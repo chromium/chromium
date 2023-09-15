@@ -10,6 +10,7 @@
 #include "base/android/base_jni_onload.h"
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_registrar.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
@@ -23,9 +24,11 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "components/cronet/android/cronet_base_feature.h"
 #include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
 #include "components/cronet/android/cronet_jni_registration_generated.h"
 #include "components/cronet/android/cronet_library_loader.h"
+#include "components/cronet/android/proto/base_feature_overrides.pb.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/version.h"
 #include "net/android/network_change_notifier_factory_android.h"
@@ -45,6 +48,11 @@ using base::android::ScopedJavaLocalRef;
 namespace cronet {
 namespace {
 
+// This feature flag can be used to make Cronet log a message from native code
+// on library initialization. This is useful for testing that the Cronet
+// base::Feature integration works.
+BASE_FEATURE(kLogMe, "CronetLogMe", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // SingleThreadTaskExecutor on the init thread, which is where objects that
 // receive Java notifications generally live.
 base::SingleThreadTaskExecutor* g_init_task_executor = nullptr;
@@ -54,11 +62,35 @@ base::WaitableEvent g_init_thread_init_done(
     base::WaitableEvent::ResetPolicy::MANUAL,
     base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-void NativeInit() {
+::org::chromium::net::httpflags::BaseFeatureOverrides GetBaseFeatureOverrides(
+    JNIEnv* env) {
+  const auto serializedProto =
+      cronet::Java_CronetLibraryLoader_getBaseFeatureOverrides(env);
+  CHECK(serializedProto);
+
+  const auto serializedProtoSize =
+      base::android::SafeGetArrayLength(env, serializedProto);
+  ::org::chromium::net::httpflags::BaseFeatureOverrides overrides;
+  void* const serializedProtoArray =
+      env->GetPrimitiveArrayCritical(serializedProto.obj(), /*isCopy=*/nullptr);
+  CHECK(serializedProtoArray != nullptr);
+  CHECK(overrides.ParseFromArray(serializedProtoArray, serializedProtoSize));
+  env->ReleasePrimitiveArrayCritical(serializedProto.obj(),
+                                     serializedProtoArray, JNI_ABORT);
+  return overrides;
+}
+
+void NativeInit(JNIEnv* env) {
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
   base::i18n::InitializeICU();
 #endif
-  base::FeatureList::InitializeInstance(std::string(), std::string());
+
+  ApplyBaseFeatureOverrides(GetBaseFeatureOverrides(env));
+
+  if (base::FeatureList::IsEnabled(kLogMe)) {
+    LOG(/* Bypass log spam warning regex */ INFO)
+        << "CronetLogMe feature flag set, logging as instructed";
+  }
 
   if (!base::ThreadPoolInstance::Get())
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
@@ -80,7 +112,7 @@ jint CronetOnLoad(JavaVM* vm, void* reserved) {
   }
   if (!base::android::OnJNIOnLoadInit())
     return -1;
-  NativeInit();
+  NativeInit(env);
   return JNI_VERSION_1_6;
 }
 
@@ -143,7 +175,7 @@ void EnsureInitialized() {
       JNIEnv* env = base::android::AttachCurrentThread();
       // Ensure initialized from Java side to properly create Init thread.
       cronet::Java_CronetLibraryLoader_ensureInitializedFromNative(env);
-      NativeInit();
+      NativeInit(env);
     }
   } s_run_once;
 }

@@ -5,6 +5,7 @@
 package org.chromium.net.httpflags;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
@@ -62,7 +63,24 @@ public final class ResolvedFlags {
             }
         }
 
-        private Value(Object value) {
+        @VisibleForTesting
+        public Value(boolean value) {
+            mValue = value;
+        }
+        @VisibleForTesting
+        public Value(long value) {
+            mValue = value;
+        }
+        @VisibleForTesting
+        public Value(float value) {
+            mValue = value;
+        }
+        @VisibleForTesting
+        public Value(String value) {
+            mValue = value;
+        }
+        @VisibleForTesting
+        public Value(ByteString value) {
             mValue = value;
         }
 
@@ -156,7 +174,8 @@ public final class ResolvedFlags {
         return new ResolvedFlags(resolvedFlags);
     }
 
-    private ResolvedFlags(Map<String, Value> flags) {
+    @VisibleForTesting
+    public ResolvedFlags(Map<String, Value> flags) {
         mFlags = flags;
     }
 

@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package org.chromium.net.httpflags;
+
+option java_package = "org.chromium.net.httpflags";
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;  // crbug/800281
+
+// Describes a set of overrides for `base::Feature` flags.
+message BaseFeatureOverrides {
+  // TODO: extend this to support overriding Feature Params as well.
+
+  // The key is the name of the base::Feature to override. The value is the
+  // override state: true force-enables the feature, false force-disables it.
+  map<string, bool> overrides = 1;
+}

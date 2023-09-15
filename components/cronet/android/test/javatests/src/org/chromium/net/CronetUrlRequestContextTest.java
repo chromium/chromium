@@ -41,6 +41,7 @@ import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
+import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.impl.CronetLibraryLoader;
@@ -187,7 +188,7 @@ public class CronetUrlRequestContextTest {
             throws Exception {
         try (LogcatCapture logcatSink = new LogcatCapture(
                      Arrays.asList(Log.normalizeTag(CronetLibraryLoader.TAG + ":I"),
-                             Log.normalizeTag(TAG + ":I")))) {
+                             Log.normalizeTag(TAG + ":I"), "chromium:I"))) {
             // Use the engine at least once to ensure we do not race against Cronet initialization.
             runOneRequest();
 
@@ -234,6 +235,55 @@ public class CronetUrlRequestContextTest {
         String marker = UUID.randomUUID().toString();
         setLogFlag(marker);
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
+    }
+
+    private void setChromiumBaseFeatureLogFlag(boolean enable) {
+        mTestRule.getTestFramework().setHttpFlags(
+                Flags.newBuilder()
+                        .putFlags(BaseFeature.FLAG_PREFIX + "CronetLogMe",
+                                FlagValue.newBuilder()
+                                        .addConstrainedValues(
+                                                FlagValue.ConstrainedValue.newBuilder()
+                                                        .setBoolValue(enable))
+                                        .build())
+                        .build());
+    }
+
+    // TODO: we can't use a marker for this because we have no way to communicate the marker to the
+    // logging code. However when we support Feature Params, we should be able to provide the marker
+    // as a param.
+    private static final String CHROMIUM_BASE_FEATURE_LOG_MESSAGE = "CronetLogMe feature flag set";
+
+    @Test
+    @SmallTest
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testBaseFeatureFlagsAreNotSetIfNoHttpFlags() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/false);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testBaseFeatureFlagsAreSetToEnabled() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        setChromiumBaseFeatureLogFlag(true);
+        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/true);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testBaseFeatureFlagsAreSetToDisabled() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        setChromiumBaseFeatureLogFlag(false);
+        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/false);
     }
 
     @Test
