@@ -56,19 +56,6 @@ CrosapiSystemLogSourceTest*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
 -SwitchAccessPointScanManagerTest.PointScanRightClick
-# TODO(b/262594550) Flaky
--ChromeVoxBackgroundTest.CrossWindowNextPreviousFocus
--ChromeVoxBackgroundTest.MultipleListBoxes
--ChromeVoxBackgroundTest.SelectOptionSelected
--ChromeVoxBackgroundTest.GestureGranularity
--ChromeVoxBackgroundTest.GestureOnPopUpButton
--ChromeVoxBackgroundTest.HitTestOnExoSurface
--ChromeVoxEditingTest.JumpCommandsSyncSelection
--ChromeVoxBackgroundTest.MixedNavWithRangeInvalidation
--ChromeVoxBackgroundTest.NavigateOutOfMultiline
--ChromeVoxBackgroundTest.ShowContextMenu
--ChromeVoxBackgroundTestWithTestServer.InPageLinks
--ChromeVoxBackgroundTest.UseEditableState
 # TODO(crbug.com/1424533): Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
 -ChromeVoxEditingTest.EditableLineTwoStaticTexts
