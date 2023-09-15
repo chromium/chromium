@@ -76,12 +76,12 @@ public abstract class PlatformServiceBridge {
         callback.onResult(false);
     }
 
-    // Overriding implementations may call "callback" asynchronously. For simplicity (and not
-    // because of any technical limitation) we require that "queryMetricsSetting" and "callback"
-    // both get called on WebView's UI thread.
+    // Overriding implementations should not call "callback" synchronously, even if the result is
+    // already known. The callback should be posted to the UI thread to run at the next opportunity,
+    // to avoid blocking the critical path for startup.
     public void queryMetricsSetting(Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        callback.onResult(false);
+        ThreadUtils.postOnUiThread(() -> { callback.onResult(false); });
     }
 
     public void setSafeBrowsingHandler() {
