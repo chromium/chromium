@@ -1835,6 +1835,24 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           capslock_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // ScrollLock key.
+  const ui::Accelerator scrolllock_accelerator(ui::VKEY_SCROLL,
+                                               ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          scrolllock_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // NumLock key.
+  const ui::Accelerator numlock_accelerator(ui::VKEY_NUMLOCK,
+                                            ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          numlock_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {

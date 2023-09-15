@@ -234,8 +234,10 @@ constexpr int kCustomizationModifierMask =
 // VKEY_F13 is treated as lock on certain devices.
 // VKEY_CAPITAL is capslock, capslock behavior is currently hardcoded and would
 // lead to complications if we allow users to use it for their own accelerators.
-constexpr ui::KeyboardCode kReservedKeys[] = {ui::VKEY_POWER, ui::VKEY_F13,
-                                              ui::VKEY_SLEEP, ui::VKEY_CAPITAL};
+// ScrollLock and NumLock are not officially supported on ChromeOS.
+constexpr ui::KeyboardCode kReservedKeys[] = {
+    ui::VKEY_POWER,   ui::VKEY_F13,    ui::VKEY_SLEEP,
+    ui::VKEY_CAPITAL, ui::VKEY_SCROLL, ui::VKEY_NUMLOCK};
 
 // Gets the parts of the string that don't contain replacements.
 // Ex: "Press and " -> ["Press ", " and "]
