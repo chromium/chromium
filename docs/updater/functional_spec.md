@@ -541,7 +541,7 @@ failure:
         be launched and the updater UI will exit silently. Otherwise, the
         updater will show an install success dialog.
 
-  *   All the errors below are treated the same.
+  *   All the error installer results below are treated the same.
       - if an installer error was not provided via the installer API or the exit
         code, generic error `kErrorApplicationInstallerFailed` will be reported.
       - the installer extra code is used if reported via the installer API.
@@ -551,6 +551,20 @@ failure:
       *   2 - FAILED\_MSI\_ERROR
       *   3 - FAILED\_SYSTEM\_ERROR
       *   4 - FAILED\_EXIT\_CODE (default)
+
+  *   If an installer result is not explicitly reported by the installer, the
+      installer API values are internally set based on whether the exit code
+      from the installer process is a success or an error:
+      - If the exit code is a success, the installer result is set to success.
+        If a launch command was provided via the installer API, the command will
+        be launched and the updater UI will exit silently. Otherwise, the
+        updater will show an install success dialog.
+      - If the exit code is a failure, the installer result is set to
+        `kExitCode`, the installer error is set to
+        `kErrorApplicationInstallerFailed`, and the installer extra code is set
+        to the exit code.
+      - If a text description is reported via the installer API, it will be
+        used.
 * `InstallerResultUIString` : A string to be displayed to the user, if
 `InstallerResult` is FAILED*.
 * `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
