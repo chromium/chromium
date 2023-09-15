@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,9 +59,13 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
+        static final PropertyModel
+                .ReadableObjectPropertyKey<FillableItemCollectionInfo> ITEM_COLLECTION_INFO =
+                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
         static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, CARD_ART_URL, NETWORK_NAME, CARD_NAME,
-                CARD_NUMBER, CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION};
+                CARD_NUMBER, CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION,
+                ITEM_COLLECTION_INFO};
 
         private CreditCardProperties() {}
     }

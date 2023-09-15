@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -80,6 +82,8 @@ public class TouchToFillCreditCardViewTest {
 
     @Mock
     private Callback<Integer> mDismissCallback;
+    @Mock
+    private FillableItemCollectionInfo mItemCollectionInfo;
 
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
@@ -114,7 +118,7 @@ public class TouchToFillCreditCardViewTest {
     public void testVisibilityChangedByModel() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
         });
         // After setting the visibility to true, the view should exist and be visible.
         runOnUiThreadBlocking(() -> mTouchToFillCreditCardModel.set(VISIBLE, true));
@@ -132,12 +136,14 @@ public class TouchToFillCreditCardViewTest {
     public void testCredentialsChangedByModel() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(MASTER_CARD)));
+                    .add(new ListItem(
+                            CREDIT_CARD, createCardModel(MASTER_CARD, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VIRTUAL_CARD)));
+                    .add(new ListItem(
+                            CREDIT_CARD, createCardModel(VIRTUAL_CARD, mItemCollectionInfo)));
         });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -172,7 +178,7 @@ public class TouchToFillCreditCardViewTest {
 
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -190,7 +196,7 @@ public class TouchToFillCreditCardViewTest {
     public void testSheetStartsInHalfHeightForAccessibilityDisabled() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -204,7 +210,7 @@ public class TouchToFillCreditCardViewTest {
     public void testSheetScrollabilityDependsOnState() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -228,7 +234,8 @@ public class TouchToFillCreditCardViewTest {
     public void testCardNameContentLabelForNicknamedCardContainsANetworkName() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(NICKNAMED_VISA)));
+                    .add(new ListItem(
+                            CREDIT_CARD, createCardModel(NICKNAMED_VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -243,7 +250,7 @@ public class TouchToFillCreditCardViewTest {
     public void testCardNameContentDescriptionIsNotSetForCardWithNoNickname() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -255,10 +262,53 @@ public class TouchToFillCreditCardViewTest {
 
     @Test
     @MediumTest
+    public void testDescriptionLineContentDescriptionOfCreditCard() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD,
+                            createCardModel(VISA, new FillableItemCollectionInfo(1, 1))));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.description_line_2);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        descriptionLine.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(descriptionLine.getContext().getString(
+                             R.string.autofill_credit_card_a11y_item_collection_info,
+                             descriptionLine.getText(), 1, 1),
+                info.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    public void testDescriptionLineContentDescriptionOfVirtualCard() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD,
+                            createCardModel(VIRTUAL_CARD, new FillableItemCollectionInfo(1, 1))));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.description_line_2);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        descriptionLine.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(descriptionLine.getContext().getString(
+                             R.string.autofill_credit_card_a11y_item_collection_info,
+                             descriptionLine.getText(), 1, 1),
+                info.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
     public void testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown() {
         runOnUiThreadBlocking(() -> {
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .add(new ListItem(CREDIT_CARD, createCardModel(LONG_CARD_NAME_CARD)));
+                    .add(new ListItem(CREDIT_CARD,
+                            createCardModel(LONG_CARD_NAME_CARD, mItemCollectionInfo)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -293,14 +343,18 @@ public class TouchToFillCreditCardViewTest {
         return mBottomSheetController.getSheetState();
     }
 
-    private static PropertyModel createCardModel(CreditCard card) {
+    private static PropertyModel createCardModel(
+            CreditCard card, FillableItemCollectionInfo collectionInfo) {
         PropertyModel.Builder creditCardModelBuilder =
                 new PropertyModel
                         .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
-                                card.getObfuscatedLastFourDigits());
+                                card.getObfuscatedLastFourDigits())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties
+                                        .ITEM_COLLECTION_INFO,
+                                collectionInfo);
         if (!card.getBasicCardIssuerNetwork().equals(
                     card.getCardNameForAutofillDisplay().toLowerCase())) {
             creditCardModelBuilder.with(

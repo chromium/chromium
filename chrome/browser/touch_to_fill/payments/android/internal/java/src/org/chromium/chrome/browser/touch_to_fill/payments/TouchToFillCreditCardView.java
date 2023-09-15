@@ -64,11 +64,10 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
     TouchToFillCreditCardView(Context context, BottomSheetController bottomSheetController) {
-        // TODO(1371492): set suppressCollectionA11y=true and update items a11y messages accordingly
         super(bottomSheetController,
                 (RelativeLayout) LayoutInflater.from(context).inflate(
                         R.layout.touch_to_fill_sheet, null),
-                false);
+                true);
 
         getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
     }
