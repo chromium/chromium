@@ -6574,7 +6574,6 @@ crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php 
 
 # To allow devtools-frontend CL crrev.com/c/4678759 to land.
 crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overview-container-a11y-test.js [ Failure Pass ]
-crbug.com/1464206 http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Failure Pass ]
 
 # Gardener 2023-07-17
 # Very flaky on most Mac builders

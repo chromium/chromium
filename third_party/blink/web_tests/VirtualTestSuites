@@ -3638,7 +3638,6 @@
       "http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.js",
       "http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js",
       "http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js",
-      "http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js",
       "http/tests/devtools/tracing/timeline-paint/layer-tree.js",
       "http/tests/devtools/unit/datagrid-editable-longtext.js",
       "http/tests/devtools/unit/list-control-equal-height.js",
