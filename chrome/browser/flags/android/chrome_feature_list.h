@@ -126,7 +126,6 @@ BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kAvoidRelayoutDuringFocusAnimation);
 BASE_DECLARE_FEATURE(kShortCircuitUnfocusAnimation);
-BASE_DECLARE_FEATURE(kOmniboxAdaptNarrowTabletWindows);
 BASE_DECLARE_FEATURE(kOmniboxCacheSuggestionResources);
 BASE_DECLARE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);

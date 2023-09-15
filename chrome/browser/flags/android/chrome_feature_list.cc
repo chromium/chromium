@@ -267,7 +267,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmahaMinSdkVersionAndroid,
     &kAvoidRelayoutDuringFocusAnimation,
     &kShortCircuitUnfocusAnimation,
-    &kOmniboxAdaptNarrowTabletWindows,
     &kOmniboxCacheSuggestionResources,
     &kOmniboxNoopEditUrlSuggestionClicks,
     &kOmniboxWarmRecycledViewPool,
@@ -857,10 +856,6 @@ BASE_FEATURE(kAvoidRelayoutDuringFocusAnimation,
 BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxAdaptNarrowTabletWindows,
-             "OmniboxAdaptNarrowTabletWindows",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxCacheSuggestionResources,
              "OmniboxCacheSuggestionResources",

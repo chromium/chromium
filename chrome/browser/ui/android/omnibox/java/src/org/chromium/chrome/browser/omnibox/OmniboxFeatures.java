@@ -57,9 +57,6 @@ public class OmniboxFeatures {
             MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP = new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_merge_clipboard_on_ntp", true);
-    private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);
 
     private static final MutableFlagWithSafeDefault sJourneysActionChipFlag =
             new MutableFlagWithSafeDefault(
@@ -112,14 +109,6 @@ public class OmniboxFeatures {
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
         return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
-    }
-
-    /**
-     * Returns whether the omnibox dropdown should be switched to a phone-like appearance when the
-     * window width is <600dp.
-     */
-    public static boolean shouldAdaptToNarrowTabletWindows() {
-        return sShouldAdaptToNarrowTabletWindows.isEnabled();
     }
 
     /**

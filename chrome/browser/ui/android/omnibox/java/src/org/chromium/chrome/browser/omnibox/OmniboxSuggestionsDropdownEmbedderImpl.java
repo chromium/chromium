@@ -92,12 +92,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
 
     @Override
     public boolean isTablet() {
-        if (OmniboxFeatures.shouldAdaptToNarrowTabletWindows()) {
-            return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
-                    && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
-        } else {
-            return DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
-        }
+        return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+                && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
     }
 
     @Override
