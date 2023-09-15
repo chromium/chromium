@@ -227,4 +227,9 @@ BASE_FEATURE(kWebAuthnPINProtocolInHMACSecret,
              "WebAuthenticationPINProtocolInHMACSecret",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M119. Remove in or after M122.
+BASE_FEATURE(kWebAuthnAndroidIncognitoConfirmation,
+             "WebAuthenticationAndroidIncognitoConfirmation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

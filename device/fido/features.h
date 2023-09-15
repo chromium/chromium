@@ -177,6 +177,10 @@ BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPINProtocolInHMACSecret);
 
+// Show an incognito confirmation sheet on Android when creating a credential.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

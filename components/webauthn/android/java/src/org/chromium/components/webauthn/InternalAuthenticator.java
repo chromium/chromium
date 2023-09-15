@@ -40,7 +40,8 @@ public class InternalAuthenticator {
             WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-        mAuthenticator = new AuthenticatorImpl(context, intentSender, renderFrameHost, topOrigin);
+        mAuthenticator = new AuthenticatorImpl(context, intentSender,
+                /*createConfirmationUiDelegate=*/null, renderFrameHost, topOrigin);
     }
 
     public static InternalAuthenticator createForTesting(Context context,

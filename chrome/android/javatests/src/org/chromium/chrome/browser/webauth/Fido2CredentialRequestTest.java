@@ -671,8 +671,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_success() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -689,9 +689,62 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    public void testAuthenticatorImplMakeCredential_withConfirmationUi_success() {
+        boolean[] wasCalled = new boolean[1];
+        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+                (accept, reject) -> {
+            wasCalled[0] = true;
+            accept.run();
+            return true;
+        };
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(
+                mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            authenticator.makeCredential(mCreationOptions,
+                    (status, response,
+                            dom_exception) -> mCallback.onRegisterResponse(status, response));
+        });
+
+        mCallback.blockUntilCalled();
+        Assert.assertTrue(wasCalled[0]);
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuthenticatorImplMakeCredential_withConfirmationUi_rejected() {
+        boolean[] wasCalled = new boolean[1];
+        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+                (accept, reject) -> {
+            wasCalled[0] = true;
+            reject.run();
+            return true;
+        };
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(
+                mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            authenticator.makeCredential(mCreationOptions,
+                    (status, response,
+                            dom_exception) -> mCallback.onRegisterResponse(status, response));
+        });
+
+        mCallback.blockUntilCalled();
+        Assert.assertTrue(wasCalled[0]);
+        Assert.assertEquals(
+                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+    }
+
+    @Test
+    @SmallTest
     public void testAuthenticatorImplMakeCredential_resultCanceled() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.makeCredential(mCreationOptions,
@@ -1059,8 +1112,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertionWithUvmRequestedWithUvmResponded_success() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.extensions.userVerificationMethods = true;
@@ -1079,8 +1132,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertionWithPrf_success() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithPrf());
         PrfValues prfValues = new PrfValues();
@@ -1105,8 +1158,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertionWithDevicePubKey_success() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithDevicePubKey());
         mRequestOptions.extensions.devicePublicKey = new DevicePublicKeyRequest();
@@ -1127,8 +1180,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertion_resultCanceled() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(mContext, mIntentSender, mFrameHost, mOrigin);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mContext, mIntentSender,
+                /*createConfirmationUiDelegate=*/null, mFrameHost, mOrigin);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.getAssertion(mRequestOptions,

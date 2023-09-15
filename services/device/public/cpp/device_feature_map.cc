@@ -21,6 +21,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidCredMan,
     &device::kWebAuthnAndroidCredManForHybrid,
     &device::kWebAuthnAndroidHybridClientUi,
+    &device::kWebAuthnAndroidIncognitoConfirmation,
     &device::kWebAuthnCableViaCredMan,
     &device::kWebAuthnDontPrelinkInProfiles,
     &device::kWebAuthnHybridLinkWithoutNotifications,

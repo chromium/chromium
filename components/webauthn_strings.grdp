@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_TITLE" desc="The title of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+      Save passkey outside Incognito?
+    </message>
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_BODY" desc="The body of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+      This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.
+    </message>
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_CONTINUE" desc="The text of a button that the user will click to continue creating a passkey in Incognito mode" formatter_data="android_java">
+      Continue
+    </message>
+
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+      Passkey confirmation sheet
+    </message>
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+      Passkey confirmation sheet opened
+    </message>
+    <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+      Passkey confirmation sheet closed
+    </message>
+</grit-part>

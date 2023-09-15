@@ -1158,6 +1158,7 @@ if (is_android) {
       "//components/variations/android:components_variations_junit_tests",
       "//components/webapk/android/libs/client:junit",
       "//components/webapps/browser/android:junit",
+      "//components/webauthn/android:junit",
     ]
     shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
   }

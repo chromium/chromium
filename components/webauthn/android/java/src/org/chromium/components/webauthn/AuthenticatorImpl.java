@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -37,12 +39,22 @@ import java.util.Set;
  * Android implementation of the authenticator.mojom interface.
  */
 public final class AuthenticatorImpl implements Authenticator {
+    /**
+     * Interface for code that will show the user a confirmation before creating a credential.
+     *
+     * This is intended for use in Incognito mode.
+     **/
+    public interface CreateConfirmationUiDelegate {
+        boolean show(Runnable positiveCallback, Runnable negativeCallback);
+    }
+
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     public static final int GMSCORE_MIN_VERSION = 16890000;
     public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private final Context mContext;
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
+    private final CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
 
     /** Ensures only one request is processed at a time. */
     private boolean mIsOperationPending;
@@ -85,10 +97,13 @@ public final class AuthenticatorImpl implements Authenticator {
      * @param context The context of the AndroidWindow that triggered this operation.
      * @param intentSender The interface that will be used to start {@link Intent}s from Play
      *         Services.
+     * @param createConfirmationUiDelegate If not null, is an object that will be called before
+     *         creating a credential to show a confirmation UI.
      * @param renderFrameHost The host of the frame that has invoked the API.
      * @param topOrigin The origin of the main frame.
      */
     public AuthenticatorImpl(Context context, WebAuthenticationDelegate.IntentSender intentSender,
+            @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
             RenderFrameHost renderFrameHost, Origin topOrigin) {
         assert renderFrameHost != null;
 
@@ -97,6 +112,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mRenderFrameHost = renderFrameHost;
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
         mTopOrigin = topOrigin;
+        mCreateConfirmationUiDelegate = createConfirmationUiDelegate;
 
         mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
     }
@@ -146,6 +162,20 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
+        if (mCreateConfirmationUiDelegate != null) {
+            if (!mCreateConfirmationUiDelegate.show(
+                        ()
+                                -> continueMakeCredential(options, callback),
+                        () -> onError(AuthenticatorStatus.NOT_ALLOWED_ERROR))) {
+                continueMakeCredential(options, callback);
+            }
+        } else {
+            continueMakeCredential(options, callback);
+        }
+    }
+
+    private void continueMakeCredential(
+            PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(mContext, options,
                 mRenderFrameHost, /*maybeClientDataHash=*/null, mOrigin,
