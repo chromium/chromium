@@ -138,9 +138,12 @@ enum MergeMode {
 //  NAME_LAST values but only a formatted NAME_FULL value.
 class AddressComponent {
  public:
+  // List of node subcomponents.
+  using SubcomponentsList = std::vector<std::unique_ptr<AddressComponent>>;
+
   // Constructor for a compound child node.
   AddressComponent(ServerFieldType storage_type,
-                   std::vector<std::unique_ptr<AddressComponent>> subcomponents,
+                   SubcomponentsList subcomponents,
                    unsigned int merge_mode);
 
   // Disallows copies and direct assignments since they are not needed in the
@@ -299,9 +302,7 @@ class AddressComponent {
   bool MergeTokenEquivalentComponent(const AddressComponent& newer_component);
 
   // Returns a constant vector of pointers to the child nodes of the component.
-  const std::vector<std::unique_ptr<AddressComponent>>& Subcomponents() const {
-    return subcomponents_;
-  }
+  const SubcomponentsList& Subcomponents() const { return subcomponents_; }
 
   // Returns a vector containing sorted normalized tokens of the
   // value of the component. The tokens are lazily calculated when first needed.
@@ -563,7 +564,7 @@ class AddressComponent {
   const ServerFieldType storage_type_;
 
   // A vector of children of the component.
-  std::vector<std::unique_ptr<AddressComponent>> subcomponents_;
+  SubcomponentsList subcomponents_;
 
   // A vector that contains the tokens of |value_| after normalization,
   // meaning that it was converted to lower case and diacritics have been

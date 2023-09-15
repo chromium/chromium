@@ -33,11 +33,10 @@ class AddressComponentWithRewriter : public AddressComponent {
 // the flag is turned off.
 class FeatureGuardedAddressComponent : public AddressComponent {
  public:
-  FeatureGuardedAddressComponent(
-      raw_ptr<const base::Feature> feature,
-      ServerFieldType storage_type,
-      std::vector<std::unique_ptr<AddressComponent>> children,
-      unsigned int merge_mode);
+  FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
+                                 ServerFieldType storage_type,
+                                 SubcomponentsList children,
+                                 unsigned int merge_mode);
 
   // Sets the value corresponding to the storage type of this component.
   void SetValue(std::u16string value, VerificationStatus status) override;
@@ -50,8 +49,7 @@ class FeatureGuardedAddressComponent : public AddressComponent {
 // The name of the street.
 class StreetNameNode : public AddressComponent {
  public:
-  explicit StreetNameNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit StreetNameNode(SubcomponentsList children);
   ~StreetNameNode() override;
 };
 
@@ -59,8 +57,7 @@ class StreetNameNode : public AddressComponent {
 // '73a'.
 class HouseNumberNode : public AddressComponent {
  public:
-  explicit HouseNumberNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit HouseNumberNode(SubcomponentsList children);
   ~HouseNumberNode() override;
 };
 
@@ -68,47 +65,42 @@ class HouseNumberNode : public AddressComponent {
 // number info.)
 class StreetLocationNode : public AddressComponent {
  public:
-  explicit StreetLocationNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit StreetLocationNode(SubcomponentsList children);
   ~StreetLocationNode() override;
 };
 
 // The floor the apartment is located in.
 class FloorNode : public AddressComponent {
  public:
-  explicit FloorNode(std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit FloorNode(SubcomponentsList children);
   ~FloorNode() override;
 };
 
 // The number of the apartment.
 class ApartmentNode : public AddressComponent {
  public:
-  explicit ApartmentNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit ApartmentNode(SubcomponentsList children);
   ~ApartmentNode() override;
 };
 
 // The SubPremise normally contains the floor and the apartment number.
 class SubPremiseNode : public AddressComponent {
  public:
-  explicit SubPremiseNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit SubPremiseNode(SubcomponentsList children);
   ~SubPremiseNode() override;
 };
 
 // Stores the landmark of an address profile.
 class LandmarkNode : public FeatureGuardedAddressComponent {
  public:
-  explicit LandmarkNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit LandmarkNode(SubcomponentsList children);
   ~LandmarkNode() override;
 };
 
 // Stores the streets intersection of an address profile.
 class BetweenStreetsNode : public FeatureGuardedAddressComponent {
  public:
-  explicit BetweenStreetsNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit BetweenStreetsNode(SubcomponentsList children);
   ~BetweenStreetsNode() override;
 };
 
@@ -116,8 +108,7 @@ class BetweenStreetsNode : public FeatureGuardedAddressComponent {
 // Municipio in Brazil or Mexico.
 class AdminLevel2Node : public FeatureGuardedAddressComponent {
  public:
-  explicit AdminLevel2Node(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit AdminLevel2Node(SubcomponentsList children);
   ~AdminLevel2Node() override;
 };
 
@@ -127,8 +118,7 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
 // rewriting values for comparison.
 class StreetAddressNode : public AddressComponentWithRewriter {
  public:
-  explicit StreetAddressNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit StreetAddressNode(SubcomponentsList children);
   ~StreetAddressNode() override;
 
   const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
@@ -182,23 +172,21 @@ class StreetAddressNode : public AddressComponentWithRewriter {
 // Stores the country code of an address profile.
 class CountryCodeNode : public AddressComponent {
  public:
-  explicit CountryCodeNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit CountryCodeNode(SubcomponentsList children);
   ~CountryCodeNode() override;
 };
 
 // Stores the city of an address.
 class DependentLocalityNode : public AddressComponent {
  public:
-  explicit DependentLocalityNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit DependentLocalityNode(SubcomponentsList children);
   ~DependentLocalityNode() override;
 };
 
 // Stores the city of an address.
 class CityNode : public AddressComponent {
  public:
-  explicit CityNode(std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit CityNode(SubcomponentsList children);
   ~CityNode() override;
 };
 
@@ -207,7 +195,7 @@ class CityNode : public AddressComponent {
 // rewriting values for comparison.
 class StateNode : public AddressComponentWithRewriter {
  public:
-  explicit StateNode(std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit StateNode(SubcomponentsList children);
   ~StateNode() override;
 
   // For states we use the AlternativeStateNameMap to offer canonicalized state
@@ -220,8 +208,7 @@ class StateNode : public AddressComponentWithRewriter {
 // rewriting values for comparison.
 class PostalCodeNode : public AddressComponentWithRewriter {
  public:
-  explicit PostalCodeNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit PostalCodeNode(SubcomponentsList children);
   ~PostalCodeNode() override;
 
  protected:
@@ -237,8 +224,7 @@ class PostalCodeNode : public AddressComponentWithRewriter {
 // Stores the sorting code.
 class SortingCodeNode : public AddressComponent {
  public:
-  explicit SortingCodeNode(
-      std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit SortingCodeNode(SubcomponentsList children);
   ~SortingCodeNode() override;
 };
 
@@ -247,7 +233,7 @@ class AddressNode : public AddressComponent {
  public:
   AddressNode();
   AddressNode(const AddressNode& other);
-  explicit AddressNode(std::vector<std::unique_ptr<AddressComponent>> children);
+  explicit AddressNode(SubcomponentsList children);
   AddressNode& operator=(const AddressNode& other);
   ~AddressNode() override;
 

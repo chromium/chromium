@@ -80,10 +80,9 @@ std::ostream& operator<<(std::ostream& os, VerificationStatus status) {
   return os;
 }
 
-AddressComponent::AddressComponent(
-    ServerFieldType storage_type,
-    std::vector<std::unique_ptr<AddressComponent>> subcomponents,
-    unsigned int merge_mode)
+AddressComponent::AddressComponent(ServerFieldType storage_type,
+                                   SubcomponentsList subcomponents,
+                                   unsigned int merge_mode)
     : value_verification_status_(VerificationStatus::kNoStatus),
       storage_type_(storage_type),
       merge_mode_(merge_mode) {
@@ -1203,7 +1202,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // this component or the other depending on which substructure is better in
   // terms of the number of validated tokens.
 
-  const std::vector<std::unique_ptr<AddressComponent>>& other_subcomponents =
+  const SubcomponentsList& other_subcomponents =
       newer_component.Subcomponents();
   CHECK(subcomponents_.size() == other_subcomponents.size());
   if (HasNewerValuePrecedenceInMerging(newer_component)) {
@@ -1322,7 +1321,7 @@ bool AddressComponent::MergeSubsetComponent(
   std::vector<int> unmerged_indices;
   unmerged_indices.reserve(subcomponents_.size());
 
-  const std::vector<std::unique_ptr<AddressComponent>>& subset_subcomponents =
+  const SubcomponentsList& subset_subcomponents =
       subset_component.Subcomponents();
 
   unmerged_indices.reserve(subcomponents_.size());
