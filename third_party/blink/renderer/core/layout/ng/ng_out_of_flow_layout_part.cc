@@ -2609,10 +2609,6 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
       // that contains the fragment.
       bool is_out_of_flow = containing_block->IsOutOfFlowPositioned();
       containing_block = containing_block->ContainingNGBox();
-      if (containing_block->IsColumnSpanAll()) {
-        is_inside_spanner = true;
-        continue;
-      }
       if (containing_block->IsFragmentationContextRoot() && !is_out_of_flow) {
         // If the OOF element we are searching for has a CB that is nested
         // within a spanner, that OOF will *not* be laid out in the nearest
@@ -2624,6 +2620,9 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
           continue;
         }
         break;
+      }
+      if (containing_block->IsColumnSpanAll()) {
+        is_inside_spanner = true;
       }
     } while (containing_block->MightBeInsideFragmentationContext());
 
