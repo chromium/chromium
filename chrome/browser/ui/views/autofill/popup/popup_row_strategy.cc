@@ -48,7 +48,7 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::kPasswordAccountStorageOptInAndGenerate};
 
 constexpr int kExpandableControlCellInsetPadding = 16;
-constexpr int kExpandableControlCellIconSize = 8;
+constexpr int kExpandableControlCellIconSize = 6;
 
 // ********************* AccessibilityDelegate implementations *****************
 
