@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -137,6 +138,28 @@ bool FormMatchesUsername(const PasswordForm* form,
 bool IsPasswordFormWithoutUsername(const PasswordForm* form) {
   return form && form->HasNonEmptyPasswordValue() &&
          form->username_value.empty();
+}
+
+// Finds best username candidate that is outside of the form. Priority is given
+// to the most recently updated fields. Right now, this function checks if there
+// is an override among possible usernames. Otherwise, returns the most recently
+// modified field not in password form.
+// TODO: crbug.com/1470586 - Add search for the most recent field with
+// `SINGLE_USERNAME` prediction. Add search for candidate that has the same
+// value as username inside the form. Search for candidate with HTML attribute
+// autocomplete="username". Skip OTP fields.
+PossibleUsernameData FindBestPossibleUsernameCandidate(
+    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
+        possible_usernames) {
+  for (auto [field_identifier, possible_username] : possible_usernames) {
+    if (possible_username.HasSingleUsernameOverride() &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::
+                kUsernameFirstFlowWithIntermediateValues)) {
+      return possible_username;
+    }
+  }
+  return possible_usernames.begin()->second;
 }
 
 }  // namespace
@@ -795,22 +818,28 @@ bool PasswordFormManager::ProvisionallySave(
   if (possible_usernames && !possible_usernames->empty()) {
     // TODO: crbug.com/1470586 - Pick the most probable |possible_username|.
     PossibleUsernameData possible_username =
-        possible_usernames->begin()->second;
+        FindBestPossibleUsernameCandidate(*possible_usernames);
 
-    // `possible_username` is considered for single username vote in 2 cases:
-    // 1) There is a password field and no username field in the current form.
-    // 2) There are both password and username fields, and the username value
-    // matches the username value (`possible_username`) in the single username
-    // form.
-    // TODO: crbug.com/1468297 - The distinction between (1) and (2), i.e.
-    // `password_form_had_matching_username`, is used only to assess the impact
-    // of (2) with metrics. The variable can be removed once the metrics are not
-    // needed anymore.
+    // TODO: crbug.com/1470586 - Search for matching username through all
+    // candidates in `FindBestPossibleUsernameCandidate`.
     bool password_form_had_matching_username = FormMatchesUsername(
         parsed_submitted_form_.get(), possible_username.value);
+
+    // `possible_username` is considered for single username vote in three
+    // cases:
+    // 1) There is a password field and no username field in the current form.
+    // 2) There are both password and username fields, and the username
+    // value matches the username value (`possible_username`) in the single
+    // username form.
+    // 3) There is a username field outside of the password form that is a
+    // server override.
     if (IsPasswordFormWithoutUsername(
-            parsed_submitted_form_.get()) ||    // Case (1).
-        password_form_had_matching_username) {  // Case (2).
+            parsed_submitted_form_.get()) ||               // Case (1).
+        password_form_had_matching_username ||             // Case (2).
+        (possible_username.HasSingleUsernameOverride() &&  // Case (3).
+         base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kUsernameFirstFlowWithIntermediateValues))) {
       // TODO(crbug.com/959776): Reset `possible_username` after it's used.
       HandleUsernameFirstFlow(possible_username,
                               password_form_had_matching_username);
@@ -1217,7 +1246,15 @@ void PasswordFormManager::HandleUsernameFirstFlow(
          base::FeatureList::IsEnabled(
              password_manager::features::
                  kUsernameFirstFlowHonorAutocomplete))) {
-      parsed_submitted_form_->username_value = possible_username.value;
+      if (!password_form_had_matching_username) {
+        // Username is found outside of the password form. Clear username field
+        // predictions that is inside the password form to not send incorrect
+        // votes.
+        parsed_submitted_form_->username_value = possible_username.value;
+        parsed_submitted_form_->username_element_renderer_id =
+            FieldRendererId();
+        parsed_submitted_form_->username_element.clear();
+      }
       metrics_recorder_->set_possible_username_used(true);
       if (possible_username.autocomplete_attribute_has_username) {
         LogUsingPossibleUsername(client_, /*is_used=*/true,

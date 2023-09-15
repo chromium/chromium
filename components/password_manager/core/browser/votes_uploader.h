@@ -70,6 +70,9 @@ struct SingleUsernameVoteData {
 
   // True if the password form has username field whose value matches username
   // value in the single username form.
+  // TODO: crbug.com/1468297 - `password_form_had_matching_username` in
+  // `VotesUploader` is used for UMA metrics. The variable can be removed once
+  // the metrics are not needed anymore.
   bool password_form_had_matching_username;
 };
 

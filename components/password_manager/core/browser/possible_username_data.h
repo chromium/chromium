@@ -94,6 +94,11 @@ struct PossibleUsernameData {
   // single username prediction stored in |form_predictions|.
   bool HasSingleUsernameServerPrediction() const;
 
+  // Returns whether the field identified by |renderer_id| has a
+  // single username prediction stored in |form_predictions| that is an
+  // override.
+  bool HasSingleUsernameOverride() const;
+
   // Returns whether the field identified by |renderer_id| has
   // any server prediction stored in |form_predictions|.
   bool HasServerPrediction() const;

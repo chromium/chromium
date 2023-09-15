@@ -66,6 +66,17 @@ bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
          password_manager_util::IsSingleUsernameType(field_prediction->type);
 }
 
+bool PossibleUsernameData::HasSingleUsernameOverride() const {
+  // Check if there is a server prediction.
+  if (!form_predictions) {
+    return false;
+  }
+  const PasswordFieldPrediction* field_prediction =
+      FindFieldPrediction(*form_predictions, renderer_id);
+  return field_prediction && field_prediction->is_override &&
+         password_manager_util::IsSingleUsernameType(field_prediction->type);
+}
+
 bool PossibleUsernameData::HasServerPrediction() const {
   // Check if there is a server prediction.
   if (!form_predictions) {
