@@ -3263,9 +3263,9 @@ crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure Timeout ]
 
-crbug.com/1147998 external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Failure ]
-crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_appended.html?pen [ Failure ]
-crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_appended.html?touch [ Failure ]
+crbug.com/1147998 external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Failure Timeout ]
+crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_appended.html?pen [ Failure Timeout ]
+crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_appended.html?touch [ Failure Timeout ]
 crbug.com/1147998 external/wpt/pointerevents/pointerevent_after_target_removed.html?mouse [ Failure ]
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?pen [ Failure ]
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Failure ]
