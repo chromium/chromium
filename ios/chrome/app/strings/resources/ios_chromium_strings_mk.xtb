@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
 <translation id="3478750326643748149">Скриј „Извлечете го максимумот од Chromium“</translation>
+<translation id="3554027294407525061">Бришење на податоците од прелистување во Chromium.</translation>
 <translation id="3567399274263440288">За да го извлечете максимумот од Chromium, најавете се на Chromium со вашата сметка на Google.</translation>
 <translation id="3639997914391704523">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> користеше Chromium и остави обележувачи, лозинки и други поставки на уредов.</translation>
@@ -97,6 +98,7 @@
 <translation id="4999538639245140991">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chromium ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="5042011327527167688">Допрете „Прикажи со „Карти на Google“ во Chromium“.</translation>
 <translation id="5048795749726991615">За лесно добивање на зачуваните лозинки во другите апликации, користете Chromium за автоматско пополнување</translation>
+<translation id="5076601183701536878">Избришете ги податоците од прелистување во Chromium</translation>
 <translation id="5131565040785979529">Вашата организација, <ph name="DOMAIN" />, управува со сметката на којашто сте најавени, а и со тоа како се користи Chromium.</translation>
 <translation id="5171868502429358653">Најавете се на Chromium</translation>
 <translation id="5213683223491576284">Го отвора Password Manager во Chromium.</translation>

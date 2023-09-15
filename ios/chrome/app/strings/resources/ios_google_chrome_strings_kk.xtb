@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1105362920864247682">Chrome-дағы браузерді пайдалану деректерін тазалау.</translation>
 <translation id="1143896152279775643">Құпия сөзіңіз <ph name="EMAIL" /> аккаунтына арналған Google Құпия сөздер реттегішіне сақталады.</translation>
 <translation id="1180362651362502943">Google аккаунтыңызда Chrome деректерін пайдалануды жалғастырыңыз.</translation>
 <translation id="1282031177488366470">Chrome функциялары мен жұмысын жақсартуға көмектесу</translation>
@@ -57,6 +58,7 @@
 <translation id="2736805085127235148">Қазіргі уақытта құрылғы параметрлерінде Chrome хабарландырулары өшірілген.</translation>
 <translation id="2767464022270041271">Ешқандай құпия сөз сақталмаған. Google Password Manager құпия сөздерді сақтаған кезде оларды тексере алады.</translation>
 <translation id="2840432500933227975">iOS жүйесінде Chromium параметрлерін ашып, "Браузердің әдепкі қолданбасы" түймесін түртіп, Chrome параметрін таңдаңыз.</translation>
+<translation id="2868822340714096138">Chrome-дағы браузерді пайдалану деректерін тазалау</translation>
 <translation id="2869959624320573933">Chrome-ға кіріңіз</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome-ның деректеріңізді құпия сақтау жолы<ph name="END_LINK" /> туралы толық ақпарат</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> браузерін таңдаңыз.</translation>

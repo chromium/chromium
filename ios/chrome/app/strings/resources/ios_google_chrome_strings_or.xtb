@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1105362920864247682">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />ର Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="1180362651362502943">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ।</translation>
 <translation id="1282031177488366470">Chromeର ଫିଚର୍‌ଏବଂ କାର୍ଯ୍ୟଦକ୍ଷତାରେ ଉନ୍ନତ ଆଣିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -57,6 +58,7 @@
 <translation id="2736805085127235148">ଆପଣଙ୍କ ଡିଭାଇସ ସେଟିଂସରେ Chrome ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ବନ୍ଦ ଅଛି।</translation>
 <translation id="2767464022270041271">ସେଭ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Google Password Manager ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
 <translation id="2840432500933227975">iOSରେ Chrome ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ବ୍ରାଉଜର ଡିଫ୍ଟଲ୍ଟ ଆପ"ରେ ଟାପ କରି Chromeକୁ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="2868822340714096138">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2869959624320573933">Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପ୍ରାଇଭେଟ ରଖେ<ph name="END_LINK" /> ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ଚୟନ କରନ୍ତୁ</translation>

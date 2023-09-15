@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="3472200483164753384">Chromium Canary에서 지원되지 않습니다.</translation>
 <translation id="3478750326643748149">'Chromium 최대한 활용하기' 숨기기</translation>
+<translation id="3554027294407525061">Chromium에서 인터넷 사용 기록을 삭제합니다.</translation>
 <translation id="3567399274263440288">Chromium을 최대한 활용하려면 Google 계정으로 Chromium에 로그인하세요</translation>
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 계정이 Chromium을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
@@ -97,6 +98,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="5042011327527167688">'Chromium에서 Google 지도로 보기'를 탭합니다.</translation>
 <translation id="5048795749726991615">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chromium 자동 완성 기능을 사용하세요</translation>
+<translation id="5076601183701536878">Chromium에서 인터넷 사용 기록 삭제</translation>
 <translation id="5131565040785979529">내가 로그인한 계정 및 Chromium이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5213683223491576284">Chromium에서 비밀번호 관리자를 엽니다.</translation>

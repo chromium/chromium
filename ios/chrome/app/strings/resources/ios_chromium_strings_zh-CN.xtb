@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="3478750326643748149">隐藏“充分利用 Chromium”</translation>
+<translation id="3554027294407525061">清除 Chromium 中的浏览数据。</translation>
 <translation id="3567399274263440288">若要充分利用 Chromium，请使用您的 Google 账号登录 Chromium。</translation>
 <translation id="3639997914391704523">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，并在此设备上保存了书签、密码及其他设置。</translation>
@@ -97,6 +98,7 @@
 <translation id="4999538639245140991">由于您要退出的账号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 账号中。</translation>
 <translation id="5042011327527167688">点按“在 Chromium 上通过 Google 地图查看”。</translation>
 <translation id="5048795749726991615">若要在其他应用中轻松获取您已保存的密码，请使用 Chromium 的自动填充功能</translation>
+<translation id="5076601183701536878">清除 Chromium 中的浏览数据</translation>
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5213683223491576284">在 Chromium 中打开密码管理工具。</translation>

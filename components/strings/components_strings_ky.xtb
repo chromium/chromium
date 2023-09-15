@@ -1135,7 +1135,7 @@
 <translation id="337363190475750230">Чыгарылды</translation>
 <translation id="3375754925484257129">Chrome'дун коопсуздугун текшерүү</translation>
 <translation id="3377144306166885718">Сервер TLS'тин жоюлган версиясын колдонду.</translation>
-<translation id="3377188786107721145">Саясатты талдоо катасы</translation>
+<translation id="3377188786107721145">Эрежени талдоо катасы</translation>
 <translation id="3377736046129930310">Карталарды тезирээк ырастоо үчүн экрандын кулпусун колдонуңуз</translation>
 <translation id="3380365263193509176">Белгисиз ката</translation>
 <translation id="3380864720620200369">Кардар ID:</translation>
@@ -1200,7 +1200,7 @@
 <translation id="3507869775212388416">Юридикалык жумуштар</translation>
 <translation id="3507936815618196901">Айланаңыздын 3D картасын түзүү же камераңыздын абалына көз салуу</translation>
 <translation id="3512163584740124171">Ушул эле саясаттар тобундагы башка саясаттын мааниси артыкчылыктуу болгондуктан, бул саясат этибарга алынбайт.</translation>
-<translation id="3515972145999192222">Саясатты бузгандыктан <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтын уюмуңуз бөгөттөп койгон. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3515972145999192222">Эрежени бузгандыктан <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтын уюмуңуз бөгөттөп койгон. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Бир нече объектти тейлөө</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
 <translation id="3528171143076753409">Сервердин тастыктамасы ишенимдүү эмес.</translation>
@@ -1617,7 +1617,7 @@
 <translation id="4325863107915753736">Макала табылбай койду</translation>
 <translation id="4326324639298822553">Мөөнөтү аяктоочу күндү текшерип, кайталап көрүңүз</translation>
 <translation id="4329657820650401545">Конверт C0</translation>
-<translation id="4329871760342656885">Саясатты талдоо катасы: <ph name="ERROR" /></translation>
+<translation id="4329871760342656885">Эрежени талдоо катасы: <ph name="ERROR" /></translation>
 <translation id="433013776994920042">Веб хостинг жана доменди каттоо</translation>
 <translation id="4331519897422864041">5-төшөгүч</translation>
 <translation id="4331708818696583467">Коопсуз эмес</translation>
@@ -1752,7 +1752,7 @@
 <translation id="4646534391647090355">Азыр көрүнсүн</translation>
 <translation id="4648262692072505866">Хештин форматы: SHA-256 болушу керек.</translation>
 <translation id="4652266463001779298">Тыюу салынган</translation>
-<translation id="4652440160515225514">Саясатты бузгандыктан, уюмуңуз бул сайтты бөгөттөп койду.</translation>
+<translation id="4652440160515225514">Эрежени бузгандыктан, уюмуңуз бул сайтты бөгөттөп койду.</translation>
 <translation id="4653167719759882810">Компанияларды бириктирүү жана сатып алуу</translation>
 <translation id="4658638640878098064">Жогорку сол жагын илмек менен бекитүү</translation>
 <translation id="4660119392514473465">Жашыруун режимдеги аракеттериңиз ушул түзмөктүн башка колдонуучуларына көрүнбөйт. Бирок жүктөп алынган файлдар жана кыстармалар сакталып кала берет.</translation>
@@ -2075,7 +2075,7 @@
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Бүгүн жаңыртуу талап кылынат}=2{Эртең жаңыртуу талап кылынат}other{# күндүн ичинде жаңыртуу талап кылынат}}</translation>
 <translation id="5293919335876685914">Купе</translation>
 <translation id="5296589789433599000">Тамак-аш даярдоо жана рецепттер</translation>
-<translation id="5299298092464848405">Саясатты талдоо катасы</translation>
+<translation id="5299298092464848405">Эрежени талдоо катасы</translation>
 <translation id="5299638840995777423">Роботика</translation>
 <translation id="5300062471671636390">Тышкы экранга чыгаруу үчүн түзмөк тизмесин жашыруу</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>

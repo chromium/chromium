@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1105362920864247682">Chromeত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
 <translation id="1143896152279775643">আপোনাৰ পাছৱৰ্ডটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব।</translation>
 <translation id="1180362651362502943">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ কৰি থাকক।</translation>
 <translation id="1282031177488366470">Chromeৰ সুবিধা আৰু কাৰ্যক্ষমতাসমূহ উন্নত কৰাত সহায় কৰক</translation>
@@ -57,6 +58,7 @@
 <translation id="2736805085127235148">আপোনাৰ ডিভাইচৰ ছেটিঙত বৰ্তমান Chromeৰ জাননী অফ কৰা আছে।</translation>
 <translation id="2767464022270041271">কোনো ছেভ কৰা পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Google Password Managerএ সেইসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="2840432500933227975">iOSত Chromeৰ ছেটিং খোলক আৰু তাৰ পাছত "ব্ৰাউজাৰৰ ডিফ’ল্ট এপ"ত টিপক আৰু Chrome বাছনি কৰক।</translation>
+<translation id="2868822340714096138">Chromeত ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chromeএ কেনেকৈ আপোনাৰ ডেটা ব্যক্তিগত কৰি ৰাখে<ph name="END_LINK" /> সেই বিষয়ে অধিক জানক</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>

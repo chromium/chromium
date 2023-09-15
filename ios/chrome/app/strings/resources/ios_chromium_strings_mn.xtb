@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="3478750326643748149">“Chromium-г бүрэн ашиглах”-ыг нуух</translation>
+<translation id="3554027294407525061">Chromium-н интернэтээр үзсэн өгөгдлийг арилгана уу.</translation>
 <translation id="3567399274263440288">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> энэ төхөөрөмж дээр Chromium-г ашиглаж байсан бөгөөд хавчуурга, нууц үг болон бусад тохиргоог үлдээсэн.</translation>
@@ -97,6 +98,7 @@
 <translation id="4999538639245140991">Ta <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="5042011327527167688">“Chromium-н Google Газрын зургаар харах”-ыг товшино уу.</translation>
 <translation id="5048795749726991615">Бусад аппад хадгалсан нууц үгнүүдээ хялбархан авахын тулд Автоматаар бөглөх хэсэгт Chromium-г ашиглана уу</translation>
+<translation id="5076601183701536878">Chromium-н интернэтээр үзсэн өгөгдлийг арилгах</translation>
 <translation id="5131565040785979529">Танай байгууллага, <ph name="DOMAIN" /> таны нэвтэрсэн бүртгэл болон Chromium-г хэрхэн ашиглахыг удирдана.</translation>
 <translation id="5171868502429358653">Chromium-д нэвтэрнэ үү</translation>
 <translation id="5213683223491576284">Нууц үгний менежерийг Chromium-д нээнэ.</translation>
