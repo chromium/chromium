@@ -1231,8 +1231,6 @@ IN_PROC_BROWSER_TEST_F(
 // - Multiple prerendering requests with the same URL but different target hint.
 // - Navigation in a new tab to the prerendering URL multiple times. Only the
 //   first navigation should activate the prerendered page.
-// - Cancellation of prerender-in-new-tab (e.g., removing speculation rules,
-//   calling disallowed features in a prerendered page).
 // - Behavior of PrerenderNewTabHandle::WebContentsDelegateImpl.
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
@@ -1616,19 +1614,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start prerendering.
   const GURL kPrerenderingUrl = GetUrl("/title2.html");
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                         let sc = document.createElement('script');
-                         sc.type = 'speculationrules';
-                         sc.textContent = JSON.stringify({
-                           prerender: [
-                             {source: "list", urls: [$1]}
-                           ]
-                         });
-                         document.head.appendChild(sc);
-                         )",
-                         kPrerenderingUrl)));
+  AddPrerenderAsync(kPrerenderingUrl);
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   int host_id = GetHostForUrl(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
@@ -1644,6 +1630,78 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             RenderFrameHost::kNoFrameTreeNodeId);
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kSpeculationRuleRemoved);
+}
+
+// Tests removing speculation rules whose target_hint is "_blank" (i.e.,
+// prerender into new tab).
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    CancelOnSpeculationCandidateRemoved_WithTargetHintBlank) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+
+  PrerenderHost* prerender_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
+      prerender_host->GetPrerenderFrameTree().root());
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  base::WeakPtr<WebContents> prerender_web_contents_weak =
+      prerender_web_contents->GetWeakPtr();
+
+  // Remove the rules and check that the prerender is cancelled with an
+  // appropriate final status.
+  test::PrerenderHostObserver host_observer(
+      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  ASSERT_TRUE(ExecJs(
+      web_contents_impl()->GetPrimaryMainFrame(),
+      "document.querySelector('script[type=speculationrules]').remove()"));
+  host_observer.WaitForDestroyed();
+  // During the cancellation, the prerender WebContents should be destroyed.
+  EXPECT_FALSE(prerender_web_contents_weak);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kSpeculationRuleRemoved);
+
+  ukm::SourceId triggering_primary_page_source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  {
+    // The prerender WebContents doesn't have the primary page that can record
+    // UKM on destruction. Instead, it asks the primary page hosted on the
+    // primary WebContents to record UKM.
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt_PreviousPrimaryPage::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+
+    PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder
+        attempt_ukm_entry_builder(
+            content_preloading_predictor::kSpeculationRules);
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder.BuildEntry(
+        triggering_primary_page_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kReady,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/false,
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
+
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
