@@ -352,6 +352,13 @@ def AddDeviceOptions(parser):
       help='If set, will merge logcats recorded during test run and dump them '
            'to the specified file.')
 
+  parser.add_argument(
+      '--force-main-user',
+      action='store_true',
+      help='Force the applicable adb commands to run with "--user" param set '
+      'to the id of the main user on device. Only use when the main user is a '
+      'secondary user, e.g. Android Automotive OS.')
+
 
 def AddEmulatorOptions(parser):
   """Adds emulator-specific options to |parser|."""
