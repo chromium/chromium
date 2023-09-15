@@ -13,19 +13,7 @@ import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
-
-const restore_state_test = {
-  suiteName: 'RestoreStateTest',
-  TestNames: {
-    RestoreTrueValues: 'restore true values',
-    RestoreFalseValues: 'restore false values',
-    SaveValues: 'save values',
-  },
-};
-
-Object.assign(window, {restore_state_test: restore_state_test});
-
-suite(restore_state_test.suiteName, function() {
+suite('RestoreStateTest', function() {
   let page: PrintPreviewAppElement;
   let nativeLayer: NativeLayerStub;
 
@@ -112,7 +100,7 @@ suite(restore_state_test.suiteName, function() {
    * 90, dpi = 100, custom square paper, and custom margins.
    */
   test(
-      restore_state_test.TestNames.RestoreTrueValues, async function() {
+      'RestoreTrueValues', async function() {
         const stickySettings: SerializedSettings = {
           version: 2,
           recentDestinations: [],
@@ -158,7 +146,7 @@ suite(restore_state_test.suiteName, function() {
    * 120, dpi = 200, letter paper and default margins.
    */
   test(
-      restore_state_test.TestNames.RestoreFalseValues, async function() {
+      'RestoreFalseValues', async function() {
         const stickySettings: SerializedSettings = {
           version: 2,
           recentDestinations: [],
@@ -197,7 +185,7 @@ suite(restore_state_test.suiteName, function() {
    * Tests that setting the settings values results in the correct serialized
    * values being sent to the native layer.
    */
-  test(restore_state_test.TestNames.SaveValues, async function() {
+  test('SaveValues', async function() {
     interface TestCase {
       section: string;
       settingName: string;

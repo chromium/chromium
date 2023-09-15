@@ -74,6 +74,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettingsTest) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixinTest) {
+  RunTest("print_preview/select_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelectTest) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
 }
@@ -226,3 +230,139 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPdfZoomToolbarTest, Toggle) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewPdfZoomToolbarTest, ForceFitToPage) {
   RunTestCase("ForceFitToPage");
 }
+
+class PrintPreviewPolicyTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/policy_test.js",
+        base::StringPrintf("runMochaTest('PolicyTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, HeaderFooterPolicy) {
+  RunTestCase("HeaderFooterPolicy");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, CssBackgroundPolicy) {
+  RunTestCase("CssBackgroundPolicy");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, MediaSizePolicy) {
+  RunTestCase("MediaSizePolicy");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, SheetsPolicy) {
+  RunTestCase("SheetsPolicy");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, ColorPolicy) {
+  RunTestCase("ColorPolicy");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, DuplexPolicy) {
+  RunTestCase("DuplexPolicy");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PinPolicy) {
+  RunTestCase("PinPolicy");
+}
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PrintPdfAsImageAvailability) {
+  RunTestCase("PrintPdfAsImageAvailability");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PrintPdfAsImageDefault) {
+  RunTestCase("PrintPdfAsImageDefault");
+}
+
+class PrintPreviewNumberSettingsSectionTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/number_settings_section_test.js",
+        base::StringPrintf("runMochaTest('NumberSettingsSectionTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewNumberSettingsSectionTest,
+                       BlocksInvalidKeys) {
+  RunTestCase("BlocksInvalidKeys");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewNumberSettingsSectionTest,
+                       UpdatesErrorMessage) {
+  RunTestCase("UpdatesErrorMessage");
+}
+
+class PrintPreviewRestoreStateTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/restore_state_test.js",
+        base::StringPrintf("runMochaTest('RestoreStateTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewRestoreStateTest, RestoreTrueValues) {
+  RunTestCase("RestoreTrueValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewRestoreStateTest, RestoreFalseValues) {
+  RunTestCase("RestoreFalseValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewRestoreStateTest, SaveValues) {
+  RunTestCase("SaveValues");
+}
+
+class PrintPreviewModelTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/model_test.js",
+        base::StringPrintf("runMochaTest('ModelTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, SetStickySettings) {
+  RunTestCase("SetStickySettings");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, SetPolicySettings) {
+  RunTestCase("SetPolicySettings");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, GetPrintTicket) {
+  RunTestCase("GetPrintTicket");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, GetCloudPrintTicket) {
+  RunTestCase("GetCloudPrintTicket");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, ChangeDestination) {
+  RunTestCase("ChangeDestination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, RemoveUnsupportedDestinations) {
+  RunTestCase("RemoveUnsupportedDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CddResetToDefault) {
+  RunTestCase("CddResetToDefault");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
+  RunTestCase("PrintToGoogleDriveCros");
+}
+#endif
