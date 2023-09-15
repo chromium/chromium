@@ -1299,11 +1299,10 @@ void inspector_function_call_event::Data(
   v8::Local<v8::Function> original_function = GetBoundFunction(function);
   v8::Local<v8::Value> function_name = original_function->GetDebugName();
   if (!function_name.IsEmpty() && function_name->IsString()) {
-    dict.Add("functionName", ToCoreString(context->GetIsolate(),
-                                          function_name.As<v8::String>()));
+    dict.Add("functionName", ToCoreString(function_name.As<v8::String>()));
   }
   std::unique_ptr<SourceLocation> location =
-      CaptureSourceLocation(context->GetIsolate(), original_function);
+      CaptureSourceLocation(original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));
   dict.Add("url", location->Url());
   dict.Add("lineNumber", location->LineNumber());

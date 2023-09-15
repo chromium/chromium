@@ -485,24 +485,22 @@ static void Getter(v8::Local<v8::Name> property,
   if (!property->IsString())
     return;
   // FIXME: Consider passing StringImpl directly.
-  v8::Isolate* isolate = info.GetIsolate();
-  AtomicString name = ToCoreAtomicString(isolate, property.As<v8::String>());
+  AtomicString name = ToCoreAtomicString(property.As<v8::String>());
   HTMLDocument* html_document =
       V8HTMLDocument::ToWrappableUnsafe(info.Holder());
   DCHECK(html_document);
   v8::Local<v8::Value> result =
-      GetNamedProperty(html_document, name, info.Holder(), isolate);
+      GetNamedProperty(html_document, name, info.Holder(), info.GetIsolate());
   if (!result.IsEmpty()) {
     V8SetReturnValue(info, result);
     return;
   }
   v8::Local<v8::Value> value;
   if (info.Holder()
-          ->GetRealNamedPropertyInPrototypeChain(isolate->GetCurrentContext(),
-                                                 property.As<v8::String>())
-          .ToLocal(&value)) {
+          ->GetRealNamedPropertyInPrototypeChain(
+              info.GetIsolate()->GetCurrentContext(), property.As<v8::String>())
+          .ToLocal(&value))
     V8SetReturnValue(info, value);
-  }
 }
 
 void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,

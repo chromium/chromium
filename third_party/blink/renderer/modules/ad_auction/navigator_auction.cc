@@ -435,7 +435,7 @@ bool Jsonify(const ScriptState& script_state,
     return false;
   }
 
-  output = ToCoreString(script_state.GetIsolate(), v8_string);
+  output = ToCoreString(v8_string);
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
   // `undefined` (as with e.g. passing a function). If JSON.stringify returns

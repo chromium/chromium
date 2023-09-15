@@ -299,7 +299,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.extend([
         S("blink_property_name",
           ("const AtomicString& ${blink_property_name} = "
-           "ToCoreAtomicString(${isolate}, ${v8_property_name});")),
+           "ToCoreAtomicString(${v8_property_name});")),
         S("blink_property_index",
           ("const AtomicString& ${blink_property_index} = "
            "AtomicString::Number(${index});")),

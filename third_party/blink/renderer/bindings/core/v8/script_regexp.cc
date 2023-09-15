@@ -72,8 +72,8 @@ ScriptRegexp::ScriptRegexp(const String& pattern,
     regex_.Reset(isolate, regex);
   }
   if (try_catch.HasCaught() && !try_catch.Message().IsEmpty()) {
-    exception_message_ = ToCoreStringWithUndefinedOrNullCheck(
-        isolate, try_catch.Message()->Get());
+    exception_message_ =
+        ToCoreStringWithUndefinedOrNullCheck(try_catch.Message()->Get());
   }
 }
 
@@ -138,8 +138,8 @@ int ScriptRegexp::Match(StringView string,
         return -1;
       String group_string;
       if (group->IsString()) {
-        group_string = ToBlinkString<String>(isolate, group.As<v8::String>(),
-                                             kExternalize);
+        group_string =
+            ToBlinkString<String>(group.As<v8::String>(), kExternalize);
       }
       group_list->push_back(group_string);
     }

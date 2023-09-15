@@ -491,8 +491,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
                       ExceptionState&) override {
     DCHECK(internal_sink_);
     internal_sink_->Append(
-        ToCoreString(script_state->GetIsolate(),
-                     chunk.V8Value()
+        ToCoreString(chunk.V8Value()
                          ->ToString(script_state->GetContext())
                          .ToLocalChecked())
             .Utf8());

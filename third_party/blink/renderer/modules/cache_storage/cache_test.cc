@@ -348,7 +348,6 @@ class CacheStorageTest : public PageTestBase {
   std::string GetRejectString(ScriptPromise& promise) {
     ScriptValue on_reject = GetRejectValue(promise);
     return ToCoreString(
-               GetIsolate(),
                on_reject.V8Value()->ToString(GetContext()).ToLocalChecked())
         .Ascii()
         .data();
@@ -364,7 +363,6 @@ class CacheStorageTest : public PageTestBase {
   std::string GetResolveString(ScriptPromise& promise) {
     ScriptValue on_resolve = GetResolveValue(promise);
     return ToCoreString(
-               GetIsolate(),
                on_resolve.V8Value()->ToString(GetContext()).ToLocalChecked())
         .Ascii()
         .data();

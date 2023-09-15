@@ -111,7 +111,6 @@ TEST(PaymentResponseTest,
   ASSERT_TRUE(details.V8Value()->IsObject());
 
   String stringified_details = ToBlinkString<String>(
-      scope.GetIsolate(),
       v8::JSON::Stringify(scope.GetContext(),
                           details.V8Value().As<v8::Object>())
           .ToLocalChecked(),
@@ -199,7 +198,6 @@ TEST(PaymentResponseTest, JSONSerializerTest) {
   EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
-      scope.GetIsolate(),
       v8::JSON::Stringify(scope.GetContext(),
                           json_object.V8Value().As<v8::Object>())
           .ToLocalChecked(),

@@ -569,7 +569,6 @@ void AnimationFrameTimingMonitor::Did(const probe::UpdateLayout& probe_data) {
 namespace {
 
 ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
-    v8::Isolate* isolate,
     v8::MaybeLocal<v8::Value> maybe_value) {
   v8::Local<v8::Value> value;
 
@@ -590,9 +589,9 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
   if (function->IsFunction()) {
     return ScriptTimingInfo::ScriptSourceLocation{
         .url = ToCoreStringWithUndefinedOrNullCheck(
-            isolate, function->GetScriptOrigin().ResourceName()),
+            function->GetScriptOrigin().ResourceName()),
         .function_name =
-            ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
+            ToCoreStringWithUndefinedOrNullCheck(function->GetName()),
         .start_position = function->GetScriptStartPosition()};
   }
 
@@ -635,7 +634,6 @@ void AnimationFrameTimingMonitor::Will(
   v8::HandleScope handle_scope(probe_data.context->GetIsolate());
 
   pending_script_info_->source_location = CaptureScriptSourceLocation(
-      probe_data.context->GetIsolate(),
       probe_data.callback ? probe_data.callback->CallbackObject()
                           : probe_data.function);
 }
@@ -719,7 +717,6 @@ void AnimationFrameTimingMonitor::Did(
 
   v8::HandleScope handle_scope(probe_data.context->GetIsolate());
   info->SetSourceLocation(CaptureScriptSourceLocation(
-      probe_data.context->GetIsolate(),
       To<JSBasedEventListener>(probe_data.listener)
           ->GetListenerObject(*probe_data.event_target)));
 }

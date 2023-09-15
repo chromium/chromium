@@ -287,8 +287,7 @@ TEST_F(ModuleRecordTest, Evaluate) {
           ->RunScriptAndReturnValue(&scope.GetWindow())
           .GetSuccessValueOrEmpty();
   ASSERT_TRUE(value->IsString());
-  EXPECT_EQ("bar", ToCoreString(scope.GetIsolate(),
-                                v8::Local<v8::String>::Cast(value)));
+  EXPECT_EQ("bar", ToCoreString(v8::Local<v8::String>::Cast(value)));
 
   v8::Local<v8::Object> module_namespace =
       v8::Local<v8::Object>::Cast(ModuleRecord::V8Namespace(module));
@@ -321,8 +320,7 @@ TEST_F(ModuleRecordTest, EvaluateCaptureError) {
   v8::Local<v8::Value> exception =
       GetException(scope.GetScriptState(), std::move(result));
   ASSERT_TRUE(exception->IsString());
-  EXPECT_EQ("bar",
-            ToCoreString(scope.GetIsolate(), exception.As<v8::String>()));
+  EXPECT_EQ("bar", ToCoreString(exception.As<v8::String>()));
 }
 
 }  // namespace

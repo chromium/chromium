@@ -260,8 +260,7 @@ void ScriptController::ExecuteJavaScriptURL(
       SanitizeScriptErrors::kDoNotSanitize);
 
   DCHECK_EQ(&window_->GetScriptController(), this);
-  v8::Isolate* isolate = GetIsolate();
-  v8::HandleScope handle_scope(isolate);
+  v8::HandleScope handle_scope(GetIsolate());
   v8::Local<v8::Value> v8_result =
       script->RunScriptAndReturnValue(window_).GetSuccessValueOrEmpty();
   UseCounter::Count(window_.Get(), WebFeature::kExecutedJavaScriptURL);
@@ -303,7 +302,7 @@ void ScriptController::ExecuteJavaScriptURL(
   DCHECK(previous_document_loader);
   auto params =
       previous_document_loader->CreateWebNavigationParamsToCloneDocument();
-  String result = ToCoreString(isolate, v8::Local<v8::String>::Cast(v8_result));
+  String result = ToCoreString(v8::Local<v8::String>::Cast(v8_result));
   WebNavigationParams::FillStaticResponse(
       params.get(), "text/html", "UTF-8",
       StringUTF8Adaptor(

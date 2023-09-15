@@ -45,11 +45,10 @@ String LCPScriptObserver::GetScriptUrlFromCallFunctionProbe(
       probe->function->GetScriptOrigin().ResourceName();
   String script_url;
   if (!resource_name.IsEmpty()) {
-    v8::Isolate* isolate = ToIsolate(local_root_);
     v8::MaybeLocal<v8::String> resource_name_string =
-        resource_name->ToString(isolate->GetCurrentContext());
+        resource_name->ToString(ToIsolate(local_root_)->GetCurrentContext());
     if (!resource_name_string.IsEmpty()) {
-      script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
+      script_url = ToCoreString(resource_name_string.ToLocalChecked());
     }
   }
   return script_url;

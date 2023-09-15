@@ -230,8 +230,7 @@ bool IsIteratorForStringMatching(ScriptState* script_state,
   }
   if (done)
     return false;
-  return ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
-                                              chunk) == expected;
+  return ToCoreStringWithUndefinedOrNullCheck(chunk) == expected;
 }
 
 bool IsTypeError(ScriptState* script_state,
@@ -251,8 +250,7 @@ bool IsTypeError(ScriptState* script_state,
                ->Get(script_state->GetContext(),
                      V8AtomicString(script_state->GetIsolate(), key))
                .ToLocal(&actual) &&
-           ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
-                                                actual) == value;
+           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
   };
 
   return Has("name", "TypeError") && Has("message", message);

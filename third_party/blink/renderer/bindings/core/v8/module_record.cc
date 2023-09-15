@@ -179,9 +179,8 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
             v8_module_request->GetImportAssertions(),
             /*v8_import_assertions_has_positions=*/true);
 
-    requests.emplace_back(
-        ToCoreString(script_state->GetIsolate(), v8_specifier), position,
-        import_assertions);
+    requests.emplace_back(ToCoreString(v8_specifier), position,
+                          import_assertions);
   }
 
   return requests;
@@ -202,8 +201,7 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
   DCHECK(modulator);
 
   ModuleRequest module_request(
-      ToCoreStringWithNullCheck(isolate, specifier),
-      TextPosition::MinimumPosition(),
+      ToCoreStringWithNullCheck(specifier), TextPosition::MinimumPosition(),
       ModuleRecord::ToBlinkImportAssertions(
           context, referrer, import_assertions,
           /*v8_import_assertions_has_positions=*/true));
@@ -231,7 +229,6 @@ Vector<ImportAssertion> ModuleRecord::ToBlinkImportAssertions(
   // in the form [key1, value1, key2, value2, ...].
   const int kV8AssertionEntrySize = v8_import_assertions_has_positions ? 3 : 2;
 
-  v8::Isolate* isolate = context->GetIsolate();
   Vector<ImportAssertion> import_assertions;
   int number_of_import_assertions =
       v8_import_assertions->Length() / kV8AssertionEntrySize;
@@ -256,8 +253,8 @@ Vector<ImportAssertion> ModuleRecord::ToBlinkImportAssertions(
           OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetColumnNumber()));
     }
 
-    import_assertions.emplace_back(ToCoreString(isolate, v8_assertion_key),
-                                   ToCoreString(isolate, v8_assertion_value),
+    import_assertions.emplace_back(ToCoreString(v8_assertion_key),
+                                   ToCoreString(v8_assertion_value),
                                    assertion_position);
   }
 

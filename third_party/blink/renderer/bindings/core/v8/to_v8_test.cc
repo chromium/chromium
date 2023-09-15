@@ -33,8 +33,7 @@ void TestToV8(V8TestingScope* scope,
     return;
   }
   String actual_string =
-      ToCoreString(scope->GetIsolate(),
-                   actual->ToString(scope->GetContext()).ToLocalChecked());
+      ToCoreString(actual->ToString(scope->GetContext()).ToLocalChecked());
   if (String(expected) != actual_string) {
     ADD_FAILURE_AT(path, line_number)
         << "toV8 returns an incorrect value.\n  Actual: "
@@ -251,15 +250,13 @@ TEST(ToV8Test, pairHeapVector) {
           .ToLocalChecked();
   EXPECT_TRUE(one->IsObject());
   EXPECT_EQ(String("foo"),
-            ToCoreString(scope.GetIsolate(),
-                         one->ToString(context).ToLocalChecked()));
+            ToCoreString(one->ToString(context).ToLocalChecked()));
   v8::Local<v8::Value> two =
       result->Get(context, V8String(scope.GetIsolate(), "two"))
           .ToLocalChecked();
   EXPECT_TRUE(two->IsObject());
   EXPECT_EQ(String("bar"),
-            ToCoreString(scope.GetIsolate(),
-                         two->ToString(context).ToLocalChecked()));
+            ToCoreString(two->ToString(context).ToLocalChecked()));
 }
 
 TEST(ToV8Test, stringVectorVector) {

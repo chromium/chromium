@@ -9888,8 +9888,7 @@ TEST_F(WebFrameSwapTest, SetTimeoutAfterSwap) {
     EXPECT_EQ(
         "SecurityError: Blocked a frame with origin \"http://internal.test\" "
         "from accessing a cross-origin frame.",
-        ToCoreString(isolate,
-                     exception
+        ToCoreString(exception
                          ->ToString(ToScriptStateForMainWorld(
                                         WebView()->MainFrameImpl()->GetFrame())
                                         ->GetContext())
@@ -11622,16 +11621,14 @@ TEST(WebFrameGlobalReuseTest, ReuseForMainFrameIfEnabled) {
   helper.Initialize(nullptr, nullptr, EnableGlobalReuseForUnownedMainFrames);
 
   WebLocalFrame* main_frame = helper.LocalMainFrame();
-  v8::Isolate* isolate = helper.GetAgentGroupScheduler().Isolate();
-  v8::HandleScope scope(isolate);
+  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
   main_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptAndReturnValue(WebScriptSource("hello"));
   ASSERT_TRUE(result->IsString());
   EXPECT_EQ("world",
-            ToCoreString(isolate,
-                         result->ToString(main_frame->MainWorldScriptContext())
+            ToCoreString(result->ToString(main_frame->MainWorldScriptContext())
                              .ToLocalChecked()));
 }
 
