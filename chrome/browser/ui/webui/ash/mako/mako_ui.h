@@ -9,6 +9,7 @@
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
+class BubbleContentsWrapper;
 class Profile;
 
 namespace ash {
@@ -39,19 +40,28 @@ class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-// Used by consumers to control the lifecycle of MakoUntrustedUI.
+// Handles showing and hiding the mako WebUI.
 class MakoPageHandler {
  public:
-  // Constructing an instance of this class will trigger the construction,
-  // bootstrapping and showing of the MakoUntrustedUI WebUi bubble.
   MakoPageHandler();
+  MakoPageHandler(const MakoPageHandler&) = delete;
+  MakoPageHandler& operator=(const MakoPageHandler&) = delete;
   ~MakoPageHandler();
 
-  // Consumers can use this method to close any currently visible
-  // MakoUntrustedUI. Consumers cannot reshow the UI with this instance after
-  // calling this method, a new instance must be created to reshow the UI.
+  // TODO(b/300554470): Add parameters to specify when the WebUI is being opened
+  // via a preset text query.
+  void ShowConsentUI(Profile* profile);
+  void ShowRewriteUI(Profile* profile);
   void CloseUI();
+
+ private:
+  // TODO(b/300554470): This doesn't seem like the right class to own the
+  // contents wrapper and probably won't handle the bubble widget lifetimes
+  // correctly. Figure out how WebUI bubbles work, then implement this properly
+  // (maybe using a WebUIBubbleManager).
+  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
 };
 
 }  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_

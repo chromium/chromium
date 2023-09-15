@@ -108,7 +108,7 @@ void EditorMediator::HandleTrigger() {
   if (!editor_switch_->CanBeTriggered()) {
     return;
   }
-  mako_page_handler_ = std::make_unique<ash::MakoPageHandler>();
+  mako_page_handler_.ShowRewriteUI(profile_);
 }
 
 void EditorMediator::CommitEditorResult(std::string_view text) {
@@ -118,10 +118,7 @@ void EditorMediator::CommitEditorResult(std::string_view text) {
   text_actuator_.InsertTextOnNextFocus(text);
   // After queuing the text to be inserted, closing the mako web ui should
   // return the focus back to the original input.
-  if (mako_page_handler_ != nullptr) {
-    mako_page_handler_->CloseUI();
-    mako_page_handler_ = nullptr;
-  }
+  mako_page_handler_.CloseUI();
 }
 
 void EditorMediator::OnTextFieldContextualInfoChanged(

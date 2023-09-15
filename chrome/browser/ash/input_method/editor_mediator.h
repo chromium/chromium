@@ -102,16 +102,14 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
   EditorPanelManager panel_manager_;
+  MakoPageHandler mako_page_handler_;
+
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;
 
   // TODO: b:298285960 - add the instantiation of this instance.
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
   std::unique_ptr<EditorClientConnector> editor_client_connector_;
-
-  // May contain an instance of MakoPageHandler. This is used to control the
-  // lifetime of the Mako WebUI.
-  std::unique_ptr<ash::MakoPageHandler> mako_page_handler_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 

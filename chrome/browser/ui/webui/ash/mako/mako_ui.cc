@@ -27,31 +27,47 @@
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
+namespace ash {
+
 namespace {
 
 constexpr int kCursorVerticalPadding = 8;
 
-// Height threshold of the mako UI which determines its screen position. Tall UI
-// is centered on the display screen containing the caret, while short UI is
-// anchored at the caret.
-constexpr int kMakoHeightThreshold = 400;
+constexpr int kMakoCornerRadius = 20;
 
-class MakoDialogView : public WebUIBubbleDialogView {
+// Height threshold of the mako rewrite UI which determines its screen position.
+// Tall UI is centered on the display screen containing the caret, while short
+// UI is anchored at the caret.
+constexpr int kMakoRewriteHeightThreshold = 400;
+
+// TODO(b/289969807): As a placeholder, use 3961 which is the emoji picker
+// identifier for task manager. We should create a proper one for mako.
+constexpr int kMakoTaskManagerStringID = 3961;
+
+const ui::TextInputClient* GetTextInputClient() {
+  const ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  return input_method ? input_method->GetTextInputClient() : nullptr;
+}
+
+class MakoRewriteView : public WebUIBubbleDialogView {
  public:
-  METADATA_HEADER(MakoDialogView);
-  MakoDialogView(std::unique_ptr<BubbleContentsWrapper> contents_wrapper,
-                 const gfx::Rect& caret_bounds)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
-        contents_wrapper_(std::move(contents_wrapper)),
+  METADATA_HEADER(MakoRewriteView);
+  MakoRewriteView(BubbleContentsWrapper* contents_wrapper,
+                  const gfx::Rect& caret_bounds)
+      : WebUIBubbleDialogView(nullptr, contents_wrapper),
         caret_bounds_(caret_bounds) {
     set_has_parent(false);
-    set_corner_radius(20);
+    set_corner_radius(kMakoCornerRadius);
     set_adjust_if_offscreen(true);
   }
+  MakoRewriteView(const MakoRewriteView&) = delete;
+  MakoRewriteView& operator=(const MakoRewriteView&) = delete;
+  ~MakoRewriteView() override = default;
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
-    if (new_size.height() > kMakoHeightThreshold) {
+    if (new_size.height() > kMakoRewriteHeightThreshold) {
       // Place tall UI at the center of the screen.
       SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
       SetAnchorRect(display::Screen::GetScreen()
@@ -68,16 +84,35 @@ class MakoDialogView : public WebUIBubbleDialogView {
   }
 
  private:
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
   gfx::Rect caret_bounds_;
 };
 
-BEGIN_METADATA(MakoDialogView, WebUIBubbleDialogView)
+BEGIN_METADATA(MakoRewriteView, WebUIBubbleDialogView)
+END_METADATA
+
+class MakoConsentView : public WebUIBubbleDialogView {
+ public:
+  METADATA_HEADER(MakoConsentView);
+  MakoConsentView(BubbleContentsWrapper* contents_wrapper,
+                  const gfx::Rect& caret_bounds)
+      : WebUIBubbleDialogView(nullptr, contents_wrapper) {
+    set_has_parent(false);
+    set_corner_radius(kMakoCornerRadius);
+    SetModalType(ui::MODAL_TYPE_SYSTEM);
+    SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
+    SetAnchorRect(display::Screen::GetScreen()
+                      ->GetDisplayMatching(caret_bounds)
+                      .work_area());
+  }
+  MakoConsentView(const MakoConsentView&) = delete;
+  MakoConsentView& operator=(const MakoConsentView&) = delete;
+  ~MakoConsentView() override = default;
+};
+
+BEGIN_METADATA(MakoConsentView, WebUIBubbleDialogView)
 END_METADATA
 
 }  // namespace
-
-namespace ash {
 
 MakoUntrustedUIConfig::MakoUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme, ash::kChromeUIMakoHost) {}
@@ -142,40 +177,47 @@ void MakoUntrustedUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)
 
-MakoPageHandler::MakoPageHandler() {
-  // TODO(b/289859230): Construct MakoUntrustedUI and show it to the user. Save
-  //   a ref to the constructed view to allow for closing it at a later time.
-  NOTIMPLEMENTED_LOG_ONCE();
+MakoPageHandler::MakoPageHandler() = default;
+
+MakoPageHandler::~MakoPageHandler() {
+  CloseUI();
 }
 
-MakoPageHandler::~MakoPageHandler() = default;
-
-void MakoPageHandler::CloseUI() {
-  // TODO(b/289859230): Use the ref saved from construction to close the webui.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void MakoUntrustedUI::Show(Profile* profile) {
-  // Don't show mako if there is no input client.
-  ui::InputMethod* input_method =
-      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  ui::TextInputClient* input_client =
-      input_method ? input_method->GetTextInputClient() : nullptr;
-  if (!input_client) {
+void MakoPageHandler::ShowConsentUI(Profile* profile) {
+  if (!GetTextInputClient()) {
     return;
   }
 
-  // TODO(b/289969807): 3961 is emoji picker identifier for task manager - we
-  // should have a better one for mako
-  auto contents_wrapper =
-      std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-          GURL(kChromeUIOrcaURL), profile, 3961);
-  contents_wrapper->ReloadWebContents();
-
+  // TODO(b/300554470): Use the actual consent url, maybe using the constants
+  // defined in the orca_resources_map.
+  contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
+      GURL(kChromeUIOrcaURL), profile, kMakoTaskManagerStringID);
+  contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<MakoDialogView>(std::move(contents_wrapper),
-                                       input_client->GetCaretBounds()))
+      std::make_unique<MakoConsentView>(contents_wrapper_.get(),
+                                        GetTextInputClient()->GetCaretBounds()))
       ->Show();
+}
+
+void MakoPageHandler::ShowRewriteUI(Profile* profile) {
+  if (!GetTextInputClient()) {
+    return;
+  }
+
+  contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
+      GURL(kChromeUIOrcaURL), profile, kMakoTaskManagerStringID);
+  contents_wrapper_->ReloadWebContents();
+  views::BubbleDialogDelegateView::CreateBubble(
+      std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
+                                        GetTextInputClient()->GetCaretBounds()))
+      ->Show();
+}
+
+void MakoPageHandler::CloseUI() {
+  if (contents_wrapper_) {
+    contents_wrapper_->CloseUI();
+    contents_wrapper_ = nullptr;
+  }
 }
 
 }  // namespace ash
