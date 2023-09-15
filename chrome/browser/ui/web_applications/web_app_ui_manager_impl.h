@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -168,11 +169,16 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       webapps::WebappUninstallSource uninstall_source,
       UninstallCompleteCallback complete_callback,
       UninstallScheduledCallback uninstall_scheduled_callback,
-      bool user_wants_uninstall);
+      web_app::UninstallUserOptions uninstall_options);
 
   void OnUninstallCancelled(
       UninstallCompleteCallback complete_callback,
       UninstallScheduledCallback uninstall_scheduled_callback);
+
+  void ClearWebAppSiteDataIfNeeded(
+      const GURL app_start_url,
+      UninstallCompleteCallback uninstall_complete_callback,
+      webapps::UninstallResultCode uninstall_code);
 
   const raw_ptr<Profile> profile_;
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;

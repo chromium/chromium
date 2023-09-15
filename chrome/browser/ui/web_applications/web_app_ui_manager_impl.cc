@@ -45,8 +45,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
@@ -55,6 +57,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/views/native_window_tracker.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_MAC)
@@ -540,16 +543,34 @@ void WebAppUiManagerImpl::ScheduleUninstallIfUserRequested(
     webapps::WebappUninstallSource uninstall_source,
     UninstallCompleteCallback complete_callback,
     UninstallScheduledCallback uninstall_scheduled_callback,
-    bool user_wants_uninstall) {
-  if (user_wants_uninstall) {
-    WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
-    CHECK(provider);
-    provider->scheduler().UninstallWebApp(app_id, uninstall_source,
-                                          std::move(complete_callback));
-  } else {
+    web_app::UninstallUserOptions uninstall_options) {
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
+  CHECK(provider);
+
+  const bool uninstall_scheduled =
+      uninstall_options.user_wants_uninstall &&
+      provider->registrar_unsafe().CanUserUninstallWebApp(app_id);
+  std::move(uninstall_scheduled_callback).Run(uninstall_scheduled);
+  if (!uninstall_scheduled) {
     std::move(complete_callback).Run(webapps::UninstallResultCode::kCancelled);
+    return;
   }
-  std::move(uninstall_scheduled_callback).Run(user_wants_uninstall);
+
+  UninstallCompleteCallback final_callback;
+  if (uninstall_options.clear_site_data) {
+    CHECK(uninstall_options.user_wants_uninstall);
+    const GURL app_start_url =
+        provider->registrar_unsafe().GetAppStartUrl(app_id);
+    final_callback =
+        base::BindOnce(&WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded,
+                       weak_ptr_factory_.GetWeakPtr(), app_start_url,
+                       std::move(complete_callback));
+  } else {
+    final_callback = std::move(complete_callback);
+  }
+
+  provider->scheduler().UninstallWebApp(app_id, uninstall_source,
+                                        std::move(final_callback));
 }
 
 void WebAppUiManagerImpl::OnUninstallCancelled(
@@ -557,6 +578,38 @@ void WebAppUiManagerImpl::OnUninstallCancelled(
     UninstallScheduledCallback uninstall_scheduled_callback) {
   std::move(uninstall_scheduled_callback).Run(false);
   std::move(complete_callback).Run(webapps::UninstallResultCode::kCancelled);
+}
+
+void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
+    const GURL app_start_url,
+    UninstallCompleteCallback uninstall_complete_callback,
+    webapps::UninstallResultCode uninstall_code) {
+  // This callback should be run at the very end of the uninstallation + site
+  // data removal process (if any).
+  base::OnceClosure final_uninstall_callback =
+      base::BindOnce(std::move(uninstall_complete_callback), uninstall_code);
+
+  // Only clear site data if the uninstallation has succeeded, i.e. either the
+  // app has been uninstalled completely, or it was previously uninstalled but
+  // some data had been left over.
+  if (webapps::UninstallSucceeded(uninstall_code)) {
+    content::ClearSiteData(base::BindRepeating(
+                               [](content::BrowserContext* browser_context) {
+                                 return browser_context;
+                               },
+                               base::Unretained(profile_)),
+                           /*storage_partition_config=*/absl::nullopt,
+                           url::Origin::Create(app_start_url),
+                           content::ClearSiteDataTypeSet::All(),
+                           /*storage_buckets_to_remove=*/{},
+                           /*avoid_closing_connections=*/false,
+                           /*cookie_partition_key=*/absl::nullopt,
+                           /*storage_key=*/absl::nullopt,
+                           /*partitioned_state_allowed_only=*/false,
+                           std::move(final_uninstall_callback));
+  } else {
+    std::move(final_uninstall_callback).Run();
+  }
 }
 
 }  // namespace web_app
