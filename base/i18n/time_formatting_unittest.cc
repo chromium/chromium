@@ -315,6 +315,42 @@ TEST(TimeFormattingTest, TimeFormatWithPattern) {
       UnlocalizedTimeFormatWithPattern(time, "E! dd MMM y 'at' HH.mm+ss"));
 }
 
+TEST(TimeFormattingTest, UnlocalizedTimeFormatWithPatternMicroseconds) {
+  Time no_micros;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &no_micros));
+  const Time micros = no_micros + Microseconds(987);
+
+  // Should support >3 'S' characters, truncating.
+  EXPECT_EQ("07.0009", UnlocalizedTimeFormatWithPattern(micros, "ss.SSSS"));
+  EXPECT_EQ("07.00098", UnlocalizedTimeFormatWithPattern(micros, "ss.SSSSS"));
+  EXPECT_EQ("07.000987", UnlocalizedTimeFormatWithPattern(micros, "ss.SSSSSS"));
+
+  // >6 'S' characters is also valid, and should be zero-filled.
+  EXPECT_EQ("07.0009870",
+            UnlocalizedTimeFormatWithPattern(micros, "ss.SSSSSSS"));
+
+  // Quoted 'S's should be ignored.
+  EXPECT_EQ("07.SSSSSS",
+            UnlocalizedTimeFormatWithPattern(micros, "ss.'SSSSSS'"));
+
+  // Multiple substitutions are possible.
+  EXPECT_EQ("07.000987'000987.07",
+            UnlocalizedTimeFormatWithPattern(micros, "ss.SSSSSS''SSSSSS.ss"));
+
+  // All the above should still work when the number of microseconds is zero.
+  EXPECT_EQ("07.0000", UnlocalizedTimeFormatWithPattern(no_micros, "ss.SSSS"));
+  EXPECT_EQ("07.00000",
+            UnlocalizedTimeFormatWithPattern(no_micros, "ss.SSSSS"));
+  EXPECT_EQ("07.000000",
+            UnlocalizedTimeFormatWithPattern(no_micros, "ss.SSSSSS"));
+  EXPECT_EQ("07.0000000",
+            UnlocalizedTimeFormatWithPattern(no_micros, "ss.SSSSSSS"));
+  EXPECT_EQ("07.SSSSSS",
+            UnlocalizedTimeFormatWithPattern(no_micros, "ss.'SSSSSS'"));
+  EXPECT_EQ("07.000000'000000.07", UnlocalizedTimeFormatWithPattern(
+                                       no_micros, "ss.SSSSSS''SSSSSS.ss"));
+}
+
 TEST(TimeFormattingTest, TimeDurationFormat) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   TimeDelta delta = Minutes(15 * 60 + 42);
