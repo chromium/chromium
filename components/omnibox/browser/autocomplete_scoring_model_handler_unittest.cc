@@ -167,6 +167,9 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::SCORING_SIGNAL_TYPE_TYPED_COUNT);
   model_metadata.mutable_scoring_signal_specs(4)->set_norm_upper_boundary(100);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_MATCHES_TITLE_OR_HOST_OR_SHORTCUT_TEXT);
 
   // Scoring signals.
   ScoringSignals scoring_signals;
@@ -175,14 +178,26 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   scoring_signals.set_elapsed_time_last_shortcut_visit_sec(-200);
   scoring_signals.set_typed_count(150);
 
-  const auto input_signals = model_handler_->ExtractInputFromScoringSignals(
+  auto input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
-  ASSERT_EQ(input_signals.size(), 5u);
+  ASSERT_EQ(input_signals.size(), 6u);
   EXPECT_THAT(input_signals[0], 0.2);  // Normalized signal.
   EXPECT_THAT(input_signals[1], 15);
   EXPECT_NEAR(input_signals[2], 0.3792, 0.0001);
   EXPECT_THAT(input_signals[3], -2);
   EXPECT_NEAR(input_signals[4], 1.0f, 0.0001);  // Clamped and normalized.
+
+  // `matches_title_or_host_or_shortcut_text` is derived from host or title
+  // match length and shortcut visit count. Expect it to be false until those
+  // values are set.
+  EXPECT_THAT(input_signals[5], 0);
+
+  scoring_signals.set_total_host_match_length(20);
+  scoring_signals.set_total_title_match_length(0);
+  scoring_signals.set_shortcut_visit_count(1);
+  input_signals = model_handler_->ExtractInputFromScoringSignals(
+      scoring_signals, model_metadata);
+  EXPECT_THAT(input_signals[5], 1);
 }
 
 TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {
