@@ -64,7 +64,7 @@
   </message>
 
   <message name="IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT" desc="Text to display in an Omnibox illustration on the search engine choice screen that shows that the box would make web searches using the given search engine provider. [Length: 25em]">
-    Search with <ph name="PRODUCT_NAME">%1$s<ex>Google</ex></ph>
+    Search with <ph name="PRODUCT_NAME">$1<ex>Google</ex></ph>
   </message>
 
 </if>

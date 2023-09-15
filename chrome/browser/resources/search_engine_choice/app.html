@@ -1,9 +1,18 @@
 <style include="cr-icons tangible-sync-style-shared">
   :host {
+    --background-color: white;
+    --dummy-omnibox-height: calc(var(--iron-icon-height) +
+        2 * var(--dummy-omnibox-vertical-padding));
+    --dummy-omnibox-vertical-padding: 12px;
     --iron-icon-height: 24px;
+    --search-engine-omnibox-shadow-color: var(--google-grey-300);
     --scrollbar-height: 116px;
     --submit-button-margins: 40px;
     color: var(--cr-primary-text-color);
+  }
+
+  .hidden {
+    visibility: hidden;
   }
 
   .tangible-sync-style-left-banner {
@@ -47,18 +56,56 @@
     margin: 12px 0 40px;
   }
 
-  .omnibox {
-    --omnibox-vertical-padding: 12px;
-    --omnibox-height: calc(var(--iron-icon-height) +
-        2 * var(--omnibox-vertical-padding));
+  /* We need to searchEngineOmnibox to be out of the flow. To do that, we set
+  its position as absolute but we encapsulate it insite this class so that it
+  doesn't position itself on the top of the dialog */
+  .omniboxes {
+    position: relative;
+  }
+
+  #dummyOmnibox {
     align-items: center;
     border: 1px dashed var(--google-grey-300);
-    border-radius: calc(var(--omnibox-height) / 2);
+    border-radius: calc(var(--dummy-omnibox-height) / 2);
     display: flex;
     flex-direction: row;
     gap: 12px;
-    padding: var(--omnibox-vertical-padding) 16px;
+    padding: var(--dummy-omnibox-vertical-padding) 0;
     width: 230px;
+  }
+
+  /* We modify the bottom and transform parameters so that the
+  searchEngineOmnibox and dummyOmnibox are positioned on top of each other. */
+  #searchEngineOmnibox {
+    --omnibox-height: 52px;
+    --search-engine-omnibox-bottom-value: calc(var(--dummy-omnibox-height) / 2);
+    align-items: center;
+    background-color: var(--background-color);
+    border-radius: calc(var(--omnibox-height) / 2);
+    bottom: var(--search-engine-omnibox-bottom-value);
+    box-shadow: 0px 4px 16px 0px var(--search-engine-omnibox-shadow-color);
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    height: var(--omnibox-height);
+    opacity: 0;
+    position: absolute;
+    transform: translateY(var(--search-engine-omnibox-bottom-value));
+    width: 234px;
+  }
+
+  .fade-in-animation {
+    animation: fade-in-animation 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-fill-mode: forwards;
+  }
+
+  .fade-out-animation {
+    animation: fade-out-animation 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-fill-mode: forwards;
+  }
+
+  #searchEngineOmnibox .choice-icon {
+    margin-left: 16px;
   }
 
   cr-radio-group {
@@ -119,6 +166,7 @@
 
   iron-icon {
     --iron-icon-fill-color: var(--google-blue-700);
+    margin-inline-start: 16px;
   }
 
   .hint-placeholder {
@@ -160,7 +208,6 @@
   }
 
   .button-container {
-    --button-container-background-color: white;
     bottom: 0;
     display: flex;
     justify-content: flex-end;
@@ -184,7 +231,46 @@
     border-radius: calc(var(--scrollbar-height) /2);
   }
 
+  @keyframes fade-in-animation {
+    0% {
+      opacity: 0;
+      top: 30px;
+      transform: rotate(5deg);
+    }
+
+    /* To add a bouncing effect. */
+    90% {
+      top: -9%;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 1;
+      top: 0;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-out-animation {
+    0% {
+      opacity: 1;
+      top: 0;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      top: 30px;
+      transform: rotate(5deg);
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
+    :host {
+      --background-color: var(--md-background-color);
+      --search-engine-omnibox-shadow-color: var(--google-grey-800);
+    }
+
     .hint-placeholder {
       background-color: var(--google-grey-800);
     }
@@ -204,10 +290,6 @@
     cr-radio-button {
       --cr-radio-button-unchecked-color: var(--google-grey-100);
       background-color: var(--google-grey-800);
-    }
-
-    .button-container {
-      --button-container-background-color: var(--md-background-color);
     }
 
     iron-icon {
@@ -234,7 +316,7 @@
     }
 
     .button-container {
-      background-color: var(--button-container-background-color);
+      background-color: var(--background-color);
       border-top: var(--cr-separator-line);
       pointer-events: unset;
     }
@@ -267,7 +349,8 @@
   }
 
   @media screen and (max-height: 767px) {
-    .omnibox {
+    #dummyOmnibox,
+    #searchEngineOmnibox {
       display: none;
     }
 
@@ -301,9 +384,15 @@
   <img class="product-logo" src="images/product-logo.svg"
       alt="$i18n{productLogoAltText}">
   <h1 class="title">$i18n{title}</h1>
-  <div class="omnibox">
-    <iron-icon icon="cr:search"></iron-icon>
-    <div class="hint-placeholder"></div>
+  <div class="omniboxes">
+    <div id="dummyOmnibox">
+      <iron-icon icon="cr:search"></iron-icon>
+      <div class="hint-placeholder"></div>
+    </div>
+    <div id="searchEngineOmnibox">
+      <div class="choice-icon"></div>
+      <div class="choice-title">[[fakeOmniboxText_]]</div>
+    </div>
   </div>
   <p class="subtitle">
     $i18n{subtitle}

@@ -83,6 +83,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddLocalizedString("infoDialogButtonText", IDS_CLOSE);
   source->AddLocalizedString("productLogoAltText",
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
+  source->AddLocalizedString("fakeOmniboxText",
+                             IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
 
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);

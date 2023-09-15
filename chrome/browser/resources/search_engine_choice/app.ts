@@ -16,6 +16,7 @@ import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,12 +25,17 @@ import {SearchEngineChoice, SearchEngineChoiceBrowserProxy} from './browser_prox
 
 export interface SearchEngineChoiceAppElement {
   $: {
+    dummyOmnibox: HTMLElement,
     infoDialog: CrDialogElement,
+    searchEngineOmnibox: HTMLElement,
     submitButton: CrButtonElement,
   };
 }
 
-export class SearchEngineChoiceAppElement extends PolymerElement {
+const SearchEngineChoiceAppElementBase = I18nMixin(PolymerElement);
+
+export class SearchEngineChoiceAppElement extends
+    SearchEngineChoiceAppElementBase {
   static get is() {
     return 'search-engine-choice-app';
   }
@@ -57,17 +63,24 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
       selectedChoice_: {
         type: Number,
         value: -1,
+        observer: 'onSelectedChoiceChanged_',
       },
 
       isSubmitDisabled_: {
         type: Boolean,
         computed: 'isSubmitButtonDisabled_(selectedChoice_)',
       },
+
+      fakeOmniboxText_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   private choiceList_: SearchEngineChoice[];
-  private selectedChoice_: number;
+  private selectedChoice_: string;
+  private fakeOmniboxText_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -82,16 +95,73 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
   }
 
   private isSubmitButtonDisabled_() {
-    return this.selectedChoice_ === -1;
+    return parseInt(this.selectedChoice_) === -1;
   }
 
   private onSubmitClicked_() {
     SearchEngineChoiceBrowserProxy.getInstance()
-        .handler.handleSearchEngineChoiceSelected(this.selectedChoice_);
+        .handler.handleSearchEngineChoiceSelected(
+            parseInt(this.selectedChoice_));
   }
 
   private onInfoDialogButtonClicked_() {
     this.$.infoDialog.close();
+  }
+
+  private onSelectedChoiceChanged_(selectedChoice: string) {
+    // No search engine selected.
+    if (parseInt(selectedChoice) === -1) {
+      return;
+    }
+
+    // Get the selected engine.
+    const choice = this.choiceList_.find(
+        elem => elem.prepopulate_id === parseInt(selectedChoice));
+    const searchEngineOmnibox = this.$.searchEngineOmnibox;
+    const dummyOmnibox = this.$.dummyOmnibox;
+
+    // We need to change the previous engine name to the new one and then start
+    // the fade-in-animation when the fade-out-animation finishes running.
+    const handleFadeOutFinished = (event: AnimationEvent) => {
+      if (event.animationName === 'fade-out-animation') {
+        searchEngineOmnibox.classList.remove('fade-out-animation');
+
+        this.fakeOmniboxText_ = this.i18n('fakeOmniboxText', choice?.name!);
+        // We call `requestAnimationFrame` to make sure that the previous
+        // animation is fully removed so that we can run the next one.
+        window.requestAnimationFrame(function() {
+          searchEngineOmnibox.classList.add('fade-in-animation');
+        });
+      } else if (event.animationName === 'fade-in-animation') {
+        // Hide the dummy omnibox so that we don't see it behind the search
+        // engine omnibox.
+        if (!dummyOmnibox.classList.contains('hidden')) {
+          dummyOmnibox.classList.add('hidden');
+        }
+      }
+    };
+
+    // Show the dummy omnibox at fade-out start so that we can see it while
+    // animating the search engine omnibox.
+    const handleAnimationStart = (event: AnimationEvent) => {
+      if (event.animationName === 'fade-out-animation') {
+        dummyOmnibox.classList.remove('hidden');
+      }
+    };
+    searchEngineOmnibox.addEventListener('animationend', handleFadeOutFinished);
+    searchEngineOmnibox.addEventListener(
+        'animationstart', handleAnimationStart);
+
+    if (searchEngineOmnibox.classList.contains('fade-in-animation')) {
+      searchEngineOmnibox.classList.remove('fade-in-animation');
+
+      window.requestAnimationFrame(function() {
+        searchEngineOmnibox.classList.add('fade-out-animation');
+      });
+    } else {
+      this.fakeOmniboxText_ = this.i18n('fakeOmniboxText', choice?.name!);
+      searchEngineOmnibox.classList.add('fade-in-animation');
+    }
   }
 }
 
