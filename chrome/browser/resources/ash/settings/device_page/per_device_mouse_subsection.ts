@@ -108,7 +108,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
 
       scrollAccelerationValue: {
         type: Boolean,
-        value: false,
+        value: true,
       },
 
       swapPrimaryOptions: {
@@ -270,7 +270,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     this.reverseScrollValue = !this.reverseScrollValue;
   }
 
-  private onMouseScrollAccelerationRowClicked_(): void {
+  private onMouseControlledScrollingRowClicked_(): void {
     this.scrollAccelerationValue = !this.scrollAccelerationValue;
   }
 

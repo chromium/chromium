@@ -5,7 +5,7 @@
 
   :host([allow-scroll-settings_]) .settings-box,
   :host([allow-scroll-settings_]) #mouseAcceleration,
-  #mouseScrollAcceleration {
+  #mouseControlledScrolling {
     margin-left:  var(--cr-section-indent-width);
   }
 
@@ -83,22 +83,22 @@
       </cr-toggle>
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
-      <div class="settings-box bottom-divider" id="mouseScrollAccelerationRow"
-            on-click="onMouseScrollAccelerationRowClicked_">
+      <div class="settings-box bottom-divider" id="mouseControlledScrollingRow"
+            on-click="onMouseControlledScrollingRowClicked_">
         <div class="start settings-box-text">
           <localized-link
               aria-describedby="mouseName"
               on-click="onLearnMoreLinkClicked_"
-              id="enableMouseScrollAccelerationLabel"
-              localized-string="$i18n{mouseScrollAccelerationLabel}"
-              link-url="$i18n{scrollAccelerationLearnMoreLink}">
+              id="enableMouseControlledScrollingLabel"
+              localized-string="$i18n{mouseControlledScrollingLabel}"
+              link-url="$i18n{controlledScrollingLearnMoreLink}">
           </localized-link>
         </div>
-        <cr-toggle id="mouseScrollAcceleration"
-            checked="{{scrollAccelerationValue}}"
+        <cr-toggle id="mouseControlledScrolling"
+            checked="{{!scrollAccelerationValue}}"
             aria-describedby="mouseName"
             aria-label=
-                "[[getLabelWithoutLearnMore('mouseScrollAccelerationLabel')]]"
+                "[[getLabelWithoutLearnMore('mouseControlledScrollingLabel')]]"
             deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
         </cr-toggle>
       </div>

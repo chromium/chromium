@@ -1583,6 +1583,8 @@ void DeviceSection::AddDevicePointersStrings(
       {"cursorAccelerationLabel", IDS_SETTINGS_CURSOR_ACCELERATION_LABEL},
       {"mouseScrollAccelerationLabel",
        IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL},
+      {"mouseControlledScrollingLabel",
+       IDS_SETTINGS_MOUSE_CONTROLLED_SCROLLING_LABEL},
       {"pointingStickAccelerationLabel",
        IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL},
       {"touchpadAccelerationLabel",
@@ -1629,8 +1631,8 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddString("naturalScrollLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kNaturalScrollHelpURL));
   html_source->AddString(
-      "scrollAccelerationLearnMoreLink",
-      GetHelpUrlWithBoard(chrome::kScrollAccelerationHelpURL));
+      "controlledScrollingLearnMoreLink",
+      GetHelpUrlWithBoard(chrome::kControlledScrollingHelpURL));
   html_source->AddString("hapticFeedbackLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 

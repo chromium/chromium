@@ -424,7 +424,7 @@ extern const char kLinuxAppsLearnMoreURL[];
 extern const char kNaturalScrollHelpURL[];
 
 // The URL for the "Learn more" link for scrolling acceleration on ChromeOS.
-extern const char kScrollAccelerationHelpURL[];
+extern const char kControlledScrollingHelpURL[];
 
 // The URL for the "Learn more" link for touchpad haptic feedback on Chrome OS.
 extern const char kHapticFeedbackHelpURL[];

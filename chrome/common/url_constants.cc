@@ -459,7 +459,7 @@ const char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";
 
 // TODO(zhangwenyu): Update link once confirmed.
-const char kScrollAccelerationHelpURL[] =
+const char kControlledScrollingHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";
 
 const char kHapticFeedbackHelpURL[] =
