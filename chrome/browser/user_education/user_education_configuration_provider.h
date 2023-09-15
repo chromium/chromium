@@ -38,6 +38,7 @@ class UserEducationConfigurationProvider
 
  private:
   user_education::FeaturePromoRegistry registry_;
+  const bool overwrite_valid_configurations_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_

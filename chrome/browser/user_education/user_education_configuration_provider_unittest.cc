@@ -42,7 +42,11 @@ const std::initializer_list<const base::Feature*> kKnownGroups{};
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 
-user_education::FeaturePromoRegistry CreateTestRegistry() {
+// Provider must be created after possibly setting v2 feature flag.
+//
+// Call this only when the provider is actually needed for the test, and after
+// SetEnableV2 (if necessary).
+std::unique_ptr<UserEducationConfigurationProvider> CreateProvider() {
   user_education::FeaturePromoRegistry registry;
   registry.RegisterFeature(
       user_education::FeaturePromoSpecification::CreateForToastPromo(
@@ -52,14 +56,16 @@ user_education::FeaturePromoRegistry CreateTestRegistry() {
   registry.RegisterFeature(
       user_education::FeaturePromoSpecification::CreateForSnoozePromo(
           kSnoozeIphFeature, kTestElementId, IDS_CLOSE));
-  return registry;
+
+  return std::make_unique<UserEducationConfigurationProvider>(
+      std::move(registry));
 }
 
 }  // namespace
 
 class UserEducationConfigurationProviderTest : public testing::Test {
  public:
-  UserEducationConfigurationProviderTest() : provider_(CreateTestRegistry()) {
+  UserEducationConfigurationProviderTest() {
     kSessionRateImpactNone.type =
         feature_engagement::SessionRateImpact::Type::NONE;
   }
@@ -100,8 +106,6 @@ class UserEducationConfigurationProviderTest : public testing::Test {
   feature_engagement::SessionRateImpact kSessionRateImpactNone;
   const feature_engagement::SessionRateImpact kSessionRateImpactAll;
 
-  UserEducationConfigurationProvider provider_;
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -109,7 +113,7 @@ class UserEducationConfigurationProviderTest : public testing::Test {
 TEST_F(UserEducationConfigurationProviderTest, ProvidesToastConfiguration) {
   feature_engagement::FeatureConfig config;
 
-  EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kToastIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_TRUE(config.valid);
@@ -140,7 +144,7 @@ TEST_F(UserEducationConfigurationProviderTest, ProvidesToastConfiguration) {
 TEST_F(UserEducationConfigurationProviderTest, ProvidesSnoozeConfiguration) {
   feature_engagement::FeatureConfig config;
 
-  EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_TRUE(config.valid);
@@ -174,7 +178,7 @@ TEST_F(UserEducationConfigurationProviderTest, HandlesEventConfigs) {
   feature_engagement::FeatureConfig config;
   config.event_configs.insert(event);
 
-  EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_EQ(kAtLeast7, config.availability);
@@ -187,7 +191,7 @@ TEST_F(UserEducationConfigurationProviderTest, DoesntOverwriteNames) {
   config.trigger.name = "foo";
   config.used.name = "bar";
 
-  EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_EQ(GetDefaultTrigger("foo"), config.trigger);
@@ -206,15 +210,14 @@ TEST_F(UserEducationConfigurationProviderTest, v1_DoesntOverwriteValid) {
   config.trigger = trigger;
   config.used = used;
   config.valid = true;
-  EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_FALSE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_EQ(trigger, config.trigger);
   EXPECT_EQ(used, config.used);
 }
 
-// TODO(crbug.com/1479993): Test is flaky across platforms.
-TEST_F(UserEducationConfigurationProviderTest, DISABLED_v2_DoesOverwriteValid) {
+TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
   SetEnableV2(true);
   feature_engagement::FeatureConfig config;
   const feature_engagement::EventConfig trigger(
@@ -226,7 +229,7 @@ TEST_F(UserEducationConfigurationProviderTest, DISABLED_v2_DoesOverwriteValid) {
   config.trigger = trigger;
   config.used = used;
   config.valid = true;
-  EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_EQ(GetDefaultTrigger("foo"), config.trigger);

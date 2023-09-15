@@ -24,19 +24,26 @@ std::string FeatureNameToEventName(const base::Feature& feature) {
   return name;
 }
 
+bool ShouldOverwriteValidConfigurations() {
+  return base::FeatureList::IsEnabled(
+      user_education::features::kUserEducationExperienceVersion2);
+}
+
 }  // namespace
 
 // Implemented in chrome/browser/ui/views/user_education.
 extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 
-UserEducationConfigurationProvider::UserEducationConfigurationProvider() {
+UserEducationConfigurationProvider::UserEducationConfigurationProvider()
+    : overwrite_valid_configurations_(ShouldOverwriteValidConfigurations()) {
   MaybeRegisterChromeFeaturePromos(registry_);
 }
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider(
     user_education::FeaturePromoRegistry registry_for_testing)
-    : registry_(std::move(registry_for_testing)) {}
+    : registry_(std::move(registry_for_testing)),
+      overwrite_valid_configurations_(ShouldOverwriteValidConfigurations()) {}
 
 UserEducationConfigurationProvider::~UserEducationConfigurationProvider() =
     default;
@@ -46,11 +53,9 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     feature_engagement::FeatureConfig& config,
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
-  static const bool is_v2 = base::FeatureList::IsEnabled(
-      user_education::features::kUserEducationExperienceVersion2);
 
   // Never override existing configurations unless 2.0 is enabled.
-  if (config.valid && !is_v2) {
+  if (config.valid && !overwrite_valid_configurations_) {
     return false;
   }
 
@@ -84,7 +89,7 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     case user_education::FeaturePromoSpecification::PromoType::kLegacy:
     case user_education::FeaturePromoSpecification::PromoType::kUnspecified:
       // No configuration is provided for legacy IPH.
-      CHECK(!is_v2)
+      CHECK(!overwrite_valid_configurations_)
           << "Legacy promos not allowed in User Education Experience V2.";
       return false;
   }
