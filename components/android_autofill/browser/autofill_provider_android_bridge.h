@@ -53,10 +53,6 @@ class AutofillProviderAndroidBridge {
     gfx::RectF bounds;
   };
 
-  // Informs the Java side of the bridge that the native autofill provider is
-  // being destroyed.
-  virtual void DetachNativeAutofillProvider() = 0;
-
   // Attaches the bridge to its Java counterpart.
   virtual void AttachToJavaAutofillProvider(
       JNIEnv* env,

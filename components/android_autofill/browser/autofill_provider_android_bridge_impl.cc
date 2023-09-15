@@ -41,16 +41,11 @@ AutofillProviderAndroidBridgeImpl::AutofillProviderAndroidBridgeImpl(
     Delegate* delegate)
     : delegate_(*delegate) {}
 
-AutofillProviderAndroidBridgeImpl::~AutofillProviderAndroidBridgeImpl() =
-    default;
-
-void AutofillProviderAndroidBridgeImpl::DetachNativeAutofillProvider() {
+AutofillProviderAndroidBridgeImpl::~AutofillProviderAndroidBridgeImpl() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
+  if (ScopedJavaLocalRef<jobject> obj = java_ref_.get(env); !obj.is_null()) {
+    Java_AutofillProvider_setNativeAutofillProvider(env, obj, 0);
   }
-  Java_AutofillProvider_setNativeAutofillProvider(env, obj, 0);
 }
 
 void AutofillProviderAndroidBridgeImpl::AttachToJavaAutofillProvider(

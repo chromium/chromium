@@ -25,7 +25,6 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   ~AutofillProviderAndroidBridgeImpl() override;
 
   // AutofillProviderAndroidBridge:
-  void DetachNativeAutofillProvider() override;
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller) override;

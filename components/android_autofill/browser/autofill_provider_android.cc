@@ -54,10 +54,7 @@ AutofillProviderAndroid::AutofillProviderAndroid(
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateAutofillProviderAndroidBridge(/*delegate=*/this)) {}
 
-AutofillProviderAndroid::~AutofillProviderAndroid() {
-  // TODO(crbug.com/1478934): Move this into the bridge destructor.
-  bridge_->DetachNativeAutofillProvider();
-}
+AutofillProviderAndroid::~AutofillProviderAndroid() = default;
 
 void AutofillProviderAndroid::AttachToJavaAutofillProvider(
     JNIEnv* env,
