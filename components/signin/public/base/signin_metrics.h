@@ -97,8 +97,12 @@ enum class ProfileSignout {
   // current account is automatically signed out.
   kDeviceLockRemovedOnAutomotive = 28,
 
+  // User revoked Sync from the Settings by pressing "Turn off" in the "Sync and
+  // Google Services" page.
+  kRevokeSyncFromSettings = 29,
+
   // Keep this as the last enum.
-  kMaxValue = kDeviceLockRemovedOnAutomotive
+  kMaxValue = kRevokeSyncFromSettings
 };
 
 // Enum values used for use with "AutoLogin.Reverse" histograms.

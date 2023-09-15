@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -38,6 +39,14 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
     -1,             // Never discard the entry.
     false           // Do not always use initial delay.
 };
+
+signin::ConsentLevel GetProfileConsentLevelToVerify(Profile* profile) {
+  // TODO(https://crbug.com/1478102): Condition to remove when we decide to
+  // align requirements for Managed vs Consumer accounts.
+  return chrome::enterprise_util::UserAcceptedAccountManagement(profile)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
+}
 
 }  // namespace
 
@@ -141,13 +150,14 @@ void ForceSigninVerifier::SendRequestIfNetworkAvailable(
           base::BindOnce(&ForceSigninVerifier::OnAccessTokenFetchComplete,
                          weak_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSync);
+          GetProfileConsentLevelToVerify(profile_));
 }
 
 bool ForceSigninVerifier::ShouldSendRequest() {
   return !has_token_verified_ && access_token_fetcher_.get() == nullptr &&
          identity_manager_ &&
-         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+         identity_manager_->HasPrimaryAccount(
+             GetProfileConsentLevelToVerify(profile_));
 }
 
 void ForceSigninVerifier::CloseAllBrowserWindows() {

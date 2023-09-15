@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -200,6 +201,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::
         kUserDeclinedHistorySyncAfterDedicatedSignIn:
     case signin_metrics::ProfileSignout::kDeviceLockRemovedOnAutomotive:
+    case signin_metrics::ProfileSignout::kRevokeSyncFromSettings:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -296,7 +298,6 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
 
 TEST_P(ChromeSigninClientSignoutSourceTest, RevokeSyncDisallowed) {
   signin_metrics::ProfileSignout signout_source = GetParam();
-
   TestingProfile::Builder builder;
   builder.SetGuestSession();
   std::unique_ptr<TestingProfile> profile = builder.Build();
@@ -352,6 +353,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::
         kUserDeclinedHistorySyncAfterDedicatedSignIn,
     signin_metrics::ProfileSignout::kDeviceLockRemovedOnAutomotive,
+    signin_metrics::ProfileSignout::kRevokeSyncFromSettings,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.

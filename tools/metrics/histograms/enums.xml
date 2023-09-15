@@ -99643,6 +99643,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     If the device lock is removed from an Android automotive device, the current
     account is automatically signed out.
   </int>
+  <int value="29" label="User turned off sync from the settings page">
+    User has signed-in previously and sync was turned on. This value is
+    recoreded when the user explicitly turns off sync from the settings page by
+    pressing &quot;Turn off&quot; in the &quot;Sync and Google services&quot;
+    section.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

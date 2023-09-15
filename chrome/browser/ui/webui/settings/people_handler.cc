@@ -355,7 +355,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     // When the user has an unrecoverable error, they first have to sign out and
     // then sign in again.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+        signin_metrics::ProfileSignout::kRevokeSyncFromSettings,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 
@@ -667,8 +667,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (is_syncing && !is_clear_primary_account_allowed) {
     DCHECK(signin_client->IsRevokeSyncConsentAllowed());
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-        delete_metric);
+        signin_metrics::ProfileSignout::kRevokeSyncFromSettings, delete_metric);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
@@ -693,8 +692,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
     // This operation may delete the current browser that owns |this| if force
     // signin is enabled (see https://crbug.com/1153120).
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-        delete_metric);
+        signin_metrics::ProfileSignout::kRevokeSyncFromSettings, delete_metric);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
