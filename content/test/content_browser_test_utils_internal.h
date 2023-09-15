@@ -30,6 +30,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -765,6 +766,12 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents);
 // Blocks the current execution until the frame submitted via the browser's
 // compositor is presented on the screen.
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
+
+// Sets up a /redirect-on-second-navigation?url endpoint on the provided
+// `server`, which will return a 200 OK response for the first request, and
+// redirect the second request to `url` provided in the query param. This should
+// be called before starting `server`.
+void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server);
 
 }  // namespace content
 

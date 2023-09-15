@@ -1274,7 +1274,8 @@ class CONTENT_EXPORT NavigationRequest
     kNone = 0,
     kInitialFrame = 1,
     kCrashedFrame = 2,
-    kMaxValue = kCrashedFrame,
+    kNavigationTransition = 3,
+    kMaxValue = kNavigationTransition,
   };
 
   // Remember if this navigation triggered an early swap of a speculative
@@ -1283,6 +1284,9 @@ class CONTENT_EXPORT NavigationRequest
   void set_early_render_frame_host_swap_type(
       EarlyRenderFrameHostSwapType type) {
     early_render_frame_host_swap_type_ = type;
+  }
+  EarlyRenderFrameHostSwapType early_render_frame_host_swap_type() {
+    return early_render_frame_host_swap_type_;
   }
 
  private:

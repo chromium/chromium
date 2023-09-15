@@ -66,6 +66,8 @@ CONTENT_EXPORT extern const base::FeatureParam<content::DIPSTriggeringAction>
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDIPSClientBounceDetectionTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicy);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kEarlyDocumentSwapForBackForwardTransitions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEarlyEstablishGpuChannel);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableCanvas2DLayers);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

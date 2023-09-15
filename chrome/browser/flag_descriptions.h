@@ -732,6 +732,9 @@ extern const char kMemlogStackModeNativeWithThreadNames[];
 extern const char kDownloadRangeName[];
 extern const char kDownloadRangeDescription[];
 
+extern const char kEarlyDocumentSwapForBackForwardTransitionsName[];
+extern const char kEarlyDocumentSwapForBackForwardTransitionsDescription[];
+
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[];
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
 

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -44,6 +45,9 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1058,6 +1062,43 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   NOTREACHED();
 #endif
   run_loop.Run();
+}
+
+namespace {
+
+// Helper to return a 200 OK non-cacheable response for a first request, and
+// redirect the second request to the URL indicated in the query param.
+std::unique_ptr<net::test_server::HttpResponse>
+RedirectToTargetOnSecondNavigation(
+    unsigned int& navigation_counter,
+    const net::test_server::HttpRequest& request) {
+  ++navigation_counter;
+  if (navigation_counter == 1) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HttpStatusCode::HTTP_OK);
+    http_response->AddCustomHeader("Cache-Control",
+                                   "no-store, must-revalidate");
+    return http_response;
+  }
+
+  std::string url_from_query =
+      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
+  http_response->AddCustomHeader("Location", url_from_query);
+  return http_response;
+}
+
+}  // namespace
+
+void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server) {
+  unsigned int navigation_counter = 0;
+  server->RegisterDefaultHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest,
+      "/redirect-on-second-navigation",
+      base::BindRepeating(&RedirectToTargetOnSecondNavigation,
+                          base::OwnedRef(navigation_counter))));
 }
 
 }  // namespace content

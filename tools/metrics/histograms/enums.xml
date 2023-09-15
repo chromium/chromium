@@ -31236,6 +31236,7 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="No early swap"/>
   <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
   <int value="2" label="Early swap for a crashed RenderFrameHost"/>
+  <int value="3" label="Early swap for a navigation transition"/>
 </enum>
 
 <enum name="EasyUnlockAuthEvent">
@@ -61606,6 +61607,8 @@ from previous Chrome versions.
   <int value="-1553477903" label="ash-disable-text-filtering-in-overview-mode"/>
   <int value="-1553280810" label="PromoBrowserCommands:enabled"/>
   <int value="-1552898031" label="SingleTabMode:enabled"/>
+  <int value="-1551839190"
+      label="EarlyDocumentSwapForBackForwardTransitions:enabled"/>
   <int value="-1551197844" label="AssistMultiWord:enabled"/>
   <int value="-1550675387" label="CriticalPersistedTabData:enabled"/>
   <int value="-1550541457" label="DisplayIdentification:disabled"/>
@@ -68500,6 +68503,8 @@ from previous Chrome versions.
   <int value="1854141935" label="EnableCardboard:enabled"/>
   <int value="1854226565" label="AutofillNoLocalSaveOnUnmaskSuccess:enabled"/>
   <int value="1854646491" label="DetailedLanguageSettings:disabled"/>
+  <int value="1855184563"
+      label="EarlyDocumentSwapForBackForwardTransitions:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>

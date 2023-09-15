@@ -637,7 +637,17 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // navigation commit.  This is a helper for performing this early
   // RenderFrameHost swap when necessary.  It should only be called once during
   // `request`'s lifetime.
-  void PerformEarlyRenderFrameHostSwapIfNeeded(NavigationRequest* request);
+  //
+  // `is_called_after_did_start_navigation` specifies whether this is called
+  // after DidStartNavigation has been dispatched to observers and after
+  // WillStartRequest navigation throttle events have been processed, vs the
+  // legacy call site at the very start of navigation and prior to these events.
+  // TODO(crbug.com/1467011): Move the legacy early swaps to also happen after
+  // DidStartNavigation and remove the `is_called_after_did_start_navigation`
+  // param (i.e., the param should always be true).
+  void PerformEarlyRenderFrameHostSwapIfNeeded(
+      NavigationRequest* request,
+      bool is_called_after_did_start_navigation);
 
   base::WeakPtr<RenderFrameHostManager> GetWeakPtr();
 
@@ -1031,6 +1041,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // stored in back-forward cache or to activate the prerenderer.
   std::unique_ptr<StoredPage> CollectPage(
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
+
+  // Helper to determine whether the provided navigation should perform an early
+  // RenderFrameHost swap for a back/forward navigation, to support a navigation
+  // transition. This is an experimental feature, see https://crbug.com/1480129.
+  bool ShouldPerformEarlySwapForNavigationTransition(
+      NavigationRequest* request);
 
   // Update `render_frame_host`'s opener in the renderer process in response to
   // the opener being modified (e.g., with window.open or being set to null) in

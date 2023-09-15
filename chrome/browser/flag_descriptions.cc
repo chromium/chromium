@@ -1242,6 +1242,16 @@ const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
 
+const char kEarlyDocumentSwapForBackForwardTransitionsName[] =
+    "Early document swap for back/forward navigations";
+const char kEarlyDocumentSwapForBackForwardTransitionsDescription[] =
+    "Enable early swapping of RenderFrameHosts during some back/forward "
+    "navigations. "
+    "This is a highly experimental feature intended to support new kinds of "
+    "navigation transitions. When enabled, the old document will be unloaded "
+    "shortly after starting some back/forward navigations to a new document, "
+    "without waiting for the new navigation to complete.";
+
 const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[] =
     "Enable enhanced safe browsing settings improvements";
 const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[] =

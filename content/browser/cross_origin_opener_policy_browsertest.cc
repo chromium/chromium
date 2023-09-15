@@ -177,32 +177,6 @@ CoopAndCspSandboxRedirectHandler(const net::test_server::HttpRequest& request) {
   return http_response;
 }
 
-std::unique_ptr<net::test_server::HttpResponse>
-RedirectToTargetOnSecondNavigation(
-    unsigned int& navigation_counter,
-    const net::test_server::HttpRequest& request) {
-  ++navigation_counter;
-  if (navigation_counter == 1) {
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HttpStatusCode::HTTP_OK);
-    http_response->AddCustomHeader("Cache-Control",
-                                   "no-store, must-revalidate");
-    return http_response;
-  }
-
-  GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
-  net::test_server::RequestQuery query =
-      net::test_server::ParseQuery(request_url);
-
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
-  http_response->AddCustomHeader("Location", dest);
-  return http_response;
-}
-
 std::unique_ptr<net::test_server::HttpResponse> ServeCoopOnSecondNavigation(
     unsigned int& navigation_counter,
     const net::test_server::HttpRequest& request) {
@@ -303,13 +277,8 @@ class CrossOriginOpenerPolicyBrowserTest
         &net::test_server::HandlePrefixedRequest,
         "/redirect-with-coop-and-csp-headers",
         base::BindRepeating(CoopAndCspSandboxRedirectHandler)));
-
+    AddRedirectOnSecondNavigationHandler(&https_server_);
     unsigned int navigation_counter = 0;
-    https_server_.RegisterDefaultHandler(base::BindRepeating(
-        &net::test_server::HandlePrefixedRequest,
-        "/redirect-to-target-on-second-navigation",
-        base::BindRepeating(&RedirectToTargetOnSecondNavigation,
-                            base::OwnedRef(navigation_counter))));
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest,
         "/serve-coop-on-second-navigation",
@@ -4054,8 +4023,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                              "/set-header?"
                              "Cross-Origin-Opener-Policy: same-origin"));
   GURL redirect_page(https_server()->GetURL(
-      "a.test",
-      "/redirect-to-target-on-second-navigation?" + coop_page.spec()));
+      "a.test", "/redirect-on-second-navigation?" + coop_page.spec()));
 
   // Navigate to the redirect page. On the first navigation, this is a simple
   // empty page with no headers.

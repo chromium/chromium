@@ -4958,6 +4958,20 @@ void NavigationRequest::OnStartChecksComplete(
       std::move(cached_response_head), std::move(interceptor));
   DCHECK(!HasRenderFrameHost());
 
+  // If needed, perform an early RenderFrameHost swap after notifying observers
+  // with DidStartNavigation, after processing WillStartRequest throttle events,
+  // and after creating the NavigationURLLoader above (which needs the old
+  // current_frame_host()). This (1) avoids performing the early swap in case
+  // the navigation gets canceled prior to getting here, and (2) ensures that
+  // DidStartNavigation and WillStartRequest implementations are not disrupted
+  // by the early swap and don't see a RenderFrameHostChanged event prior to a
+  // navigation actually starting.
+  //
+  // TODO(crbug.com/1467011): Remove the `is_called_after_did_start_navigation`
+  // param once all early swaps are done from here.
+  frame_tree_node_->render_manager()->PerformEarlyRenderFrameHostSwapIfNeeded(
+      this, /*is_called_after_did_start_navigation=*/true);
+
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.WillStartRequestToLoaderStart.",
                     IsInMainFrame() ? "MainFrame" : "Subframe"}),
