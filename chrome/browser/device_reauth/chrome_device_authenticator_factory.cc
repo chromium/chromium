@@ -38,6 +38,7 @@ ChromeDeviceAuthenticatorFactory::ChromeDeviceAuthenticatorFactory()
           "ChromeDeviceAuthenticator",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 ChromeDeviceAuthenticatorFactory::~ChromeDeviceAuthenticatorFactory() = default;
