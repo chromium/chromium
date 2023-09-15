@@ -180,8 +180,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // launched. Disable features for the new version of "Cookies in use"
     // dialog. The new UI is covered by
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures({},
-                                   {safe_browsing::kRedInterstitialFacelift});
+    feature_list_.InitWithFeatures({}, {});
   }
 
   PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
