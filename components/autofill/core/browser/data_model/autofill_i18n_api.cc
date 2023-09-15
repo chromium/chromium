@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,11 @@ using i18n_model_definition::kAutofillParsingRulesMap;
 // which are children of X.
 using TreeDefinition =
     base::flat_map<ServerFieldType, base::span<const ServerFieldType>>;
+
+// Address lines are currently the only computed types. These are are shared by
+// all countries.
+constexpr ServerFieldTypeSet kAddressComputedTypes = {
+    ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
 
 // Returns an instance of the AddressComponent implementation that matches
 // the corresponding ServerFieldType if exists. Otherwise, returns a default
@@ -242,6 +248,24 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
   return legacy_it != kAutofillParsingRulesMap.end()
              ? legacy_it->second->Parse(value)
              : absl::nullopt;
+}
+
+bool IsTypeEnabledForCountry(ServerFieldType field_type,
+                             std::string_view country_code) {
+  auto* it = kAutofillModelRules.find(country_code);
+  if (it == kAutofillModelRules.end()) {
+    return false;
+  }
+
+  if (kAddressComputedTypes.contains(field_type)) {
+    return true;
+  }
+
+  return base::ranges::any_of(
+      it->second, [field_type](const FieldTypeDescription& description) {
+        return description.field_type == field_type ||
+               base::Contains(description.children, field_type);
+      });
 }
 
 }  // namespace autofill::i18n_model_definition

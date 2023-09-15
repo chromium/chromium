@@ -34,6 +34,11 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     ServerFieldType field_type,
     std::string_view country_code);
 
+// The function returns true if the provided `field_type` is included in the
+// hierarchy model of the given country. Otherwise it returns false.
+bool IsTypeEnabledForCountry(ServerFieldType field_type,
+                             std::string_view country_code);
+
 }  // namespace autofill::i18n_model_definition
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_

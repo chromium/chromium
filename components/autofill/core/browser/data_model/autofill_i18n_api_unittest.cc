@@ -7,6 +7,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -168,4 +169,31 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
                 street_address, ADDRESS_HOME_STREET_ADDRESS, "XX"));
 }
 
+TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
+    std::unique_ptr<AddressComponent> address =
+        CreateAddressComponentModel(country_code);
+
+    for (std::underlying_type_t<ServerFieldType> i = 0;
+         i < MAX_VALID_FIELD_TYPE; ++i) {
+      ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+      if (field_type == NO_SERVER_DATA) {
+        continue;
+      }
+      SCOPED_TRACE(testing::Message()
+                   << "Testing type " << FieldTypeToStringPiece(field_type)
+                   << " in country " << country_code);
+
+      if (!kAutofillModelRules.contains(country_code)) {
+        EXPECT_FALSE(IsTypeEnabledForCountry(field_type, country_code));
+      } else {
+        bool is_contained =
+            address->GetNodeForTypeForTesting(field_type) != nullptr;
+        EXPECT_EQ(is_contained,
+                  IsTypeEnabledForCountry(field_type, country_code));
+      }
+    }
+  }
+}
 }  // namespace autofill::i18n_model_definition
