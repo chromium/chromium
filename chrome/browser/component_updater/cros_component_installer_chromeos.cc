@@ -42,6 +42,10 @@ const char kPreferDcheckSwitch[] = "prefer-dcheck";
 const char kPreferDcheckOptIn[] = "opt-in";
 const char kPreferDcheckOptOut[] = "opt-out";
 
+// Switch to control which serving campaigns file versions to select in test
+// cohort.
+const char kCompaignsTestTag[] = "campaigns-test-tag";
+
 // Root path where all components are stored.
 constexpr char kComponentsRootPath[] = "cros-components";
 
@@ -67,6 +71,8 @@ const ComponentConfig kConfigs[] = {
      "7d5c1428f7f67b56f95123851adec1da105980c56b5c126352040f3b65d3e43b"},
     {"lacros-dogfood-stable", ComponentConfig::PolicyType::kLacros, nullptr,
      "47f910805afac79e2d4d9117c42d5291a32ac60a4ea1a42e537fd86082c3ba48"},
+    {"growth-campaigns", ComponentConfig::PolicyType::kGrowthCampaigns, nullptr,
+     "36448796af5fb67380ec0180a8379ddd26fce20d3da6a231e0a60dfe2360407e"},
 };
 
 const char* g_ash_version_for_test = nullptr;
@@ -298,6 +304,30 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
   return demo_app_installer_attributes;
 }
 
+GrowthCampaignsInstallerPolicy::GrowthCampaignsInstallerPolicy(
+    const ComponentConfig& config,
+    CrOSComponentInstaller* cros_component_installer)
+    : CrOSComponentInstallerPolicy(config, cros_component_installer) {}
+
+GrowthCampaignsInstallerPolicy::~GrowthCampaignsInstallerPolicy() = default;
+
+void GrowthCampaignsInstallerPolicy::ComponentReady(
+    const base::Version& version,
+    const base::FilePath& path,
+    base::Value::Dict manifest) {
+  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+}
+
+update_client::InstallerAttributes
+GrowthCampaignsInstallerPolicy::GetInstallerAttributes() const {
+  update_client::InstallerAttributes attributes;
+  auto* const cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(kCompaignsTestTag)) {
+    attributes["tag"] = cmdline->GetSwitchValueASCII(kCompaignsTestTag);
+  }
+  return attributes;
+}
+
 CrOSComponentInstaller::CrOSComponentInstaller(
     std::unique_ptr<MetadataTable> metadata_table,
     ComponentUpdateService* component_updater)
@@ -422,6 +452,9 @@ void CrOSComponentInstaller::Register(const ComponentConfig& config,
       break;
     case ComponentConfig::PolicyType::kDemoApp:
       policy = std::make_unique<DemoAppInstallerPolicy>(config, this);
+      break;
+    case ComponentConfig::PolicyType::kGrowthCampaigns:
+      policy = std::make_unique<GrowthCampaignsInstallerPolicy>(config, this);
       break;
   }
   auto installer = base::MakeRefCounted<ComponentInstaller>(std::move(policy));

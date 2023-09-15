@@ -41,9 +41,10 @@ struct ComponentConfig {
   const char* name;
   // ComponentInstallerPolicy to use.
   enum class PolicyType {
-    kEnvVersion,  // Checks env_version, see below.
-    kLacros,      // Uses special lacros compatibility rules.
-    kDemoApp,     // Adds demo-mode-specific install attributes
+    kEnvVersion,       // Checks env_version, see below.
+    kLacros,           // Uses special lacros compatibility rules.
+    kDemoApp,          // Adds demo-mode-specific install attributes
+    kGrowthCampaigns,  // Adds growth campaigns install attributes
   };
   PolicyType policy_type;
   // This is used for ABI compatibility checks. It is compared against the
@@ -149,6 +150,27 @@ class DemoAppInstallerPolicy : public CrOSComponentInstallerPolicy {
   DemoAppInstallerPolicy(const DemoAppInstallerPolicy&) = delete;
   DemoAppInstallerPolicy& operator=(const DemoAppInstallerPolicy&) = delete;
   ~DemoAppInstallerPolicy() override;
+
+  // ComponentInstallerPolicy:
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& path,
+                      base::Value::Dict manifest) override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
+};
+
+// An installer policy for the ChromeOS growth campaigns, which includes special
+// system-sourced installer attributes in the request to receive customized
+// campaigns versions.
+class GrowthCampaignsInstallerPolicy : public CrOSComponentInstallerPolicy {
+ public:
+  GrowthCampaignsInstallerPolicy(
+      const ComponentConfig& config,
+      CrOSComponentInstaller* cros_component_installer);
+  GrowthCampaignsInstallerPolicy(const GrowthCampaignsInstallerPolicy&) =
+      delete;
+  GrowthCampaignsInstallerPolicy& operator=(
+      const GrowthCampaignsInstallerPolicy&) = delete;
+  ~GrowthCampaignsInstallerPolicy() override;
 
   // ComponentInstallerPolicy:
   void ComponentReady(const base::Version& version,
