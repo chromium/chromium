@@ -63,10 +63,6 @@ namespace WTF {
 WTF_EXPORT absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string);
 
-// utcOffset: [-720,720].
-WTF_EXPORT absl::optional<String> MakeRFC2822DateString(const base::Time date,
-                                                        int utc_offset);
-
 const char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
                                  "Thu", "Fri", "Sat"};
 const char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -115,7 +111,6 @@ using WTF::kMsPerSecond;
 using WTF::MsToYear;
 using WTF::kSecondsPerMinute;
 using WTF::ParseDateFromNullTerminatedCharacters;
-using WTF::MakeRFC2822DateString;
 using WTF::ConvertToLocalTime;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DATE_MATH_H_

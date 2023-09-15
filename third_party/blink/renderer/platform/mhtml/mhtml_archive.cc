@@ -35,6 +35,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
@@ -310,7 +311,17 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
   DCHECK(!boundary.empty());
   DCHECK(!mime_type.empty());
 
-  auto date_string = MakeRFC2822DateString(date, 0);
+  // See http://tools.ietf.org/html/rfc2822#section-3.3.
+  std::string date_string;
+  base::Time::Exploded exploded;
+  date.UTCExplode(&exploded);
+  if (exploded.HasValidValues()) {
+    date_string = base::StringPrintf(
+        "%s, %d %s %d %02d:%02d:%02d -0000",
+        WTF::kWeekdayName[exploded.day_of_week], exploded.day_of_month,
+        WTF::kMonthName[exploded.month - 1], exploded.year, exploded.hour,
+        exploded.minute, exploded.second);
+  }
 
   StringBuilder string_builder;
   string_builder.Append("From: <Saved by Blink>\r\n");
@@ -322,9 +333,9 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   string_builder.Append("\r\nSubject: ");
   string_builder.Append(ConvertToPrintableCharacters(title));
-  if (date_string) {
+  if (!date_string.empty()) {
     string_builder.Append("\r\nDate: ");
-    string_builder.Append(*date_string);
+    string_builder.Append(String(date_string));
   }
   string_builder.Append("\r\nMIME-Version: 1.0\r\n");
   string_builder.Append("Content-Type: multipart/related;\r\n");

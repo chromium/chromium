@@ -65,7 +65,6 @@ class MHTMLArchiveTest : public testing::Test {
   MHTMLArchiveTest() {
     file_path_ = test::CoreTestDataPath("frameserializer/css/");
     mhtml_date_ = base::Time::FromJsTime(1520551829000);
-    mhtml_date_header_ = String::FromUTF8("Thu, 8 Mar 2018 23:30:29 -0000");
   }
 
  protected:
@@ -185,7 +184,6 @@ class MHTMLArchiveTest : public testing::Test {
   Vector<char>& mhtml_data() { return mhtml_data_; }
 
   base::Time mhtml_date() const { return mhtml_date_; }
-  const String& mhtml_date_header() const { return mhtml_date_header_; }
 
   void CheckLoadResult(const KURL url,
                        scoped_refptr<const SharedBuffer> data,
@@ -214,7 +212,6 @@ class MHTMLArchiveTest : public testing::Test {
   Vector<SerializedResource> resources_;
   Vector<char> mhtml_data_;
   base::Time mhtml_date_;
-  String mhtml_date_header_;
 };
 
 TEST_F(MHTMLArchiveTest,
@@ -389,7 +386,10 @@ TEST_F(MHTMLArchiveTest, MHTMLDate) {
   // The serialization process should have added a date header corresponding to
   // mhtml_date().
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
-  ASSERT_EQ(mhtml_date_header(), mhtml_headers.find("Date")->value);
+  base::Time header_date;
+  EXPECT_TRUE(base::Time::FromString(
+      mhtml_headers.find("Date")->value.Utf8().c_str(), &header_date));
+  EXPECT_EQ(mhtml_date(), header_date);
 
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(mhtml_data().data(), mhtml_data().size());
