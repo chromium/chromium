@@ -23,6 +23,7 @@ testing/data/advance_focus_in_form_with_key_event_listeners.html
 testing/data/advance_focus_in_form_with_tabindex_elements.html
 testing/data/autofocus_input_field_iframe.html
 testing/data/back_forward_restore_scroll.html
+testing/data/background_image.png
 testing/data/bad_tap_targets_iframe.html
 testing/data/bar.html
 testing/data/black-and-white.ico
