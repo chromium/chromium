@@ -11,6 +11,8 @@
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 
+class Profile;
+
 namespace crosapi {
 
 // Base class for Ash browser tests that depend on Lacros and use
@@ -19,6 +21,9 @@ class AshRequiresLacrosBrowserTestBase : public InProcessBrowserTest {
  public:
   AshRequiresLacrosBrowserTestBase();
   ~AshRequiresLacrosBrowserTestBase() override;
+
+  // Gets user profile in ash.
+  Profile* GetAshProfile() const;
 
  protected:
   void SetUpInProcessBrowserTestFixture() override;

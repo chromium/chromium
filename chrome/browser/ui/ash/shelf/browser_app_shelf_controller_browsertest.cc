@@ -192,12 +192,12 @@ class BrowserAppShelfControllerBrowserTest
 
   void SetUpOnMainThread() override {
     crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
-    profile_ = ProfileManager::GetActiveUserProfile();
     if (!HasLacrosArgument()) {
       return;
     }
 
-    apps::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb).Await();
+    apps::AppTypeInitializationWaiter(GetAshProfile(), apps::AppType::kWeb)
+        .Await();
 
     auto* registry = AppServiceProxy()->BrowserAppInstanceRegistry();
     ASSERT_NE(registry, nullptr);
@@ -221,22 +221,20 @@ class BrowserAppShelfControllerBrowserTest
     for (const std::string& app_id : app_ids) {
       AppServiceProxy()->UninstallSilently(app_id,
                                            apps::UninstallSource::kShelf);
-      apps::AppReadinessWaiter(profile(), app_id,
+      apps::AppReadinessWaiter(GetAshProfile(), app_id,
                                apps::Readiness::kUninstalledByUser)
           .Await();
     }
   }
 
-  Profile* profile() { return profile_; }
-
   apps::AppServiceProxy* AppServiceProxy() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile());
+    return apps::AppServiceProxyFactory::GetForProfile(GetAshProfile());
   }
 
   void WaitForCondition(const base::Location& from_here,
                         TestConditionWaiter::Condition condition,
                         const std::string& message) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(GetAshProfile());
     TestConditionWaiter(*registry_, proxy->AppRegistryCache(),
                         std::move(condition))
         .Wait(from_here, message);
@@ -252,7 +250,7 @@ class BrowserAppShelfControllerBrowserTest
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
-    apps::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(GetAshProfile(), app_id).Await();
     AppServiceProxy()->AppRegistryCache().ForOneApp(
         app_id, [mode](const apps::AppUpdate& update) {
           EXPECT_EQ(update.AppType(), apps::AppType::kWeb);
@@ -338,7 +336,6 @@ class BrowserAppShelfControllerBrowserTest
     return SelectResult{action_taken, std::move(app_menu_items)};
   }
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
   raw_ptr<apps::BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
       registry_{nullptr};
 };

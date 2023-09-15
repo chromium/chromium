@@ -31,7 +31,7 @@ class WebAppProviderBridgeBrowserTest
                                                         future.GetCallback());
     auto app_id = future.Take();
     CHECK(!app_id.empty());
-    apps::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(GetAshProfile(), app_id).Await();
     return app_id;
   }
 
@@ -42,11 +42,9 @@ class WebAppProviderBridgeBrowserTest
         parent_app_id, sub_app_start_url, future.GetCallback());
     auto sub_app_id = future.Take();
     CHECK(!sub_app_id.empty());
-    apps::AppReadinessWaiter(profile(), sub_app_id).Await();
+    apps::AppReadinessWaiter(GetAshProfile(), sub_app_id).Await();
     return sub_app_id;
   }
-
-  Profile* profile() { return browser()->profile(); }
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppIds) {

@@ -8,8 +8,11 @@
 #include "base/location.h"
 #include "base/one_shot_event.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -29,6 +32,8 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
   if (!ash_starter_.HasLacrosArgument()) {
     return;
   }
+
+  CHECK(!browser_util::IsAshWebBrowserEnabled());
   auto* manager = crosapi::CrosapiManager::Get();
   test_controller_ash_ = std::make_unique<crosapi::TestControllerAsh>();
   manager->crosapi_ash()->SetTestControllerForTesting(  // IN-TEST
@@ -50,4 +55,9 @@ AshRequiresLacrosBrowserTestBase::GetStandaloneBrowserTestController() {
   return test_controller_ash_->GetStandaloneBrowserTestController().get();
 }
 
+Profile* AshRequiresLacrosBrowserTestBase::GetAshProfile() const {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  return profile;
+}
 }  // namespace crosapi
