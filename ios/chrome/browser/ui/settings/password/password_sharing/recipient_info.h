@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_RECIPIENT_INFO_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 namespace password_manager {
 struct PublicKey;
@@ -30,6 +31,16 @@ struct RecipientInfo;
 
 // Public key of the user including its version.
 @property(nonatomic, readonly) password_manager::PublicKey publicKey;
+
+// URL to the profile picture of the recipient for display in the UI.
+@property(nonatomic, copy) NSString* profileImageURL;
+
+// Circular profile icon of the recipient. Initialized with default user icon
+// placeholder.
+@property(nonatomic, copy) UIImage* profileImage;
+
+// Whether the `profileImage` has been already fetched from `profileImageURL`.
+@property(nonatomic, assign, getter=isImageFetched) BOOL imageFetched;
 
 - (instancetype)initWithRecipientInfo:
     (const password_manager::RecipientInfo&)recipient NS_DESIGNATED_INITIALIZER;

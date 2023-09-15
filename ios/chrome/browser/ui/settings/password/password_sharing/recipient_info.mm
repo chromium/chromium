@@ -6,6 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipient_info.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 
 @implementation RecipientInfoForIOSDisplay
 
@@ -18,6 +20,9 @@
     _isEligible = !recipient.public_key.key.empty();
     _userID = base::SysUTF8ToNSString(recipient.user_id);
     _publicKey = recipient.public_key;
+    _profileImageURL = base::SysUTF8ToNSString(recipient.profile_image_url);
+    _profileImage = DefaultSymbolTemplateWithPointSize(
+        kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
   }
   return self;
 }
