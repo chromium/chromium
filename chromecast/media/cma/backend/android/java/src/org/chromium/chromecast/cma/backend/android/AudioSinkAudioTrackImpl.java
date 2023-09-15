@@ -250,8 +250,14 @@ class AudioSinkAudioTrackImpl {
     private static AudioSinkAudioTrackImpl create(long nativeAudioSinkAudioTrackImpl,
             @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
             int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
-        return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
-                channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio, useHwAvSync);
+        try {
+            return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
+                    channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio,
+                    useHwAvSync);
+        } catch (UnsupportedOperationException e) {
+            Log.e(TAG, "Failed to create audio sink track");
+            return null;
+        }
     }
 
     private AudioSinkAudioTrackImpl(long nativeAudioSinkAudioTrackImpl,

@@ -80,7 +80,7 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   void OnSinkError(SinkError error) override;
 
   void CleanUpPcm();
-  void ResetSinkForNewConfig(const AudioConfig& config);
+  bool ResetSinkForNewConfig(const AudioConfig& config) ABSL_MUST_USE_RESULT;
   void CreateDecoder();
   void CreateRateShifter(const AudioConfig& config);
   void OnBufferDecoded(uint64_t input_bytes,

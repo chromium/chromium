@@ -112,18 +112,19 @@ class ManagedAudioSink {
   // Resets the sink_ object by removing it from the manager and deleting it.
   void Reset();
 
-  // Resets the sink_ object to a new AudioSinkAndroid* instance and adds it to
+  // Creates a new sink_ object of AudioSinkAndroid* instance and adds it to
   // the manager. If a valid instance existed on entry it is removed from the
   // manager and deleted before creating the new one.
-  void Reset(Delegate* delegate,
-             int num_channels,
-             int samples_per_second,
-             int audio_track_session_id,
-             bool primary,
-             bool is_apk_audio,
-             bool use_hw_av_sync,
-             const std::string& device_id,
-             AudioContentType content_type);
+  // Returns true on success; false otherwise.
+  bool Create(Delegate* delegate,
+              int num_channels,
+              int samples_per_second,
+              int audio_track_session_id,
+              bool primary,
+              bool is_apk_audio,
+              bool use_hw_av_sync,
+              const std::string& device_id,
+              AudioContentType content_type) ABSL_MUST_USE_RESULT;
 
   AudioSinkAndroid* operator->() const { return sink_; }
   operator AudioSinkAndroid*() const { return sink_; }

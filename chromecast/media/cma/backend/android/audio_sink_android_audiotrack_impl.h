@@ -41,13 +41,26 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   // buffer larger than this size and feed it in in smaller chunks.
   static const int kDirectBufferSize = 512 * 1024;
 
+  static int64_t GetMinimumBufferedTime(int num_channels,
+                                        int samples_per_second);
+
+  AudioSinkAndroidAudioTrackImpl(AudioSinkAndroid::Delegate* delegate,
+                                 int num_channels,
+                                 int input_samples_per_second,
+                                 bool primary,
+                                 bool use_hw_av_sync,
+                                 const std::string& device_id,
+                                 AudioContentType content_type);
+
   AudioSinkAndroidAudioTrackImpl(const AudioSinkAndroidAudioTrackImpl&) =
       delete;
   AudioSinkAndroidAudioTrackImpl& operator=(
       const AudioSinkAndroidAudioTrackImpl&) = delete;
 
-  static int64_t GetMinimumBufferedTime(int num_channels,
-                                        int samples_per_second);
+  ~AudioSinkAndroidAudioTrackImpl() override;
+
+  // Initializes the audio track.
+  bool Initialize(int audio_track_session_id, bool is_apk_audio);
 
   // Called from Java so that we can cache the addresses of the Java-managed
   // byte_buffers.
@@ -83,20 +96,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   State state() const { return state_; }
 
  private:
-  friend class ManagedAudioSink;
-
-  AudioSinkAndroidAudioTrackImpl(AudioSinkAndroid::Delegate* delegate,
-                                 int num_channels,
-                                 int input_samples_per_second,
-                                 int audio_track_session_id,
-                                 bool primary,
-                                 bool is_apk_audio,
-                                 bool use_hw_av_sync,
-                                 const std::string& device_id,
-                                 AudioContentType content_type);
-
-  ~AudioSinkAndroidAudioTrackImpl() override;
-
   void FinalizeOnFeederThread();
 
   void FeedData();
@@ -145,8 +144,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   uint64_t* direct_audio_track_timestamp_address_;
 
   // Java AudioSinkAudioTrackImpl instance.
-  const base::android::ScopedJavaGlobalRef<jobject>
-      j_audio_sink_audiotrack_impl_;
+  base::android::ScopedJavaGlobalRef<jobject> j_audio_sink_audiotrack_impl_;
 
   // Thread that feeds audio data into the Java instance though JNI,
   // potentially blocking. When in Play mode the Java AudioTrack blocks as it
@@ -168,8 +166,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
 
   MediaPipelineBackendAndroid::RenderingDelay sink_rendering_delay_;
 
-  base::WeakPtr<AudioSinkAndroidAudioTrackImpl> weak_this_;
-  base::WeakPtrFactory<AudioSinkAndroidAudioTrackImpl> weak_factory_;
+  base::WeakPtrFactory<AudioSinkAndroidAudioTrackImpl> weak_factory_{this};
 };
 
 }  // namespace media
