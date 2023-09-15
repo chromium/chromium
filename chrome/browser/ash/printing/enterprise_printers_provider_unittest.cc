@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
@@ -37,10 +38,7 @@ using ::chromeos::Printer;
 using ::testing::UnorderedElementsAre;
 
 std::vector<std::string> GetPrinterIds(const std::vector<Printer>& printers) {
-  std::vector<std::string> ids(printers.size());
-  base::ranges::transform(printers, ids.begin(),
-                          [](const Printer& p) { return p.id(); });
-  return ids;
+  return base::test::ToVector(printers, &Printer::id);
 }
 
 base::Value::List StringsToValueList(const std::vector<std::string>& strings) {

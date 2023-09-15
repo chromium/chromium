@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -245,10 +246,8 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   std::string GetRecordedPageLoadMetricNames() {
     auto entries = histogram_tester_->GetTotalCountsForPrefix("PageLoad.");
-    std::vector<std::string> names;
-    base::ranges::transform(
-        entries, std::back_inserter(names),
-        &base::HistogramTester::CountsMap::value_type::first);
+    std::vector<std::string> names = base::test::ToVector(
+        entries, &base::HistogramTester::CountsMap::value_type::first);
     return base::JoinString(names, ",");
   }
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
@@ -95,10 +96,8 @@ class SearchControllerTest : public testing::Test {
   void ExpectIdOrder(std::vector<std::string> expected_ids) {
     const auto& actual_results = model_updater_.search_results();
     EXPECT_EQ(actual_results.size(), expected_ids.size());
-    std::vector<std::string> actual_ids;
-    base::ranges::transform(actual_results, std::back_inserter(actual_ids),
-                            &ChromeSearchResult::id);
-    EXPECT_THAT(actual_ids, ElementsAreArray(expected_ids));
+    EXPECT_THAT(base::test::ToVector(actual_results, &ChromeSearchResult::id),
+                ElementsAreArray(expected_ids));
   }
 
   // Compares expected category burn-in iteration numbers to those recorded

@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -51,13 +52,9 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
   bool success = dependency_graph.GetConstructionOrder(&nodes);
   DCHECK(success);
 
-  std::vector<KeyedServiceBaseFactory*> keyedServiceFactories;
-  keyedServiceFactories.reserve(nodes.size());
-  base::ranges::transform(nodes, std::back_inserter(keyedServiceFactories),
-                          [](DependencyNode* node) {
-                            return static_cast<KeyedServiceBaseFactory*>(node);
-                          });
-  return keyedServiceFactories;
+  return base::test::ToVector(nodes, [](DependencyNode* node) {
+    return static_cast<KeyedServiceBaseFactory*>(node);
+  });
 }
 
 // Returns a string representation of the elements of `set1` which are absent

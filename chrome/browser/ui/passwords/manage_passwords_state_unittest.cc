@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/to_vector.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -45,10 +46,11 @@ constexpr char kTestPSLOrigin[] = "http://1.example.com/";
 
 std::vector<const PasswordForm*> GetRawPointers(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  std::vector<const PasswordForm*> result;
-  base::ranges::transform(forms, std::back_inserter(result),
-                          &std::unique_ptr<PasswordForm>::get);
-  return result;
+  // &std::unique_ptr<PasswordForm>::get returns a non-const ptr and hence
+  // cannot be used instead.
+  return base::test::ToVector(
+      forms,
+      [](const auto& form) -> const PasswordForm* { return form.get(); });
 }
 
 class MockPasswordManagerClient

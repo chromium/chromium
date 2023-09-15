@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -251,15 +252,10 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // - content::WebContentsConsoleObserver
   template <typename TConsoleObserver>
   void VerifyFetchWasBlockedByCors(const TConsoleObserver& console_observer) {
-    using ConsoleMessage = typename TConsoleObserver::Message;
-    const std::vector<ConsoleMessage>& console_messages =
-        console_observer.messages();
-
-    std::vector<std::string> messages;
-    base::ranges::transform(console_messages, std::back_inserter(messages),
-                            [](const auto& console_message) {
-                              return base::UTF16ToUTF8(console_message.message);
-                            });
+    std::vector<std::string> messages = base::test::ToVector(
+        console_observer.messages(), [](const auto& console_message) {
+          return base::UTF16ToUTF8(console_message.message);
+        });
 
     // We allow more than 1 console message, because the test might flakily see
     // extra console messages - see https://crbug.com/1085629.

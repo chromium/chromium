@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -569,10 +570,8 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
 
     // Convert the test cases, and the returned dictionary, into tuples for
     // unordered comparison, as the order of exception is not relevant.
-    std::vector<std::tuple<std::string, std::string, std::string>> expected;
-    std::vector<std::tuple<std::string, std::string, std::string>> actual;
-    base::ranges::transform(
-        test_cases, std::back_inserter(expected), [&](const auto& test_case) {
+    std::vector<std::tuple<std::string, std::string, std::string>> expected =
+        base::test::ToVector(test_cases, [&](const auto& test_case) {
           // make_tuple as we've some temporary rvalues.
           return std::make_tuple(
               test_case.primary_pattern,
@@ -584,12 +583,13 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
                   feature_state ? test_case.updated_setting
                                 : test_case.initial_setting));
         });
-    base::ranges::transform(
-        exceptions, std::back_inserter(actual), [](const auto& exception) {
+
+    std::vector<std::tuple<std::string, std::string, std::string>> actual =
+        base::test::ToVector(exceptions, [](const auto& exception) {
           const base::Value::Dict& dict = exception.GetDict();
-          return std::forward_as_tuple(*dict.FindString(kOrigin),
-                                       *dict.FindString(kEmbeddingOrigin),
-                                       *dict.FindString(kSetting));
+          return std::make_tuple(*dict.FindString(kOrigin),
+                                 *dict.FindString(kEmbeddingOrigin),
+                                 *dict.FindString(kSetting));
         });
 
     EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))

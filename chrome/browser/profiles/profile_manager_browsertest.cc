@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -919,13 +920,10 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerNonAsciiBrowserTest,
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributes();
-  std::vector<base::FilePath::StringType> actual_paths;
-  base::ranges::transform(entries, std::back_inserter(actual_paths),
-                          [](const ProfileAttributesEntry* entry) {
-                            return entry->GetPath().BaseName().value();
-                          });
-
-  EXPECT_THAT(actual_paths,
+  EXPECT_THAT(base::test::ToVector(entries,
+                                   [](const auto* entry) {
+                                     return entry->GetPath().BaseName().value();
+                                   }),
               ::testing::UnorderedElementsAreArray(expected_paths));
 }
 

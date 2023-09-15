@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
@@ -137,13 +138,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
   WaitForTestSystemAppInstall();
   auto* system_app = GetManager().GetSystemApp(SystemWebAppType::HELP);
-  std::vector<int> search_terms = system_app->GetAdditionalSearchTerms();
-  std::vector<std::string> search_terms_strings;
-  base::ranges::transform(search_terms,
-                          std::back_inserter(search_terms_strings),
-                          &l10n_util::GetStringUTF8);
-  EXPECT_EQ(std::vector<std::string>({"Get Help", "Perks", "Offers"}),
-            search_terms_strings);
+  EXPECT_THAT(base::test::ToVector(system_app->GetAdditionalSearchTerms(),
+                                   &l10n_util::GetStringUTF8),
+              testing::ElementsAre("Get Help", "Perks", "Offers"));
 }
 
 // Test that the Help App has a minimum window size of 600x320.

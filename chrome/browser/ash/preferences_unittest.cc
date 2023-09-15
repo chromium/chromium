@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -49,13 +50,13 @@
 namespace ash {
 namespace {
 
-const char kIdentityIMEID[] =
+constexpr char kIdentityIMEID[] =
     "_ext_ime_iafoklpfplgfnoimmaejoeondnjnlcfpIdentityIME";
-const char kToUpperIMEID[] =
+constexpr char kToUpperIMEID[] =
     "_ext_ime_iafoklpfplgfnoimmaejoeondnjnlcfpToUpperIME";
-const char kAPIArgumentIMEID[] =
+constexpr char kAPIArgumentIMEID[] =
     "_ext_ime_iafoklpfplgfnoimmaejoeondnjnlcfpAPIArgumentIME";
-const char kUnknownIMEID[] =
+constexpr char kUnknownIMEID[] =
     "_ext_ime_iafoklpfplgfnoimmaejoeondnjnlcfpUnknownIME";
 
 syncer::SyncData
@@ -425,11 +426,12 @@ class InputMethodPreferencesTest : public PreferencesTest {
 
   // Translates engine IDs in a CSV string to input method IDs.
   std::string ToInputMethodIds(const std::string& value) {
-    std::vector<std::string> tokens = base::SplitString(
-        value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    base::ranges::transform(tokens, tokens.begin(),
-                            &extension_ime_util::GetInputMethodIDByEngineID);
-    return base::JoinString(tokens, ",");
+    return base::JoinString(
+        base::test::ToVector(
+            base::SplitString(value, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_ALL),
+            &extension_ime_util::GetInputMethodIDByEngineID),
+        ",");
   }
 
   // Simulates the initial sync of preferences.
