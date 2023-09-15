@@ -15096,6 +15096,21 @@
             ]
         }
     ],
+    "ShelfStackedHotseat": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShelfStackedHotseat"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShoppingListTrackByDefault": [
         {
             "platforms": [
