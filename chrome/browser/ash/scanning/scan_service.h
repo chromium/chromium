@@ -200,7 +200,7 @@ class ScanService : public scanning::mojom::ScanService,
   std::vector<std::string> scanned_images_;
 
   // The time a scan was started. Used in filenames when saving scanned images.
-  base::Time::Exploded start_time_;
+  base::Time start_time_;
 
   // The file paths of the pages scanned in a scan job.
   std::vector<base::FilePath> scanned_file_paths_;

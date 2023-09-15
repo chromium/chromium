@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/scanning/scan_service.h"
 
 #include <cstdint>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -49,9 +50,15 @@ constexpr base::TimeDelta kTimeout = base::Minutes(15);
 
 // Creates a filename for a scanned image using |start_time|, |page_number|, and
 // |file_ext|.
-std::string CreateFilename(const base::Time::Exploded& start_time,
+std::string CreateFilename(const base::Time& start_time,
                            uint32_t page_number,
                            const mojo_ipc::FileType file_type) {
+  base::Time::Exploded exploded;
+  start_time.LocalExplode(&exploded);
+  const std::string timestamp = base::StringPrintf(
+      "%02d%02d%02d-%02d%02d%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
+
   std::string file_ext;
   switch (file_type) {
     case mojo_ipc::FileType::kPng:
@@ -62,16 +69,11 @@ std::string CreateFilename(const base::Time::Exploded& start_time,
       break;
     case mojo_ipc::FileType::kPdf:
       // The filename of a PDF doesn't include the page number.
-      return base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d.pdf",
-                                start_time.year, start_time.month,
-                                start_time.day_of_month, start_time.hour,
-                                start_time.minute, start_time.second);
+      return base::StringPrintf("scan_%s.pdf", timestamp.c_str());
   }
 
-  return base::StringPrintf(
-      "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
-      start_time.day_of_month, start_time.hour, start_time.minute,
-      start_time.second, page_number, file_ext.c_str());
+  return base::StringPrintf("scan_%s_%d.%s", timestamp.c_str(), page_number,
+                            file_ext.c_str());
 }
 
 // Helper function that writes |scanned_image| to |file_path|.
@@ -120,7 +122,7 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
                         const mojo_ipc::FileType file_type,
                         std::string scanned_image,
                         uint32_t page_number,
-                        const base::Time::Exploded& start_time) {
+                        const base::Time& start_time) {
   std::string filename = CreateFilename(start_time, page_number, file_type);
   if (!WriteImage(scan_to_path.Append(filename), scanned_image))
     return base::FilePath();
@@ -312,7 +314,7 @@ bool ScanService::SendScanRequest(
                                 lorgnette::SCAN_FAILURE_MODE_IO_ERROR),
       kTimeout);
 
-  base::Time::Now().LocalExplode(&start_time_);
+  start_time_ = base::Time::Now();
   lorgnette_scanner_manager_->Scan(
       scanner_name,
       mojo::StructTraits<lorgnette::ScanSettings,
