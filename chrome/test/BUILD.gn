@@ -3209,7 +3209,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_win || is_linux) {
+    if (enable_search_engine_choice && (is_win || is_linux)) {
       sources += [ "../browser/ui/webui/search_engine_choice/search_engine_choice_ui_browsertest.cc" ]
     }
 
