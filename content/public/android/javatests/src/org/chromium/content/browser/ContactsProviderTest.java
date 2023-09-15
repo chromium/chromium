@@ -137,7 +137,8 @@ public class ContactsProviderTest {
                         listener.onContactsPickerUserAction(
                                 ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED,
                                 contacts,
-                                /*percentageShared=*/0, /*propertiesRequested=*/0);
+                                /*percentageShared=*/0, /*propertiesSiteRequested=*/0,
+                                /*propertiesUserRejected=*/0);
                         return true;
                     });
         });

@@ -52,7 +52,7 @@ android_library("java") {
   ]
   srcjar_deps = [
     ":contacts_picker_jni_headers",
-    "//content/public/browser:contacts_picker_properties_requested_javagen",
+    "//content/public/browser:contacts_picker_properties_javagen",
   ]
 }
 

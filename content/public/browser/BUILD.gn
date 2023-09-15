@@ -117,7 +117,7 @@ source_set("browser_sources") {
     "commit_deferring_condition.h",
     "console_message.cc",
     "console_message.h",
-    "contacts_picker_properties_requested.h",
+    "contacts_picker_properties.h",
     "content_browser_client.cc",
     "content_browser_client.h",
     "content_index_context.h",
@@ -707,8 +707,8 @@ source_set("browser_sources") {
 }
 
 if (is_android) {
-  java_cpp_enum("contacts_picker_properties_requested_javagen") {
-    sources = [ "contacts_picker_properties_requested.h" ]
+  java_cpp_enum("contacts_picker_properties_javagen") {
+    sources = [ "contacts_picker_properties.h" ]
   }
   java_cpp_enum("bluetooth_chooser_event_javagen") {
     sources = [ "bluetooth_chooser.h" ]

@@ -76,9 +76,11 @@ public interface ContactsPickerListener {
      * @param contacts The list of contacts selected.
      * @param percentageShared How big a percentage of the full contact list was shared (for metrics
      *         purposes).
-     * @param propertiesRequested The properties requested by the website (names, emails,
-     *         telephones).
+     * @param propertiesSiteRequested The properties requested by the website (bitmask of names,
+     *         emails, telephones, etc).
+     * @param propertiesUserRejected The properties rejected by the user (bitmask of names, emails,
+     *         telephones, etc) when the sharing dialog is presented.
      */
     void onContactsPickerUserAction(@ContactsPickerAction int action, List<Contact> contacts,
-            int percentageShared, int propertiesRequested);
+            int percentageShared, int propertiesSiteRequested, int propertiesUserRejected);
 }
