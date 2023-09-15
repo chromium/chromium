@@ -82,10 +82,10 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
 
   void InitializeCalendar();
 
-  std::unique_ptr<Vector<String>> CreateLabelVector(const UDateFormat*,
-                                                    UDateFormatSymbolType,
-                                                    int32_t start_index,
-                                                    int32_t size);
+  Vector<String> CreateLabelVector(const UDateFormat*,
+                                   UDateFormatSymbolType,
+                                   int32_t start_index,
+                                   int32_t size);
   void InitializeDateTimeFormat();
 
   std::string locale_;
@@ -94,9 +94,9 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   bool did_create_decimal_format_;
   bool did_create_short_date_format_;
 
-  std::unique_ptr<Vector<String>> week_day_short_labels_;
+  Vector<String> week_day_short_labels_;
   unsigned first_day_of_week_;
-  std::unique_ptr<Vector<String>> month_labels_;
+  Vector<String> month_labels_;
   String date_format_;
   String month_format_;
   String short_month_format_;
