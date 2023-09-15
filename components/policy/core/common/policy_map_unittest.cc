@@ -449,7 +449,6 @@ TEST_F(PolicyMapTest, MergeFrom_CloudMetapolicies) {
   auto conflicting_policy_3 = policy_map_2.Get(kTestPolicyName3)->DeepCopy();
   auto conflicting_policy_4 = policy_map_1.Get(kTestPolicyName4)->DeepCopy();
 
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   PolicyMap policy_map_expected;
@@ -1645,7 +1644,6 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
   policy_map_1.GetMutable(kTestPolicyName7)->SetBlocked();
   policy_map_2.GetMutable(kTestPolicyName7)->SetBlocked();
   policy_map_1.GetMutable(kTestPolicyName8)->SetBlocked();
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
@@ -1695,7 +1693,6 @@ TEST_P(PolicyMapMergeTest, MergeFrom_Metapolicies) {
                                 std::move(merge_list_1),
                                 std::move(merge_list_2));
 
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
@@ -1830,8 +1827,7 @@ TEST_P(PolicyMapPriorityTest, PriorityCheck) {
       base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
   // Causes the stored metapolicy values to be updated.
   PolicyMap policy_map_empty;
-  policy_map.MergeFrom(policy_map_empty,
-                       /*merge_precedence_metapolicies=*/true);
+  policy_map.MergeFrom(policy_map_empty);
 
   if (IsUserAffiliated()) {
     base::flat_set<std::string> affiliation_ids;

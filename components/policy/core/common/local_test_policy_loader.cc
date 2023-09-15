@@ -80,46 +80,14 @@ void LocalTestPolicyLoader::SetPolicyListJson(
     policy_map.SetDeviceAffiliationIds(device_ids);
   }
 
-// Check for precedence metapolicies and merge first.
-#if !BUILDFLAG(IS_CHROMEOS)
-  for (auto& policy : policies->GetList()) {
-    CHECK(policy.is_dict())
-        << "A dictionary is expected for each policy definition";
-    base::Value::Dict* policy_dict = &policy.GetDict();
-    VerifyJsonContents(policy_dict);
-    if (!base::Contains(metapolicy::kPrecedence,
-                        *policy_dict->FindString(kName))) {
-      continue;
-    }
-
-    PolicyMap entry_map = GetPolicyMapWithEntry(policy_dict);
-    PolicyServiceImpl::IgnoreUserCloudPrecedencePolicies(&entry_map);
-
-    policy_map.MergeFrom(entry_map, /*merge_precedence_metapolicies=*/true);
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   for (auto& policy : policies->GetList()) {
     CHECK(policy.is_dict())
         << "A dictionary is expected for each policy definition";
     base::Value::Dict* policy_dict = &policy.GetDict();
 
-#if BUILDFLAG(IS_CHROMEOS)
     VerifyJsonContents(policy_dict);
-#else
-    // Skip precedence metapolicies since they have already been merged.
-    if (base::Contains(metapolicy::kPrecedence,
-                       *policy_dict->FindString(kName))) {
-      continue;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     PolicyMap entry_map = GetPolicyMapWithEntry(policy_dict);
-
-#if BUILDFLAG(IS_CHROMEOS)
     PolicyServiceImpl::IgnoreUserCloudPrecedencePolicies(&entry_map);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     policy_map.MergeFrom(entry_map);
   }
 

@@ -44,8 +44,7 @@ PolicyBundle PolicyBundle::Clone() const {
   return clone;
 }
 
-void PolicyBundle::MergeFrom(const PolicyBundle& other,
-                             bool merge_precedence_metapolicies) {
+void PolicyBundle::MergeFrom(const PolicyBundle& other) {
   DCHECK_NE(this, &other);
 
   // Iterate over both |this| and |other| in order; skip what's extra in |this|,
@@ -58,8 +57,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other,
   while (it_this != end_this && it_other != end_other) {
     if (it_this->first == it_other->first) {
       // Same namespace: merge existing PolicyMaps.
-      it_this->second.MergeFrom(it_other->second,
-                                merge_precedence_metapolicies);
+      it_this->second.MergeFrom(it_other->second);
       ++it_this;
       ++it_other;
     } else if (it_this->first < it_other->first) {
