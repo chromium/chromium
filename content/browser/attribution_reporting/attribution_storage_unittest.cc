@@ -1777,6 +1777,88 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
+       HandleSource_DestinationThrottleReportingLimitReached) {
+  // Current reporting limit for Destination Throttle
+  int max_per_reporting_source_site = 50;
+
+  for (int i = 0; i < max_per_reporting_source_site; i++) {
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build());
+  }
+  EXPECT_THAT(storage()->GetActiveSources(),
+              SizeIs(max_per_reporting_source_site));
+
+  // Should fail due to limit
+  StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_THAT(result.status,
+              StorableSource::Result::kDestinationReportingLimitReached);
+}
+
+TEST_F(AttributionStorageTest,
+       HandleSource_DestinationThrottleGlobalLimitReached) {
+  // Current global limit for Destination Throttle
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i++) {
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                "https://r" + base::NumberToString(i) + ".test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build());
+  }
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_THAT(result.status,
+              StorableSource::Result::kDestinationGlobalLimitReached);
+}
+
+TEST_F(AttributionStorageTest,
+       HandleSource_DestinationThrottleBothLimitsReached) {
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i += 4) {
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build());
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 1) + ".test")})
+            .Build());
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 2) + ".test")})
+            .Build());
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r4.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 3) + ".test")})
+            .Build());
+  }
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  StoreSourceResult result = storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+          .Build());
+  EXPECT_THAT(result.status,
+              StorableSource::Result::kDestinationBothLimitsReached);
+}
+
+TEST_F(AttributionStorageTest,
        MultipleImpressionsPerConversion_MostRecentAttributesForSamePriority) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
 
