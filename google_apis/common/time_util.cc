@@ -71,27 +71,24 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       time = time_and_tz;
       time.remove_suffix(1);
     } else {
+      bool ahead = true;
       parts = base::SplitStringPiece(time_and_tz, "+", base::KEEP_WHITESPACE,
                                      base::SPLIT_WANT_NONEMPTY);
+      if (parts.size() != 2) {
+        ahead = false;
+        parts = base::SplitStringPiece(time_and_tz, "-", base::KEEP_WHITESPACE,
+                                       base::SPLIT_WANT_NONEMPTY);
+      }
       if (parts.size() == 2) {
-        // Timezone is "+hh:mm" format
-        if (!ParseTimezone(parts[1], true, &offset_to_utc_in_minutes))
+        // Timezone is "+/-hh:mm"
+        if (!ParseTimezone(parts[1], ahead, &offset_to_utc_in_minutes)) {
           return false;
+        }
         has_timezone = true;
         time = parts[0];
       } else {
-        parts = base::SplitStringPiece(time_and_tz, "-", base::KEEP_WHITESPACE,
-                                       base::SPLIT_WANT_NONEMPTY);
-        if (parts.size() == 2) {
-          // Timezone is "-hh:mm" format
-          if (!ParseTimezone(parts[1], false, &offset_to_utc_in_minutes))
-            return false;
-          has_timezone = true;
-          time = parts[0];
-        } else {
-          // No timezone (uses local timezone)
-          time = time_and_tz;
-        }
+        // No timezone (uses local timezone)
+        time = time_and_tz;
       }
     }
   }
