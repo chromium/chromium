@@ -93,7 +93,14 @@ class SafetyHubService : public KeyedService,
   bool IsUpdateRunning();
 
   // Returns the latest result that is available in memory.
-  absl::optional<SafetyHubService::Result*> GetCachedResult();
+  template <typename T,
+            typename = std::enable_if_t<std::is_base_of_v<Result, T>>>
+  absl::optional<std::unique_ptr<T>> GetCachedResult() {
+    if (latest_result_ != nullptr) {
+      return std::make_unique<T>(*static_cast<T*>(latest_result_.get()));
+    }
+    return absl::nullopt;
+  }
 
   // KeyedService implementation.
   void Shutdown() override;

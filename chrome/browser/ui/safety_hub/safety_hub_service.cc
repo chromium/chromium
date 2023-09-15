@@ -87,10 +87,3 @@ void SafetyHubService::NotifyObservers(Result* result) {
 bool SafetyHubService::IsUpdateRunning() {
   return pending_updates_ > 0;
 }
-
-absl::optional<SafetyHubService::Result*> SafetyHubService::GetCachedResult() {
-  if (latest_result_ != nullptr) {
-    return latest_result_.get();
-  }
-  return absl::nullopt;
-}

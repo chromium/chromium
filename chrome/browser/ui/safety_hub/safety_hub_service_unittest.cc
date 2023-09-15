@@ -204,17 +204,17 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
 TEST_F(SafetyHubServiceTest, GetCachedResult) {
   // The mock service does not initialize the latest result on construction, so
   // the cached result should be null.
-  absl::optional<SafetyHubService::Result*> opt_result1 =
-      service()->GetCachedResult();
+  absl::optional<std::unique_ptr<MockSafetyHubResult>> opt_result1 =
+      service()->GetCachedResult<MockSafetyHubResult>();
   EXPECT_FALSE(opt_result1.has_value());
 
   // We have to call InitializeLatestResult here as the service is not created
   // using a factory (which usually calls it).
   service()->InitializeLatestResult();
-  absl::optional<SafetyHubService::Result*> opt_result2 =
-      service()->GetCachedResult();
+  absl::optional<std::unique_ptr<MockSafetyHubResult>> opt_result2 =
+      service()->GetCachedResult<MockSafetyHubResult>();
   EXPECT_TRUE(opt_result2.has_value());
-  auto* result = static_cast<MockSafetyHubResult*>(opt_result2.value());
+  std::unique_ptr<MockSafetyHubResult> result = std::move(opt_result2.value());
   EXPECT_EQ(result->GetVal(), 42);
 }
 

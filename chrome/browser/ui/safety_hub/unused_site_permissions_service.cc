@@ -114,6 +114,9 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
     ~UnusedSitePermissionsResult() = default;
 
 UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    UnusedSitePermissionsResult(const UnusedSitePermissionsResult&) = default;
+
+UnusedSitePermissionsService::UnusedSitePermissionsResult::
     UnusedSitePermissionsResult(const base::Value::Dict& dict)
     : SafetyHubService::Result(dict) {
   content_settings::WebsiteSettingsRegistry* registry =

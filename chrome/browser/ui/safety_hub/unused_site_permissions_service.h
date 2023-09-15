@@ -75,7 +75,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
     explicit UnusedSitePermissionsResult(const base::Value::Dict& dict);
 
-    UnusedSitePermissionsResult(const UnusedSitePermissionsResult&) = delete;
+    UnusedSitePermissionsResult(const UnusedSitePermissionsResult&);
     UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
         delete;
 

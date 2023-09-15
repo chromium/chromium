@@ -659,14 +659,12 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
   auto new_service = std::make_unique<UnusedSitePermissionsService>(hcsm());
-  absl::optional<SafetyHubService::Result*> opt_result =
-      new_service->GetCachedResult();
-  EXPECT_TRUE(opt_result.has_value());
-
-  UnusedSitePermissionsService::UnusedSitePermissionsResult* result =
-      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
-          opt_result.value());
-  EXPECT_EQ(2U, result->GetRevokedPermissions().size());
+  absl::optional<std::unique_ptr<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>>
+      result = new_service->GetCachedResult<
+          UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(2U, result.value()->GetRevokedPermissions().size());
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
