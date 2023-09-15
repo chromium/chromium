@@ -8045,9 +8045,6 @@ grit("resources") {
   if (is_android) {
     deps += [ "//chrome/browser/resources/offline_pages:build_ts" ]
   }
-  if (!is_android) {
-    deps += [ "//chrome/browser/resources/media_router/internals:build_ts" ]
-  }
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom_js__generator",

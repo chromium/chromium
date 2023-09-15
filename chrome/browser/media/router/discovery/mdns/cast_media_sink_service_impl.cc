@@ -419,7 +419,7 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
   LoggerList::GetInstance()->Log(
       LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
       kLoggerComponent,
-      base::StringPrintf("Network ID chagned from \"%s\" to \"%s\".",
+      base::StringPrintf("Network ID changed from \"%s\" to \"%s\".",
                          last_network_id.c_str(), current_network_id_.c_str()),
       "", "", "");
 

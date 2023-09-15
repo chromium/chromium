@@ -261,6 +261,10 @@ group("dev_ui_resources") {
   if (is_android || is_linux || is_chromeos || is_win) {
     public_deps += [ "//chrome/browser/resources/sandbox_internals:resources" ]
   }
+
+  if (!is_android) {
+    public_deps += [ "media_router/internals:resources" ]
+  }
 }
 
 repack("dev_ui_paks") {
@@ -311,6 +315,10 @@ repack("dev_ui_paks") {
 
   if (is_android || is_linux || is_chromeos || is_win) {
     sources += [ "$root_gen_dir/chrome/sandbox_internals_resources.pak" ]
+  }
+
+  if (!is_android) {
+    sources += [ "$root_gen_dir/chrome/media_router_internals_resources.pak" ]
   }
 
   deps = [ ":dev_ui_resources" ]

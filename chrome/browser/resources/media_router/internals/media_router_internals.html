@@ -8,20 +8,37 @@
   <script type="module" src="media_router_internals.js"></script>
 </head>
 
-<!-- TODO(b/272093671): Make headers collapsible. -->
 <body>
-  <h1>Media Router</h1>
-  <div id="sink-status-div" class="status"></div>
-
-  <h1>Cast Media Route Provider</h1>
-  <div id="cast-status-div" class="status"></div>
-
-  <h1>Mirroring Stats</h1>
-  <div id="mirroring-stats-div" class="status"></div>
-
-  <h1>Logs</h1>
-  <div id="logs-div" class="status"></div>
-
+  <h1>Media Router Internals</h1>
+  <cr-tab-box>
+    <div slot="tab">Sink status</div>
+    <div slot="tab">Cast media route provider</div>
+    <div slot="tab">Mirroring stats</div>
+    <div slot="tab">Logs</div>
+    <div id="sink-status-slot" slot="panel">
+      <div id="sink-status-div" class="status"></div>
+    </div>
+    <div id="cast-media-route-provider-slot" slot="panel">
+      <div id="cast-status-div" class="status"></div>
+    </div>
+    <div id="mirroring-stats-slot" slot="panel">
+      <div id="mirroring-stats-div" class="status"></div>
+    </div>
+    <div id="logs-slot" slot="panel">
+      <table id="logs-table">
+        <tr>
+          <th>Time</th>
+          <th class="log-message">Message</th>
+          <th>SessionID</th>
+          <th>SinkID</th>
+          <th>MediaSource</th>
+          <th>Category</th>
+          <th>Component</th>
+          <th>Severity</th>
+        </tr>
+      </table>
+    </div>
+  </cr-tab-box>
 </body>
 
 </html>
