@@ -2250,13 +2250,15 @@ void InterestGroupAuction::StartFromServerResponse(
         {"runAdAuction(): Could not parse response framing"});
     return;
   }
-  auto decoder = std::make_unique<data_decoder::DataDecoder>();
-  data_decoder::DataDecoder* tmp_decoder = decoder.get();
-  tmp_decoder->GzipUncompress(
+  request_context->decoder->GzipUncompress(
       std::move(compressed_response).value(),
-      base::BindOnce(&InterestGroupAuction::OnDecompressedServerResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(decoder),
-                     request_context));
+      base::BindOnce(
+          &InterestGroupAuction::OnDecompressedServerResponse,
+          // This use of unretained is safe since the request_context is owned
+          // by a PageUserData and is only deleted when the page is destroyed.
+          // This auction is owned by the page through a DocumentService, so it
+          // will be destroyed before the decoder.
+          weak_ptr_factory_.GetWeakPtr(), base::Unretained(request_context)));
 }
 
 std::unique_ptr<InterestGroupAuctionReporter>
@@ -4249,7 +4251,6 @@ AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
 }
 
 void InterestGroupAuction::OnDecompressedServerResponse(
-    std::unique_ptr<data_decoder::DataDecoder> decoder,
     AdAuctionRequestContext* request_context,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
@@ -4260,11 +4261,16 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     return;
   }
   base::span<const uint8_t> result_span = result.value().byte_span();
-  data_decoder::DataDecoder* tmp_decoder = decoder.get();
-  tmp_decoder->ParseCbor(
-      result_span, base::BindOnce(&InterestGroupAuction::OnParsedServerResponse,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(decoder), request_context));
+  request_context->decoder->ParseCbor(
+      result_span,
+      base::BindOnce(
+          &InterestGroupAuction::OnParsedServerResponse,
+          weak_ptr_factory_.GetWeakPtr(),
+          // This use of unretained is safe since the request_context is owned
+          // by a PageUserData and is only deleted when the page is destroyed.
+          // This auction is owned by the page through a DocumentService, so it
+          // will be destroyed before the decoder.
+          base::Unretained(request_context)));
 
   // `result` falls out of scope, deallocating the buffer with the decompressed
   // response. This is okay because `DataDecoder::ParseCbor` made a copy before
@@ -4272,7 +4278,6 @@ void InterestGroupAuction::OnDecompressedServerResponse(
 }
 
 void InterestGroupAuction::OnParsedServerResponse(
-    std::unique_ptr<data_decoder::DataDecoder> decoder,
     AdAuctionRequestContext* request_context,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {

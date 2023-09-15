@@ -1081,14 +1081,11 @@ class CONTENT_EXPORT InterestGroupAuction
   }
 
   void OnDecompressedServerResponse(
-      std::unique_ptr<data_decoder::DataDecoder> decoder,
       AdAuctionRequestContext* request_context,
       base::expected<mojo_base::BigBuffer, std::string> result);
 
-  void OnParsedServerResponse(
-      std::unique_ptr<data_decoder::DataDecoder> decoder,
-      AdAuctionRequestContext* request_context,
-      data_decoder::DataDecoder::ValueOrError result);
+  void OnParsedServerResponse(AdAuctionRequestContext* request_context,
+                              data_decoder::DataDecoder::ValueOrError result);
 
   void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
                             absl::optional<StorageInterestGroup> maybe_group);

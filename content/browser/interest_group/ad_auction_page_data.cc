@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace content {
 
@@ -117,7 +118,10 @@ AdAuctionRequestContext::AdAuctionRequestContext(
     : seller(std::move(seller)),
       group_names(std::move(group_names)),
       context(std::move(context)),
-      start_time(start_time) {}
+      start_time(start_time),
+      decoder(std::make_unique<data_decoder::DataDecoder>()) {
+  decoder->GetService();  // pre-warm decoder.
+}
 AdAuctionRequestContext::AdAuctionRequestContext(
     AdAuctionRequestContext&& other) = default;
 AdAuctionRequestContext::~AdAuctionRequestContext() = default;
