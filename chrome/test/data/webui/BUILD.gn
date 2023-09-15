@@ -435,7 +435,6 @@ ts_library("build_ts") {
     # from tsconfig_base.json.
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
-    "identity_internals/identity_internals_test.js",
     "sandbox/gpu_test.js",
     "sandbox/sandbox_test.js",
     "sync_internals/sync_internals_test.js",
@@ -496,6 +495,7 @@ generate_grd("build_grd") {
     "histograms:build_grdp",
     "history:build_grdp",
     "history_clusters_internals:build_grdp",
+    "identity_internals:build_grdp",
     "js:build_grdp",
     "location_internals:build_grdp",
     "media:build_grdp",
@@ -530,6 +530,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/histograms/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/history_clusters_internals/resources.grdp",
+    "$target_gen_dir/identity_internals/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/location_internals/resources.grdp",
     "$target_gen_dir/media_internals/resources.grdp",
