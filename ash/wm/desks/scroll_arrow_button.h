@@ -6,9 +6,9 @@
 #define ASH_WM_DESKS_SCROLL_ARROW_BUTTON_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/desks/desk_mini_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -21,6 +21,8 @@ class DeskBarViewBase;
 // customize the icon's layout.
 class ASH_EXPORT ScrollArrowButton : public views::Button {
  public:
+  METADATA_HEADER(ScrollArrowButton);
+
   ScrollArrowButton(base::RepeatingClosure on_scroll,
                     bool is_left_arrow,
                     DeskBarViewBase* bar_view);
@@ -31,7 +33,6 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
-  const char* GetClassName() const override;
 
   // Called when a desk is being dragged and hovering on the button.
   void OnDeskHoverStart();

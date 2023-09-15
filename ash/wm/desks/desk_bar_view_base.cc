@@ -533,11 +533,11 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
   SetupBackgroundView(this);
 
   // Use layer scrolling so that the contents will paint on top of the parent,
-  // which uses SetPaintToLayer()
+  // which uses `SetPaintToLayer()`.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
-  scroll_view_->SetPaintToLayer();
-  scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  scroll_view_->layer()->SetMasksToBounds(true);
   scroll_view_->SetBackgroundColor(absl::nullopt);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetHorizontalScrollBarMode(
@@ -555,10 +555,11 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
       /*is_left_arrow=*/false, this));
   right_scroll_button_->RemoveFromFocusList();
 
-  // Make the scroll content view animatable by painting to a layer.
+  // Since we created a `ScrollView` with scrolling with layers enabled, it will
+  // automatically create a layer for our contents.
   scroll_view_contents_ =
       scroll_view_->SetContents(std::make_unique<views::View>());
-  scroll_view_contents_->SetPaintToLayer();
+  CHECK(scroll_view_contents_->layer());
 
   if (is_jellyroll_enabled) {
     default_desk_button_ = scroll_view_contents_->AddChildView(
@@ -660,6 +661,8 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
 }
 
 DeskBarViewBase::~DeskBarViewBase() {
+  TRACE_EVENT0("ui", "DeskBarViewBase::~DeskBarViewBase");
+
   DesksController::Get()->RemoveObserver(this);
   if (drag_view_) {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
@@ -744,6 +747,9 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
       params.bounds = bounds;
       params.name = type == Type::kOverview ? "OverviewDeskBarWidget"
                                             : "DeskButtonDeskBarWidget";
+      // The contents of this widget will have a textured layer, so we can mark
+      // the widget's layer as not drawn.
+      params.layer_type = ui::LAYER_NOT_DRAWN;
 
       // Even though this widget exists on the active desk container, it should
       // not show up in the MRU list, and it should not be mirrored in the desks
@@ -846,8 +852,6 @@ void DeskBarViewBase::Layout() {
     scroll_view_contents_->Layout();
   }
 
-  // Clip the contents that are outside of the `scroll_view_`'s bounds.
-  scroll_view_->layer()->SetMasksToBounds(true);
   scroll_view_->Layout();
 
   UpdateScrollButtonsVisibility();

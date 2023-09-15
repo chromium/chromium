@@ -9,10 +9,8 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "base/functional/bind.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 base::TimeDelta kScrollTimeInterval = base::Seconds(1);
@@ -29,9 +27,6 @@ ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                               base::Unretained(this)))),
       is_left_arrow_(is_left_arrow),
       bar_view_(bar_view) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
   SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
 }
 
@@ -55,10 +50,6 @@ void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
 void ScrollArrowButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   SchedulePaint();
-}
-
-const char* ScrollArrowButton::GetClassName() const {
-  return "ScrollArrowButton";
 }
 
 void ScrollArrowButton::OnDeskHoverStart() {
@@ -87,5 +78,8 @@ void ScrollArrowButton::OnStateChanged() {
     timer_.Stop();
   }
 }
+
+BEGIN_METADATA(ScrollArrowButton, views::Button)
+END_METADATA
 
 }  // namespace ash
