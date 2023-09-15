@@ -23,8 +23,8 @@ const char kNullTimeString[] = "null";
 
 bool ParseTimezone(base::StringPiece timezone,
                    bool ahead,
-                   int* out_offset_to_utc_in_minutes) {
-  DCHECK(out_offset_to_utc_in_minutes);
+                   base::TimeDelta* out_offset_to_utc) {
+  DCHECK(out_offset_to_utc);
 
   std::vector<base::StringPiece> parts = base::SplitStringPiece(
       timezone, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -37,7 +37,8 @@ bool ParseTimezone(base::StringPiece timezone,
   if (parts.size() > 1 && !base::StringToInt(parts[1], &minute))
     return false;
 
-  *out_offset_to_utc_in_minutes = (hour * 60 + minute) * (ahead ? +1 : -1);
+  *out_offset_to_utc =
+      (base::Hours(hour) + base::Minutes(minute)) * (ahead ? +1 : -1);
   return true;
 }
 
@@ -49,7 +50,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   base::StringPiece time;
   base::Time::Exploded exploded = {0};
   bool has_timezone = false;
-  int offset_to_utc_in_minutes = 0;
+  base::TimeDelta offset_to_utc;
 
   // Splits the string into "date" part and "time" part.
   {
@@ -67,7 +68,6 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
     if (time_and_tz.back() == 'Z') {
       // Timezone is 'Z' (UTC)
       has_timezone = true;
-      offset_to_utc_in_minutes = 0;
       time = time_and_tz;
       time.remove_suffix(1);
     } else {
@@ -81,7 +81,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       }
       if (parts.size() == 2) {
         // Timezone is "+/-hh:mm"
-        if (!ParseTimezone(parts[1], ahead, &offset_to_utc_in_minutes)) {
+        if (!ParseTimezone(parts[1], ahead, &offset_to_utc)) {
           return false;
         }
         has_timezone = true;
@@ -141,8 +141,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   if (has_timezone) {
     if (!base::Time::FromUTCExploded(exploded, parsed_time))
       return false;
-    if (offset_to_utc_in_minutes != 0)
-      *parsed_time -= base::Minutes(offset_to_utc_in_minutes);
+    *parsed_time -= offset_to_utc;
   } else {
     if (!base::Time::FromLocalExploded(exploded, parsed_time))
       return false;

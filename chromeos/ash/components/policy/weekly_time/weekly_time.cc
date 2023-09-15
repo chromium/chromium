@@ -14,11 +14,7 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kWeek = base::Days(7);
-constexpr base::TimeDelta kDay = base::Days(1);
-constexpr base::TimeDelta kHour = base::Hours(1);
-constexpr base::TimeDelta kMinute = base::Minutes(1);
-constexpr base::TimeDelta kSecond = base::Seconds(1);
+constexpr int64_t kMillisecondsPerWeek = base::Days(7).InMilliseconds();
 
 }  // namespace
 
@@ -40,7 +36,7 @@ WeeklyTime::WeeklyTime(int day_of_week,
   DCHECK_GT(day_of_week, 0);
   DCHECK_LE(day_of_week, 7);
   DCHECK_GE(milliseconds, 0);
-  DCHECK_LT(milliseconds, kDay.InMilliseconds());
+  DCHECK_LT(milliseconds, base::Time::kMillisecondsPerDay);
 }
 
 WeeklyTime::WeeklyTime(const WeeklyTime& rhs) = default;
@@ -63,23 +59,25 @@ base::TimeDelta WeeklyTime::GetDurationTo(const WeeklyTime& other) const {
   WeeklyTime other_converted =
       timezone_offset_ ? other.ConvertToTimezone(timezone_offset_.value())
                        : other;
-  int duration =
-      (other_converted.day_of_week() - day_of_week_) * kDay.InMilliseconds() +
-      other_converted.milliseconds() - milliseconds_;
-  if (duration < 0)
-    duration += kWeek.InMilliseconds();
+  int duration = base::Days(other_converted.day_of_week() - day_of_week_)
+                     .InMilliseconds() +
+                 other_converted.milliseconds() - milliseconds_;
+  if (duration < 0) {
+    duration += kMillisecondsPerWeek;
+  }
   return base::Milliseconds(duration);
 }
 
 WeeklyTime WeeklyTime::AddMilliseconds(int milliseconds) const {
-  milliseconds %= kWeek.InMilliseconds();
+  milliseconds %= kMillisecondsPerWeek;
   // Make |milliseconds| positive number (add number of milliseconds per week)
   // for easier evaluation.
-  milliseconds += kWeek.InMilliseconds();
+  milliseconds += kMillisecondsPerWeek;
   int shifted_milliseconds = milliseconds_ + milliseconds;
   // Get milliseconds from the start of the day.
-  int result_milliseconds = shifted_milliseconds % kDay.InMilliseconds();
-  int day_offset = shifted_milliseconds / kDay.InMilliseconds();
+  int result_milliseconds =
+      shifted_milliseconds % base::Time::kMillisecondsPerDay;
+  int day_offset = shifted_milliseconds / base::Time::kMillisecondsPerDay;
   // Convert day of week considering week is cyclic. +/- 1 is
   // because day of week is from 1 to 7.
   int result_day_of_week = (day_of_week_ + day_offset - 1) % 7 + 1;
@@ -127,10 +125,10 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromProto(
     return nullptr;
   }
   int time_of_day = container.time();
-  if (!(time_of_day >= 0 && time_of_day < kDay.InMilliseconds())) {
+  if (!(time_of_day >= 0 && time_of_day < base::Time::kMillisecondsPerDay)) {
     LOG(ERROR) << "Invalid time value: " << time_of_day
-               << ", the value should be in [0; " << kDay.InMilliseconds()
-               << ").";
+               << ", the value should be in [0; "
+               << base::Time::kMillisecondsPerDay << ").";
     return nullptr;
   }
   return std::make_unique<WeeklyTime>(container.day_of_week(), time_of_day,
@@ -159,10 +157,10 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
   }
 
   if (!(time_of_day.value() >= 0 &&
-        time_of_day.value() < kDay.InMilliseconds())) {
+        time_of_day.value() < base::Time::kMillisecondsPerDay)) {
     LOG(ERROR) << "Invalid time value: " << time_of_day.value()
-               << ", the value should be in [0; " << kDay.InMilliseconds()
-               << ").";
+               << ", the value should be in [0; "
+               << base::Time::kMillisecondsPerDay << ").";
     return nullptr;
   }
   return std::make_unique<WeeklyTime>(day_of_week_value, time_of_day.value(),
@@ -173,10 +171,10 @@ WeeklyTime GetWeeklyTimeFromExploded(
     const base::Time::Exploded& exploded,
     const absl::optional<int> timezone_offset) {
   int day_of_week = exploded.day_of_week == 0 ? 7 : exploded.day_of_week;
-  int milliseconds = exploded.hour * kHour.InMilliseconds() +
-                     exploded.minute * kMinute.InMilliseconds() +
-                     exploded.second * kSecond.InMilliseconds() +
-                     exploded.millisecond;
+  int milliseconds = static_cast<int>(
+      base::Hours(exploded.hour).InMilliseconds() +
+      base::Minutes(exploded.minute).InMilliseconds() +
+      base::Seconds(exploded.second).InMilliseconds() + exploded.millisecond);
   return WeeklyTime(day_of_week, milliseconds, timezone_offset);
 }
 
