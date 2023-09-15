@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/error.h"
 #include "services/webnn/webnn_context_impl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -70,8 +71,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   scoped_refptr<dml::Adapter> adapter =
       dml::Adapter::GetInstance(kMinDMLFeatureLevelForWebNN);
   if (!adapter) {
-    std::move(callback).Run(mojom::CreateContextResult::kNotSupported,
-                            mojo::NullRemote());
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "Failed to acquire DirectML adapter."));
     return;
   }
   // The remote sent to the renderer.
@@ -80,13 +82,14 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
       std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(),
       this)));
-  std::move(callback).Run(mojom::CreateContextResult::kOk,
-                          std::move(blink_remote));
+  std::move(callback).Run(
+      mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #else
   // TODO(crbug.com/1273291): Supporting WebNN Service on the platform.
-  std::move(callback).Run(mojom::CreateContextResult::kNotSupported,
-                          mojo::NullRemote());
-  DLOG(ERROR) << "Platform not supported for WebNN Service.";
+  std::move(callback).Run(ToError<mojom::CreateContextResult>(
+      mojom::Error::Code::kNotSupportedError,
+      "WebNN Service is not supported on this platform."));
+  DLOG(ERROR) << "WebNN Service is not supported on this platform.";
 #endif
 }
 

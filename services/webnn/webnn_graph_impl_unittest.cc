@@ -37,7 +37,8 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
         std::make_unique<FakeWebNNGraphImpl>(
             std::make_unique<ComputeResourceInfo>(graph_info)),
         blink_remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(blink_remote));
+    std::move(callback).Run(
+        mojom::CreateGraphResult::NewGraphRemote(std::move(blink_remote)));
   }
 
  private:
@@ -81,8 +82,8 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     // The receiver bound to FakeWebNNContext.
     context_impls.push_back(std::make_unique<FakeWebNNContextImpl>(
         blink_remote.InitWithNewPipeAndPassReceiver(), context_provider_impl));
-    std::move(callback).Run(mojom::CreateContextResult::kOk,
-                            std::move(blink_remote));
+    std::move(callback).Run(
+        mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
   }
 };
 
@@ -99,14 +100,12 @@ bool ValidateInputsForComputing(
   auto options = mojom::CreateContextOptions::New();
   provider_remote->CreateWebNNContext(
       std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResult result,
-              mojo::PendingRemote<mojom::WebNNContext> remote) {
-            EXPECT_EQ(result, mojom::CreateContextResult::kOk);
-            webnn_context.Bind(std::move(remote));
-            is_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::CreateContextResultPtr result) {
+        ASSERT_TRUE(result->is_context_remote());
+        webnn_context.Bind(std::move(result->get_context_remote()));
+        is_callback_called = true;
+        run_loop_create_context.Quit();
+      }));
   run_loop_create_context.Run();
   EXPECT_TRUE(is_callback_called);
 
@@ -118,8 +117,9 @@ bool ValidateInputsForComputing(
   webnn_context->CreateGraph(
       std::move(graph_info),
       base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {
-            webnn_graph.Bind(std::move(remote));
+          [&](mojom::CreateGraphResultPtr create_graph_result) {
+            webnn_graph.Bind(
+                std::move(create_graph_result->get_graph_remote()));
             is_callback_called = true;
             run_loop_create_graph.Quit();
           }));

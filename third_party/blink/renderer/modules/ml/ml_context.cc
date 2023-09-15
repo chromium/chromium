@@ -12,6 +12,20 @@
 
 namespace blink {
 
+namespace {
+
+namespace blink_mojom = webnn::mojom::blink;
+
+template <typename MojoResultType>
+mojo::StructPtr<MojoResultType> ToError(
+    const blink_mojom::Error::Code& error_code,
+    const WTF::String& error_message) {
+  return MojoResultType::NewError(
+      blink_mojom::Error::New(error_code, error_message));
+}
+
+}  // namespace
+
 MLContext::MLContext(const V8MLDevicePreference device_preference,
                      const V8MLPowerPreference power_preference,
                      const V8MLModelFormat model_format,
@@ -112,12 +126,13 @@ void MLContext::computeSync(MLGraph* graph,
   graph->ComputeSync(inputs, outputs, exception_state);
 }
 
-void MLContext::CreateWebNNGraph(ScriptState* script_state,
-                                 webnn::mojom::blink::GraphInfoPtr graph_info,
-                                 CreateWebNNGraphCallback callback) {
+void MLContext::CreateWebNNGraph(
+    ScriptState* script_state,
+    blink_mojom::GraphInfoPtr graph_info,
+    blink_mojom::WebNNContext::CreateGraphCallback callback) {
   if (!webnn_context_.is_bound()) {
     // Needs to create `WebNNContext` interface first.
-    auto options = webnn::mojom::blink::CreateContextOptions::New();
+    auto options = blink_mojom::CreateContextOptions::New();
     // TODO(crbug.com/1273291): Set power preference in the context option.
     ml_->CreateWebNNContext(
         std::move(options),
@@ -126,47 +141,35 @@ void MLContext::CreateWebNNGraph(ScriptState* script_state,
                       std::move(callback)));
   } else {
     // Directly use `WebNNContext` to create `WebNNGraph` message pipe.
-    webnn_context_->CreateGraph(
-        std::move(graph_info),
-        WTF::BindOnce(std::move(callback), CreateWebNNGraphResult::kOk));
+    webnn_context_->CreateGraph(std::move(graph_info),
+                                WTF::BindOnce(std::move(callback)));
   }
 }
 
 void MLContext::OnCreateWebNNContext(
     ScriptState* script_state,
-    webnn::mojom::blink::GraphInfoPtr graph_info,
-    CreateWebNNGraphCallback callback,
-    webnn::mojom::blink::CreateContextResult result,
-    mojo::PendingRemote<webnn::mojom::blink::WebNNContext>
-        pending_remote_context) {
+    blink_mojom::GraphInfoPtr graph_info,
+    blink_mojom::WebNNContext::CreateGraphCallback callback,
+    blink_mojom::CreateContextResultPtr result) {
   if (!script_state->ContextIsValid()) {
-    std::move(callback).Run(CreateWebNNGraphResult::kUnknownError,
-                            mojo::NullRemote());
+    std::move(callback).Run(ToError<blink_mojom::CreateGraphResult>(
+        blink_mojom::Error::Code::kUnknownError, "Invalid script state."));
     return;
   }
-  switch (result) {
-    case webnn::mojom::blink::CreateContextResult::kUnknownError: {
-      std::move(callback).Run(CreateWebNNGraphResult::kUnknownError,
-                              mojo::NullRemote());
-      return;
-    }
-    case webnn::mojom::blink::CreateContextResult::kNotSupported: {
-      std::move(callback).Run(CreateWebNNGraphResult::kNotSupported,
-                              mojo::NullRemote());
-      return;
-    }
-    case webnn::mojom::blink::CreateContextResult::kOk: {
-      auto* execution_context = ExecutionContext::From(script_state);
-      webnn_context_.Bind(
-          std::move(pending_remote_context),
-          execution_context->GetTaskRunner(TaskType::kInternalDefault));
 
-      webnn_context_->CreateGraph(
-          std::move(graph_info),
-          WTF::BindOnce(std::move(callback), CreateWebNNGraphResult::kOk));
-      return;
-    }
+  if (result->is_error()) {
+    std::move(callback).Run(blink_mojom::CreateGraphResult::NewError(
+        std::move(result->get_error())));
+    return;
   }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  webnn_context_.Bind(
+      std::move(result->get_context_remote()),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+
+  webnn_context_->CreateGraph(std::move(graph_info),
+                              WTF::BindOnce(std::move(callback)));
 }
 
 }  // namespace blink

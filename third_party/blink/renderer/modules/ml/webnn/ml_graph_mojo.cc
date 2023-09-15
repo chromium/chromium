@@ -18,12 +18,12 @@ namespace blink {
 
 namespace {
 
-using webnn::mojom::blink::OperandPtr;
+namespace blink_mojom = webnn::mojom::blink;
 
-base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
+base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs) {
   // The `GraphInfo` represents an entire information of WebNN graph.
-  auto graph_info = webnn::mojom::blink::GraphInfo::New();
+  auto graph_info = blink_mojom::GraphInfo::New();
   // The id used to identify operand on the server side. Each operation
   // generates an output operand that will be inserted in a hash map with the
   // MLOperand and id, incrementing the id by one.
@@ -31,7 +31,8 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
   for (const auto& [name, operand] : named_outputs) {
     // Create `mojo::Operand` for output operands of graph with the name.
-    auto output_operand = mojo::ConvertTo<OperandPtr>(operand.Get());
+    auto output_operand =
+        mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
     output_operand->name = name;
     operand_id++;
     graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
@@ -55,7 +56,8 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           // Create `mojo::Operand` for the input MLOperand.
           operand_id++;
           graph_info->id_to_operand_map.insert(
-              operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
+              operand_id,
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           //  Build the array of input operands for this graph with the id.
           graph_info->input_operands.push_back(operand_id);
           operand_to_id_map.insert(operand, operand_id);
@@ -65,7 +67,8 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           // Convert `mojo::Operand` for constant operand.
           operand_id++;
           graph_info->id_to_operand_map.insert(
-              operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
+              operand_id,
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           //  Build the map of constant operands for this graph with the id.
           const auto* array_buffer_view = operand->ArrayBufferView();
           CHECK(array_buffer_view);
@@ -95,7 +98,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
       // operators. Create `mojo::Operand` for this operand.
       operand_id++;
       graph_info->id_to_operand_map.insert(
-          operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
+          operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
 
@@ -110,6 +113,19 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   }
 
   return graph_info;
+}
+
+#define DEFINE_WEBNN_ERROR_CODE_MAPPING(error_code) \
+  case blink_mojom::Error::Code::error_code: {      \
+    return DOMExceptionCode::error_code;            \
+  }
+
+DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
+    blink_mojom::Error::Code error_code) {
+  switch (error_code) {
+    DEFINE_WEBNN_ERROR_CODE_MAPPING(kUnknownError)
+    DEFINE_WEBNN_ERROR_CODE_MAPPING(kNotSupportedError)
+  }
 }
 
 }  // namespace
@@ -204,9 +220,9 @@ void MLGraphMojo::OnDidCompute(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,
-    webnn::mojom::blink::ComputeResult mojo_result,
+    blink_mojom::ComputeResult mojo_result,
     const absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs) {
-  if (mojo_result != webnn::mojom::blink::ComputeResult::kOk ||
+  if (mojo_result != blink_mojom::ComputeResult::kOk ||
       !mojo_outputs.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,
@@ -252,34 +268,25 @@ void MLGraphMojo::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                                     "Sync compute not implemented");
 }
 
-void MLGraphMojo::OnCreateWebNNGraph(
-    ScriptPromiseResolver* resolver,
-    MLContext::CreateWebNNGraphResult result,
-    mojo::PendingRemote<webnn::mojom::blink::WebNNGraph> pending_remote) {
-  switch (result) {
-    case MLContext::CreateWebNNGraphResult::kUnknownError: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Internal error."));
-      return;
-    }
-    case MLContext::CreateWebNNGraphResult::kNotSupported: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Input configuration not supported."));
-      return;
-    }
-    case MLContext::CreateWebNNGraphResult::kOk: {
-      auto* script_state = resolver->GetScriptState();
-      auto* execution_context = ExecutionContext::From(script_state);
-      // Bind the end point of `WebNNGraph` mojo interface in the blink side.
-      remote_graph_.Bind(
-          std::move(pending_remote),
-          execution_context->GetTaskRunner(TaskType::kInternalDefault));
-
-      resolver->Resolve(this);
-      return;
-    }
+void MLGraphMojo::OnCreateWebNNGraph(ScriptPromiseResolver* resolver,
+                                     blink_mojom::CreateGraphResultPtr result) {
+  // Handle error message and throw exception.
+  if (result->is_error()) {
+    const auto& create_graph_error = result->get_error();
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->error_code),
+        create_graph_error->error_message));
+    return;
   }
+
+  auto* script_state = resolver->GetScriptState();
+  auto* execution_context = ExecutionContext::From(script_state);
+  // Bind the end point of `WebNNGraph` mojo interface in the blink side.
+  remote_graph_.Bind(
+      std::move(result->get_graph_remote()),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+
+  resolver->Resolve(this);
 }
 
 }  // namespace blink

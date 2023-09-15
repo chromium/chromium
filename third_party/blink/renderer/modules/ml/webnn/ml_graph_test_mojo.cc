@@ -107,7 +107,8 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         std::make_unique<FakeWebNNGraph>(helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
-    std::move(callback).Run(std::move(blink_remote));
+    std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
+        std::move(blink_remote)));
   }
   MLGraphTestMojo& helper_;
 };
@@ -142,8 +143,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         std::make_unique<FakeWebNNContext>(helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
-    std::move(callback).Run(blink_mojom::CreateContextResult::kOk,
-                            std::move(blink_remote));
+    std::move(callback).Run(blink_mojom::CreateContextResult::NewContextRemote(
+        std::move(blink_remote)));
   }
 
   MLGraphTestMojo& helper_;

@@ -22,11 +22,37 @@ struct CreateContextOptions {
   PowerPreference power_preference;
 };
 
-enum CreateContextResult {
-  kOk,
-  kUnknownError,
-  // The input configuration is not supported.
-  kNotSupported,
+// Error message that can be exposed to JS for debugging use. It should be used
+// in a union as a return value that represents expected<result, error>, or
+// used on its own if the operation has no expected return result.
+struct Error {
+  // Error code maps to DOMException code.
+  enum Code {
+    // Internal error from backend.
+    kUnknownError,
+    // The configuration (e.g. platform, parameters, methods, etc.) is not
+    // supported.
+    kNotSupportedError,
+  };
+
+  Code error_code;
+  // Specific error message.
+  string error_message;
+};
+
+// Represents the return value of `WebNNContext::CreateGraph()`. Let it be
+// `graph_remote` if the graph was successfully created and `error` otherwise.
+union CreateGraphResult {
+  pending_remote<WebNNGraph> graph_remote;
+  Error error;
+};
+
+// Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
+// Let it be `context_remote` if WebNNContext was successfully created and
+// `error` otherwise.
+union CreateContextResult {
+  pending_remote<WebNNContext> context_remote;
+  Error error;
 };
 
 // Represents the `MLContext` object in the WebIDL definition that is a global
@@ -37,7 +63,7 @@ interface WebNNContext {
   // executing computational graph, the WebNN graph will be validated and
   // compiled. Initializes the compiled graph for optimal performance of the
   // subsequent graph executions if the initialization is a necessary step.
-  CreateGraph(GraphInfo graph_info) => (pending_remote<WebNNGraph>? remote);
+  CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
 };
 
 // This interface runs in the GPU process and is called from the renderer
@@ -46,8 +72,8 @@ interface WebNNContext {
 // from the GpuService via the GpuClient.
 interface WebNNContextProvider {
   // Called by the renderer process to create a message pipe for `MLContext`,
-  // the `CreateContextResult::kNotSupported` with `mojo::NullRemote` will be
-  // thrown if the configuration of options isn't supported.
+  // the `CreateContextResult` will be `Error` with error messages if the
+  // configuration of options isn't supported.
   CreateWebNNContext(CreateContextOptions options)
-      => (CreateContextResult result, pending_remote<WebNNContext>? remote);
+      => (CreateContextResult result);
 };

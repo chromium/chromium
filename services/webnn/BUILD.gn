@@ -6,6 +6,7 @@ import("//mojo/public/tools/fuzzers/mojolpm.gni")
 
 source_set("webnn") {
   sources = [
+    "error.h",
     "webnn_context_impl.cc",
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",

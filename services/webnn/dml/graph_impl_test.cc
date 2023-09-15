@@ -50,8 +50,8 @@ bool WebNNGraphDMLImplTest::CreateAndBuildGraph(
   GraphImpl::CreateAndBuild(
       adapter_->command_queue(), adapter_->dml_device(), graph_info,
       base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {
-            result = remote.is_valid();
+          [&](mojom::CreateGraphResultPtr create_graph_result) {
+            result = create_graph_result->is_graph_remote();
             build_graph_run_loop.Quit();
           }));
   build_graph_run_loop.Run();
@@ -354,8 +354,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorAveragePool2d) {
 // Test building a DML graph with single operator max pool2d with nchw layout.
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMaxPool2d) {
   // DML_MAX_POOLING2_OPERATOR_DESC was introduced in DML_FEATURE_LEVEL_2_1.
-  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
-               DML_FEATURE_LEVEL_2_1);
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_2_1));
   {
     // Test max pool2d with nchw layout, strides=2, padding=1, and floor
     // rounding.
@@ -632,8 +631,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleOperatorGemm) {
 TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
   // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
   // DML_FEATURE_LEVEL_4_0.
-  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
-               DML_FEATURE_LEVEL_4_0);
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
   GraphInfoBuilder builder;
@@ -663,8 +661,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
 TEST_F(WebNNGraphDMLImplTest, BuildMultipleInputsAppendingConstants) {
   // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
   // DML_FEATURE_LEVEL_4_0.
-  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
-               DML_FEATURE_LEVEL_4_0);
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -714,8 +711,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleInputsAppendingConstants) {
 TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
   // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
   // DML_FEATURE_LEVEL_4_0.
-  SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
-               DML_FEATURE_LEVEL_4_0);
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =

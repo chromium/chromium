@@ -64,11 +64,10 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
                        ExceptionState& exception_state) override;
 
   // The callback of creating `WebNNGraph` mojo interface from WebNN Service.
-  // Return `CreatGraphResult::kNotSupported` with `mojo::NullRemote` on
-  // non-supported input configuration.
+  // The returned `CreateGraphResultPtr` contains a `pending_remote<WebNNGraph>`
+  // if the graph was successfully created and an `Error` otherwise.
   void OnCreateWebNNGraph(ScriptPromiseResolver* resolver,
-                          MLContext::CreateWebNNGraphResult result,
-                          mojo::PendingRemote<webnn::mojom::blink::WebNNGraph>);
+                          webnn::mojom::blink::CreateGraphResultPtr result);
 
   // The `WebNNGraph` is compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.

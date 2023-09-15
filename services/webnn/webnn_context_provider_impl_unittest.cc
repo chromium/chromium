@@ -48,13 +48,16 @@ TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
   auto options = mojom::CreateContextOptions::New();
   provider_remote->CreateWebNNContext(
       std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResult result,
-              mojo::PendingRemote<mojom::WebNNContext> remote) {
-            EXPECT_EQ(result, mojom::CreateContextResult::kNotSupported);
-            is_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::CreateContextResultPtr result) {
+        ASSERT_TRUE(result->is_error());
+        const auto& create_context_error = result->get_error();
+        EXPECT_EQ(create_context_error->error_code,
+                  mojom::Error::Code::kNotSupportedError);
+        EXPECT_EQ(create_context_error->error_message,
+                  "WebNN Service is not supported on this platform.");
+        is_callback_called = true;
+        run_loop_create_context.Quit();
+      }));
   run_loop_create_context.Run();
   EXPECT_TRUE(is_callback_called);
 }

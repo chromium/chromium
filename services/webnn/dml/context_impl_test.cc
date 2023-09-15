@@ -23,8 +23,7 @@ class WebNNContextDMLImplTest : public TestBase {
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  mojom::CreateContextResult webnn_context_result =
-      mojom::CreateContextResult::kOk;
+  bool is_platform_supported = true;
 
   WebNNContextProviderImpl::Create(
       provider_remote.BindNewPipeAndPassReceiver());
@@ -36,23 +35,24 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   provider_remote->CreateWebNNContext(
       std::move(options),
       base::BindLambdaForTesting(
-          [&](mojom::CreateContextResult result,
-              mojo::PendingRemote<mojom::WebNNContext> remote) {
-            if (result == mojom::CreateContextResult::kOk) {
-              webnn_context_remote.Bind(std::move(remote));
+          [&](mojom::CreateContextResultPtr create_context_result) {
+            if (create_context_result->is_context_remote()) {
+              webnn_context_remote.Bind(
+                  std::move(create_context_result->get_context_remote()));
+            } else {
+              is_platform_supported =
+                  create_context_result->get_error()->error_code !=
+                  mojom::Error::Code::kNotSupportedError;
             }
-            webnn_context_result = result;
             is_callback_called = true;
             run_loop_create_context.Quit();
           }));
   run_loop_create_context.Run();
   EXPECT_TRUE(is_callback_called);
 
-  // Remote is null when result is Unsupported which cannot be bound.
-  SKIP_TEST_IF(webnn_context_result ==
-               mojom::CreateContextResult::kNotSupported);
+  // Remote is null when the platform is not supported which cannot be bound.
+  SKIP_TEST_IF(!is_platform_supported);
 
-  EXPECT_EQ(webnn_context_result, mojom::CreateContextResult::kOk);
   ASSERT_TRUE(webnn_context_remote.is_bound());
 
   // Build a simple graph with relu operator.
@@ -70,8 +70,8 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   webnn_context_remote->CreateGraph(
       builder.CloneGraphInfo(),
       base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {
-            EXPECT_TRUE(remote.is_valid());
+          [&](mojom::CreateGraphResultPtr create_graph_result) {
+            EXPECT_TRUE(create_graph_result->is_graph_remote());
             is_callback_called = true;
             run_loop_create_graph.Quit();
           }));
