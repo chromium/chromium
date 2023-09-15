@@ -235,6 +235,12 @@ bool AllowProcessLockMismatchForNTP(const ProcessLock& expected_lock,
       expected_lock.lock_url(), actual_lock.site_url());
 }
 
+base::WeakPtr<ResourceContext> GetResourceContext(
+    BrowserContext* browser_context) {
+  ResourceContext* resource_context = browser_context->GetResourceContext();
+  return resource_context ? resource_context->GetWeakPtr() : nullptr;
+}
+
 }  // namespace
 
 ChildProcessSecurityPolicyImpl::Handle::Handle()
@@ -346,7 +352,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
         can_send_midi_(false),
         can_send_midi_sysex_(false),
         browser_context_(browser_context),
-        resource_context_(browser_context->GetResourceContext()) {
+        resource_context_(GetResourceContext(browser_context)) {
     if (!base::FeatureList::IsEnabled(
             permissions::features::kBlockMidiByDefault)) {
       can_send_midi_ = true;
@@ -634,7 +640,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
       return BrowserOrResourceContext(browser_context_);
 
     if (BrowserThread::CurrentlyOn(BrowserThread::IO) && resource_context_)
-      return BrowserOrResourceContext(resource_context_);
+      return BrowserOrResourceContext(resource_context_.get());
 
     return BrowserOrResourceContext();
   }
@@ -719,7 +725,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   FileSystemMap filesystem_permissions_;
 
   raw_ptr<BrowserContext> browser_context_;
-  raw_ptr<ResourceContext, AcrossTasksDanglingUntriaged> resource_context_;
+  base::WeakPtr<ResourceContext> resource_context_;
 };
 
 // IsolatedOriginEntry implementation.
