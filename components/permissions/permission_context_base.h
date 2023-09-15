@@ -38,6 +38,10 @@ namespace permissions {
 
 class Observer : public base::CheckedObserver {
  public:
+  // Called whenever there is a potential permission status change for the
+  // specified patterns. This function being called does not necessarily mean
+  // that the result of |GetPermissionStatus| has changed for any particular
+  // origin.
   virtual void OnPermissionChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
@@ -109,6 +113,8 @@ class PermissionContextBase : public content_settings::Observer {
   // Update |result| with any modifications based on the device state. For
   // example, if |result| is ALLOW but Chrome does not have the relevant
   // permission at the device level, but will prompt the user, return ASK.
+  // This function updates the cached device permission status which can result
+  // in the permission status changing and observers being notified.
   virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::PermissionResult result,
       const GURL& requesting_origin,
@@ -218,6 +224,10 @@ class PermissionContextBase : public content_settings::Observer {
                          bool is_one_time,
                          bool is_final_decision);
 
+  void NotifyObservers(const ContentSettingsPattern& primary_pattern,
+                       const ContentSettingsPattern& secondary_pattern,
+                       ContentSettingsTypeSet content_type_set) const;
+
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
   const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
@@ -225,6 +235,9 @@ class PermissionContextBase : public content_settings::Observer {
       std::string,
       std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>
       pending_requests_;
+
+  mutable absl::optional<bool> last_has_device_permission_result_ =
+      absl::nullopt;
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
