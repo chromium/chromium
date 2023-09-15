@@ -5,14 +5,21 @@
 #include "components/webapps/browser/installable/installable_icon_fetcher.h"
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -77,13 +84,37 @@ int GetMinimumFaviconForPrimaryIconSizeInPx() {
     CHECK_IS_TEST();
     return test::g_minimum_favicon_size_for_testing;
   } else {
-#if BUILDFLAG(IS_ANDROID)
-    return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
-#else
+#if !BUILDFLAG(IS_ANDROID)
     NOTREACHED();
-    return InstallableEvaluator::GetMinimumIconSizeInPx();
 #endif
+    return features::kMinimumFaviconSize.Get();
   }
+}
+
+void ProcessFaviconInBackground(
+    const favicon_base::FaviconRawBitmapResult& bitmap_result,
+    scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
+    base::OnceCallback<void(const SkBitmap&)> success_callback,
+    base::OnceCallback<void(InstallableStatusCode)> failed_callback) {
+  SkBitmap decoded;
+  if (bitmap_result.is_valid()) {
+    base::AssertLongCPUWorkAllowed();
+    gfx::PNGCodec::Decode(bitmap_result.bitmap_data->front(),
+                          bitmap_result.bitmap_data->size(), &decoded);
+  }
+
+  base::UmaHistogramCounts1000("Webapp.Install.FaviconSize", decoded.width());
+
+  int min_size = GetMinimumFaviconForPrimaryIconSizeInPx();
+  if (decoded.width() < min_size || decoded.height() < min_size) {
+    ui_thread_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(failed_callback), NO_ACCEPTABLE_ICON));
+    return;
+  }
+
+  ui_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(success_callback), decoded));
 }
 
 }  // namespace
@@ -169,9 +200,8 @@ void InstallableIconFetcher::FetchFavicon() {
     return;
   }
 
-  favicon_provider->GetLargeIconImageOrFallbackStyleForPageUrl(
+  favicon_provider->GetLargeIconRawBitmapForPageUrl(
       web_contents_->GetLastCommittedURL(),
-      GetMinimumFaviconForPrimaryIconSizeInPx(),
       GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
       base::BindOnce(&InstallableIconFetcher::OnFaviconFetched,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -179,14 +209,23 @@ void InstallableIconFetcher::FetchFavicon() {
 }
 
 void InstallableIconFetcher::OnFaviconFetched(
-    const favicon_base::LargeIconImageResult& image_result) {
-  // TODO(crbug.com/1462726): add histogram to record fetched favicon size.
-  if (!image_result.image.IsEmpty()) {
-    OnIconFetched(image_result.icon_url, IconPurpose::ANY,
-                  *image_result.image.ToSkBitmap());
+    const favicon_base::FaviconRawBitmapResult& bitmap_result) {
+  if (!bitmap_result.is_valid()) {
+    EndWithError(NO_ACCEPTABLE_ICON);
     return;
   }
-  EndWithError(NO_ACCEPTABLE_ICON);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ProcessFaviconInBackground, bitmap_result,
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     base::BindOnce(&InstallableIconFetcher::OnIconFetched,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    bitmap_result.icon_url, IconPurpose::ANY),
+                     base::BindOnce(&InstallableIconFetcher::EndWithError,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void InstallableIconFetcher::OnIconFetched(const GURL& icon_url,

@@ -120,5 +120,8 @@ BASE_FEATURE(kUniversalInstallIcon,
              "UniversalInstallIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+extern const base::FeatureParam<int> kMinimumFaviconSize{&kUniversalInstallIcon,
+                                                         "size", 48};
+
 }  // namespace features
 }  // namespace webapps

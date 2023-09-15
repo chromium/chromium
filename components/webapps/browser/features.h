@@ -56,6 +56,7 @@ BASE_DECLARE_FEATURE(kWebAppsEnableMLModelForPromotion);
 
 BASE_DECLARE_FEATURE(kUniversalInstallManifest);
 BASE_DECLARE_FEATURE(kUniversalInstallIcon);
+extern const base::FeatureParam<int> kMinimumFaviconSize;
 
 }  // namespace features
 }  // namespace webapps

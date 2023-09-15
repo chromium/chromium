@@ -711,6 +711,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Install.FaviconSize" units="pixels"
+    expires_after="2024-06-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When PWA installable check is trying to download the favicon, records the
+    selected favicon size (concretely the width) in pixel.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
     expires_after="2024-02-25">
   <owner>alancutter@chromium.org</owner>
