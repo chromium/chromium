@@ -71,6 +71,10 @@ class PlusAddressService : public KeyedService {
   // further decoupling of PlusAddress generation and autofill.
   std::u16string GetCreateSuggestionLabel();
 
+  // Used for displaying the user's email address in the UI modal.
+  // virtual to allow mocking in tests that don't want to do identity setup.
+  virtual absl::optional<std::string> GetPrimaryEmail();
+
   // Helper to prevent using the service integration to keep tests simpler..
   void set_use_url_based_plus_addresses_for_testing(bool enabled);
 

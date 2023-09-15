@@ -252,4 +252,26 @@ TEST_F(PlusAddressServiceEnabledTest, DefaultLabel) {
   EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
 }
 
+TEST_F(PlusAddressServiceEnabledTest, NoIdentityServiceGetEmail) {
+  PlusAddressService service(nullptr, nullptr, nullptr);
+  EXPECT_EQ(service.GetPrimaryEmail(), absl::nullopt);
+}
+
+TEST_F(PlusAddressServiceEnabledTest, SignedOutGetEmail) {
+  signin::IdentityTestEnvironment identity_test_env;
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
+  EXPECT_EQ(service.GetPrimaryEmail(), absl::nullopt);
+}
+
+TEST_F(PlusAddressServiceEnabledTest, SignedInGetEmail) {
+  const std::string expected_email = "plus@plus.plus";
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable(expected_email,
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
+  EXPECT_EQ(service.GetPrimaryEmail(), expected_email);
+}
+
 }  // namespace plus_addresses

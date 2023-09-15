@@ -149,6 +149,18 @@ std::u16string PlusAddressService::GetCreateSuggestionLabel() {
       plus_addresses::kEnterprisePlusAddressLabelOverride.Get());
 }
 
+absl::optional<std::string> PlusAddressService::GetPrimaryEmail() {
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return absl::nullopt;
+  }
+  // TODO(crbug.com/1467623): This is fine for prototyping, but eventually we
+  // must also take `AccountInfo::CanHaveEmailAddressDisplayed` into account
+  // here and elsewhere in this file.
+  return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      .email;
+}
+
 void PlusAddressService::set_use_url_based_plus_addresses_for_testing(
     bool enabled) {
   use_url_based_plus_address_ = enabled;
