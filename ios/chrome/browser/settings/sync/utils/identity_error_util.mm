@@ -92,6 +92,9 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
+  // TODO(crbug.com/1462552): Remove usage of IsSyncFeatureEnabled() after
+  // kSync users are migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // documentation for details.
   if (sync_service->IsSyncFeatureEnabled()) {
     // Don't indicate account errors when Sync is enabled.
     return nil;

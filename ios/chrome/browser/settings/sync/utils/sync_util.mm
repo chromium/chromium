@@ -48,14 +48,11 @@ enum InfobarSyncError : uint8_t {
 };
 
 // Returns true if the identity error info bar should be used instead of the
-// Sync error info bar. Returns false for the case where
-// SyncService::IsSyncFeatureEnabled() returns true, because
-// GetAccountErrorUIInfo() is guaranteed to return nil.
+// Sync error info bar. Returns false for the case where Sync-the-feature is
+// enabled, because GetAccountErrorUIInfo() is guaranteed to return nil.
 bool UseIdentityErrorInfobar(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
-  // TODO(crbug.com/1426861): Consider changing the way we detect that the Sync
-  // feature is enabled in GetAccountErrorUIInfo().
   return GetAccountErrorUIInfo(sync_service) != nil;
 }
 
@@ -180,7 +177,6 @@ std::u16string GetSyncErrorInfoBarTitleForBrowserState(
   DCHECK(sync_service);
 
   if (UseIdentityErrorInfobar(sync_service)) {
-    DCHECK(!sync_service->IsSyncFeatureEnabled());
     return GetIdentityErrorInfoBarTitle(sync_service->GetUserActionableError());
   } else {
     // There is no title in Sync error info bar.
@@ -197,7 +193,6 @@ NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState) {
       syncService->GetUserActionableError();
 
   if (UseIdentityErrorInfobar(syncService)) {
-    DCHECK(!syncService->IsSyncFeatureEnabled());
     return GetIdentityErrorInfoBarMessage(error);
   }
 
@@ -234,7 +229,6 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
       syncService->GetUserActionableError();
 
   if (UseIdentityErrorInfobar(syncService)) {
-    DCHECK(!syncService->IsSyncFeatureEnabled());
     return GetIdentityErrorInfoBarButtonLabel(error);
   }
 
@@ -306,6 +300,10 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
 
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(browser_state);
+    // TODO(crbug.com/1462552): Simplify this (remove the whole
+    // `if (!UseIdentityErrorInfobar(syncService)) {...}`) after kSync users are
+    // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for
+    // details.
     if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       return false;
     }
