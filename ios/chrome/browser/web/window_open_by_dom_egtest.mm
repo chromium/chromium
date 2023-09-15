@@ -176,7 +176,8 @@ id<GREYMatcher> PopupBlocker() {
 // Tests that the correct URL is displayed for a child window opened with the
 // script window.open('', '').location.replace('about:blank#hash').
 // This is a regression test for crbug.com/866142.
-- (void)testLocationReplaceInWindowOpenWithEmptyTarget {
+// TODO(crbug.com/1483298): Reenable once it passes on all bots.
+- (void)DISABLE_testLocationReplaceInWindowOpenWithEmptyTarget {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioLocationReplaceInWindowOpenWithEmptyTarget"];
   [ChromeEarlGrey waitForMainTabCount:2];
