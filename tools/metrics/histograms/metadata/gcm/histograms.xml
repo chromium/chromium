@@ -49,6 +49,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GCM.ClientStartDelay" units="ms" expires_after="2024-09-14">
+  <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the time for which GCM client start task has been delayed. Recorded
+    whenever GCM client is requested to start.
+  </summary>
+</histogram>
+
 <histogram name="GCM.Crypto.DecryptMessageResult" enum="GCMDecryptionResult"
     expires_after="never">
 <!-- expires-never: Used to monitor push encryption and debug issues. -->
@@ -77,6 +86,16 @@ chromium-metrics-reviews@google.com.
   <owner>pwnall@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>The result of a database open attempt by the GCM store.</summary>
+</histogram>
+
+<histogram name="GCM.DelayedTaskControlledReadyTime" units="ms"
+    expires_after="2024-09-14">
+  <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the time for which tasks in GCM driver were delayed. Recorded once
+    GCM driver is ready (normally this means that GCM client is initialized).
+  </summary>
 </histogram>
 
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"

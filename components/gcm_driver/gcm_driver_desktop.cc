@@ -12,14 +12,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -82,7 +82,8 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
       network::NetworkConnectionTracker* network_connection_tracker,
       const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
   void Start(GCMClient::StartMode start_mode,
-             const base::WeakPtr<GCMDriverDesktop>& service);
+             const base::WeakPtr<GCMDriverDesktop>& service,
+             base::TimeTicks time_task_posted);
   void Stop();
   void Register(const std::string& app_id,
                 const std::vector<std::string>& sender_ids);
@@ -307,8 +308,14 @@ void GCMDriverDesktop::IOWorker::OnStoreReset() {
 
 void GCMDriverDesktop::IOWorker::Start(
     GCMClient::StartMode start_mode,
-    const base::WeakPtr<GCMDriverDesktop>& service) {
+    const base::WeakPtr<GCMDriverDesktop>& service,
+    base::TimeTicks time_task_posted) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
+
+  // Record for how long current task has been delayed. This is important during
+  // the browser startup when some best effort tasks are postponed.
+  base::UmaHistogramMediumTimes("GCM.ClientStartDelay",
+                                base::TimeTicks::Now() - time_task_posted);
 
   service_ = service;
   gcm_client_->Start(start_mode);
@@ -1179,7 +1186,8 @@ GCMClient::Result GCMDriverDesktop::EnsureStarted(
   io_thread_->PostTask(
       FROM_HERE, base::BindOnce(&GCMDriverDesktop::IOWorker::Start,
                                 base::Unretained(io_worker_.get()), start_mode,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr(),
+                                /*time_task_posted=*/base::TimeTicks::Now()));
 
   return GCMClient::SUCCESS;
 }
