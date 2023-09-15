@@ -527,11 +527,6 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
 
   v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
 
-  // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
-  // needed when forward probabilities update is used. With new VP9 API landing
-  // in kernel 5.17, VIDIOC_G_EXT_CTRLS ioctl call is no longer needed, see:
-  // https://lwn.net/Articles/855419/
-
   v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 
   return Vp9Decoder::kOk;
