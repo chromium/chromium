@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
+#import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
 #import "base/run_loop.h"
@@ -21,8 +21,8 @@
 #import "components/session_proto_db/session_proto_db.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/commerce/session_proto_db_factory.h"
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"

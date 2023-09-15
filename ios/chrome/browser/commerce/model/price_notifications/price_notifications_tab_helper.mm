@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
+#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/commerce/price_notifications/price_notifications_iph_presenter.h"
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

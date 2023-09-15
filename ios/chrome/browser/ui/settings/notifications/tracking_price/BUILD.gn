@@ -16,7 +16,7 @@ source_set("tracking_price") {
     "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/push_notification:push_notification_client",

@@ -6,7 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"

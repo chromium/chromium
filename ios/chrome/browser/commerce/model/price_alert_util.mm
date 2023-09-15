@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/model/price_alert_util.h"
 
 #import "base/metrics/field_trial_params.h"
 #import "components/commerce/core/commerce_feature_list.h"

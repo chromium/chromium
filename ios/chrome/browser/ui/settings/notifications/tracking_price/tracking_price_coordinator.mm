@@ -8,7 +8,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/commerce/core/shopping_service.h"
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

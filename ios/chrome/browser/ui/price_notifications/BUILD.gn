@@ -22,7 +22,7 @@ source_set("price_notifications") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/push_notification:push_notification_client",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -48,7 +48,7 @@ source_set("price_notifications_iph") {
   ]
 
   deps = [
-    "//ios/chrome/browser/commerce/price_notifications",
+    "//ios/chrome/browser/commerce/model/price_notifications",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
@@ -108,7 +108,7 @@ source_set("unit_tests") {
     "//components/image_fetcher/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

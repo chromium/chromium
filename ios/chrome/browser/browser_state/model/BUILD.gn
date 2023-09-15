@@ -77,7 +77,7 @@ source_set("model") {
     "//ios/chrome/browser/bring_android_tabs/model",
     "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report/breadcrumbs",

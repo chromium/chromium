@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMMERCE_SESSION_PROTO_DB_FACTORY_H_
-#define IOS_CHROME_BROWSER_COMMERCE_SESSION_PROTO_DB_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_
+#define IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_
 
 #include <memory>
 
@@ -78,8 +78,9 @@ template <typename T>
 SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
     web::BrowserState* state) {
   // Incognito is currently not supported
-  if (state->IsOffTheRecord())
+  if (state->IsOffTheRecord()) {
     return nullptr;
+  }
 
   return static_cast<SessionProtoDB<T>*>(
       GetInstance()->GetServiceForBrowserState(state, true));
@@ -104,4 +105,4 @@ std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
   return session_proto_db::internal::BuildSessionProtoDB<T>(state);
 }
 
-#endif  // IOS_CHROME_BROWSER_COMMERCE_SESSION_PROTO_DB_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_

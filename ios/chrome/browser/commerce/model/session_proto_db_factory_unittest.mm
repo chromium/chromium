@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/session_proto_db_factory.h"
+#import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

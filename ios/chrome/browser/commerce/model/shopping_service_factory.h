@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMMERCE_SHOPPING_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_COMMERCE_SHOPPING_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_SHOPPING_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_COMMERCE_MODEL_SHOPPING_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -38,4 +38,4 @@ class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
 
 }  // namespace commerce
 
-#endif  // IOS_CHROME_BROWSER_COMMERCE_SHOPPING_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_SHOPPING_SERVICE_FACTORY_H_

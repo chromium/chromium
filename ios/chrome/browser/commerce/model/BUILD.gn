@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("commerce") {
+source_set("model") {
   sources = [
     "price_alert_util.h",
     "price_alert_util.mm",
@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "shopping_persisted_data_tab_helper_unittest.mm",
   ]
   deps = [
-    ":commerce",
+    ":model",
     "//base/test:test_support",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
@@ -89,7 +89,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/unified_consent:unified_consent",
-    "//ios/chrome/browser/commerce:session_proto_db",
+    "//ios/chrome/browser/commerce/model:session_proto_db",
     "//ios/chrome/browser/optimization_guide:optimization_guide",
     "//ios/chrome/browser/optimization_guide:unit_tests",
     "//ios/chrome/browser/shared/model/application_context",

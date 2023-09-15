@@ -469,7 +469,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/commerce/push_notification",
+    "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",

@@ -114,7 +114,7 @@ source_set("settings") {
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
-    "//ios/chrome/browser/commerce/push_notification",
+    "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",

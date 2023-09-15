@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/optimization_guide/core/optimization_metadata.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -51,10 +51,11 @@ const char* GetLogIdString(PriceDropLogId& log_id) {
 }
 
 const char* GetTabStatusString(base::Time time_last_accessed) {
-  if (base::Time::Now() - time_last_accessed < kActiveTabThreshold)
+  if (base::Time::Now() - time_last_accessed < kActiveTabThreshold) {
     return kActiveTabMetricsString;
-  else
+  } else {
     return kStaleTabMetricsString;
+  }
 }
 
 }  // namespace
@@ -77,8 +78,9 @@ ShoppingPersistedDataTabHelper::PriceDrop::~PriceDrop() = default;
 
 const ShoppingPersistedDataTabHelper::PriceDrop*
 ShoppingPersistedDataTabHelper::GetPriceDrop() {
-  if (!IsPriceAlertsEligible(web_state_->GetBrowserState()))
+  if (!IsPriceAlertsEligible(web_state_->GetBrowserState())) {
     return nullptr;
+  }
   const GURL& url = web_state_->GetLastCommittedURL().is_valid()
                         ? web_state_->GetLastCommittedURL()
                         : web_state_->GetVisibleURL();
@@ -89,13 +91,15 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
         OptimizationGuideServiceFactory::GetForBrowserState(
             ChromeBrowserState::FromBrowserState(
                 web_state_->GetBrowserState()));
-    if (!optimization_guide_service)
+    if (!optimization_guide_service) {
       return nullptr;
+    }
     optimization_guide::OptimizationMetadata metadata;
     if (optimization_guide_service->CanApplyOptimization(
             url, optimization_guide::proto::PRICE_TRACKING, &metadata) !=
-        optimization_guide::OptimizationGuideDecision::kTrue)
+        optimization_guide::OptimizationGuideDecision::kTrue) {
       return nullptr;
+    }
     ParseProto(url, metadata.ParsedMetadata<commerce::PriceTrackingData>());
   }
   if (price_drop_) {
@@ -130,8 +134,9 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
       OptimizationGuideServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 
-  if (!optimization_guide_service)
+  if (!optimization_guide_service) {
     return;
+  }
 
   optimization_guide_service->RegisterOptimizationTypes(
       {optimization_guide::proto::PRICE_TRACKING});
@@ -168,19 +173,22 @@ std::u16string ShoppingPersistedDataTabHelper::FormatPrice(
 void ShoppingPersistedDataTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!IsPriceAlertsEligible(web_state->GetBrowserState()))
+  if (!IsPriceAlertsEligible(web_state->GetBrowserState())) {
     return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   ResetPriceDrop();
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service)
+  if (!optimization_guide_service) {
     return;
+  }
 
   optimization_guide_service->CanApplyOptimization(
       navigation_context->GetUrl(), optimization_guide::proto::PRICE_TRACKING,
@@ -225,24 +233,28 @@ ShoppingPersistedDataTabHelper::GetCurrencyFormatter(
 void ShoppingPersistedDataTabHelper::ParseProto(
     const GURL& url,
     const absl::optional<commerce::PriceTrackingData>& price_metadata) {
-  if (!price_metadata)
+  if (!price_metadata) {
     return;
+  }
   // TODO(crbug.com/1270473) Change PriceDrop to PriceData.
   price_drop_ = std::make_unique<PriceDrop>();
   if (price_metadata->has_buyable_product() &&
       price_metadata->buyable_product().has_offer_id()) {
     price_drop_->offer_id = price_metadata->buyable_product().offer_id();
   }
-  if (!price_metadata->has_product_update())
+  if (!price_metadata->has_product_update()) {
     return;
+  }
 
   const auto& product_update = price_metadata->product_update();
-  if (!product_update.has_old_price() || !product_update.has_new_price())
+  if (!product_update.has_old_price() || !product_update.has_new_price()) {
     return;
+  }
 
   if (product_update.old_price().currency_code() !=
-      product_update.new_price().currency_code())
+      product_update.new_price().currency_code()) {
     return;
+  }
 
   if (!IsQualifyingPriceDrop(product_update.new_price().amount_micros(),
                              product_update.old_price().amount_micros())) {
@@ -260,8 +272,9 @@ void ShoppingPersistedDataTabHelper::ParseProto(
       currencyFormatter, product_update.old_price().amount_micros()));
   price_drop_->url = url;
   price_drop_->timestamp = base::Time::Now();
-  if (product_update.has_offer_id())
+  if (product_update.has_offer_id()) {
     price_drop_->offer_id = product_update.offer_id();
+  }
 }
 
 void ShoppingPersistedDataTabHelper::ResetPriceDrop() {

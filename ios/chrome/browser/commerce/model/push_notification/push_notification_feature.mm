@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

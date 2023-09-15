@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/session_proto_db_factory.h"
+#import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 
 #import "base/no_destructor.h"
 

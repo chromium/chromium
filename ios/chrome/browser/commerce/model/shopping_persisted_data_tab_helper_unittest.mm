@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 
 #import "base/base64.h"
 #import "base/command_line.h"

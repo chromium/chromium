@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -11,7 +11,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/commerce/session_proto_db_factory.h"
+#import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"

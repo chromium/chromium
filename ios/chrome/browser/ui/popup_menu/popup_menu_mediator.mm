@@ -28,7 +28,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
