@@ -4393,7 +4393,7 @@
 <translation id="4682830185876172415">عمليات التنزيل الأخيرة</translation>
 <translation id="4683629100208651599">تحويل الأحرف إلى أحرف صغيرة</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
-<translation id="4684427112815847243">مزامنة كل شيء</translation>
+<translation id="4684427112815847243">مزامنة جميع البيانات</translation>
 <translation id="4687613760714619596">جهاز غير معروف (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">الإعلانات المقترَحة من المواقع الإلكترونية</translation>
 <translation id="4688036121858134881">رقم تعريف السِجلّ المحلي: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -9386,7 +9386,7 @@
 <translation id="8975396729541388937">يمكنك إلغاء الاشتراك في أي وقت من خلال النقر على الرابط المتوفّر في الرسائل الإلكترونية التي تتلقّاها.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى}two{"<ph name="TAB_TITLE" />" وعلامتا تبويب أخريان}few{"<ph name="TAB_TITLE" />" و# علامات تبويب أخرى}many{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}other{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}}</translation>
 <translation id="8977811652087512276">كلمة مرور غير صالحة أو ملف تالف</translation>
-<translation id="8978154919215542464">تشغيل - مزامنة كل شيء</translation>
+<translation id="8978154919215542464">مزامنة جميع البيانات مفعّلة</translation>
 <translation id="8978670037548431647">إعادة تحميل إمكانيات التوصيل</translation>
 <translation id="897939795688207351">على <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">تقارير التعليقات</translation>
