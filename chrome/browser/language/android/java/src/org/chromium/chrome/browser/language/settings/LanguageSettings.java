@@ -97,7 +97,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         ContentLanguagesPreference mLanguageListPref =
                 (ContentLanguagesPreference) findPreference(PREFERRED_LANGUAGES_KEY);
-        mLanguageListPref.registerActivityLauncher(this);
+        mLanguageListPref.initialize(this, getPrefService());
 
         ChromeSwitchPreference translateSwitch =
                 (ChromeSwitchPreference) findPreference(TRANSLATE_SWITCH_KEY);
@@ -142,7 +142,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         ContentLanguagesPreference mLanguageListPref =
                 (ContentLanguagesPreference) findPreference(CONTENT_LANGUAGES_KEY);
-        mLanguageListPref.registerActivityLauncher(this);
+        mLanguageListPref.initialize(this, getPrefService());
 
         setupTranslateSection(mLanguageListPref);
     }

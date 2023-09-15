@@ -21,14 +21,13 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
-import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -39,10 +38,12 @@ public class ContentLanguagesPreference extends Preference {
     private static class LanguageListAdapter
             extends LanguageListBaseAdapter implements LanguagesManager.AcceptLanguageObserver {
         private final Context mContext;
+        private final PrefService mPrefService;
 
-        LanguageListAdapter(Context context) {
+        LanguageListAdapter(Context context, PrefService prefService) {
             super(context);
             mContext = context;
+            mPrefService = prefService;
         }
 
         @Override
@@ -56,8 +57,7 @@ public class ContentLanguagesPreference extends Preference {
 
             // Show "Offer to translate" option if "Chrome Translate" is enabled and
             // the detailed languages settings page is not active.
-            if (UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .getBoolean(Pref.OFFER_TRANSLATE_ENABLED)
+            if (mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)
                     && !ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
                 // Set this row checked if the language is unblocked.
                 int endIconResId = TranslateBridge.isBlockedLanguage(info.getCode())
@@ -144,7 +144,19 @@ public class ContentLanguagesPreference extends Preference {
 
     public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAdapter = new LanguageListAdapter(context);
+    }
+
+    /**
+     * Initialize the dependencies for the ContentLanguagesPreference.
+     * <p>
+     * Preference's host fragment should call this in its onCreate().
+     *
+     * @param launcher a launcher for SelectLanguageFragment.
+     * @param prefService Allows accessing the contextually appropriate prefs.
+     */
+    void initialize(SelectLanguageFragment.Launcher launcher, PrefService prefService) {
+        mLauncher = launcher;
+        mAdapter = new LanguageListAdapter(getContext(), prefService);
     }
 
     @Override
@@ -152,6 +164,7 @@ public class ContentLanguagesPreference extends Preference {
         super.onBindViewHolder(holder);
 
         assert mLauncher != null;
+        assert mAdapter != null;
 
         mAddLanguageButton = (TextView) holder.findViewById(R.id.add_language);
         final TintedDrawable tintedDrawable =
@@ -180,14 +193,6 @@ public class ContentLanguagesPreference extends Preference {
             // Initialize accept language list.
             mAdapter.onDataUpdated();
         }
-    }
-
-    /**
-     * Register a launcher for SelectLanguageFragment. Preference's host fragment should call
-     * this in its onCreate().
-     */
-    void registerActivityLauncher(SelectLanguageFragment.Launcher launcher) {
-        mLauncher = launcher;
     }
 
     /**
