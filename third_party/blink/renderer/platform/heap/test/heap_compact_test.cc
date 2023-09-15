@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -344,6 +345,77 @@ TEST_F(HeapCompactTest, CompactInlinedBackingStore) {
   // The first GC should update the pointer accordingly and thus not crash on
   // the second GC.
   PerformHeapCompaction();
+}
+
+struct Dummy final {};
+
+struct NestedType final {
+  DISALLOW_NEW();
+
+  static size_t num_dtor_checks;
+
+  NestedType() {
+    vec.emplace_back();
+    CHECK_EQ(vec.size(), 1u);
+    CheckValidInlineBuffer();
+  }
+  ~NestedType() {
+    if (vec.size() > 0) {
+      num_dtor_checks++;
+      CheckValidInlineBuffer();
+    }
+  }
+
+  void CheckValidInlineBuffer() const {
+    if (!Vector<Dummy, 4>::SupportsInlineCapacity()) {
+      return;
+    }
+
+    const auto front = reinterpret_cast<uintptr_t>(&vec.front());
+    // Since the vector has inline capacity, the front must be somewhere within
+    // the vector itself.
+    CHECK(reinterpret_cast<uintptr_t>(&vec) <= front &&
+          front < reinterpret_cast<uintptr_t>(&vec) + sizeof(vec));
+  }
+
+  void Trace(Visitor* visitor) const {}
+
+  Vector<Dummy, 4> vec;
+};
+
+size_t NestedType::num_dtor_checks = 0;
+
+}  // namespace blink
+
+namespace WTF {
+template <>
+struct VectorTraits<blink::NestedType> : VectorTraitsBase<blink::NestedType> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+}  // namespace WTF
+
+namespace blink {
+
+TEST_F(HeapCompactTest, AvoidCompactionWhenTraitsProhibitMemcpy) {
+  // Regression test: https://crbug.com/1478343
+  //
+  // This test checks that compaction does not happen in cases where
+  // `VectorTraits<T>::kCanMoveWithMemcpy` doesn't hold.
+
+  static_assert(WTF::VectorTraits<NestedType>::kCanMoveWithMemcpy == false,
+                "should not allow move using memcpy");
+  // Create a vector with a backing store that immediately gets reclaimed. The
+  // backing store leaves free memory to be reused for compaction.
+  MakeGarbageCollected<HeapVector<NestedType>>()->emplace_back();
+  // The vector that is actually connected.
+  Persistent<HeapVector<NestedType>> vec =
+      MakeGarbageCollected<HeapVector<NestedType>>();
+  vec->emplace_back();
+  PerformHeapCompaction();
+  vec = nullptr;
+  PreciselyCollectGarbage();
+  PreciselyCollectGarbage();
+  EXPECT_EQ(NestedType::num_dtor_checks, 2u);
 }
 
 }  // namespace blink

@@ -233,10 +233,14 @@ class PLATFORM_EXPORT HeapAllocator {
   static void TraceVectorBacking(Visitor* visitor,
                                  const T* backing,
                                  const T* const* backing_slot) {
-    visitor->RegisterMovableReference(const_cast<const HeapVectorBacking<T>**>(
-        reinterpret_cast<const HeapVectorBacking<T>* const*>(backing_slot)));
+    using BackingType = HeapVectorBacking<T>;
+
+    if constexpr (BackingType::TraitsType::kCanMoveWithMemcpy) {
+      visitor->RegisterMovableReference(const_cast<const BackingType**>(
+          reinterpret_cast<const BackingType* const*>(backing_slot)));
+    }
     visitor->TraceStrongContainer(
-        reinterpret_cast<const HeapVectorBacking<T>*>(backing));
+        reinterpret_cast<const BackingType*>(backing));
   }
 
   template <typename T, typename HashTable>

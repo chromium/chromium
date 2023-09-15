@@ -411,10 +411,9 @@ struct IsWeak<internal::ConcurrentBucket<T>> : IsWeak<T> {};
 
 namespace cppgc {
 
-// Assign HeapVector to the custom HeapVectorBackingSpace.
 template <typename Table>
 struct SpaceTrait<blink::HeapHashTableBacking<Table>> {
-  using Space = blink::HeapHashTableBackingSpace;
+  using Space = blink::CompactableHeapHashTableBackingSpace;
 };
 
 // Custom allocation accounts for inlined storage of the actual elements of the

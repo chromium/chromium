@@ -732,9 +732,6 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
                         VectorOperationOrigin this_origin) {
     using TypeOperations = VectorTypeOperations<T, Allocator>;
 
-    static_assert(VectorTraits<T>::kCanSwapUsingCopyOrMove,
-                  "Cannot swap using copy or move.");
-
     if (Buffer() != InlineBuffer() && other.Buffer() != other.InlineBuffer()) {
       Base::SwapBuffers(other, this_origin);
       return;
@@ -1093,6 +1090,8 @@ class Vector
   using const_iterator = const T*;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+  static constexpr bool SupportsInlineCapacity() { return INLINE_CAPACITY > 0; }
 
   // Create an empty vector.
   inline Vector();
