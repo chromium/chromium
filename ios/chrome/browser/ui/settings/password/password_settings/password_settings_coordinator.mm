@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
@@ -300,8 +301,38 @@
 
 #pragma mark - BulkMoveLocalPasswordsToAccountHandler
 
-- (void)showAuthentication {
-  // TODO(crbug.com/1479177): Add auth for bulk move passwords.
+- (void)showAuthenticationForMovePasswordsToAccountWithMessage:
+    (NSString*)message {
+  // No need to auth if AuthOnEntryV2 is enabled, since user is presumed to have
+  // just recently authed.
+  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [self.mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
+    return;
+  }
+
+  if ([self.reauthModule canAttemptReauth]) {
+    __weak PasswordSettingsCoordinator* weakSelf = self;
+
+    void (^onReauthenticationFinished)(ReauthenticationResult) = ^(
+        ReauthenticationResult result) {
+      PasswordSettingsCoordinator* strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+
+      // On auth success, move passwords. Otherwise, do nothing.
+      if (result == ReauthenticationResult::kSuccess) {
+        [strongSelf.mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
+      }
+    };
+
+    [self.reauthModule
+        attemptReauthWithLocalizedReason:message
+                    canReusePreviousAuth:NO
+                                 handler:onReauthenticationFinished];
+  } else {
+    [self showSetPasscodeForMovePasswordsToAccountDialog];
+  }
 }
 
 - (void)showConfirmationDialogWithAlertTitle:(NSString*)alertTitle
@@ -336,8 +367,9 @@
                 if (!strongSelf) {
                   return;
                 }
-                [strongSelf.mediator
-                        userDidStartBulkMoveLocalPasswordsToAccountFlow];
+                [strongSelf
+                    showAuthenticationForMovePasswordsToAccountWithMessage:
+                        alertTitle];
               }];
 
   [movePasswordsConfirmation addAction:movePasswordsAction];
@@ -355,8 +387,11 @@
                  completion:nil];
 }
 
-- (void)showSetPasscodeAlert {
-  // TODO(crbug.com/1479177): Add auth for bulk move passwords.
+- (void)showSetPasscodeForMovePasswordsToAccountDialog {
+  [self
+      showSetPasscodeDialogWithContent:
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)];
 }
 
 #pragma mark - PasswordExportHandler
@@ -431,34 +466,10 @@
                  completion:nil];
 }
 
-- (void)showSetPasscodeDialog {
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
-                       message:
-                           l10n_util::GetNSString(
-                               IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  void (^blockOpenURL)(const GURL&) =
-      BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher);
-  UIAlertAction* learnAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction*) {
-                blockOpenURL(GURL(kPasscodeArticleURL));
-              }];
-  [alertController addAction:learnAction];
-  UIAlertAction* okAction =
-      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
-                               style:UIAlertActionStyleDefault
-                             handler:nil];
-  [alertController addAction:okAction];
-  alertController.preferredAction = okAction;
-  [self.passwordSettingsViewController presentViewController:alertController
-                                                    animated:YES
-                                                  completion:nil];
+- (void)showSetPasscodeForPasswordExportDialog {
+  [self showSetPasscodeDialogWithContent:
+            l10n_util::GetNSString(
+                IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)];
 }
 
 #pragma mark - ExportActivityViewControllerDelegate
@@ -509,6 +520,35 @@
 }
 
 #pragma mark - Private
+
+// Helper to show the "set passcode" dialog with customizable content.
+- (void)showSetPasscodeDialogWithContent:(NSString*)content {
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
+                       message:content
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^blockOpenURL)(const GURL&) =
+      BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher);
+  UIAlertAction* learnAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction*) {
+                blockOpenURL(GURL(kPasscodeArticleURL));
+              }];
+  [alertController addAction:learnAction];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  alertController.preferredAction = okAction;
+  [self.passwordSettingsViewController presentViewController:alertController
+                                                    animated:YES
+                                                  completion:nil];
+}
 
 // Helper method for presenting several ViewControllers used in the export flow.
 // Ensures that the "Preparing passwords" alert is dismissed when something is

@@ -169,7 +169,7 @@ enum class ReauthenticationStatus {
     [self serializePasswords:std::move(passwords)];
     [self startReauthentication];
   } else {
-    [_weakDelegate showSetPasscodeDialog];
+    [_weakDelegate showSetPasscodeForPasswordExportDialog];
   }
 }
 
