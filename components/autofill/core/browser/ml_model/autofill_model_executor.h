@@ -16,68 +16,99 @@
 
 namespace autofill {
 
-// Implements BaseModelExecutor to execute models with FormFieldData input and
-// ServerFieldType output.
+// Implements BaseModelExecutor to execute models with FormData input and
+// std::vector<ServerFieldType> output. The executor only supports at most
+// `kMaxNumberOfFields`. When calling the executor with a larger form,
+// predictions are only returned for the first `kMaxNumberOfFields` many fields.
 class AutofillModelExecutor
-    : public optimization_guide::BaseModelExecutor<ServerFieldType,
-                                                   const FormFieldData&> {
+    : public optimization_guide::BaseModelExecutor<std::vector<ServerFieldType>,
+                                                   const FormData&> {
  public:
   AutofillModelExecutor();
   ~AutofillModelExecutor() override;
 
  protected:
   // Array describes how the output of the ML model is interpreted.
-  // Indices 20 and 33 used to hold field types ADDRESS_HOME_SEARCH_WIDGET
-  // and ADDITIONAL_PHONE_NUMBER respectively, but were changed to UNKNOWN_TYPE
-  // since these two server field types are not supported on
-  // client side.
+  // Some of the types that the model was trained on are not supported by the
+  // client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
   // TODO(crbug.com/1465926): Download dynamically from the server instead.
-  static constexpr std::array<ServerFieldType, 34> kSupportedFieldTypes = {
+  static constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
       UNKNOWN_TYPE,
-      CREDIT_CARD_VERIFICATION_CODE,
-      CREDIT_CARD_NAME_FIRST,
-      NAME_LAST,
-      NAME_FULL,
-      ADDRESS_HOME_LINE2,
+      EMAIL_ADDRESS,
+      UNKNOWN_TYPE,
+      UNKNOWN_TYPE,
+      UNKNOWN_TYPE,
+      UNKNOWN_TYPE,
+      CREDIT_CARD_NUMBER,
+      CONFIRMATION_PASSWORD,
+      UNKNOWN_TYPE,
+      PHONE_HOME_EXTENSION,
+      PHONE_HOME_WHOLE_NUMBER,
+      PHONE_HOME_COUNTRY_CODE,
+      UNKNOWN_TYPE,
+      NAME_FIRST,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STREET_ADDRESS,
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      UNKNOWN_TYPE,
+      NAME_HONORIFIC_PREFIX,
       CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      ADDRESS_HOME_STATE,
+      UNKNOWN_TYPE,
       CREDIT_CARD_NAME_LAST,
+      ACCOUNT_CREATION_PASSWORD,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+      CREDIT_CARD_TYPE,
+      CREDIT_CARD_NAME_FULL,
+      ADDRESS_HOME_APT_NUM,
+      CREDIT_CARD_NAME_FIRST,
+      ADDRESS_HOME_FLOOR,
+      UNKNOWN_TYPE,
+      ADDRESS_HOME_LANDMARK,
+      UNKNOWN_TYPE,
+      ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_COUNTRY,
       CREDIT_CARD_EXP_4_DIGIT_YEAR,
-      PHONE_HOME_CITY_AND_NUMBER,
-      COMPANY_NAME,
-      EMAIL_ADDRESS,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_STREET_ADDRESS,
-      PHONE_HOME_EXTENSION,
-      CREDIT_CARD_TYPE,
-      NAME_HONORIFIC_PREFIX,
       DELIVERY_INSTRUCTIONS,
-      UNKNOWN_TYPE,
-      ADDRESS_HOME_LINE3,
-      CREDIT_CARD_NUMBER,
-      PHONE_HOME_COUNTRY_CODE,
-      ADDRESS_HOME_STATE,
-      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-      ADDRESS_HOME_ZIP,
-      PHONE_HOME_WHOLE_NUMBER,
-      NAME_FIRST,
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-      CREDIT_CARD_NAME_FULL,
+      PHONE_HOME_NUMBER,
+      CREDIT_CARD_VERIFICATION_CODE,
+      NAME_LAST,
       CREDIT_CARD_EXP_MONTH,
-      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-      UNKNOWN_TYPE};
+      ADDRESS_HOME_OVERFLOW,
+      UNKNOWN_TYPE,
+      NAME_FULL,
+      COMPANY_NAME,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+      PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_CODE,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_STREET_LOCATION,
+      ADDRESS_HOME_ZIP,
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_LINE3,
+      ADDRESS_HOME_LINE1};
+
+  // Maximum number of fields in one form that can be used as input.
+  static constexpr size_t kMaxNumberOfFields = 20;
 
   // optimization_guide::BaseModelExecutor:
   // This function must be called on a background thread.
-  // It initilaizes the vectorizer by reading the dictionary file
+  // It initializes the vectorizer by reading the dictionary file
   // which can't be done on the UI thread.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const FormFieldData& input) override;
-  absl::optional<ServerFieldType> Postprocess(
+                  const FormData& input) override;
+  absl::optional<std::vector<ServerFieldType>> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
   std::unique_ptr<AutofillModelVectorizer> vectorizer_;
+
+  // Stores the number of fields in the given to 'PreProcess()' FormData if it
+  // is less than `kMaxNumberOfFields`. It will be used in `PostProcess()` to
+  // return the first `fields_count_` predictions from the model.
+  size_t fields_count_ = 0;
 };
 
 }  // namespace autofill

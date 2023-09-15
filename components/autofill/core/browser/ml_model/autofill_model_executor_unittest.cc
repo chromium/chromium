@@ -14,10 +14,12 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
-#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/form_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +39,9 @@ class AutofillModelExecutorTest : public testing::Test {
                                        .AppendASCII("autofill")
                                        .AppendASCII("ml_model");
     model_file_path_ =
-        test_data_dir.AppendASCII("autofill_model_baseline.tflite");
+        test_data_dir.AppendASCII("autofill_model-br-overfit.tflite");
     base::FilePath dictionary_path =
-        test_data_dir.AppendASCII("dictionary_test.txt");
+        test_data_dir.AppendASCII("br_overfitted_dictionary_test.txt");
     features_.InitAndEnableFeatureWithParameters(
         features::kAutofillModelPredictions,
         {{features::kAutofillModelDictionaryFilePath.name,
@@ -60,6 +62,7 @@ class AutofillModelExecutorTest : public testing::Test {
   }
 
  protected:
+  test::AutofillUnitTestEnvironment autofill_environment_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
   base::FilePath model_file_path_;
@@ -72,30 +75,43 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
   execution_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &optimization_guide::ModelExecutor<
-              ServerFieldType, const FormFieldData&>::UpdateModelFile,
+          &optimization_guide::ModelExecutor<std::vector<ServerFieldType>,
+                                             const FormData&>::UpdateModelFile,
           model_executor_->GetWeakPtrForExecutionThread(), model_file_path_));
   // Execute model.
   base::RunLoop run_loop;
-  absl::optional<ServerFieldType> prediction;
-  base::OnceCallback<void(const absl::optional<ServerFieldType>&)>
+  absl::optional<std::vector<ServerFieldType>> predictions;
+  base::OnceCallback<void(const absl::optional<std::vector<ServerFieldType>>&)>
       execution_callback = base::BindLambdaForTesting(
-          [&](const absl::optional<ServerFieldType>& output) {
-            prediction = output;
+          [&](const absl::optional<std::vector<ServerFieldType>>& output) {
+            predictions = output;
             run_loop.Quit();
           });
-  FormFieldData input;
-  input.label = u"First Name";
+  // The overfitted model is trained on this exact form in this order so this
+  // is the only form that can be used for unittests. The model that will be
+  // provided by the server side will be trained on many different other forms.
+  FormData form_data =
+      test::GetFormData({.fields = {{.label = u"nome completo"},
+                                    {.label = u"cpf"},
+                                    {.label = u"data de nascimento ddmmaaaa"},
+                                    {.label = u"seu telefone"},
+                                    {.label = u"email"},
+                                    {.label = u"senha"},
+                                    {.label = u"cep"}}});
   execution_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &optimization_guide::ModelExecutor<
-              ServerFieldType, const FormFieldData&>::SendForExecution,
+          &optimization_guide::ModelExecutor<std::vector<ServerFieldType>,
+                                             const FormData&>::SendForExecution,
           model_executor_->GetWeakPtrForExecutionThread(),
           std::move(execution_callback),
-          /*start_time=*/AutofillTickClock::NowTicks(), input));
+          /*start_time=*/AutofillTickClock::NowTicks(), form_data));
   run_loop.Run();
-  EXPECT_THAT(prediction, testing::Optional(NAME_FIRST));
+  ASSERT_TRUE(predictions.has_value());
+  EXPECT_THAT(predictions.value(),
+              testing::ElementsAre(NAME_FULL, UNKNOWN_TYPE, UNKNOWN_TYPE,
+                                   PHONE_HOME_CITY_AND_NUMBER, EMAIL_ADDRESS,
+                                   UNKNOWN_TYPE, ADDRESS_HOME_ZIP));
 }
 
 }  // namespace autofill

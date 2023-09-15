@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,9 +47,9 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
                                        .AppendASCII("autofill")
                                        .AppendASCII("ml_model");
     base::FilePath model_file_path =
-        test_data_dir.AppendASCII("autofill_model_baseline.tflite");
+        test_data_dir.AppendASCII("autofill_model-br-overfit.tflite");
     base::FilePath dictionary_path =
-        test_data_dir.AppendASCII("dictionary_test.txt");
+        test_data_dir.AppendASCII("br_overfitted_dictionary_test.txt");
     features_.InitAndEnableFeatureWithParameters(
         features::kAutofillModelPredictions,
         {{features::kAutofillModelDictionaryFilePath.name,
@@ -90,53 +89,21 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
 
 TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedFormData) {
   auto form_structure = std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {
-                             {.label = u"First name"},
-                             {.label = u"Last name"},
-                             {.label = u"Address line 1"},
-                         }}));
+      test::GetFormData({.fields = {{.label = u"nome completo"},
+                                    {.label = u"cpf"},
+                                    {.label = u"data de nascimento ddmmaaaa"},
+                                    {.label = u"seu telefone"},
+                                    {.label = u"email"},
+                                    {.label = u"senha"},
+                                    {.label = u"cep"}}}));
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler_->GetModelPredictionsForForm(std::move(form_structure),
                                              future.GetCallback());
-  EXPECT_THAT(future.Get()->fields(),
-              testing::Pointwise(MlTypeEq(),
-                                 {NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1}));
-}
-
-TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedMultipleForms) {
-  {
-    auto form_structure = std::make_unique<FormStructure>(
-        test::GetFormData({.fields = {
-                               {.label = u"First name"},
-                               {.label = u"Last name"},
-                           }}));
-    base::test::TestFuture<std::unique_ptr<FormStructure>> future;
-    model_handler_->GetModelPredictionsForForm(std::move(form_structure),
-                                               future.GetCallback());
-    EXPECT_THAT(future.Get()->fields(),
-                testing::Pointwise(MlTypeEq(), {NAME_FIRST, NAME_LAST}));
-  }
-  {
-    auto form_structure = std::make_unique<FormStructure>(
-        test::GetFormData({.fields = {
-                               {.label = u"Credit card name"},
-                               {.label = u"Credit card number"},
-                           }}));
-    base::test::TestFuture<std::unique_ptr<FormStructure>> future;
-    model_handler_->GetModelPredictionsForForm(std::move(form_structure),
-                                               future.GetCallback());
-    EXPECT_THAT(future.Get()->fields(),
-                testing::Pointwise(
-                    MlTypeEq(), {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER}));
-  }
-}
-
-TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedEmptyForm) {
-  auto form_structure = std::make_unique<FormStructure>(FormData());
-  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
-  model_handler_->GetModelPredictionsForForm(std::move(form_structure),
-                                             future.GetCallback());
-  EXPECT_TRUE(future.Get()->fields().empty());
+  EXPECT_THAT(
+      future.Get()->fields(),
+      testing::Pointwise(MlTypeEq(), {NAME_FULL, UNKNOWN_TYPE, UNKNOWN_TYPE,
+                                      PHONE_HOME_CITY_AND_NUMBER, EMAIL_ADDRESS,
+                                      UNKNOWN_TYPE, ADDRESS_HOME_ZIP}));
 }
 
 }  // namespace autofill
