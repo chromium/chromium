@@ -862,16 +862,43 @@ the browser and content area. -->
     expires_after="2024-03-03">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
-  <summary>Tracks the latency of calls to the Kids Management API.</summary>
+  <summary>
+    This metric captures the latency of one individual call to the Kids
+    Management API that might be retried if an error occurs. For the overall
+    request latency in retrying fetchers, see
+    Signin.ListFamilyMembersRequest.OverallLatency.
+  </summary>
 </histogram>
 
-<histogram name="Signin.ListFamilyMembersRequest.RetryCount" units="retries"
-    expires_after="2024-02-11">
+<histogram name="Signin.ListFamilyMembersRequest.OverallLatency" units="ms"
+    expires_after="2024-02-04">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Tracks the number of retries before a decisive status (OK or permanent
-    error).
+    Kids Management API fetchers have a retry logic that might trigger multiple
+    individual calls to the Kids Management API one after the other. This metric
+    captures the total time, including all individual latencies tracked in
+    Signin.ListFamilyMembersRequest.Latency.
+  </summary>
+</histogram>
+
+<histogram name="Signin.ListFamilyMembersRequest.OverallStatus"
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-02-04">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The final status of the fetch to the Kids Management API, visible to the
+    user. Statuses of intermediate fetches (including final one) are tracked in
+    the Signin.ListFamilyMembersRequest.Status metric.
+  </summary>
+</histogram>
+
+<histogram name="Signin.ListFamilyMembersRequest.RetryCount" units="retries"
+    expires_after="2024-02-04">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The number of retries before a decisive status (OK or permanent error).
   </summary>
 </histogram>
 
@@ -879,11 +906,15 @@ the browser and content area. -->
     enum="SupervisedUserProtoFetcherStatus" expires_after="2024-03-03">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
-  <summary>The status of the fetch to the Kids Management API.</summary>
+  <summary>
+    The status of every fetch to the Kids Management API, including the retried
+    ones. The final status is case of retrying fetchers is recorded in
+    Signin.ListFamilyMembersRequest.OverallStatus.
+  </summary>
 </histogram>
 
 <histogram name="Signin.ListFamilyMembersRequest.{Status}.Latency" units="ms"
-    expires_after="2023-11-01">
+    expires_after="2024-02-04">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

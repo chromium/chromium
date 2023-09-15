@@ -181,7 +181,7 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetUrlOfPendingRequest(index).spec(), /*content=*/"", error);
   }
-  void SimulateResponseForPendingRequestWithPersistentError(size_t index) {
+  void SimulateMalformedResponseForPendingRequest(size_t index) {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetUrlOfPendingRequest(index).spec(), "malformed-response");
   }
@@ -447,6 +447,17 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
   EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
                   {GetConfig().histogram_basename, ".RetryCount"})),
               base::BucketsInclude(base::Bucket(3, 1)));
+
+  // The actual latency of mocked fetch is variable, so only expect that some
+  // value was recorded.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({GetConfig().histogram_basename, ".OverallLatency"}),
+      /*expected_count(grew by)*/ 1);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          base::StrCat({GetConfig().histogram_basename, ".OverallStatus"})),
+      base::BucketsInclude(base::Bucket(ProtoFetcherStatus::State::OK, 1)));
 }
 
 // When retrying is configured, the fetch process is re-launched until a
@@ -474,7 +485,7 @@ TEST_P(ProtoFetcherTest,
 
   // Then persistent error.
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  SimulateResponseForPendingRequestWithPersistentError(0);
+  SimulateMalformedResponseForPendingRequest(0);
   FastForward();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -486,6 +497,17 @@ TEST_P(ProtoFetcherTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
                   {GetConfig().histogram_basename, ".RetryCount"})),
               base::BucketsInclude(base::Bucket(2, 1)));
+
+  // The actual latency of mocked fetch is variable, so only expect that some
+  // value was recorded.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({GetConfig().histogram_basename, ".OverallLatency"}),
+      /*expected_count(grew by)*/ 1);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                  {GetConfig().histogram_basename, ".OverallStatus"})),
+              base::BucketsInclude(base::Bucket(
+                  ProtoFetcherStatus::State::INVALID_RESPONSE, 1)));
 }
 
 // When retrying is configured, the fetch process is re-launched until a
@@ -504,6 +526,8 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   std::unique_ptr<Receiver> receiver = MakeReceiver();
   std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
 
+  base::HistogramTester histogram_tester;
+
   // Only transient errors.
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateResponseForPendingRequestWithTransientError(0);
@@ -516,6 +540,11 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   // Request is still pending, because the system keeps retrying.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   EXPECT_FALSE(receiver->HasResultOrError());
+
+  // No final status was recorded as the fetcher is still pending.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({GetConfig().histogram_basename, ".OverallStatus"}),
+      /*expected_count(grew by)*/ 0);
 }
 
 // Instead of /0, /1... print human-readable description of the test: status of
