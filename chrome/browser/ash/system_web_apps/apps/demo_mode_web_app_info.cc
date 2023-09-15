@@ -25,8 +25,11 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
       info->start_url,
       {{"app_icon_192.png", 192, IDR_ASH_DEMO_MODE_APP_APP_ICON_192_PNG}},
       *info);
-  info->theme_color = 0xFF4285F4;
-  info->background_color = 0xFFFFFFFF;
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
