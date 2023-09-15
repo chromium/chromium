@@ -23,7 +23,6 @@
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -298,6 +297,29 @@ bool ValidateFileSources(const UserScriptList& scripts,
       if (!IsScriptValid(path, css_script->relative_path(), max_script_length,
                          IDS_EXTENSION_LOAD_CSS_FAILED, error, warnings,
                          remaining_scripts_length)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+bool ValidateMatchOriginAsFallback(
+    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    const URLPatternSet& url_patterns,
+    std::u16string* error_out) {
+  // If the extension is using `match_origin_as_fallback`, we require the
+  // pattern to match all paths. This is because origins don't have a path;
+  // thus, if an extension specified `"match_origin_as_fallback": true` for
+  // a pattern of `"https://google.com/maps/*"`, this script would also run
+  // on about:blank, data:, etc frames from https://google.com (because in
+  // both cases, the precursor origin is https://google.com).
+  if (match_origin_as_fallback == MatchOriginAsFallbackBehavior::kAlways) {
+    for (const auto& pattern : url_patterns) {
+      if (pattern.path() != "/*") {
+        *error_out =
+            base::ASCIIToUTF16(errors::kMatchOriginAsFallbackCantHavePaths);
         return false;
       }
     }

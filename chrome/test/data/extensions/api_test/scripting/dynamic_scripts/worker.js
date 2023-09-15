@@ -48,7 +48,8 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         excludeMatches: ['*://abc.com/*'],
         css: ['nothing.css'],
-        allFrames: true
+        allFrames: true,
+        matchOriginAsFallback: true,
       },
       {
         id: 'GRS_2',
@@ -70,7 +71,7 @@ chrome.test.runTests([
         css: ['nothing.css'],
         allFrames: true,
         runAt: 'document_idle',
-        matchOriginAsFallback: false,
+        matchOriginAsFallback: true,
         persistAcrossSessions: true,
         world: chrome.scripting.ExecutionWorld.ISOLATED
       },
@@ -291,6 +292,37 @@ chrome.test.runTests([
         chrome.scripting.registerContentScripts(scripts),
         `Error: Invalid value for 'content_scripts[0].matches[0]': Missing ` +
             `scheme separator.`);
+
+    chrome.test.succeed();
+  },
+
+  // Test that if `match_origin_as_fallback` is true, any path specified for the
+  // script must be wildcarded, otherwise an error is returned.
+  async function matchOriginAsFallbackWithPath() {
+    await chrome.scripting.unregisterContentScripts();
+    let scripts = [{
+      id: 'matchOriginAsFallbackWithPath',
+      matches: ['https://example/path'],
+      matchOriginAsFallback: true,
+      js: ['dynamic_1.js']
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.registerContentScripts(scripts),
+        `Error: The path component for scripts with ` +
+            `'match_origin_as_fallback' must be '*'.`);
+
+    // Try again with a wildcarded path, the register call should succeed.
+    scripts[0].matches = ['https://example/*'];
+    await chrome.scripting.registerContentScripts(scripts);
+
+    // Test that an error is thrown when attempting to update a script with
+    // `match_origin_as_fallback` as true with an invalid path.
+    scripts[0].matches = ['https://example/anotherpath'];
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.updateContentScripts(scripts),
+        `Error: The path component for scripts with ` +
+            `'match_origin_as_fallback' must be '*'.`);
 
     chrome.test.succeed();
   },

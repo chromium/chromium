@@ -12,6 +12,7 @@
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
 
 // Contains helper methods for parsing content script fields.
@@ -78,6 +79,14 @@ bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
                          std::string* error,
                          std::vector<InstallWarning>* warnings);
+
+// Validates that `match_origin_as_fallback` is legal in relation to the match
+// patterns specified in `url_patterns`. I.e. patterns in `url_patterns` must
+// specify a wildcard path or no path if `match_origin_as_fallback` is enabled.
+bool ValidateMatchOriginAsFallback(
+    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    const URLPatternSet& url_patterns,
+    std::u16string* error_out);
 
 ExtensionResource::SymlinkPolicy GetSymlinkPolicy(const Extension* extension);
 
