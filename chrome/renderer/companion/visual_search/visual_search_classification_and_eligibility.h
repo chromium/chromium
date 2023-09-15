@@ -8,7 +8,6 @@
 #include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "third_party/blink/public/web/web_element.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -20,12 +19,6 @@ using optimization_guide::proto::OrOfThresholdingRules;
 using optimization_guide::proto::ThresholdingRule;
 
 using ImageId = std::string;
-
-struct SingleImageFeaturesAndBytes {
-  SingleImageGeometryFeatures features;
-  SkBitmap image_contents;
-  ~SingleImageFeaturesAndBytes() = default;
-};
 
 // Structure for classification metrics about the page being processed.
 struct ClassificationMetrics {

@@ -188,9 +188,13 @@ enum UiSurface {
   kPHResult = 10
 };
 
+// Container for sending visual suggestion results to the side panel renderer.
 struct VisualSearchResult {
-  // Encoded image bytes
+  // Base64 encoded image bytes.
   string data_uri;
+
+  // Alt-text for the image specified by the data uri.
+  string alt_text;
 };
 
 // Factory method for creating a new WebUI page handler.

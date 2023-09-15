@@ -29,6 +29,9 @@ struct ClassificationStats {
 struct VisualSearchSuggestion {
   // raw skbitmap version of image.
   skia.mojom.BitmapN32 image;
+
+  // alt-text for the image.
+  string alt_text;
 };
 
 // Browser-side interface handling responses for visual search suggestions.

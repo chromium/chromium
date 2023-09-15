@@ -171,11 +171,11 @@ void CompanionPageHandler::DidFinishLoad(
 }
 
 void CompanionPageHandler::SendVisualSearchResult(
-    const std::vector<std::string>& results) {
+    const visual_search::VisualSuggestionsResults& results) {
   std::vector<side_panel::mojom::VisualSearchResultPtr> final_results;
   for (const auto& result : results) {
-    final_results.emplace_back(
-        side_panel::mojom::VisualSearchResult::New(result));
+    final_results.emplace_back(side_panel::mojom::VisualSearchResult::New(
+        result.base64_img, result.alt_text));
   }
   page_->OnDeviceVisualClassificationResult(std::move(final_results));
   base::UmaHistogramTimes(
@@ -187,7 +187,7 @@ void CompanionPageHandler::SendVisualSearchResult(
 }
 
 void CompanionPageHandler::HandleVisualSearchResult(
-    const std::vector<std::string> results,
+    const visual_search::VisualSuggestionsResults results,
     const VisualSuggestionsMetrics metrics) {
   // This is the only place where we log UKM metrics for the visual
   // classification pipeline. We record the metrics even when the UI is not
@@ -221,7 +221,7 @@ void CompanionPageHandler::OnLoadingState(
   if (loading_state == side_panel::mojom::LoadingState::kStartedLoading) {
     ui_loading_start_time_ = base::TimeTicks::Now();
     if (visual_result) {
-      SendVisualSearchResult(visual_result.value().second);
+      SendVisualSearchResult(visual_result.value());
     } else {
       visual_search::VisualSearchClassifierHost::ResultCallback callback =
           base::BindOnce(&CompanionPageHandler::HandleVisualSearchResult,

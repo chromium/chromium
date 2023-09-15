@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -19,14 +20,12 @@
 namespace companion::visual_search {
 
 using ClassificationResultsAndStats =
-    std::pair<std::vector<SkBitmap>, mojom::ClassificationStatsPtr>;
+    std::pair<std::vector<SingleImageFeaturesAndBytes>,
+              mojom::ClassificationStatsPtr>;
 
 class VisualSearchClassifierAgent : public content::RenderFrameObserver,
                                     mojom::VisualSuggestionsRequestHandler {
  public:
-  using ClassifierResultCallback =
-      base::OnceCallback<void(std::vector<SkBitmap>)>;
-
   static VisualSearchClassifierAgent* Create(
       content::RenderFrame* render_frame);
 
