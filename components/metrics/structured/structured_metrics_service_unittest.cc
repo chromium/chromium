@@ -180,10 +180,10 @@ class StructuredMetricsServiceTest : public testing::Test {
 
  protected:
   std::unique_ptr<StructuredMetricsService> service_;
+  metrics::TestMetricsServiceClient client_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  metrics::TestMetricsServiceClient client_;
   TestingPrefServiceSimple prefs_;
 
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
@@ -245,6 +245,26 @@ TEST_F(StructuredMetricsServiceTest, RotateLogs) {
 
   const auto uma_proto = GetPersistedLog();
   EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+}
+
+TEST_F(StructuredMetricsServiceTest, SystemProfileFilled) {
+  Init();
+
+  EnableRecording();
+  EnableReporting();
+
+  TestEventOne().SetTestMetricTwo(1).Record();
+  TestEventSeven().SetTestMetricSeven(1).Record();
+
+  service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  const auto uma_proto = GetPersistedLog();
+  EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+  EXPECT_TRUE(uma_proto.has_system_profile());
+
+  const SystemProfileProto& system_profile = uma_proto.system_profile();
+  EXPECT_EQ(system_profile.channel(), client_.GetChannel());
+  EXPECT_EQ(system_profile.app_version(), client_.GetVersionString());
 }
 
 TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {

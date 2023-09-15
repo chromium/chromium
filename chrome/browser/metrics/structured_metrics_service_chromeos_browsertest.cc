@@ -19,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
@@ -44,16 +45,24 @@ constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
 // The name hash of "chrome::TestProjectFive::TestEventSix".
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 
-}  // namespace
-
-metrics::structured::StructuredMetricsService* GetSMService() {
+structured::StructuredMetricsService* GetSMService() {
   return g_browser_process->GetMetricsServicesManager()
       ->GetStructuredMetricsService();
 }
 
+MetricsServiceClient* GetMetricsServiceClient() {
+  return GetSMService()->GetMetricsServiceClient();
+}
+
+}  // namespace
+
 class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
  public:
   StructuredMetricsServiceTestBase() = default;
+
+  void SetUpOnMainThread() override {
+    structured_metrics_mixin_.SetUpOnMainThread();
+  }
 
   bool HasUnsentLogs() {
     return GetSMService()->reporting_service_->log_store()->has_unsent_logs();
@@ -65,6 +74,32 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
 
   void WaitForConsentChanges() { base::RunLoop().RunUntilIdle(); }
   void WaitUntilKeysReady() { structured_metrics_mixin_.WaitUntilKeysReady(); }
+
+  std::unique_ptr<ChromeUserMetricsExtension> GetStagedLog() {
+    if (!HasUnsentLogs()) {
+      return nullptr;
+    }
+
+    auto* log_store = GetSMService()->reporting_service_->log_store();
+    if (log_store->has_staged_log()) {
+      // For testing purposes, we examine the content of a staged log without
+      // ever sending the log, so discard any previously staged log.
+      log_store->DiscardStagedLog();
+    }
+
+    log_store->StageNextLog();
+    if (!log_store->has_staged_log()) {
+      return nullptr;
+    }
+
+    std::unique_ptr<ChromeUserMetricsExtension> uma_proto =
+        std::make_unique<ChromeUserMetricsExtension>();
+    if (!metrics::DecodeLogDataToProto(log_store->staged_log(),
+                                       uma_proto.get())) {
+      return nullptr;
+    }
+    return uma_proto;
+  }
 
  protected:
   structured::StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
@@ -220,6 +255,44 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_FALSE(HasStagedLog());
   EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
   EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
+  auto* sm_service = GetSMService();
+
+  // Enable consent for profile.
+  structured_metrics_mixin_.UpdateRecordingState(true);
+
+  // Wait for the consent to propagate.
+  WaitForConsentChanges();
+
+  // Verify that recording and reporting are enabled.
+  EXPECT_TRUE(sm_service->recording_enabled());
+  EXPECT_TRUE(sm_service->reporting_active());
+
+  WaitUntilKeysReady();
+
+  // Record an event inorder to build a log.
+  structured::events::v2::test_project_one::TestEventOne()
+      .SetTestMetricOne("metric one")
+      .SetTestMetricTwo(10)
+      .Record();
+
+  // This will timeout and fail the test if events have not been recorded
+  // successfully.
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectOneHash,
+                                                   kEventOneHash);
+
+  // Flush the in-memory events to a staged log.
+  sm_service->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetStagedLog();
+  ASSERT_NE(uma_proto.get(), nullptr);
+
+  // Verify that the SystemProfile has been set appropriately.
+  const SystemProfileProto& system_profile = uma_proto->system_profile();
+  EXPECT_EQ(system_profile.app_version(),
+            GetMetricsServiceClient()->GetVersionString());
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
