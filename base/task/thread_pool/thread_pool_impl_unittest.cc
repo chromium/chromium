@@ -1465,9 +1465,12 @@ std::vector<std::unique_ptr<TaskRunnerAndEvents>> CreateTaskRunnersAndEvents(
   // If the task following the priority update is expected to run in the
   // foreground group, it should be after the task posted to the TaskRunner
   // whose priority is updated to USER_VISIBLE.
-  expected_previous_event = CanUseBackgroundThreadTypeForWorkerThread()
-                                ? nullptr
-                                : &task_runners_and_events.back()->task_ran;
+  expected_previous_event =
+      CanUseBackgroundThreadTypeForWorkerThread() ||
+              (test->GetUseResourceEfficientThreadGroup() &&
+               CanUseUtilityThreadTypeForWorkerThread())
+          ? nullptr
+          : &task_runners_and_events.back()->task_ran;
 
   task_runners_and_events.push_back(std::make_unique<TaskRunnerAndEvents>(
       thread_pool->CreateUpdateableSequencedTaskRunner(
