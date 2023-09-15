@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+enum class Edge;
 class TabOrganizationButton;
 class TabSearchButton;
 class TabStrip;
@@ -30,7 +31,6 @@ class TabSearchContainer : public views::View {
   raw_ptr<TabOrganizationButton, DanglingUntriaged> tab_organization_button_ =
       nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
-  bool before_tab_strip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_

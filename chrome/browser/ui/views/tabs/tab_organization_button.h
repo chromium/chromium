@@ -13,7 +13,7 @@ class TabStrip;
 class TabOrganizationButton : public TabStripControlButton {
  public:
   METADATA_HEADER(TabOrganizationButton);
-  explicit TabOrganizationButton(TabStrip* tab_strip);
+  TabOrganizationButton(TabStrip* tab_strip, Edge flat_edge);
   TabOrganizationButton(const TabOrganizationButton&) = delete;
   TabOrganizationButton& operator=(const TabOrganizationButton&) = delete;
   ~TabOrganizationButton() override;

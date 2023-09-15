@@ -54,3 +54,16 @@ TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
   ASSERT_EQ(container_after_tab_strip_->tab_search_button(),
             container_after_tab_strip_->children()[1]);
 }
+
+TEST_F(TabSearchContainerTest, ButtonsHaveFlatEdges) {
+  ASSERT_EQ(Edge::kRight,
+            container_before_tab_strip_->tab_search_button()->flat_edge());
+  ASSERT_EQ(
+      Edge::kLeft,
+      container_before_tab_strip_->tab_organization_button()->flat_edge());
+
+  ASSERT_EQ(Edge::kLeft,
+            container_after_tab_strip_->tab_search_button()->flat_edge());
+  ASSERT_EQ(Edge::kRight,
+            container_after_tab_strip_->tab_organization_button()->flat_edge());
+}

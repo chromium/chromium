@@ -9,26 +9,44 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 
+namespace {
+
+Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
+  const bool is_rtl = base::i18n::IsRTL();
+  if ((!is_search_button && before_tab_strip) ||
+      (is_search_button && !before_tab_strip)) {
+    return is_rtl ? Edge::kRight : Edge::kLeft;
+  }
+  return is_rtl ? Edge::kLeft : Edge::kRight;
+}
+
+}  // namespace
+
 TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
-                                       bool before_tab_strip)
-    : before_tab_strip_(before_tab_strip) {
+                                       bool before_tab_strip) {
   std::unique_ptr<TabSearchButton> tab_search_button =
-      std::make_unique<TabSearchButton>(tab_strip);
+      std::make_unique<TabSearchButton>(
+          tab_strip, features::IsTabOrganization()
+                         ? GetFlatEdge(true, before_tab_strip)
+                         : Edge::kNone);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
 
-  if (before_tab_strip_) {
+  if (before_tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
   }
 
   if (features::IsTabOrganization()) {
     tab_organization_button_ =
-        AddChildView(std::make_unique<TabOrganizationButton>(tab_strip));
+        AddChildView(std::make_unique<TabOrganizationButton>(
+            tab_strip, features::IsTabOrganization()
+                           ? GetFlatEdge(false, before_tab_strip)
+                           : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
   }
 
-  if (!before_tab_strip_) {
+  if (!before_tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
   }
 

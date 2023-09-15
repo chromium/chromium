@@ -18,7 +18,7 @@ class TabStrip;
 class TabSearchButton : public TabStripControlButton {
  public:
   METADATA_HEADER(TabSearchButton);
-  explicit TabSearchButton(TabStrip* tab_strip);
+  TabSearchButton(TabStrip* tab_strip, Edge flat_edge);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
   ~TabSearchButton() override;

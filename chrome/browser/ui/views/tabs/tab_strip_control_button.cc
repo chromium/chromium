@@ -10,6 +10,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -33,9 +34,14 @@ class ControlButtonHighlightPathGenerator
     gfx::Rect rect(view->GetContentsBounds());
 
     SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(rect),
-                      control_button_->GetCornerRadius(),
-                      control_button_->GetCornerRadius());
+    const int corner_radius = control_button_->GetCornerRadius();
+    const Edge flat_edge = control_button_->flat_edge();
+    const SkScalar left_radius = flat_edge == Edge::kLeft ? 0 : corner_radius;
+    const SkScalar right_radius = flat_edge == Edge::kRight ? 0 : corner_radius;
+    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
+                               right_radius, right_radius, right_radius,
+                               left_radius,  left_radius};
+    path.addRoundRect(gfx::RectToSkRect(rect), radii);
     return path;
   }
 
@@ -49,9 +55,11 @@ const gfx::Size TabStripControlButton::kButtonSize{28, 28};
 
 TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
                                              PressedCallback callback,
-                                             const gfx::VectorIcon& icon)
+                                             const gfx::VectorIcon& icon,
+                                             Edge flat_edge)
     : views::LabelButton(std::move(callback)),
       icon_(icon),
+      flat_edge_(flat_edge),
       tab_strip_(tab_strip) {
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -152,9 +160,15 @@ void TabStripControlButton::UpdateBackground() {
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
     SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   } else {
+    const float right_corner_radius =
+        flat_edge_ == Edge::kRight ? 0 : GetCornerRadius();
+    const float left_corner_radius =
+        flat_edge_ == Edge::kLeft ? 0 : GetCornerRadius();
     SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainter(
-            color_provider->GetColor(GetBackgroundColor()), GetCornerRadius(),
+        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+            color_provider->GetColor(GetBackgroundColor()),
+            gfx::RoundedCornersF(left_corner_radius, right_corner_radius,
+                                 right_corner_radius, left_corner_radius),
             GetInsets())));
   }
 }
@@ -184,9 +198,16 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
 
   const SkScalar bottom_radius = GetCornerRadius();
   const SkScalar top_radius = extend_to_top ? 0.0f : bottom_radius;
-  const SkScalar radii[8] = {top_radius,    top_radius,    top_radius,
-                             top_radius,    bottom_radius, bottom_radius,
-                             bottom_radius, bottom_radius};
+  const SkScalar bottom_left_radius =
+      flat_edge_ == Edge::kLeft ? 0 : bottom_radius;
+  const SkScalar bottom_right_radius =
+      flat_edge_ == Edge::kRight ? 0 : bottom_radius;
+  const SkScalar top_left_radius = flat_edge_ == Edge::kLeft ? 0 : top_radius;
+  const SkScalar top_right_radius = flat_edge_ == Edge::kRight ? 0 : top_radius;
+  const SkScalar radii[8] = {top_left_radius,     top_left_radius,
+                             top_right_radius,    top_right_radius,
+                             bottom_right_radius, bottom_right_radius,
+                             bottom_left_radius,  bottom_left_radius};
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {

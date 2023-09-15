@@ -16,10 +16,12 @@ namespace {
 constexpr int kTabOrganizeCornerRadius = 10;
 }
 
-TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip)
+TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
+                                             Edge flat_edge)
     : TabStripControlButton(tab_strip,
                             PressedCallback(),  // Tab organize callback
-                            kPaintbrushIcon) {
+                            kPaintbrushIcon,
+                            flat_edge) {
   SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));

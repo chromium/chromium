@@ -18,6 +18,12 @@ struct VectorIcon;
 
 class TabStrip;
 
+enum class Edge {
+  kNone = 0,
+  kLeft,
+  kRight,
+};
+
 class TabStripControlButton : public views::LabelButton,
                               public views::MaskedTargeterDelegate {
  public:
@@ -28,7 +34,8 @@ class TabStripControlButton : public views::LabelButton,
 
   TabStripControlButton(TabStrip* tab_strip,
                         PressedCallback callback,
-                        const gfx::VectorIcon& icon);
+                        const gfx::VectorIcon& icon,
+                        Edge flat_edge = Edge::kNone);
   TabStripControlButton(const TabStripControlButton&) = delete;
   TabStripControlButton& operator=(const TabStripControlButton&) = delete;
   ~TabStripControlButton() override = default;
@@ -38,6 +45,8 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateIcon();
 
   virtual int GetCornerRadius() const;
+
+  Edge flat_edge() { return flat_edge_; }
 
   // Helper function for changing the state for TabStripRegionView tests.
   void AnimateToStateForTesting(views::InkDropState state);
@@ -99,6 +108,9 @@ class TabStripControlButton : public views::LabelButton,
   const raw_ref<const gfx::VectorIcon> icon_;
 
   bool paint_transparent_for_custom_image_theme_;
+
+  // Button edge which should render without rounded corners.
+  Edge flat_edge_;
 
   // Tab strip that contains this button.
   raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_;

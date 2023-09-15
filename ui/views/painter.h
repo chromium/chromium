@@ -20,6 +20,7 @@ class Canvas;
 class ImageSkia;
 class InsetsF;
 class Rect;
+class RoundedCornersF;
 class Size;
 }  // namespace gfx
 
@@ -60,6 +61,15 @@ class VIEWS_EXPORT Painter {
   static std::unique_ptr<Painter> CreateSolidRoundRectPainter(
       SkColor color,
       float radius,
+      const gfx::Insets& insets = gfx::Insets(),
+      SkBlendMode blend_mode = SkBlendMode::kSrcOver,
+      bool antialias = true);
+
+  // Creates a painter that draws a RoundRect with a solid color and given
+  // corner radii.
+  static std::unique_ptr<Painter> CreateSolidRoundRectPainterWithVariableRadius(
+      SkColor color,
+      gfx::RoundedCornersF radii,
       const gfx::Insets& insets = gfx::Insets(),
       SkBlendMode blend_mode = SkBlendMode::kSrcOver,
       bool antialias = true);
