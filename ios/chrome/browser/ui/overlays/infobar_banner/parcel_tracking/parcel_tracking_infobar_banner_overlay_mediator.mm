@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/parcel_tracking/parcel_tracking_infobar_banner_overlay_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface ParcelTrackingBannerOverlayMediator ()
 
@@ -40,8 +46,13 @@
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  [self dismissOverlay];
   ParcelTrackingInfobarDelegate* delegate = self.parcelTrackingInfobarDelegate;
+  if (!delegate) {
+    return;
+  }
+
+  [self dismissOverlay];
+
   ParcelTrackingStep step = delegate->GetStep();
   switch (step) {
     case ParcelTrackingStep::kAskedToTrackPackage:
@@ -59,7 +70,55 @@
 @implementation ParcelTrackingBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  // TODO(crbug.com/1473449): implement.
+  ParcelTrackingInfobarDelegate* delegate = self.parcelTrackingInfobarDelegate;
+
+  ParcelTrackingStep step = delegate->GetStep();
+  int numberOfParcels = delegate->GetParcelList().count;
+
+  NSString* title;
+  NSString* subtitle;
+  NSString* buttonText;
+  bool presentsModal;
+
+  switch (step) {
+    case ParcelTrackingStep::kNewPackageTracked:
+      title = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE,
+          numberOfParcels));
+      subtitle = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_SUBTITLE,
+          numberOfParcels));
+      buttonText =
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_INFOBAR_VIEW_BUTTON);
+      presentsModal = YES;
+      break;
+    case ParcelTrackingStep::kPackageUntracked:
+      title = l10n_util::GetNSString(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_TITLE);
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_SUBTITLE);
+      buttonText =
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_INFOBAR_VIEW_BUTTON);
+      presentsModal = YES;
+      break;
+    case ParcelTrackingStep::kAskedToTrackPackage:
+      title = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE, numberOfParcels));
+      subtitle = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_SUBTITLE,
+          numberOfParcels));
+      buttonText =
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_INFOBAR_TRACK_BUTTON);
+      presentsModal = NO;
+      break;
+  }
+
+  [self.consumer setTitleText:title];
+  [self.consumer setSubtitleText:subtitle];
+  [self.consumer setButtonText:buttonText];
+  [self.consumer setIconImage:DefaultSymbolWithPointSize(
+                                  kShippingBoxSymbol, kInfobarSymbolPointSize)];
+  [self.consumer setPresentsModal:presentsModal];
 }
 
 @end

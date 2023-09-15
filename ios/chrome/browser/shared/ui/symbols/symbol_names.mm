@@ -168,6 +168,7 @@ NSString* const kMovePlatterToTopPhoneSymbol =
 NSString* const kMovePlatterToBottomPhoneSymbol =
     @"platter.filled.bottom.and.arrow.down.iphone";
 NSString* const kMapSymbol = @"map";
+NSString* const kShippingBoxSymbol = @"shippingbox";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

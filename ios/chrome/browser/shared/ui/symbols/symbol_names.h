@@ -175,6 +175,7 @@ extern NSString* const kSpeedometerSymbol;
 extern NSString* const kMovePlatterToTopPhoneSymbol;
 extern NSString* const kMovePlatterToBottomPhoneSymbol;
 extern NSString* const kMapSymbol;
+extern NSString* const kShippingBoxSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

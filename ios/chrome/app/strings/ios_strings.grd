@@ -2130,6 +2130,28 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER" desc="Footer for the screen setting displaying tab suggestion settings.">
         Gives you tab suggestions based on your browsing activity on your other devices using your Google account. Your devices must be signed in and synced using the same Google account.
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE" desc="Text for the title string of the infobar that is displayed to prompt user to track a package.">
+        {COUNT, plural,
+        =1 {Track This Package?}
+        other {Track {COUNT} Packages?}}
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed after a new package is tracked.">
+        {COUNT, plural,
+        =1 {New Package Tracked}
+        other {New Packages Tracked}}
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_TRACK_BUTTON" desc="Text for the button on the Parcel Tracking infobars that tracks a package.">
+        Track
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_VIEW_BUTTON" desc="Text for the button on the Parcel Tracking infobars that shows the Parcel Tracking module in the NTP.">
+        View
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_TITLE" desc="Text for the title string of the infobar that is displayed after a package is untracked.">
+        Package Untracked
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_SUBTITLE" desc="Text for the subtitle string of the infobar that is displayed after a package is untracked.">
+        This package has been successfully untracked.
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_PRIMARY_ACTION" desc="Text for the primary action string of the parcel tracking opt-in half-sheet screen.">
         Always Track Detected Packages
       </message>
