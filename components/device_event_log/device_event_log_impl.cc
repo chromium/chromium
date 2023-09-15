@@ -10,6 +10,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -101,56 +102,22 @@ LogType GetLogTypeFromString(base::StringPiece desc) {
 }
 
 std::string DateAndTimeWithMicroseconds(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  // base::Time::Exploded does not include microseconds, but sometimes we need
-  // microseconds, so append '.' + usecs to the end of the formatted string.
-  int usecs = static_cast<int>(fmod(time.ToDoubleT() * 1000000, 1000000));
-  return base::StringPrintf("%04d/%02d/%02d %02d:%02d:%02d.%06d", exploded.year,
-                            exploded.month, exploded.day_of_month,
-                            exploded.hour, exploded.minute, exploded.second,
-                            usecs);
+  return base::UnlocalizedTimeFormatWithPattern(time,
+                                                "yyyy/MM/dd HH:mm:ss.SSSSSS");
 }
 
 std::string TimeWithSeconds(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return base::StringPrintf("%02d:%02d:%02d", exploded.hour, exploded.minute,
-                            exploded.second);
+  return base::UnlocalizedTimeFormatWithPattern(time, "HH:mm:ss");
 }
 
 std::string TimeWithMillieconds(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return base::StringPrintf("%02d:%02d:%02d.%03d", exploded.hour,
-                            exploded.minute, exploded.second,
-                            exploded.millisecond);
+  return base::UnlocalizedTimeFormatWithPattern(time, "HH:mm:ss.SSS");
 }
 
 #if BUILDFLAG(IS_POSIX)
 std::string UnixTime(const base::Time& time) {
-  base::Time::Exploded utc_exploded, exploded;
-  time.UTCExplode(&utc_exploded);
-  time.LocalExplode(&exploded);
-  // Note: |timezone_hours| is only used to display the correct timezone UTC
-  // offset (which alas is not conveniently provided in Time::Exploded).
-  // Thus, we don't have to account for any date shift, it is already considered
-  // in |exploded| (i.e. exploded.day may not match utc_exploded.day).
-  int timezone_hours = exploded.hour - utc_exploded.hour;
-  if (timezone_hours >= 12)
-    timezone_hours = 24 - timezone_hours;
-  else if (timezone_hours <= -12)
-    timezone_hours = 24 + timezone_hours;
-  char sign = timezone_hours > 0 ? '+' : '-';
-  // See note in DateAndTimeWithMicroseconds.
-  int usecs = static_cast<int>(fmod(time.ToDoubleT() * 1000000, 1000000));
-  // This format is consistent with the date/time format in /var/log/messages
-  // and /var/log/net.log, e.g: 2020-01-23T01:23:45.678901-07:00.
-  // Note: %+02d does not respect the '0', resulting in e.g. +7:00.
-  return base::StringPrintf(
-      "%04d-%02d-%02dT%02d:%02d:%02d.%06d%c%02d:00", exploded.year,
-      exploded.month, exploded.day_of_month, exploded.hour, exploded.minute,
-      exploded.second, usecs, sign, std::abs(timezone_hours));
+  return base::UnlocalizedTimeFormatWithPattern(
+      time, "yyyy-MM-dd'T'HH:mm:ss.SSSSSSxxx");
 }
 #endif
 
