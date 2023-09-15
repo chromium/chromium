@@ -38,12 +38,12 @@ PropertyCache::~PropertyCache() {
 
 const GetPropertyResponse& PropertyCache::Get(Atom atom) {
   auto it = properties_.find(atom);
-  DCHECK(it != properties_.end());
+  DUMP_WILL_BE_CHECK(it != properties_.end());
 
   if (!it->second.response.has_value()) {
     it->second.future.DispatchNow();
   }
-  DCHECK(it->second.response.has_value());
+  DUMP_WILL_BE_CHECK(it->second.response.has_value());
 
   return it->second.response.value();
 }
@@ -63,7 +63,7 @@ void PropertyCache::OnEvent(const Event& xev) {
   if (prop->state == Property::NewValue) {
     FetchProperty(it);
   } else {
-    DCHECK_EQ(prop->state, Property::Delete);
+    DUMP_WILL_BE_CHECK_EQ(prop->state, Property::Delete);
     // When the property is deleted, a GetPropertyRequest will result in a
     // zeroed GetPropertyReply, so set the reply state now to avoid making an
     // unnecessary request.

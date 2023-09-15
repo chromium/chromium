@@ -94,7 +94,7 @@ void ReadError<Render::PictFormatError>(Render::PictFormatError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Render::PictureError::ToString() const {
   std::stringstream ss_;
@@ -137,7 +137,7 @@ void ReadError<Render::PictureError>(Render::PictureError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Render::PictOpError::ToString() const {
   std::stringstream ss_;
@@ -180,7 +180,7 @@ void ReadError<Render::PictOpError>(Render::PictOpError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Render::GlyphSetError::ToString() const {
   std::stringstream ss_;
@@ -223,7 +223,7 @@ void ReadError<Render::GlyphSetError>(Render::GlyphSetError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Render::GlyphError::ToString() const {
   std::stringstream ss_;
@@ -266,7 +266,7 @@ void ReadError<Render::GlyphError>(Render::GlyphError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<Render::QueryVersionReply> Render::QueryVersion(
     const Render::QueryVersionRequest& request) {
@@ -344,7 +344,7 @@ std::unique_ptr<Render::QueryVersionReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -564,7 +564,7 @@ std::unique_ptr<Render::QueryPictFormatsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -666,7 +666,7 @@ std::unique_ptr<Render::QueryPictIndexValuesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1060,7 +1060,7 @@ Future<void> Render::SetPictureClipRectangles(
   buf.Write(&clip_y_origin);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -1276,7 +1276,7 @@ Future<void> Render::Trapezoids(const Render::TrapezoidsRequest& request) {
   buf.Write(&src_y);
 
   // traps
-  DCHECK_EQ(static_cast<size_t>(traps_len), traps.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(traps_len), traps.size());
   for (auto& traps_elem : traps) {
     // traps_elem
     {
@@ -1420,7 +1420,7 @@ Future<void> Render::Triangles(const Render::TrianglesRequest& request) {
   buf.Write(&src_y);
 
   // triangles
-  DCHECK_EQ(static_cast<size_t>(triangles_len), triangles.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(triangles_len), triangles.size());
   for (auto& triangles_elem : triangles) {
     // triangles_elem
     {
@@ -1533,7 +1533,7 @@ Future<void> Render::TriStrip(const Render::TriStripRequest& request) {
   buf.Write(&src_y);
 
   // points
-  DCHECK_EQ(static_cast<size_t>(points_len), points.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(points_len), points.size());
   for (auto& points_elem : points) {
     // points_elem
     {
@@ -1615,7 +1615,7 @@ Future<void> Render::TriFan(const Render::TriFanRequest& request) {
   buf.Write(&src_y);
 
   // points
-  DCHECK_EQ(static_cast<size_t>(points_len), points.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(points_len), points.size());
   for (auto& points_elem : points) {
     // points_elem
     {
@@ -1790,14 +1790,14 @@ Future<void> Render::AddGlyphs(const Render::AddGlyphsRequest& request) {
   buf.Write(&glyphs_len);
 
   // glyphids
-  DCHECK_EQ(static_cast<size_t>(glyphs_len), glyphids.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphs_len), glyphids.size());
   for (auto& glyphids_elem : glyphids) {
     // glyphids_elem
     buf.Write(&glyphids_elem);
   }
 
   // glyphs
-  DCHECK_EQ(static_cast<size_t>(glyphs_len), glyphs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphs_len), glyphs.size());
   for (auto& glyphs_elem : glyphs) {
     // glyphs_elem
     {
@@ -1829,7 +1829,7 @@ Future<void> Render::AddGlyphs(const Render::AddGlyphsRequest& request) {
   }
 
   // data
-  DCHECK_EQ(static_cast<size_t>(data_len), data.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -1874,7 +1874,7 @@ Future<void> Render::FreeGlyphs(const Render::FreeGlyphsRequest& request) {
   buf.Write(&glyphset);
 
   // glyphs
-  DCHECK_EQ(static_cast<size_t>(glyphs_len), glyphs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphs_len), glyphs.size());
   for (auto& glyphs_elem : glyphs) {
     // glyphs_elem
     buf.Write(&glyphs_elem);
@@ -1946,7 +1946,7 @@ Future<void> Render::CompositeGlyphs8(
   buf.Write(&src_y);
 
   // glyphcmds
-  DCHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
   for (auto& glyphcmds_elem : glyphcmds) {
     // glyphcmds_elem
     buf.Write(&glyphcmds_elem);
@@ -2026,7 +2026,7 @@ Future<void> Render::CompositeGlyphs16(
   buf.Write(&src_y);
 
   // glyphcmds
-  DCHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
   for (auto& glyphcmds_elem : glyphcmds) {
     // glyphcmds_elem
     buf.Write(&glyphcmds_elem);
@@ -2106,7 +2106,7 @@ Future<void> Render::CompositeGlyphs32(
   buf.Write(&src_y);
 
   // glyphcmds
-  DCHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glyphcmds_len), glyphcmds.size());
   for (auto& glyphcmds_elem : glyphcmds) {
     // glyphcmds_elem
     buf.Write(&glyphcmds_elem);
@@ -2187,7 +2187,7 @@ Future<void> Render::FillRectangles(
   }
 
   // rects
-  DCHECK_EQ(static_cast<size_t>(rects_len), rects.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(rects_len), rects.size());
   for (auto& rects_elem : rects) {
     // rects_elem
     {
@@ -2448,7 +2448,7 @@ std::unique_ptr<Render::QueryFiltersReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2489,7 +2489,7 @@ Future<void> Render::SetPictureFilter(
   Pad(&buf, 2);
 
   // filter
-  DCHECK_EQ(static_cast<size_t>(filter_len), filter.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(filter_len), filter.size());
   for (auto& filter_elem : filter) {
     // filter_elem
     buf.Write(&filter_elem);
@@ -2499,7 +2499,7 @@ Future<void> Render::SetPictureFilter(
   Align(&buf, 4);
 
   // values
-  DCHECK_EQ(static_cast<size_t>(values_len), values.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(values_len), values.size());
   for (auto& values_elem : values) {
     // values_elem
     buf.Write(&values_elem);
@@ -2545,7 +2545,7 @@ Future<void> Render::CreateAnimCursor(
   buf.Write(&cid);
 
   // cursors
-  DCHECK_EQ(static_cast<size_t>(cursors_len), cursors.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(cursors_len), cursors.size());
   for (auto& cursors_elem : cursors) {
     // cursors_elem
     {
@@ -2607,7 +2607,7 @@ Future<void> Render::AddTraps(const Render::AddTrapsRequest& request) {
   buf.Write(&y_off);
 
   // traps
-  DCHECK_EQ(static_cast<size_t>(traps_len), traps.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(traps_len), traps.size());
   for (auto& traps_elem : traps) {
     // traps_elem
     {
@@ -2777,14 +2777,14 @@ Future<void> Render::CreateLinearGradient(
   buf.Write(&num_stops);
 
   // stops
-  DCHECK_EQ(static_cast<size_t>(num_stops), stops.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), stops.size());
   for (auto& stops_elem : stops) {
     // stops_elem
     buf.Write(&stops_elem);
   }
 
   // colors
-  DCHECK_EQ(static_cast<size_t>(num_stops), colors.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), colors.size());
   for (auto& colors_elem : colors) {
     // colors_elem
     {
@@ -2890,14 +2890,14 @@ Future<void> Render::CreateRadialGradient(
   buf.Write(&num_stops);
 
   // stops
-  DCHECK_EQ(static_cast<size_t>(num_stops), stops.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), stops.size());
   for (auto& stops_elem : stops) {
     // stops_elem
     buf.Write(&stops_elem);
   }
 
   // colors
-  DCHECK_EQ(static_cast<size_t>(num_stops), colors.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), colors.size());
   for (auto& colors_elem : colors) {
     // colors_elem
     {
@@ -2988,14 +2988,14 @@ Future<void> Render::CreateConicalGradient(
   buf.Write(&num_stops);
 
   // stops
-  DCHECK_EQ(static_cast<size_t>(num_stops), stops.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), stops.size());
   for (auto& stops_elem : stops) {
     // stops_elem
     buf.Write(&stops_elem);
   }
 
   // colors
-  DCHECK_EQ(static_cast<size_t>(num_stops), colors.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_stops), colors.size());
   for (auto& colors_elem : colors) {
     // colors_elem
     {

@@ -126,7 +126,7 @@ std::unique_ptr<Dpms::GetVersionReply> detail::ReadReply<Dpms::GetVersionReply>(
   Read(&server_minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -190,7 +190,7 @@ std::unique_ptr<Dpms::CapableReply> detail::ReadReply<Dpms::CapableReply>(
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -263,7 +263,7 @@ std::unique_ptr<Dpms::GetTimeoutsReply> detail::ReadReply<
   Pad(&buf, 18);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -463,7 +463,7 @@ std::unique_ptr<Dpms::InfoReply> detail::ReadReply<Dpms::InfoReply>(
   Pad(&buf, 21);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

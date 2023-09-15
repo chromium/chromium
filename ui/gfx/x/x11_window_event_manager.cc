@@ -64,7 +64,7 @@ class XWindowEventManager::MultiMask {
   void RemoveMask(EventMask mask) {
     for (int i = 0; i < kMaskSize; i++) {
       if (static_cast<uint32_t>(mask) & (1 << i)) {
-        DCHECK(mask_bits_[i]);
+        DUMP_WILL_BE_CHECK(mask_bits_[i]);
         mask_bits_[i]--;
       }
     }
@@ -103,7 +103,7 @@ void XWindowEventManager::SelectEvents(Window window, EventMask event_mask) {
 }
 
 void XWindowEventManager::DeselectEvents(Window window, EventMask event_mask) {
-  DCHECK(mask_map_.find(window) != mask_map_.end());
+  DUMP_WILL_BE_CHECK(mask_map_.find(window) != mask_map_.end());
   std::unique_ptr<MultiMask>& mask = mask_map_[window];
   EventMask old_mask = mask->ToMask();
   mask->RemoveMask(event_mask);

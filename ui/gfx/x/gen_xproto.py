@@ -595,7 +595,8 @@ class GenXproto(FileWriter):
                 self.write('%s.resize(%s);' % (name, size))
             else:
                 left = 'static_cast<size_t>(%s)' % size
-                self.write('DCHECK_EQ(%s, %s.size());' % (left, name))
+                self.write('DUMP_WILL_BE_CHECK_EQ(%s, %s.size());' %
+                           (left, name))
         with Indent(self, 'for (auto& %s_elem : %s) {' % (name, name), '}'):
             elem_name = name + '_elem'
             elem_type = t.member
@@ -986,7 +987,7 @@ class GenXproto(FileWriter):
             self.copy_container(reply, '(*reply)')
             self.write('Align(&buf, 4);')
             offset = 'buf.offset < 32 ? 0 : buf.offset - 32'
-            self.write('DCHECK_EQ(%s, 4 * length);' % offset)
+            self.write('DUMP_WILL_BE_CHECK_EQ(%s, 4 * length);' % offset)
             self.write()
             self.write('return reply;')
         self.write()
@@ -1003,9 +1004,10 @@ class GenXproto(FileWriter):
             self.copy_container(event, '(*event_)')
             if event.is_ge_event:
                 self.write('Align(&buf, 4);')
-                self.write('DCHECK_EQ(buf.offset, 32 + 4 * length);')
+                self.write(
+                    'DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);')
             else:
-                self.write('DCHECK_LE(buf.offset, 32ul);')
+                self.write('DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);')
         self.write()
 
     def define_error(self, error, name):
@@ -1029,7 +1031,7 @@ class GenXproto(FileWriter):
             self.write()
             self.is_read = True
             self.copy_container(error, '(*error_)')
-            self.write('DCHECK_LE(buf.offset, 32ul);')
+            self.write('DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);')
 
     def define_type(self, item, name):
         if name in READ_SPECIAL:

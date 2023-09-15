@@ -126,7 +126,7 @@ std::unique_ptr<SELinux::QueryVersionReply> detail::ReadReply<
   Read(&server_minor, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -158,7 +158,7 @@ Future<void> SELinux::SetDeviceCreateContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -244,7 +244,7 @@ std::unique_ptr<SELinux::GetDeviceCreateContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -280,7 +280,7 @@ Future<void> SELinux::SetDeviceContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -372,7 +372,7 @@ std::unique_ptr<SELinux::GetDeviceContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -404,7 +404,7 @@ Future<void> SELinux::SetWindowCreateContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -490,7 +490,7 @@ std::unique_ptr<SELinux::GetWindowCreateContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -569,7 +569,7 @@ std::unique_ptr<SELinux::GetWindowContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -601,7 +601,7 @@ Future<void> SELinux::SetPropertyCreateContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -689,7 +689,7 @@ std::unique_ptr<SELinux::GetPropertyCreateContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -721,7 +721,7 @@ Future<void> SELinux::SetPropertyUseContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -807,7 +807,7 @@ std::unique_ptr<SELinux::GetPropertyUseContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -892,7 +892,7 @@ std::unique_ptr<SELinux::GetPropertyContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -977,7 +977,7 @@ std::unique_ptr<SELinux::GetPropertyDataContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1091,7 +1091,7 @@ std::unique_ptr<SELinux::ListPropertiesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1123,7 +1123,7 @@ Future<void> SELinux::SetSelectionCreateContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -1211,7 +1211,7 @@ std::unique_ptr<SELinux::GetSelectionCreateContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1243,7 +1243,7 @@ Future<void> SELinux::SetSelectionUseContext(
   buf.Write(&context_len);
 
   // context
-  DCHECK_EQ(static_cast<size_t>(context_len), context.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(context_len), context.size());
   for (auto& context_elem : context) {
     // context_elem
     buf.Write(&context_elem);
@@ -1329,7 +1329,7 @@ std::unique_ptr<SELinux::GetSelectionUseContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1409,7 +1409,7 @@ std::unique_ptr<SELinux::GetSelectionContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1489,7 +1489,7 @@ std::unique_ptr<SELinux::GetSelectionDataContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1597,7 +1597,7 @@ std::unique_ptr<SELinux::ListSelectionsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1676,7 +1676,7 @@ std::unique_ptr<SELinux::GetClientContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

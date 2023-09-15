@@ -126,7 +126,7 @@ std::unique_ptr<Dri3::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -200,7 +200,7 @@ std::unique_ptr<Dri3::OpenReply> detail::ReadReply<Dri3::OpenReply>(
   Pad(&buf, 24);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -370,7 +370,7 @@ std::unique_ptr<Dri3::BufferFromPixmapReply> detail::ReadReply<
   Pad(&buf, 12);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -497,7 +497,7 @@ std::unique_ptr<Dri3::FDFromFenceReply> detail::ReadReply<
   Pad(&buf, 24);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -604,7 +604,7 @@ std::unique_ptr<Dri3::GetSupportedModifiersReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -703,7 +703,7 @@ Future<void> Dri3::PixmapFromBuffers(
   buf.Write(&modifier);
 
   // buffers
-  DCHECK_EQ(static_cast<size_t>(num_buffers), buffers.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_buffers), buffers.size());
   for (auto& buffers_elem : buffers) {
     // buffers_elem
     buf.fds().push_back(HANDLE_EINTR(dup(buffers_elem.get())));
@@ -848,7 +848,7 @@ std::unique_ptr<Dri3::BuffersFromPixmapReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

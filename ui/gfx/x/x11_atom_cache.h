@@ -27,9 +27,9 @@ namespace x11 {
 COMPONENT_EXPORT(X11) Atom GetAtom(const std::string& atom_name);
 
 // Pre-caches all Atoms on first use to minimize roundtrips to the X11
-// server. By default, GetAtom() will CHECK() that atoms accessed through
-// GetAtom() were passed to the constructor, but this behaviour can be changed
-// with allow_uncached_atoms().
+// server. By default, GetAtom() will DUMP_WILL_BE_CHECK() that atoms accessed
+// through GetAtom() were passed to the constructor, but this behaviour can be
+// changed with allow_uncached_atoms().
 class COMPONENT_EXPORT(X11) X11AtomCache {
  public:
   static X11AtomCache* GetInstance();

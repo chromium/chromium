@@ -105,7 +105,7 @@ void ReadEvent<Dri2::BufferSwapCompleteEvent>(
   // sbc
   Read(&sbc, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -131,7 +131,7 @@ void ReadEvent<Dri2::InvalidateBuffersEvent>(
   // drawable
   Read(&drawable, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 Future<Dri2::QueryVersionReply> Dri2::QueryVersion(
@@ -207,7 +207,7 @@ std::unique_ptr<Dri2::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -311,7 +311,7 @@ std::unique_ptr<Dri2::ConnectReply> detail::ReadReply<Dri2::ConnectReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -383,7 +383,7 @@ std::unique_ptr<Dri2::AuthenticateReply> detail::ReadReply<
   Read(&authenticated, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -484,7 +484,8 @@ Future<Dri2::GetBuffersReply> Dri2::GetBuffers(
   buf.Write(&count);
 
   // attachments
-  DCHECK_EQ(static_cast<size_t>(attachments_len), attachments.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(attachments_len),
+                        attachments.size());
   for (auto& attachments_elem : attachments) {
     // attachments_elem
     buf.Write(&attachments_elem);
@@ -575,7 +576,7 @@ std::unique_ptr<Dri2::GetBuffersReply> detail::ReadReply<Dri2::GetBuffersReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -653,7 +654,7 @@ std::unique_ptr<Dri2::CopyRegionReply> detail::ReadReply<Dri2::CopyRegionReply>(
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -689,7 +690,8 @@ Future<Dri2::GetBuffersWithFormatReply> Dri2::GetBuffersWithFormat(
   buf.Write(&count);
 
   // attachments
-  DCHECK_EQ(static_cast<size_t>(attachments_len), attachments.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(attachments_len),
+                        attachments.size());
   for (auto& attachments_elem : attachments) {
     // attachments_elem
     {
@@ -791,7 +793,7 @@ std::unique_ptr<Dri2::GetBuffersWithFormatReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -894,7 +896,7 @@ std::unique_ptr<Dri2::SwapBuffersReply> detail::ReadReply<
   Read(&swap_lo, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -980,7 +982,7 @@ std::unique_ptr<Dri2::GetMSCReply> detail::ReadReply<Dri2::GetMSCReply>(
   Read(&sbc_lo, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1098,7 +1100,7 @@ std::unique_ptr<Dri2::WaitMSCReply> detail::ReadReply<Dri2::WaitMSCReply>(
   Read(&sbc_lo, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1195,7 +1197,7 @@ std::unique_ptr<Dri2::WaitSBCReply> detail::ReadReply<Dri2::WaitSBCReply>(
   Read(&sbc_lo, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1309,7 +1311,7 @@ std::unique_ptr<Dri2::GetParamReply> detail::ReadReply<Dri2::GetParamReply>(
   Read(&value_lo, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

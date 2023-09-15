@@ -80,7 +80,7 @@ void ReadEvent<XPrint::NotifyEvent>(XPrint::NotifyEvent* event_,
   // cancel
   Read(&cancel, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -106,7 +106,7 @@ void ReadEvent<XPrint::AttributNotifyEvent>(XPrint::AttributNotifyEvent* event_,
   // context
   Read(&context, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 std::string XPrint::BadContextError::ToString() const {
@@ -150,7 +150,7 @@ void ReadError<XPrint::BadContextError>(XPrint::BadContextError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XPrint::BadSequenceError::ToString() const {
   std::stringstream ss_;
@@ -193,7 +193,7 @@ void ReadError<XPrint::BadSequenceError>(XPrint::BadSequenceError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<XPrint::PrintQueryVersionReply> XPrint::PrintQueryVersion(
     const XPrint::PrintQueryVersionRequest& request) {
@@ -256,7 +256,7 @@ std::unique_ptr<XPrint::PrintQueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -296,7 +296,8 @@ Future<XPrint::PrintGetPrinterListReply> XPrint::PrintGetPrinterList(
   buf.Write(&localeLen);
 
   // printer_name
-  DCHECK_EQ(static_cast<size_t>(printerNameLen), printer_name.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(printerNameLen),
+                        printer_name.size());
   for (auto& printer_name_elem : printer_name) {
     // printer_name_elem
     buf.Write(&printer_name_elem);
@@ -306,7 +307,7 @@ Future<XPrint::PrintGetPrinterListReply> XPrint::PrintGetPrinterList(
   Align(&buf, 4);
 
   // locale
-  DCHECK_EQ(static_cast<size_t>(localeLen), locale.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(localeLen), locale.size());
   for (auto& locale_elem : locale) {
     // locale_elem
     buf.Write(&locale_elem);
@@ -398,7 +399,7 @@ std::unique_ptr<XPrint::PrintGetPrinterListReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -472,7 +473,8 @@ Future<void> XPrint::CreateContext(
   buf.Write(&localeLen);
 
   // printerName
-  DCHECK_EQ(static_cast<size_t>(printerNameLen), printerName.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(printerNameLen),
+                        printerName.size());
   for (auto& printerName_elem : printerName) {
     // printerName_elem
     buf.Write(&printerName_elem);
@@ -482,7 +484,7 @@ Future<void> XPrint::CreateContext(
   Align(&buf, 4);
 
   // locale
-  DCHECK_EQ(static_cast<size_t>(localeLen), locale.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(localeLen), locale.size());
   for (auto& locale_elem : locale) {
     // locale_elem
     buf.Write(&locale_elem);
@@ -590,7 +592,7 @@ std::unique_ptr<XPrint::PrintGetContextReply> detail::ReadReply<
   Read(&context, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -688,7 +690,7 @@ std::unique_ptr<XPrint::PrintGetScreenOfContextReply> detail::ReadReply<
   Read(&root, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -869,7 +871,7 @@ Future<void> XPrint::PrintPutDocumentData(
   buf.Write(&len_options);
 
   // data
-  DCHECK_EQ(static_cast<size_t>(len_data), data.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(len_data), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -879,7 +881,7 @@ Future<void> XPrint::PrintPutDocumentData(
   Align(&buf, 4);
 
   // doc_format
-  DCHECK_EQ(static_cast<size_t>(len_fmt), doc_format.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(len_fmt), doc_format.size());
   for (auto& doc_format_elem : doc_format) {
     // doc_format_elem
     buf.Write(&doc_format_elem);
@@ -889,7 +891,7 @@ Future<void> XPrint::PrintPutDocumentData(
   Align(&buf, 4);
 
   // options
-  DCHECK_EQ(static_cast<size_t>(len_options), options.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(len_options), options.size());
   for (auto& options_elem : options) {
     // options_elem
     buf.Write(&options_elem);
@@ -999,7 +1001,7 @@ std::unique_ptr<XPrint::PrintGetDocumentDataReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1179,7 +1181,7 @@ std::unique_ptr<XPrint::PrintInputSelectedReply> detail::ReadReply<
   Read(&all_events_mask, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1268,7 +1270,7 @@ std::unique_ptr<XPrint::PrintGetAttributesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1312,7 +1314,7 @@ Future<XPrint::PrintGetOneAttributesReply> XPrint::PrintGetOneAttributes(
   Pad(&buf, 3);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(nameLen), name.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nameLen), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -1372,7 +1374,7 @@ std::unique_ptr<XPrint::PrintGetOneAttributesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1419,7 +1421,7 @@ Future<void> XPrint::PrintSetAttributes(
   Pad(&buf, 2);
 
   // attributes
-  DCHECK_EQ(static_cast<size_t>(attributes_len), attributes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(attributes_len), attributes.size());
   for (auto& attributes_elem : attributes) {
     // attributes_elem
     buf.Write(&attributes_elem);
@@ -1525,7 +1527,7 @@ std::unique_ptr<XPrint::PrintGetPageDimensionsReply> detail::ReadReply<
   Read(&reproducible_height, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1599,7 +1601,7 @@ std::unique_ptr<XPrint::PrintQueryScreensReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1674,7 +1676,7 @@ std::unique_ptr<XPrint::PrintSetImageResolutionReply> detail::ReadReply<
   Read(&previous_resolutions, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1743,7 +1745,7 @@ std::unique_ptr<XPrint::PrintGetImageResolutionReply> detail::ReadReply<
   Read(&image_resolution, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

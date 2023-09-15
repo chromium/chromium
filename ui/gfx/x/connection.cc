@@ -61,8 +61,9 @@ class UnknownError : public Error {
       char buf[3];
       sprintf(buf, "%02x", error_bytes_->data()[i]);
       ss << "0x" << buf;
-      if (i != 31)
+      if (i != 31) {
         ss << ", ";
+      }
     }
     ss << "}";
     return ss.str();
@@ -77,8 +78,9 @@ class UnknownError : public Error {
 // static
 Connection* Connection::Get() {
   auto& tls = GetConnectionTLS();
-  if (Connection* connection = tls.Get())
+  if (Connection* connection = tls.Get()) {
     return connection;
+  }
   auto connection = std::make_unique<Connection>();
   auto* p_connection = connection.get();
   tls.Set(std::move(connection));
@@ -89,7 +91,7 @@ Connection* Connection::Get() {
 void Connection::Set(std::unique_ptr<Connection> connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
   auto& tls = GetConnectionTLS();
-  DCHECK(!tls.Get());
+  DUMP_WILL_BE_CHECK(!tls.Get());
   tls.Set(std::move(connection));
 }
 
@@ -106,7 +108,7 @@ Connection::Connection(const std::string& address)
                   xcb_disconnect),
       error_handler_(base::BindRepeating(DefaultErrorHandler)),
       io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
-  DCHECK(connection_);
+  DUMP_WILL_BE_CHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
                               xcb_get_setup(XcbConnection())),
@@ -131,17 +133,20 @@ Connection::Connection(const std::string& address)
   xkb()
       .UseExtension({Xkb::major_version, Xkb::minor_version})
       .OnResponse(base::BindOnce([](Xkb::UseExtensionResponse response) {
-        if (!response || !response->supported)
+        if (!response || !response->supported) {
           DVLOG(1) << "Xkb extension not available.";
+        }
       }));
   Flush();
-  if (auto response = enable_bigreq.Sync())
+  if (auto response = enable_bigreq.Sync()) {
     extended_max_request_length_ = response->maximum_request_length;
+  }
 
   const Format* formats[256];
   memset(formats, 0, sizeof(formats));
-  for (const auto& format : setup_.pixmap_formats)
+  for (const auto& format : setup_.pixmap_formats) {
     formats[format.depth] = &format;
+  }
 
   std::vector<std::pair<VisualId, VisualInfo>> default_screen_visuals;
   for (const auto& depth : default_screen().allowed_depths) {
@@ -172,8 +177,9 @@ size_t Connection::MaxRequestSizeInBytes() const {
 
 XlibDisplay& Connection::GetXlibDisplay() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!xlib_display_)
+  if (!xlib_display_) {
     xlib_display_ = base::WrapUnique(new XlibDisplay(display_string_));
+  }
   return *xlib_display_;
 }
 
@@ -211,11 +217,11 @@ void Connection::FutureImpl::OnResponse(ResponseCallback callback) {
 
 void Connection::FutureImpl::UpdateRequestHandler(ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
-  DCHECK(callback);
+  DUMP_WILL_BE_CHECK(callback);
 
   auto* request = connection->GetRequestForFuture(this);
   // Make sure we haven't processed this request yet.
-  DCHECK(request->callback);
+  DUMP_WILL_BE_CHECK(request->callback);
 
   request->callback = std::move(callback);
 }
@@ -224,8 +230,8 @@ void Connection::FutureImpl::ProcessResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
 
   auto* request = connection->GetRequestForFuture(this);
-  DCHECK(request->callback);
-  DCHECK(request->have_response);
+  DUMP_WILL_BE_CHECK(request->callback);
+  DUMP_WILL_BE_CHECK(request->have_response);
 
   std::move(request->callback)
       .Run(std::move(request->reply), std::move(request->error));
@@ -236,8 +242,8 @@ void Connection::FutureImpl::TakeResponse(RawReply* raw_reply,
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
 
   auto* request = connection->GetRequestForFuture(this);
-  DCHECK(request->callback);
-  DCHECK(request->have_response);
+  DUMP_WILL_BE_CHECK(request->callback);
+  DUMP_WILL_BE_CHECK(request->have_response);
 
   *raw_reply = std::move(request->reply);
   *error = std::move(request->error);
@@ -246,7 +252,7 @@ void Connection::FutureImpl::TakeResponse(RawReply* raw_reply,
 
 Connection::Request::Request(ResponseCallback callback)
     : callback(std::move(callback)) {
-  DCHECK(this->callback);
+  DUMP_WILL_BE_CHECK(this->callback);
 }
 
 Connection::Request::Request(Request&& other) = default;
@@ -257,8 +263,9 @@ void Connection::Request::SetResponse(Connection* connection,
                                       void* raw_reply,
                                       void* raw_error) {
   have_response = true;
-  if (raw_reply)
+  if (raw_reply) {
     reply = base::MakeRefCounted<MallocedRefCountedMemory>(raw_reply);
+  }
   if (raw_error) {
     error = connection->ParseError(
         base::MakeRefCounted<MallocedRefCountedMemory>(raw_error));
@@ -266,16 +273,19 @@ void Connection::Request::SetResponse(Connection* connection,
 }
 
 bool Connection::HasNextResponse() {
-  if (requests_.empty())
+  if (requests_.empty()) {
     return false;
+  }
   auto& request = requests_.front();
-  if (request.have_response)
+  if (request.have_response) {
     return true;
+  }
 
   void* reply = nullptr;
   xcb_generic_error_t* error = nullptr;
-  if (!xcb_poll_for_reply(XcbConnection(), first_request_id_, &reply, &error))
+  if (!xcb_poll_for_reply(XcbConnection(), first_request_id_, &reply, &error)) {
     return false;
+  }
 
   request.SetResponse(this, reply, error);
   return true;
@@ -283,8 +293,9 @@ bool Connection::HasNextResponse() {
 
 bool Connection::HasNextEvent() {
   while (!events_.empty()) {
-    if (events_.front().Initialized())
+    if (events_.front().Initialized()) {
       return true;
+    }
     events_.pop_front();
   }
   return false;
@@ -333,8 +344,9 @@ void Connection::Flush() {
 
 void Connection::Sync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (syncing_)
+  if (syncing_) {
     return;
+  }
   {
     base::AutoReset<bool> auto_reset(&syncing_, true);
     GetInputFocus().Sync();
@@ -344,8 +356,9 @@ void Connection::Sync() {
 void Connection::SynchronizeForTest(bool synchronous) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   synchronous_ = synchronous;
-  if (synchronous_)
+  if (synchronous_) {
     Sync();
+  }
 }
 
 void Connection::ReadResponses() {
@@ -388,8 +401,9 @@ const Connection::VisualInfo* Connection::GetVisualInfoFromId(
     VisualId id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = default_screen_visuals_.find(id);
-  if (it != default_screen_visuals_.end())
+  if (it != default_screen_visuals_.end()) {
     return &it->second;
+  }
   return nullptr;
 }
 
@@ -424,10 +438,11 @@ bool Connection::Dispatch() {
     // All events have the sequence number of the last processed request
     // included in them.  So if a reply and an event have the same sequence,
     // the reply must have been received first.
-    if (CompareSequenceIds(next_event_sequence, next_response_sequence) <= 0)
+    if (CompareSequenceIds(next_event_sequence, next_response_sequence) <= 0) {
       ProcessNextResponse();
-    else
+    } else {
       ProcessNextEvent();
+    }
   } else if (HasNextResponse()) {
     ProcessNextResponse();
   } else if (HasNextEvent()) {
@@ -453,8 +468,9 @@ void Connection::DispatchEvent(const Event& event) {
   // will incorrectly think that the current event being dispatched is
   // an old event.  This means base::AutoReset should not be used.
   dispatching_event_ = &event;
-  for (auto& observer : event_observers_)
+  for (auto& observer : event_observers_) {
     observer.OnEvent(event);
+  }
   dispatching_event_ = nullptr;
 }
 
@@ -480,8 +496,9 @@ void Connection::RemoveEventObserver(EventObserver* observer) {
 
 xcb_connection_t* Connection::XcbConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (io_error_handler_ && xcb_connection_has_error(connection_.get()))
+  if (io_error_handler_ && xcb_connection_has_error(connection_.get())) {
     std::move(io_error_handler_).Run();
+  }
   return connection_.get();
 }
 
@@ -500,7 +517,7 @@ void Connection::InitRootDepthAndVisual() {
 
 void Connection::ProcessNextEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(HasNextEvent());
+  DUMP_WILL_BE_CHECK(HasNextEvent());
 
   Event event = std::move(events_.front());
   events_.pop_front();
@@ -510,8 +527,8 @@ void Connection::ProcessNextEvent() {
 
 void Connection::ProcessNextResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!requests_.empty());
-  DCHECK(requests_.front().have_response);
+  DUMP_WILL_BE_CHECK(!requests_.empty());
+  DUMP_WILL_BE_CHECK(requests_.front().have_response);
 
   Request request = std::move(requests_.front());
   requests_.pop_front();
@@ -551,14 +568,14 @@ std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
   static_assert(sizeof(ExtendedRequestHeader) == 8, "");
 
   auto& first_buffer = buf->GetBuffers()[0];
-  DCHECK_GE(first_buffer->size(), sizeof(RequestHeader));
+  DUMP_WILL_BE_CHECK_GE(first_buffer->size(), sizeof(RequestHeader));
   auto* old_header = reinterpret_cast<RequestHeader*>(
       const_cast<uint8_t*>(first_buffer->data()));
   ExtendedRequestHeader new_header{*old_header, 0};
 
   // Requests are always a multiple of 4 bytes on the wire.  Because of this,
   // the length field represents the size in chunks of 4 bytes.
-  DCHECK_EQ(buf->offset() % 4, 0UL);
+  DUMP_WILL_BE_CHECK_EQ(buf->offset() % 4, 0UL);
   size_t size32 = buf->offset() / 4;
 
   // XCB requires 2 iovecs for its own internal usage.
@@ -568,7 +585,7 @@ std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
     old_header->length = size32;
   } else if (size32 < extended_max_request_length_) {
     // BigRequests extension request
-    DCHECK_EQ(new_header.header.length, 0U);
+    DUMP_WILL_BE_CHECK_EQ(new_header.header.length, 0U);
     new_header.long_length = size32 + 1;
 
     io.push_back({&new_header, sizeof(ExtendedRequestHeader)});
@@ -580,44 +597,51 @@ std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
     return nullptr;
   }
 
-  for (auto& buffer : buf->GetBuffers())
+  for (auto& buffer : buf->GetBuffers()) {
     io.push_back({const_cast<uint8_t*>(buffer->data()), buffer->size()});
+  }
   xpr.count = io.size() - 2;
 
   xcb_connection_t* conn = XcbConnection();
   auto flags = XCB_REQUEST_CHECKED | XCB_REQUEST_RAW;
-  if (reply_has_fds)
+  if (reply_has_fds) {
     flags |= XCB_REQUEST_REPLY_FDS;
+  }
 
-  for (int fd : buf->fds())
+  for (int fd : buf->fds()) {
     xcb_send_fd(conn, fd);
+  }
   SequenceType sequence = xcb_send_request(conn, flags, &io[2], &xpr);
 
-  if (xcb_connection_has_error(conn))
+  if (xcb_connection_has_error(conn)) {
     return nullptr;
+  }
 
   SequenceType next_request_id = first_request_id_ + requests_.size();
-  DCHECK_EQ(CompareSequenceIds(next_request_id, sequence), 0);
+  DUMP_WILL_BE_CHECK_EQ(CompareSequenceIds(next_request_id, sequence), 0);
 
   // If we ever reach 2^32 outstanding requests, then bail because sequence IDs
   // would no longer be unique.
   next_request_id++;
-  CHECK_NE(next_request_id, first_request_id_);
+  DUMP_WILL_BE_CHECK_NE(next_request_id, first_request_id_);
 
   // Install a default response-handler that throws away the reply and prints
   // the error if there is one.  This handler may be overridden by clients.
   auto callback = base::BindOnce(
       [](const char* request_name, Connection::ErrorHandler error_handler,
          RawReply raw_reply, std::unique_ptr<Error> error) {
-        if (error)
+        if (error) {
           error_handler.Run(error.get(), request_name);
+        }
       },
       request_name_for_tracing, error_handler_);
   requests_.emplace_back(std::move(callback));
-  if (generates_reply)
+  if (generates_reply) {
     last_non_void_request_id_ = sequence;
-  if (synchronous_)
+  }
+  if (synchronous_) {
     Sync();
+  }
 
   return std::make_unique<FutureImpl>(this, sequence, generates_reply,
                                       request_name_for_tracing);
@@ -627,9 +651,10 @@ void Connection::WaitForResponse(FutureImpl* future) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto* request = GetRequestForFuture(future);
-  DCHECK(request->callback);
-  if (request->have_response)
+  DUMP_WILL_BE_CHECK(request->callback);
+  if (request->have_response) {
     return;
+  }
 
   xcb_generic_error_t* error = nullptr;
   void* reply = nullptr;
@@ -685,7 +710,7 @@ Connection::Request* Connection::GetRequestForFuture(FutureImpl* future) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SequenceType offset = future->sequence - first_request_id_;
-  DCHECK_LT(offset, requests_.size());
+  DUMP_WILL_BE_CHECK_LT(offset, requests_.size());
   return &requests_[offset];
 }
 
@@ -714,7 +739,7 @@ void Connection::PreDispatchEvent(const Event& event) {
     }
   } else if (auto* screen = event.As<RandR::ScreenChangeNotifyEvent>()) {
     int index = ScreenIndexFromRootWindow(screen->root);
-    DCHECK_GE(index, 0);
+    DUMP_WILL_BE_CHECK_GE(index, 0);
     bool portrait =
         static_cast<bool>(screen->rotation & (RandR::Rotation::Rotate_90 |
                                               RandR::Rotation::Rotate_270));
@@ -734,23 +759,26 @@ void Connection::PreDispatchEvent(const Event& event) {
 
 int Connection::ScreenIndexFromRootWindow(Window root) const {
   for (size_t i = 0; i < setup_.roots.size(); i++) {
-    if (setup_.roots[i].root == root)
+    if (setup_.roots[i].root == root) {
       return i;
+    }
   }
   return -1;
 }
 
 std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
-  if (!error_bytes)
+  if (!error_bytes) {
     return nullptr;
+  }
   struct ErrorHeader {
     uint8_t response_type;
     uint8_t error_code;
     uint16_t sequence;
   };
   auto error_code = error_bytes->front_as<ErrorHeader>()->error_code;
-  if (auto parser = error_parsers_[error_code])
+  if (auto parser = error_parsers_[error_code]) {
     return parser(error_bytes);
+  }
   return std::make_unique<UnknownError>(error_bytes);
 }
 

@@ -98,7 +98,7 @@ void ReadEvent<XFixes::SelectionNotifyEvent>(
   // pad0
   Pad(&buf, 8);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -141,7 +141,7 @@ void ReadEvent<XFixes::CursorNotifyEvent>(XFixes::CursorNotifyEvent* event_,
   // pad0
   Pad(&buf, 12);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 std::string XFixes::BadRegionError::ToString() const {
@@ -185,7 +185,7 @@ void ReadError<XFixes::BadRegionError>(XFixes::BadRegionError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<XFixes::QueryVersionReply> XFixes::QueryVersion(
     const XFixes::QueryVersionRequest& request) {
@@ -263,7 +263,7 @@ std::unique_ptr<XFixes::QueryVersionReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -509,7 +509,7 @@ std::unique_ptr<XFixes::GetCursorImageReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -540,7 +540,7 @@ Future<void> XFixes::CreateRegion(const XFixes::CreateRegionRequest& request) {
   buf.Write(&region);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -802,7 +802,7 @@ Future<void> XFixes::SetRegion(const XFixes::SetRegionRequest& request) {
   buf.Write(&region);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -1254,7 +1254,7 @@ std::unique_ptr<XFixes::FetchRegionReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1453,7 +1453,7 @@ Future<void> XFixes::SetCursorName(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(nbytes), name.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nbytes), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -1547,7 +1547,7 @@ std::unique_ptr<XFixes::GetCursorNameReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1662,7 +1662,7 @@ std::unique_ptr<XFixes::GetCursorImageAndNameReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1739,7 +1739,7 @@ Future<void> XFixes::ChangeCursorByName(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(nbytes), name.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nbytes), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -1940,7 +1940,7 @@ Future<void> XFixes::CreatePointerBarrier(
   buf.Write(&num_devices);
 
   // devices
-  DCHECK_EQ(static_cast<size_t>(num_devices), devices.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_devices), devices.size());
   for (auto& devices_elem : devices) {
     // devices_elem
     buf.Write(&devices_elem);
@@ -2101,7 +2101,7 @@ std::unique_ptr<XFixes::GetClientDisconnectModeReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

@@ -87,7 +87,7 @@ void ReadEvent<Present::GenericEvent>(Present::GenericEvent* event_,
   // event
   Read(&event, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -166,7 +166,7 @@ void ReadEvent<Present::ConfigureNotifyEvent>(
   Read(&pixmap_flags, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -230,7 +230,7 @@ void ReadEvent<Present::CompleteNotifyEvent>(
   Read(&msc, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -284,7 +284,7 @@ void ReadEvent<Present::IdleNotifyEvent>(Present::IdleNotifyEvent* event_,
   Read(&idle_fence, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -450,7 +450,7 @@ void ReadEvent<Present::RedirectNotifyEvent>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 Future<Present::QueryVersionReply> Present::QueryVersion(
@@ -526,7 +526,7 @@ std::unique_ptr<Present::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -613,7 +613,7 @@ Future<void> Present::PresentPixmap(
   buf.Write(&remainder);
 
   // notifies
-  DCHECK_EQ(static_cast<size_t>(notifies_len), notifies.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(notifies_len), notifies.size());
   for (auto& notifies_elem : notifies) {
     // notifies_elem
     {
@@ -818,7 +818,7 @@ std::unique_ptr<Present::QueryCapabilitiesReply> detail::ReadReply<
   Read(&capabilities, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

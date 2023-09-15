@@ -92,7 +92,7 @@ void ReadEvent<Input::DeviceValuatorEvent>(Input::DeviceValuatorEvent* event_,
     Read(&valuators_elem, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -160,7 +160,7 @@ void ReadEvent<Input::LegacyDeviceEvent>(Input::LegacyDeviceEvent* event_,
   // device_id
   Read(&device_id, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -205,7 +205,7 @@ void ReadEvent<Input::DeviceFocusEvent>(Input::DeviceFocusEvent* event_,
   // pad0
   Pad(&buf, 18);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -274,7 +274,7 @@ void ReadEvent<Input::DeviceStateNotifyEvent>(
     Read(&valuators_elem, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -321,7 +321,7 @@ void ReadEvent<Input::DeviceMappingNotifyEvent>(
   // pad1
   Pad(&buf, 20);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -357,7 +357,7 @@ void ReadEvent<Input::ChangeDeviceNotifyEvent>(
   // pad0
   Pad(&buf, 23);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -388,7 +388,7 @@ void ReadEvent<Input::DeviceKeyStateNotifyEvent>(
     Read(&keys_elem, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -419,7 +419,7 @@ void ReadEvent<Input::DeviceButtonStateNotifyEvent>(
     Read(&buttons_elem, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -462,7 +462,7 @@ void ReadEvent<Input::DevicePresenceNotifyEvent>(
   // pad1
   Pad(&buf, 20);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -502,7 +502,7 @@ void ReadEvent<Input::DevicePropertyNotifyEvent>(
   // device_id
   Read(&device_id, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -748,7 +748,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -920,7 +920,7 @@ void ReadEvent<Input::DeviceEvent>(Input::DeviceEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1065,7 +1065,7 @@ void ReadEvent<Input::CrossingEvent>(Input::CrossingEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1154,7 +1154,7 @@ void ReadEvent<Input::HierarchyEvent>(Input::HierarchyEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1206,7 +1206,7 @@ void ReadEvent<Input::PropertyEvent>(Input::PropertyEvent* event_,
   Pad(&buf, 11);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1315,7 +1315,7 @@ void ReadEvent<Input::RawDeviceEvent>(Input::RawDeviceEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1386,7 +1386,7 @@ void ReadEvent<Input::TouchOwnershipEvent>(Input::TouchOwnershipEvent* event_,
   Pad(&buf, 8);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1492,7 +1492,7 @@ void ReadEvent<Input::BarrierEvent>(Input::BarrierEvent* event_,
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1642,7 +1642,7 @@ void ReadEvent<Input::GesturePinchEvent>(Input::GesturePinchEvent* event_,
   flags = static_cast<Input::GesturePinchEventFlags>(tmp27);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 template <>
@@ -1784,7 +1784,7 @@ void ReadEvent<Input::GestureSwipeEvent>(Input::GestureSwipeEvent* event_,
   flags = static_cast<Input::GestureSwipeEventFlags>(tmp28);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 std::string Input::DeviceError::ToString() const {
@@ -1828,7 +1828,7 @@ void ReadError<Input::DeviceError>(Input::DeviceError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Input::EventError::ToString() const {
   std::stringstream ss_;
@@ -1871,7 +1871,7 @@ void ReadError<Input::EventError>(Input::EventError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Input::ModeError::ToString() const {
   std::stringstream ss_;
@@ -1913,7 +1913,7 @@ void ReadError<Input::ModeError>(Input::ModeError* error_, ReadBuffer* buffer) {
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Input::DeviceBusyError::ToString() const {
   std::stringstream ss_;
@@ -1956,7 +1956,7 @@ void ReadError<Input::DeviceBusyError>(Input::DeviceBusyError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Input::ClassError::ToString() const {
   std::stringstream ss_;
@@ -1999,7 +1999,7 @@ void ReadError<Input::ClassError>(Input::ClassError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<Input::GetExtensionVersionReply> Input::GetExtensionVersion(
     const Input::GetExtensionVersionRequest& request) {
@@ -2031,7 +2031,7 @@ Future<Input::GetExtensionVersionReply> Input::GetExtensionVersion(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -2088,7 +2088,7 @@ std::unique_ptr<Input::GetExtensionVersionReply> detail::ReadReply<
   Pad(&buf, 19);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2306,7 +2306,7 @@ std::unique_ptr<Input::ListInputDevicesReply> detail::ReadReply<
   Pad(&buf, 1);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2403,7 +2403,7 @@ std::unique_ptr<Input::OpenDeviceReply> detail::ReadReply<
   Align(&buf, 4);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2522,7 +2522,7 @@ std::unique_ptr<Input::SetDeviceModeReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2562,7 +2562,7 @@ Future<void> Input::SelectExtensionEvent(
   Pad(&buf, 2);
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);
@@ -2672,7 +2672,7 @@ std::unique_ptr<Input::GetSelectedExtensionEventsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2718,7 +2718,7 @@ Future<void> Input::ChangeDeviceDontPropagateList(
   Pad(&buf, 1);
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);
@@ -2816,7 +2816,7 @@ std::unique_ptr<Input::GetDeviceDontPropagateListReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2935,7 +2935,7 @@ std::unique_ptr<Input::GetDeviceMotionEventsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3013,7 +3013,7 @@ std::unique_ptr<Input::ChangeKeyboardDeviceReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3101,7 +3101,7 @@ std::unique_ptr<Input::ChangePointerDeviceReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3165,7 +3165,7 @@ Future<Input::GrabDeviceReply> Input::GrabDevice(
   Pad(&buf, 2);
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);
@@ -3224,7 +3224,7 @@ std::unique_ptr<Input::GrabDeviceReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3336,7 +3336,7 @@ Future<void> Input::GrabDeviceKey(const Input::GrabDeviceKeyRequest& request) {
   Pad(&buf, 2);
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);
@@ -3486,7 +3486,7 @@ Future<void> Input::GrabDeviceButton(
   Pad(&buf, 2);
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);
@@ -3701,7 +3701,7 @@ std::unique_ptr<Input::GetDeviceFocusReply> detail::ReadReply<
   Pad(&buf, 15);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3982,7 +3982,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4118,7 +4118,7 @@ Future<void> Input::ChangeFeedbackControl(
       buf.Write(&num_keysyms);
 
       // keysyms
-      DCHECK_EQ(static_cast<size_t>(num_keysyms), keysyms.size());
+      DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_keysyms), keysyms.size());
       for (auto& keysyms_elem : keysyms) {
         // keysyms_elem
         buf.Write(&keysyms_elem);
@@ -4263,7 +4263,7 @@ std::unique_ptr<Input::GetDeviceKeyMappingReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4307,8 +4307,9 @@ Future<void> Input::ChangeDeviceKeyMapping(
   buf.Write(&keycode_count);
 
   // keysyms
-  DCHECK_EQ(static_cast<size_t>((keycode_count) * (keysyms_per_keycode)),
-            keysyms.size());
+  DUMP_WILL_BE_CHECK_EQ(
+      static_cast<size_t>((keycode_count) * (keysyms_per_keycode)),
+      keysyms.size());
   for (auto& keysyms_elem : keysyms) {
     // keysyms_elem
     buf.Write(&keysyms_elem);
@@ -4409,7 +4410,7 @@ std::unique_ptr<Input::GetDeviceModifierMappingReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4448,7 +4449,8 @@ Future<Input::SetDeviceModifierMappingReply> Input::SetDeviceModifierMapping(
   Pad(&buf, 2);
 
   // keymaps
-  DCHECK_EQ(static_cast<size_t>((keycodes_per_modifier) * (8)), keymaps.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((keycodes_per_modifier) * (8)),
+                        keymaps.size());
   for (auto& keymaps_elem : keymaps) {
     // keymaps_elem
     buf.Write(&keymaps_elem);
@@ -4502,7 +4504,7 @@ std::unique_ptr<Input::SetDeviceModifierMappingReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4590,7 +4592,7 @@ std::unique_ptr<Input::GetDeviceButtonMappingReply> detail::ReadReply<
   Align(&buf, 4);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4630,7 +4632,7 @@ Future<Input::SetDeviceButtonMappingReply> Input::SetDeviceButtonMapping(
   Pad(&buf, 2);
 
   // map
-  DCHECK_EQ(static_cast<size_t>(map_size), map.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(map_size), map.size());
   for (auto& map_elem : map) {
     // map_elem
     buf.Write(&map_elem);
@@ -4683,7 +4685,7 @@ std::unique_ptr<Input::SetDeviceButtonMappingReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4840,7 +4842,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4932,7 +4934,7 @@ Future<Input::SetDeviceValuatorsReply> Input::SetDeviceValuators(
   Pad(&buf, 1);
 
   // valuators
-  DCHECK_EQ(static_cast<size_t>(num_valuators), valuators.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_valuators), valuators.size());
   for (auto& valuators_elem : valuators) {
     // valuators_elem
     buf.Write(&valuators_elem);
@@ -4986,7 +4988,7 @@ std::unique_ptr<Input::SetDeviceValuatorsReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5208,7 +5210,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5289,7 +5291,8 @@ Future<Input::ChangeDeviceControlReply> Input::ChangeDeviceControl(
       Pad(&buf, 2);
 
       // resolution_values
-      DCHECK_EQ(static_cast<size_t>(num_valuators), resolution_values.size());
+      DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_valuators),
+                            resolution_values.size());
       for (auto& resolution_values_elem : resolution_values) {
         // resolution_values_elem
         buf.Write(&resolution_values_elem);
@@ -5421,7 +5424,7 @@ std::unique_ptr<Input::ChangeDeviceControlReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5506,7 +5509,7 @@ std::unique_ptr<Input::ListDevicePropertiesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5573,7 +5576,7 @@ Future<void> Input::ChangeDeviceProperty(
     size_t data8_len = data8.size();
 
     // data8
-    DCHECK_EQ(static_cast<size_t>(num_items), data8.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data8.size());
     for (auto& data8_elem : data8) {
       // data8_elem
       buf.Write(&data8_elem);
@@ -5587,7 +5590,7 @@ Future<void> Input::ChangeDeviceProperty(
     size_t data16_len = data16.size();
 
     // data16
-    DCHECK_EQ(static_cast<size_t>(num_items), data16.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data16.size());
     for (auto& data16_elem : data16) {
       // data16_elem
       buf.Write(&data16_elem);
@@ -5601,7 +5604,7 @@ Future<void> Input::ChangeDeviceProperty(
     size_t data32_len = data32.size();
 
     // data32
-    DCHECK_EQ(static_cast<size_t>(num_items), data32.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data32.size());
     for (auto& data32_elem : data32) {
       // data32_elem
       buf.Write(&data32_elem);
@@ -5830,7 +5833,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5987,7 +5990,7 @@ std::unique_ptr<Input::XIQueryPointerReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6147,7 +6150,7 @@ Future<void> Input::XIChangeHierarchy(
   Pad(&buf, 3);
 
   // changes
-  DCHECK_EQ(static_cast<size_t>(num_changes), changes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_changes), changes.size());
   for (auto& changes_elem : changes) {
     // changes_elem
     {
@@ -6190,7 +6193,7 @@ Future<void> Input::XIChangeHierarchy(
         buf.Write(&enable);
 
         // name
-        DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+        DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(name_len), name.size());
         for (auto& name_elem : name) {
           // name_elem
           buf.Write(&name_elem);
@@ -6371,7 +6374,7 @@ std::unique_ptr<Input::XIGetClientPointerReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6411,7 +6414,7 @@ Future<void> Input::XISelectEvents(
   Pad(&buf, 2);
 
   // masks
-  DCHECK_EQ(static_cast<size_t>(num_mask), masks.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_mask), masks.size());
   for (auto& masks_elem : masks) {
     // masks_elem
     {
@@ -6427,7 +6430,7 @@ Future<void> Input::XISelectEvents(
       buf.Write(&mask_len);
 
       // mask
-      DCHECK_EQ(static_cast<size_t>(mask_len), mask.size());
+      DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(mask_len), mask.size());
       for (auto& mask_elem : mask) {
         // mask_elem
         uint32_t tmp71;
@@ -6523,7 +6526,7 @@ std::unique_ptr<Input::XIQueryVersionReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6837,7 +6840,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6955,7 +6958,7 @@ std::unique_ptr<Input::XIGetFocusReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7024,7 +7027,7 @@ Future<Input::XIGrabDeviceReply> Input::XIGrabDevice(
   buf.Write(&mask_len);
 
   // mask
-  DCHECK_EQ(static_cast<size_t>(mask_len), mask.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(mask_len), mask.size());
   for (auto& mask_elem : mask) {
     // mask_elem
     buf.Write(&mask_elem);
@@ -7083,7 +7086,7 @@ std::unique_ptr<Input::XIGrabDeviceReply> detail::ReadReply<
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7267,14 +7270,14 @@ Future<Input::XIPassiveGrabDeviceReply> Input::XIPassiveGrabDevice(
   Pad(&buf, 2);
 
   // mask
-  DCHECK_EQ(static_cast<size_t>(mask_len), mask.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(mask_len), mask.size());
   for (auto& mask_elem : mask) {
     // mask_elem
     buf.Write(&mask_elem);
   }
 
   // modifiers
-  DCHECK_EQ(static_cast<size_t>(num_modifiers), modifiers.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_modifiers), modifiers.size());
   for (auto& modifiers_elem : modifiers) {
     // modifiers_elem
     buf.Write(&modifiers_elem);
@@ -7357,7 +7360,7 @@ std::unique_ptr<Input::XIPassiveGrabDeviceReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7411,7 +7414,7 @@ Future<void> Input::XIPassiveUngrabDevice(
   Pad(&buf, 3);
 
   // modifiers
-  DCHECK_EQ(static_cast<size_t>(num_modifiers), modifiers.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_modifiers), modifiers.size());
   for (auto& modifiers_elem : modifiers) {
     // modifiers_elem
     buf.Write(&modifiers_elem);
@@ -7511,7 +7514,7 @@ std::unique_ptr<Input::XIListPropertiesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7575,7 +7578,7 @@ Future<void> Input::XIChangeProperty(
     size_t data8_len = data8.size();
 
     // data8
-    DCHECK_EQ(static_cast<size_t>(num_items), data8.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data8.size());
     for (auto& data8_elem : data8) {
       // data8_elem
       buf.Write(&data8_elem);
@@ -7589,7 +7592,7 @@ Future<void> Input::XIChangeProperty(
     size_t data16_len = data16.size();
 
     // data16
-    DCHECK_EQ(static_cast<size_t>(num_items), data16.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data16.size());
     for (auto& data16_elem : data16) {
       // data16_elem
       buf.Write(&data16_elem);
@@ -7603,7 +7606,7 @@ Future<void> Input::XIChangeProperty(
     size_t data32_len = data32.size();
 
     // data32
-    DCHECK_EQ(static_cast<size_t>(num_items), data32.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_items), data32.size());
     for (auto& data32_elem : data32) {
       // data32_elem
       buf.Write(&data32_elem);
@@ -7824,7 +7827,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7923,7 +7926,7 @@ std::unique_ptr<Input::XIGetSelectedEventsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7956,7 +7959,7 @@ Future<void> Input::XIBarrierReleasePointer(
   buf.Write(&num_barriers);
 
   // barriers
-  DCHECK_EQ(static_cast<size_t>(num_barriers), barriers.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_barriers), barriers.size());
   for (auto& barriers_elem : barriers) {
     // barriers_elem
     {
@@ -8040,14 +8043,14 @@ Future<void> Input::SendExtensionEvent(
   Pad(&buf, 3);
 
   // events
-  DCHECK_EQ(static_cast<size_t>(num_events), events.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_events), events.size());
   for (auto& events_elem : events) {
     // events_elem
     buf.Write(&events_elem);
   }
 
   // classes
-  DCHECK_EQ(static_cast<size_t>(num_classes), classes.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_classes), classes.size());
   for (auto& classes_elem : classes) {
     // classes_elem
     buf.Write(&classes_elem);

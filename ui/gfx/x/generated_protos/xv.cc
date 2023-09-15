@@ -93,7 +93,7 @@ void ReadError<Xv::BadPortError>(Xv::BadPortError* error_, ReadBuffer* buffer) {
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Xv::BadEncodingError::ToString() const {
   std::stringstream ss_;
@@ -136,7 +136,7 @@ void ReadError<Xv::BadEncodingError>(Xv::BadEncodingError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string Xv::BadControlError::ToString() const {
   std::stringstream ss_;
@@ -179,7 +179,7 @@ void ReadError<Xv::BadControlError>(Xv::BadControlError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 template <>
 COMPONENT_EXPORT(X11)
@@ -214,7 +214,7 @@ void ReadEvent<Xv::VideoNotifyEvent>(Xv::VideoNotifyEvent* event_,
   // port
   Read(&port, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -251,7 +251,7 @@ void ReadEvent<Xv::PortNotifyEvent>(Xv::PortNotifyEvent* event_,
   // value
   Read(&value, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 Future<Xv::QueryExtensionReply> Xv::QueryExtension(
@@ -315,7 +315,7 @@ std::unique_ptr<Xv::QueryExtensionReply> detail::ReadReply<
   Read(&minor, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -453,7 +453,7 @@ std::unique_ptr<Xv::QueryAdaptorsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -577,7 +577,7 @@ std::unique_ptr<Xv::QueryEncodingsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -646,7 +646,7 @@ std::unique_ptr<Xv::GrabPortReply> detail::ReadReply<Xv::GrabPortReply>(
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1234,7 +1234,7 @@ std::unique_ptr<Xv::QueryBestSizeReply> detail::ReadReply<
   Read(&actual_height, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1349,7 +1349,7 @@ std::unique_ptr<Xv::GetPortAttributeReply> detail::ReadReply<
   Read(&value, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1463,7 +1463,7 @@ std::unique_ptr<Xv::QueryPortAttributesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1662,7 +1662,7 @@ std::unique_ptr<Xv::ListImageFormatsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1779,7 +1779,7 @@ std::unique_ptr<Xv::QueryImageAttributesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1862,7 +1862,7 @@ Future<void> Xv::PutImage(const Xv::PutImageRequest& request) {
   buf.Write(&height);
 
   // data
-  DCHECK_EQ(static_cast<size_t>(data_len), data.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);

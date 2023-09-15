@@ -97,7 +97,7 @@ void ReadError<Xkb::KeyboardError>(Xkb::KeyboardError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 template <>
 COMPONENT_EXPORT(X11)
@@ -163,7 +163,7 @@ void ReadEvent<Xkb::NewKeyboardNotifyEvent>(Xkb::NewKeyboardNotifyEvent* event_,
   // pad0
   Pad(&buf, 14);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -276,7 +276,7 @@ void ReadEvent<Xkb::MapNotifyEvent>(Xkb::MapNotifyEvent* event_,
   // pad0
   Pad(&buf, 2);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -408,7 +408,7 @@ void ReadEvent<Xkb::StateNotifyEvent>(Xkb::StateNotifyEvent* event_,
   // requestMinor
   Read(&requestMinor, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -482,7 +482,7 @@ void ReadEvent<Xkb::ControlsNotifyEvent>(Xkb::ControlsNotifyEvent* event_,
   // pad1
   Pad(&buf, 4);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -527,7 +527,7 @@ void ReadEvent<Xkb::IndicatorStateNotifyEvent>(
   // pad1
   Pad(&buf, 12);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -572,7 +572,7 @@ void ReadEvent<Xkb::IndicatorMapNotifyEvent>(
   // pad1
   Pad(&buf, 12);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -665,7 +665,7 @@ void ReadEvent<Xkb::NamesNotifyEvent>(Xkb::NamesNotifyEvent* event_,
   // pad2
   Pad(&buf, 4);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -716,7 +716,7 @@ void ReadEvent<Xkb::CompatMapNotifyEvent>(Xkb::CompatMapNotifyEvent* event_,
   // pad0
   Pad(&buf, 16);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -783,7 +783,7 @@ void ReadEvent<Xkb::BellNotifyEvent>(Xkb::BellNotifyEvent* event_,
   // pad0
   Pad(&buf, 7);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -848,7 +848,7 @@ void ReadEvent<Xkb::ActionMessageEvent>(Xkb::ActionMessageEvent* event_,
   // pad0
   Pad(&buf, 10);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -899,7 +899,7 @@ void ReadEvent<Xkb::AccessXNotifyEvent>(Xkb::AccessXNotifyEvent* event_,
   // pad0
   Pad(&buf, 16);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -980,7 +980,7 @@ void ReadEvent<Xkb::ExtensionDeviceNotifyEvent>(
   // pad1
   Pad(&buf, 2);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 Future<Xkb::UseExtensionReply> Xkb::UseExtension(
@@ -1058,7 +1058,7 @@ std::unique_ptr<Xkb::UseExtensionReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1555,7 +1555,7 @@ std::unique_ptr<Xkb::GetStateReply> detail::ReadReply<Xkb::GetStateReply>(
   Pad(&buf, 6);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1843,7 +1843,7 @@ std::unique_ptr<Xkb::GetControlsReply> detail::ReadReply<Xkb::GetControlsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2661,7 +2661,7 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2814,7 +2814,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t types_len = types.size();
 
     // types
-    DCHECK_EQ(static_cast<size_t>(nTypes), types.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nTypes), types.size());
     for (auto& types_elem : types) {
       // types_elem
       {
@@ -2858,7 +2858,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
         Pad(&buf, 1);
 
         // entries
-        DCHECK_EQ(static_cast<size_t>(nMapEntries), entries.size());
+        DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nMapEntries), entries.size());
         for (auto& entries_elem : entries) {
           // entries_elem
           {
@@ -2882,8 +2882,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
         }
 
         // preserve_entries
-        DCHECK_EQ(static_cast<size_t>((preserve) * (nMapEntries)),
-                  preserve_entries.size());
+        DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((preserve) * (nMapEntries)),
+                              preserve_entries.size());
         for (auto& preserve_entries_elem : preserve_entries) {
           // preserve_entries_elem
           {
@@ -2913,7 +2913,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t syms_len = syms.size();
 
     // syms
-    DCHECK_EQ(static_cast<size_t>(nKeySyms), syms.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nKeySyms), syms.size());
     for (auto& syms_elem : syms) {
       // syms_elem
       {
@@ -2942,7 +2942,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
         buf.Write(&nSyms);
 
         // syms
-        DCHECK_EQ(static_cast<size_t>(nSyms), syms.size());
+        DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nSyms), syms.size());
         for (auto& syms_elem : syms) {
           // syms_elem
           buf.Write(&syms_elem);
@@ -2957,7 +2957,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t actions_len = actions.size();
 
     // actionsCount
-    DCHECK_EQ(static_cast<size_t>(nKeyActions), actionsCount.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nKeyActions),
+                          actionsCount.size());
     for (auto& actionsCount_elem : actionsCount) {
       // actionsCount_elem
       buf.Write(&actionsCount_elem);
@@ -2967,7 +2968,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     Align(&buf, 4);
 
     // actions
-    DCHECK_EQ(static_cast<size_t>(totalActions), actions.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(totalActions), actions.size());
     for (auto& actions_elem : actions) {
       // actions_elem
       buf.Write(&actions_elem);
@@ -2978,7 +2979,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t behaviors_len = behaviors.size();
 
     // behaviors
-    DCHECK_EQ(static_cast<size_t>(totalKeyBehaviors), behaviors.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(totalKeyBehaviors),
+                          behaviors.size());
     for (auto& behaviors_elem : behaviors) {
       // behaviors_elem
       {
@@ -3001,7 +3003,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t vmods_len = vmods.size();
 
     // vmods
-    DCHECK_EQ(static_cast<size_t>(PopCount(virtualMods)), vmods.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(virtualMods)),
+                          vmods.size());
     for (auto& vmods_elem : vmods) {
       // vmods_elem
       buf.Write(&vmods_elem);
@@ -3015,7 +3018,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t c_explicit_len = c_explicit.size();
 
     // c_explicit
-    DCHECK_EQ(static_cast<size_t>(totalKeyExplicit), c_explicit.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(totalKeyExplicit),
+                          c_explicit.size());
     for (auto& c_explicit_elem : c_explicit) {
       // c_explicit_elem
       {
@@ -3037,7 +3041,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t modmap_len = modmap.size();
 
     // modmap
-    DCHECK_EQ(static_cast<size_t>(totalModMapKeys), modmap.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(totalModMapKeys), modmap.size());
     for (auto& modmap_elem : modmap) {
       // modmap_elem
       {
@@ -3059,7 +3063,8 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
     size_t vmodmap_len = vmodmap.size();
 
     // vmodmap
-    DCHECK_EQ(static_cast<size_t>(totalVModMapKeys), vmodmap.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(totalVModMapKeys),
+                          vmodmap.size());
     for (auto& vmodmap_elem : vmodmap) {
       // vmodmap_elem
       {
@@ -3343,7 +3348,7 @@ std::unique_ptr<Xkb::GetCompatMapReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3405,7 +3410,7 @@ Future<void> Xkb::SetCompatMap(const Xkb::SetCompatMapRequest& request) {
   Pad(&buf, 2);
 
   // si
-  DCHECK_EQ(static_cast<size_t>(nSI), si.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nSI), si.size());
   for (auto& si_elem : si) {
     // si_elem
     {
@@ -3456,7 +3461,8 @@ Future<void> Xkb::SetCompatMap(const Xkb::SetCompatMapRequest& request) {
   }
 
   // groupMaps
-  DCHECK_EQ(static_cast<size_t>(PopCount(groups)), groupMaps.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(groups)),
+                        groupMaps.size());
   for (auto& groupMaps_elem : groupMaps) {
     // groupMaps_elem
     {
@@ -3568,7 +3574,7 @@ std::unique_ptr<Xkb::GetIndicatorStateReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3714,7 +3720,7 @@ std::unique_ptr<Xkb::GetIndicatorMapReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3752,7 +3758,7 @@ Future<void> Xkb::SetIndicatorMap(const Xkb::SetIndicatorMapRequest& request) {
   buf.Write(&which);
 
   // maps
-  DCHECK_EQ(static_cast<size_t>(PopCount(which)), maps.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(which)), maps.size());
   for (auto& maps_elem : maps) {
     // maps_elem
     {
@@ -3975,7 +3981,7 @@ std::unique_ptr<Xkb::GetNamedIndicatorReply> detail::ReadReply<
   Pad(&buf, 3);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4416,7 +4422,7 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4572,7 +4578,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t typeNames_len = typeNames.size();
 
     // typeNames
-    DCHECK_EQ(static_cast<size_t>(nTypes), typeNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nTypes), typeNames.size());
     for (auto& typeNames_elem : typeNames) {
       // typeNames_elem
       buf.Write(&typeNames_elem);
@@ -4585,7 +4591,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t ktLevelNames_len = ktLevelNames.size();
 
     // nLevelsPerType
-    DCHECK_EQ(static_cast<size_t>(nTypes), nLevelsPerType.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nTypes), nLevelsPerType.size());
     for (auto& nLevelsPerType_elem : nLevelsPerType) {
       // nLevelsPerType_elem
       buf.Write(&nLevelsPerType_elem);
@@ -4597,7 +4603,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     // ktLevelNames
     auto sum181_ = SumOf([](const auto& listelem_ref) { return listelem_ref; },
                          nLevelsPerType);
-    DCHECK_EQ(static_cast<size_t>(sum181_), ktLevelNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(sum181_), ktLevelNames.size());
     for (auto& ktLevelNames_elem : ktLevelNames) {
       // ktLevelNames_elem
       buf.Write(&ktLevelNames_elem);
@@ -4608,7 +4614,8 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t indicatorNames_len = indicatorNames.size();
 
     // indicatorNames
-    DCHECK_EQ(static_cast<size_t>(PopCount(indicators)), indicatorNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(indicators)),
+                          indicatorNames.size());
     for (auto& indicatorNames_elem : indicatorNames) {
       // indicatorNames_elem
       buf.Write(&indicatorNames_elem);
@@ -4619,8 +4626,8 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t virtualModNames_len = virtualModNames.size();
 
     // virtualModNames
-    DCHECK_EQ(static_cast<size_t>(PopCount(virtualMods)),
-              virtualModNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(virtualMods)),
+                          virtualModNames.size());
     for (auto& virtualModNames_elem : virtualModNames) {
       // virtualModNames_elem
       buf.Write(&virtualModNames_elem);
@@ -4631,7 +4638,8 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t groups_len = groups.size();
 
     // groups
-    DCHECK_EQ(static_cast<size_t>(PopCount(groupNames)), groups.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(groupNames)),
+                          groups.size());
     for (auto& groups_elem : groups) {
       // groups_elem
       buf.Write(&groups_elem);
@@ -4642,7 +4650,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t keyNames_len = keyNames.size();
 
     // keyNames
-    DCHECK_EQ(static_cast<size_t>(nKeys), keyNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nKeys), keyNames.size());
     for (auto& keyNames_elem : keyNames) {
       // keyNames_elem
       {
@@ -4662,7 +4670,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t keyAliases_len = keyAliases.size();
 
     // keyAliases
-    DCHECK_EQ(static_cast<size_t>(nKeyAliases), keyAliases.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nKeyAliases), keyAliases.size());
     for (auto& keyAliases_elem : keyAliases) {
       // keyAliases_elem
       {
@@ -4690,7 +4698,8 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
     size_t radioGroupNames_len = radioGroupNames.size();
 
     // radioGroupNames
-    DCHECK_EQ(static_cast<size_t>(nRadioGroups), radioGroupNames.size());
+    DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nRadioGroups),
+                          radioGroupNames.size());
     for (auto& radioGroupNames_elem : radioGroupNames) {
       // radioGroupNames_elem
       buf.Write(&radioGroupNames_elem);
@@ -4887,7 +4896,7 @@ std::unique_ptr<Xkb::PerClientFlagsReply> detail::ReadReply<
   Pad(&buf, 8);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5168,7 +5177,7 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6295,7 +6304,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6586,7 +6595,7 @@ std::unique_ptr<Xkb::GetDeviceInfoReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6639,14 +6648,14 @@ Future<void> Xkb::SetDeviceInfo(const Xkb::SetDeviceInfoRequest& request) {
   buf.Write(&nDeviceLedFBs);
 
   // btnActions
-  DCHECK_EQ(static_cast<size_t>(nBtns), btnActions.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nBtns), btnActions.size());
   for (auto& btnActions_elem : btnActions) {
     // btnActions_elem
     buf.Write(&btnActions_elem);
   }
 
   // leds
-  DCHECK_EQ(static_cast<size_t>(nDeviceLedFBs), leds.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(nDeviceLedFBs), leds.size());
   for (auto& leds_elem : leds) {
     // leds_elem
     {
@@ -6682,14 +6691,16 @@ Future<void> Xkb::SetDeviceInfo(const Xkb::SetDeviceInfoRequest& request) {
       buf.Write(&state);
 
       // names
-      DCHECK_EQ(static_cast<size_t>(PopCount(namesPresent)), names.size());
+      DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(namesPresent)),
+                            names.size());
       for (auto& names_elem : names) {
         // names_elem
         buf.Write(&names_elem);
       }
 
       // maps
-      DCHECK_EQ(static_cast<size_t>(PopCount(mapsPresent)), maps.size());
+      DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(PopCount(mapsPresent)),
+                            maps.size());
       for (auto& maps_elem : maps) {
         // maps_elem
         {
@@ -6807,7 +6818,7 @@ Future<Xkb::SetDebuggingFlagsReply> Xkb::SetDebuggingFlags(
   buf.Write(&ctrls);
 
   // message
-  DCHECK_EQ(static_cast<size_t>(msgLength), message.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(msgLength), message.size());
   for (auto& message_elem : message) {
     // message_elem
     buf.Write(&message_elem);
@@ -6872,7 +6883,7 @@ std::unique_ptr<Xkb::SetDebuggingFlagsReply> detail::ReadReply<
   Pad(&buf, 8);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

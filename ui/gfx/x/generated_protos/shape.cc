@@ -105,7 +105,7 @@ void ReadEvent<Shape::NotifyEvent>(Shape::NotifyEvent* event_,
   // pad0
   Pad(&buf, 11);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 Future<Shape::QueryVersionReply> Shape::QueryVersion(
@@ -169,7 +169,7 @@ std::unique_ptr<Shape::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -229,7 +229,7 @@ Future<void> Shape::Rectangles(const Shape::RectanglesRequest& request) {
   buf.Write(&y_offset);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -563,7 +563,7 @@ std::unique_ptr<Shape::QueryExtentsReply> detail::ReadReply<
   Read(&clip_shape_extents_height, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -669,7 +669,7 @@ std::unique_ptr<Shape::InputSelectedReply> detail::ReadReply<
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -777,7 +777,7 @@ std::unique_ptr<Shape::GetRectanglesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

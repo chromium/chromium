@@ -94,7 +94,7 @@ void ReadError<Damage::BadDamageError>(Damage::BadDamageError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 template <>
 COMPONENT_EXPORT(X11)
@@ -171,7 +171,7 @@ void ReadEvent<Damage::NotifyEvent>(Damage::NotifyEvent* event_,
     Read(&height, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 
 Future<Damage::QueryVersionReply> Damage::QueryVersion(
@@ -250,7 +250,7 @@ std::unique_ptr<Damage::QueryVersionReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

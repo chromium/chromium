@@ -111,7 +111,7 @@ std::unique_ptr<BigRequests::EnableReply> detail::ReadReply<
   Read(&maximum_request_length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

@@ -95,7 +95,7 @@ void ReadError<XF86VidMode::BadClockError>(XF86VidMode::BadClockError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::BadHTimingsError::ToString() const {
   std::stringstream ss_;
@@ -139,7 +139,7 @@ void ReadError<XF86VidMode::BadHTimingsError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::BadVTimingsError::ToString() const {
   std::stringstream ss_;
@@ -183,7 +183,7 @@ void ReadError<XF86VidMode::BadVTimingsError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ModeUnsuitableError::ToString() const {
   std::stringstream ss_;
@@ -227,7 +227,7 @@ void ReadError<XF86VidMode::ModeUnsuitableError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ExtensionDisabledError::ToString() const {
   std::stringstream ss_;
@@ -271,7 +271,7 @@ void ReadError<XF86VidMode::ExtensionDisabledError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ClientNotLocalError::ToString() const {
   std::stringstream ss_;
@@ -315,7 +315,7 @@ void ReadError<XF86VidMode::ClientNotLocalError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 std::string XF86VidMode::ZoomLockedError::ToString() const {
   std::stringstream ss_;
@@ -359,7 +359,7 @@ void ReadError<XF86VidMode::ZoomLockedError>(
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<XF86VidMode::QueryVersionReply> XF86VidMode::QueryVersion(
     const XF86VidMode::QueryVersionRequest& request) {
@@ -422,7 +422,7 @@ std::unique_ptr<XF86VidMode::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -554,7 +554,7 @@ std::unique_ptr<XF86VidMode::GetModeLineReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -639,7 +639,7 @@ Future<void> XF86VidMode::ModModeLine(
   buf.Write(&privsize);
 
   // c_private
-  DCHECK_EQ(static_cast<size_t>(privsize), c_private.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(privsize), c_private.size());
   for (auto& c_private_elem : c_private) {
     // c_private_elem
     buf.Write(&c_private_elem);
@@ -829,7 +829,7 @@ std::unique_ptr<XF86VidMode::GetMonitorReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1010,7 +1010,7 @@ std::unique_ptr<XF86VidMode::GetAllModeLinesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1151,7 +1151,7 @@ Future<void> XF86VidMode::AddModeLine(
   Pad(&buf, 12);
 
   // c_private
-  DCHECK_EQ(static_cast<size_t>(privsize), c_private.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(privsize), c_private.size());
   for (auto& c_private_elem : c_private) {
     // c_private_elem
     buf.Write(&c_private_elem);
@@ -1282,7 +1282,7 @@ Future<void> XF86VidMode::DeleteModeLine(
   buf.Write(&privsize);
 
   // c_private
-  DCHECK_EQ(static_cast<size_t>(privsize), c_private.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(privsize), c_private.size());
   for (auto& c_private_elem : c_private) {
     // c_private_elem
     buf.Write(&c_private_elem);
@@ -1397,7 +1397,7 @@ Future<XF86VidMode::ValidateModeLineReply> XF86VidMode::ValidateModeLine(
   buf.Write(&privsize);
 
   // c_private
-  DCHECK_EQ(static_cast<size_t>(privsize), c_private.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(privsize), c_private.size());
   for (auto& c_private_elem : c_private) {
     // c_private_elem
     buf.Write(&c_private_elem);
@@ -1459,7 +1459,7 @@ std::unique_ptr<XF86VidMode::ValidateModeLineReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1548,7 +1548,7 @@ Future<void> XF86VidMode::SwitchToMode(
   buf.Write(&privsize);
 
   // c_private
-  DCHECK_EQ(static_cast<size_t>(privsize), c_private.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(privsize), c_private.size());
   for (auto& c_private_elem : c_private) {
     // c_private_elem
     buf.Write(&c_private_elem);
@@ -1651,7 +1651,7 @@ std::unique_ptr<XF86VidMode::GetViewPortReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1792,7 +1792,7 @@ std::unique_ptr<XF86VidMode::GetDotClocksReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1969,7 +1969,7 @@ std::unique_ptr<XF86VidMode::GetGammaReply> detail::ReadReply<
   Pad(&buf, 12);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2073,7 +2073,7 @@ std::unique_ptr<XF86VidMode::GetGammaRampReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2113,21 +2113,24 @@ Future<void> XF86VidMode::SetGammaRamp(
   buf.Write(&size);
 
   // red
-  DCHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))), red.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))),
+                        red.size());
   for (auto& red_elem : red) {
     // red_elem
     buf.Write(&red_elem);
   }
 
   // green
-  DCHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))), green.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))),
+                        green.size());
   for (auto& green_elem : green) {
     // green_elem
     buf.Write(&green_elem);
   }
 
   // blue
-  DCHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))), blue.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(BitAnd((size) + (1), BitNot(1))),
+                        blue.size());
   for (auto& blue_elem : blue) {
     // blue_elem
     buf.Write(&blue_elem);
@@ -2218,7 +2221,7 @@ std::unique_ptr<XF86VidMode::GetGammaRampSizeReply> detail::ReadReply<
   Pad(&buf, 22);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2295,7 +2298,7 @@ std::unique_ptr<XF86VidMode::GetPermissionsReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

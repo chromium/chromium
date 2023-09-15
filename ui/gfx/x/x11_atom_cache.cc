@@ -185,8 +185,8 @@ X11AtomCache* X11AtomCache::GetInstance() {
 X11AtomCache::X11AtomCache() : connection_(Connection::Get()) {
   // Clipboard formats are keyed on their format string (eg. "STRING",
   // "UTF8_STRING", "image/png").  Plumbing through x11::Atoms instead would be
-  // tricky, so set "STRING" here to prevent hitting the DCHECK_GT() in
-  // GetAtom().
+  // tricky, so set "STRING" here to prevent hitting the DUMP_WILL_BE_CHECK_GT()
+  // in GetAtom().
   cached_atoms_["STRING"] = x11::Atom::STRING;
 
   std::vector<Future<InternAtomReply>> requests;
@@ -213,7 +213,7 @@ Atom X11AtomCache::GetAtom(const std::string& name) const {
   if (auto response =
           connection_->InternAtom(InternAtomRequest{.name = name}).Sync()) {
     atom = response->atom;
-    DCHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
+    DUMP_WILL_BE_CHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
         << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
         << "\")";
     cached_atoms_.emplace(name, atom);

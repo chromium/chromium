@@ -29,7 +29,7 @@ void VerifyAlignment(T* t, size_t offset) {
   // On the wire, X11 types are always aligned to their size.  This is a sanity
   // check to ensure padding etc are working properly.
   if (sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
-    DCHECK_EQ(offset % sizeof(*t), 0UL);
+    DUMP_WILL_BE_CHECK_EQ(offset % sizeof(*t), 0UL);
 }
 
 }  // namespace detail

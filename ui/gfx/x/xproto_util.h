@@ -23,9 +23,9 @@ Future<void> SendEvent(const T& event,
                        Connection* connection = Connection::Get()) {
   static_assert(T::type_id > 0, "T must be an *Event type");
   auto write_buffer = Write(event);
-  DCHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
+  DUMP_WILL_BE_CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
   auto& first_buffer = write_buffer.GetBuffers()[0];
-  DCHECK_LE(first_buffer->size(), 32ul);
+  DUMP_WILL_BE_CHECK_LE(first_buffer->size(), 32ul);
   std::vector<uint8_t> event_bytes(32);
   memcpy(event_bytes.data(), first_buffer->data(), first_buffer->size());
 
@@ -60,8 +60,8 @@ bool GetArrayProperty(Window window,
   if (!response || response->format != CHAR_BIT * sizeof(T))
     return false;
 
-  DCHECK_EQ(response->format / CHAR_BIT * response->value_len,
-            response->value->size());
+  DUMP_WILL_BE_CHECK_EQ(response->format / CHAR_BIT * response->value_len,
+                        response->value->size());
   value->resize(response->value_len);
   if (response->value_len > 0)
     memcpy(value->data(), response->value->data(), response->value->size());

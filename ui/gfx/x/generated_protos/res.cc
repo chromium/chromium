@@ -125,7 +125,7 @@ std::unique_ptr<Res::QueryVersionReply> detail::ReadReply<
   Read(&server_minor, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -208,7 +208,7 @@ std::unique_ptr<Res::QueryClientsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -297,7 +297,7 @@ std::unique_ptr<Res::QueryClientResourcesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -369,7 +369,7 @@ std::unique_ptr<Res::QueryClientPixmapBytesReply> detail::ReadReply<
   Read(&bytes_overflow, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -402,7 +402,7 @@ Future<Res::QueryClientIdsReply> Res::QueryClientIds(
   buf.Write(&num_specs);
 
   // specs
-  DCHECK_EQ(static_cast<size_t>(num_specs), specs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_specs), specs.size());
   for (auto& specs_elem : specs) {
     // specs_elem
     {
@@ -499,7 +499,7 @@ std::unique_ptr<Res::QueryClientIdsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -536,7 +536,7 @@ Future<Res::QueryResourceBytesReply> Res::QueryResourceBytes(
   buf.Write(&num_specs);
 
   // specs
-  DCHECK_EQ(static_cast<size_t>(num_specs), specs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_specs), specs.size());
   for (auto& specs_elem : specs) {
     // specs_elem
     {
@@ -673,7 +673,7 @@ std::unique_ptr<Res::QueryResourceBytesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

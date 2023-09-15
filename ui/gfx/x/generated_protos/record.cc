@@ -94,7 +94,7 @@ void ReadError<Record::BadContextError>(Record::BadContextError* error_,
   // major_opcode
   Read(&major_opcode, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
 Future<Record::QueryVersionReply> Record::QueryVersion(
     const Record::QueryVersionRequest& request) {
@@ -169,7 +169,7 @@ std::unique_ptr<Record::QueryVersionReply> detail::ReadReply<
   Read(&minor_version, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -220,14 +220,15 @@ Future<void> Record::CreateContext(
   buf.Write(&num_ranges);
 
   // client_specs
-  DCHECK_EQ(static_cast<size_t>(num_client_specs), client_specs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_client_specs),
+                        client_specs.size());
   for (auto& client_specs_elem : client_specs) {
     // client_specs_elem
     buf.Write(&client_specs_elem);
   }
 
   // ranges
-  DCHECK_EQ(static_cast<size_t>(num_ranges), ranges.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_ranges), ranges.size());
   for (auto& ranges_elem : ranges) {
     // ranges_elem
     {
@@ -428,14 +429,15 @@ Future<void> Record::RegisterClients(
   buf.Write(&num_ranges);
 
   // client_specs
-  DCHECK_EQ(static_cast<size_t>(num_client_specs), client_specs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_client_specs),
+                        client_specs.size());
   for (auto& client_specs_elem : client_specs) {
     // client_specs_elem
     buf.Write(&client_specs_elem);
   }
 
   // ranges
-  DCHECK_EQ(static_cast<size_t>(num_ranges), ranges.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_ranges), ranges.size());
   for (auto& ranges_elem : ranges) {
     // ranges_elem
     {
@@ -623,7 +625,8 @@ Future<void> Record::UnregisterClients(
   buf.Write(&num_client_specs);
 
   // client_specs
-  DCHECK_EQ(static_cast<size_t>(num_client_specs), client_specs.size());
+  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(num_client_specs),
+                        client_specs.size());
   for (auto& client_specs_elem : client_specs) {
     // client_specs_elem
     buf.Write(&client_specs_elem);
@@ -878,7 +881,7 @@ std::unique_ptr<Record::GetContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -978,7 +981,7 @@ std::unique_ptr<Record::EnableContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
