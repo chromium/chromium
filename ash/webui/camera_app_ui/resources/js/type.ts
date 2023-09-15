@@ -480,6 +480,7 @@ export enum LocalStorageKey {
   ENABLE_MULTISTREAM_RECORDING_CHROME = 'enableMultistreamRecordingChrome',
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
+  GA_ID_REFRESH_TIME = 'gaIdRefreshTime',
   GA_USER_ID = 'google-analytics.analytics.user-id',
   GA4_CLIENT_ID = 'ga4ClientId',
   MIRRORING_TOGGLES = 'mirroringToggles',

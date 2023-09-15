@@ -162,6 +162,28 @@ export async function initMetrics(): Promise<void> {
         Comlink.proxy(setClientId));
   }
 
+  // GA_IDs are refreshed every 90 days cycle according to GA_ID_REFRESH_TIME.
+  // If GA_ID_REFRESH_TIME does not exist or is outdated, updates
+  // GA_ID_REFRESH_TIME and removes outdated GA_USER_ID and GA4_CLIENT_ID to
+  // have the new IDs.
+  const timeNow = Date.now();
+  const dayInMs = 1000 * 60 * 60 * 24;
+  let refreshTime = localStorage.getNumber(LocalStorageKey.GA_ID_REFRESH_TIME);
+  // Assign the first |refreshTime| uniformly in today+[1,90] days.
+  // This solves an initial launch problem by avoiding that all Chromebooks do a
+  // synchronized refresh 90 days after launch.
+  if (refreshTime === 0) {
+    const randomInt = Math.floor(Math.random() * 90) + 1;
+    refreshTime = timeNow + randomInt * dayInMs;
+  } else if (refreshTime <= timeNow) {
+    localStorage.remove(LocalStorageKey.GA_USER_ID);
+    localStorage.remove(LocalStorageKey.GA4_CLIENT_ID);
+    const cycle = 90 * dayInMs;
+    const cycleCount = Math.floor((timeNow - refreshTime) / cycle) + 1;
+    refreshTime += cycle * cycleCount;
+  }
+  localStorage.set(LocalStorageKey.GA_ID_REFRESH_TIME, refreshTime);
+
   await Promise.all([initGa(), initGa4()]);
   // TODO(b/286511762): Monitor consent option to enable/disable sending
   // metrics. Since end_session event is sent when the window is unloaded, we

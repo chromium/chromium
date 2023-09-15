@@ -5,6 +5,7 @@
 import {
   assertBoolean,
   assertInstanceof,
+  assertNumber,
   assertString,
   checkEnumVariant,
 } from '../assert.js';
@@ -48,6 +49,13 @@ export function getString(key: LocalStorageKey, defaultValue = ''): string {
  */
 export function getBool(key: LocalStorageKey, defaultValue = false): boolean {
   return assertBoolean(getHelper(key, defaultValue));
+}
+
+/**
+ * @return The number in storage or |defaultValue| if not found.
+ */
+export function getNumber(key: LocalStorageKey, defaultValue = 0): number {
+  return assertNumber(getHelper(key, defaultValue));
 }
 
 /**
