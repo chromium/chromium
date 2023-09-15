@@ -913,6 +913,9 @@ const char kSwReporter[] = "software_reporter";
 inline constexpr char kChromeCleaner[] = "chrome_cleaner";
 inline constexpr char kSettingsResetPrompt[] = "settings_reset_prompt";
 #endif
+// A boolean specifying whether the new download bubble UI is enabled. If it is
+// set to false, the old download shelf UI will be shown instead.
+inline constexpr char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 
 // Deprecated 09/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1298,6 +1301,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kSettingsResetPrompt);
   registry->RegisterDictionaryPref(kChromeCleaner);
 #endif
+  registry->RegisterBooleanPref(kDownloadBubbleEnabled, true);
 }
 
 }  // namespace
@@ -2453,6 +2457,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kSettingsResetPrompt);
   profile_prefs->ClearPref(kChromeCleaner);
 #endif
+  profile_prefs->ClearPref(kDownloadBubbleEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

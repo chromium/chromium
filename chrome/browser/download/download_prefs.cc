@@ -219,7 +219,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
   download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
-  download_bubble_enabled_.Init(prefs::kDownloadBubbleEnabled, prefs);
   prompt_for_duplicate_file_.Init(prefs::kDownloadDuplicateFilePromptEnabled,
                                   prefs);
 
@@ -291,7 +290,6 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kSaveFileType,
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
-  registry->RegisterBooleanPref(prefs::kDownloadBubbleEnabled, true);
   // The following two prefs are ignored on ChromeOS Lacros if SysUI integration
   // is enabled.
   // TODO(chlily): Clean them up once SysUI integration is enabled by default.

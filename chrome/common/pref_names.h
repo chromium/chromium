@@ -49,10 +49,6 @@ inline constexpr char kDisableScreenshots[] = "disable_screenshots";
 // 4 - Block malicious downloads
 inline constexpr char kDownloadRestrictions[] = "download_restrictions";
 
-// A boolean specifying whether the new download bubble UI is enabled. If it is
-// set to false, the old download shelf UI will be shown instead.
-inline constexpr char kDownloadBubbleEnabled[] = "download_bubble_enabled";
-
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
 // bubble will show automatically) by default.

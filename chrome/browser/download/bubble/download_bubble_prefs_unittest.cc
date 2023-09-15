@@ -105,16 +105,6 @@ TEST_F(DownloadBubblePrefsTest, FeatureFlagDisabled) {
   ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
 }
 
-TEST_F(DownloadBubblePrefsTest, DownloadBubbleEnabledManaged) {
-  feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(true));
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/true);
-  profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(false));
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
-}
-
 TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
   EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
   profile_->GetPrefs()->Set(

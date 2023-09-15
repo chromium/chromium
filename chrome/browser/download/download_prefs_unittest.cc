@@ -743,11 +743,6 @@ TEST(DownloadPrefsTest, PromptForDuplicateFile) {
                                    true);
     EXPECT_FALSE(prefs.PromptForDuplicateFile());
   }
-
-  // Bubble disabled by enterprise policy.
-  profile.GetTestingPrefService()->SetManagedPref(
-      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(false));
-  EXPECT_FALSE(prefs.PromptForDuplicateFile());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

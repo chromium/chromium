@@ -2348,26 +2348,6 @@
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
       {
-        "policies": {
-          "DownloadBubbleEnabled": true
-        },
-        "prefs": {
-          "download_bubble_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DownloadBubbleEnabled": false
-        },
-        "prefs": {
-          "download_bubble_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
         "policies": {},
         "prefs": {
           "download_bubble_enabled": {
