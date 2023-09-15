@@ -530,7 +530,7 @@ TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppInRegistry) {
   }
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
 #if BUILDFLAG(IS_MAC)
@@ -591,7 +591,7 @@ TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
 #if BUILDFLAG(IS_MAC)

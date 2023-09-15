@@ -132,7 +132,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
     // This is necessary to remove all OS integrations if the app has
     // been uninstalled.
     SynchronizeOsOptions synchronize_options;
-    synchronize_options.force_unregister_on_app_missing = true;
+    synchronize_options.force_unregister_os_integration = true;
     provider->scheduler().SynchronizeOsIntegration(
         app_id, base::BindOnce(synchronize_barrier, OsHooksErrors()),
         synchronize_options);

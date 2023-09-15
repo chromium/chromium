@@ -21,8 +21,8 @@ namespace {
 
 base::Value SynchronizeOptionsDebugValue(const SynchronizeOsOptions& options) {
   base::Value::Dict debug_dict;
-  debug_dict.Set("force_unregister_on_app_missing",
-                 options.force_unregister_on_app_missing);
+  debug_dict.Set("force_unregister_os_integration",
+                 options.force_unregister_os_integration);
   debug_dict.Set("add_shortcut_to_desktop", options.add_shortcut_to_desktop);
   debug_dict.Set("add_to_quick_launch_bar", options.add_to_quick_launch_bar);
   debug_dict.Set("force_create_shortcuts", options.force_create_shortcuts);

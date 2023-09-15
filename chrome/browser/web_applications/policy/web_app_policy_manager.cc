@@ -551,7 +551,7 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
   }
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   auto callback_for_synchronize_complete =
       base::BarrierClosure(app_ids_for_force_unregistration.size(),
                            std::move(policy_settings_applied_callback));

@@ -14,9 +14,11 @@
 namespace web_app {
 
 struct SynchronizeOsOptions {
-  // This allows the OS Integration sub managers to remove all OS registrations,
-  // bypassing the entire configuration and execution steps.
-  bool force_unregister_on_app_missing = false;
+  // This option will always unregister all os integration, despite what may be
+  // in the database. All other options will be ignored.
+  // TODO(b/300628551): Investigate if this can be exposed as a separate API
+  // instead of being called via Synchronize().
+  bool force_unregister_os_integration = false;
   // Adds a shortcut to the desktop IFF this call to synchronize creates
   // shortcuts fresh for the given app (it's not an update).
   bool add_shortcut_to_desktop = false;
@@ -48,7 +50,7 @@ class OsIntegrationSubManager {
       base::OnceClosure callback) = 0;
 
   // Only invoked if the app is not in the database and the caller set
-  // force_unregister_on_app_missing to true. Intended to clean up stale OS
+  // force_unregister_os_integration to true. Intended to clean up stale OS
   // state that was left over from an unsuccessful uninstall or stale OS data.
   virtual void ForceUnregister(const AppId& app_id,
                                base::OnceClosure callback) = 0;

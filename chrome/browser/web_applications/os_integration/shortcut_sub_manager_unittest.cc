@@ -527,7 +527,7 @@ TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   }
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
   if (HasShortcutsOsIntegration()) {
@@ -575,7 +575,7 @@ TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
   // Shortcuts should now be removed.

@@ -237,10 +237,10 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
         << "Error parsing os integration: " << output_result.error();
     EXPECT_TRUE(output_result.value());
 
-    // Call OS integration again with the force_unregister_on_app_missing flag
+    // Call OS integration again with the force_unregister_os_integration flag
     // set to true.
     SynchronizeOsOptions options;
-    options.force_unregister_on_app_missing = true;
+    options.force_unregister_os_integration = true;
     test::SynchronizeOsIntegration(profile(), app_id, options);
 
     // OS Uninstallation entries should no longer exist in the registry.

@@ -473,7 +473,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
   }
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
@@ -532,7 +532,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
   SynchronizeOsOptions options;
-  options.force_unregister_on_app_missing = true;
+  options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(

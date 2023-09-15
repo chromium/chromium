@@ -217,7 +217,7 @@ void OsIntegrationManager::Synchronize(
   // This is usually called to clean up OS integration states on the OS,
   // regardless of whether there are apps existing in the app registry or not.
   if (AreSubManagersExecuteEnabled() && options.has_value() &&
-      options.value().force_unregister_on_app_missing) {
+      options.value().force_unregister_os_integration) {
     ForceUnregisterOsIntegrationOnSubManager(
         app_id, /*index=*/0,
         std::move(callback).Then(
@@ -230,7 +230,7 @@ void OsIntegrationManager::Synchronize(
   CHECK(provider_->registrar_unsafe().GetAppById(app_id))
       << "Can't perform OS integration without the app existing in the "
          "registrar. If the use-case requires an app to not be installed, "
-         "consider setting the force_unregister_on_app_missing flag inside "
+         "consider setting the force_unregister_os_integration flag inside "
          "SynchronizeOsOptions";
 
   CHECK(set_provider_called_);
