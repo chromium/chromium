@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -40,7 +41,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 context.getString(R.string.enable_price_tracking_menu_item),
                 /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
                 /*supportsTinting=*/true, /*iphCommandBuilder*/ null,
-                AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING, /*tooltipTextResId*/ Resources.ID_NULL,
+                /*showHoverHighlight*/ false);
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mBottomSheetController = bottomSheetController;
 

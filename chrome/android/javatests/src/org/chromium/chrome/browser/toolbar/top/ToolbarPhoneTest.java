@@ -186,7 +186,7 @@ public class ToolbarPhoneTest {
             mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
             mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
                     mActivityTestRule.getActivity().getString(R.string.share), false, null, false,
-                    AdaptiveToolbarButtonVariant.UNKNOWN));
+                    AdaptiveToolbarButtonVariant.UNKNOWN, 0, false));
             // Make sure the button is visible in the beginning of the test.
             assertEquals(realMenuButtonCoordinator.isVisible(), true);
 
@@ -652,7 +652,7 @@ public class ToolbarPhoneTest {
                 mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
                 mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
+                AdaptiveToolbarButtonVariant.UNKNOWN, 0, false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
@@ -685,7 +685,7 @@ public class ToolbarPhoneTest {
                 mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
                 mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
+                AdaptiveToolbarButtonVariant.UNKNOWN, 0, false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
@@ -719,7 +719,7 @@ public class ToolbarPhoneTest {
                 mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
                 mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
+                AdaptiveToolbarButtonVariant.UNKNOWN, 0, false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });

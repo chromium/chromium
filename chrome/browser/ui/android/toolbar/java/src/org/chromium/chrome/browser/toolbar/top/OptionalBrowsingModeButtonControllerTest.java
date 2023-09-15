@@ -10,6 +10,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.res.Resources;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -211,6 +213,7 @@ public class OptionalBrowsingModeButtonControllerTest {
         return new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
                 /*contentDescription=*/"", /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, /*isEnabled=*/true, buttonVariant);
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true, buttonVariant,
+                /*tooltipTextResId=*/Resources.ID_NULL, /*showHoverHighlight=*/false);
     }
 }

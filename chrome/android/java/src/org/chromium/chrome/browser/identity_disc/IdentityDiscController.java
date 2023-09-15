@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.identity_disc;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
@@ -101,7 +102,9 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 new IPHCommandBuilder(mContext.getResources(),
                         FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
                         R.string.iph_identity_disc_accessibility_text),
-                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.UNKNOWN);
+                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.UNKNOWN, /*tooltipTextResId=*/
+                Resources.ID_NULL,
+                /*showHoverHighlight=*/true);
     }
 
     /**
@@ -190,7 +193,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
                 /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
                 buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
-                buttonSpec.getActionChipLabelResId());
+                buttonSpec.getActionChipLabelResId(), buttonSpec.getHoverTooltipTextId(),
+                buttonSpec.getShouldShowHoverHighlight());
     }
 
     /**

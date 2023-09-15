@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -51,7 +52,8 @@ public class BaseButtonDataProviderTest {
                 String contentDescription, int actionChipLabelResId, boolean supportsTinting,
                 int adaptiveButtonVariant) {
             super(activeTabSupplier, modalDialogManager, buttonDrawable, contentDescription,
-                    actionChipLabelResId, supportsTinting, null, adaptiveButtonVariant);
+                    actionChipLabelResId, supportsTinting, null, adaptiveButtonVariant,
+                    Resources.ID_NULL, false);
         }
 
         @Override

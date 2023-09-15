@@ -39,7 +39,8 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
         super(activeTabSupplier, /* modalDialogManager = */ null, buttonDrawable,
                 context.getString(R.string.menu_listen_to_this_page), Resources.ID_NULL,
                 /* supportsTinting = */ true,
-                /* iphCommandBuilder= */ null, AdaptiveToolbarButtonVariant.READ_ALOUD);
+                /* iphCommandBuilder= */ null, AdaptiveToolbarButtonVariant.READ_ALOUD,
+                /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/ false);
         mControllerSupplier = controllerSupplier;
         mTrackerSupplier = trackerSupplier;
     }

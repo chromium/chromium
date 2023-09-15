@@ -68,7 +68,9 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
                 context.getString(R.string.accessibility_toolbar_btn_mic),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.VOICE);
+                AdaptiveToolbarButtonVariant.VOICE,
+                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search,
+                /* showHoverHighlight= */ true);
         mTrackerSupplier = trackerSupplier;
         mVoiceSearchDelegate = voiceSearchDelegate;
     }

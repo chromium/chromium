@@ -71,8 +71,7 @@ found in the LICENSE file.
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button"
             android:layout="@layout/optional_toolbar_button"
-            style="@style/ToolbarHoverableButton"
-            android:background="@drawable/toolbar_tab_switcher_button_ripple"
+            style="@style/ToolbarButton"
             android:paddingStart="8dp"
             android:visibility="gone" />
 

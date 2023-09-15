@@ -88,7 +88,9 @@ public class AddToBookmarksToolbarButtonController
                 AppCompatResources.getDrawable(context, R.drawable.btn_star),
                 context.getString(R.string.accessibility_menu_bookmark),
                 /* actionChipLabelResId = */ Resources.ID_NULL, /* supportsTinting = */ true,
-                /* iphCommandBuilder = */ null, AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
+                /* iphCommandBuilder = */ null, AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
+                /* tooltipTextResId = */ Resources.ID_NULL,
+                /* showHoverHighlight = */ false);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTrackerSupplier = trackerSupplier;
@@ -110,7 +112,9 @@ public class AddToBookmarksToolbarButtonController
                 AppCompatResources.getDrawable(context, R.drawable.btn_star_filled), this, null,
                 context.getString(R.string.menu_edit_bookmark), true,
                 /* iphCommandBuilder= */ null, AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                /* actionChipLabelResId = */ Resources.ID_NULL);
+                /* actionChipLabelResId = */ Resources.ID_NULL,
+                /* tooltipTextResId = */ Resources.ID_NULL,
+                /* showHoverHighlight = */ false);
 
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }

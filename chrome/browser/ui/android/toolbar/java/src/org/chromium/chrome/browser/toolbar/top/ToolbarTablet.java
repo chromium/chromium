@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -674,10 +675,23 @@ public class ToolbarTablet
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
 
-        // Set hover state tooltip text for mic and share button on tablets.
+        // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
+        // box hover highlight for the rest of button variants.
+        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
+            mOptionalButton.setBackgroundResource(R.drawable.toolbar_button_ripple);
+        } else {
+            TypedValue themeRes = new TypedValue();
+            getContext().getTheme().resolveAttribute(
+                    R.attr.selectableItemBackground, themeRes, true);
+            mOptionalButton.setBackgroundResource(themeRes.resourceId);
+        }
+
+        // Set hover tooltip text for voice search, share and new tab button on tablets.
         if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID) {
             super.setTooltipText(
                     mOptionalButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
+        } else {
+            super.setTooltipText(mOptionalButton, null);
         }
 
         mOptionalButtonUsesTint = buttonSpec.getSupportsTinting();

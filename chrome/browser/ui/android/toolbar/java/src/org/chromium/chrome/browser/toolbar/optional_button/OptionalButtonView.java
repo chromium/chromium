@@ -19,6 +19,7 @@ import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -222,11 +223,25 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
 
-        // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search).
+        // Set circular hover highlight for optional button when button variant is profile, share,
+        // voice search and new tab. Set box hover highlight for the rest of button variants.
+        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
+            mButton.setBackgroundResource(R.drawable.toolbar_button_ripple);
+        } else {
+            TypedValue themeRes = new TypedValue();
+            getContext().getTheme().resolveAttribute(
+                    R.attr.selectableItemBackground, themeRes, true);
+            mButton.setBackgroundResource(themeRes.resourceId);
+        }
+
+        // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
+        // tab and profile).
         if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID
                 && mButton != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             TooltipCompat.setTooltipText(
                     mButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
+        } else {
+            TooltipCompat.setTooltipText(mButton, null);
         }
         mContentDescription = buttonSpec.getContentDescription();
 

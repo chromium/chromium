@@ -37,7 +37,8 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
             Drawable buttonDrawable, String contentDescription, Supplier<Tracker> trackerSupplier) {
         super(activeTabSupplier, /* modalDialogManager = */ null, buttonDrawable,
                 contentDescription, Resources.ID_NULL, /* supportsTinting = */ true, null,
-                AdaptiveToolbarButtonVariant.TRANSLATE);
+                AdaptiveToolbarButtonVariant.TRANSLATE, /*tooltipTextResId*/ Resources.ID_NULL,
+                /*showHoverHighlight*/ false);
         mTrackerSupplier = trackerSupplier;
     }
 

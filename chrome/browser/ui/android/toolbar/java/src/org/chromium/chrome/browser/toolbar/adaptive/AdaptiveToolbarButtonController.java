@@ -211,7 +211,9 @@ public class AdaptiveToolbarButtonController
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
                     receivedButtonSpec.getButtonVariant(),
-                    receivedButtonSpec.getActionChipLabelResId()));
+                    receivedButtonSpec.getActionChipLabelResId(),
+                    receivedButtonSpec.getHoverTooltipTextId(),
+                    receivedButtonSpec.getShouldShowHoverHighlight()));
         }
         return mButtonData;
     }

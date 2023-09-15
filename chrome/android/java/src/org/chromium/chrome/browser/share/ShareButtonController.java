@@ -60,7 +60,9 @@ public class ShareButtonController extends BaseButtonDataProvider {
         super(tabProvider, modalDialogManager, buttonDrawable, context.getString(R.string.share),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /*supportsTinting=*/true,
-                /*iphCommandBuilder=*/null, AdaptiveToolbarButtonVariant.SHARE);
+                /*iphCommandBuilder=*/null, AdaptiveToolbarButtonVariant.SHARE,
+                /*tooltipTextResId=*/R.string.adaptive_toolbar_button_preference_share,
+                /*showHoverHighlight=*/true);
 
         mShareUtils = shareUtils;
         mShareDelegateSupplier = shareDelegateSupplier;

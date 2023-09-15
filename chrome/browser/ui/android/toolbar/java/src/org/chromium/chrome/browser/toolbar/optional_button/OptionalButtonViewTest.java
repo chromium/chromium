@@ -137,7 +137,8 @@ public class OptionalButtonViewTest {
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
                 contentDescription, true, null, /* buttonVariant= */
-                AdaptiveToolbarButtonVariant.NEW_TAB, /*actionChipLabelResId=*/Resources.ID_NULL);
+                AdaptiveToolbarButtonVariant.NEW_TAB, /*actionChipLabelResId=*/Resources.ID_NULL,
+                /*tooltipTextResId=*/R.string.new_tab_title, /*showHoverHighlight=*/true);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -156,7 +157,8 @@ public class OptionalButtonViewTest {
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
                 contentDescription, true, null, /* buttonVariant= */
                 AdaptiveToolbarButtonVariant.READER_MODE,
-                /*actionChipLabelResId=*/Resources.ID_NULL);
+                /*actionChipLabelResId=*/Resources.ID_NULL, /*tooltipTextResId=*/Resources.ID_NULL,
+                /*showHoverHighlight=*/false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -175,7 +177,8 @@ public class OptionalButtonViewTest {
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
                 contentDescription, true, null, /* buttonVariant= */
                 AdaptiveToolbarButtonVariant.READER_MODE,
-                /*actionChipLabelResId=*/actionChipLabelResId);
+                /*actionChipLabelResId=*/actionChipLabelResId,
+                /*tooltipTextResId=*/Resources.ID_NULL, /*showHoverHighlight=*/false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -184,7 +187,7 @@ public class OptionalButtonViewTest {
         return buttonData;
     }
 
-    private ButtonDataImpl getDataForTestingTooltipText(int buttonVariant) {
+    private ButtonDataImpl getDataForTestingTooltipText(int buttonVariant, int tooltipTextIdRes) {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
@@ -192,7 +195,7 @@ public class OptionalButtonViewTest {
 
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
                 contentDescription, true, null, /* buttonVariant= */
-                buttonVariant, 0);
+                buttonVariant, 0, tooltipTextIdRes, true);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -203,21 +206,37 @@ public class OptionalButtonViewTest {
 
     @Test
     public void testHoverTooltipText() {
-        // Test whether Share button tooltip Text is set correctly.
-        ButtonData buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.SHARE);
+        // Test whether share button tooltip Text is set correctly.
+        ButtonData buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.SHARE,
+                R.string.adaptive_toolbar_button_preference_share);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals("Tooltip text for Share button is not as expected",
+        Assert.assertEquals("Tooltip text for share button is not as expected",
                 mButton.getTooltipText(),
                 mActivity.getResources().getString(
                         R.string.adaptive_toolbar_button_preference_share));
 
-        // Test whether Voice search button tooltip Text is set correctly.
-        buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.VOICE);
+        // Test whether voice search button tooltip Text is set correctly.
+        buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.VOICE,
+                R.string.adaptive_toolbar_button_preference_voice_search);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals("Tooltip text for Voice search button is not as expected",
+        Assert.assertEquals("Tooltip text for voice search button is not as expected",
                 mButton.getTooltipText(),
                 mActivity.getResources().getString(
                         R.string.adaptive_toolbar_button_preference_voice_search));
+
+        // Test whether new tab button tooltip Text is set correctly.
+        buttonData = getDataForTestingTooltipText(
+                AdaptiveToolbarButtonVariant.NEW_TAB, R.string.button_new_tab);
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        Assert.assertEquals("Tooltip text for new tab button is not as expected",
+                mButton.getTooltipText(),
+                mActivity.getResources().getString(R.string.button_new_tab));
+
+        // Test whether reader mode tooltip Text is null.
+        buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.READER_MODE, 0);
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        Assert.assertEquals("Tooltip text for reader mode button is not as expected",
+                mButton.getTooltipText(), null);
     }
 
     @Test
@@ -631,7 +650,9 @@ public class OptionalButtonViewTest {
                 originalButtonSpec.getOnLongClickListener(),
                 originalButtonSpec.getContentDescription(), originalButtonSpec.getSupportsTinting(),
                 originalButtonSpec.getIPHCommandBuilder(), originalButtonSpec.getButtonVariant(),
-                originalButtonSpec.getActionChipLabelResId()));
+                originalButtonSpec.getActionChipLabelResId(),
+                originalButtonSpec.getHoverTooltipTextId(),
+                originalButtonSpec.getShouldShowHoverHighlight()));
 
         mOptionalButtonView.updateButtonWithAnimation(readerModeButtonData);
         mOptionalButtonView.onTransitionStart(null);

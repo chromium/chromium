@@ -55,11 +55,15 @@ public interface ButtonData {
         private final boolean mIsDynamicAction;
         @StringRes
         private final int mActionChipLabelResId;
+        private final boolean mShowHoverHighlight;
+        @StringRes
+        private final int mTooltipTextResId;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
                 @Nullable View.OnLongClickListener onLongClickListener, String contentDescription,
                 boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId) {
+                @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId,
+                int tooltipTextResId, boolean showHoverHighlight) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -69,6 +73,8 @@ public interface ButtonData {
             mButtonVariant = buttonVariant;
             mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
             mActionChipLabelResId = actionChipLabelResId;
+            mTooltipTextResId = tooltipTextResId;
+            mShowHoverHighlight = showHoverHighlight;
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -122,15 +128,20 @@ public interface ButtonData {
             return mIsDynamicAction;
         }
 
-        /** Get hover state tooltip text for optional toolbar buttons(e.g. share, voice search). */
-        public int getHoverTooltipTextId() {
-            if (mButtonVariant == AdaptiveToolbarButtonVariant.SHARE) {
-                return R.string.adaptive_toolbar_button_preference_share;
-            } else if (mButtonVariant == AdaptiveToolbarButtonVariant.VOICE) {
-                return R.string.adaptive_toolbar_button_preference_voice_search;
-            } else {
-                return INVALID_TOOLTIP_TEXT_ID;
-            }
+        /**
+         * Get hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
+         * tab and profile).
+         */
+        public @StringRes int getHoverTooltipTextId() {
+            return mTooltipTextResId;
+        }
+
+        /**
+         * Show hover highlight for optional toolbar buttons(e.g. share, voice search, new tab and
+         * profile).
+         */
+        public boolean getShouldShowHoverHighlight() {
+            return mShowHoverHighlight;
         }
 
         @Override

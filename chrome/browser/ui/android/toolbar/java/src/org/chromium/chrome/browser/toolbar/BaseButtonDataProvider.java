@@ -54,7 +54,8 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             @Nullable ModalDialogManager modalDialogManager, Drawable buttonDrawable,
             String contentDescription, @StringRes int actionChipLabelResId, boolean supportsTinting,
             @Nullable IPHCommandBuilder iphCommandBuilder,
-            @AdaptiveToolbarButtonVariant int adaptiveButtonVariant) {
+            @AdaptiveToolbarButtonVariant int adaptiveButtonVariant,
+            @StringRes int tooltipTextResId, boolean showHoverHighlight) {
         mActiveTabSupplier = activeTabSupplier;
         mModalDialogManager = modalDialogManager;
         if (mModalDialogManager != null) {
@@ -83,7 +84,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
                 /* onClickListener= */ this, contentDescription, actionChipLabelResId,
                 supportsTinting,
                 /* iphCommandBuilder= */ iphCommandBuilder, /*isEnabled=*/true,
-                adaptiveButtonVariant);
+                adaptiveButtonVariant, tooltipTextResId, showHoverHighlight);
     }
 
     /**

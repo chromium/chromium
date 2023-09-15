@@ -95,7 +95,8 @@ public class AdaptiveToolbarButtonControllerTest {
                 /*canShow=*/true, /*drawable=*/null, mock(View.OnClickListener.class),
                 /*contentDescription=*/"", /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, /*isEnabled=*/true,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
+                AdaptiveToolbarButtonVariant.UNKNOWN, /*tooltipTextResId=*/Resources.ID_NULL,
+                /*showHoverHighlight=*/false);
         mConfiguration.screenWidthDp = 420;
     }
 
@@ -444,6 +445,7 @@ public class AdaptiveToolbarButtonControllerTest {
         return new ButtonSpec(/*drawable=*/null, mock(View.OnClickListener.class),
                 /*onLongClickListener=*/null,
                 /*contentDescription=*/"description", /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, variant, /*actionChipLabelResId=*/0);
+                /*iphCommandBuilder=*/null, variant, /*actionChipLabelResId=*/0,
+                /*tooltipTextResId=*/Resources.ID_NULL, /*showHoverHighlight=*/false);
     }
 }

@@ -100,7 +100,8 @@ public class OptionalNewTabButtonController
                 context.getString(R.string.button_new_tab),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /*supportsTinting= */ true, /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.NEW_TAB);
+                AdaptiveToolbarButtonVariant.NEW_TAB,
+                /* tooltipTextResId= */ R.string.new_tab_title, /* showHoverHighlight= */ true);
         setShouldShowOnIncognitoTabs(true);
 
         mContext = context;

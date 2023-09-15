@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -36,7 +37,8 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 context.getString(R.string.reader_view_text_alt),
                 /* actionChipLabelResId= */ R.string.reader_mode_action_chip_label_simplify_page,
                 /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.READER_MODE);
+                AdaptiveToolbarButtonVariant.READER_MODE,
+                /* tooltipTextResId = */ Resources.ID_NULL, /* showHoverHighlight = */ false);
     }
 
     @Override
