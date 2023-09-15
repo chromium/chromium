@@ -927,8 +927,7 @@ TEST(PasswordManagerUtil, ConstructGURLWithScheme) {
 TEST(PasswordManagerUtil, IsValidPasswordURL) {
   std::vector<std::pair<GURL, bool>> test_cases = {
       {GURL("noscheme.com"), false},
-      {GURL("https://;/valid"), true},
-      {GURL("https://^/invalid"), false},
+      {GURL("https://;/invalid"), false},
       {GURL("scheme://unsupported"), false},
       {GURL("http://example.com"), true},
       {GURL("https://test.com/login"), true}};
