@@ -1067,7 +1067,7 @@ class _StackScriptContext:
       cmd.append('--quiet')
     if input_file:
       cmd.append(input_file)
-    logging.info('Running stack.py')
+    logging.info('Running: %s', shlex.join(cmd))
     return subprocess.Popen(cmd, universal_newlines=True, **kwargs)
 
 
@@ -1780,15 +1780,18 @@ class _PrintCertsCommand(_Command):
             self.bundle_generation_info.keystore_password, '-alias',
             self.bundle_generation_info.keystore_alias, '-file', f.name
         ]
+        logging.warning('Running: %s', shlex.join(cmd))
         subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         cmd = [keytool, '-printcert', '-file', f.name]
-        logging.warning('Running: %s', ' '.join(cmd))
+        logging.warning('Running: %s', shlex.join(cmd))
         subprocess.check_call(cmd)
         if self.args.full_cert:
           # Redirect stderr to hide a keytool warning about using non-standard
           # keystore format.
+          cmd += ['-rfc']
+          logging.warning('Running: %s', shlex.join(cmd))
           pem_encoded_certificate = subprocess.check_output(
-              cmd + ['-rfc'], stderr=subprocess.STDOUT).decode()
+              cmd, stderr=subprocess.STDOUT).decode()
     else:
 
       def run_apksigner(min_sdk_version):
@@ -1797,7 +1800,7 @@ class _PrintCertsCommand(_Command):
             str(min_sdk_version), '--print-certs-pem', '--verbose',
             self.apk_helper.path
         ]
-        logging.warning('Running: %s', ' '.join(cmd))
+        logging.warning('Running: %s', shlex.join(cmd))
         env = os.environ.copy()
         env['PATH'] = os.path.pathsep.join(
             [os.path.join(_JAVA_HOME, 'bin'),
@@ -1983,8 +1986,9 @@ class _ManifestCommand(_Command):
       apkanalyzer = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                  'public', 'cmdline-tools', 'latest', 'bin',
                                  'apkanalyzer')
-      subprocess.check_call(
-          [apkanalyzer, 'manifest', 'print', self.apk_helper.path])
+      cmd = [apkanalyzer, 'manifest', 'print', self.apk_helper.path]
+      logging.info('Running: %s', shlex.join(cmd))
+      subprocess.check_call(cmd)
 
 
 class _StackCommand(_Command):
