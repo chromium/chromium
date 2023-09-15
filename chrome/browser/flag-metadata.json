@@ -5346,17 +5346,17 @@
   {
     "name": "launcher-local-image-search",
     "owners": ["dgrebenyuk", "nbowe"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "launcher-local-image-search-ica",
     "owners": ["dgrebenyuk", "nbowe"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "launcher-local-image-search-ocr",
     "owners": ["dgrebenyuk", "nbowe"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "launcher-nudge-session-reset",
@@ -5366,7 +5366,7 @@
   {
     "name": "launcher-search-control",
     "owners": ["chenjih", "dgrebenyuk"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "launcher-system-info-answer-cards",
@@ -6885,8 +6885,8 @@
   },
   {
     "name": "productivity-launcher-image-search",
-    "owners": [ "yulunwu","cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 118
+    "owners": [ "wcwang", "yulunwu","cros-system-ui-eng@google.com" ],
+    "expiry_milestone": 124
   },
   {
     "name": "profiles-reordering",
