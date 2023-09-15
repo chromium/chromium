@@ -159,9 +159,10 @@ void NavigationManagerImpl::SerializeToProto(
     proto::NavigationStorage& storage) const {
   const int count = GetItemCount();
 
-  // Ensure that the last committed item index is in range.
+  // The last committed item index may be equal to -1 if a session is saved
+  // during restoration. In that case use GetItemCount() - 1.
   int last_committed_item_index = GetLastCommittedItemIndex();
-  if (last_committed_item_index < 0 || last_committed_item_index >= count) {
+  if (last_committed_item_index == -1) {
     last_committed_item_index = count - 1;
   }
 
@@ -173,6 +174,7 @@ void NavigationManagerImpl::SerializeToProto(
   std::vector<const NavigationItemImpl*> items;
   items.reserve(static_cast<size_t>(count));
 
+  const int original_last_committed_item_index = last_committed_item_index;
   for (int index = 0; index < count; ++index) {
     const NavigationItemImpl* item =
         GetNavigationItemImplAtIndex(static_cast<size_t>(index));
@@ -180,7 +182,7 @@ void NavigationManagerImpl::SerializeToProto(
     if (item->ShouldSkipSerialization()) {
       // Update the index of the last committed item if necessary when
       // skipping an item.
-      if (index <= last_committed_item_index) {
+      if (index <= original_last_committed_item_index) {
         --last_committed_item_index;
       }
       continue;
