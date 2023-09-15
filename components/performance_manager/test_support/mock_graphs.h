@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_MOCK_GRAPHS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_MOCK_GRAPHS_H_
 
+#include <vector>
+
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -81,6 +83,29 @@ struct MockMultiplePagesInSingleProcessGraph
   ~MockMultiplePagesInSingleProcessGraph();
   TestNodeWrapper<PageNodeImpl> other_page;
   TestNodeWrapper<FrameNodeImpl> other_frame;
+};
+
+// The following graph topology is created to emulate a scenario where
+// `num_other_pages` pages are executing in a single process:
+//
+// Pg  Pr OPg...  BPr
+//  \ / \ /
+//   F  OF...
+//
+// Where:
+// F: frame(frame_tree_id:0)
+// OFs...: other_frames(frame_tree_id:1..num_other_pages)
+// Pg: page
+// OPgs...: other_pages
+// BPr: browser_process(pid:1)
+// Pr: process(pid:2)
+struct MockManyPagesInSingleProcessGraph
+    : public MockSinglePageInSingleProcessGraph {
+  explicit MockManyPagesInSingleProcessGraph(TestGraphImpl* graph,
+                                             size_t num_other_pages);
+  ~MockManyPagesInSingleProcessGraph();
+  std::vector<TestNodeWrapper<PageNodeImpl>> other_pages;
+  std::vector<TestNodeWrapper<FrameNodeImpl>> other_frames;
 };
 
 // The following graph topology is created to emulate a scenario where a single

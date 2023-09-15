@@ -38,7 +38,6 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
-#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/tab_revisit_tracker.h"
@@ -116,7 +115,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::PageLiveStateDecorator>(
           performance_manager::PageLiveStateDelegateImpl::Create()));
-  graph->PassToGraph(std::make_unique<performance_manager::TabPageDecorator>());
   graph->PassToGraph(
       std::make_unique<performance_manager::TabRevisitTracker>());
 

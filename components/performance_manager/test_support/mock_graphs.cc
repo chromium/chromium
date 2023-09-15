@@ -87,6 +87,29 @@ MockMultiplePagesInSingleProcessGraph::
   other_page.reset();
 }
 
+MockManyPagesInSingleProcessGraph::MockManyPagesInSingleProcessGraph(
+    TestGraphImpl* graph,
+    size_t num_other_pages)
+    : MockSinglePageInSingleProcessGraph(graph) {
+  other_pages.reserve(num_other_pages);
+  other_frames.reserve(num_other_pages);
+  for (size_t i = 0; i < num_other_pages; ++i) {
+    other_pages.push_back(TestNodeWrapper<PageNodeImpl>::Create(graph));
+    other_frames.push_back(graph->CreateFrameNodeAutoId(
+        process.get(), other_pages[i].get(), nullptr));
+  }
+}
+
+MockManyPagesInSingleProcessGraph::~MockManyPagesInSingleProcessGraph() {
+  for (auto& f : other_frames) {
+    f.reset();
+  }
+
+  for (auto& p : other_pages) {
+    p.reset();
+  }
+}
+
 MockSinglePageWithMultipleProcessesGraph::
     MockSinglePageWithMultipleProcessesGraph(TestGraphImpl* graph)
     : MockSinglePageInSingleProcessGraph(graph),

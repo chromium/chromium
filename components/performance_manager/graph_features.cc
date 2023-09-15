@@ -17,6 +17,8 @@
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
+#include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/performance_manager/resource_attribution/resource_context_registry_storage.h"
@@ -75,6 +77,13 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.v8_context_tracker) {
     Install<v8_memory::V8ContextTracker>(graph);
+  }
+
+  if (flags_.tab_page_decorator) {
+    Install<TabPageDecorator>(graph);
+  }
+  if (flags_.tab_connectedness_decorator) {
+    Install<TabConnectednessDecorator>(graph);
   }
 }
 
