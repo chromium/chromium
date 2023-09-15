@@ -48,9 +48,11 @@ bool EditorMediator::HasInstance() {
   return g_instance_ != nullptr;
 }
 
-void EditorMediator::BindEditorInstance(
-    mojo::PendingReceiver<mojom::EditorInstance> pending_receiver) {
-  editor_instance_impl_.BindReceiver(std::move(pending_receiver));
+void EditorMediator::BindEditorClient(
+    mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
+  if (editor_client_connector_ != nullptr) {
+    editor_client_connector_->BindEditorClient(std::move(pending_receiver));
+  }
 }
 
 void EditorMediator::BindEditorPanelManager(

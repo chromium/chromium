@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/input_method/editor_client_connector.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
@@ -47,8 +48,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   static bool HasInstance();
 
   // Binds a new editor instance request from a client.
-  void BindEditorInstance(
-      mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);
+  void BindEditorClient(
+      mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
 
   // Binds a new panel manager request from a client.
   void BindEditorPanelManager(
@@ -106,6 +107,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
 
   // TODO: b:298285960 - add the instantiation of this instance.
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
+  std::unique_ptr<EditorClientConnector> editor_client_connector_;
 
   // May contain an instance of MakoPageHandler. This is used to control the
   // lifetime of the Mako WebUI.

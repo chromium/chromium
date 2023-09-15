@@ -1463,6 +1463,8 @@ source_set("ash") {
     "input_method/diacritics_checker.h",
     "input_method/diacritics_insensitive_string_comparator.cc",
     "input_method/diacritics_insensitive_string_comparator.h",
+    "input_method/editor_client_connector.cc",
+    "input_method/editor_client_connector.h",
     "input_method/editor_consent_enums.cc",
     "input_method/editor_consent_enums.h",
     "input_method/editor_consent_store.cc",

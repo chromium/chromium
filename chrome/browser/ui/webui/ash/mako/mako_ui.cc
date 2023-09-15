@@ -135,8 +135,9 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
 MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::BindInterface(
-    mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver) {
-  input_method::EditorMediator::Get()->BindEditorInstance(std::move(receiver));
+    mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
+  input_method::EditorMediator::Get()->BindEditorClient(
+      std::move(pending_receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)
