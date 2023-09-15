@@ -2044,7 +2044,7 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
   CHECK(proxy_delegate_);
 
   auto* ipp_config_cache_impl = static_cast<IpProtectionConfigCacheImpl*>(
-      proxy_delegate_->GetIpProtectionConfigCacheForTesting());  // IN-TEST
+      proxy_delegate_->GetIpProtectionConfigCache());
   CHECK(ipp_config_cache_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -2064,8 +2064,7 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
               CHECK(weak_ptr);
               auto* ipp_config_cache_impl =
                   static_cast<IpProtectionConfigCacheImpl*>(
-                      weak_ptr->proxy_delegate_
-                          ->GetIpProtectionConfigCacheForTesting());  // IN-TEST
+                      weak_ptr->proxy_delegate_->GetIpProtectionConfigCache());
               ipp_config_cache_impl->InvalidateTryAgainAfterTime();
               while (ipp_config_cache_impl->IsAuthTokenAvailable()) {
                 ipp_config_cache_impl->GetAuthToken();
@@ -2105,7 +2104,7 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
 void NetworkContext::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
   auto* ipp_config_cache_impl = static_cast<IpProtectionConfigCacheImpl*>(
-      proxy_delegate_->GetIpProtectionConfigCacheForTesting());  // IN-TEST
+      proxy_delegate_->GetIpProtectionConfigCache());
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
       ipp_config_cache_impl->GetAuthToken();
@@ -2117,6 +2116,17 @@ void NetworkContext::OnIpProtectionConfigAvailableForTesting(
       ipp_config_cache_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   std::move(callback).Run(nullptr, try_auth_tokens_after);
+}
+
+void NetworkContext::InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
+  if (!proxy_delegate_) {
+    return;
+  }
+  auto* ipp_config_cache = proxy_delegate_->GetIpProtectionConfigCache();
+  if (!ipp_config_cache) {
+    return;
+  }
+  ipp_config_cache->InvalidateTryAgainAfterTime();
 }
 
 void NetworkContext::PreconnectSockets(

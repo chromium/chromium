@@ -15,6 +15,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -60,11 +61,13 @@ enum class IpProtectionTryGetAuthTokensResult {
 // UI thread.
 class IpProtectionConfigProvider
     : public KeyedService,
-      public network::mojom::IpProtectionConfigGetter {
+      public network::mojom::IpProtectionConfigGetter,
+      public signin::IdentityManager::Observer {
  public:
   IpProtectionConfigProvider(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      Profile* profile);
 
   ~IpProtectionConfigProvider() override;
 
@@ -104,7 +107,6 @@ class IpProtectionConfigProvider
   }
 
   // Base time deltas for calculating `try_again_after`.
-  static constexpr base::TimeDelta kNoAccountBackoff = base::Minutes(5);
   static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
   static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
   static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
@@ -112,6 +114,8 @@ class IpProtectionConfigProvider
  private:
   friend class IpProtectionConfigProviderTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderBrowserTest,
+                           BackoffTimeResetAfterProfileAvailabilityChange);
 
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
@@ -139,6 +143,12 @@ class IpProtectionConfigProvider
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
   raw_ptr<signin::IdentityManager> identity_manager_;
+  // The `Profile` object associated with this
+  // `IpProtectionConfigProvider()`. Will be reset to nullptr after
+  // `Shutdown()` is called.
+  // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
+  // corresponding dependency (if needed) registered in the factory class.
+  raw_ptr<Profile> profile_;
 
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
   // its callback.
@@ -152,6 +162,14 @@ class IpProtectionConfigProvider
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
   absl::optional<base::TimeDelta> CalculateBackoff(
       IpProtectionTryGetAuthTokensResult result);
+
+  // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
+  // ignore any previously sent `try_again_after` times.
+  void InvalidateNetworkContextTryAgainAfterTime();
+
+  // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
   // raw pointer to `url_loader_factory_` gets passed to
@@ -169,9 +187,10 @@ class IpProtectionConfigProvider
   bool is_shutting_down_ = false;
 
   // The result of the last call to `TryGetAuthTokens()`, and the
-  // backoff applied to `try_again_after`. These will be updated by calls from
-  // any receiver (so, from either the main profile or an associated incognito
-  // mode profile).
+  // backoff applied to `try_again_after`. `last_try_get_auth_tokens_backoff_`
+  // will be set to `base::TimeDelta::Max()` if no further attempts to get
+  // tokens should be made. These will be updated by calls from any receiver
+  // (so, from either the main profile or an associated incognito mode profile).
   IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
       IpProtectionTryGetAuthTokensResult::kSuccess;
   absl::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;

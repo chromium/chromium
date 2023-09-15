@@ -25,6 +25,10 @@
 #include "services/network/public/mojom/network_context.mojom-test-utils.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#endif
+
 namespace {
 class ScopedIpProtectionFeatureList {
  public:
@@ -46,11 +50,13 @@ class IpProtectionConfigGetterInterceptor
  public:
   IpProtectionConfigGetterInterceptor(IpProtectionConfigProvider* getter,
                                       std::string token,
-                                      base::Time expiration)
+                                      base::Time expiration,
+                                      bool should_intercept = true)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
-        expiration_(expiration) {
+        expiration_(expiration),
+        should_intercept_(should_intercept) {
     getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, this);
   }
 
@@ -64,12 +70,20 @@ class IpProtectionConfigGetterInterceptor
 
   void TryGetAuthTokens(uint32_t batch_size,
                         TryGetAuthTokensCallback callback) override {
-    // NOTE: We'll ignore batch size and just return one token.
-    std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
-    auto token = network::mojom::BlindSignedAuthToken::New(token_, expiration_);
-    tokens.push_back(std::move(token));
-    std::move(callback).Run(std::move(tokens), base::Time());
+    if (should_intercept_) {
+      // NOTE: We'll ignore batch size and just return one token.
+      std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
+      auto token =
+          network::mojom::BlindSignedAuthToken::New(token_, expiration_);
+      tokens.push_back(std::move(token));
+      std::move(callback).Run(std::move(tokens), base::Time());
+      return;
+    }
+    GetForwardingInterface()->TryGetAuthTokens(batch_size, std::move(callback));
   }
+
+  void EnableInterception() { should_intercept_ = true; }
+  void DisableInterception() { should_intercept_ = false; }
 
  private:
   raw_ptr<IpProtectionConfigProvider> getter_;
@@ -80,7 +94,10 @@ class IpProtectionConfigGetterInterceptor
   mojo::ReceiverId receiver_id_;
   std::string token_;
   base::Time expiration_;
+  bool should_intercept_;
 };
+
+constexpr char kTestEmail[] = "test@example.com";
 }  // namespace
 
 class IpProtectionConfigProviderBrowserTest : public InProcessBrowserTest {
@@ -102,9 +119,8 @@ class IpProtectionConfigProviderBrowserTest : public InProcessBrowserTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
 
-    identity_test_environment_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("user@gmail.com",
-                                      signin::ConsentLevel::kSignin);
+    MakePrimaryAccountAvailable();
+
     identity_test_environment_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
   }
@@ -112,6 +128,22 @@ class IpProtectionConfigProviderBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     IpProtectionConfigProvider::Get(browser()->profile())->Shutdown();
     identity_test_environment_adaptor_.reset();
+  }
+
+  signin::IdentityManager* IdentityManager() {
+    return identity_test_environment_adaptor_->identity_test_env()
+        ->identity_manager();
+  }
+
+  void MakePrimaryAccountAvailable() {
+    identity_test_environment_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable(kTestEmail,
+                                      signin::ConsentLevel::kSignin);
+  }
+
+  void ClearPrimaryAccount() {
+    identity_test_environment_adaptor_->identity_test_env()
+        ->ClearPrimaryAccount();
   }
 
  protected:
@@ -231,4 +263,130 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   getter->receivers_for_testing().FlushForTesting();
 
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
+                       BackoffTimeResetAfterProfileAvailabilityChange) {
+  IpProtectionConfigProvider* provider =
+      IpProtectionConfigProvider::Get(browser()->profile());
+  ASSERT_TRUE(provider);
+  ASSERT_EQ(provider->receivers_for_testing().size(), 1U);
+
+  std::string token = "best_token_ever";
+  base::Time expiration = base::Time::Now() + base::Seconds(12345);
+  auto main_profile_auth_token_getter_interceptor =
+      std::make_unique<IpProtectionConfigGetterInterceptor>(
+          provider, token, expiration, /*should_intercept=*/false);
+
+  network::mojom::NetworkContext* main_profile_network_context =
+      browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
+
+  Browser* incognito_profile_browser =
+      CreateIncognitoBrowser(browser()->profile());
+  ASSERT_EQ(provider->receivers_for_testing().size(), 2U);
+  network::mojom::NetworkContext* incognito_profile_network_context =
+      incognito_profile_browser->profile()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  ASSERT_NE(main_profile_network_context, incognito_profile_network_context);
+
+  auto incognito_profile_auth_token_getter_interceptor =
+      std::make_unique<IpProtectionConfigGetterInterceptor>(
+          provider, token, expiration, /*should_intercept=*/false);
+
+// Request tokens from both contexts and ensure that the "don't retry"
+// cooldown time is returned. The provider should do this itself, so the
+// interceptors won't be used for this part.
+
+// Simulate logging the user out, which should make the provider indicate that
+// `TryGetAuthTokens()` calls should not be retried on the next request.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  ClearPrimaryAccount();
+#else
+  // On ChromeOS, `ClearPrimaryAccount()` either isn't supported (Ash) or
+  // doesn't seem to work well (Lacros), but we can still test that our
+  // implementation works by mocking up the account status change event.
+  provider->OnPrimaryAccountChanged(signin::PrimaryAccountChangeEvent(
+      signin::PrimaryAccountChangeEvent::State(
+          IdentityManager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin),
+          signin::ConsentLevel::kSignin),
+      signin::PrimaryAccountChangeEvent::State()));
+#endif
+
+  base::Time dont_retry = base::Time::Max();
+  base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
+                         absl::optional<base::Time>>
+      future;
+  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const absl::optional<base::Time>& main_profile_first_attempt_result =
+      future.Get<absl::optional<base::Time>>();
+  EXPECT_EQ(main_profile_first_attempt_result.value(), dont_retry);
+
+  future.Clear();
+  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const absl::optional<base::Time>& incognito_profile_first_attempt_result =
+      future.Get<absl::optional<base::Time>>();
+  EXPECT_EQ(incognito_profile_first_attempt_result.value(), dont_retry);
+
+  // Make the interceptors return tokens now so that if the network service
+  // isn't respecting the cooldown, tokens will be returned and the test will
+  // fail below.
+  main_profile_auth_token_getter_interceptor->EnableInterception();
+  incognito_profile_auth_token_getter_interceptor->EnableInterception();
+
+  // Run the test again and check that the network service is still in a
+  // cooldown phase.
+  future.Clear();
+  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const absl::optional<base::Time>& main_profile_second_attempt_result =
+      future.Get<absl::optional<base::Time>>();
+  EXPECT_EQ(main_profile_second_attempt_result.value(), dont_retry);
+
+  future.Clear();
+  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const absl::optional<base::Time>& incognito_profile_second_attempt_result =
+      future.Get<absl::optional<base::Time>>();
+  EXPECT_EQ(incognito_profile_second_attempt_result.value(), dont_retry);
+
+// Simulate the account becoming active again, which should cause `provider`
+// to notify the network contexts. No need to flush the remotes after, since
+// the messages generated will be in order with the
+// `VerifyIpProtectionConfigGetterForTesting()` messages used below.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  MakePrimaryAccountAvailable();
+#else
+  provider->OnPrimaryAccountChanged(signin::PrimaryAccountChangeEvent(
+      signin::PrimaryAccountChangeEvent::State(),
+      signin::PrimaryAccountChangeEvent::State(
+          IdentityManager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin),
+          signin::ConsentLevel::kSignin)));
+#endif
+
+  // Verify that cooldown timers in the network context have been reset and
+  // that we can now request tokens successfully.
+  future.Clear();
+  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const network::mojom::BlindSignedAuthTokenPtr&
+      main_profile_third_attempt_result =
+          future.Get<network::mojom::BlindSignedAuthTokenPtr>();
+  ASSERT_TRUE(main_profile_third_attempt_result);
+  EXPECT_EQ(main_profile_third_attempt_result->token, token);
+  EXPECT_EQ(main_profile_third_attempt_result->expiration, expiration);
+
+  future.Clear();
+  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
+  const network::mojom::BlindSignedAuthTokenPtr&
+      incognito_profile_third_attempt_result =
+          future.Get<network::mojom::BlindSignedAuthTokenPtr>();
+  ASSERT_TRUE(incognito_profile_third_attempt_result);
+  EXPECT_EQ(incognito_profile_third_attempt_result->token, token);
+  EXPECT_EQ(incognito_profile_third_attempt_result->expiration, expiration);
 }

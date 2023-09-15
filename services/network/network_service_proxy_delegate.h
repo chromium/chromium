@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       const net::ProxyServer& proxy_server,
       const net::HttpResponseHeaders& response_headers) override;
 
-  IpProtectionConfigCache* GetIpProtectionConfigCacheForTesting() {
+  IpProtectionConfigCache* GetIpProtectionConfigCache() {
     return ipp_config_cache_.get();
   }
 

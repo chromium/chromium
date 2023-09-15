@@ -11,6 +11,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -19,8 +20,10 @@
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    Profile* profile)
     : identity_manager_(identity_manager),
+      profile_(profile),
       url_loader_factory_(url_loader_factory),
       ip_protection_config_http_(
           std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get())),
@@ -29,6 +32,7 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
           privacy::ppn::BlindSignAuthOptions())),
       bsa_(blind_sign_auth_.get()) {
   CHECK(identity_manager);
+  identity_manager_->AddObserver(this);
 }
 
 IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
@@ -45,6 +49,15 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
     mojo::ReportBadMessage("Invalid batch_size");
     return;
   }
+
+  if (last_try_get_auth_tokens_backoff_ &&
+      *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
+    TryGetAuthTokensComplete(
+        absl::nullopt, std::move(callback),
+        IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
+    return;
+  }
+
   RequestOAuthToken(batch_size, std::move(callback));
 }
 
@@ -221,10 +234,36 @@ void IpProtectionConfigProvider::TryGetAuthTokensComplete(
   absl::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   absl::optional<base::Time> try_again_after;
   if (backoff) {
-    try_again_after = base::Time::Now() + *backoff;
+    if (*backoff == base::TimeDelta::Max()) {
+      try_again_after = base::Time::Max();
+    } else {
+      try_again_after = base::Time::Now() + *backoff;
+    }
   }
   DCHECK(bsa_tokens.has_value() || try_again_after.has_value());
   std::move(callback).Run(std::move(bsa_tokens), try_again_after);
+}
+
+void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
+  if (!profile_) {
+    // `profile_` will be nullptr if `Shutdown()` was called or if this is
+    // called in unit tests.
+    return;
+  }
+  // Notify the main profile network context to invalidate its stored cooldown
+  // time.
+  profile_->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+
+  // If an associated incognito profile exists, tell it to invalidate its
+  // cooldown time as well.
+  if (profile_->HasPrimaryOTRProfile()) {
+    profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+  }
 }
 
 absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
@@ -235,20 +274,21 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     case IpProtectionTryGetAuthTokensResult::kSuccess:
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNoAccount:
-      // A primary account may become available at any time, so do not wait very
-      // long.
-      //
-      // TODO(djmitche): coordinate this with changes to the primary account's
-      // status instead of polling.
-      backoff = kNoAccountBackoff;
+    case IpProtectionTryGetAuthTokensResult::kFailedOAuthToken:
+      backoff = base::TimeDelta::Max();
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNotEligible:
+      // TODO(https://crbug.com/1444621): When we add a client side account
+      // capabilities check, if this capability/eligibility is something that
+      // can change and be detected via callbacks to an overridden
+      // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
+      // then update this failure so that we wait indefinitely as well (like the
+      // cases above).
     case IpProtectionTryGetAuthTokensResult::kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
       backoff = kNotEligibleBackoff;
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedOAuthToken:
     case IpProtectionTryGetAuthTokensResult::kFailedBSAOther:
       // Failure to fetch an OAuth token, or some other error from BSA, is
       // probably transient.
@@ -287,6 +327,14 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     }
   }
 
+  // If the cooldown is due to a user account issue, then only update the
+  // cooldown time based on account status changes (via the login observer) and
+  // not based on the result of any `TryGetAuthTokens()` calls.
+  if (last_try_get_auth_tokens_backoff_ &&
+      *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
+    return *last_try_get_auth_tokens_backoff_;
+  }
+
   last_try_get_auth_tokens_result_ = result;
   last_try_get_auth_tokens_backoff_ = backoff;
 
@@ -294,12 +342,18 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
 }
 
 void IpProtectionConfigProvider::Shutdown() {
+  if (is_shutting_down_) {
+    return;
+  }
   is_shutting_down_ = true;
+  CHECK(identity_manager_);
+  identity_manager_->RemoveObserver(this);
+  identity_manager_ = nullptr;
+  profile_ = nullptr;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
   // receiver set.
   receivers_.Clear();
-  identity_manager_ = nullptr;
   bsa_ = nullptr;
 }
 
@@ -322,6 +376,33 @@ void IpProtectionConfigProvider::AddReceiver(
   // (if an incognito window is open). However, if the network service crashes
   // and is restarted, there might be lingering receivers that are bound until
   // they are eventually cleaned up.
+}
+
+void IpProtectionConfigProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  auto signin_event_type = event.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  VLOG(2) << "IPATP::OnPrimaryAccountChanged kSignin event type: "
+          << static_cast<int>(signin_event_type);
+  switch (signin_event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // If a cooldown is active because no account information was available,
+      // reset it and then tell the `IpProtectionConfigCache()` in the
+      // Network Service also (or else it won't request tokens again until after
+      // the backoff time has been reached).
+      if (last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
+        last_try_get_auth_tokens_backoff_.reset();
+        InvalidateNetworkContextTryAgainAfterTime();
+      }
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
+      // No need to tell the Network Service - it will find out the next time it
+      // calls `TryGetAuthTokens()`.
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 void IpProtectionConfigProvider::SetIpProtectionConfigHttpForTesting(

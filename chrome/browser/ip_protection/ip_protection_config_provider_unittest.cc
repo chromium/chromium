@@ -11,6 +11,7 @@
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
@@ -137,7 +138,8 @@ class IpProtectionConfigProviderTest : public testing::Test {
   void SetUp() override {
     getter_ = std::make_unique<IpProtectionConfigProvider>(
         IdentityManager(),
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
+        /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetBlindSignAuthInterfaceForTesting(bsa_.get());
   }
@@ -402,8 +404,7 @@ TEST_F(IpProtectionConfigProviderTest, AuthTokenError) {
   TryGetAuthTokens(1);
 
   EXPECT_FALSE(bsa_->get_tokens_called_);
-  ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedOAuthToken, 1);
@@ -416,14 +417,35 @@ TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
   TryGetAuthTokens(1);
 
   EXPECT_FALSE(bsa_->get_tokens_called_);
-  ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kNoAccountBackoff);
+  ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedNoAccount, 1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
+
+// No primary account initially but this changes when the account status
+// changes.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersCooldownReset) {
+  primary_account_behavior_ = PrimaryAccountBehavior::kNone;
+
+  TryGetAuthTokens(1);
+
+  EXPECT_FALSE(bsa_->get_tokens_called_);
+  ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
+
+  primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
+  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_}};
+
+  TryGetAuthTokens(1);
+
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+}
+#endif
 
 // Backoff calculations.
 TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
@@ -441,13 +463,20 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   };
 
   check(kSuccess, absl::nullopt, false);
-  check(kFailedNoAccount, getter_->kNoAccountBackoff, false);
   check(kFailedNotEligible, getter_->kNotEligibleBackoff, false);
-  check(kFailedOAuthToken, getter_->kTransientBackoff, true);
   check(kFailedBSA400, getter_->kBugBackoff, true);
   check(kFailedBSA401, getter_->kBugBackoff, true);
   check(kFailedBSA403, getter_->kNotEligibleBackoff, false);
   check(kFailedBSAOther, getter_->kTransientBackoff, true);
+  check(kFailedNoAccount, base::TimeDelta::Max(), false);
+  check(kFailedOAuthToken, base::TimeDelta::Max(), false);
+  // The account-related backoffs should not be changed except by account change
+  // events.
+  check(kFailedBSA400, base::TimeDelta::Max(), false);
+  identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
+                                                 signin::ConsentLevel::kSignin);
+  // The backoff time should have been reset.
+  check(kFailedBSA400, getter_->kBugBackoff, true);
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyList) {

@@ -535,6 +535,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const scoped_refptr<net::X509Certificate>& certificate) override;
   void VerifyIpProtectionConfigGetterForTesting(
       VerifyIpProtectionConfigGetterForTestingCallback callback) override;
+  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
