@@ -1046,69 +1046,64 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     return false;
   }
 
-  bool move_past = false;
+  LayoutUnit block_size =
+      BlockSizeForFragmentation(layout_result, space.GetWritingDirection());
   NGBreakAppeal appeal_inside =
       CalculateBreakAppealInside(space, layout_result);
-  if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
-    // The block child broke inside, either in this fragmentation context, or in
-    // an inner one. We now need to decide whether to keep that break, or if it
-    // would be better to break before it. Allow breaking inside if it has the
-    // same appeal or higher than breaking before or breaking earlier. Also, if
-    // breaking before is impossible, break inside regardless of appeal.
-    if (refuse_break_before)
-      return true;
-    if (appeal_inside >= appeal_before) {
-      if (flex_column_break_info) {
-        if (!flex_column_break_info->early_break ||
-            appeal_inside >= flex_column_break_info->early_break->BreakAppeal())
+
+  // If breaking before is impossible, we have to move past.
+  bool move_past = refuse_break_before;
+
+  if (!move_past && block_size <= space_left) {
+    if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
+      // The block child broke inside, either in this fragmentation context, or
+      // in an inner one. We now need to decide whether to keep that break, or
+      // if it would be better to break before it. Allow breaking inside if it
+      // has the same appeal or higher than breaking before or breaking earlier.
+      if (appeal_inside >= appeal_before) {
+        if (flex_column_break_info) {
+          if (!flex_column_break_info->early_break ||
+              appeal_inside >=
+                  flex_column_break_info->early_break->BreakAppeal()) {
+            move_past = true;
+          }
+        } else if (!builder || !builder->HasEarlyBreak() ||
+                   appeal_inside >= builder->EarlyBreak().BreakAppeal()) {
           move_past = true;
-      } else if (!builder || !builder->HasEarlyBreak() ||
-                 appeal_inside >= builder->EarlyBreak().BreakAppeal()) {
-        move_past = true;
+        }
       }
+    } else {
+      move_past = true;
     }
-  } else {
-    LayoutUnit block_size =
-        BlockSizeForFragmentation(layout_result, space.GetWritingDirection());
-    move_past = refuse_break_before;
-    if (!move_past) {
-      if (block_size <= space_left) {
-        // The fragment fits! We can move past.
-        move_past = true;
-      } else if (appeal_before == kBreakAppealLastResort && builder &&
-                 builder->RequiresContentBeforeBreaking()) {
-        // The fragment doesn't fit, but we need to force to stay here anyway.
-        builder->SetIsBlockSizeForFragmentationClamped();
-        move_past = true;
-      }
-    }
-    if (move_past) {
-      // The child either fits, or we are not allowed to break. So we can move
-      // past this breakpoint.
-      if (block_size > space_left && builder) {
+  } else if (appeal_before == kBreakAppealLastResort && builder &&
+             builder->RequiresContentBeforeBreaking()) {
+    // The fragment doesn't fit, but we need to force it to stay here anyway.
+    builder->SetIsBlockSizeForFragmentationClamped();
+    move_past = true;
+  }
+
+  if (move_past) {
+    if (builder) {
+      if (block_size > space_left) {
         // We're moving past the breakpoint even if the child doesn't fit. This
         // may happen with monolithic content at the beginning of the
         // fragmentainer. Report space shortage.
         PropagateSpaceShortage(space, &layout_result,
                                fragmentainer_block_offset, builder);
       }
+      if (child.IsBlock() && !is_row_item) {
+        // We're tentatively not going to break before this child, but we'll
+        // check the appeal of breaking there anyway. It may be the best
+        // breakpoint we'll ever find. (Note that we only do this for block
+        // children, since, when it comes to inline layout, we first need to lay
+        // out all the line boxes, so that we know what do to in order to honor
+        // orphans and widows, if at all possible. We also only do this for
+        // non-row items since items in a row will be parallel to one another.)
+        UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child),
+                                     layout_result, appeal_before, builder,
+                                     flex_column_break_info);
+      }
     }
-  }
-
-  if (move_past) {
-    if (child.IsBlock() && builder && !is_row_item) {
-      // We're tentatively not going to break before this child, but we'll check
-      // the appeal of breaking there anyway. It may be the best breakpoint
-      // we'll ever find. (Note that we only do this for block children, since,
-      // when it comes to inline layout, we first need to lay out all the line
-      // boxes, so that we know what do to in order to honor orphans and widows,
-      // if at all possible. We also only do this for non-row items since items
-      // in a row will be parallel to one another.)
-      UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child), layout_result,
-                                   appeal_before, builder,
-                                   flex_column_break_info);
-    }
-
     return true;
   }
 
