@@ -39,7 +39,6 @@
    * blue0 is darkest and blue100 is lightest. */
   --cros-ref-blue40: var(--blue-600);
   --cros-ref-error40: #f44336;
-  --cros-ref-primary100: white;
   --cros-ref-red40: var(--red-600);
   --cros-sys-app_base: var(--grey-900);
   --cros-sys-base_elevated: var(--grey-900);
@@ -68,7 +67,7 @@
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
   --cros-sys-tertiary_container: var(--blue-300);
   --cros-sys-warning: #ffb960;
-  --cros-sys-white: #000000;
+  --cros-sys-white: white;
 }
 
 .mode-item > input:checked + span {
