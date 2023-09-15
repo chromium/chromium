@@ -35,9 +35,6 @@ class StartupAppLauncher : public KioskAppLauncher,
   ~StartupAppLauncher() override;
 
  private:
-  // Class used to watch for app window creation.
-  class AppWindowWatcher;
-
   // Launch state of the kiosk application
   enum class LaunchState {
     kNotStarted,
