@@ -11,6 +11,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace policy {
@@ -18,26 +19,11 @@ namespace policy {
 // static
 std::unique_ptr<LocalTestPolicyProvider>
 LocalTestPolicyProvider::CreateIfAllowed(version_info::Channel channel) {
-  if (IsAllowed(channel)) {
+  if (utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr, channel)) {
     return base::WrapUnique(new LocalTestPolicyProvider());
   }
 
   return nullptr;
-}
-
-bool LocalTestPolicyProvider::IsAllowed(version_info::Channel channel) {
-  if (channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEFAULT) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_IOS)
-  if (channel == version_info::Channel::BETA) {
-    return true;
-  }
-#endif
-
-  return false;
 }
 
 LocalTestPolicyProvider::~LocalTestPolicyProvider() = default;

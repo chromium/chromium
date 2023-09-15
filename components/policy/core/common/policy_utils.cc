@@ -10,12 +10,35 @@
 
 namespace policy::utils {
 
-bool IsPolicyTestingEnabled(PrefService* pref_service) {
-  bool flag_enabled =
-      base::FeatureList::IsEnabled(policy::features::kEnablePolicyTestPage);
-  bool policy_enabled =
-      pref_service->GetBoolean(policy_prefs::kPolicyTestPageEnabled);
-  return flag_enabled && policy_enabled;
+bool IsPolicyTestingEnabled(PrefService* pref_service,
+                            version_info::Channel channel) {
+  if (base::FeatureList::GetInstance() &&
+      !base::FeatureList::IsEnabled(policy::features::kEnablePolicyTestPage)) {
+    return false;
+  }
+
+  if (pref_service &&
+      !pref_service->GetBoolean(policy_prefs::kPolicyTestPageEnabled)) {
+    return false;
+  }
+
+  if (channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEFAULT) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_IOS)
+  if (channel == version_info::Channel::BETA) {
+    return true;
+  }
+#endif
+
+#if !defined(NDEBUG)
+  // The page should be available in debug builds.
+  return true;
+#else
+  return false;
+#endif
 }
 
 }  // namespace policy::utils

@@ -9,7 +9,6 @@
 #include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_registry_simple.h"
-
 #include "components/version_info/channel.h"
 
 namespace policy {
@@ -23,8 +22,6 @@ class POLICY_EXPORT LocalTestPolicyProvider
   // Creates the PolicyTestPolicyProvider
   static std::unique_ptr<LocalTestPolicyProvider> CreateIfAllowed(
       version_info::Channel channel);
-
-  static bool IsAllowed(version_info::Channel channel);
 
   LocalTestPolicyProvider(const LocalTestPolicyProvider&) = delete;
   LocalTestPolicyProvider& operator=(const LocalTestPolicyProvider&) = delete;

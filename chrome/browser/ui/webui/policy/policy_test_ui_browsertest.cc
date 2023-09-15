@@ -31,6 +31,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/policy_utils.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
@@ -235,7 +236,8 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        HandleSetAndRevertLocalTestPolicies) {
-  if (!policy::LocalTestPolicyProvider::IsAllowed(chrome::GetChannel())) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
     return;
   }
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
@@ -317,7 +319,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
-  if (!policy::LocalTestPolicyProvider::IsAllowed(chrome::GetChannel())) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
     return;
   }
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();

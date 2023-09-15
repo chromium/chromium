@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -25,6 +26,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -400,6 +402,8 @@ TEST_F(ProfilePolicyConnectorTest, InitializationDurationUma) {
 }
 
 TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      policy::features::kEnablePolicyTestPage);
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
   // Set up connector
