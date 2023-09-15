@@ -5,7 +5,7 @@
 #ifndef BASE_SCOPED_OBSERVATION_H_
 #define BASE_SCOPED_OBSERVATION_H_
 
-#include <stddef.h>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -112,8 +112,7 @@ class ScopedObservation {
   // if currently observing. Does nothing otherwise.
   void Reset() {
     if (source_) {
-      Traits::RemoveObserver(source_, observer_);
-      source_ = nullptr;
+      Traits::RemoveObserver(std::exchange(source_, nullptr), observer_);
     }
   }
 
