@@ -76,13 +76,12 @@ base::Value DumpInfo::GetAsValue() const {
   base::Value::Dict result;
 
   // "%Y-%m-%d %H:%M:%S";
-  static constexpr char kDumpTimeFormat[] = "%04d-%02d-%02d %02d:%02d:%02d";
   base::Time::Exploded ex;
   dump_time_.LocalExplode(&ex);
-  std::string dump_time =
-      base::StringPrintf(kDumpTimeFormat, ex.year, ex.month, ex.day_of_month,
-                         ex.hour, ex.minute, ex.second);
-  result.Set(kDumpTimeKey, dump_time);
+  result.Set(
+      kDumpTimeKey,
+      base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d", ex.year, ex.month,
+                         ex.day_of_month, ex.hour, ex.minute, ex.second));
 
   result.Set(kDumpKey, crashed_process_dump_);
   std::string uptime = std::to_string(params_.process_uptime);
