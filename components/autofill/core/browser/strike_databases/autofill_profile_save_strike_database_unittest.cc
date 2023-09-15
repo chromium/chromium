@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/strike_databases/strike_database_integrator_test_strike_database.h"
-
-#include <utility>
+#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace autofill {
 
@@ -61,20 +55,6 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
   std::set<std::string> delete_all_hosts_set = {test_host1, test_host2,
                                                 test_host3};
 };
-
-TEST_F(AutofillProfileSaveStrikeDatabaseTest, AddAndRemoveStrikes) {
-  strike_database_->AddStrike(test_host1);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
-  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_host1));
-
-  strike_database_->AddStrikes(2, test_host1);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 3);
-  EXPECT_TRUE(strike_database_->ShouldBlockFeature(test_host1));
-
-  strike_database_->RemoveStrike(test_host1);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 2);
-  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_host1));
-}
 
 TEST_F(AutofillProfileSaveStrikeDatabaseTest,
        RemoveStrikesByOriginWithinDeletionWindow) {

@@ -10,11 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
-
-class IbanSaveStrikeDatabase;
 
 // Decides whether an IBAN local save should be offered and handles the workflow
 // for local saves.

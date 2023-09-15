@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_H_
 
-#include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
 
 namespace autofill {
 
@@ -18,26 +15,26 @@ namespace autofill {
 // enrollment attempt.
 constexpr int kEnrollmentEnforcedDelayInDays = 7;
 
-// Implementation of StrikeDatabaseIntegratorBase for virtual card enrollment
-// dialogs.
+struct VirtualCardEnrollmentStrikeDatabaseTraits {
+  static constexpr std::string_view kName = "VirtualCardEnrollment";
+  static constexpr size_t kMaxStrikeEntities = 50;
+  static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 30;
+  static constexpr size_t kMaxStrikeLimit = 3;
+  static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
+  static constexpr bool kUniqueIdRequired = true;
+};
+
 class VirtualCardEnrollmentStrikeDatabase
-    : public StrikeDatabaseIntegratorBase {
+    : public SimpleAutofillStrikeDatabase<
+          VirtualCardEnrollmentStrikeDatabaseTraits> {
  public:
-  explicit VirtualCardEnrollmentStrikeDatabase(
-      StrikeDatabaseBase* strike_database);
-  ~VirtualCardEnrollmentStrikeDatabase() override;
+  using SimpleAutofillStrikeDatabase<
+      VirtualCardEnrollmentStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
   // Whether bubble to be shown is the last offer for the card with
   // |instrument_id|.
   bool IsLastOffer(const std::string& instrument_id) const;
 
-  absl::optional<size_t> GetMaximumEntries() const override;
-  absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override;
-
-  std::string GetProjectPrefix() const override;
-  int GetMaxStrikesLimit() const override;
-  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
-  bool UniqueIdsRequired() const override;
   absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;
 };
