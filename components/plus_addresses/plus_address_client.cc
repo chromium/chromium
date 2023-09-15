@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_parser.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"

@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 
-#include <unordered_map>
 #include <unordered_set>
-#include "base/functional/callback_forward.h"
+
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_client.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 

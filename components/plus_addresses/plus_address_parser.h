@@ -6,13 +6,11 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PARSER_H_
 
 #include "base/values.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
-
-// TODO (b/300123836): move these types to a central place.
-typedef std::unordered_map<std::string, std::string> PlusAddressMap;
 
 // Utility for parsing plus-address responses from a remote plus-address server.
 class PlusAddressParser {

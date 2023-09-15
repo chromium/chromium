@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -32,11 +33,6 @@ class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
 namespace plus_addresses {
-
-// TODO (b/300123836): move these types to a central place.
-typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
-typedef std::unordered_map<std::string, std::string> PlusAddressMap;
-typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;
 
 // This endpoint is used for most plus-address operations.
 constexpr char kServerPlusProfileEndpoint[] = "v1/profiles";
@@ -69,6 +65,7 @@ class PlusAddressClient {
     access_token_info_ = info;
   }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+
  private:
   // Initiates a network request for an OAuth token, and may only be
   // called by GetAuthToken. This also must be run on the UI thread.

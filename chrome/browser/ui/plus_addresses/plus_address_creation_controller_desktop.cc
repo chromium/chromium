@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 
 namespace plus_addresses {
 // static

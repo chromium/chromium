@@ -12,6 +12,7 @@ source_set("plus_addresses") {
     "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
+    "plus_address_types.h",
   ]
   deps = [
     "//components/prefs",
