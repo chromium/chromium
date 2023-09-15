@@ -25,10 +25,6 @@ WebKioskLacrosTest*
 CrosapiSystemLogSourceTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
--ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
--ChromeVoxBackgroundTest.TouchEditingState
--ChromeVoxBackgroundTestWithHoldingSpacePredictabilityDisabled.SwipeLeftRight4ByContainers
--ChromeVoxBackgroundTestWithHoldingSpacePredictabilityEnabled.SwipeLeftRight4ByContainers
 -ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
 -ChromeVoxISearchTest.Simple
 -ChromeVoxPanelTest.FormControlsMenu
@@ -47,7 +43,6 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxTutorialTest.EscapeTest
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
--ChromeVoxBackgroundTest.ListBoxItemsNavigation
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
 -ChromeVoxLiveRegionsTest.LiveRegionAddElement
 -ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
@@ -71,27 +66,15 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxEditingTest.BackwardWordDeleteAcrossParagraphs
 -ChromeVoxTutorialTest.BasicTest
 -ChromeVoxTutorialTest.EarconLesson
--ChromeVoxBackgroundTest.NavigationIgnoresLabels
--ChromeVoxBackgroundTest.GroupNavigation
--ChromeVoxBackgroundTest.MenuItemRadio
--ChromeVoxBackgroundTest.NestedListNavigationMixed
--ChromeVoxBackgroundTest.ShowContextMenuOnViewsTab
--ChromeVoxBackgroundTest.NewTabRead
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
 -ChromeVoxAutoScrollHandlerTest.ScrollForward
 -ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
 -ChromeVoxPanelTest.ActionsMenu
 -ChromeVoxPanelTest.SearchMenu
 # TODO(b/277821091) Flaky
--ChromeVoxBackgroundTest.NavigationEscapesEdit
--ChromeVoxBackgroundTest.NavigationIgnoresLabels
 -ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
 -ChromeVoxEditingTest.MoveByWordSuggestions
 -ChromeVoxTutorialTest.ResourcesTest
--ChromeVoxBackgroundTest.EarconsForControls
--ChromeVoxBackgroundTest.NavigationIgnoresDescriptions
--ChromeVoxBackgroundTest.NavigationEscapesEdit
--ChromeVoxBackgroundTest.NavigationIgnoresLabels
 -ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
 # TODO(crbug.com/1432222): Flaky
 -DictationE2ETest.SilencesSpokenFeedbackWhenStarting
