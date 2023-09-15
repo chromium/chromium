@@ -216,6 +216,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   const PowerStatus& status = *PowerStatus::Get();
 
   const bool on_AC_power = status.IsMainsChargerConnected();
+  const bool on_USB_power = status.IsUsbChargerConnected();
   const double rounded_battery_percent = status.GetRoundedBatteryPercent();
 
   const bool below_threshold =
@@ -243,21 +244,25 @@ PowerNotificationController::HandleBatterySaverNotifications() {
         }
 
         // Send appropriate notification at
-        // `battery_saver_activation_charge_percent_` battery percentage.
-        if (no_notification_currently_showing) {
+        // `battery_saver_activation_charge_percent_` battery percentage or
+        // update the notification state if we're on USB power.
+        if (no_notification_currently_showing || on_USB_power) {
           // If enabled previously or the user doesn't want it to be on
           // Send the appropriate notification.
           if (rounded_battery_percent <= critical_percentage_) {
             notification_state_ =
                 PowerNotificationController::NOTIFICATION_CRITICAL;
-            return true;
+          } else {
+            notification_state_ =
+                (was_active || user_opt_status_)
+                    ? PowerNotificationController::
+                          NOTIFICATION_GENERIC_LOW_POWER
+                    : PowerNotificationController::
+                          NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
           }
-          notification_state_ =
-              (was_active || user_opt_status_)
-                  ? PowerNotificationController::NOTIFICATION_GENERIC_LOW_POWER
-                  : PowerNotificationController::
-                        NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-          return true;
+
+          // Only send a new notification is there isn't one already displayed.
+          return no_notification_currently_showing;
         }
       }
       break;
@@ -281,20 +286,20 @@ PowerNotificationController::HandleBatterySaverNotifications() {
         }
 
         // Send Opt-In Notification at
-        // `battery_saver_activation_charge_percent_` battery percentage.
-        if (no_notification_currently_showing) {
+        // `battery_saver_activation_charge_percent_` battery percentage or
+        // update the notification state if we're on USB power.
+        if (no_notification_currently_showing || on_USB_power) {
           if (rounded_battery_percent <= critical_percentage_) {
             notification_state_ =
                 PowerNotificationController::NOTIFICATION_CRITICAL;
-            return true;
+          } else {
+            notification_state_ = (was_active || user_opt_status_)
+                                      ? PowerNotificationController::
+                                            NOTIFICATION_GENERIC_LOW_POWER
+                                      : PowerNotificationController::
+                                            NOTIFICATION_BSM_THRESHOLD_OPT_IN;
           }
-
-          notification_state_ =
-              (was_active || user_opt_status_)
-                  ? PowerNotificationController::NOTIFICATION_GENERIC_LOW_POWER
-                  : PowerNotificationController::
-                        NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-          return true;
+          return no_notification_currently_showing;
         }
       }
       break;
@@ -308,11 +313,12 @@ PowerNotificationController::HandleBatterySaverNotifications() {
 bool PowerNotificationController::UpdateNotificationState() {
   const PowerStatus& status = *PowerStatus::Get();
   const bool on_AC_power = status.IsMainsChargerConnected();
+  const bool on_USB_power = status.IsUsbChargerConnected();
 
   // When charging, we clear the previous notification, and disable battery
   // saver. This means when we unplug the charger (under the threshold), we want
   // to resend the notification.
-  if (on_AC_power) {
+  if (on_AC_power || on_USB_power) {
     battery_saver_triggered_ = false;
   }
 
@@ -329,7 +335,6 @@ bool PowerNotificationController::UpdateNotificationState() {
   // Send different notifications if Battery Saver flag is enabled.
   if (features::IsBatterySaverAvailable()) {
     const double rounded_battery_percent = status.GetRoundedBatteryPercent();
-    const bool on_USB_power = status.IsUsbChargerConnected();
     const bool on_line_power = status.IsLinePowerConnected();
 
     // Reset threshold when charging and percent remaining goes above the
