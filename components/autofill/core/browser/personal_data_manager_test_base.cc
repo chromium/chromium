@@ -110,26 +110,15 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
   sync_service_.SetAccountInfo(account_info);
   sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
 
+  PersonalDataProfileTaskWaiter waiter(*personal_data);
   personal_data->Init(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
       /*image_fetcher=*/nullptr);
-
   personal_data->AddObserver(&personal_data_observer_);
   personal_data->OnStateChanged(&sync_service_);
-
-  // TODO(crbug.com/1007974): `WaitForOnPersonalDataChanged()` can't be used
-  // here, because the first time the `PersonalDataManager` is initialized,
-  // the `PersonalDataManagerCleaner` might trigger additional
-  // `OnPersonalDataFinishedProfileTasks()` calls. See
-  // `PersonalDataManagerCleaner:::CleanupDataAndNotifyPersonalDataObservers()`.
-  base::RunLoop run_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .Times(testing::AnyNumber());
-  run_loop.Run();
+  std::move(waiter).Wait();
 }
 
 [[nodiscard]] bool PersonalDataManagerTestBase::TurnOnSyncFeature(

@@ -96,7 +96,7 @@ class PersonalDataManagerTestBase {
   raw_ptr<AutofillTable> profile_autofill_table_;  // weak ref
   raw_ptr<AutofillTable> account_autofill_table_;  // weak ref
   std::unique_ptr<StrikeDatabaseBase> strike_database_;
-  PersonalDataLoadedObserverMock personal_data_observer_;
+  testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
 };
 
 }  // namespace autofill

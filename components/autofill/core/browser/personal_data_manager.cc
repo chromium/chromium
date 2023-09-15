@@ -2589,12 +2589,17 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  bool profile_changes_are_ongoing = ProfileChangesAreOngoing();
+  // After all pending write operations have concluded, the PDM calls Refresh(),
+  // which triggers a series of read operations to update members like
+  // `synced_local_profiles_` and `local_credit_cards_`.
+  // Only when all read operations are concluded, the PDM is in a consistent
+  // state again.
+  bool pending_changes = ProfileChangesAreOngoing() || HasPendingQueries();
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
-  if (!profile_changes_are_ongoing) {
-    // Call OnPersonalDataFinishedProfileTasks in a separate loop as
+  if (!pending_changes) {
+    // Call `OnPersonalDataFinishedProfileTasks()` in a separate loop as
     // the observers might have removed themselves in OnPersonalDataChanged
     for (PersonalDataManagerObserver& observer : observers_) {
       observer.OnPersonalDataFinishedProfileTasks();
