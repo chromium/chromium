@@ -124,6 +124,11 @@ const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
+  // Check if root
+  if (geteuid() == 0) {
+    return true;
+  }
+
   // A non-zero soft-limit on RLIMIT_RTPRIO is required to be allowed to invoke
   // pthread_setschedparam in SetCurrentThreadTypeForPlatform().
   struct rlimit rlim;

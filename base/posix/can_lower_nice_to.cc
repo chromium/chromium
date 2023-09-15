@@ -28,8 +28,9 @@ bool CanLowerNiceTo(int nice_value) {
   // the target value is within the range allowed by RLIMIT_NICE.
 
   // 1. Check for root user.
-  if (geteuid() == 0)
+  if (geteuid() == 0) {
     return true;
+  }
 
   // 2. Skip checking the CAP_SYS_NICE permission because it would require
   // libcap.so.
@@ -47,8 +48,9 @@ bool CanLowerNiceTo(int nice_value) {
   //
   // So, we are allowed to reduce niceness to a minimum of NZERO - rlimit:
   struct rlimit rlim;
-  if (getrlimit(RLIMIT_NICE, &rlim) != 0)
+  if (getrlimit(RLIMIT_NICE, &rlim) != 0) {
     return false;
+  }
   const int lowest_nice_allowed = NZERO - static_cast<int>(rlim.rlim_cur);
 
   // And lowering niceness to |nice_value| is allowed if it is greater than or

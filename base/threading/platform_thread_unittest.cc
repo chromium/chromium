@@ -425,8 +425,12 @@ TEST(PlatformThreadTest,
 TEST(PlatformThreadTest, CanChangeThreadType) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Ubuntu, RLIMIT_NICE and RLIMIT_RTPRIO are 0 by default, so we won't be
-  // able to increase priority to any level.
-  constexpr bool kCanIncreasePriority = false;
+  // able to increase priority to any level unless we are root (euid == 0).
+  bool kCanIncreasePriority = false;
+  if (geteuid() == 0) {
+    kCanIncreasePriority = true;
+  }
+
 #else
   constexpr bool kCanIncreasePriority = true;
 #endif
