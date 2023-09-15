@@ -279,7 +279,7 @@ void BackgroundTracingManagerImpl::GetAllTraceReports(
 
 void BackgroundTracingManagerImpl::DeleteSingleTrace(
     const base::Uuid& trace_uuid,
-    FinishedProcessingCallback callback) {
+    TraceUploadList::FinishedProcessingCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(false);
     return;
@@ -293,7 +293,7 @@ void BackgroundTracingManagerImpl::DeleteSingleTrace(
 }
 
 void BackgroundTracingManagerImpl::DeleteAllTraces(
-    FinishedProcessingCallback callback) {
+    TraceUploadList::FinishedProcessingCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(false);
     return;
@@ -308,7 +308,7 @@ void BackgroundTracingManagerImpl::DeleteAllTraces(
 
 void BackgroundTracingManagerImpl::UserUploadSingleTrace(
     const base::Uuid& trace_uuid,
-    FinishedProcessingCallback callback) {
+    TraceUploadList::FinishedProcessingCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(false);
     return;
