@@ -189,8 +189,7 @@ void AutofillProviderAndroidBridgeImpl::DetachFromJavaAutofillProvider(
 }
 
 void AutofillProviderAndroidBridgeImpl::OnAutofillAvailable(JNIEnv* env,
-                                                            jobject jcaller,
-                                                            jobject form_data) {
+                                                            jobject jcaller) {
   delegate_->OnAutofillAvailable();
 }
 

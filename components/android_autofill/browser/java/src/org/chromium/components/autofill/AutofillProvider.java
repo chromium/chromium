@@ -163,7 +163,7 @@ public class AutofillProvider {
      */
     public void autofill(final SparseArray<AutofillValue> values) {
         if (mNativeAutofillProvider != 0 && mRequest != null && mRequest.autofill((values))) {
-            autofill(mNativeAutofillProvider, mRequest.getForm());
+            autofill(mNativeAutofillProvider);
             if (AutofillManagerWrapper.isLoggable()) {
                 AutofillManagerWrapper.log("autofill values:" + values.size());
             }
@@ -626,14 +626,13 @@ public class AutofillProvider {
     }
 
     /**
-     * Send form to renderer for filling.
+     * Inform native provider to autofill.
      *
      * @param nativeAutofillProvider the native autofill provider.
-     * @param formData the form to fill.
      */
-    private void autofill(long nativeAutofillProvider, FormData formData) {
+    private void autofill(long nativeAutofillProvider) {
         AutofillProviderJni.get().onAutofillAvailable(
-                nativeAutofillProvider, AutofillProvider.this, formData);
+                nativeAutofillProvider, AutofillProvider.this);
     }
 
     private void acceptDataListSuggestion(long nativeAutofillProvider, String value) {
@@ -650,8 +649,8 @@ public class AutofillProvider {
     interface Natives {
         void init(AutofillProvider caller, WebContents webContents);
         void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroidBridgeImpl);
-        void onAutofillAvailable(long nativeAutofillProviderAndroidBridgeImpl,
-                AutofillProvider caller, FormData formData);
+        void onAutofillAvailable(
+                long nativeAutofillProviderAndroidBridgeImpl, AutofillProvider caller);
         void onAcceptDataListSuggestion(long nativeAutofillProviderAndroidBridgeImpl,
                 AutofillProvider caller, String value);
         void setAnchorViewRect(long nativeAutofillProviderAndroidBridgeImpl,

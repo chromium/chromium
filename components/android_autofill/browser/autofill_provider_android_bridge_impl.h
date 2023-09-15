@@ -53,8 +53,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
 
   // Informs the `Delegate` that the linked form should be sent to the renderer
   // for filling. Invoked when the user has accepted Autofill.
-  // TODO(crbug.com/1478934): Remove the form_data parameter. It is not used.
-  void OnAutofillAvailable(JNIEnv* env, jobject jcaller, jobject form_data);
+  void OnAutofillAvailable(JNIEnv* env, jobject jcaller);
 
   // Informs the `Delegate` that the datalist `value` should be accepted in the
   // renderer. Invoked when the user has accepted a datalist entry.
