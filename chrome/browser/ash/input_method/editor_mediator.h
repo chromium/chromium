@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
+#include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
@@ -58,8 +59,10 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnActivateIme(std::string_view engine_id) override;
+  void OnSurroundingTextChanged(const std::u16string& text,
+                                gfx::Range selection_range) override;
 
-  void OnConsentActionReceived(ConsentAction consent_action);
+  void OnConsentActionReceived(ConsentAction consent_action) override;
 
   // EditorPanelManager::Delegate
   void OnPromoCardDeclined() override;
@@ -100,6 +103,9 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   EditorPanelManager panel_manager_;
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;
+
+  // TODO: b:298285960 - add the instantiation of this instance.
+  std::unique_ptr<EditorEventProxy> editor_event_proxy_;
 
   // May contain an instance of MakoPageHandler. This is used to control the
   // lifetime of the Mako WebUI.

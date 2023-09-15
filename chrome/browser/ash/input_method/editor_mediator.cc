@@ -75,6 +75,13 @@ void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_switch_->OnActivateIme(engine_id);
 }
 
+void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
+                                              gfx::Range selection_range) {
+  if (editor_event_proxy_ != nullptr) {
+    editor_event_proxy_->OnSurroundingTextChanged(text, selection_range);
+  }
+}
+
 void EditorMediator::OnTabletModeStarting() {
   editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/true);
 }

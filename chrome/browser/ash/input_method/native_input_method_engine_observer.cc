@@ -1109,6 +1109,9 @@ void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text,
                                                  selection_range, offset_pos);
   }
+  if (editor_event_sink_) {
+    editor_event_sink_->OnSurroundingTextChanged(text, selection_range);
+  }
 }
 
 void NativeInputMethodEngineObserver::OnCandidateClicked(
