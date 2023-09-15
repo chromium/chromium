@@ -300,23 +300,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.AppLaunch.DurationDrawWasBlocked" units="ms"
-    expires_after="2022-08-21">
-  <obsolete>
-    Removed 03/2022. Superseded by
-    Android.AppLaunch.DurationDrawWasBlocked.OnInitialTab
-  </obsolete>
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records how long the initial tab's draw was blocked, if it was. Recorded
-    when the active tab is restored or an initial tab is created in
-    ChromeTabbedActivity.
-  </summary>
-</histogram>
-
 <histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth"
     units="ms" expires_after="2024-02-11">
   <owner>roagarwal@chromium.org</owner>
