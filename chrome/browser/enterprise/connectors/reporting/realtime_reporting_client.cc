@@ -10,8 +10,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -103,17 +103,6 @@ void UploadCallback(base::Value::Dict wrapper,
   }
 }
 
-std::string GetTimestampString(const base::Time& time) {
-  // Format the current time (UTC) in RFC3339 format.
-  base::Time::Exploded exploded_time;
-  time.UTCExplode(&exploded_time);
-  std::string time_str = base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded_time.year,
-      exploded_time.month, exploded_time.day_of_month, exploded_time.hour,
-      exploded_time.minute, exploded_time.second, exploded_time.millisecond);
-  return time_str;
-}
-
 void UploadSecurityEventReport(base::Value::Dict event,
                                policy::CloudPolicyClient* client,
                                std::string name,
@@ -125,7 +114,7 @@ void UploadSecurityEventReport(base::Value::Dict event,
       enterprise_connectors::GetUmaEnumFromEventName(name));
 
   base::Value::Dict wrapper;
-  wrapper.Set("time", GetTimestampString(time));
+  wrapper.Set("time", base::TimeFormatAsIso8601(time));
   wrapper.Set(name, std::move(event));
 
   VLOG(1) << "enterprise.connectors: security event: " << wrapper.DebugString();

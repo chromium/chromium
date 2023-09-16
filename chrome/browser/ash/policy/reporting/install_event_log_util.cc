@@ -7,10 +7,10 @@
 #include <set>
 
 #include "base/hash/md5.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -86,16 +86,6 @@ bool GetHash(const base::Value::Dict& event,
   base::MD5Final(&digest, &ctx);
   *hash = base::MD5DigestToBase16(digest);
   return true;
-}
-
-std::string GetTimeString(const base::Time& timestamp) {
-  base::Time::Exploded time_exploded;
-  timestamp.UTCExplode(&time_exploded);
-  std::string time_str = base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", time_exploded.year,
-      time_exploded.month, time_exploded.day_of_month, time_exploded.hour,
-      time_exploded.minute, time_exploded.second, time_exploded.millisecond);
-  return time_str;
 }
 
 }  // namespace
@@ -252,7 +242,7 @@ base::Value::Dict ConvertExtensionEventToValue(
     base::Time timestamp =
         base::Time::UnixEpoch() +
         base::Microseconds(extension_install_report_log_event.timestamp());
-    wrapper.Set(kTime, GetTimeString(timestamp));
+    wrapper.Set(kTime, base::TimeFormatAsIso8601(timestamp));
   }
 
   std::string event_id;
@@ -351,7 +341,7 @@ base::Value::Dict ConvertArcAppEventToValue(
     base::Time timestamp =
         base::Time::UnixEpoch() +
         base::Microseconds(app_install_report_log_event.timestamp());
-    wrapper.Set(kTime, GetTimeString(timestamp));
+    wrapper.Set(kTime, base::TimeFormatAsIso8601(timestamp));
   }
 
   std::string event_id;

@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -1523,21 +1524,14 @@ TEST_F(FFmpegDemuxerTest, UTCDateToTime_Valid) {
   base::Time::Exploded exploded;
   result.UTCExplode(&exploded);
   EXPECT_TRUE(exploded.HasValidValues());
-  EXPECT_EQ(2012, exploded.year);
-  EXPECT_EQ(11, exploded.month);
-  EXPECT_EQ(6, exploded.day_of_week);
-  EXPECT_EQ(10, exploded.day_of_month);
-  EXPECT_EQ(12, exploded.hour);
-  EXPECT_EQ(34, exploded.minute);
-  EXPECT_EQ(56, exploded.second);
-  EXPECT_EQ(987, exploded.millisecond);
+  base::Time without_fractional_ms;
+  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &without_fractional_ms));
 
   // base::Time exploding operations round fractional milliseconds down, so
   // verify fractional milliseconds using a base::TimeDelta.
-  base::Time without_fractional_ms;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &without_fractional_ms));
-  base::TimeDelta delta = result - without_fractional_ms;
-  EXPECT_EQ(654, delta.InMicroseconds());
+  EXPECT_EQ("2012-11-10T12:34:56.987Z",
+            base::TimeFormatAsIso8601(without_fractional_ms));
+  EXPECT_EQ(654, (result - without_fractional_ms).InMicroseconds());
 }
 
 TEST_F(FFmpegDemuxerTest, UTCDateToTime_Invalid) {
