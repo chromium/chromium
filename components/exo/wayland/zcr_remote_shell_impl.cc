@@ -493,9 +493,7 @@ WaylandRemoteShell::~WaylandRemoteShell() {
 }
 
 std::unique_ptr<ClientControlledShellSurface>
-WaylandRemoteShell::CreateShellSurface(Surface* surface,
-                                       int container,
-                                       double default_device_scale_factor) {
+WaylandRemoteShell::CreateShellSurface(Surface* surface, int container) {
   return display_->CreateOrGetClientControlledShellSurface(
       surface, container, use_default_scale_cancellation_,
       /*supports_floated_state=*/event_mapping_.has_bounds_change_reason_float);

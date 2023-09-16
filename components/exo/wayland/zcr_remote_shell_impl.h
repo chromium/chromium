@@ -73,8 +73,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   std::unique_ptr<ClientControlledShellSurface> CreateShellSurface(
       Surface* surface,
-      int container,
-      double default_device_scale_factor);
+      int container);
 
   std::unique_ptr<ClientControlledShellSurface::Delegate>
   CreateShellSurfaceDelegate(wl_resource* resource);

@@ -161,15 +161,9 @@ void remote_shell_get_remote_surface(wl_client* client,
                                      wl_resource* surface,
                                      uint32_t container) {
   WaylandRemoteShell* shell = GetUserDataAs<WaylandRemoteShell>(resource);
-  double default_scale_factor =
-      wl_resource_get_version(resource) >= 8
-          ? zcr_remote_shell::GetDefaultDeviceScaleFactor()
-          : 1.0;
-
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       shell->CreateShellSurface(GetUserDataAs<Surface>(surface),
-                                RemoteSurfaceContainer(container),
-                                default_scale_factor);
+                                RemoteSurfaceContainer(container));
   if (!shell_surface) {
     wl_resource_post_error(resource, ZCR_REMOTE_SHELL_V1_ERROR_ROLE,
                            "surface has already been assigned a role");
