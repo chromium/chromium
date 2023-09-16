@@ -162,16 +162,7 @@ WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
-                   max_decoded_bytes),
-      decoder_(nullptr),
-      format_flags_(0),
-      is_lossy_not_animated_no_alpha_(false),
-      frame_background_has_alpha_(false),
-      demux_(nullptr),
-      demux_state_(WEBP_DEMUX_PARSING_HEADER),
-      have_parsed_current_data_(false),
-      repetition_count_(kAnimationLoopOnce),
-      decoded_height_(0) {
+                   max_decoded_bytes) {
   blend_function_ = (alpha_option == kAlphaPremultiplied)
                         ? alphaBlendPremultiplied
                         : alphaBlendNonPremultiplied;
