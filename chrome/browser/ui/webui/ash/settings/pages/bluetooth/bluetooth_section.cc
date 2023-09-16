@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/bluetooth_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -12,11 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/bluetooth_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/fast_pair_saved_devices_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -171,8 +171,9 @@ BluetoothSection::BluetoothSection(Profile* profile,
 }
 
 BluetoothSection::~BluetoothSection() {
-  if (bluetooth_adapter_)
+  if (bluetooth_adapter_) {
     bluetooth_adapter_->RemoveObserver(this);
+  }
 }
 
 void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -452,8 +453,9 @@ void BluetoothSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetFastPairSavedDevicesSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothPairableSearchConcepts());
 
-  if (!bluetooth_adapter_->IsPresent())
+  if (!bluetooth_adapter_->IsPresent()) {
     return;
+  }
 
   updater.AddSearchTags(GetBluetoothSearchConcepts());
 

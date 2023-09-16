@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/fast_pair_saved_devices_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
@@ -96,8 +96,9 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
 
   // If the page is already loading, we ignore any new requests to load the
   // page.
-  if (loading_saved_device_page_)
+  if (loading_saved_device_page_) {
     return;
+  }
 
   loading_saved_device_page_ = true;
   loading_start_time_ = base::TimeTicks::Now();
@@ -185,8 +186,9 @@ void FastPairSavedDevicesHandler::SaveImageAsBase64(
   // list to the settings page. If we don't have an image, we will
   // send the settings page a null url, and it is up to the settings page
   // to handle this case as needed.
-  if (!pending_decoding_tasks_count_->Decrement())
+  if (!pending_decoding_tasks_count_->Decrement()) {
     DecodingUrlsFinished();
+  }
 }
 
 void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
@@ -208,8 +210,9 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
     // has devices still in Footprints but marked as deleted by removing the
     // account key, so it is not expected for all of these devices to have
     // account keys.
-    if (!device.has_account_key())
+    if (!device.has_account_key()) {
       continue;
+    }
 
     std::string account_key = device.account_key();
     std::string image_url = "";

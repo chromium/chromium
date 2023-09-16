@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/fast_pair_saved_devices_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"

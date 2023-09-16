@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/bluetooth_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_handler.h"
 
 #include "ash/public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"

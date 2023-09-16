@@ -7,6 +7,9 @@ specific_include_rules = {
     '+ash/color_enhancement/color_enhancement_controller.h',
     '+content/public/browser/tts_controller.h',
   ],
+  'fast_pair_.*': [
+    "+ash/quick_pair",
+  ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',
   ],
