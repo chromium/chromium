@@ -1728,7 +1728,7 @@ void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
 bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
   if (graphite_recorder_) {
     // TODO(crbug.com/1451789): Implement properly for Graphite.
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
     return false;
 #else
     return true;

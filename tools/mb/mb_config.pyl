@@ -3068,7 +3068,7 @@
     ],
 
     'ios_simulator_blink_xctest': [
-        'release_trybot_blink', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'skia_use_metal', 'use_blink', 'xctest'
+        'release_trybot_blink', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'use_blink', 'xctest'
     ],
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
@@ -4754,10 +4754,6 @@
 
     'siso': {
       'gn_args': 'enable_precompiled_headers=false',
-    },
-
-    'skia_use_metal': {
-      'gn_args': 'skia_use_metal=true',
     },
 
     'skip_generate_fuzzer_owners': {

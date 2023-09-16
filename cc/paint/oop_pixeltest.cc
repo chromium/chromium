@@ -654,7 +654,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Allow large quantization error on Android.
   // TODO(https://crbug.com/1363056): Ensure higher precision for HDR images.
   constexpr float kEpsilon = 1 / 16.f;
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
   // TODO(crbug.com/1476507): Allow larger errors on iOS as well.
   constexpr float kEpsilon = 1 / 12.f;
 #else
@@ -817,7 +817,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto actual = Raster(display_item_list, options);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL))
   // Android has slight differences in color.
   FuzzyPixelOffByOneComparator comparator;
 #else
@@ -1640,7 +1640,7 @@ class OopTextBlobPixelTest
       public ::testing::WithParamInterface<TextBlobTestConfig> {
  public:
   void RunTest() {
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
     if (GetFilterStrategy(GetParam()) != FilterStrategy::kNone) {
       GTEST_SKIP() << " blur with decal tile mode currently fails on with "
                       "SkiaGraphite and the metal backend in the simulator";
@@ -2514,7 +2514,7 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->Finalize();
 
     auto comparator =
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
         // TODO(crbug.com/1476507): We have larger errors on the platform, but
         // the images here still seem visually indistinguishable.
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);

@@ -71,7 +71,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   // TODO(kylechar): This shouldn't be SkiaRenderer/GL for platforms with no GL
   // support.
   static constexpr viz::RendererType kDefaultRendererType =
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
       viz::RendererType::kSkiaGraphite;
 #else
       viz::RendererType::kSkiaGL;
