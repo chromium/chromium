@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -67,7 +68,7 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
 public class AnswerSuggestionProcessorUnitTest {
-    private static final @AnswerType int ANSWER_TYPES[] = {AnswerType.DICTIONARY,
+    private static final @AnswerType int[] ANSWER_TYPES = {AnswerType.DICTIONARY,
             AnswerType.FINANCE, AnswerType.KNOWLEDGE_GRAPH, AnswerType.SPORTS, AnswerType.SUNRISE,
             AnswerType.TRANSLATION, AnswerType.WEATHER, AnswerType.WHEN_IS, AnswerType.CURRENCY};
 
@@ -186,11 +187,13 @@ public class AnswerSuggestionProcessorUnitTest {
         mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlStateProvider, mImageSupplier);
         mDefaultLocale = Locale.getDefault();
+        OmniboxResourceProvider.disableCachesForTesting();
     }
 
     @After
     public void tearDown() {
         Locale.setDefault(mDefaultLocale);
+        OmniboxResourceProvider.reenableCachesForTesting();
     }
 
     @Test

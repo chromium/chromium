@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
@@ -70,6 +72,12 @@ public class HistoryClustersProcessorTest {
         mProcessor = new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
                 ContextUtils.getApplicationContext(), mSuggestionHost, mUrlBarText, mImageSupplier,
                 mBookmarkState);
+        OmniboxResourceProvider.disableCachesForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        OmniboxResourceProvider.reenableCachesForTesting();
     }
 
     @Test

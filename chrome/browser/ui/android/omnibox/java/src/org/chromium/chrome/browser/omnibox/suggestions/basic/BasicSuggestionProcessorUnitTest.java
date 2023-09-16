@@ -17,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -80,7 +82,6 @@ public class BasicSuggestionProcessorUnitTest {
     private static final Map<Integer, String> SUGGESTION_TYPE_NAMES;
     static {
         Map<Integer, String> map = new HashMap<>();
-        ;
         map.put(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "URL_WHAT_YOU_TYPED");
         map.put(OmniboxSuggestionType.HISTORY_URL, "HISTORY_URL");
         map.put(OmniboxSuggestionType.HISTORY_TITLE, "HISTORY_TITLE");
@@ -131,6 +132,12 @@ public class BasicSuggestionProcessorUnitTest {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlBarText, mImageSupplier, mIsBookmarked);
+        OmniboxResourceProvider.disableCachesForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        OmniboxResourceProvider.reenableCachesForTesting();
     }
 
     /**

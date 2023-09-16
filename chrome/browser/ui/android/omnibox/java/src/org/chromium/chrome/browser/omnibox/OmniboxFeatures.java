@@ -67,11 +67,10 @@ public class OmniboxFeatures {
 
     private static final MutableFlagWithSafeDefault sCacheSuggestionResources =
             new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES, false);
+                    ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES, true);
 
     private static final MutableFlagWithSafeDefault sWarmRecycledViewPoolFlag =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL, false);
+            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL, true);
 
     private static final MutableFlagWithSafeDefault sNoopEditUrlSuggestionClicks =
             new MutableFlagWithSafeDefault(

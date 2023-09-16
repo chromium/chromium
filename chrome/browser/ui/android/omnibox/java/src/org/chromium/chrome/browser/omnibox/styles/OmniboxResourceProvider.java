@@ -93,6 +93,35 @@ public class OmniboxResourceProvider {
         return sDrawableCache;
     }
 
+    public static void disableCachesForTesting() {
+        sDrawableCache = new SparseArray<>() {
+            @Override
+            public ConstantState get(int key) {
+                return null;
+            }
+            @Override
+            public ConstantState get(int key, ConstantState valueIfKeyNotFound) {
+                return valueIfKeyNotFound;
+            }
+        };
+        sStringCache = new SparseArray<>() {
+            @Override
+            public String get(int key) {
+                return null;
+            }
+
+            @Override
+            public String get(int key, String valueIfKeyNotFound) {
+                return valueIfKeyNotFound;
+            }
+        };
+    }
+
+    public static void reenableCachesForTesting() {
+        sDrawableCache = new SparseArray<>();
+        sStringCache = new SparseArray<>();
+    }
+
     public static SparseArray<String> getStringCacheForTesting() {
         return sStringCache;
     }

@@ -23,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -97,6 +99,12 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
         mProcessor = new MostVisitedTilesProcessor(mContext, mSuggestionHost, mImageSupplier);
+        OmniboxResourceProvider.disableCachesForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        OmniboxResourceProvider.reenableCachesForTesting();
     }
 
     /**

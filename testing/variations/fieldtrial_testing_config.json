@@ -443,22 +443,6 @@
             ]
         }
     ],
-    "AndroidOmniboxPerf": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "CacheSuggestionResources_WarmPool",
-                    "enable_features": [
-                        "OmniboxCacheSuggestionResources",
-                        "OmniboxWarmRecycledViewPool"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidOmniboxUxRevampPhase2": [
         {
             "platforms": [
