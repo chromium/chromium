@@ -44,6 +44,8 @@
 
 namespace {
 
+using testing::SaveArg;
+
 class MockNtpCustomBackgroundServiceObserver
     : public NtpCustomBackgroundServiceObserver {
  public:
@@ -783,6 +785,34 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
   EXPECT_EQ(
       SK_ColorRED,
       custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
+}
+
+TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomLocalBackgroundColor) {
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      profile().GetTestingPrefService();
+
+  SkColor color = SK_ColorBLUE;
+  EXPECT_CALL(mock_theme_service(), SetUserColorAndBrowserColorVariant)
+      .Times(1)
+      .WillOnce(SaveArg<0>(&color));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
+
+  // Background color will not update if local background is not set.
+  // This is checked by not making another call to ThemeService.
+  custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
+  task_environment_.RunUntilIdle();
+
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
+
+  // Background color should update.
+  custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(SK_ColorRED, color);
 }
 
 // Most of the color extraction pipeline is tested above. The only thing tested

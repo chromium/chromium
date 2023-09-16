@@ -35,6 +35,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -123,6 +124,12 @@ void WriteFileToProfilePath(const std::string& data,
   base::WriteFile(profile_path.AppendASCII(
                       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
                   base::as_bytes(base::make_span(data)));
+}
+
+std::string ReadFileToString(const base::FilePath& path) {
+  std::string image_data;
+  base::ReadFileToString(path, &image_data);
+  return image_data;
 }
 
 void RemoveLocalBackgroundImageCopy(Profile* profile) {
@@ -301,6 +308,43 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   }
 }
 
+void NtpCustomBackgroundService::UpdateLocalCustomBackgroundPrefsWithColor(
+    SkColor color) {
+  // Make sure that local background is still set.
+  if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+    // Set background color.
+    theme_service_->SetUserColorAndBrowserColorVariant(
+        color, ui::mojom::BrowserColorVariant::kTonalSpot);
+  }
+}
+
+void NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync(
+    const gfx::Image& image) {
+  // If decoding fails, it will send an empty image to this callback,
+  // in which case, don't continue.
+  if (!image.IsEmpty()) {
+    auto resized_image = skia::ImageOperations::Resize(
+        *image.ToSkBitmap(), skia::ImageOperations::RESIZE_GOOD, 100, 100);
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&GetBitmapMainColor, resized_image),
+        base::BindOnce(&NtpCustomBackgroundService::
+                           UpdateLocalCustomBackgroundPrefsWithColor,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void NtpCustomBackgroundService::ProcessLocalImageData(std::string image_data) {
+  if (!image_data.empty()) {
+    image_fetcher_->GetImageDecoder()->DecodeImage(
+        image_data, gfx::Size(), nullptr,
+        base::BindOnce(
+            &NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 void NtpCustomBackgroundService::SelectLocalBackgroundImage(
     const base::FilePath& path) {
   if (IsCustomBackgroundDisabledByPolicy()) {
@@ -313,6 +357,15 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&ReadFileToString, path),
+        base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void NtpCustomBackgroundService::SelectLocalBackgroundImage(
@@ -327,6 +380,11 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
       base::BindOnce(&WriteFileToProfilePath, data, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch)) {
+    NtpCustomBackgroundService::ProcessLocalImageData(data);
+  }
 }
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
