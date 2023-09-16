@@ -145,6 +145,10 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     origin_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    net::EmbeddedTestServer::ServerCertificateConfig origin_server_cert_config;
+    origin_server_cert_config.dns_names = {kGoogleHost};
+    origin_server_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+    origin_server_->SetSSLConfig(origin_server_cert_config);
     origin_server_->RegisterRequestHandler(
         base::BindRepeating(&HandleGoogleSearchUrlRequest));
     origin_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
@@ -159,6 +163,12 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     hints_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+
+    net::EmbeddedTestServer::ServerCertificateConfig hints_server_cert_config;
+    hints_server_cert_config.dns_names = {
+        GURL(optimization_guide::kOptimizationGuideServiceGetHintsDefaultURL)
+            .host()};
+    hints_server_->SetSSLConfig(hints_server_cert_config);
     hints_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
     hints_server_->RegisterRequestHandler(base::BindRepeating(
         &HintsFetcherDisabledBrowserTest::HandleGetHintsRequest,
@@ -175,8 +185,6 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch("ignore-certificate-errors");
-
     cmd->AppendSwitch("purge_hint_cache_store");
 
     cmd->AppendSwitch(optimization_guide::switches::
@@ -192,7 +200,6 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
                          .host(),
                      "/")
             .spec());
-    cmd->AppendSwitchASCII("host-rules", "MAP * 127.0.0.1");
     cmd->AppendSwitchASCII("force-variation-ids", "4");
 
     cmd->AppendSwitchASCII(optimization_guide::switches::kFetchHintsOverride,
@@ -1294,7 +1301,6 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
-    cmd->AppendSwitch("ignore-certificate-errors");
     HintsFetcherBrowserTest::SetUpCommandLine(cmd);
   }
 };
@@ -1612,7 +1618,6 @@ class HintsFetcherSearchPageLimitedURLsBrowserTest
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
-    cmd->AppendSwitch("ignore-certificate-errors");
     HintsFetcherDisabledBrowserTest::SetUpCommandLine(cmd);
   }
 

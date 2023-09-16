@@ -30,6 +30,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -82,6 +83,11 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
 
     models_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    net::EmbeddedTestServer::ServerCertificateConfig models_server_cert_config;
+    models_server_cert_config.dns_names = {
+        GURL(kOptimizationGuideServiceGetModelsDefaultURL).host()};
+    models_server_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+    models_server_->SetSSLConfig(models_server_cert_config);
     models_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/optimization_guide");
     models_server_->RegisterRequestHandler(base::BindRepeating(
@@ -93,17 +99,14 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    download_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    download_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(download_server_->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     model_file_url_ = models_server_->GetURL("/signed_valid_model.crx3");
 
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
-    EXPECT_TRUE(download_server_->ShutdownAndWaitUntilComplete());
     EXPECT_TRUE(models_server_->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -116,7 +119,6 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
             ->GetURL(GURL(kOptimizationGuideServiceGetModelsDefaultURL).host(),
                      "/")
             .spec());
-    cmd->AppendSwitchASCII("host-rules", "MAP * 127.0.0.1");
     cmd->AppendSwitchASCII("force-variation-ids", "4");
     cmd->AppendSwitch(switches::kDebugLoggingEnabled);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -234,7 +236,6 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   GURL model_file_url_;
-  std::unique_ptr<net::EmbeddedTestServer> download_server_;
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
   base::HistogramTester histogram_tester_;
 

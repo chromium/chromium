@@ -46,6 +46,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_connection_change_simulator.h"
+#include "net/base/ip_address.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -140,6 +142,11 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
 
     models_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    net::EmbeddedTestServer::ServerCertificateConfig models_server_cert_config;
+    models_server_cert_config.dns_names = {
+        GURL(kOptimizationGuideServiceGetModelsDefaultURL).host()};
+    models_server_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+    models_server_->SetSSLConfig(models_server_cert_config);
     models_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/optimization_guide");
     models_server_->RegisterRequestHandler(base::BindRepeating(
@@ -151,6 +158,8 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -182,7 +191,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
             ->GetURL(GURL(kOptimizationGuideServiceGetModelsDefaultURL).host(),
                      "/")
             .spec());
-    cmd->AppendSwitchASCII("host-rules", "MAP * 127.0.0.1");
     cmd->AppendSwitchASCII("force-variation-ids", "4");
     cmd->AppendSwitch(switches::kDebugLoggingEnabled);
   }
