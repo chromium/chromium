@@ -75,7 +75,17 @@ class TestMultiEvent {
   // for cases when the caller requires it.
   [[nodiscard]] base::RepeatingCallback<void(ResType... res)> repeating_cb() {
     return base::BindPostTaskToCurrentDefault(base::BindRepeating(
-        &TestMultiEvent::SetResult, weak_ptr_factory_.GetWeakPtr()));
+        [](base::WeakPtr<TestMultiEvent<ResType...>> self, ResType... res) {
+          if (!self) {
+            return;
+          }
+          ASSERT_FALSE(self->repeated_cb_called_)
+              << "repeating_cb() called more than once, but it is only "
+                 "intended to be called once.";
+          self->SetResult(std::forward<ResType>(res)...);
+          self->repeated_cb_called_ = true;
+        },
+        weak_ptr_factory_.GetWeakPtr()));
   }
 
  protected:
@@ -106,6 +116,7 @@ class TestMultiEvent {
 
   base::Lock lock_;
   absl::optional<TupleType> result_;
+  bool repeated_cb_called_{false};
   base::WeakPtrFactory<TestMultiEvent<ResType...>> weak_ptr_factory_{this};
 };
 
