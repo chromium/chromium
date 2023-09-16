@@ -15,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/common/pref_names.h"
@@ -37,10 +36,6 @@
 #endif
 
 namespace media_router {
-
-BASE_FEATURE(kMediaRouterOTRInstance,
-             "MediaRouterOTRInstance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCastAnotherContentWhileCasting,
@@ -119,13 +114,6 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   if (!IsUserProfile(Profile::FromBrowserContext(context)))
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (!base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
-    // The MediaRouter service is shared across the original and the incognito
-    // profiles, so we must use the original context for consistency between
-    // them.
-    context = chrome::GetBrowserContextRedirectedInIncognito(context);
-  }
 
   // If the Media Router was already enabled or disabled for |context|, then it
   // must remain so.  The Media Router does not support dynamic

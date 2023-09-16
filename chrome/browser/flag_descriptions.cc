@@ -4640,13 +4640,6 @@ const char kDialMediaRouteProviderDescription[] =
     "Enable/Disable the browser discovery of the DIAL support cast device."
     "It sends a discovery SSDP message every 120 seconds";
 
-const char kMediaRouterOtrInstanceName[] =
-    "Create a separate Media Router instance for off-the-record "
-    "profiles.";
-const char kMediaRouterOtrInstanceDescription[] =
-    "When enabled, a separate Media Router instance will be created for "
-    "off-the-record (\"incognito\") profiles.";
-
 const char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for cast mirroring.";
 const char kCastMirroringTargetPlayoutDelayDescription[] =

@@ -2686,9 +2686,6 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
 
-extern const char kMediaRouterOtrInstanceName[];
-extern const char kMediaRouterOtrInstanceDescription[];
-
 extern const char kCastMirroringTargetPlayoutDelayName[];
 extern const char kCastMirroringTargetPlayoutDelayDescription[];
 extern const char kCastMirroringTargetPlayoutDelayDefault[];

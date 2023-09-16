@@ -231,6 +231,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
+    "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -273,10 +274,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "sct_reporting::Factory"
   };
   // clang-format on
-
-  if (base::FeatureList::IsEnabled(media_router::kMediaRouterOTRInstance)) {
-    guest_otr_active_services.insert("MediaRouter");
-  }
 
   Profile* guest_profile =
       CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());

@@ -26,10 +26,6 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
-// If enabled, separate Media Router instances will be created for normal and
-// off-the-record profiles.
-BASE_DECLARE_FEATURE(kMediaRouterOTRInstance);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, and the HTMLMediaElement source changes (e.g. started observing
 // new source, and stopped observing the first one), the new source is cast

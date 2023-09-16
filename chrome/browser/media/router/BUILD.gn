@@ -63,6 +63,7 @@ static_library("router") {
     "//base",
     "//chrome:strings",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

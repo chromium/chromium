@@ -6,7 +6,8 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -59,12 +60,17 @@ ChromeMediaRouterFactory::ChromeMediaRouterFactory() = default;
 
 ChromeMediaRouterFactory::~ChromeMediaRouterFactory() = default;
 
-// TODO(https://crbug.com/1455493): Update profile selection logic.
 content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return base::FeatureList::IsEnabled(kMediaRouterOTRInstance)
-             ? context
-             : chrome::GetBrowserContextRedirectedInIncognito(context);
+  // TODO(crbug.com/1483551): Figure out what to do with system profiles.
+  ProfileSelections profile_selections =
+      ProfileSelections::Builder()
+          .WithRegular(ProfileSelection::kOwnInstance)
+          .WithGuest(ProfileSelection::kOwnInstance)
+          .WithSystem(ProfileSelection::kOwnInstance)
+          .Build();
+  return profile_selections.ApplyProfileSelection(
+      Profile::FromBrowserContext(context));
 }
 
 std::unique_ptr<KeyedService>

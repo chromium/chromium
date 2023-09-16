@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -173,14 +170,9 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
 #else
         ProfileManager::GetLastUsedProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
-      ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-          default_profile, base::BindRepeating(&MockMediaRouter::Create));
-    } else {
-      ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-          default_profile->GetOriginalProfile(),
-          base::BindRepeating(&MockMediaRouter::Create));
-    }
+
+    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+        default_profile, base::BindRepeating(&MockMediaRouter::Create));
   }
 
   void CreateStarterForDefaultModes() {
@@ -889,59 +881,6 @@ TEST_F(MediaRouteStarterTest, GetScreenCapturePermission) {
   EXPECT_EQ(screen_capture_is_allowed,
             MediaRouteStarter::GetScreenCapturePermission(
                 MediaCastMode::DESKTOP_MIRROR));
-}
-
-class MediaRouteStarterIncognitoTest : public MediaRouteStarterTest {
- protected:
-  void SetMediaRouterFactory() override {
-    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
-      // We must set the factory on the incognito browser context.
-      MediaRouterFactory::GetInstance()->SetTestingFactory(
-          GetBrowserContext(), base::BindRepeating(&MockMediaRouter::Create));
-    } else {
-      // We must set the factory on the non-incognito browser context.
-      MediaRouterFactory::GetInstance()->SetTestingFactory(
-          MediaRouteStarterTest::GetBrowserContext(),
-          base::BindRepeating(&MockMediaRouter::Create));
-    }
-  }
-
-  content::BrowserContext* GetBrowserContext() override {
-    return static_cast<Profile*>(MediaRouteStarterTest::GetBrowserContext())
-        ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-};
-
-// Demonstrates that when tab mirroring is available and requested that the
-// RouteParameters are properly filled out - particularly that the off the
-// record is now true.
-TEST_F(MediaRouteStarterIncognitoTest, CreateRouteParameters_TabMirroring) {
-  CreateStarterForDefaultModes();
-
-  // Add a sink
-  UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
-
-  auto params = media_route_starter()->CreateRouteParameters(
-      cast_sink().id(), MediaCastMode::TAB_MIRROR);
-
-  EXPECT_TRUE(params->off_the_record);
-}
-
-// Basically the same as the on the record case, but demonstrates that
-// the incognito parameter is passed into MR.
-TEST_F(MediaRouteStarterIncognitoTest, StartRoute_TabMirroring) {
-  CreateStarterForDefaultModes();
-
-  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
-
-  StartMirroring(cast_sink(), MediaCastMode::TAB_MIRROR);
-
-  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
-            route_request_result()->result_code());
-
-  MediaSource expected_source = MediaSource::ForTab(
-      sessions::SessionTabHelper::IdForTab(web_contents()).id());
-  EXPECT_EQ(expected_source, route_request_result()->route()->media_source());
 }
 
 }  // namespace media_router

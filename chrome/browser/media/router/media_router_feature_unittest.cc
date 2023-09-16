@@ -115,10 +115,7 @@ class MediaRouterEnabledTest : public ::testing::Test {
   TestingProfile disabled_profile;
 };
 
-TEST_F(MediaRouterEnabledTest, TestEnabledByPolicy_SameOTR) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMediaRouterOTRInstance);
-
+TEST_F(MediaRouterEnabledTest, TestEnabledByPolicy) {
   enabled_profile.GetTestingPrefService()->SetManagedPref(
       ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
   EXPECT_TRUE(MediaRouterEnabled(&enabled_profile));
@@ -135,50 +132,7 @@ TEST_F(MediaRouterEnabledTest, TestEnabledByPolicy_SameOTR) {
   EXPECT_TRUE(MediaRouterEnabled(incognito_profile));
 }
 
-TEST_F(MediaRouterEnabledTest, TestEnabledByPolicy_SeparateOTR) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMediaRouterOTRInstance);
-
-  enabled_profile.GetTestingPrefService()->SetManagedPref(
-      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
-  EXPECT_TRUE(MediaRouterEnabled(&enabled_profile));
-
-  TestingProfile* incognito_profile =
-      TestingProfile::Builder().BuildIncognito(&enabled_profile);
-  EXPECT_TRUE(MediaRouterEnabled(incognito_profile));
-
-  enabled_profile.GetTestingPrefService()->SetManagedPref(
-      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
-  // Runtime changes are not supported.
-  EXPECT_TRUE(MediaRouterEnabled(&enabled_profile));
-  // Should remain enabled for incognito too.
-  EXPECT_TRUE(MediaRouterEnabled(incognito_profile));
-}
-
-TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy_SameOTR) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMediaRouterOTRInstance);
-
-  disabled_profile.GetTestingPrefService()->SetManagedPref(
-      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
-  EXPECT_FALSE(MediaRouterEnabled(&disabled_profile));
-
-  TestingProfile* incognito_profile =
-      TestingProfile::Builder().BuildIncognito(&disabled_profile);
-  EXPECT_FALSE(MediaRouterEnabled(incognito_profile));
-
-  disabled_profile.GetTestingPrefService()->SetManagedPref(
-      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
-  // Runtime changes are not supported.
-  EXPECT_FALSE(MediaRouterEnabled(&disabled_profile));
-  // Should remain disabled for incognito too.
-  EXPECT_FALSE(MediaRouterEnabled(incognito_profile));
-}
-
-TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy_SeparateOTR) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMediaRouterOTRInstance);
-
+TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy) {
   disabled_profile.GetTestingPrefService()->SetManagedPref(
       ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   EXPECT_FALSE(MediaRouterEnabled(&disabled_profile));
