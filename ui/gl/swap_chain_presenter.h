@@ -260,6 +260,9 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Current size of swap chain.
   gfx::Size swap_chain_size_;
 
+  // Current buffer count of swap chain.
+  const UINT swap_chain_buffer_count_;
+
   // Current swap chain format.
   DXGI_FORMAT swap_chain_format_ = DXGI_FORMAT_B8G8R8A8_UNORM;
 
