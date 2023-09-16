@@ -4571,14 +4571,11 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     immersive_mode_controller_->SetEnabled(fullscreen);
   }
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
   // On Mac platforms, FullscreenStateChanged() is invoked from
   // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
   // fullscreen transition is complete. On other platforms, there is no
   // asynchronous transition so we synchronously invoke the function.
-  //
-  // On Lacros, the state change is only realized after the
-  // window has been informed that the state change has been performed.
   FullscreenStateChanged();
 #endif
 
