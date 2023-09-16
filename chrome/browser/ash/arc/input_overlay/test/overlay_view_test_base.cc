@@ -25,18 +25,10 @@ void OverlayViewTestBase::EnableEditMode() {
 }
 
 ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
-  // Hide the editing list first to click on the action touch point.
-  DCHECK(controller_->editing_list_widget_);
-  controller_->editing_list_widget_->Hide();
-
-  LeftClickOn(action->action_view()->touch_point());
-
+  action->action_view()->ShowButtonOptionsMenu();
   DCHECK(controller_->button_options_widget_);
-  auto* menu = static_cast<ButtonOptionsMenu*>(
+  return static_cast<ButtonOptionsMenu*>(
       controller_->button_options_widget_->GetContentsView());
-  // Reshow the editing list.
-  controller_->editing_list_widget_->Show();
-  return menu;
 }
 
 // Create a GIO enabled window with default actions including two action tap and

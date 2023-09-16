@@ -39,6 +39,25 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     return 0;
   }
 
+  // Return -1 if there is no list item for `action`. Otherwise, return the
+  // index of list item in `EditingList` for `action`.
+  int GetIndexInEditingList(Action* action) {
+    if (IsEditingListInZeroState()) {
+      return -1;
+    }
+
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    for (size_t i = 0; i < scroll_content->children().size(); i++) {
+      auto* list_item =
+          static_cast<ActionViewListItem*>(scroll_content->children()[i]);
+      if (list_item->action() == action) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   size_t GetActionViewSize() { return input_mapping_view_->children().size(); }
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
@@ -161,18 +180,22 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
 TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   // Change Action Tap.
   auto* menu = ShowButtonOptionsMenu(tap_action_);
+  int list_index = GetIndexInEditingList(tap_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
   PressActionMoveButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
   EXPECT_TRUE(IsActionInEditingList(menu->action()));
+  EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
   // Change Action Move.
   menu = ShowButtonOptionsMenu(move_action_);
+  list_index = GetIndexInEditingList(move_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
   PressTapButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
   EXPECT_TRUE(IsActionInEditingList(menu->action()));
+  EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
 }
 
 TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {

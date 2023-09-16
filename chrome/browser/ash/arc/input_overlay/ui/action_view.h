@@ -155,6 +155,7 @@ class ActionView : public views::View {
 
  private:
   friend class ActionViewTest;
+  friend class OverlayViewTestBase;
   friend class ViewTestBase;
 
   void ShowButtonOptionsMenu();

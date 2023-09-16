@@ -356,8 +356,19 @@ void EditingList::OnActionRemoved(const Action& action) {
 }
 
 void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
-  OnActionRemoved(*action);
-  OnActionAdded(*new_action);
+  DCHECK(!is_zero_state_);
+  for (size_t i = 0; i < scroll_content_->children().size(); i++) {
+    auto* list_item =
+        static_cast<ActionViewListItem*>(scroll_content_->children()[i]);
+    DCHECK(list_item);
+    if (list_item->action() == action) {
+      scroll_content_->RemoveChildViewT(list_item);
+      scroll_content_->AddChildViewAt(
+          std::make_unique<ActionViewListItem>(controller_, new_action), i);
+      break;
+    }
+  }
+
   UpdateWidget();
 }
 
