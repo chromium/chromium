@@ -131,10 +131,6 @@ class TestHelper {
       const gfx::ExtensionSet& extensions,
       bool use_default_textures);
 
-  static void SetupExpectationsForClearingUniforms(::gl::MockGLInterface* gl,
-                                                   UniformInfo* uniforms,
-                                                   size_t num_uniforms);
-
   static void SetupShaderExpectations(::gl::MockGLInterface* gl,
                                       const FeatureInfo* feature_info,
                                       AttribInfo* attribs,
@@ -254,4 +250,3 @@ class TestHelper {
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_TEST_HELPER_H_
-

@@ -499,9 +499,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // Updates the program log info from GL
   void UpdateLogInfo();
 
-  // Clears all the uniforms.
-  void ClearUniforms(std::vector<uint8_t>* zero_buffer);
-
   // Updates the draw id uniform location used by ANGLE_multi_draw
   void UpdateDrawIDUniformLocation();
 
@@ -683,9 +680,6 @@ class GPU_GLES2_EXPORT ProgramManager {
 
   // Makes a program as unused. If deleted the program will be removed.
   void UnuseProgram(ShaderManager* shader_manager, Program* program);
-
-  // Clears the uniforms for this program.
-  void ClearUniforms(Program* program);
 
   // Updates the draw id location for this program for ANGLE_multi_draw
   void UpdateDrawIDUniformLocation(Program* program);

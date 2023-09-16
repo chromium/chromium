@@ -314,12 +314,6 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
                                         service_id);
   }
 
-  void SetupExpectationsForClearingUniforms(
-      UniformInfo* uniforms, size_t num_uniforms) {
-    TestHelper::SetupExpectationsForClearingUniforms(
-        gl_.get(), uniforms, num_uniforms);
-  }
-
   // Return true if link status matches expected_link_status
   bool LinkAsExpected(Program* program,
                       bool expected_link_status) {
@@ -1987,71 +1981,6 @@ TEST_F(ProgramManagerWithShaderTest, CountAllVaryingsInPacking) {
       SetupProgramForVariables(kVertexVaryings, 2, kFragmentVaryings, 2);
 
   EXPECT_FALSE(program->CheckVaryingsPacking(Program::kCountAll));
-}
-
-TEST_F(ProgramManagerWithShaderTest, ClearWithSamplerTypes) {
-  Shader* vshader = shader_manager_.CreateShader(
-      kVertexShaderClientId, kVertexShaderServiceId, GL_VERTEX_SHADER);
-  ASSERT_TRUE(vshader != nullptr);
-  TestHelper::SetShaderStates(gl_.get(), vshader, true);
-  Shader* fshader = shader_manager_.CreateShader(
-      kFragmentShaderClientId, kFragmentShaderServiceId, GL_FRAGMENT_SHADER);
-  ASSERT_TRUE(fshader != nullptr);
-  TestHelper::SetShaderStates(gl_.get(), fshader, true);
-  Program* program =
-      manager_->CreateProgram(kClientProgramId, kServiceProgramId);
-  ASSERT_TRUE(program != nullptr);
-  EXPECT_TRUE(program->AttachShader(&shader_manager_, vshader));
-  EXPECT_TRUE(program->AttachShader(&shader_manager_, fshader));
-
-  static const GLenum kSamplerTypes[] = {
-    GL_SAMPLER_2D,
-    GL_SAMPLER_CUBE,
-    GL_SAMPLER_EXTERNAL_OES,
-    GL_SAMPLER_3D_OES,
-    GL_SAMPLER_2D_RECT_ARB,
-  };
-  const size_t kNumSamplerTypes = std::size(kSamplerTypes);
-  for (size_t ii = 0; ii < kNumSamplerTypes; ++ii) {
-    static ProgramManagerWithShaderTest::AttribInfo kAttribs[] = {
-      { kAttrib1Name, kAttrib1Size, kAttrib1Type, kAttrib1Location, },
-      { kAttrib2Name, kAttrib2Size, kAttrib2Type, kAttrib2Location, },
-      { kAttrib3Name, kAttrib3Size, kAttrib3Type, kAttrib3Location, },
-    };
-    ProgramManagerWithShaderTest::UniformInfo kUniforms[] = {
-      { kUniform1Name,
-        kUniform1Size,
-        kUniform1Type,
-        kUniform1FakeLocation,
-        kUniform1RealLocation,
-        kUniform1DesiredLocation,
-        kUniform1Name,
-      },
-      { kUniform2Name,
-        kUniform2Size,
-        kSamplerTypes[ii],
-        kUniform2FakeLocation,
-        kUniform2RealLocation,
-        kUniform2DesiredLocation,
-        kUniform2NameWithArrayIndex,
-      },
-      { kUniform3Name,
-        kUniform3Size,
-        kUniform3Type,
-        kUniform3FakeLocation,
-        kUniform3RealLocation,
-        kUniform3DesiredLocation,
-        kUniform3NameWithArrayIndex,
-      },
-    };
-    const size_t kNumAttribs = std::size(kAttribs);
-    const size_t kNumUniforms = std::size(kUniforms);
-    SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms,
-                            kServiceProgramId);
-    program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
-    SetupExpectationsForClearingUniforms(kUniforms, kNumUniforms);
-    manager_->ClearUniforms(program);
-  }
 }
 
 TEST_F(ProgramManagerWithShaderTest, BindUniformLocation) {

@@ -71,24 +71,6 @@
       ]
     },
     {
-      "id": 20,
-      "description": "Disable EXT_draw_buffers on GeForce GT 650M on Mac OS X due to driver bugs",
-      "cr_bugs": [180397, 779991],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12"
-        }
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fd5"],
-      "multi_gpu_category": "any",
-      "features": [
-        "disable_ext_draw_buffers"
-      ]
-    },
-    {
       "id": 21,
       "description": "Vivante GPUs are buggy with context switching",
       "cr_bugs": [179250, 235935],
@@ -313,21 +295,6 @@
       "gl_vendor": "Qualcomm.*",
       "features": [
         "wake_up_gpu_before_drawing"
-      ]
-    },
-    {
-      "id": 54,
-      "cr_bugs": [124764, 349137],
-      "description": "Clear uniforms before first program use on all platforms",
-      "exceptions": [
-        {
-          "os": {
-            "type": "macosx"
-          }
-        }
-      ],
-      "features": [
-        "clear_uniforms_before_first_program_use"
       ]
     },
     {
@@ -1511,21 +1478,6 @@
       ]
     },
     {
-      "id": 188,
-      "description": "AVSampleBufferDisplayLayer leaks IOSurfaces on 10.9.",
-      "cr_bugs": [632178],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.10"
-        }
-      },
-      "features": [
-        "disable_av_sample_buffer_display_layer"
-      ]
-    },
-    {
       "id": 189,
       "description": "Do TexImage2D first before CopyTexImage2D for cube map texture on Intel Mac 10.11",
       "cr_bugs": [648197],
@@ -2171,25 +2123,6 @@
       ]
     },
     {
-      "id": 250,
-      "description": "Depth/stencil renderbuffers can't be resized on NVIDIA on early macOS 10.13",
-      "cr_bugs": [775202],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "between",
-          "value": "10.13.0",
-          "value2": "10.13.3",
-          "comment": "Fixed in 10.13.4."
-        }
-      },
-      "vendor_id": "0x10de",
-      "multi_gpu_category": "any",
-      "features": [
-        "depth_stencil_renderbuffer_resize_emulation"
-      ]
-    },
-    {
       "id": 251,
       "description": "Vivante GPUs shader cache breaks rendering",
       "cr_bugs": [780498],
@@ -2226,21 +2159,6 @@
       "features": [
         "max_msaa_sample_count_4",
         "use_eqaa_storage_samples_2"
-      ]
-    },
-    {
-      "id": 255,
-      "description": "Fullscreen video crashes macOS 10.11 WindowServer.",
-      "cr_bugs": [806506],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12"
-        }
-      },
-      "features": [
-        "disable_av_sample_buffer_display_layer"
       ]
     },
     {
@@ -3000,22 +2918,6 @@
       "multi_gpu_category": "any",
       "features": [
         "force_low_power_gpu"
-      ]
-    },
-    {
-      "id": 327,
-      "cr_bugs": [1027981],
-      "description": "Disable dual source blending support",
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.14"
-        }
-      },
-      "gl_vendor": "Intel.*",
-      "features": [
-        "disable_dual_source_blending_support"
       ]
     },
     {

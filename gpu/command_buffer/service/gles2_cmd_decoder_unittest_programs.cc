@@ -2043,52 +2043,6 @@ TEST_P(GLES2DecoderWithShaderTest, BindUniformLocationCHROMIUMBucket) {
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
 }
 
-TEST_P(GLES2DecoderManualInitTest, ClearUniformsBeforeFirstProgramUse) {
-  gpu::GpuDriverBugWorkarounds workarounds;
-  workarounds.clear_uniforms_before_first_program_use = true;
-  InitState init;
-  init.has_alpha = true;
-  init.request_alpha = true;
-  init.bind_generates_resource = true;
-  InitDecoderWithWorkarounds(init, workarounds);
-  {
-    static AttribInfo attribs[] = {
-        {
-         kAttrib1Name, kAttrib1Size, kAttrib1Type, kAttrib1Location,
-        },
-        {
-         kAttrib2Name, kAttrib2Size, kAttrib2Type, kAttrib2Location,
-        },
-        {
-         kAttrib3Name, kAttrib3Size, kAttrib3Type, kAttrib3Location,
-        },
-    };
-    static UniformInfo uniforms[] = {
-        {kUniform1Name, kUniform1Size, kUniform1Type, kUniform1FakeLocation,
-         kUniform1RealLocation, kUniform1DesiredLocation},
-        {kUniform2Name, kUniform2Size, kUniform2Type, kUniform2FakeLocation,
-         kUniform2RealLocation, kUniform2DesiredLocation},
-        {kUniform3Name, kUniform3Size, kUniform3Type, kUniform3FakeLocation,
-         kUniform3RealLocation, kUniform3DesiredLocation},
-    };
-    SetupShader(attribs, std::size(attribs), uniforms, std::size(uniforms),
-                client_program_id_, kServiceProgramId, client_vertex_shader_id_,
-                kServiceVertexShaderId, client_fragment_shader_id_,
-                kServiceFragmentShaderId);
-    TestHelper::SetupExpectationsForClearingUniforms(gl_.get(), uniforms,
-                                                     std::size(uniforms));
-  }
-
-  {
-    EXPECT_CALL(*gl_, UseProgram(kServiceProgramId))
-        .Times(1)
-        .RetiresOnSaturation();
-    cmds::UseProgram cmd;
-    cmd.Init(client_program_id_);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  }
-}
-
 TEST_P(GLES2DecoderWithShaderTest, UseDeletedProgram) {
   DoDeleteProgram(client_program_id_, kServiceProgramId);
   {

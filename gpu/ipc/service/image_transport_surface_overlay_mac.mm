@@ -60,14 +60,8 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
-  bool allow_av_sample_buffer_display_layer =
-      !av_disabled_at_command_line &&
-      !delegate_->GetFeatureInfo()
-           ->workarounds()
-           .disable_av_sample_buffer_display_layer;
-
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
-      use_remote_layer_api_, allow_av_sample_buffer_display_layer);
+      use_remote_layer_api_, !av_disabled_at_command_line);
 
   // Create the CAContext to send this to the GPU process, and the layer for
   // the context.

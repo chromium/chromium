@@ -8993,10 +8993,6 @@ void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
                         ? Program::kCountAll
                         : Program::kCountOnlyStaticallyUsed,
                     client())) {
-    if (program == state_.current_program.get()) {
-      if (workarounds().clear_uniforms_before_first_program_use)
-        program_manager()->ClearUniforms(program);
-    }
     if (features().webgl_multi_draw)
       program_manager()->UpdateDrawIDUniformLocation(program);
     if (features().webgl_draw_instanced_base_vertex_base_instance ||
@@ -9710,8 +9706,6 @@ void GLES2DecoderImpl::DoUseProgram(GLuint program_id) {
   api()->glUseProgramFn(service_id);
   if (state_.current_program.get()) {
     program_manager()->UseProgram(state_.current_program.get());
-    if (workarounds().clear_uniforms_before_first_program_use)
-      program_manager()->ClearUniforms(program);
   }
 }
 
