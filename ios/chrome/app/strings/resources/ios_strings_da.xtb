@@ -156,6 +156,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1830634592642484976">Denne adresse gemmes i øjeblikket i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{Bogmærket er gemt på din Google-konto, {email}}other{Bogmærkerne er gemt på din Google-konto, {email}}}</translation>
+<translation id="183878838231635348">Dette kort viser eventuelle privatlivs- eller sikkerhedsproblemer, som Sikkerhedstjek automatisk registrerer for dig.</translation>
 <translation id="1847795903283049083">Du kan også se og administrere disse elementer i dine bogmærker, på din læseliste eller via Adgangskodeadministrator.</translation>
 <translation id="1870148520156231997">Vis adgangskode</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
@@ -265,6 +266,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2523363575747517183">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Skjul "Sikkerhedstjek"</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. Angiv din adgangssætning for at starte synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofejl</translation>
 <translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>

@@ -156,6 +156,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1830634592642484976">Alamat ini disimpan ke Chrome untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{Bookmark disimpan di Akun Google Anda, {email}}}</translation>
+<translation id="183878838231635348">Kartu ini menampilkan setiap masalah privasi atau keamanan yang otomatis terdeteksi oleh Pemeriksaan Keamanan untuk Anda.</translation>
 <translation id="1847795903283049083">Anda juga dapat melihat dan mengelola item ini di bookmark, Daftar Bacaan, atau pengelola sandi.</translation>
 <translation id="1870148520156231997">Tampilkan Sandi</translation>
 <translation id="1872096359983322073">Senter</translation>
@@ -265,6 +266,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2523363575747517183">Situs ini berulang kali mencoba membuka aplikasi lain.</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
 <translation id="2547458583188611426">Sinkronisasi tidak berfungsi. Untuk memulai sinkronisasi, masukkan frasa sandi.</translation>
 <translation id="2551153019974022505">Error akun</translation>
 <translation id="2556092377360758201">Tidak Ada Perlindungan (tidak direkomendasikan)</translation>

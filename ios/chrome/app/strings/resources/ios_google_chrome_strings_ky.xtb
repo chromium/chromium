@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1105362920864247682">Chrome'догу серептөө дайындарын өчүрүү.</translation>
 <translation id="1143896152279775643">Cырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="1180362651362502943">Google аккаунтуңуздагы Chrome маалыматын колдоно бериңиз.</translation>
 <translation id="1282031177488366470">Chrome'дун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз</translation>
@@ -57,6 +58,7 @@
 <translation id="2736805085127235148">Учурда түзмөгүңүздүн параметрлеринде Chrome билдирмелери күйүп турат.</translation>
 <translation id="2767464022270041271">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Сырсөздөрдү башкаргыч аларды текшерет.</translation>
 <translation id="2840432500933227975">iOS'то Chrome жөндөөлөрүн ачып, андан соң "Серепчинин демейки колдонмосун" таптап, Chrome'ду тандаңыз.</translation>
+<translation id="2868822340714096138">Chrome'догу серептөө дайындарын өчүрүү</translation>
 <translation id="2869959624320573933">Chrome'го кириңиз</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome’ду<ph name="END_BOLD" /> тандаңыз</translation>

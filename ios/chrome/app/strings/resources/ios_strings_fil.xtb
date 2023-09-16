@@ -156,6 +156,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1830634592642484976">Kasalukuyang naka-save ang address na ito sa Chrome. Para gamitin ito sa mga produkto ng Google, i-save ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
 <translation id="1836891464494477513">{count,plural, =1{Na-save ang bookmark sa iyong Google Account na, {email}}one{Na-save ang mga bookmark sa iyong Google Account na, {email}}other{Na-save ang mga bookmark sa iyong Google Account na, {email}}}</translation>
+<translation id="183878838231635348">Ipinapakita ng card na ito ang anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Pag-check sa Kaligtasan para sa iyo.</translation>
 <translation id="1847795903283049083">Puwede mo ring tingnan at pamahalaan ang mga item na ito sa iyong mga bookmark, Listahan ng Babasahin, o password manager.</translation>
 <translation id="1870148520156231997">Ipakita ang Password</translation>
 <translation id="1872096359983322073">Torch</translation>
@@ -265,6 +266,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2523363575747517183">Paulit-ulit na sinusubukang buksan ng website na ito ang isa pang application.</translation>
 <translation id="2529021024822217800">Buksan Lahat</translation>
 <translation id="2536991091671391962">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">I-hide ang "Pag-check sa Kaligtasan"</translation>
 <translation id="2547458583188611426">Hindi gumagana ang pag-sync. Para simulan ang pag-sync, ilagay ang iyong passphrase.</translation>
 <translation id="2551153019974022505">Error sa account</translation>
 <translation id="2556092377360758201">Walang Proteksyon (hindi inirerekomenda)</translation>

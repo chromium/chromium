@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="3472200483164753384">No es compatible en Chromium Canary</translation>
 <translation id="3478750326643748149">Ocultar "Aprovecha Chromium al máximo"</translation>
+<translation id="3554027294407525061">Borra los datos de navegación en Chromium.</translation>
 <translation id="3567399274263440288">Para aprovechar Chromium al maximo, accede al navegador con tu Cuenta de Google.</translation>
 <translation id="3639997914391704523">Chromium puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> usó Chromium y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
@@ -97,6 +98,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="4999538639245140991">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chromium se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="5042011327527167688">Presiona "Ver con Google Maps en Chromium".</translation>
 <translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en otras apps, usa la opción para autocompletarlas con Chromium</translation>
+<translation id="5076601183701536878">Borrar los datos de navegación en Chromium</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chromium.</translation>
 <translation id="5171868502429358653">Accede en Chromium</translation>
 <translation id="5213683223491576284">Abre el Administrador de contraseñas en Chromium.</translation>

@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1836891464494477513">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크가 Google 계정({email})에 저장되었습니다.}}</translation>
+<translation id="183878838231635348">이 카드에는 안전 확인 기능이 자동으로 감지한 개인 정보 보호 또는 보안 문제가 표시됩니다.</translation>
 <translation id="1847795903283049083">북마크, 읽기 목록, 비밀번호 관리자에서도 이러한 항목을 보고 관리할 수 있습니다.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
@@ -265,6 +266,7 @@
 <translation id="2523363575747517183">다른 애플리케이션을 열려는 반복적인 시도가 실행되는 웹사이트입니다.</translation>
 <translation id="2529021024822217800">모두 열기</translation>
 <translation id="2536991091671391962">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
+<translation id="2542268842667970959">'안전 확인' 숨기기</translation>
 <translation id="2547458583188611426">동기화가 작동하지 않습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="2551153019974022505">계정 오류</translation>
 <translation id="2556092377360758201">보호되지 않음(권장되지 않음)</translation>

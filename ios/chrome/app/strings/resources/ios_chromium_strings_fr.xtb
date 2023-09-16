@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
 <translation id="3478750326643748149">Masquer la fiche "Profiter pleinement de Chromium"</translation>
+<translation id="3554027294407525061">Effacer les données de navigation dans Chromium.</translation>
 <translation id="3567399274263440288">Pour profiter pleinement de Chromium, connectez-vous avec votre compte Google.</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> utilisait Chromium et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
@@ -97,6 +98,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="5042011327527167688">Appuyez sur "Afficher avec Google Maps sur Chromium".</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chromium pour la saisie automatique</translation>
+<translation id="5076601183701536878">Effacer les données de navigation dans Chromium</translation>
 <translation id="5131565040785979529">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chromium est utilisé.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5213683223491576284">Ouvre le Gestionnaire de mots de passe dans Chromium.</translation>

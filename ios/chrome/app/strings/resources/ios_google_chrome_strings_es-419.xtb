@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1105362920864247682">Borrar los datos de navegación en Chrome.</translation>
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="1282031177488366470">Ayuda a mejorar las funciones y el rendimiento de Chrome</translation>
@@ -57,6 +58,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2840432500933227975">Abre la Configuración de Chrome en iOS, presiona "Navegador predeterminado" y selecciona Chrome.</translation>
+<translation id="2868822340714096138">Borrar los datos de navegación en Chrome</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>

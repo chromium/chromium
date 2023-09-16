@@ -156,6 +156,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1830634592642484976">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}other{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
+<translation id="183878838231635348">Þetta spjald sýnir persónuverndar- og öryggisvandamál sem öryggisathugun greinir sjálfkrafa.</translation>
 <translation id="1847795903283049083">Þú getur einnig skoðað og stjórnað þessum atriðum í bókamerkjum, á leslista eða í aðgangsorðastjórnun.</translation>
 <translation id="1870148520156231997">Sýna aðgangsorð</translation>
 <translation id="1872096359983322073">Ljós</translation>
@@ -265,6 +266,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2523363575747517183">Þetta vefsvæði reynir ítrekað að opna annað forrit.</translation>
 <translation id="2529021024822217800">Opna allt</translation>
 <translation id="2536991091671391962">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í Google-aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Fela „Öryggisathugun“</translation>
 <translation id="2547458583188611426">Samstilling virkar ekki. Sláðu inn aðgangsorðið þitt til að hefja samstillingu.</translation>
 <translation id="2551153019974022505">Villa á reikningi</translation>
 <translation id="2556092377360758201">Engin vörn (ekki mælt með)</translation>

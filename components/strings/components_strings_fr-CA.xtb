@@ -2321,6 +2321,7 @@
 <translation id="5830698870816298009">mouvement et utilisation de la caméra</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Nous vous déconseillons d'entrer des données sensibles sur ce site (par exemple, des mots de passe ou des cartes de crédit), car elles pourraient être volées par des pirates.</translation>
+<translation id="5838732667866024867">Vous pouvez utiliser la flèche vers la gauche ou la droite pour consulter les changements de prix sur le graphique</translation>
 <translation id="5840318881868981258">Dans votre compte Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Enregistrer dans le compte?</translation>
 <translation id="5847181246682413476">Alimentations électriques</translation>
@@ -2992,6 +2993,7 @@
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
 <translation id="7226276626900992675">Vous avez autorisé ce site à utiliser des témoins tiers. Cela signifie que la plupart des fonctionnalités du site devraient fonctionner, mais vous avez moins de protection.</translation>
 <translation id="7227293336683593977">Historique des prix</translation>
+<translation id="7227747683324411744">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter pourraient tenter de vous inciter à installer un logiciel malveillant qui affecte la façon dont vous naviguez, par exemple en modifiant votre page d'accueil ou en vous montrant des publicités supplémentaires sur les sites que vous visitez.</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7234638337680728591">Prix de l'essence et ravitaillement des véhicules</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % effectué | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3192,6 +3194,7 @@ Détails supplémentaires :
 <translation id="7599089013883397081">Le téléchargement a dépassé le délai</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Vous vous connectez généralement à ce site en toute sécurité, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Un pirate peut essayer d'écouter ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter pourraient installer des logiciels malveillants qui usurpent ou suppriment des éléments tels que votre mot de passe, vos photos, vos messages ou votre numéro de carte de crédit.</translation>
 <translation id="7610193165460212391">La valeur « <ph name="VALUE" /> » est hors limites.</translation>
 <translation id="7613889955535752492">Expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Entrée pour afficher et gérer vos mots de passe dans les paramètres de Chrome</translation>
@@ -3592,6 +3595,7 @@ Détails supplémentaires :
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Le microphone est autorisé cette fois</translation>
+<translation id="8422228580902424274">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que votre mot de passe ou votre numéro de téléphone ou de carte de crédit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 mm x 750 mm</translation>
 <translation id="8428213095426709021">Paramètres</translation>

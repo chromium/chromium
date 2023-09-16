@@ -156,6 +156,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1830634592642484976">Helbide hau Chrome-n gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="1836891464494477513">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{Gorde dira laster-markak Google-ko kontuan ({email})}}</translation>
+<translation id="183878838231635348">Segurtasun-egiaztapenak pribatutasun- edo segurtasun-arazoren bat aurkitzen badu automatikoki, txartel honetan agertuko da.</translation>
 <translation id="1847795903283049083">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu.</translation>
 <translation id="1870148520156231997">Erakutsi pasahitza</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -265,6 +266,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2523363575747517183">Webgunea behin eta berriz saiatzen ari da beste aplikazio bat irekitzen.</translation>
 <translation id="2529021024822217800">Ireki guztiak</translation>
 <translation id="2536991091671391962">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
+<translation id="2542268842667970959">Ezkutatu "Segurtasun-egiaztapena"</translation>
 <translation id="2547458583188611426">Sinkronizazioak ez du funtzionatzen. Sinkronizatzen hasteko, idatzi pasaesaldia.</translation>
 <translation id="2551153019974022505">Kontuaren errorea</translation>
 <translation id="2556092377360758201">Babesik gabe (ez da gomendatzen)</translation>
@@ -750,7 +752,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5238301240406177137">Gorde kontuan</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
-<translation id="5271265092610673171">{count,plural, =1{Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{Nahitaezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Nahitaezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>
 <translation id="5283494734135414249">Sakatu helbide-barraren azpiko lasterbidea.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> kontua kendu nahi duzu?</translation>

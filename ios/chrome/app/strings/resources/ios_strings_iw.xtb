@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏הסימנייה נשמרה בחשבון Google שלך, {email}}one{‏הסימניות נשמרו בחשבון Google שלך, {email}}two{‏הסימניות נשמרו בחשבון Google שלך, {email}}other{‏הסימניות נשמרו בחשבון Google שלך, {email}}}</translation>
+<translation id="183878838231635348">בכרטיס הזה מוצגות כל הבעיות בפרטיות או באבטחה שזוהו באופן אוטומטי בבדיקת האבטחה.</translation>
 <translation id="1847795903283049083">אפשר גם לראות ולנהל את הפריטים האלה בסימניות, ברשימת הקריאה או במנהל הסיסמאות.</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
@@ -265,6 +266,7 @@
 <translation id="2523363575747517183">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
 <translation id="2536991091671391962">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות ב'מנהל הסיסמאות של Google' לחשבון <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">הסתרת האפשרות 'בדיקת אבטחה'</translation>
 <translation id="2547458583188611426">הסנכרון לא פועל. כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה.</translation>
 <translation id="2551153019974022505">שגיאה בחשבון</translation>
 <translation id="2556092377360758201">ללא הגנה (לא מומלץ)</translation>

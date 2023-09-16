@@ -156,6 +156,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
 <translation id="1836891464494477513">{count,plural, =1{Preferito salvato nel tuo Account Google {email}}other{Preferiti salvati nel tuo Account Google {email}}}</translation>
+<translation id="183878838231635348">In questa scheda vengono mostrati eventuali problemi di privacy o di sicurezza che il controllo di sicurezza rileva automaticamente per te.</translation>
 <translation id="1847795903283049083">Puoi visualizzare e gestire questi elementi anche nei preferiti, nel tuo elenco di lettura o in Gestore delle password.</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
@@ -265,6 +266,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2523363575747517183">Questo sito web sta cercando ripetutamente di aprire un'altra applicazione.</translation>
 <translation id="2529021024822217800">Apri tutto</translation>
 <translation id="2536991091671391962">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Nascondi "Controllo di sicurezza"</translation>
 <translation id="2547458583188611426">La sincronizzazione non funziona. Per avviare la sincronizzazione devi inserire la tua passphrase.</translation>
 <translation id="2551153019974022505">Errore dell'account</translation>
 <translation id="2556092377360758201">Nessuna protezione (non consigliato)</translation>

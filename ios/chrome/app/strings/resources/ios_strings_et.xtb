@@ -156,6 +156,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
 <translation id="1836891464494477513">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{Järjehoidjad salvestati teie Google'i kontole {email}}}</translation>
+<translation id="183878838231635348">Sellel kaardil kuvatakse kõik privaatsus- või turvaohud, mille ohutuskontroll teie eest automaatselt tuvastab.</translation>
 <translation id="1847795903283049083">Neid üksusi saate vaadata ja hallata ka järjehoidjates, lugemisloendis või paroolihalduris.</translation>
 <translation id="1870148520156231997">Kuva parool</translation>
 <translation id="1872096359983322073">Lamp</translation>
@@ -265,6 +266,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2523363575747517183">See veebisait üritab korduvalt avada teist rakendust.</translation>
 <translation id="2529021024822217800">Ava kõik</translation>
 <translation id="2536991091671391962">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="EMAIL" /> puhul Google'i paroolihaldurisse.</translation>
+<translation id="2542268842667970959">Peitke funktsioon Ohutuskontroll</translation>
 <translation id="2547458583188611426">Sünkroonimine ei tööta. Sünkroonimise alustamiseks sisestage oma parool.</translation>
 <translation id="2551153019974022505">Konto viga</translation>
 <translation id="2556092377360758201">Kaitseta (ei ole soovitatav)</translation>

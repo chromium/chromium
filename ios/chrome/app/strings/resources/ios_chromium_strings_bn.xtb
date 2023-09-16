@@ -61,6 +61,7 @@
 <translation id="3344973607274501920">Chromium আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="3478750326643748149">"Chromium থেকে সবচেয়ে বেশি সুবিধা পান" মেনু লুকান</translation>
+<translation id="3554027294407525061">Chromium-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ব্যবহার করছিলেন এবং এই ডিভাইসে বুকমার্ক, পাসওয়ার্ড এবং অন্যান্য সেটিংস রয়ে গেছে।</translation>
@@ -97,6 +98,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chromium ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
 <translation id="5042011327527167688">“Chromium-এ Google Maps-এর মাধ্যমে দেখুন” বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5048795749726991615">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chromium ব্যবহার করুন</translation>
+<translation id="5076601183701536878">Chromium-এ ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="5131565040785979529">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chromium কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5171868502429358653">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="5213683223491576284">Chromium-এ Password Manager খোলে।</translation>

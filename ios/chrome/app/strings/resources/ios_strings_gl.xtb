@@ -156,6 +156,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1830634592642484976">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1836891464494477513">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{Os marcadores gardáronse na túa Conta de Google ({email})}}</translation>
+<translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
 <translation id="1847795903283049083">Tamén podes ver e xestionar estes elementos nos marcadores, na lista de lectura ou no xestor de contrasinais.</translation>
 <translation id="1870148520156231997">Mostrar contrasinal</translation>
 <translation id="1872096359983322073">Lanterna</translation>
@@ -265,6 +266,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2523363575747517183">Este sitio web está tentando abrir outra aplicación.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
 <translation id="2536991091671391962">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Oculta Comprobación de seguranza</translation>
 <translation id="2547458583188611426">A sincronización non funciona. Para comezar a sincronizar datos, escribe a túa frase de acceso.</translation>
 <translation id="2551153019974022505">Erro da conta</translation>
 <translation id="2556092377360758201">Sen protección (non recomendado)</translation>

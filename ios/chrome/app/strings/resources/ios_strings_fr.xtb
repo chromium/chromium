@@ -156,6 +156,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google ({email})}one{Favori enregistré dans votre compte Google ({email})}other{Favoris enregistrés dans votre compte Google ({email})}}</translation>
+<translation id="183878838231635348">Cette fiche présente les problèmes de confidentialité ou de sécurité que le contrôle de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1847795903283049083">Vous pouvez également afficher et gérer ces éléments dans les favoris, la liste de lecture ou le gestionnaire de mots de passe.</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
@@ -265,6 +266,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2523363575747517183">Ce site Web a tenté à plusieurs reprises d'ouvrir une autre application.</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour la lancer, saisissez votre phrase secrète.</translation>
 <translation id="2551153019974022505">Erreur de compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>

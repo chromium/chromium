@@ -156,6 +156,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1830634592642484976">Mae'r cyfeiriad hwn wedi'i gadw i Chrome ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="1836891464494477513">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}two{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}few{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}many{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}other{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}}</translation>
+<translation id="183878838231635348">Mae'r cerdyn hwn yn dangos unrhyw faterion preifatrwydd neu ddiogelwch y mae Gwiriad Diogelwch yn eu canfod yn awtomatig i chi.</translation>
 <translation id="1847795903283049083">Gallwch hefyd weld a rheoli'r eitemau hyn yn eich nodau tudalen, Rhestr Ddarllen, neu reolwr cyfrineiriau.</translation>
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
 <translation id="1872096359983322073">Tortsh</translation>
@@ -265,6 +266,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2523363575747517183">Mae'r wefan hon yn ceisio agor rhaglen arall tro ar ôl tro.</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
 <translation id="2536991091671391962">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Cuddio 'Gwiriad Diogelwch'</translation>
 <translation id="2547458583188611426">Nid yw cysoni yn gweithio. I ddechrau cysoni, rhowch eich cyfrinymadrodd.</translation>
 <translation id="2551153019974022505">Gwall cyfrif</translation>
 <translation id="2556092377360758201">Dim Amddiffyniad (ni argymhellir)</translation>

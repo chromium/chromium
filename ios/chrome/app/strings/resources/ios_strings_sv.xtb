@@ -156,6 +156,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1830634592642484976">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{Bokmärkena har sparats i ditt Google-konto, {email}}}</translation>
+<translation id="183878838231635348">På det här kortet visas eventuella integritets- eller säkerhetsproblem som automatiskt har identifierats av säkerhetskontrollen.</translation>
 <translation id="1847795903283049083">Du kan även visa och hantera de här objekten i bokmärken, läslistan eller Lösenordshantering.</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
@@ -265,6 +266,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2523363575747517183">Webbplatsen försöker öppna ett annat program upprepade gånger.</translation>
 <translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Dölj Säkerhetskontroll</translation>
 <translation id="2547458583188611426">Synkroniseringen fungerar inte. Ange din lösenfras för att starta synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofel</translation>
 <translation id="2556092377360758201">Inget skydd (rekommenderas inte)</translation>

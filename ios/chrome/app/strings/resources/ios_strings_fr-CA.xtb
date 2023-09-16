@@ -155,6 +155,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{Favori enregistré dans votre compte Google, {email}}other{Favoris enregistrés dans votre compte Google, {email}}}</translation>
+<translation id="183878838231635348">Cette carte affiche tous les problèmes de confidentialité ou de sécurité que la Vérification de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1847795903283049083">Vous pouvez également afficher et gérer ces éléments dans vos favoris, votre liste de lecture ou votre gestionnaire de mots de passe.</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
@@ -261,6 +262,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2523363575747517183">Ce site Web a tenté plusieurs fois d'ouvrir une autre application.</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Masquer la « Vérification de sécurité »</translation>
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour lancer la synchronisation, entrez votre phrase de passe.</translation>
 <translation id="2551153019974022505">Erreur relative au compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
@@ -418,6 +420,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3328801116991980348">Information sur le site</translation>
 <translation id="3340938510625667914">Actions de Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
+<translation id="3349676726073650389">Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
 <translation id="3365529507898144230">Enregistrer dans Photos</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
@@ -787,6 +790,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5597915316964418992">Ouvrir la grille d'onglets</translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
+<translation id="5619871095170816857">Cette carte affiche le dernier onglet ouvert utilisé sur tous vos appareils synchronisés au cours des dernières 24 heures.</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="562753339521713441">Exécuter la vérification de sécurité</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
@@ -1092,6 +1096,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7082853213442715471">Lorsque cette option est activée, certaines technologies Web sont bloquées, ce qui peut ralentir le chargement de certains sites Web ou les empêcher de fonctionner correctement.</translation>
 <translation id="7095110968493193530">Dans le gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Onglets récents</translation>
+<translation id="7101580180124131336">Vous verrez maintenant du contenu provenant de <ph name="CHANNEL_NAME" /> dans l'onglet Contenus suivis.</translation>
 <translation id="7102005569666697658">Téléchargement en cours… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108762695052995889">Visiter le site</translation>
@@ -1173,6 +1178,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="764827086632467055">Toucher Navigateur par défaut</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
 <translation id="7679915578945954324">Adresses de site copiées</translation>
 <translation id="7687508192620387263">Un fichier d'agenda est disponible</translation>
@@ -1247,6 +1253,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
+<translation id="8044568254381073661">Enregistrer sans chiffrement</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode de navigation privée</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
@@ -1303,7 +1310,9 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8386068868580335421">Réinitialiser</translation>
 <translation id="838867811594159347">Entrer la phrase de passe…</translation>
 <translation id="8393889347136007944">Onglets non utilisés pendant <ph name="THRESHOLD" /> jours</translation>
+<translation id="8395339334550012808">Bientôt, vous verrez du contenu provenant de <ph name="CHANNEL_NAME" /> dans l'onglet Contenus suivis.</translation>
 <translation id="8395378633507873708">Barre d'adresse</translation>
+<translation id="8403629764260204788">Masquer la « Navigation continue »</translation>
 <translation id="8407669440184693619">Aucun mot de passé trouvé pour ce site</translation>
 <translation id="842017693807136194">Connecté avec</translation>
 <translation id="8423121072346537366">À l'instant</translation>

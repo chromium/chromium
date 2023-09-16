@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">Địa chỉ này hiện được lưu vào Chrome. Để sử dụng địa chỉ này trên các sản phẩm của Google, hãy lưu địa chỉ vào Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
 <translation id="1832848789136765277">Hãy xác minh danh tính để đảm bảo bạn luôn có thể truy cập vào dữ liệu đã đồng bộ</translation>
 <translation id="1836891464494477513">{count,plural, =1{Đã lưu dấu trang vào Tài khoản Google {email} của bạn}other{Đã lưu dấu trang vào Tài khoản Google {email} của bạn}}</translation>
+<translation id="183878838231635348">Thẻ này cho biết mọi vấn đề về quyền riêng tư hoặc bảo mật mà tính năng Kiểm tra an toàn tự động phát hiện cho bạn.</translation>
 <translation id="1847795903283049083">Bạn cũng có thể xem và quản lý các mục này trong dấu trang, Danh sách đọc hoặc trình quản lý mật khẩu.</translation>
 <translation id="1870148520156231997">Hiện mật khẩu</translation>
 <translation id="1872096359983322073">Đèn pin</translation>
@@ -265,6 +266,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2523363575747517183">Trang web này đang liên tục tìm cách mở một ứng dụng khác.</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
 <translation id="2536991091671391962">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Ẩn tính năng "Kiểm tra an toàn"</translation>
 <translation id="2547458583188611426">Tính năng đồng bộ hoá không hoạt động. Để bắt đầu đồng bộ hoá, hãy nhập cụm mật khẩu của bạn.</translation>
 <translation id="2551153019974022505">Lỗi tài khoản</translation>
 <translation id="2556092377360758201">Không được bảo vệ (không khuyến nghị)</translation>

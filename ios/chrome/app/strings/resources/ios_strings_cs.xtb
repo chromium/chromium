@@ -156,6 +156,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1830634592642484976">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svoji totožnost</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Záložky byly uloženy do vašeho účtu Google {email}}many{Záložky byly uloženy do vašeho účtu Google {email}}other{Záložky byly uloženy do vašeho účtu Google {email}}}</translation>
+<translation id="183878838231635348">Na této kartě se zobrazují veškeré problémy se soukromím nebo zabezpečením zjištěné při automatické bezpečnostní kontrole.</translation>
 <translation id="1847795903283049083">Tyto položky můžete zobrazit a spravovat také v záložkách, seznamu četby nebo správci hesel.</translation>
 <translation id="1870148520156231997">Zobrazit heslo</translation>
 <translation id="1872096359983322073">Svítilna</translation>
@@ -265,6 +266,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2523363575747517183">Tento web se opakovaně pokouší otevřít jinou aplikaci.</translation>
 <translation id="2529021024822217800">Otevřít vše</translation>
 <translation id="2536991091671391962">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Skrýt možnost Bezpečnostní kontrola</translation>
 <translation id="2547458583188611426">Synchronizace nefunguje. Zadejte heslovou frázi.</translation>
 <translation id="2551153019974022505">Chyba účtu</translation>
 <translation id="2556092377360758201">Bez ochrany (nedoporučujeme)</translation>

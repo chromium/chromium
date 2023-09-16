@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
+<translation id="183878838231635348">此資訊卡會顯示「安全檢查」功能自動偵測到的任何私隱或安全問題。</translation>
 <translation id="1847795903283049083">你亦可在書籤、「閱讀清單」或密碼管理工具中查看和管理這些項目。</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
@@ -265,6 +266,7 @@
 <translation id="2523363575747517183">這個網站嘗試重覆開啟另一個應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">您可在任何裝置上使用已儲存的密碼。密碼已儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
+<translation id="2542268842667970959">隱藏「安全檢查」</translation>
 <translation id="2547458583188611426">同步處理無法運作。如要開始同步處理，請輸入密碼短語。</translation>
 <translation id="2551153019974022505">帳戶錯誤</translation>
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>

@@ -156,6 +156,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1830634592642484976">Ta je adresa trenutačno spremljena u Chromeu. Da biste je upotrebljavali na Googleovim proizvodima, spremite je na svoj Google račun, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Da biste uvijek mogli pristupati svojim podacima za sinkronizaciju, potvrdite da ste to vi</translation>
 <translation id="1836891464494477513">{count,plural, =1{Oznaka je spremljena na vaš Google račun, {email}}one{Oznake su spremljene na vaš Google račun, {email}}few{Oznake su spremljene na vaš Google račun, {email}}other{Oznake su spremljene na vaš Google račun, {email}}}</translation>
+<translation id="183878838231635348">Na toj se kartici prikazuju problemi s privatnošću ili sigurnošću koje sigurnosna provjera automatski otkrije za vas.</translation>
 <translation id="1847795903283049083">Te stavke također možete gledati i upravljati njima u oznakama, popisu za čitanje ili upravitelju zaporki.</translation>
 <translation id="1870148520156231997">Otkrijte zaporku</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
@@ -265,6 +266,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2523363575747517183">Ova web-lokacija opetovano pokušava otvoriti neku drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
 <translation id="2536991091671391962">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Sakrij značajku Sigurnosna provjera</translation>
 <translation id="2547458583188611426">Sinkronizacija ne funkcionira. Unesite šifru da biste pokrenuli sinkronizaciju.</translation>
 <translation id="2551153019974022505">Pogreška računa</translation>
 <translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>

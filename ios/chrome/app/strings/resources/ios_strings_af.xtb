@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">Hierdie adres is tans in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
+<translation id="183878838231635348">Hierdie kaart wys enige privaatheid- of sekuriteitkwessies wat veiligheidskontrole outomaties vir jou bespeur.</translation>
 <translation id="1847795903283049083">Jy kan ook hierdie items in jou boekmerke, Leeslys of wagwoordbestuurder bekyk en bestuur.</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
@@ -265,6 +266,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2523363575747517183">Hierdie webwerf probeer herhaaldelik 'n ander program oopmaak.</translation>
 <translation id="2529021024822217800">Maak almal oop</translation>
 <translation id="2536991091671391962">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word in Google Wagwoordbestuurder gestoor vir <ph name="EMAIL" /></translation>
+<translation id="2542268842667970959">Versteek “Veiligheidskontrole”</translation>
 <translation id="2547458583188611426">Sinkronisering werk nie tans nie. Voer jou wagfrase in om sinkronisering te begin.</translation>
 <translation id="2551153019974022505">Rekeningfout</translation>
 <translation id="2556092377360758201">Geen beskerming nie (nie aanbeveel nie)</translation>
