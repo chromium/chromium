@@ -60,6 +60,7 @@
 #include "components/drive/file_system_core_util.h"
 #include "components/drive/resource_metadata_storage.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -1679,6 +1680,31 @@ void DriveIntegrationService::OnNetworkChanged() {
   if (pin_manager_) {
     pin_manager_->SetOnline(is_online_);
   }
+}
+
+// static
+void DriveIntegrationService::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kDisableDrive, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kDisableDriveOverCellular, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(prefs::kDriveFsWasLaunchedAtLeastOnce, false);
+  registry->RegisterStringPref(prefs::kDriveFsProfileSalt, "");
+  registry->RegisterBooleanPref(prefs::kDriveFsPinnedMigrated, false);
+  registry->RegisterBooleanPref(prefs::kDriveFsEnableVerboseLogging, false);
+  // Do not sync prefs::kDriveFsEnableMirrorSync and
+  // prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
+  // and users may wish to turn this off on a per device basis.
+  registry->RegisterBooleanPref(prefs::kDriveFsEnableMirrorSync, false);
+  registry->RegisterStringPref(prefs::kDriveFsMirrorSyncMachineRootId, "");
+  // Do not sync kDriveFsBulkPinningEnabled as this maintains files that are
+  // locally pinned to this device and should not sync the state across multiple
+  // devices.
+  registry->RegisterBooleanPref(prefs::kDriveFsBulkPinningVisible, true);
+  registry->RegisterBooleanPref(prefs::kDriveFsBulkPinningEnabled, false);
 }
 
 void DriveIntegrationService::OnDrivePrefChanged() {

@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
@@ -61,7 +62,6 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
-#include "components/drive/drive_pref_names.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -178,6 +178,7 @@ void Preferences::RegisterProfilePrefs(
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
   crosapi::browser_util::RegisterProfilePrefs(registry);
+  ::drive::DriveIntegrationService::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
   // TODO(yusukes): Remove the runtime hack.
@@ -261,30 +262,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ::prefs::kUse24HourClock, base::GetHourClockType() == base::k24HourClock,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      drive::prefs::kDisableDrive, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      drive::prefs::kDisableDriveOverCellular, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsWasLaunchedAtLeastOnce,
-                                false);
-  registry->RegisterStringPref(drive::prefs::kDriveFsProfileSalt, "");
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsPinnedMigrated, false);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableVerboseLogging,
-                                false);
-  // Do not sync drive::prefs::kDriveFsEnableMirrorSync and
-  // drive::prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
-  // and users may wish to turn this off on a per device basis.
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableMirrorSync, false);
-  registry->RegisterStringPref(drive::prefs::kDriveFsMirrorSyncMachineRootId,
-                               "");
-  // Do not sync kDriveFsBulkPinningEnabled as this maintains files that are
-  // locally pinned to this device and should not sync the state across multiple
-  // devices.
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningVisible, true);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningEnabled,
-                                false);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
@@ -388,7 +365,7 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  disks::prefs::RegisterProfilePrefs(registry);
+  ::disks::prefs::RegisterProfilePrefs(registry);
 
   registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
 

@@ -52,6 +52,10 @@ class DriveFs;
 }  // namespace mojom
 }  // namespace drivefs
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace drive {
 
 namespace internal {
@@ -345,6 +349,9 @@ class DriveIntegrationService : public KeyedService,
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
   void OnNetworkChanged();
+
+  // Register the drive related profile prefs.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* prefs);
 
  private:
   enum class State {
