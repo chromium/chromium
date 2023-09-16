@@ -129,6 +129,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void UpdateWindowDimensionsType() override;
   void CreateItemWidget() override;
   gfx::Point GetMagnifierFocusPointInScreen() const override;
+  const gfx::RoundedCornersF GetRoundedCorners() const override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

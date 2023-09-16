@@ -136,7 +136,6 @@ bool WindowCycleItemView::HandleAccessibleAction(
 
 void WindowCycleItemView::RefreshItemVisuals() {
   header_view()->UpdateIconView(source_window());
-  SetShowPreview(/*show=*/true);
   RefreshHeaderViewRoundedCorners();
   RefreshPreviewRoundedCorners(/*show=*/true);
 }
@@ -149,6 +148,7 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
       std::make_unique<WindowCycleItemView>(snap_group->window1()));
   mini_view2_ = AddChildView(
       std::make_unique<WindowCycleItemView>(snap_group->window2()));
+  SetShowPreview(/*show=*/true);
   RefreshItemVisuals();
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -182,6 +182,14 @@ aura::Window* GroupContainerCycleView::GetWindowAtPoint(
     }
   }
   return nullptr;
+}
+
+void GroupContainerCycleView::SetShowPreview(bool show) {
+  for (auto mini_view : {mini_view1_, mini_view2_}) {
+    if (mini_view) {
+      mini_view->SetShowPreview(show);
+    }
+  }
 }
 
 void GroupContainerCycleView::RefreshItemVisuals() {

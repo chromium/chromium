@@ -51,6 +51,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
@@ -582,8 +583,6 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   // corners for minimized windows, and show rounded corners for non-minimized
   // windows after the continuous scroll has ended.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  const bool is_shutting_down =
-      !overview_controller || !overview_controller->InOverviewSession();
   const bool continuous_scroll_in_progress =
       features::IsContinuousOverviewScrollAnimationEnabled() &&
       Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
@@ -598,13 +597,15 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
         !overview_controller->IsInStartAnimation();
   }
 
+  const bool is_shutting_down =
+      !overview_controller || !overview_controller->InOverviewSession();
   const bool should_show_rounded_corners =
       !is_shutting_down && show_rounded_corners_for_start_animation;
-  if (transform_window_.IsMinimizedOrTucked()) {
-    overview_item_view_->RefreshPreviewRoundedCorners(
-        should_show_rounded_corners);
-  } else {
-    transform_window_.UpdateRoundedCorners(should_show_rounded_corners);
+  if (should_show_rounded_corners) {
+    overview_item_view_->RefreshItemVisuals();
+    if (!transform_window_.IsMinimizedOrTucked()) {
+      transform_window_.UpdateRoundedCorners(should_show_rounded_corners);
+    }
   }
 
   // In addition, the shadow should be hidden if
@@ -1180,11 +1181,29 @@ void OverviewItem::CreateItemWidget() {
       overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
           ? 1.f
           : 0.f);
-  item_widget_->GetLayer()->SetMasksToBounds(false);
+  item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }
 
 gfx::Point OverviewItem::GetMagnifierFocusPointInScreen() const {
   return overview_item_view_->GetMagnifierFocusPointInScreen();
+}
+
+const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
+  if (transform_window_.IsMinimizedOrTucked()) {
+    return overview_item_view_->GetRoundedCorners();
+  }
+
+  aura::Window* window = transform_window_.window();
+  const gfx::RoundedCornersF& header_rounded_corners =
+      overview_item_view_->header_view()->GetHeaderRoundedCorners(window);
+  const auto* layer = window->layer();
+  const gfx::RoundedCornersF& transform_window_rounded_corners =
+      layer->rounded_corner_radii();
+  const float scale = layer->transform().To2dScale().x();
+  return gfx::RoundedCornersF(
+      header_rounded_corners.upper_left(), header_rounded_corners.upper_right(),
+      transform_window_rounded_corners.lower_right() * scale,
+      transform_window_rounded_corners.lower_left() * scale);
 }
 
 void OverviewItem::OnWindowPropertyChanged(aura::Window* window,

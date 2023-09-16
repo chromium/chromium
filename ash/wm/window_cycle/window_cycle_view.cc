@@ -713,6 +713,7 @@ void WindowCycleView::Layout() {
     gfx::RectF bounds(view->GetLocalBounds());
     views::View::ConvertRectToTarget(view, this, &bounds);
     if (bounds.Intersects(local_bounds)) {
+      view->SetShowPreview(/*show=*/true);
       view->RefreshItemVisuals();
       it = no_previews_list_.erase(it);
     } else {

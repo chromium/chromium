@@ -52,9 +52,12 @@ class WindowMiniViewBase : public views::View {
   virtual aura::Window* GetWindowAtPoint(
       const gfx::Point& screen_point) const = 0;
 
-  // Shows the preview and icon. For performance reasons, these are not created
-  // on construction. This should be called at most one time during the lifetime
-  // of `this`.
+  // Creates or deletes preview view as needed. For performance reasons, these
+  // are not created on construction. Note that this may create or destroy a
+  // `WindowPreviewView` which is an expensive operation.
+  virtual void SetShowPreview(bool show) = 0;
+
+  // Refreshes the rounded corners and optionally updates the icon view.
   virtual void RefreshItemVisuals() = 0;
 
   // Try removing the mini view representation of the `destroying_window`.
@@ -98,7 +101,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // to the title.
   static constexpr gfx::Size kIconSize = gfx::Size(24, 24);
 
-  // The corner radius for WindowMiniView. Please notice, instead of setting the
+  // The corner radius for WindowMiniView. Note that instead of setting the
   // corner radius directly on the window mini view, setting the corner radius
   // on its children (header view, preview header). The reasons are:
   // 1. The WindowMiniView might have a non-empty border.
@@ -116,9 +119,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
 
-  // Creates or deletes |preview_view_| as needed.
-  void SetShowPreview(bool show);
-
   // Sets or hides rounded corners on `preview_view_`, if it exists.
   void RefreshPreviewRoundedCorners(bool show);
 
@@ -132,6 +132,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+  void SetShowPreview(bool show) override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
 

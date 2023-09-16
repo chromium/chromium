@@ -68,6 +68,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       const ScopedOverviewTransformWindow&) = delete;
   ~ScopedOverviewTransformWindow() override;
 
+  aura::Window* window() const { return window_; }
+
+  OverviewGridWindowFillMode type() const { return type_; }
+
   // Starts an animation sequence which will use animation settings specified by
   // |animation_type|. The |animation_settings| container is populated with
   // scoped entities and the container should be destroyed at the end of the
@@ -154,10 +158,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  aura::Window* window() const { return window_; }
-
-  OverviewGridWindowFillMode type() const { return type_; }
 
  private:
   friend class OverviewFocusCyclerTest;

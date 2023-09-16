@@ -23,6 +23,7 @@ class Window;
 
 namespace gfx {
 class RectF;
+class RoundedCornersF;
 }  // namespace gfx
 
 namespace ui {
@@ -284,6 +285,8 @@ class OverviewItemBase {
   // Returns the point the accessibility magnifiers should focus when this is
   // focused.
   virtual gfx::Point GetMagnifierFocusPointInScreen() const = 0;
+
+  virtual const gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {
     target_bounds_ = target_bounds;

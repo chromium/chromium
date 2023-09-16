@@ -64,6 +64,7 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+  void SetShowPreview(bool show) override;
   void RefreshItemVisuals() override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;

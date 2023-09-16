@@ -8,8 +8,11 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "base/containers/contains.h"
@@ -94,9 +97,10 @@ OverviewItemView::OverviewItemView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  // Call this last as it calls |Layout()| which relies on the some of the other
+  // Call this last as it calls `Layout()` which relies on the some of the other
   // elements existing.
   SetShowPreview(show_preview);
+
   // Do not show header if the current overview item is the drop target widget.
   if (overview_item_->overview_grid()->IsDropTargetWindow(
           overview_item_->GetWindow())) {
@@ -250,7 +254,30 @@ gfx::Size OverviewItemView::GetPreviewViewSize() const {
   return gfx::ToRoundedSize(target_size);
 }
 
-void OverviewItemView::RefreshItemVisuals() {}
+void OverviewItemView::RefreshItemVisuals() {
+  // Set the rounded corners to accommodate for the customized rounded corners
+  // needed for the overview group item.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    const aura::Window* window = overview_item_->GetWindow();
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      SetRoundedCornersRadius(
+          window == snap_group->window1()
+              ? gfx::RoundedCornersF(
+                    /*upper_left=*/kOverviewItemCornerRadius,
+                    /*upper_right=*/0, /*lower_right=*/0,
+                    /*lower_left=*/kOverviewItemCornerRadius)
+              : gfx::RoundedCornersF(
+                    /*upper_left=*/0,
+                    /*upper_right=*/kOverviewItemCornerRadius,
+                    /*lower_right=*/kOverviewItemCornerRadius,
+                    /*lower_left=*/0));
+    }
+  }
+
+  RefreshHeaderViewRoundedCorners();
+  RefreshPreviewRoundedCorners(/*show=*/true);
+}
 
 views::View* OverviewItemView::GetView() {
   return this;

@@ -908,6 +908,31 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewItemBoundsTest) {
   }
 }
 
+// Tests the rounded corners will be applied to the exposed corners of the
+// overview group item.
+TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemRoundedCorners) {
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 2u);
+  for (const auto& overview_item : window_list) {
+    EXPECT_EQ(overview_item->GetRoundedCorners(),
+              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+}
+
 // Tests that the hit area of the split view divider can be outside of its
 // bounds with the extra insets whose value is `kSplitViewDividerExtraInset`.
 TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {
@@ -1390,7 +1415,7 @@ TEST_F(SnapGroupEntryPointArm1Test, SteppingInWindowCycleView) {
 // Tests that the exposed rounded corners of the cycling items are rounded
 // corners. The visuals will be refreshed on window destruction that belongs to
 // a snap group.
-TEST_F(SnapGroupEntryPointArm1Test, WindowCycleRoundedCorners) {
+TEST_F(SnapGroupEntryPointArm1Test, WindowCycleItemRoundedCorners) {
   std::unique_ptr<aura::Window> window0 =
       CreateAppWindow(gfx::Rect(100, 200), AppType::BROWSER);
   std::unique_ptr<aura::Window> window1 =

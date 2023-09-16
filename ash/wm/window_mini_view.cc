@@ -43,7 +43,7 @@ constexpr int kFocusRingCornerRadius = 20;
 // `scale` for the preview view with given source `window` if allowed to `show`.
 // If the preview view is completely inside the rounded bounds of `backdrop`, no
 // need to round its corners.
-gfx::RoundedCornersF GetRoundedCornerForPreviewView(
+gfx::RoundedCornersF GetRoundedCornersForPreviewView(
     aura::Window* window,
     views::View* backdrop,
     const gfx::Rect& preview_bounds_in_screen,
@@ -162,29 +162,8 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     Layout();
   }
+
   backdrop_view_->SetVisible(visible);
-}
-
-void WindowMiniView::SetShowPreview(bool show) {
-  if (show == !!preview_view_) {
-    return;
-  }
-
-  if (!show) {
-    RemoveChildViewT(preview_view_.get());
-    preview_view_ = nullptr;
-    return;
-  }
-
-  if (!source_window_) {
-    return;
-  }
-
-  preview_view_ =
-      AddChildView(std::make_unique<WindowPreviewView>(source_window_));
-  preview_view_->SetPaintToLayer();
-  preview_view_->layer()->SetFillsBoundsOpaquely(false);
-  Layout();
 }
 
 void WindowMiniView::RefreshPreviewRoundedCorners(bool show) {
@@ -194,11 +173,10 @@ void WindowMiniView::RefreshPreviewRoundedCorners(bool show) {
 
   ui::Layer* layer = preview_view_->layer();
   CHECK(layer);
-  const float scale = layer->transform().To2dScale().x();
 
-  layer->SetRoundedCornerRadius(GetRoundedCornerForPreviewView(
-      source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(), scale,
-      show, preview_view_rounded_corners_));
+  layer->SetRoundedCornerRadius(GetRoundedCornersForPreviewView(
+      source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(),
+      layer->transform().To2dScale().x(), show, preview_view_rounded_corners_));
   layer->SetIsFastRoundedCorner(true);
 }
 
@@ -231,6 +209,28 @@ bool WindowMiniView::Contains(aura::Window* window) const {
 aura::Window* WindowMiniView::GetWindowAtPoint(
     const gfx::Point& screen_point) const {
   return GetBoundsInScreen().Contains(screen_point) ? source_window_ : nullptr;
+}
+
+void WindowMiniView::SetShowPreview(bool show) {
+  if (show == !!preview_view_) {
+    return;
+  }
+
+  if (!show) {
+    RemoveChildViewT(preview_view_.get());
+    preview_view_ = nullptr;
+    return;
+  }
+
+  if (!source_window_) {
+    return;
+  }
+
+  preview_view_ =
+      AddChildView(std::make_unique<WindowPreviewView>(source_window_));
+  preview_view_->SetPaintToLayer();
+  preview_view_->layer()->SetFillsBoundsOpaquely(false);
+  Layout();
 }
 
 int WindowMiniView::TryRemovingChildItem(aura::Window* destroying_window) {

@@ -14,6 +14,7 @@
 #include "ash/wm/window_util.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -163,7 +164,11 @@ views::View* OverviewGroupItem::GetBackDropView() const {
   return overview_group_container_view_;
 }
 
-void OverviewGroupItem::UpdateRoundedCornersAndShadow() {}
+void OverviewGroupItem::UpdateRoundedCornersAndShadow() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->UpdateRoundedCornersAndShadow();
+  }
+}
 
 void OverviewGroupItem::SetShadowBounds(
     absl::optional<gfx::RectF> bounds_in_screen) {}
@@ -244,6 +249,18 @@ gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
   return overview_group_container_view_->GetMagnifierFocusPointInScreen();
 }
 
+const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {
+  // TODO(michelefan): Return a different set of rounded corners for vertical
+  // split screen.
+  const gfx::RoundedCornersF& front_rounded_corners =
+      overview_items_.front()->GetRoundedCorners();
+  const gfx::RoundedCornersF& back_rounded_corners =
+      overview_items_.back()->GetRoundedCorners();
+  return gfx::RoundedCornersF(
+      front_rounded_corners.upper_left(), back_rounded_corners.upper_right(),
+      back_rounded_corners.lower_right(), front_rounded_corners.lower_left());
+}
+
 void OverviewGroupItem::OnOverviewItemWindowDestroying(
     OverviewItem* overview_item,
     bool reposition) {
@@ -275,7 +292,7 @@ void OverviewGroupItem::CreateItemWidget() {
   overview_group_container_view_ = item_widget_->SetContentsView(
       std::make_unique<OverviewGroupContainerView>(this));
   item_widget_->Show();
-  item_widget_->GetLayer()->SetMasksToBounds(false);
+  item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }
 
 }  // namespace ash

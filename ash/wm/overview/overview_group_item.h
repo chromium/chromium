@@ -86,6 +86,7 @@ class OverviewGroupItem : public OverviewItemBase,
   OverviewGridWindowFillMode GetWindowDimensionsType() const override;
   void UpdateWindowDimensionsType() override;
   gfx::Point GetMagnifierFocusPointInScreen() const override;
+  const gfx::RoundedCornersF GetRoundedCorners() const override;
 
   // OverviewItem::WindowDestructionDelegate:
   void OnOverviewItemWindowDestroying(OverviewItem* overview_item,
