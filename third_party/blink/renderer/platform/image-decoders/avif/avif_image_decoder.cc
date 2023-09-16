@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
-#include <cstring>
 #include <memory>
 #include <utility>
 
@@ -1053,7 +1053,7 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   }
 
   if (ret == AVIF_RESULT_OK) {
-    if (IsAllDataReceived() && !update_bpp_histogram_callback_.is_null()) {
+    if (IsAllDataReceived() && update_bpp_histogram_callback_) {
       std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
     }
 
