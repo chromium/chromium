@@ -781,6 +781,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
     if (!DirectoryExists(subpath)) {
       if (error)
         *error = File::OSErrorToFileError(saved_errno);
+      errno = saved_errno;
       return false;
     }
   }
