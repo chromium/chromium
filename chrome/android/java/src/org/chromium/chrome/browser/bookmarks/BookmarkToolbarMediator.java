@@ -66,18 +66,21 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
     private final BookmarkOpener mBookmarkOpener;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
+    private final Runnable mEndSearchRunnable;
 
     // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
 
     private BookmarkId mCurrentFolder;
+    private @BookmarkUiMode int mCurrentUiMode;
 
     BookmarkToolbarMediator(Context context, PropertyModel model,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
             SelectionDelegate selectionDelegate, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, BookmarkUiPrefs bookmarkUiPrefs,
-            BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator) {
+            BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
+            Runnable endSearchRunnable) {
         mContext = context;
         mModel = model;
 
@@ -91,6 +94,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
+        mEndSearchRunnable = endSearchRunnable;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
@@ -104,8 +108,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         }
         bookmarkDelegateSupplier.onAvailable((bookmarkDelegate) -> {
             mBookmarkDelegate = bookmarkDelegate;
-            mModel.set(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE,
-                    this::openParentForCurrentFolder);
+            mModel.set(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE, this::onNavigateBack);
             mBookmarkDelegate.addUiObserver(this);
             mBookmarkDelegate.notifyStateChange(this);
         });
@@ -251,6 +254,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     @Override
     public void onUiModeChanged(@BookmarkUiMode int mode) {
+        mCurrentUiMode = mode;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             // TODO(https://crbug.com/1439583): Update buttons.
         } else {
@@ -267,8 +271,12 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                 && mode == BookmarkUiMode.SEARCHING) {
             mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.BACK);
-            mModel.set(BookmarkToolbarProperties.TITLE,
-                    mContext.getString(R.string.bookmark_toolbar_search_title));
+            if (!mSelectionDelegate.isSelectionEnabled()) {
+                mModel.set(BookmarkToolbarProperties.TITLE,
+                        mContext.getString(R.string.bookmark_toolbar_search_title));
+            }
+            mModel.set(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE, false);
+            mModel.set(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED, false);
         } else {
             // All modes besides LOADING require a folder to be set. If there's none available,
             // then the button visibilities will be updated accordingly. Additionally, it's
@@ -355,10 +363,15 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     @Override
     public void onSelectionStateChange(List<BookmarkItem> selectedItems) {
-        mModel.set(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE, false);
         if (!mSelectionDelegate.isSelectionEnabled()) {
-            onFolderStateSet(mCurrentFolder);
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                onUiModeChanged(mCurrentUiMode);
+            } else {
+                onFolderStateSet(mCurrentFolder);
+            }
         }
+
+        mModel.set(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE, false);
     }
 
     private @IdRes int getMenuIdFromDisplayPref(@BookmarkRowDisplayPref int displayPref) {
@@ -391,7 +404,12 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     // Private methods.
 
-    private void openParentForCurrentFolder() {
+    private void onNavigateBack() {
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && mCurrentUiMode == BookmarkUiMode.SEARCHING) {
+            mEndSearchRunnable.run();
+            return;
+        }
         mBookmarkDelegate.openFolder(
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, mCurrentFolder));
     }

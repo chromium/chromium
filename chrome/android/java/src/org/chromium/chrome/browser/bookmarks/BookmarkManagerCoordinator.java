@@ -152,7 +152,7 @@ public class BookmarkManagerCoordinator
         mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(context, mSelectableListLayout,
                 mSelectionDelegate, /*searchDelegate=*/this, dragReorderableRecyclerViewAdapter,
                 isDialogUi, bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener,
-                mBookmarkUiPrefs, mModalDialogManager);
+                mBookmarkUiPrefs, mModalDialogManager, this::onEndSearch);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
