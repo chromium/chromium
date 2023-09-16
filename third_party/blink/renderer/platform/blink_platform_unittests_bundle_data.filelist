@@ -218,6 +218,7 @@
 ../../web_tests/images/resources/bad.ico
 ../../web_tests/images/resources/base-test-resources/success.png
 ../../web_tests/images/resources/bee.jpg
+../../web_tests/images/resources/bee.webp
 ../../web_tests/images/resources/blue-10.png
 ../../web_tests/images/resources/blue-100.png
 ../../web_tests/images/resources/blue-wheel-srgb-color-profile.jpg
@@ -324,9 +325,13 @@
 ../../web_tests/images/resources/palatted-color-png-gamma-one-color-profile.png
 ../../web_tests/images/resources/pdf_test_landscape.pdf
 ../../web_tests/images/resources/peach.jpg
+../../web_tests/images/resources/peach.webp
 ../../web_tests/images/resources/peach_13000000.jpg
+../../web_tests/images/resources/peach_13000000.webp
 ../../web_tests/images/resources/peach_13000002.jpg
+../../web_tests/images/resources/peach_13000002.webp
 ../../web_tests/images/resources/peach_900000.jpg
+../../web_tests/images/resources/peach_900000.webp
 ../../web_tests/images/resources/pixel-crack-image-background-webkit-transform-scale.png
 ../../web_tests/images/resources/pixelated-hdpi.png
 ../../web_tests/images/resources/png-16bit/2x2_16bit_AdobeRGB_opaque.png
@@ -385,6 +390,8 @@
 ../../web_tests/images/resources/red-at-12-oclock-with-color-profile.jpg
 ../../web_tests/images/resources/red-at-12-oclock-with-color-profile.png
 ../../web_tests/images/resources/red-half-stripe.png
+../../web_tests/images/resources/red3x3-lossless.webp
+../../web_tests/images/resources/red3x3-lossy.webp
 ../../web_tests/images/resources/rgb-jpeg-blue.jpg
 ../../web_tests/images/resources/rgb-jpeg-green.jpg
 ../../web_tests/images/resources/rgb-jpeg-red.jpg

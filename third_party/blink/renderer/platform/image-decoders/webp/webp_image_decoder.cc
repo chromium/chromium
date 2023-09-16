@@ -6,7 +6,10 @@
 
 #include <string.h>
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -122,7 +125,7 @@ void UpdateWebPFileFormatUMA(const sk_sp<SkData>& blob) {
     return;
   }
 
-  WebPBitstreamFeatures features{};
+  WebPBitstreamFeatures features;
   if (WebPGetFeatures(blob->bytes(), blob->size(), &features) !=
       VP8_STATUS_OK) {
     return;
@@ -162,6 +165,7 @@ WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
                    max_decoded_bytes),
       decoder_(nullptr),
       format_flags_(0),
+      is_lossy_not_animated_no_alpha_(false),
       frame_background_has_alpha_(false),
       demux_(nullptr),
       demux_state_(WEBP_DEMUX_PARSING_HEADER),
@@ -219,20 +223,12 @@ WEBP_CSP_MODE WEBPImageDecoder::RGBOutputMode() {
 #endif
 }
 
-bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
-  if (!consolidated_data_) {
-    return false;
-  }
+bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() const {
   // Should have been updated with a recent call to UpdateDemuxer().
-  WebPBitstreamFeatures features;
-  if ((demux_state_ == WEBP_DEMUX_PARSED_HEADER ||
-       demux_state_ == WEBP_DEMUX_DONE) &&
-      WebPGetFeatures(consolidated_data_->bytes(), consolidated_data_->size(),
-                      &features) == VP8_STATUS_OK) {
-    bool is_animated = !!(format_flags_ & ANIMATION_FLAG);
-    constexpr int kLossyFormat = ImageDecoder::CompressionFormat::kLossyFormat;
+  if (demux_state_ >= WEBP_DEMUX_PARSED_HEADER &&
+      WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT)) {
     // TODO(crbug/910276): Change after alpha support.
-    if (features.format != kLossyFormat || features.has_alpha || is_animated) {
+    if (!is_lossy_not_animated_no_alpha_) {
       return false;
     }
 
@@ -261,7 +257,7 @@ int WEBPImageDecoder::RepetitionCount() const {
 }
 
 bool WEBPImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
-  if (!demux_ || demux_state_ <= WEBP_DEMUX_PARSING_HEADER) {
+  if (!demux_ || demux_state_ < WEBP_DEMUX_PARSED_HEADER) {
     return false;
   }
   if (!(format_flags_ & ANIMATION_FLAG)) {
@@ -341,7 +337,7 @@ bool WEBPImageDecoder::UpdateDemuxer() {
     return truncated_file ? SetFailed() : false;
   }
 
-  DCHECK_GT(demux_state_, WEBP_DEMUX_PARSING_HEADER);
+  DCHECK_GE(demux_state_, WEBP_DEMUX_PARSED_HEADER);
   if (!WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT)) {
     return false;  // Wait until the encoded image frame data arrives.
   }
@@ -376,6 +372,21 @@ bool WEBPImageDecoder::UpdateDemuxer() {
 
     if ((format_flags_ & ICCP_FLAG) && !IgnoresColorSpace()) {
       ReadColorProfile();
+    }
+
+    // Record bpp information only for lossy still images that do not have
+    // alpha.
+    if (!(format_flags_ & (ANIMATION_FLAG | ALPHA_FLAG))) {
+      WebPBitstreamFeatures features;
+      CHECK_EQ(WebPGetFeatures(consolidated_data_->bytes(),
+                               consolidated_data_->size(), &features),
+               VP8_STATUS_OK);
+      if (features.format == CompressionFormat::kLossyFormat) {
+        is_lossy_not_animated_no_alpha_ = true;
+        static constexpr char kType[] = "WebP";
+        update_bpp_histogram_callback_ =
+            base::BindOnce(&UpdateBppHistogram<kType>);
+      }
     }
   }
 
@@ -746,6 +757,9 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // supports multiplanar formats.
   ClearDecoder();
   image_planes->SetHasCompleteScan();
+  if (IsAllDataReceived() && update_bpp_histogram_callback_) {
+    std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+  }
   return true;
 }
 
@@ -801,6 +815,9 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
                          frame_background_has_alpha_);
       buffer.SetStatus(ImageFrame::kFrameComplete);
       ClearDecoder();
+      if (IsAllDataReceived() && update_bpp_histogram_callback_) {
+        std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+      }
       return true;
     case VP8_STATUS_SUSPENDED:
       if (!IsAllDataReceived() && !FrameIsReceivedAtIndex(frame_index)) {
