@@ -1213,12 +1213,6 @@
       base_feature: "none",
     },
     {
-      // Explainer: https://github.com/DevSDK/css-trigonometric-functions
-      name: "CSSTrigonometricFunctions",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSUpdateMediaFeature",
       status: "stable",
     },

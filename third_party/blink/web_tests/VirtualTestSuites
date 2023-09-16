@@ -875,22 +875,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "css-trigonometric-functions-disabled",
-    "owners": ["seokho@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-values/sin-cos-tan-serialize.html",
-      "external/wpt/css/css-values/sin-cos-tan-computed.html",
-      "external/wpt/css/css-values/sin-cos-tan-invalid.html",
-      "external/wpt/css/css-values/acos-asin-atan-atan2-serialize.html",
-      "external/wpt/css/css-values/acos-asin-atan-atan2-computed.html",
-      "external/wpt/css/css-values/acos-asin-atan-atan2-invalid.html"
-    ],
-    "args": ["--disable-blink-features=CSSTrigonometricFunctions",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "css-text-autospace",
     "owners": [
       "kojii@chromium.org",
