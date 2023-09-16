@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/overflow_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 ToolbarController::ToolbarController(
     std::vector<ui::ElementIdentifier> element_ids,
     int element_flex_order_start,
-    views::View* toolbar_container_view)
+    views::View* toolbar_container_view,
+    views::View* overflow_button)
     : element_ids_(element_ids),
       element_flex_order_start_(element_flex_order_start),
-      toolbar_container_view_(toolbar_container_view) {
-  for (ui::ElementIdentifier id : element_ids_) {
+      toolbar_container_view_(toolbar_container_view),
+      overflow_button_(overflow_button) {
+  for (ui::ElementIdentifier id : element_ids) {
     views::View* toolbar_element = FindToolbarElementWithId(id);
     if (!toolbar_element) {
       continue;
@@ -32,6 +36,25 @@ ToolbarController::ToolbarController(
                     ->WithOrder(element_flex_order_start++);
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
   }
+
+  UpdateOverflowButtonVisibility();
+}
+
+void ToolbarController::UpdateOverflowButtonVisibility() {
+  // Once at least one button has been dropped by layout manager show overflow
+  // button.
+  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
+      toolbar_container_view_->GetLayoutManager());
+  bool show_button = false;
+  for (ui::ElementIdentifier id : element_ids_) {
+    const views::View* toolbar_element = FindToolbarElementWithId(id);
+    if (flex_layout->CanBeVisible(toolbar_element) &&
+        !toolbar_element->GetVisible()) {
+      show_button = true;
+      break;
+    }
+  }
+  overflow_button_->SetVisible(show_button);
 }
 
 const views::View* ToolbarController::FindToolbarElementWithId(

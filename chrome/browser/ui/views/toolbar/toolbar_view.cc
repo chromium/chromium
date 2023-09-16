@@ -469,6 +469,12 @@ void ToolbarView::Init() {
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
 
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    overflow_button_ =
+        container_view_->AddChildView(std::make_unique<OverflowButton>());
+    overflow_button_->SetVisible(false);
+  }
+
   auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
   app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
   app_menu_button->SetAccessibleName(
@@ -779,6 +785,10 @@ void ToolbarView::Layout() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    toolbar_controller_->UpdateOverflowButtonVisibility();
+  }
+
   // Call super implementation to ensure layout manager and child layouts
   // happen.
   AccessiblePaneView::Layout();
@@ -904,7 +914,7 @@ void ToolbarView::InitLayout() {
             kToolbarExtensionsContainerElementId,
             kToolbarSidePanelContainerElementId, kToolbarHomeButtonElementId,
             kToolbarChromeLabsButtonElementId},
-        kToolbarFlexOrderStart, container_view_);
+        kToolbarFlexOrderStart, container_view_, overflow_button_);
   }
 
   LayoutCommon();

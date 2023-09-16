@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "components/prefs/pref_member.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -325,6 +326,11 @@ class ToolbarView : public views::AccessiblePaneView,
   // background_view_left_ and background_view_right_.
   // the future.
   raw_ptr<ContainerView> container_view_ = nullptr;
+
+  // A chevron button that indicates some toolbar elements have overflowed
+  // due to small toolbar view width. Visibility controlled by
+  // `toolbar_controller_`.
+  raw_ptr<OverflowButton> overflow_button_ = nullptr;
 
   // There are two situations where background_view_left_ and
   // background_view_right_ need be repainted: window active state change and
