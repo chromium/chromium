@@ -14,6 +14,8 @@
 #include "components/permissions/permission_hats_trigger_helper.h"  // nogncheck
 #include "components/safe_browsing/core/common/features.h"          // nogncheck
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
+#else
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -95,6 +97,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
     "ts-v2-ps4-notice-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
     "ts-v2-safe-browsing-interstitial";
+#else   // BUILDFLAG(IS_ANDROID)
+constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
@@ -415,6 +419,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           safe_browsing::kFlaggedUrl, safe_browsing::kMainFrameUrl,
           safe_browsing::kReferrerUrl, safe_browsing::kUserActivityWithUrls});
+
+#else
+  survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
+                              kHatsSurveyTriggerAndroidStartupSurvey);
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

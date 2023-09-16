@@ -31,9 +31,14 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate;
+import org.chromium.chrome.browser.ui.hats.SurveyClient;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
+import org.chromium.chrome.browser.ui.hats.SurveyConfig;
 import org.chromium.chrome.browser.ui.hats.SurveyController;
 import org.chromium.chrome.browser.ui.hats.SurveyControllerProvider;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler;
+import org.chromium.chrome.browser.ui.hats.SurveyUiDelegate;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -50,6 +55,7 @@ import org.chromium.url.GURL;
  */
 public class ChromeSurveyController {
     private static final String TAG = "ChromeSurveyCtrler";
+    private static final String TRIGGER_STARTUP_SURVEY = "startup_survey";
     @VisibleForTesting
     public static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
     @VisibleForTesting
@@ -101,6 +107,17 @@ public class ChromeSurveyController {
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher, Activity activity,
             MessageDispatcher messageDispatcher) {
         assert tabModelSelector != null;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HATS_REFACTOR)) {
+            PropertyModel message = createBasicSurveyMessage(activity.getResources());
+            SurveyUiDelegate messageDelegate = new MessageSurveyUiDelegate(message,
+                    messageDispatcher, tabModelSelector, ChromeSurveyController::isUMAEnabled);
+            SurveyClient client = SurveyClientFactory.getInstance().createClient(
+                    SurveyConfig.get(TRIGGER_STARTUP_SURVEY), messageDelegate);
+            client.showSurvey(activity, lifecycleDispatcher);
+            return;
+        }
+
         if (!isSurveyEnabled() || TextUtils.isEmpty(getTriggerId())) return;
         new StartDownloadIfEligibleTask(new ChromeSurveyController(getTriggerId(),
                                                 lifecycleDispatcher, activity, messageDispatcher),
@@ -196,26 +213,12 @@ public class ChromeSurveyController {
         if (mSurveyController.isSurveyExpired(siteId)) {
             return;
         }
-        Resources resources = mActivity.getResources();
-
-        PropertyModel message =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.CHROME_SURVEY)
-                        .with(MessageBannerProperties.TITLE,
-                                resources.getString(R.string.chrome_survey_message_title))
-                        .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.chrome_sync_logo)
-                        .with(MessageBannerProperties.ICON_TINT_COLOR,
-                                MessageBannerProperties.TINT_NONE)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                resources.getString(R.string.chrome_survey_message_button))
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    showSurvey(siteId);
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
-                        .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
-                        .build();
+        PropertyModel message = createBasicSurveyMessage(mActivity.getResources());
+        message.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
+            showSurvey(siteId);
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+        });
+        message.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
 
         // Dismiss the message when the original tab in which the message is shown is
         // hidden. This prevents the prompt from being shown if the tab is opened after being
@@ -259,6 +262,22 @@ public class ChromeSurveyController {
     private void showSurvey(String siteId) {
         mSurveyController.showSurveyIfAvailable(
                 mActivity, siteId, R.drawable.chrome_sync_logo, mLifecycleDispatcher, null);
+    }
+
+    private static PropertyModel createBasicSurveyMessage(Resources resources) {
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.CHROME_SURVEY)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.chrome_survey_message_title))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.chrome_sync_logo)
+                        .with(MessageBannerProperties.ICON_TINT_COLOR,
+                                MessageBannerProperties.TINT_NONE)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.chrome_survey_message_button))
+                        .build();
+        return message;
     }
 
     /**

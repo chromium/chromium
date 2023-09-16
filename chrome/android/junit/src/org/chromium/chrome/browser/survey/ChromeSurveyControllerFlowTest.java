@@ -632,6 +632,7 @@ public class ChromeSurveyControllerFlowTest {
                         featureName, param.getKey(), param.getValue());
             }
         }
+        testValues.addFeatureFlagOverride(ChromeFeatureList.ANDROID_HATS_REFACTOR, false);
         FeatureList.setTestValues(testValues);
     }
 

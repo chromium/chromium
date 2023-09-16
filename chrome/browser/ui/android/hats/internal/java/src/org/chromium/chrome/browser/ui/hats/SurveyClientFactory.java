@@ -15,10 +15,11 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
  */
 public class SurveyClientFactory {
     private static SurveyClientFactory sInstance;
+    private static boolean sHasInstanceForTesting;
 
     private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
 
-    private SurveyClientFactory(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
+    protected SurveyClientFactory(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier != null
                 ? crashUploadPermissionSupplier
                 : new ObservableSupplierImpl<>();
@@ -29,9 +30,24 @@ public class SurveyClientFactory {
      * @param crashUploadPermissionSupplier Supplier for UMA upload permission.
      */
     public static void initialize(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
+        if (sHasInstanceForTesting) return;
+
         assert sInstance == null : "Instance is already #initialized.";
         sInstance = new SurveyClientFactory(crashUploadPermissionSupplier);
         ResettersForTesting.register(() -> sInstance = null);
+    }
+
+    /**
+     * Set a stubbed factory for testing.
+     */
+    public static void setInstanceForTesting(SurveyClientFactory testFactory) {
+        var origin = sInstance;
+        sInstance = testFactory;
+        sHasInstanceForTesting = true;
+        ResettersForTesting.register(() -> {
+            sInstance = origin;
+            sHasInstanceForTesting = false;
+        });
     }
 
     /**
