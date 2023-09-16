@@ -56,7 +56,7 @@
 <translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu "Sartu" tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="1101672080107056897">Errore-ekintza</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
-<translation id="1104409666019087579">Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.</translation>
+<translation id="1104409666019087579">Nahitaezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.</translation>
 <translation id="1104860668737945357">Pasahitzak kudeatzeko botoia: aktiba ezazu pasahitzak ikusi eta kudeatzeko Chrome-ren ezarpenetan</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Hautatu honetarako baimena: <ph name="PERMISSION_NAME" /></translation>
@@ -440,7 +440,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="186539747722034544">Kable eta satelite bidezko hornitzaileak</translation>
 <translation id="1870473978371099486">Klase pribatuak</translation>
 <translation id="1871208020102129563">Proxy-zerbitzari finkoak erabiltzeko konfiguratu da proxya, ez .pac scripteko URLak erabiltzeko.</translation>
-<translation id="1871284979644508959">Derrigorrezko eremua</translation>
+<translation id="1871284979644508959">Nahitaezko eremua</translation>
 <translation id="1871739799120352748">Prezioa altua da</translation>
 <translation id="1873899211667975540">Rock musika</translation>
 <translation id="1874224422119691492">Pantailaren blokeoa pasahitzen eremuak betetzeko erabiltzen den ala ez aldatzeko, joan <ph name="SETTINGS" /> atalera</translation>
@@ -2744,7 +2744,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6799145206637008376">Bete txartel birtual honen CVCa</translation>
 <translation id="6805030849054648206">B6/C4 gutun-azala</translation>
 <translation id="6807791860691150411">Hezkuntza</translation>
-<translation id="681021252041861472">Derrigorrezko eremua</translation>
+<translation id="681021252041861472">Nahitaezko eremua</translation>
 <translation id="6810899417690483278">Pertsonalizazio IDa</translation>
 <translation id="6816109178681043245">Kirol-salgaiak</translation>
 <translation id="6817217109584391709">JavaScript</translation>
@@ -3251,7 +3251,7 @@ Xehetasun gehiago:
 <translation id="7779418012194492374">Kendu <ph name="DEVICE_NAME" /> gailurako sarbidea</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7785790577395078482">tableta hau</translation>
-<translation id="7786368602962652765">Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.</translation>
+<translation id="7786368602962652765">Nahitaezko eremu bat hutsik dago. Bete ezazu gorde aurretik.</translation>
 <translation id="7786912885126430740">CVCak gordetzen badituzu, ordainketa-prozesua bizkorragoa izango da</translation>
 <translation id="7790488044432570133">Iragarkien errendimendua neurtzen laguntzen dien informazioa eska diezaiokete bisitatzen dituzun webguneek Chrome-ri. Chrome-k datu mota jakin batzuk soilik biltzea ahalbidetzen die webguneei; adibidez, zer ordutan erakutsi dizuten iragarki bat.</translation>
 <translation id="7791011319128895129">Kaleratzeke</translation>

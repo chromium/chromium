@@ -715,7 +715,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5232485538978018676">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
-<translation id="5271265092610673171">{count,plural, =1{Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{Nahitaezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Nahitaezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>
 <translation id="5283494734135414249">Sakatu helbide-barraren azpiko lasterbidea.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> kontua kendu nahi duzu?</translation>
