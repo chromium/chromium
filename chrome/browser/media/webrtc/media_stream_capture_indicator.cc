@@ -344,9 +344,15 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
 
   if (type == MediaType::kUserMedia) {
     user_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
-  } else if (type == MediaType::kDisplayMedia) {
-    display_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
   }
+
+  // TODO(crbug.com/1479984): Don't turn on this until related bugs are fixed.
+  // This may record the same stop_callback twice and lead to a crash if
+  // called later on.
+  // if (type == MediaType::kDisplayMedia) {
+  //     display_media_stop_callbacks_[stop_callback_id] =
+  //     std::move(stop_callback);
+  //   }
 
   if (web_contents()) {
     web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);

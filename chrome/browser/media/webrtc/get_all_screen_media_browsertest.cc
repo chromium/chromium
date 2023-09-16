@@ -310,9 +310,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(false, AreAllTracksLive(method2_));
 }
 
+// TODO(crbug.com/1479984): re-enable once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
+    DISABLED_UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
 
   ASSERT_EQ(nullptr, Run(method1_));
