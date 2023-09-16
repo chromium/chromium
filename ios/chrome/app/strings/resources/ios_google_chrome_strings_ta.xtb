@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1105362920864247682">Chromeமில் உலாவிய தரவை அழிக்கும்.</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> கணக்கின் Google கடவுச்சொல் நிர்வாகியில் உங்கள் கடவுச்சொல் சேமிக்கப்படும்.</translation>
 <translation id="1180362651362502943">உங்கள் Google கணக்கில் தொடர்ந்து Chrome தரவைப் பயன்படுத்தவும்.</translation>
 <translation id="1282031177488366470">Chromeமின் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுக</translation>
@@ -28,7 +29,6 @@
 <translation id="1675955119303651351">உங்களின் சில Chrome தரவு உங்கள் Google கணக்கில் இன்னமும் சேமிக்கப்படவில்லை.
         வெளியேறுவதற்கு முன் சில நிமிடங்கள் காத்திருக்கவும். இப்போதே வெளியேறினால் இந்தத் தரவு நீக்கப்படும்.</translation>
 <translation id="1682483655351012182">Chrome தரவை ஒத்திசை</translation>
-<translation id="1733654336159102143">Chromeமில் இருந்து வெளியேறும்போதோ வேறொரு ஆப்ஸிற்கு மாறும்போதோ மறைநிலைப் பக்கங்களைப் பூட்டலாம்.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">மெசேஜ்கள், ஆவணங்கள் அல்லது பிற ஆப்ஸில் உள்ள இணைப்புகளைக் கிளிக் செய்யும்போது Chromeமைத் தானாகவே பயன்படுத்தலாம்.</translation>
 <translation id="1917964099031477364">இந்தக் கணக்கும் சேமிக்கப்படாத தரவு இருந்தால் அதுவும் Chromeமில் இருந்தும் இந்தச் சாதனத்தில் உள்ள பிற Google ஆப்ஸில் இருந்தும் அகற்றப்படும்.</translation>
@@ -56,6 +56,7 @@
 <translation id="2736805085127235148">உங்கள் சாதன அமைப்புகளில் Chrome அறிவிப்புகள் தற்போது முடக்கப்பட்டுள்ளன.</translation>
 <translation id="2767464022270041271">சேமித்த கடவுச்சொற்கள் எதுவுமில்லை. நீங்கள் கடவுச்சொற்களைச் சேமிக்கும்போது Google Password Managerரால் அவற்றைச் சரிபார்க்க முடியும்.</translation>
 <translation id="2840432500933227975">iOSஸில் Chrome அமைப்புகளைத் திறந்து "உலாவியின் இயல்பான ஆப்ஸ்" என்பதைத் தட்டி Chrome என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
+<translation id="2868822340714096138">Chromeமில் உலாவிய தரவை அழி</translation>
 <translation id="2869959624320573933">Chromeமில் உள்நுழைக</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome உங்கள் தரவை எப்படித் தனிப்பட்டதாக வைத்திருக்கிறது<ph name="END_LINK" /> என்பது குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> உலாவியைத் தேர்ந்தெடுக்கவும்</translation>

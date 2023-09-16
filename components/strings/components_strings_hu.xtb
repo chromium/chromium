@@ -685,6 +685,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2366689192918515749">Hús és tengeri ételek</translation>
 <translation id="2367567093518048410">Szint</translation>
 <translation id="23703388716193220">Golffelszerelés</translation>
+<translation id="2374629208601905275">A Chrome a régiójában hatályos jogszabályok alapján arra kéri Önt, hogy válassza ki az alapértelmezett keresőmotort. Ezek a keresőmotorok népszerűek az Ön régiójában, és véletlenszerű sorrendben jelennek meg.</translation>
 <translation id="2378084239755710604">Kártya mentése bezárva.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Személyre szabhatja a kisegítő lehetőségeket a Chrome beállításaiban.</translation>
@@ -900,6 +901,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2879694782644540289">a képernyőzárat használni jelszavak kitöltéséhez</translation>
 <translation id="2881276955470682203">Menti a kártyát?</translation>
 <translation id="2882949212241984732">Oltárhajtás</translation>
+<translation id="2891963978019740012">Az Ön keresőmotorja a Chrome-ban</translation>
 <translation id="2893773853358652045">4. tekercs</translation>
 <translation id="2900528713135656174">Esemény létrehozása</translation>
 <translation id="2902312830803030883">További műveletek</translation>
@@ -1161,6 +1163,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3427342743765426898">&amp;Szerkesztés újra</translation>
 <translation id="342781501876943858">A Chromium azt javasolja, hogy adjon meg új jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
 <translation id="3428151540071562330">A DnsOverHttpsTemplates szerversablon-URI-k közül legalább egy érvénytelen, és nem használható.</translation>
+<translation id="3429817405364886479">A keresőmotor megerősítése</translation>
 <translation id="3431216045099978607">Nyomja meg a(z) |<ph name="ACCELERATOR" />| gombot a teljes képernyős nézetből való kilépéshez és a letöltés megjelenítéséhez.</translation>
 <translation id="3432601291244612633">Oldal bezárása</translation>
 <translation id="3433111389595862568">Együttműködési és konferenciaszoftverek</translation>
@@ -1913,6 +1916,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4957080528849277028">Chrome-előzmények megtekintése gomb. A gombot megnyomva megtekintheti és kezelheti a böngészési előzményeket a Chrome beállításaiban.</translation>
 <translation id="4958444002117714549">Lista részletes nézete</translation>
 <translation id="4960068118612257147">Módosításokat a Chrome hirdetésekhez kapcsolódó adatvédelmi beállításaiban végezhet</translation>
+<translation id="4960203958361543136">A keresőmotor kiválasztása</translation>
 <translation id="4964505745997821360">Egészségbiztosítás</translation>
 <translation id="4968522289500246572">Ez az alkalmazás mobileszközökre készült, átméretezése nem feltétlenül működik megfelelően. Az alkalmazásnál problémák merülhetnek fel, esetleges újraindítása szükséges.</translation>
 <translation id="4968665849807487749">Engedélyt kérhet ablakok kezelésére az összes képernyőn</translation>
@@ -2095,6 +2099,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5323043727018853753">Beágyazott tartalmak engedélyezve</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> elemből a következő pozícióban: <ph name="MATCH_POSITION" />.</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
+<translation id="5331585574693522196">Beállítás alapértelmezettként</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
 <translation id="5332769172018416402">Kérés üzenetben</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
@@ -2535,6 +2540,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6287197303017372967">A navigációs funkció használatával részletes útvonaltervet kaphat úti céljához.</translation>
 <translation id="628877850550444614">Kedvezményt találtunk</translation>
 <translation id="6289939620939689042">Oldalszín</translation>
+<translation id="6292819926564202163">Az Ön keresőmotorja a Chrome-ban</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Mentés…</translation>
@@ -2770,6 +2776,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6770747695101757579">Papír (karton)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Üzleti hitelezés</translation>
+<translation id="6785990323398321538">Keresőmotorját bármikor módosíthatja a Chrome beállításai között</translation>
 <translation id="6786145470008421571">6 × 9 hüvelykes boríték</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
 <translation id="6786747875388722282">Bővítmények</translation>
@@ -2841,6 +2848,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6917795328362592458">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6925267999184670015">„Észak-amerikai B+” méret</translation>
 <translation id="692638818576287323">Haszonjárművek</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és támogatja a Chrome-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="6934672428414710184">Ez a név a Google-fiókjából származik</translation>
 <translation id="6935082727755903526">Könyvviteli és pénzügyi állások</translation>
 <translation id="6936976777388162184">Csomag részét képező eszköz, ezért nem regisztrálható a Kiosk és a Signage Upgrade szolgáltatásra.</translation>
@@ -3228,6 +3236,7 @@ További részletek:
 <translation id="765676359832457558">Speciális beállítások elrejtése...</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659327900411729175">Kaku 8 boríték</translation>
+<translation id="7659880963341457291">A keresőmotor megerősítése</translation>
 <translation id="766014026101194726">{0,plural, =1{A fájl feltöltését rendszergazdai házirend tiltja}other{# fájl letöltését rendszergazdai házirend tiltja}}</translation>
 <translation id="7662298039739062396">A beállítást bővítmény vezérli</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> tanúsítvány</translation>
@@ -3299,6 +3308,7 @@ További részletek:
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7785790577395078482">ennek a táblagépnek</translation>
 <translation id="7786368602962652765">Egy kötelező mező üres. A mentés előtt töltse ki.</translation>
+<translation id="7786432318297177736">Ezek a keresőmotorok véletlenszerű sorrendben jelennek meg. Az alapértelmezett beállítást bármikor módosíthatja a beállításokban.</translation>
 <translation id="7786912885126430740">Fizessen gyorsabban mentett CVC-kódokkal</translation>
 <translation id="7790488044432570133">Az Ön által felkeresett webhelyek olyan információkat kérhetnek a Chrome-tól, amelyek segítségével mérhetik a hirdetések teljesítményét. A Chrome lehetővé teszi a webhelyek számára, hogy korlátozott adattípusokat gyűjtsenek (például hogy milyen napszakban jelent meg Önnek a hirdetés).</translation>
 <translation id="7791011319128895129">Kiadatlan</translation>

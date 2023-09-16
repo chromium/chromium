@@ -685,6 +685,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2366689192918515749">Carne e marisco</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="23703388716193220">Equipamento de golfe</translation>
+<translation id="2374629208601905275">Com base numa lei na sua região, o Chrome pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados por ordem aleatória.</translation>
 <translation id="2378084239755710604">Cartão para guardar fechado.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalize as ferramentas de acessibilidade nas definições do Chrome</translation>
@@ -900,6 +901,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2879694782644540289">usar o bloqueio de ecrã para preencher palavras-passe</translation>
 <translation id="2881276955470682203">Guardar o cartão?</translation>
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
+<translation id="2891963978019740012">O seu motor de pesquisa no Chrome</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2902312830803030883">Mais ações</translation>
@@ -1163,6 +1165,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3427342743765426898">&amp;Refazer edição</translation>
 <translation id="342781501876943858">O Chromium recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
+<translation id="3429817405364886479">Confirme o seu motor de pesquisa</translation>
 <translation id="3431216045099978607">Prima |<ph name="ACCELERATOR" />| para sair do modo de ecrã inteiro e ver a transferência.</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software de colaboração e videoconferência</translation>
@@ -1915,6 +1918,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4957080528849277028">Botão Ver o Histórico do Chrome; ative para ver e gerir o histórico de navegação nas definições do Chrome</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4960068118612257147">Pode fazer alterações nas definições de privacidade dos anúncios do Chrome</translation>
+<translation id="4960203958361543136">Escolha o seu motor de pesquisa</translation>
 <translation id="4964505745997821360">Seguro de saúde</translation>
 <translation id="4968522289500246572">Esta app foi concebida para dispositivos móveis e pode não ser redimensionada corretamente. A app pode ter problemas ou reiniciar.</translation>
 <translation id="4968665849807487749">Pode pedir para gerir janelas em todos os seus ecrãs</translation>
@@ -2097,6 +2101,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5323043727018853753">Conteúdo incorporado permitido</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
+<translation id="5331585574693522196">Definir como predefinição</translation>
 <translation id="5332219387342487447">Método de envio</translation>
 <translation id="5332769172018416402">Pedir numa mensagem</translation>
 <translation id="5334013548165032829">Registos de sistema detalhados</translation>
@@ -2537,6 +2542,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6287197303017372967">Obtenha direções para o seu destino com as orientações curva a curva da funcionalidade de navegação.</translation>
 <translation id="628877850550444614">Desconto encontrado</translation>
 <translation id="6289939620939689042">Cor da página</translation>
+<translation id="6292819926564202163">O seu motor de pesquisa no Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Código de segurança:</translation>
 <translation id="6295855836753816081">A guardar...</translation>
@@ -2772,6 +2778,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6770747695101757579">Papel (algodão)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Empréstimos comerciais</translation>
+<translation id="6785990323398321538">Pode alterar o motor de pesquisa em qualquer altura nas definições do Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 pol.</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -2843,6 +2850,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6917795328362592458">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe recomenda que verifique as suas palavras-passe guardadas.</translation>
 <translation id="6925267999184670015">B+ norte-americano</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
 <translation id="6935082727755903526">Empregos na área de contabilidade e finanças</translation>
 <translation id="6936976777388162184">Este é um dispositivo integrado e não é possível inscrevê-lo com uma atualização de quiosque e sinalização.</translation>
@@ -3229,6 +3237,7 @@ Detalhes adicionais:
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
+<translation id="7659880963341457291">Confirme o seu motor de pesquisa</translation>
 <translation id="766014026101194726">{0,plural, =1{O carregamento deste ficheiro foi bloqueado pela política do administrador}other{O carregamento de # ficheiros foi bloqueado pela política do administrador}}</translation>
 <translation id="7662298039739062396">Definição controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3300,6 +3309,7 @@ Detalhes adicionais:
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7785790577395078482">este tablet</translation>
 <translation id="7786368602962652765">Um campo obrigatório está vazio. Preencha-o antes de guardar.</translation>
+<translation id="7786432318297177736">Estes motores de pesquisa são apresentados por ordem aleatória. Pode alterar a predefinição em qualquer altura nas definições.</translation>
 <translation id="7786912885126430740">Pague mais rapidamente quando os seus Códigos de Segurança/CVCs forem guardados</translation>
 <translation id="7790488044432570133">Os sites que visitar podem pedir informações ao Chrome para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, como a hora do dia em que um anúncio lhe foi apresentado.</translation>
 <translation id="7791011319128895129">Não lançada</translation>

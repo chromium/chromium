@@ -3255,7 +3255,6 @@
 <translation id="3582057310199111521">প্ৰৱঞ্চনামূলক ছাইটত দিয়া হৈছিল আৰু ডেটা উলংঘনত পোৱা গৈছিল</translation>
 <translation id="3582299299336701326">পাতল স্ক্ৰীন গাঢ় কৰক আৰু গাঢ় স্ক্ৰীন পাতল কৰক। ৰঙৰ বিপৰীতকৰণ সুবিধাটো অন আৰু অফ কৰিবলৈ Search + Ctrl + H টিপক।</translation>
 <translation id="3584169441612580296">আপোনাৰ কম্পিউটাৰৰ ফট’, সংগীত আৰু অন্য মিডিয়া পঢ়ক তথা সলনি কৰক</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" />ৰ বাবে আপোনাৰ যাত্ৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="3586806079541226322">এই ফাইলটো খুলিব নোৱাৰি</translation>
 <translation id="3586931643579894722">সবিশেষ লুকুৱাওক</translation>
 <translation id="3587438013689771191">ইয়াৰ বিষয়ে অধিক জানক: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4198,6 +4197,7 @@
 <translation id="4332976768901252016">অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ছেট আপ কৰক</translation>
 <translation id="4333854382783149454">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-1</translation>
 <translation id="4334768748331667190">আপুনি <ph name="MODULE_NAME" /> পুনৰ দেখা নাপায়</translation>
+<translation id="4335835283689002019">সুৰক্ষিত ব্ৰাউজিং অফ আছে</translation>
 <translation id="4339203724549370495">এপ্ আনইনষ্টল কৰক</translation>
 <translation id="4340125850502689798">ব্যৱহাৰকাৰীৰ নামটো অমান্য</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />এ "<ph name="EXTENSION_NAME" />" এপ্‌টোৰ সৈতে যোগাযোগ কৰিব বিচাৰিছে</translation>
@@ -4510,7 +4510,6 @@
 <translation id="4580587929153007251">Google Password Managerত পুনৰ ছাইন ইন কৰক</translation>
 <translation id="4580596421317071374">পাছৱৰ্ডসমূহ এই ডিভাইচটোত<ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হয়।</translation>
 <translation id="4581774856936278355">Linux পুনঃস্থাপন কৰি থাকোঁতে আসোঁৱাহ হ’ল</translation>
-<translation id="4582217877717474109">ছিষ্টেমৰ অগ্ৰাধিকাৰ</translation>
 <translation id="4582297591746054421">আপুনি প্ৰতিলিপি কৰা পাঠৰ ফৰ্মেট কৰাটো ৰখাৰ দৰে সুবিধাসমূহৰ বাবে ছাইটসমূহে সচৰাচৰ ক্লিপব'ৰ্ড পঢ়ে</translation>
 <translation id="4582563038311694664">সকলো ছেটিং ৰিছেট কৰক</translation>
 <translation id="4585793705637313973">পৃষ্ঠা সম্পাদনা কৰক</translation>
@@ -6794,7 +6793,6 @@
 <translation id="6497784818439587832">আপোনাৰ স্ক্ৰীনত থকা বস্তুবোৰ সৰু অথবা ডাঙৰ কৰিবলৈ ডিছপ্লে’ৰ আকাৰ সলনি কৰক</translation>
 <translation id="6497789971060331894">মাউছ ওলোটাকৈ স্ক্র’ল কৰাৰ সুবিধা</translation>
 <translation id="6498249116389603658">&amp;আপোনাৰ সকলো ভাষা</translation>
-<translation id="6498583202177273322">আপুনি এই পৃষ্ঠাখন অন্বেষণ কৰাৰ সময়ত অতিৰিক্ত উপযোগী তথ্য লাভ কৰক</translation>
 <translation id="6499143127267478107">প্ৰক্সি স্ক্ৰিপ্টত হ'ষ্টৰ সমাধান কৰি থকা হৈছে ...</translation>
 <translation id="6499764981457476645">নিকটৱৰ্তী স্থানত কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="6501957628055559556">আটাইবোৰ কণ্টেনাৰ</translation>
@@ -8861,6 +8859,7 @@
 <translation id="816055135686411707">প্ৰমাণপত্ৰৰ বিশ্বাস ছেট কৰোঁতে আসোঁৱাহ হ’ল</translation>
 <translation id="8160775796528709999">ছেটিংসমূহত লাইভ কেপশ্বন সক্ষম কৰি আপোনাৰ অডিঅ’ আৰু ভিডিঅ’ৰ বাবে কেপশ্বনসমূহ পাওক</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="8161293209665121583">ৱে’ব পৃষ্ঠাসমূহৰ বাবে ৰীডাৰ ম’ড</translation>
 <translation id="8161604891089629425">আউটলাইন ফণ্ট</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{টেবটো নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
@@ -9312,6 +9311,7 @@
 <translation id="8528962588711550376">ছাইন ইন কৰি থকা হৈছে।</translation>
 <translation id="8529925957403338845">তাৎক্ষণিক টেডাৰিং সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="8531701051932785007">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং সুবিধাটো অফ আছে</translation>
+<translation id="8533670235862049797">সুৰক্ষিত ব্ৰাউজিং অন আছে</translation>
 <translation id="8534656636775144800">ওঁহো!  ড'মেইনটোত যোগদান কৰিবলৈ চেষ্টা কৰাৰ সময়ত কিবা ভুল হ'ল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="8535005006684281994">নেটস্কেপৰ প্ৰমাণপত্ৰ নৱীকৰণ কৰাৰ বাবে থকা URL</translation>
 <translation id="8536713137312218707">ক্ষিপ্ৰ নিৰ্দেশনা</translation>

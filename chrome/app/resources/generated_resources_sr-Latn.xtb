@@ -3245,7 +3245,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3582057310199111521">Uneto na obmanjujućem sajtu i pronađeno pri upadu u podatke</translation>
 <translation id="3582299299336701326">Svetli ekrani postaju tamni, a tamni ekrani svetli. Pritisnite taster za pretragu + Ctrl + H da biste uključili ili isključili inverziju boja.</translation>
 <translation id="3584169441612580296">Čitanje slika, muzike i drugih medija sa računara i menjanje tih medija</translation>
-<translation id="3584527007414070635">Nastavite putovanje za: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Otvaranje ove datoteke nije uspelo</translation>
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587438013689771191">Saznajte više o podstranici <ph name="SUBPAGE_TITLE" /></translation>
@@ -4189,6 +4188,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4332976768901252016">Podesite roditeljski nadzor</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 sa RSA šifrovanjem</translation>
 <translation id="4334768748331667190">Neće vam se više prikazivati modul <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Bezbedno pregledanje je isključeno</translation>
 <translation id="4339203724549370495">Deinstaliraj aplikaciju</translation>
 <translation id="4340125850502689798">Nevažeće korisničko ime</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> želi da komunicira sa aplikacijom „<ph name="EXTENSION_NAME" />“</translation>
@@ -4500,7 +4500,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4580587929153007251">Ponovo se prijavite u Google menadžer lozinki</translation>
 <translation id="4580596421317071374">Lozinke se čuvaju na ovom uređaju u:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4581774856936278355">Greška pri vraćanju Linux-a</translation>
-<translation id="4582217877717474109">Podešavanja sistema</translation>
 <translation id="4582297591746054421">Sajtovi obično čitaju privremenu memoriju za potrebe funkcija poput zadržavanja formatiranja teksta koji ste kopirali</translation>
 <translation id="4582563038311694664">Resetuj sva podešavanja</translation>
 <translation id="4585793705637313973">Izmeni stranicu</translation>
@@ -6788,7 +6787,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6497784818439587832">Promenite veličinu prikaza da biste umanjili ili uvećali stavke na ekranu</translation>
 <translation id="6497789971060331894">Obrnuto pomeranje mišem</translation>
 <translation id="6498249116389603658">&amp;Svi vaši jezici</translation>
-<translation id="6498583202177273322">Pogledajte dodatne korisne informacije dok istražujete ovu stranicu</translation>
 <translation id="6499143127267478107">Rešavanje hosta u skripti proksija...</translation>
 <translation id="6499764981457476645">Nije pronađen nijedan uređaj u blizini</translation>
 <translation id="6501957628055559556">Svi kontejneri</translation>
@@ -8860,6 +8858,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="816055135686411707">Greška pri podešavanju pouzdanosti sertifikata</translation>
 <translation id="8160775796528709999">Omogućite titl uživo u podešavanjima da biste preuzimali titl za audio i video</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Nastavi pregledanje</translation>
 <translation id="8161293209665121583">Režim čitača za veb-stranice</translation>
 <translation id="8161604891089629425">Font okvira</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premesti karticu u nov prozor}one{Premesti kartice u nov prozor}few{Premesti kartice u nov prozor}other{Premesti kartice u nov prozor}}</translation>
@@ -9311,6 +9310,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8528962588711550376">Prijavljivanje.</translation>
 <translation id="8529925957403338845">Povezivanje preko trenutnog privezivanja nije uspelo</translation>
 <translation id="8531701051932785007">Poboljšano bezbedno pregledanje je isključeno</translation>
+<translation id="8533670235862049797">Bezbedno pregledanje je uključeno</translation>
 <translation id="8534656636775144800">Ups, došlo je do greške pri pridruživanju domenu. Probajte ponovo.</translation>
 <translation id="8535005006684281994">URL adresa za obnovu Netscape sertifikata</translation>
 <translation id="8536713137312218707">Brze komande</translation>

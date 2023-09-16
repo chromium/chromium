@@ -3263,7 +3263,6 @@
 <translation id="3582057310199111521">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था और यह हैक हो चुका है</translation>
 <translation id="3582299299336701326">हल्के रंग की स्क्रीन को गहरे रंग में बदलें और गहरे रंग की स्क्रीन को हल्के रंग में बदलें. रंग बदलने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + H दबाएं.</translation>
 <translation id="3584169441612580296">अपने कंप्यूटर से फ़ोटो, संगीत और अन्य मीडिया ऐक्सेस करें और उन्हें बदलें</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> के बारे में खोजना जारी रखें</translation>
 <translation id="3586806079541226322">यह फ़ाइल नहीं खुल सकती</translation>
 <translation id="3586931643579894722">विवरण छुपाएं</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> के बारे में ज़्यादा जानें</translation>
@@ -4206,6 +4205,7 @@
 <translation id="4332976768901252016">माता-पिता के नियंत्रण सेट अप करें</translation>
 <translation id="4333854382783149454">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-1</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> को हमेशा के लिए हटा दिया गया है</translation>
+<translation id="4335835283689002019">सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="4339203724549370495">ऐप्लिकेशन अनइंस्टॉल करें</translation>
 <translation id="4340125850502689798">यह उपयोगकर्ता नाम गलत/अमान्य है</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" से संचार करना चाहती है</translation>
@@ -4518,7 +4518,6 @@
 <translation id="4580587929153007251">Google Password Manager में फिर से साइन इन करें</translation>
 <translation id="4580596421317071374">इस डिवाइस पर, पासवर्ड, <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किए जाते हैं.</translation>
 <translation id="4581774856936278355">Linux को बहाल करते समय गड़बड़ी हुई</translation>
-<translation id="4582217877717474109">सिस्टम की सेटिंग</translation>
 <translation id="4582297591746054421">आम तौर पर, साइटें आपके क्लिपबोर्ड को पढ़ती हैं. आप जो टेक्स्ट कॉपी करते हैं उसकी फ़ॉर्मैटिंग सही रखने जैसी सुविधाओं के लिए ऐसा किया जाता है</translation>
 <translation id="4582563038311694664">सभी सेटिंग रीसेट करें</translation>
 <translation id="4585793705637313973">पेज में बदलाव करें</translation>
@@ -6806,7 +6805,6 @@
 <translation id="6497784818439587832">अपनी स्क्रीन पर मौजूद आइटम को छोटा या बड़ा करने के लिए, डिसप्ले का साइज़ बदलें</translation>
 <translation id="6497789971060331894">माउस से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="6498249116389603658">&amp;आपकी सभी भाषाएं</translation>
-<translation id="6498583202177273322">इस पेज को एक्सप्लोर करते समय, काम की अन्य जानकारी पाएं</translation>
 <translation id="6499143127267478107">प्रॉक्‍सी स्‍क्रिप्‍ट में होस्‍ट का समाधान किया जा रहा है...</translation>
 <translation id="6499764981457476645">आस-पास कोई डिवाइस नहीं मिला</translation>
 <translation id="6501957628055559556">सभी कंटेनर</translation>
@@ -8874,6 +8872,7 @@
 <translation id="816055135686411707">प्रमाणपत्र विश्‍वास सेट करने में गड़बड़ी</translation>
 <translation id="8160775796528709999">सेटिंग में लाइव कैप्शन की सुविधा चालू करके, अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="8161293209665121583">वेब पेजों के लिए रीडर मोड</translation>
 <translation id="8161604891089629425">आउटलाइन फ़ॉन्ट</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टैब को नई विंडो पर ले जाएं}one{टैब को नई विंडो पर ले जाएं}other{टैब को नई विंडो पर ले जाएं}}</translation>
@@ -9325,6 +9324,7 @@
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
 <translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
 <translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
+<translation id="8533670235862049797">सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
 <translation id="8534656636775144800">ओह!  डोमेन में शामिल होने की कोशिश करते समय कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="8535005006684281994">Netscape प्रमाणपत्र नवीनीकरण यूआरएल</translation>
 <translation id="8536713137312218707">फटाफट निर्देश</translation>

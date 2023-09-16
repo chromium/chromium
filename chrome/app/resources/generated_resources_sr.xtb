@@ -3245,7 +3245,6 @@
 <translation id="3582057310199111521">Унето на обмањујућем сајту и пронађено при упаду у податке</translation>
 <translation id="3582299299336701326">Светли екрани постају тамни, а тамни екрани светли. Притисните тастер за претрагу + Ctrl + H да бисте укључили или искључили инверзију боја.</translation>
 <translation id="3584169441612580296">Читање слика, музике и других медија са рачунара и мењање тих медија</translation>
-<translation id="3584527007414070635">Наставите путовање за: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Отварање ове датотеке није успело</translation>
 <translation id="3586931643579894722">Сакриј детаље</translation>
 <translation id="3587438013689771191">Сазнајте више о подстраници <ph name="SUBPAGE_TITLE" /></translation>
@@ -4189,6 +4188,7 @@
 <translation id="4332976768901252016">Подесите родитељски надзор</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 са RSA шифровањем</translation>
 <translation id="4334768748331667190">Неће вам се више приказивати модул <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Безбедно прегледање је искључено</translation>
 <translation id="4339203724549370495">Деинсталирај апликацију</translation>
 <translation id="4340125850502689798">Неважеће корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> жели да комуницира са апликацијом „<ph name="EXTENSION_NAME" />“</translation>
@@ -4500,7 +4500,6 @@
 <translation id="4580587929153007251">Поново се пријавите у Google менаџер лозинки</translation>
 <translation id="4580596421317071374">Лозинке се чувају на овом уређају у:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4581774856936278355">Грешка при враћању Linux-а</translation>
-<translation id="4582217877717474109">Подешавања система</translation>
 <translation id="4582297591746054421">Сајтови обично читају привремену меморију за потребе функција попут задржавања форматирања текста који сте копирали</translation>
 <translation id="4582563038311694664">Ресетуј сва подешавања</translation>
 <translation id="4585793705637313973">Измени страницу</translation>
@@ -6788,7 +6787,6 @@
 <translation id="6497784818439587832">Промените величину приказа да бисте умањили или увећали ставке на екрану</translation>
 <translation id="6497789971060331894">Обрнуто померање мишем</translation>
 <translation id="6498249116389603658">&amp;Сви ваши језици</translation>
-<translation id="6498583202177273322">Погледајте додатне корисне информације док истражујете ову страницу</translation>
 <translation id="6499143127267478107">Решавање хоста у скрипти проксија...</translation>
 <translation id="6499764981457476645">Није пронађен ниједан уређај у близини</translation>
 <translation id="6501957628055559556">Сви контејнери</translation>
@@ -8860,6 +8858,7 @@
 <translation id="816055135686411707">Грешка при подешавању поузданости сертификата</translation>
 <translation id="8160775796528709999">Омогућите титл уживо у подешавањима да бисте преузимали титл за аудио и видео</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Настави прегледање</translation>
 <translation id="8161293209665121583">Режим читача за веб-странице</translation>
 <translation id="8161604891089629425">Фонт оквира</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Премести картицу у нов прозор}one{Премести картице у нов прозор}few{Премести картице у нов прозор}other{Премести картице у нов прозор}}</translation>
@@ -9311,6 +9310,7 @@
 <translation id="8528962588711550376">Пријављивање.</translation>
 <translation id="8529925957403338845">Повезивање преко тренутног привезивања није успело</translation>
 <translation id="8531701051932785007">Побољшано безбедно прегледање је искључено</translation>
+<translation id="8533670235862049797">Безбедно прегледање је укључено</translation>
 <translation id="8534656636775144800">Упс, дошло је до грешке при придруживању домену. Пробајте поново.</translation>
 <translation id="8535005006684281994">URL адреса за обнову Netscape сертификата</translation>
 <translation id="8536713137312218707">Брзе команде</translation>

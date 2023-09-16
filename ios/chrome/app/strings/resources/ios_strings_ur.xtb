@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں</translation>
 <translation id="2050196510205866090">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ ادائیگی کا طریقہ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ ادائیگی کے طریقے دستیاب ہیں۔}}</translation>
 <translation id="2055515971416882518">"ترتیبات" کھولیں۔</translation>
+<translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="3595252146048399851">‏آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
+<translation id="3599500618468205645"><ph name="DOMAIN_NAME" /> کی پیروی کریں کو چھپائیں</translation>
 <translation id="3603009562372709545">‏لنک URL کاپی کریں</translation>
 <translation id="3607167657931203000">آٹو فل ڈیٹا</translation>
 <translation id="3609785682760573515">مطابقت پذیری کی جا رہی ہے…</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">‏آپ کا فیملی ممبر ابھی پاس ورڈز موصول نہیں کر سکتا۔ ان سے Chrome اپ ڈیٹ کرنے اور پاس ورڈز کو مطابقت پذیر کرنے کے لیے کہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">کنفیگریشن پروفائل دستیاب ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
+<translation id="3680970647557344817">بُک مارک میں ترمیم کریں کو چھپائیں</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3688815115226493214">ٹیب کی تجاویز</translation>
 <translation id="3700134753671613714">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے سائن ان کریں۔</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">کی بورڈ</translation>
 <translation id="4601095002996233687">مشتبہ ڈاؤن لوڈز کے لیے گہرائی سے اسکینز کرتا ہے۔</translation>
 <translation id="4606247758155004938">آپ کا براؤزر آپ کی تنظیم کے زیر انتظام ہے۔</translation>
+<translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> کی پیروی ختم کریں کو چھپائیں</translation>
 <translation id="461440297010471931">‏Google کے ذریعے تلاش کیا جا رہا ہے</translation>
 <translation id="4616391354457235490">کالعدم کریں</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
@@ -1058,6 +1062,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6753469262000681876">لاک ڈاؤن وضع</translation>
 <translation id="6760509555861141183">حالیہ ٹیب میں واپس جائیں</translation>
 <translation id="6762812039470893796">سبھی غیر منتخب کریں</translation>
+<translation id="6771287014037609247">ہمیشہ دریافت شدہ پیکیجز کو ٹریک کریں</translation>
 <translation id="6780034285637185932">زپ کوڈ</translation>
 <translation id="6781260999953472352">مطابقت پذیری آن کریں؟</translation>
 <translation id="6781405765516175232">راستے کے اختیارات کے لیے، "ڈائریکشنز حاصل کریں" پر تھپتھپائیں۔</translation>
@@ -1409,6 +1414,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8780076847684176174">{count,plural, =1{ٹیب کا جائزہ لیں...}other{تمام ٹیبز کا جائزہ لیں...}}</translation>
 <translation id="8787968206789828143">ویب پر تلاش کریں</translation>
 <translation id="8792626944327216835">مائیکروفون</translation>
+<translation id="8793366654064127924">ہر بار مجھ سے پوچھیں</translation>
 <translation id="8803639129939845298">محفوظ</translation>
 <translation id="8806823403540278281">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ ٹیبز پوشیدگی وضع میں محفوظ نہیں ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8849001918648564819">پوشیدہ</translation>
 <translation id="8855242995793521265">آپ کے براؤزر یا آلے کو واضح طور پر سست نہیں کرتا ہے۔</translation>
 <translation id="8855781063981781621">‏Chrome میں لاک ڈاؤن وضع کو غیر فعال کرنے کیلئے اسے اپنے iPad پر آف کریں۔</translation>
+<translation id="886335568110896118">موبائل سائٹ کی درخواست کو چھپائیں</translation>
 <translation id="8863431381414769983">‏Google Maps سے ڈائریکشنز اور مقامی معلومات حاصل کریں</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ٹیب}other{{count} ٹیبز}}</translation>

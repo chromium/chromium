@@ -3239,7 +3239,6 @@
 <translation id="3582057310199111521">Жалған сайтқа кірген және деректер қауіпсіздігінің бұзылуы анықталды</translation>
 <translation id="3582299299336701326">Ашық экрандарды қарайтып, күңгірт экрандарды ашық ете аласыз. "Іздеу" + Ctrl + H перне тіркесімімен түс инверсиясын қосуға және өшіруге болады.</translation>
 <translation id="3584169441612580296">Компьютеріңізден фотосуреттерді, музыканы және басқа медиа файлдарын оқу және өзгерту</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> сеансын жалғастыру</translation>
 <translation id="3586806079541226322">Бұл файлды ашу мүмкін емес</translation>
 <translation id="3586931643579894722">Мәліметтерді жасыру</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> туралы толық ақпарат</translation>
@@ -4183,6 +4182,7 @@
 <translation id="4332976768901252016">Ата-ана бақылауын реттеу</translation>
 <translation id="4333854382783149454">RSA шифрлауына ие PKCS #1 SHA-1</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> енді қайта көрсетілмейтін болады.</translation>
+<translation id="4335835283689002019">"Қауіпсіз шолу" функциясы өшірулі.</translation>
 <translation id="4339203724549370495">Қолданбаны жою</translation>
 <translation id="4340125850502689798">Пайдаланушы аты дұрыс емес.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" қолданбасымен байланысуға рұқсат сұрап тұр</translation>
@@ -4494,7 +4494,6 @@
 <translation id="4580587929153007251">Google Құпия сөз менеджеріне қайтадан кіріңіз.</translation>
 <translation id="4580596421317071374">Құпия сөздер осы құрылғыда <ph name="GOOGLE_PASSWORD_MANAGER" /> қызметінде сақталады.</translation>
 <translation id="4581774856936278355">Linux жүйесін қалпына келтіру кезінде қате шықты.</translation>
-<translation id="4582217877717474109">Жүйе параметрлері</translation>
 <translation id="4582297591746054421">Сіз көшірген мәтіннің форматын сақтау сияқты функциялар үшін сайттар әдетте буферді оқиды.</translation>
 <translation id="4582563038311694664">Барлық параметрлерді қалпына келтіру</translation>
 <translation id="4585793705637313973">Бет мәліметтерін өзгерту</translation>
@@ -6775,7 +6774,6 @@
 <translation id="6497784818439587832">Экрандағы элементтерді кішірейту не ұлғайту үшін дисплей өлшемін өзгертіңіз.</translation>
 <translation id="6497789971060331894">Тінтуірмен кері айналдыру</translation>
 <translation id="6498249116389603658">&amp;Барлық тілдер</translation>
-<translation id="6498583202177273322">Осы бетті зерттеген кезде қосымша пайдалы ақпарат алыңыз.</translation>
 <translation id="6499143127267478107">Прокси сценарийіндегі хост анықталуда…</translation>
 <translation id="6499764981457476645">Маңайда ешқандай құрылғы табылмады</translation>
 <translation id="6501957628055559556">Барлық контейнер</translation>
@@ -8839,6 +8837,7 @@
 <translation id="816055135686411707">Сенімді сертификатты орнату қатесі</translation>
 <translation id="8160775796528709999">Параметрлерден Live Caption функциясын қосу арқылы аудио мен бейненің субтитрін көріңіз.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Шолуды жалғастыру</translation>
 <translation id="8161293209665121583">Веб-беттерге арналған оқу құралы режимі</translation>
 <translation id="8161604891089629425">Контурлық қаріп</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Қойындыны жаңа терезеден ашу}other{Қойындыларды жаңа терезеден ашу}}</translation>
@@ -9290,6 +9289,7 @@
 <translation id="8528962588711550376">Кіріп жатырсыз.</translation>
 <translation id="8529925957403338845">Жылдам тетеринг байланысы орнатылмады</translation>
 <translation id="8531701051932785007">Күшейтілген Safe Browsing өшірулі</translation>
+<translation id="8533670235862049797">Safe Browsing қосулы</translation>
 <translation id="8534656636775144800">Қап! Доменге кіру кезінде бірдеңеден қате кетті. Әрекетті қайталаңыз.</translation>
 <translation id="8535005006684281994">Netscape сертификат жаңалау URL мекенжайы</translation>
 <translation id="8536713137312218707">Жылдам пәрмендер</translation>

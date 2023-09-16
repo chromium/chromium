@@ -3257,7 +3257,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3582057310199111521">Dimasukkan pada situs penipuan dan ditemukan dalam pelanggaran data</translation>
 <translation id="3582299299336701326">Ubah layar terang menjadi gelap, dan layar gelap menjadi terang. Tekan Penelusuran + Ctrl + H untuk mengaktifkan dan menonaktifkan inversi warna.</translation>
 <translation id="3584169441612580296">Membaca dan mengubah foto, musik, serta media lain dari komputer Anda</translation>
-<translation id="3584527007414070635">Lanjutkan perjalanan Anda untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Tidak dapat membuka file ini</translation>
 <translation id="3586931643579894722">Sembunyikan detail</translation>
 <translation id="3587438013689771191">Pelajari lebih lanjut: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4201,6 +4200,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4332976768901252016">Menyiapkan Kontrol Orang Tua</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 Dengan Enkripsi RSA</translation>
 <translation id="4334768748331667190">Anda tidak akan melihat <ph name="MODULE_NAME" /> lagi</translation>
+<translation id="4335835283689002019">Safe Browsing nonaktif</translation>
 <translation id="4339203724549370495">Uninstal aplikasi</translation>
 <translation id="4340125850502689798">Nama pengguna tidak valid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ingin berkomunikasi dengan aplikasi "<ph name="EXTENSION_NAME" />"</translation>
@@ -4513,7 +4513,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4580587929153007251">Login kembali ke Pengelola Sandi Google</translation>
 <translation id="4580596421317071374">Sandi disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> di perangkat ini.</translation>
 <translation id="4581774856936278355">Terjadi error saat memulihkan Linux</translation>
-<translation id="4582217877717474109">Preferensi Sistem</translation>
 <translation id="4582297591746054421">Situs biasanya membaca papan klip Anda untuk fitur seperti mempertahankan format teks yang disalin</translation>
 <translation id="4582563038311694664">Reset semua setelan</translation>
 <translation id="4585793705637313973">Edit halaman</translation>
@@ -6797,7 +6796,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa Anda</translation>
-<translation id="6498583202177273322">Dapatkan info bermanfaat tambahan saat Anda menjelajahi halaman ini</translation>
 <translation id="6499143127267478107">Mencari host di skrip proxy...</translation>
 <translation id="6499764981457476645">Tidak ada perangkat yang ditemukan di sekitar</translation>
 <translation id="6501957628055559556">Semua penampung</translation>
@@ -8863,6 +8861,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="816055135686411707">Kesalahan Saat Menyetel Kepercayaan Sertifikat</translation>
 <translation id="8160775796528709999">Dapatkan teks untuk audio dan video Anda dengan mengaktifkan Teks Otomatis di setelan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Lanjutkan menjelajah</translation>
 <translation id="8161293209665121583">Mode pembaca untuk halaman web</translation>
 <translation id="8161604891089629425">Font bergaris batas</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Pindahkan Tab ke Jendela Baru}other{Pindahkan beberapa Tab ke Jendela Baru}}</translation>
@@ -9314,6 +9313,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8528962588711550376">Login.</translation>
 <translation id="8529925957403338845">Koneksi Tethering Instan gagal</translation>
 <translation id="8531701051932785007">Safe Browsing yang Disempurnakan nonaktif</translation>
+<translation id="8533670235862049797">Safe Browsing aktif</translation>
 <translation id="8534656636775144800">Maaf.  Terjadi error saat mencoba bergabung dengan domain. Harap coba lagi.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536713137312218707">Perintah Cepat</translation>

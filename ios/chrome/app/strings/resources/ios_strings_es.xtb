@@ -313,6 +313,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2738375676495545665">Ocultar Novedades</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
+<translation id="2754492786623500387">Cuentas en este dispositivo</translation>
 <translation id="2762000892062317888">justo ahora</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Búsqueda en modo Incógnito</translation>
@@ -1229,6 +1230,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="778855399387580014">Inicia una búsqueda en una nueva pestaña de Chrome.</translation>
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>
+<translation id="78146569776629510">Descargas</translation>
 <translation id="7839985698273989086">Página sin conexión</translation>
 <translation id="7840771868269352570">Se eliminarán los elementos que hayas seleccionado.</translation>
 <translation id="7845466610722898">Mostrar lista de lectura</translation>

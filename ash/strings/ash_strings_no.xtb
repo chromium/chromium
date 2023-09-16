@@ -740,6 +740,7 @@ Koble enheten til strøm.</translation>
 <translation id="4028481283645788203">Passord kreves for mer sikkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + venstrepil</translation>
+<translation id="4039699481424758547">Trykk på Enter for å ta en skjermdump av vinduet <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="404437169852192935">Enheten får ikke oppdateringer lenger</translation>
 <translation id="4049230407053723315">Hurtiginnstillinger</translation>
@@ -1751,7 +1752,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8230305195727960608">Modus for fargeinvertering</translation>
 <translation id="8236042855478648955">På tide med en pause</translation>
 <translation id="8239034820133090126">Aktiver skrivebordet til høyre</translation>
-<translation id="8246282815785366524">Velkommen tilbake, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
 <translation id="8255234195843591763">Tilbakestill for å oppdatere</translation>
@@ -1965,6 +1965,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> gjenstår til batteriet er fulladet.</translation>
 <translation id="9215934040295798075">Velg bakgrunn</translation>
+<translation id="9216699844945104164">Trykk på Enter for å ta opp vinduet <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="921989828232331238">Forelderen din har låst enheten din for dagen</translation>
 <translation id="9220525904950070496">Fjern konto</translation>

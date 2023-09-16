@@ -3260,7 +3260,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3582057310199111521">Vneseno na zavajajočem spletnem mestu in odkrito v podatkovni kršitvi</translation>
 <translation id="3582299299336701326">Svetle zaslone spremenite v temne in obratno. Pritisnite tipko za iskanje + Ctrl + H, če želite vklopiti in izklopiti inverzijo barv.</translation>
 <translation id="3584169441612580296">Branje in spreminjanje fotografij, glasbe in drugih predstavnosti v računalniku</translation>
-<translation id="3584527007414070635">Nadaljevanje poti za: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Datoteke ni mogoče odpreti</translation>
 <translation id="3586931643579894722">Skrij podrobnosti</translation>
 <translation id="3587438013689771191">Preberite več o tem: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4204,6 +4203,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4332976768901252016">Nastavitev starševskega nadzora</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 s šifriranjem RSA</translation>
 <translation id="4334768748331667190">Modul <ph name="MODULE_NAME" /> ne bo več prikazan</translation>
+<translation id="4335835283689002019">Varno brskanje je izklopljeno</translation>
 <translation id="4339203724549370495">Odmesti aplikacijo</translation>
 <translation id="4340125850502689798">Neveljavno uporabniško ime</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> želi vzpostaviti povezavo z aplikacijo »<ph name="EXTENSION_NAME" />«</translation>
@@ -4516,7 +4516,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4580587929153007251">Znova se prijavite v Googlovega upravitelja gesel.</translation>
 <translation id="4580596421317071374">Gesla se shranjujejo v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" /> v tej napravi.</translation>
 <translation id="4581774856936278355">Napaka pri obnavljanju Linuxa</translation>
-<translation id="4582217877717474109">Sistemske nastavitve</translation>
 <translation id="4582297591746054421">Spletna mesta običajno preberejo odložišče zaradi funkcij, kot je ohranjanje oblike kopiranega besedila.</translation>
 <translation id="4582563038311694664">Ponastavi vse nastavitve</translation>
 <translation id="4585793705637313973">Urejanje strani</translation>
@@ -6802,7 +6801,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6497784818439587832">Spremenite velikost zaslona, če želite pomanjšati ali povečati elemente na zaslonu.</translation>
 <translation id="6497789971060331894">Obratno pomikanje z miško</translation>
 <translation id="6498249116389603658">&amp;Vsi jeziki</translation>
-<translation id="6498583202177273322">Oglejte si dodatne koristne informacije, ko raziskujete to stran</translation>
 <translation id="6499143127267478107">Razreševanje gostitelja v skriptu proxy ...</translation>
 <translation id="6499764981457476645">Ni naprav v bližini</translation>
 <translation id="6501957628055559556">Vsi vsebniki</translation>
@@ -8875,6 +8873,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="816055135686411707">Napačna nastavitev zaupanja potrdilu</translation>
 <translation id="8160775796528709999">Zagotovite podnapise za svoj zvok in video tako, da v nastavitvah omogočite samodejne podnapise</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Nadaljuj brskanje</translation>
 <translation id="8161293209665121583">Način bralnika za spletne strani</translation>
 <translation id="8161604891089629425">Pisava z orisom</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premik zavihka v novo okno}one{Premik zavihka v novo okno}two{Premik zavihkov v novo okno}few{Premik zavihkov v novo okno}other{Premik zavihkov v novo okno}}</translation>
@@ -9326,6 +9325,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8528962588711550376">Prijavljanje.</translation>
 <translation id="8529925957403338845">Vzpostavljanje takojšnje povezave z internetom prek mobilnega telefona ni uspelo</translation>
 <translation id="8531701051932785007">Izboljšano varno brskanje je izklopljeno</translation>
+<translation id="8533670235862049797">Varno brskanje je vklopljeno</translation>
 <translation id="8534656636775144800">Ojoj. Pri poskusu pridružitve domeni je prišlo do težav. Poskusite znova.</translation>
 <translation id="8535005006684281994">Spletni naslov podaljšanja Netscapeovega potrdila</translation>
 <translation id="8536713137312218707">Hitri ukazi</translation>

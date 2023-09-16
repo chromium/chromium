@@ -741,6 +741,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4028481283645788203">A nagyobb biztonság érdekében jelszó szükséges</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + balra nyíl</translation>
+<translation id="4039699481424758547">Nyomja le az Enter billentyűt az ablak képernyőképének rögzítéséhez: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Jelenleg megosztja a képernyőt</translation>
 <translation id="404437169852192935">Többé nem kap frissítést</translation>
 <translation id="4049230407053723315">Gyorsbeállítások</translation>
@@ -1752,7 +1753,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8230305195727960608">Színinvertálás mód</translation>
 <translation id="8236042855478648955">Ideje pihenni</translation>
 <translation id="8239034820133090126">Asztal aktiválása a jobb oldalon</translation>
-<translation id="8246282815785366524">Üdvözöljük ismét, kedves <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a telefon akkumulátora: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, alkalmazás</translation>
 <translation id="8255234195843591763">Indítsa újra a frissítéshez!</translation>
@@ -1966,6 +1966,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9211490828691860325">Az összes asztal</translation>
 <translation id="9211681782751733685">Akkumulátor teljes feltöltéséig hátralévő idő: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Háttérkép beállítása</translation>
+<translation id="9216699844945104164">Nyomja le az Enter billentyűt az ablak tartalmának rögzítéséhez: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="921989828232331238">A szülőd zárolta az eszközt mára</translation>
 <translation id="9220525904950070496">Fiók eltávolítása</translation>

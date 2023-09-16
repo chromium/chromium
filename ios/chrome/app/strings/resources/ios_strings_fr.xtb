@@ -313,6 +313,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2738375676495545665">Masquer "Nouveautés"</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Comptes sur cet appareil</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Recherche en mode navigation privée</translation>
@@ -1230,6 +1231,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="778855399387580014">Lancer une recherche dans un nouvel onglet Chrome.</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
+<translation id="78146569776629510">Téléchargements</translation>
 <translation id="7839985698273989086">Page hors connexion</translation>
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>

@@ -256,11 +256,6 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
 <translation id="1223789468190631420">Navigation sécurisée activée pour les sources fiables</translation>
 <translation id="123018742985150697">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="123081309365616809">Activer la diffusion de contenus sur l'appareil</translation>
-<translation id="1233815313234662905">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf dans le cas d'extensions installées dans le cadre des règles de l'entreprise ou, depuis la version 114 et s'il s'agit d'un utilisateur géré, d'extensions intégrées au navigateur. Si elle est définie sur 1, vous pouvez accéder à ces outils et à cette console dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si elle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
-
-      En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.
-
-      Depuis <ph name="PRODUCT_NAME" /> version 99, ce paramètre contrôle également les points d'entrée de la fonctionnalité "Afficher le code source de la page". Si cette règle est définie sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne peuvent pas accéder à l'affichage du code source via le raccourci clavier ou le menu contextuel. Pour empêcher complètement l'affichage du code source, vous devez également ajouter "view-source:*" à la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Contrôle si les sites sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée.
 
@@ -1688,9 +1683,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2439187682308339104">Interdire à tous les sites de demander l'accès aux appareils HID via l'API WebHID</translation>
 <translation id="2439733504887695659">Activer la fermeture des alertes de mot de passe compromis pour les identifiants saisis</translation>
 <translation id="2446244536806499267">Ne pas considérer l'utilisateur comme inactif pendant la lecture audio</translation>
-<translation id="2448315169529769573">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les statistiques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces statistiques et ces données ne sont pas envoyées.
-
-       Si cette règle n'est pas configurée, les statistiques et les données de diagnostic ne sont pas envoyées concernant les appareils non gérés, mais le sont pour les appareils gérés.</translation>
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
@@ -3262,11 +3254,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
       Remarque : Pour éviter toute actualisation inutile, chaque fois qu'une règle est modifiée, une actualisation est effectuée de façon forcée pour signaler ce changement. Si la plate-forme accepte les notifications relatives aux règles, le délai d'actualisation est de 24 heures (et toutes les valeurs par défaut ainsi que celle de cette règle sont ignorées).</translation>
 <translation id="382476126209906314">Configurer le préfixe TalkGadget pour les hôtes d'accès à distance</translation>
 <translation id="3824972131618513497">Paramètres de commande de la gestion de l'alimentation et du redémarrage.</translation>
-<translation id="3825313562760682300">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées. Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
-
-Le champ <ph name="MANIFEST_ID_FIELD" /> contient l'ID du fichier manifeste pour l'application Web. Pour savoir comment déterminer l'ID du fichier manifeste d'une application Web qui a été installée, consultez <ph name="WEB_APP_ID_REFERENCE_URL" />.
-Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. Si ce champ est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. Si ce champ est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.
-(Depuis la version 117) Le champ <ph name="PREVENT_CLOSE_FIELD" /> indique si la fermeture de l'application Web doit être empêchée de quelque manière que ce soit (par exemple, par l'utilisateur, le gestionnaire de tâches ou les API Web). Ce comportement ne peut être activé que si <ph name="RUN_ON_OS_LOGIN_FIELD" /> est défini sur <ph name="RUN_WINDOWED" />. Si l'appli était déjà en cours d'exécution, cette propriété ne sera prise en compte qu'après avoir redémarré l'appli. Si ce champ n'est pas défini, les utilisateurs pourront fermer les applis.</translation>
 <translation id="3825873934240606959">Empêcher la détection des appareils en local</translation>
 <translation id="3826475866868158882">Services de localisation Google activés</translation>
 <translation id="3829344785870486923">Liste d'autorisation des domaines secondaires de séparation des profils d'entreprise</translation>
@@ -3661,11 +3648,6 @@ Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extens
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur de saisie est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="4181820969510931391">Si cette règle est activée ou n'est pas configurée, la nouvelle interface utilisateur de la bulle de téléchargement est affichée dans <ph name="PRODUCT_NAME" />.
-
-      Si elle est désactivée, <ph name="PRODUCT_NAME" /> continue d'afficher l'ancienne interface utilisateur du répertoire de téléchargement.
-
-      Notez que cette règle est temporaire et sera supprimée une fois le lancement de la nouvelle interface utilisateur de la bulle de téléchargement terminé.</translation>
 <translation id="4182348537826882258">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.

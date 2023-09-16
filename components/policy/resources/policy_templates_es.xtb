@@ -259,11 +259,6 @@ Sin embargo, los patrones de esta política que coinciden con el origen no puede
 <translation id="1223789468190631420">Estado habilitado de Navegación segura con fuentes de confianza</translation>
 <translation id="123018742985150697">Requerir que el usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="123081309365616809">Habilita el envío de contenido al dispositivo</translation>
-<translation id="1233815313234662905">Si se asigna el valor "0" (predeterminado) a esta política, podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript, pero no en extensiones instaladas por políticas de empresa o, desde la versión 114 y si se trata de un usuario gestionado, no podrás acceder a las herramientas para desarrolladores ni a la consola de JavaScript en extensiones integradas en el navegador. Si se le asigna el valor "1", podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript sin excepciones, incluso en extensiones instaladas por políticas de empresa. Si se le asigna el valor "2", no podrás acceder a las herramientas para desarrolladores ni tampoco podrás inspeccionar elementos de sitios web.
-
-      Este ajuste también desactiva las combinaciones de teclas y las entradas de menús o menús contextuales que permiten abrir las herramientas para desarrolladores y la consola de JavaScript.
-
-      A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este ajuste también controla los puntos de entrada de la función Ver código fuente de la página. Si se asigna el valor "DeveloperToolsDisallowed" (valor 2) a esta política, los usuarios no podrán visualizar el código fuente a través de una combinación de teclas ni mediante el menú contextual. Para bloquear completamente la visualización del código fuente, también debes añadir "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para<ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura.
 
@@ -1690,9 +1685,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2439187682308339104">No permite que ningún sitio solicite acceso a los dispositivos HID a través de la API WebHID</translation>
 <translation id="2439733504887695659">Habilitar la opción de cerrar alertas de contraseñas vulneradas para credenciales introducidas</translation>
 <translation id="2446244536806499267">No considerar que el usuario está inactivo mientras se reproduce audio</translation>
-<translation id="2448315169529769573">Si se habilita la política, <ph name="PRODUCT_OS_NAME" /> enviará métricas de uso y datos de diagnóstico, como informes sobre fallos, a Google. Si se inhabilita la política, no se enviarán métricas ni datos de diagnóstico.
-
-       Si no se establece la política, se desactivarán las métricas y los datos de diagnóstico en los dispositivos no administrados, y se activarán en los dispositivos administrados.</translation>
 <translation id="2452225615952836461">Utilizar métodos de solicitud siempre en mayúsculas</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
@@ -3272,11 +3264,6 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
       Nota: Las notificaciones acerca de políticas forzarán una actualización cuando se produzca algún cambio en la política. De esta manera, no será necesario realizar actualizaciones frecuentemente. Si la plataforma admite estas notificaciones, el periodo entre actualizaciones se establecerá en 24 horas (se ignorarán los valores predeterminados y el valor de esta política).</translation>
 <translation id="382476126209906314">Configurar el prefijo TalkGadget para hosts de acceso remoto</translation>
 <translation id="3824972131618513497">Controla los ajustes relacionados con el reinicio y la gestión de la batería.</translation>
-<translation id="3825313562760682300">Esta política permite que un administrador especifique la configuración de las aplicaciones web instaladas. Esta política asocia un ID de aplicación web a su configuración concreta. Se puede definir una configuración predeterminada usando el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web para las que no se haya definido una configuración personalizada en esta política.
-
-El campo <ph name="MANIFEST_ID_FIELD" /> es el ID del archivo de manifiesto de la aplicación web. En <ph name="WEB_APP_ID_REFERENCE_URL" /> encontrarás las instrucciones para determinar el ID del archivo de manifiesto de una aplicación web instalada.
-El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web puede ejecutarse durante el inicio de sesión en el SO. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el SO y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el SO y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-Desde la versión 117, en el campo <ph name="PREVENT_CLOSE_FIELD" /> se especifica si se debe impedir todo tipo de cierres de aplicaciones web (por ejemplo, por parte del usuario, el administrador de tareas o las APIs web). Este comportamiento solo se puede habilitar si se asigna el valor <ph name="RUN_WINDOWED" /> a <ph name="RUN_ON_OS_LOGIN_FIELD" />. Si la aplicación ya se estaba ejecutando, esta propiedad solo se hará efectiva después de reiniciar la aplicación. Si este campo no se define, los usuarios podrán cerrar las aplicaciones.</translation>
 <translation id="3825873934240606959">Evitar descubrimiento de dispositivos locales</translation>
 <translation id="3826475866868158882">Se han habilitado los servicios de ubicación de Google</translation>
 <translation id="3829344785870486923">Lista de dominios secundarios de separación de perfiles de empresa permitidos</translation>
@@ -3672,11 +3659,6 @@ Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política,
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
-<translation id="4181820969510931391">Si se habilita esta política o no se define, se mostrará la nueva interfaz del cuadro de descargas en <ph name="PRODUCT_NAME" />.
-
-      Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> seguirá mostrando la interfaz antigua de la estantería de descargas.
-
-      Ten en cuenta que esta política es temporal y se eliminará en cuanto se lance por completo la nueva interfaz del cuadro de descargas.</translation>
 <translation id="4182348537826882258">Si se define la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Si no se asigna ningún valor, no se bloqueará ninguna URL en el navegador. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página con datos cargados dinámicamente. Si has bloqueado example.com/abc, la página example.com podría cargarlo igualmente con XMLHTTPRequest. Además, esta política no evita que las páginas web actualicen la URL mostrada en el omnibox con una URL bloqueada usando la API History de JavaScript.
@@ -8054,7 +8036,7 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="8071371098891664137">Si se utiliza <ph name="PRINTERS_BLOCKLIST" /> para la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />, esta especifica qué impresoras no pueden utilizar los usuarios. El usuario podrá utilizar todas las impresoras, excepto aquellas con los ID indicados en la política. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8072934771584553388">Esta política permite a los administradores restringir las cuentas que pueden iniciar sesión en <ph name="MICROSOFT_ONE_DRIVE_NAME" /> cuando la política <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> está habilitada.
 
-Si no se establece esta política o se le asigna un valor vacío, se podrá usar cualquier cuenta para iniciar sesión.
+Si no se establece esta política o no se le asigna ningún valor, se podrá usar cualquier cuenta para iniciar sesión.
 
 Si a esta política se le asigna un nombre de dominio o un ID de cliente (consulta https://learn.microsoft.com/es-es/azure/active-directory/develop/v2-protocols#endpoints), solo las cuentas que tengan ese nombre de dominio o ID de cliente podrán usarse para iniciar sesión.
 

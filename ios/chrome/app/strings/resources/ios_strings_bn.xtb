@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2055515971416882518">"সেটিংস" খুলুন।</translation>
+<translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
@@ -313,6 +314,7 @@
 <translation id="2738375676495545665">'নতুন কী আছে' লুকান</translation>
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফলো করা হচ্ছে</translation>
+<translation id="2754492786623500387">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="2772667768515195373">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ সেভ করা আছে।</translation>
 <translation id="2773292004659987824">ছদ্মবেশী সার্চ</translation>
@@ -477,6 +479,7 @@
 <translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
+<translation id="3599500618468205645">'<ph name="DOMAIN_NAME" /> ফলো করুন' বিকল্পটি লুকান</translation>
 <translation id="3603009562372709545">লিঙ্ক ইউআরএল কপি করুন</translation>
 <translation id="3607167657931203000">ডেটা স্বতঃপূর্ণ করুন</translation>
 <translation id="3609785682760573515">সিঙ্ক হচ্ছে...</translation>
@@ -487,6 +490,7 @@
 <translation id="3646736009628185125">আপনার পরিবারের সদস্য এই মুহূর্তে পাসওয়ার্ড রিসিভ করতে পারবেন না। তাকে Chrome আপডেট করে পাসওয়ার্ড সিঙ্ক করতে বলুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">কনফিগারেশন প্রোফাইল উপলভ্য আছে</translation>
 <translation id="3670030362669914947">নম্বর</translation>
+<translation id="3680970647557344817">'বুকমার্ক এডিট করুন' বিকল্পটি লুকান</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
 <translation id="3688815115226493214">ট্যাব সংক্রান্ত সাজেশন</translation>
 <translation id="3700134753671613714">আপনার সকল ডিভাইসগুলিতে আপনার বুকমার্কগুলি পেতে সাইন করুন।</translation>
@@ -636,6 +640,7 @@
 <translation id="4592368184551360546">কীবোর্ড</translation>
 <translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4606247758155004938">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে।</translation>
+<translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> আনফলো করুন' বিকল্পটি লুকান</translation>
 <translation id="461440297010471931">Google এর মাধ্যমে সার্চ করা হচ্ছে</translation>
 <translation id="4616391354457235490">আগের অবস্থায় ফিরে যান</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
@@ -1058,6 +1063,7 @@
 <translation id="6753469262000681876">লকডাউন মোড</translation>
 <translation id="6760509555861141183">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
 <translation id="6762812039470893796">সবকটি বাদ দিন</translation>
+<translation id="6771287014037609247">শনাক্ত করা প্যাকেজ সবসময় ট্রযাক করুন</translation>
 <translation id="6780034285637185932">পিন কোড</translation>
 <translation id="6781260999953472352">সিঙ্ক চালু করবেন?</translation>
 <translation id="6781405765516175232">রুট সম্পর্কিত বিকল্পের জন্য, “দিকনির্দেশ পান” বিকল্পে ট্যাপ করুন।</translation>
@@ -1230,6 +1236,7 @@
 <translation id="778855399387580014">নতুন Chrome ট্যাবে সার্চ করা শুরু করুন।</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
+<translation id="78146569776629510">ডাউনলোড</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
 <translation id="7840771868269352570">আপনার বেছে নেওয়া আইটেমগুলি সরানো হবে।</translation>
 <translation id="7845466610722898">পড়ার তালিকা দেখান</translation>
@@ -1408,6 +1415,7 @@
 <translation id="8780076847684176174">{count,plural, =1{ট্যাব পর্যালোচনা করুন...}one{সবকটি ট্যাব পর্যালোচনা করুন...}other{সবকটি ট্যাব পর্যালোচনা করুন...}}</translation>
 <translation id="8787968206789828143">ওয়েবে সার্চ করুন</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
+<translation id="8793366654064127924">প্রতিবার আমাকে জিজ্ঞাসা করো</translation>
 <translation id="8803639129939845298">সুরক্ষিত</translation>
 <translation id="8806823403540278281">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে। 'ছদ্মবেশী মোডে' ট্যাব সেভ করা হয় না।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1421,6 +1429,7 @@
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
 <translation id="8855781063981781621">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPad-এ বন্ধ করুন।</translation>
+<translation id="886335568110896118">মোবাইল সাইটের অনুরোধ লুকান</translation>
 <translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>

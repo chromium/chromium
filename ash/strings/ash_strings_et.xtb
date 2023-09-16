@@ -1752,7 +1752,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8230305195727960608">Värvide ümberpööramise režiim</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
 <translation id="8239034820133090126">Aktiveerige parempoolne töölaud</translation>
-<translation id="8246282815785366524">Tere tulemast tagasi, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">Rakendus, <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">Värskendamiseks taaskäivitage</translation>
@@ -1851,6 +1850,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
 <translation id="8704155109538237473">Pilt pildis akna esile tõstmine</translation>
 <translation id="870917907284186124">Lülita dikteerimine (häälega teksti sisestamine) sisse/välja</translation>
+<translation id="8714138378966541668">Teenusepakkuja lukustatud</translation>
 <translation id="8717459106217102612">Eelmise sõna või tähe valimine</translation>
 <translation id="8721053961083920564">Lülitage helitugevus sisse. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Täisekraani jäädvustamine</translation>

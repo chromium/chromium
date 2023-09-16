@@ -3242,7 +3242,6 @@
 <translation id="3582057310199111521">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
 <translation id="3582299299336701326">Բաց գույները դարձնել մուգ, իսկ մուգ գույները՝ բաց։ Սեղմեք Որոնում + Ctrl + H՝ գունաշրջումը միացնելու և անջատելու համար։</translation>
 <translation id="3584169441612580296">Կարդալ և փոխել լուսանկարները, երաժշտությունը և ձեր համակարգչում պահվող այլ մեդիա ֆայլերը</translation>
-<translation id="3584527007414070635">Շարունակեք «<ph name="MODULE_TITLE" />» հարցումով որոնումը</translation>
 <translation id="3586806079541226322">Չհաջողվեց բացել ֆայլը</translation>
 <translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
 <translation id="3587438013689771191">Իմանալ ավելին «<ph name="SUBPAGE_TITLE" />» ենթաէջի մասին</translation>
@@ -4186,6 +4185,7 @@
 <translation id="4332976768901252016">Ծնողական վերահսկողության կարգավորում</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1՝ RSA գաղտնագրումով</translation>
 <translation id="4334768748331667190">Ձեզ այլևս չի ցուցադրվի <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4339203724549370495">Ապատեղադրել հավելվածը</translation>
 <translation id="4340125850502689798">Օգտանունն անվավեր է</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» հավելվածի հետ</translation>
@@ -4497,7 +4497,6 @@
 <translation id="4580587929153007251">Նորից մտեք Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="4580596421317071374">Գաղտնաբառերը պահվում են այս սարքի <ph name="GOOGLE_PASSWORD_MANAGER" />ում։</translation>
 <translation id="4581774856936278355">Չհաջողվեց վերականգնել Լինուքսը սխալի պատճառով</translation>
-<translation id="4582217877717474109">Համակարգի կարգավորումներ</translation>
 <translation id="4582297591746054421">Կայքերը սովորաբար դիտում են սեղմատախտակը՝ պատճենված տեքստի ձևաչափը պահպանելու և նման այլ գործառույթների համար</translation>
 <translation id="4582563038311694664">Վերակայել բոլոր կարգավորումները</translation>
 <translation id="4585793705637313973">Փոխել էջը</translation>
@@ -6781,7 +6780,6 @@
 <translation id="6497784818439587832">Փոխեք էկրանի չափը՝ տարրերը ավելի մեծ կամ ավելի փոքր դարձնելու համար</translation>
 <translation id="6497789971060331894">Մկնիկով հետադարձ ոլորում</translation>
 <translation id="6498249116389603658">&amp;Ձեր բոլոր լեզուները</translation>
-<translation id="6498583202177273322">Ստացեք լրացուցիչ օգտակար տեղեկություններ այս էջում</translation>
 <translation id="6499143127267478107">Խնամորդի լուծում պրոքսի-սերվերի սկրիպտում…</translation>
 <translation id="6499764981457476645">Մոտակայքում սարքեր չկան</translation>
 <translation id="6501957628055559556">Բոլոր կոնտեյներները</translation>
@@ -8847,6 +8845,7 @@
 <translation id="816055135686411707">Վկայագրի վստահության որոշման սխալ</translation>
 <translation id="8160775796528709999">Միացրեք «Կենդանի ենթագրերը» կարգավորումներում և ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Շարունակել դիտարկումը</translation>
 <translation id="8161293209665121583">Ընթերցման ռեժիմ վեբ էջերի համար</translation>
 <translation id="8161604891089629425">Եզրագծված տառատեսակ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Բացել ներդիրը նոր պատուհանում}one{Բացել ներդիրները նոր պատուհանում}other{Բացել ներդիրները նոր պատուհանում}}</translation>
@@ -9298,6 +9297,7 @@
 <translation id="8528962588711550376">Մուտք...</translation>
 <translation id="8529925957403338845">Չհաջողվեց մոդեմի ակնթարթային ռեժիմով կապ հաստատել</translation>
 <translation id="8531701051932785007">Բարելավված Ապահով դիտարկումն անջատված է</translation>
+<translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8534656636775144800">Տիրույթին միանալիս սխալ առաջացավ: Նորից փորձեք:</translation>
 <translation id="8535005006684281994">Netscape-ի վկայագրի նորացման URL</translation>
 <translation id="8536713137312218707">Արագ հրամաններ</translation>

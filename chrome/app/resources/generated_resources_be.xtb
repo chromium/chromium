@@ -3243,7 +3243,6 @@
 <translation id="3582057310199111521">Уведзены на сайце, вядомым падманнымі паводзінамі, і раскрыты пры ўцечцы даных</translation>
 <translation id="3582299299336701326">Рабіце светлыя экраны цёмнымі, а цёмныя – светлымі. Каб уключыць або выключыць інверсію колераў, націсніце Пошук + Ctrl + H.</translation>
 <translation id="3584169441612580296">Прагляд і змяненне з камп'ютара фота, музыкі і іншых файлаў мультымедыя</translation>
-<translation id="3584527007414070635">Узнавіце шлях, які вы прайшлі, шукаючы "<ph name="MODULE_TITLE" />"</translation>
 <translation id="3586806079541226322">Не ўдалося адкрыць гэты файл</translation>
 <translation id="3586931643579894722">Схаваць падрабязнасці</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />: даведайцеся больш</translation>
@@ -4185,6 +4184,7 @@
 <translation id="4332976768901252016">Наладжванне бацькоўскага кантролю</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 з шыфраваннем RSA</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> больш не будзе паказвацца</translation>
+<translation id="4335835283689002019">"Бяспечны прагляд" выключаны</translation>
 <translation id="4339203724549370495">Выдаліць праграму</translation>
 <translation id="4340125850502689798">Несапраўднае імя карыстальніка</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> запытвае абмен данымі з праграмай "<ph name="EXTENSION_NAME" />"</translation>
@@ -4496,7 +4496,6 @@
 <translation id="4580587929153007251">Увайдзіце ў Менеджар пароляў Google зноў</translation>
 <translation id="4580596421317071374">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />" на гэтай прыладзе.</translation>
 <translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
-<translation id="4582217877717474109">Налады сістэмы</translation>
 <translation id="4582297591746054421">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4582563038311694664">Скінуць усе налады</translation>
 <translation id="4585793705637313973">Рэдагаванне старонкі</translation>
@@ -6780,7 +6779,6 @@
 <translation id="6497784818439587832">Змяняйце маштаб дысплэя, каб паменшыць або павялічыць памеры аб'ектаў на экране</translation>
 <translation id="6497789971060331894">Адваротная прагортка мышшу</translation>
 <translation id="6498249116389603658">&amp;Усе вашы мовы</translation>
-<translation id="6498583202177273322">Атрымліваць дадатковую карысную інфармацыю пры праглядзе гэтай старонкі</translation>
 <translation id="6499143127267478107">Перавызначэнне хоста ў сцэнарыі проксі-сервера...</translation>
 <translation id="6499764981457476645">Прылады паблізу не знойдзены</translation>
 <translation id="6501957628055559556">Усе кантэйнеры</translation>
@@ -8851,6 +8849,7 @@
 <translation id="816055135686411707">Не ўдалося наладзіць давер сертыфіката</translation>
 <translation id="8160775796528709999">Дазвольце ствараць субцітры для аўдыя і відэа, уключыўшы функцыю "Імгненныя субцітры" ў наладах</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Узнавіць прагляд</translation>
 <translation id="8161293209665121583">Рэжым чытання для вэб-старонак</translation>
 <translation id="8161604891089629425">Контурны шрыфт</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перамясціць укладку ў новае акно}one{Перамясціць укладкі ў новае акно}few{Перамясціць укладкі ў новае акно}many{Перамясціць укладкі ў новае акно}other{Перамясціць укладкі ў новае акно}}</translation>
@@ -9302,6 +9301,7 @@
 <translation id="8528962588711550376">Выконваецца ўваход.</translation>
 <translation id="8529925957403338845">Збой злучэння Імгненнага рэжыму мадэма</translation>
 <translation id="8531701051932785007">Палепшаны Бяспечны прагляд выключаны</translation>
+<translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>
 <translation id="8534656636775144800">Памылка!  Нешта пайшло не так падчас спробы далучыцца да дамена. Паўтарыце спробу.</translation>
 <translation id="8535005006684281994">URL-адрас абнаўлення сертыфіката Netscape</translation>
 <translation id="8536713137312218707">Хуткія каманды</translation>

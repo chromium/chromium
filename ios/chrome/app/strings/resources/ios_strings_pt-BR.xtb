@@ -197,6 +197,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2049727122989709386"><ph name="COUNT" /> contas usando a mesma senha</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} forma de pagamento salva disponível acima do teclado.}one{{count} forma de pagamento salva disponível acima do teclado.}other{{count} formas de pagamento salvas disponíveis acima do teclado.}}</translation>
 <translation id="2055515971416882518">Abra "Configurações".</translation>
+<translation id="2059166748188874810">Município</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -478,6 +479,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir imagem em "Nova guia"</translation>
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="3599500618468205645">Ocultar opção "Seguir <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">Copiar URL do link</translation>
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
@@ -488,6 +490,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3646736009628185125">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chrome e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Perfil de configuração disponível</translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3680970647557344817">Ocultar opção "Editar favorito"</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
 <translation id="3688815115226493214">Sugestões de guias</translation>
 <translation id="3700134753671613714">Faça login para ter acesso aos seus favoritos em todos os seus dispositivos.</translation>
@@ -637,6 +640,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606247758155004938">O navegador é gerenciado pela sua organização.</translation>
+<translation id="4611811151908969241">Ocultar opção "Parar de seguir <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Pesquisando com o Google</translation>
 <translation id="4616391354457235490">Desfazer</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
@@ -1058,6 +1062,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6753469262000681876">Modo de bloqueio total</translation>
 <translation id="6760509555861141183">Voltar à guia recente</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
+<translation id="6771287014037609247">Sempre rastrear pacotes detectados</translation>
 <translation id="6780034285637185932">CEP</translation>
 <translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6781405765516175232">Para conferir opções de trajeto, toque em "Conferir rotas".</translation>
@@ -1409,6 +1414,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8780076847684176174">{count,plural, =1{Conferir a guia…}one{Conferir a guia…}other{Conferir todas as guias…}}</translation>
 <translation id="8787968206789828143">Pesquisar na Web</translation>
 <translation id="8792626944327216835">microfone</translation>
+<translation id="8793366654064127924">Perguntar sempre</translation>
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8806823403540278281">Sua organização requer o uso do modo de navegação privada. As guias não são salvas no modo de navegação anônima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não deixa o navegador ou dispositivo lento.</translation>
 <translation id="8855781063981781621">Desative o modo de bloqueio total no Chrome para desativá-lo no seu iPad.</translation>
+<translation id="886335568110896118">Ocultar opção "Solicitar o site móvel"</translation>
 <translation id="8863431381414769983">Receber rotas e informações locais no Google Maps</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} guia}one{{count} guia}other{{count} guias}}</translation>

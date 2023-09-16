@@ -1751,7 +1751,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8230305195727960608">Rengi Ters Çevirme Modu</translation>
 <translation id="8236042855478648955">Mola verme zamanı</translation>
 <translation id="8239034820133090126">Sağdaki masayı etkinleştir</translation>
-<translation id="8246282815785366524">Tekrar hoş geldiniz <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Uygulama</translation>
 <translation id="8255234195843591763">Güncellemek için sıfırlayın</translation>
@@ -1850,6 +1849,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8703634754197148428">Kaydı başlat. Kayıt başladıktan sonra Alt+Üst Karakter+L tuşlarını kullanarak rafta bulunan kaydı durdur düğmesine gidebilirsiniz</translation>
 <translation id="8704155109538237473">Pencere içinde pencereye odaklanır</translation>
 <translation id="870917907284186124">Dikteyi açın/kapatın (konuşarak yazın)</translation>
+<translation id="8714138378966541668">Sağlayıcı tarafından kilitlendi</translation>
 <translation id="8717459106217102612">Önceki kelimeyi veya harfi seçer</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran görüntüsü alma</translation>

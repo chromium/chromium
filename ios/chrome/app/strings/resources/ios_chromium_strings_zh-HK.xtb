@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium 設定</translation>
 <translation id="1722370509450468186">密碼將會儲存在您的帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 的資料</translation>
-<translation id="1758508597843173586">在您離開 Chromium 或切換至其他應用程式時鎖定無痕模式。</translation>
 <translation id="1791845338122684020">開啟 Chromium 記錄頁面。</translation>
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
 <translation id="1843424232666537147">Chromium 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="3478750326643748149">隱藏「充分運用 Chromium 的功能」</translation>
+<translation id="3554027294407525061">清除 Chromium 中的瀏覽資料。</translation>
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chromium，並儲存書籤、密碼和其他設定。</translation>
@@ -92,12 +92,14 @@
 <translation id="4736424910885271643">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chromium 資料將會從此裝置上清除</translation>
 <translation id="4790638144988730920">繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼。請稍後再試。</translation>
+<translation id="4935539884203837577">Chromium 可以偵測你輸入的追蹤號碼，在「新分頁」頁面追蹤包裹，並協助你享受其他 Chromium 購物體驗。</translation>
 <translation id="4985291216379576555">離線，Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 比以前更簡便、安全而快速，讓您事半功倍。</translation>
 <translation id="4999538639245140991">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chromium 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="5042011327527167688">輕按「在 Chromium 中使用『Google 地圖』查看」。</translation>
 <translation id="5044871537677053278">Chromium 會偵測地址，並使用「Google 地圖」為你規劃路線及提供當地資訊。</translation>
 <translation id="5048795749726991615">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
+<translation id="5076601183701536878">清除 Chromium 中的瀏覽資料</translation>
 <translation id="5131565040785979529">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5213683223491576284">在 Chromium 中開啟「密碼管理工具」。</translation>
@@ -114,6 +116,7 @@
 <translation id="5688047395118852662">此資訊卡會建議您如何充分運用 Chromium 的功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
+<translation id="584303319228224680">在 Chromium 中自動追蹤包裹</translation>
 <translation id="5889847953983052353">開啟時：
 <ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的使用體驗。<ph name="END_INDENT" />
 

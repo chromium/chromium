@@ -1983,6 +1983,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />යම් දෙයක් වැරදුණ අතර <ph name="DEVICE_OS" /> ස්ථාපනය කළ නොහැකි විය.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />වැඩිදුර උදවු සඳහා, මෙතැනට පිවිසෙන්න: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">ඔබගේ බැටරිය 80% පමණ තබා ගැනීමෙන් බැටරි ආයු කාලය දීර්ඝ කරයි. ඔබ සාමාන්‍යයෙන් බලයෙන් විසන්ධි කිරීමට පෙර බැටරිය සම්පූර්ණයෙන්ම ආරෝපණය වේ.</translation>
+<translation id="2532146950330687938">උපාංගය සූදානම් කරමින්...</translation>
 <translation id="2532198298278778531">ChromeOS Flex සැකසීම් තුළ සුරක්ෂිත DNS කළමනාකරණය කරන්න</translation>
 <translation id="2532589005999780174">අධි අසමානතා ප්‍රකාරය</translation>
 <translation id="2533649878691950253">ඔබ සාමාන්‍යයෙන් මෙයට ඉඩ නොදෙන නිසා ඔබගේ ඉතා නිවැරදි ස්ථානය දැන ගැනීමෙන් මෙම අඩවිය අවහිර කර ඇත</translation>
@@ -3245,7 +3246,6 @@
 <translation id="3582057310199111521">වංචනික වෙබ් අඩවියකට ඇතුළත් වූ අතර දත්ත කඩ කිරීම සොයා ගත්තා</translation>
 <translation id="3582299299336701326">ආලෝකමත් තිර අඳුරු කරන්න, සහ අඳුරු තිර ආලෝකමත් කරන්න. වර්ණ අපවර්තනය ක්‍රියාත්මක සහ ක්‍රියා විරහිත කිරීමට සෙවීම + Ctrl + H ඔබන්න.</translation>
 <translation id="3584169441612580296">ඔබගේ පරිගණකයෙන් ඡායාරූප, සංගීතය, සහ වෙනත් මාධ්‍යය කියවා වෙනස් කරන්න</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> සඳහා ඔබේ ගමන නැවත පටන් ගන්න</translation>
 <translation id="3586806079541226322">මෙම ගොනුව විවෘත කළ නොහැක</translation>
 <translation id="3586931643579894722">විස්තර සඟවන්න</translation>
 <translation id="3587438013689771191">මේ පිළිබඳව තව දැන ගන්න: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4190,6 +4190,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4332976768901252016">මාපිය පාලන සකසන්න</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 With RSA සංකේතනය</translation>
 <translation id="4334768748331667190">ඔබ නැවත <ph name="MODULE_NAME" /> නොදකිනු ඇත</translation>
+<translation id="4335835283689002019">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිතයි</translation>
 <translation id="4339203724549370495">යෙදුම අස්ථාපනය කරන්න</translation>
 <translation id="4340125850502689798">වලංගු නොවන පරිශීලක නාමය</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> හට "<ph name="EXTENSION_NAME" />" යෙදුම සමඟ සන්නිවේදනය කිරීමට අවශ්‍යයි</translation>
@@ -4501,7 +4502,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4580587929153007251">Google මුරපද කළමනාකරු වෙත ආපසු පුරන්න</translation>
 <translation id="4580596421317071374">මෙම උපාංගයේ <ph name="GOOGLE_PASSWORD_MANAGER" /> හි මුරපද සුරැකේ.</translation>
 <translation id="4581774856936278355">ලිනක්ස් ප්‍රතිසාධන කරන විට දෝෂයක් සිදු විය</translation>
-<translation id="4582217877717474109">පද්ධති මනාප</translation>
 <translation id="4582297591746054421">අඩවි සාමාන්‍යයෙන් ඔබ පිටපත් කළ පෙළ හැඩ ගැන්වීම තබා ගැනීම වැනි විශේෂාංග සඳහා ඔබේ පසුරු පුවරුව කියවයි</translation>
 <translation id="4582563038311694664">සියලු සැකසුම් යළි සකසන්න</translation>
 <translation id="4585793705637313973">පිටුව සංස්කරණය කරන්න</translation>
@@ -5745,6 +5745,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5627086634964711283">තවද එය ඔබ නිවෙස් බොත්තම ක්ලික් කළ විට පෙන්වන පිටුවද පාලනය කරයි.</translation>
 <translation id="5627676517703583263">Chrome සමඟ බුද්ධිමත්ව බ්‍රවුස් කරන්න</translation>
 <translation id="5627832140542566187">සංදර්ශක දිශානතිය</translation>
+<translation id="5628434207686266338">උපාංග මුරපදය සකසන්න</translation>
 <translation id="562935524653278697">ඔබේ පරිපාලක ඔබේ පිටුසන්, ඉතිහාසය, මුරපද, සහ වෙනත් සැකසීම් සමමුහුර්ත කිරීම අබල කර ඇත.</translation>
 <translation id="5631017369956619646">CPU භාවිතය</translation>
 <translation id="5631272057151918206">මෙය ඔබේ නොබැඳි ගොනු භාවිත කරන <ph name="OFFLINE_STORAGE_SIZE" />ක ඉඩක් දක්වා ඉවත් කරනු ඇත. සමහර ගොනු තවමත් නොබැඳිව පවතියි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -6785,7 +6786,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6497784818439587832">ඔබේ තිරයෙහි ඇති අයිතම කුඩා හෝ විශාල කිරීමට සංදර්ශක ප්‍රමාණය වෙනස් කරන්න</translation>
 <translation id="6497789971060331894">මූසික ආපස්සට අනුචලනය</translation>
 <translation id="6498249116389603658">ඔබගේ සියලුම භාෂා</translation>
-<translation id="6498583202177273322">ඔබ මෙම පිටුව ගවේෂණය කරන විට අතිරේක ප්‍රයෝජනවත් තතු ලබා ගන්න</translation>
 <translation id="6499143127267478107">ප්‍රොක්සි ස්ක්‍රිප්ට තුළ සත්කාරක විසඳමින්...</translation>
 <translation id="6499764981457476645">අවට උපාංග හමු නොවීය</translation>
 <translation id="6501957628055559556">සියලු බහාලුම්</translation>
@@ -8849,6 +8849,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="816055135686411707">සහතික භාර සැකසුම් දෝෂය</translation>
 <translation id="8160775796528709999">සැකසීම් තුළ සජීවී සිරස්තල සබල කිරීමෙන් ඔබගේ ශ්‍රව්‍ය සහ වීඩියෝ සඳහා සිරස්තල ලබා ගන්න</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">බ්‍රවුස් කිරීම නැවත පටන් ගන්න</translation>
 <translation id="8161293209665121583">වෙබ් පිටු සඳහා පාඨක ප්‍රකාරය</translation>
 <translation id="8161604891089629425">දළ සටහන් අකුරු වර්ගය</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{පටිත්ත නව කවුළුවට ගෙන යන්න}one{පටිති නව කවුළුවට ගෙන යන්න}other{පටිති නව කවුළුවට ගෙන යන්න}}</translation>
@@ -9300,6 +9301,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8528962588711550376">පුරමින්.</translation>
 <translation id="8529925957403338845">ක්ෂණික ටෙදරින් සබැඳුම අසාර්ථක විය</translation>
 <translation id="8531701051932785007">ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ක්‍රියාවිරහිතයි</translation>
+<translation id="8533670235862049797">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>
 <translation id="8534656636775144800">අපොයි! වසමට එක් වීමට උත්සාහ කරන විට යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="8535005006684281994">Netscape සහතිකය අලුත් කිරීමේ URL</translation>
 <translation id="8536713137312218707">ඉක්මන් විධාන</translation>

@@ -3257,7 +3257,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3582057310199111521">Har angetts på en bedräglig webbplats och upptäckts i ett dataintrång</translation>
 <translation id="3582299299336701326">Gör ljusa skärmar mörka och mörka skärmar ljusa. Tryck på Sök + Ctrl + H för att aktivera och inaktivera inverterade färger.</translation>
 <translation id="3584169441612580296">Läsa och ändra foton, musik och andra media från datorn</translation>
-<translation id="3584527007414070635">Återuppta sökningen efter <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Det går inte att öppna den här filen</translation>
 <translation id="3586931643579894722">Dölj detaljerad information</translation>
 <translation id="3587438013689771191">Läs mer om <ph name="SUBPAGE_TITLE" /></translation>
@@ -4201,6 +4200,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4332976768901252016">Konfigurera föräldrakontroller</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 med RSA-kryptering</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> visas inte igen</translation>
+<translation id="4335835283689002019">Säker webbsökning har inaktiverats</translation>
 <translation id="4339203724549370495">Avinstallera app</translation>
 <translation id="4340125850502689798">Ogiltigt användarnamn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> vill kommunicera med appen <ph name="EXTENSION_NAME" /></translation>
@@ -4513,7 +4513,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4580587929153007251">Logga in i Google Lösenordshantering igen</translation>
 <translation id="4580596421317071374">Lösenorden sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> på den här enheten.</translation>
 <translation id="4581774856936278355">Ett fel uppstod när Linux skulle återställas</translation>
-<translation id="4582217877717474109">Systeminställningar</translation>
 <translation id="4582297591746054421">Att läsa från Urklipp brukar kunna behövas till exempel för att bevara formateringen när du kopierar text på webbplatsen</translation>
 <translation id="4582563038311694664">Återställ alla inställningar</translation>
 <translation id="4585793705637313973">Redigera sida</translation>
@@ -6797,7 +6796,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6497784818439587832">Ändra skärmstorlek för att göra objekt på skärmen större eller mindre</translation>
 <translation id="6497789971060331894">Omvänd scrollning på musen</translation>
 <translation id="6498249116389603658">&amp;Alla dina språk</translation>
-<translation id="6498583202177273322">Få mer användbar information när du utforskar sidan</translation>
 <translation id="6499143127267478107">Slår upp adress i proxyscript</translation>
 <translation id="6499764981457476645">Inga enheter hittades i närheten</translation>
 <translation id="6501957628055559556">Alla behållare</translation>
@@ -8864,6 +8862,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="816055135686411707">Fel när certifikatets tillförlitlighet angavs</translation>
 <translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Live Caption i inställningarna</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Fortsätt surfa</translation>
 <translation id="8161293209665121583">Läsläge för webbsidor</translation>
 <translation id="8161604891089629425">Konturteckensnitt</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta flikarna till ett nytt fönster}}</translation>
@@ -9315,6 +9314,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8528962588711550376">Inloggning sker</translation>
 <translation id="8529925957403338845">Direktinternetdelning misslyckades</translation>
 <translation id="8531701051932785007">Förbättrad säker webbsökning har inaktiverats</translation>
+<translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
 <translation id="8534656636775144800">Hoppsan. Något gick fel när du försökte ansluta till domänen. Försök igen.</translation>
 <translation id="8535005006684281994">Förnyelseadress för Netscape-certifikat</translation>
 <translation id="8536713137312218707">Snabbkommandon</translation>

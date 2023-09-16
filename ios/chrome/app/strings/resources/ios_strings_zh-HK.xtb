@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> 個帳戶正在使用同一個密碼</translation>
 <translation id="2050196510205866090">{count,plural, =1{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}}</translation>
 <translation id="2055515971416882518">開啟「設定」。</translation>
+<translation id="2059166748188874810">自治市</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -313,6 +314,7 @@
 <translation id="2738375676495545665">隱藏「最新資訊」</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
 <translation id="2749231692441336879">正在追蹤 <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">此裝置上的帳戶</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="2772667768515195373">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2773292004659987824">無痕搜尋</translation>
@@ -477,6 +479,7 @@
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
+<translation id="3599500618468205645">隱藏「追蹤 <ph name="DOMAIN_NAME" />」</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
@@ -487,6 +490,7 @@
 <translation id="3646736009628185125">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">有可用的設定描述檔。</translation>
 <translation id="3670030362669914947">號碼</translation>
+<translation id="3680970647557344817">隱藏「編輯書籤」</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3688815115226493214">分頁建議</translation>
 <translation id="3700134753671613714">登入後，即可從任何裝置取得自己的書籤。</translation>
@@ -636,6 +640,7 @@
 <translation id="4592368184551360546">鍵盤</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
+<translation id="4611811151908969241">隱藏「取消追蹤 <ph name="DOMAIN_NAME" />」</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
 <translation id="4616391354457235490">復原</translation>
 <translation id="4619564267100705184">驗證身分</translation>
@@ -1055,6 +1060,7 @@
 <translation id="6753469262000681876">鎖定模式</translation>
 <translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6762812039470893796">全部取消選取</translation>
+<translation id="6771287014037609247">一律追蹤偵測到的包裹</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
 <translation id="6781260999953472352">要開啟同步處理功能嗎？</translation>
 <translation id="6781405765516175232">如要查看路線選項，請輕按「取得路線」。</translation>
@@ -1227,6 +1233,7 @@
 <translation id="778855399387580014">在新的 Chrome 分頁上開始搜尋。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
+<translation id="78146569776629510">下載</translation>
 <translation id="7839985698273989086">離線頁面</translation>
 <translation id="7840771868269352570">您選取的項目將會被移除。</translation>
 <translation id="7845466610722898">顯示閱讀清單</translation>
@@ -1405,6 +1412,7 @@
 <translation id="8780076847684176174">{count,plural, =1{查看分頁…}other{查看所有分頁…}}</translation>
 <translation id="8787968206789828143">在網絡上搜尋</translation>
 <translation id="8792626944327216835">麥克風</translation>
+<translation id="8793366654064127924">每次都詢問我</translation>
 <translation id="8803639129939845298">安全</translation>
 <translation id="8806823403540278281">您的機構要求您私密瀏覽內容。在無痕模式下無法儲存分頁。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1418,6 +1426,7 @@
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8855242995793521265">不會大幅減慢瀏覽器或裝置運作速度。</translation>
 <translation id="8855781063981781621">在 iPad 上關閉「封鎖模式」，就能在 Chrome 中停用此模式。</translation>
+<translation id="886335568110896118">隱藏「切換至流動網站」</translation>
 <translation id="8863431381414769983">透過「Google 地圖」規劃路線及取得本地資料</translation>
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>

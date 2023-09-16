@@ -3244,7 +3244,6 @@
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
 <translation id="3582299299336701326">Сделать светлые цвета темными, а темные светлыми. Чтобы включить или отключить инверсию цветов, нажмите Поиск + Ctrl + H.</translation>
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
-<translation id="3584527007414070635">Продолжите поиск по теме <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Не удалось открыть файл</translation>
 <translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587438013689771191">Подробнее: статья "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4188,6 +4187,7 @@
 <translation id="4332976768901252016">Настройка родительского контроля</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 с шифрованием RSA</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> больше не будет показываться.</translation>
+<translation id="4335835283689002019">Отключено</translation>
 <translation id="4339203724549370495">Удалить приложение</translation>
 <translation id="4340125850502689798">Неверное имя пользователя.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> запрашивает доступ к приложению "<ph name="EXTENSION_NAME" />"</translation>
@@ -4499,7 +4499,6 @@
 <translation id="4580587929153007251">Войдите в Google Менеджер паролей.</translation>
 <translation id="4580596421317071374">Место хранения паролей на этом устройстве: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4581774856936278355">Не удалось восстановить данные Linux</translation>
-<translation id="4582217877717474109">Системные настройки</translation>
 <translation id="4582297591746054421">Обычно сайтам нужен доступ к буферу обмена, чтобы использовать некоторые функции, например сохранять форматирование скопированного текста.</translation>
 <translation id="4582563038311694664">Сбросить все настройки</translation>
 <translation id="4585793705637313973">Изменить страницу</translation>
@@ -6783,7 +6782,6 @@
 <translation id="6497784818439587832">Изменить масштаб изображения, чтобы увеличить или уменьшить объекты на экране</translation>
 <translation id="6497789971060331894">Обратное направление прокрутки мышью</translation>
 <translation id="6498249116389603658">&amp;Все языки</translation>
-<translation id="6498583202177273322">Получайте дополнительную информацию при навигации по странице</translation>
 <translation id="6499143127267478107">Разрешение хоста в скрипте прокси-сервера...</translation>
 <translation id="6499764981457476645">Устройства не найдены</translation>
 <translation id="6501957628055559556">Все контейнеры</translation>
@@ -8855,6 +8853,7 @@
 <translation id="816055135686411707">Ошибка при определении доверия сертификата</translation>
 <translation id="8160775796528709999">Включить автоматические субтитры для аудио и видео можно в настройках</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Продолжить просмотр</translation>
 <translation id="8161293209665121583">Режим чтения веб-страниц</translation>
 <translation id="8161604891089629425">Контурный шрифт</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
@@ -9306,6 +9305,7 @@
 <translation id="8528962588711550376">Выполняется вход.</translation>
 <translation id="8529925957403338845">Нет подключения к мгновенной точке доступа</translation>
 <translation id="8531701051932785007">Улучшенный Безопасный просмотр отключен</translation>
+<translation id="8533670235862049797">Включен</translation>
 <translation id="8534656636775144800">Произошла ошибка при подключении к домену. Повторите попытку.</translation>
 <translation id="8535005006684281994">URL обновления сертификатов Netscape</translation>
 <translation id="8536713137312218707">Быстрые команды</translation>

@@ -1978,6 +1978,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Un problème est survenu, et <ph name="DEVICE_OS" /> n'a pas pu être installé.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide supplémentaire, consultez la page g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Prolonge l'autonomie de la pile en maintenant le niveau de recharge autour de 80 %. La pile se rechargera complètement avant que vous ne la débranchiez de la prise comme d'habitude.</translation>
+<translation id="2532146950330687938">Préparation de l'appareil en cours…</translation>
 <translation id="2532198298278778531">Gérer le DNS sécurisé dans les paramètres de Chrome OS Flex</translation>
 <translation id="2532589005999780174">Mode de contraste élevé</translation>
 <translation id="2533649878691950253">Votre position exacte est bloquée pour ce site parce que vous refusez habituellement de la communiquer</translation>
@@ -3240,7 +3241,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3582057310199111521">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3582299299336701326">Assombrissez les écrans clairs et éclaircissez les écrans sombres. Appuyez sur Rechercher+Ctrl+H pour activer et désactiver l'inversion des couleurs.</translation>
 <translation id="3584169441612580296">Lire et modifier les photos, la musique et les autres médias stockés sur votre ordinateur</translation>
-<translation id="3584527007414070635">Reprendre votre exploration de <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587438013689771191">En savoir plus sur : <ph name="SUBPAGE_TITLE" /></translation>
@@ -4184,6 +4184,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4332976768901252016">Configurer les contrôles parentaux</translation>
 <translation id="4333854382783149454">PKCS n° 1 SHA-1 avec chiffrement RSA</translation>
 <translation id="4334768748331667190">Vous ne verrez plus <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4339203724549370495">Désinstaller l'application</translation>
 <translation id="4340125850502689798">Nom d'utilisateur non valide</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> souhaite communiquer avec l’application « <ph name="EXTENSION_NAME" /> »</translation>
@@ -4493,7 +4494,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4580587929153007251">Reconnectez-vous au gestionnaire de mots de passe de Google</translation>
 <translation id="4580596421317071374">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> sur cet appareil.</translation>
 <translation id="4581774856936278355">Une erreur s'est produite lors de la restauration du conteneur Linux</translation>
-<translation id="4582217877717474109">Préférences système</translation>
 <translation id="4582297591746054421">Les sites lisent généralement le contenu de votre presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
@@ -5735,6 +5735,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5627086634964711283">Elle définit également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5627676517703583263">Naviguez intelligemment avec Chrome</translation>
 <translation id="5627832140542566187">Orientation de l'écran</translation>
+<translation id="5628434207686266338">Définir le mot de passe de l'appareil</translation>
 <translation id="562935524653278697">Votre administrateur a désactivé la synchronisation de vos favoris, de l'historique, des mots de passe et d'autres paramètres.</translation>
 <translation id="5631017369956619646">Utilisation de l'UC</translation>
 <translation id="5631272057151918206">Cela va retirer jusqu'à <ph name="OFFLINE_STORAGE_SIZE" /> d'espace utilisés par vos fichiers hors ligne. Certains fichiers seront toujours accessibles hors ligne. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6775,7 +6776,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6497784818439587832">Modifier la taille d'affichage pour rétrécir ou agrandir les éléments sur votre écran</translation>
 <translation id="6497789971060331894">Défilement inversé de la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
-<translation id="6498583202177273322">Obtenez des informations utiles supplémentaires en explorant cette page</translation>
 <translation id="6499143127267478107">Résolution de l'hôte dans le script de mandataire en cours...</translation>
 <translation id="6499764981457476645">Aucun appareil trouvé à proximité</translation>
 <translation id="6501957628055559556">Tous les conteneurs</translation>
@@ -8839,6 +8839,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="816055135686411707">Erreur de définition du paramètre de confiance du certificat</translation>
 <translation id="8160775796528709999">Activez l'option de sous-titres instantanés dans les paramètres pour afficher les sous-titres de vos contenus vidéo et audio</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Reprendre la navigation</translation>
 <translation id="8161293209665121583">Mode Lecteur pour pages Web</translation>
 <translation id="8161604891089629425">Police de contour</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
@@ -9288,6 +9289,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8528962588711550376">En cours de connexion.</translation>
 <translation id="8529925957403338845">Échec du partage de connexion instantané</translation>
 <translation id="8531701051932785007">La navigation sécurisée améliorée est désactivée</translation>
+<translation id="8533670235862049797">Navigation sécuritaire activée</translation>
 <translation id="8534656636775144800">Oups! Une erreur s'est produite lorsque vous avez tenté de vous joindre au domaine. Veuillez réessayer.</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536713137312218707">Commandes rapides</translation>
@@ -9475,6 +9477,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8680251145628383637">Connectez-vous pour accéder à vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils. Vous serez également automatiquement connecté(e) à vos services Google.</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour présenter des annonces intrusives ou trompeuses</translation>
 <translation id="8682730193597992579">L'imprimante <ph name="PRINTER_NAME" /> est connectée et prête à être utilisée</translation>
+<translation id="8684471948980641888">Autoriser la synchronisation sur les réseaux mesurés</translation>
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuler <ph name="FILE_NAME" /></translation>

@@ -3265,7 +3265,6 @@
 <translation id="3582057310199111521">Введено на оманливому сайті та виявлено порушення безпеки даних</translation>
 <translation id="3582299299336701326">Світлі екрани стануть темними й навпаки. Щоб увімкнути або вимкнути інверсію кольорів, натисніть клавішу пошуку + Ctrl + H.</translation>
 <translation id="3584169441612580296">Читати й змінювати фотографії, музику та інші медіафайли на комп’ютері</translation>
-<translation id="3584527007414070635">Відновити сеанс для запиту "<ph name="MODULE_TITLE" />"</translation>
 <translation id="3586806079541226322">Не вдається відкрити цей файл</translation>
 <translation id="3586931643579894722">Сховати докладні дані</translation>
 <translation id="3587438013689771191">Докладніше про підсторінку "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4209,6 +4208,7 @@
 <translation id="4332976768901252016">Налаштуйте батьківський контроль</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 із шифруванням RSA</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> більше не відображатиметься</translation>
+<translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
 <translation id="4339203724549370495">Видалити додаток</translation>
 <translation id="4340125850502689798">Недійсне ім'я користувача</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> хоче обмінюватися даними з додатком <ph name="EXTENSION_NAME" /></translation>
@@ -4521,7 +4521,6 @@
 <translation id="4580587929153007251">Знову ввійдіть у Менеджер паролів Google</translation>
 <translation id="4580596421317071374">Паролі зберігаються в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> на цьому пристрої.</translation>
 <translation id="4581774856936278355">Сталася помилка під час відновлення Linux</translation>
-<translation id="4582217877717474109">Налаштування системи</translation>
 <translation id="4582297591746054421">Сайти зазвичай переглядають буфер обміну для роботи таких функцій, як зберігання форматування скопійованого тексту</translation>
 <translation id="4582563038311694664">Скинути всі налаштування</translation>
 <translation id="4585793705637313973">Редагувати сторінку</translation>
@@ -6806,7 +6805,6 @@
 <translation id="6497784818439587832">Зменшуйте або збільшуйте розмір елементів на екрані</translation>
 <translation id="6497789971060331894">Зворотне прокручування мишею</translation>
 <translation id="6498249116389603658">&amp;Усі мови</translation>
-<translation id="6498583202177273322">Переглядайте додаткову корисну інформацію на цій сторінці</translation>
 <translation id="6499143127267478107">Визначення хосту в сценарії проксі-сервера...</translation>
 <translation id="6499764981457476645">Пристроїв поблизу не знайдено</translation>
 <translation id="6501957628055559556">Усі контейнери</translation>
@@ -8879,6 +8877,7 @@
 <translation id="816055135686411707">Помилка під час налаштування довіри сертифікату</translation>
 <translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Відновити перегляд</translation>
 <translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
 <translation id="8161604891089629425">Шрифт із контуром</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
@@ -9330,6 +9329,7 @@
 <translation id="8528962588711550376">Виконується вхід.</translation>
 <translation id="8529925957403338845">Не вдалося під’єднатися в миттєвому режимі модема</translation>
 <translation id="8531701051932785007">Безпечний перегляд із розширеним захистом вимкнено</translation>
+<translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>
 <translation id="8534656636775144800">На жаль, не вдалося приєднатися до домену. Повторіть спробу.</translation>
 <translation id="8535005006684281994">URL-адреса відновлення сертифікатів Netscape</translation>
 <translation id="8536713137312218707">Швидкі команди</translation>

@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium-stillingar</translation>
 <translation id="1722370509450468186">Aðgangsorðið þitt verður vistað á reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Hreinsaði gögn Chromium</translation>
-<translation id="1758508597843173586">Læstu huliðsflipum þegar þú lokar Chromium eða skiptir yfir í annað forrit.</translation>
 <translation id="1791845338122684020">Opnar Chromium-ferilssíðuna þína</translation>
 <translation id="1838412507805038478">Chromium staðfesti að <ph name="ISSUER" /> gaf út vottorð þessa vefsvæðis.</translation>
 <translation id="1843424232666537147">Í Chromium eru eiginleikar sem aðstoða þig við að hafa umsjón með gögnum á netinu og hversu fljótlega þú hleður vefsíðum niður.
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="3472200483164753384">Ekki stutt í Chromium Canary</translation>
 <translation id="3478750326643748149">Fela „Nýttu þér Chromium til fulls“</translation>
+<translation id="3554027294407525061">Hreinsa vefskoðunargögn í Chromium.</translation>
 <translation id="3567399274263440288">Skráðu þig inn í Chromium með Google reikningnum þínum svo að Chromium nýtist þér sem best.</translation>
 <translation id="3639997914391704523">Chromium getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> notaði Chromium og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
@@ -98,6 +98,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromiu
 <translation id="5042011327527167688">Ýttu á „Skoða með Google-kortum í Chromium“.</translation>
 <translation id="5044871537677053278">Chromium greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
 <translation id="5048795749726991615">Notaðu Chromium fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
+<translation id="5076601183701536878">Hreinsa vefskoðunargögn í Chromium</translation>
 <translation id="5131565040785979529">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chromium er notað.</translation>
 <translation id="5171868502429358653">Skráðu þig inn á Chromium</translation>
 <translation id="5213683223491576284">Opnar aðgangsorðastjórnun í Chromium.</translation>

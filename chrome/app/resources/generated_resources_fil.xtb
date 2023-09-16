@@ -3258,7 +3258,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3582057310199111521">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3582299299336701326">Padilimin ang maliliwanag na screen, at paliwanagin ang madidilim na screen. Pindutin ang Search + Ctrl + H para i-on at i-off ang pag-invert ng kulay.</translation>
 <translation id="3584169441612580296">Basahin at baguhin ang mga larawan, musika at iba pang media sa iyong computer</translation>
-<translation id="3584527007414070635">Ituloy ang iyong paglalakbay para sa <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Hindi mabuksan ang file na ito</translation>
 <translation id="3586931643579894722">Magtago ng mga detalye</translation>
 <translation id="3587438013689771191">Matuto pa tungkol sa: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4202,6 +4201,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4332976768901252016">Mag-set Up ng Parental Controls</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 na May RSA Encryption</translation>
 <translation id="4334768748331667190">Hindi mo na makikita ulit ang <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Naka-off ang Ligtas na Pag-browse</translation>
 <translation id="4339203724549370495">I-uninstall ang app</translation>
 <translation id="4340125850502689798">Invalid na username</translation>
 <translation id="4340515029017875942">Gustong makipag-ugnayan ng <ph name="ORIGIN" /> sa app na "<ph name="EXTENSION_NAME" />"</translation>
@@ -4514,7 +4514,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4580587929153007251">Mag-sign in ulit sa Google Password Manager</translation>
 <translation id="4580596421317071374">Sine-save ang mga password sa <ph name="GOOGLE_PASSWORD_MANAGER" /> sa device na ito.</translation>
 <translation id="4581774856936278355">Error habang nire-restore ang Linux</translation>
-<translation id="4582217877717474109">Mga Preference sa System</translation>
 <translation id="4582297591746054421">Karaniwang binabasa ng mga site ang iyong clipboard para sa mga feature gaya ng pagpapanatili ng pag-format ng text na kinopya mo</translation>
 <translation id="4582563038311694664">I-reset lahat ng setting</translation>
 <translation id="4585793705637313973">I-edit ang page</translation>
@@ -6798,7 +6797,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6497784818439587832">Baguhin ang laki ng display para paliitin o palakihin ang mga item sa iyong screen</translation>
 <translation id="6497789971060331894">Reverse na pag-scroll gamit ang mouse</translation>
 <translation id="6498249116389603658">&amp;Lahat ng iyong wika</translation>
-<translation id="6498583202177273322">Makakuha ng dagdag na kapaki-pakinabang na impormasyon habang ine-explore mo ang page na ito</translation>
 <translation id="6499143127267478107">Nireresolba ang host sa proxy script...</translation>
 <translation id="6499764981457476645">Walang nakitang device sa malapit</translation>
 <translation id="6501957628055559556">Lahat ng container</translation>
@@ -8867,6 +8865,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="816055135686411707">Error sa Pagtakda ng Certificate Trust</translation>
 <translation id="8160775796528709999">Kumuha ng mga caption para sa iyong audio at video sa pamamagitan ng pag-enable sa Instant Caption sa mga setting</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Ipagpatuloy ang pag-browse</translation>
 <translation id="8161293209665121583">Reader mode para sa mga web page</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Ilipat ang Tab sa Bagong Window}one{Maglipat ng Mga Tab sa Bagong Window}other{Maglipat ng Mga Tab sa Bagong Window}}</translation>
@@ -9319,6 +9318,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8528962588711550376">Nagsa-sign in.</translation>
 <translation id="8529925957403338845">Hindi nakakonekta ang Instant na Pag-tether</translation>
 <translation id="8531701051932785007">Naka-off ang Pinahusay na Ligtas na Pag-browse</translation>
+<translation id="8533670235862049797">Naka-on ang Ligtas na Pag-browse</translation>
 <translation id="8534656636775144800">Oops!  Nagkaproblema noong sinusubukang sumali sa domain. Pakisubukang muli.</translation>
 <translation id="8535005006684281994">URL ng Pag-renew ng Netscape Certificate</translation>
 <translation id="8536713137312218707">Mabibilis na Command</translation>

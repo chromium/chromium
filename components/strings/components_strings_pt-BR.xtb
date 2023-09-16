@@ -685,6 +685,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2366689192918515749">Carnes e frutos do mar</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="23703388716193220">Equipamentos de golfe</translation>
+<translation id="2374629208601905275">Com base na legislação da sua região, o Chrome pede que você escolha o mecanismo de pesquisa padrão. Esses mecanismos são famosos na sua região e estão em ordem aleatória.</translation>
 <translation id="2378084239755710604">Página para salvar cartão fechada.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalize as ferramentas de acessibilidade nas configurações do Chrome</translation>
@@ -900,6 +901,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2879694782644540289">usar o bloqueio de tela para preencher senhas</translation>
 <translation id="2881276955470682203">Salvar cartão?</translation>
 <translation id="2882949212241984732">Dobra janela dupla</translation>
+<translation id="2891963978019740012">Seu mecanismo de pesquisa no Chrome</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2902312830803030883">Mais ações</translation>
@@ -1163,6 +1165,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3427342743765426898">&amp;Refazer editar</translation>
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
+<translation id="3429817405364886479">Confirme seu mecanismo de pesquisa</translation>
 <translation id="3431216045099978607">Pressione |<ph name="ACCELERATOR" />| para sair da tela cheia e ver o download.</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software para conferências e colaboração</translation>
@@ -1915,6 +1918,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4957080528849277028">Botão "Ver seu histórico do Chrome". Ative para abrir e gerenciar seu histórico de navegação nas configurações do Chrome</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4960068118612257147">Você pode fazer mudanças nas configurações de privacidade do Chrome</translation>
+<translation id="4960203958361543136">Escolha seu mecanismo de pesquisa</translation>
 <translation id="4964505745997821360">Plano de saúde</translation>
 <translation id="4968522289500246572">Este app foi criado para dispositivos móveis e pode não ser redimensionado corretamente. Pode haver erros ou talvez o app seja reiniciado.</translation>
 <translation id="4968665849807487749">Pode pedir para gerenciar janelas em todas as suas telas</translation>
@@ -2097,6 +2101,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5323043727018853753">É permitido incorporar conteúdo</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>
+<translation id="5331585574693522196">Definir como padrão</translation>
 <translation id="5332219387342487447">Forma de envio</translation>
 <translation id="5332769172018416402">Pedir por mensagem</translation>
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
@@ -2537,6 +2542,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6287197303017372967">Confira rotas para seu destino usando o recurso de navegação guiada.</translation>
 <translation id="628877850550444614">Desconto encontrado</translation>
 <translation id="6289939620939689042">Cor da página</translation>
+<translation id="6292819926564202163">Seu mecanismo de pesquisa no Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Salvando...</translation>
@@ -2772,6 +2778,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6770747695101757579">Papel (algodão)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Empréstimo comercial</translation>
+<translation id="6785990323398321538">Você pode mudar o mecanismo de pesquisa a qualquer momento nas configurações do Chrome.</translation>
 <translation id="6786145470008421571">Envelope de 15 cm x 23 cm</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -2843,6 +2850,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6917795328362592458">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você revise as senhas salvas.</translation>
 <translation id="6925267999184670015">B+ (América do Norte)</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão permite que você faça pesquisas na Web e use recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Um recurso poderá ficar indisponível se o mecanismo de pesquisa não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6935082727755903526">Vagas de emprego nas áreas contábil e financeira</translation>
 <translation id="6936976777388162184">Este é um dispositivo com pacote e não pode ser registrado com o Upgrade de quiosque e sinalização.</translation>
@@ -3230,6 +3238,7 @@ Mais detalhes:
 <translation id="765676359832457558">Ocultar configurações avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
+<translation id="7659880963341457291">Confirme seu mecanismo de pesquisa</translation>
 <translation id="766014026101194726">{0,plural, =1{O upload desse arquivo está bloqueado pela política do administrador}one{O upload de # arquivo está bloqueado pela política do administrador}other{O upload de # arquivos está bloqueado pela política do administrador}}</translation>
 <translation id="7662298039739062396">Configuração controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3301,6 +3310,7 @@ Mais detalhes:
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7785790577395078482">este tablet</translation>
 <translation id="7786368602962652765">Um campo obrigatório está em branco. Preencha antes de salvar.</translation>
+<translation id="7786432318297177736">Os mecanismos de pesquisa estão em ordem aleatória. Você pode mudar o padrão definido a qualquer momento nas configurações.</translation>
 <translation id="7786912885126430740">Finalizar compras mais rapidamente quando seus CVCs forem salvos</translation>
 <translation id="7790488044432570133">Os sites que você acessa podem pedir informações ao Chrome para medir a performance dos anúncios. O Chrome permite que os sites coletem tipos limitados de dados, como o horário em que um anúncio apareceu para você.</translation>
 <translation id="7791011319128895129">Não lançada</translation>

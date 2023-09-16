@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">A Chromium beállításai</translation>
 <translation id="1722370509450468186">Jelszavát a rendszer a fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="1736662517232558588">A Chromium adatai törölve</translation>
-<translation id="1758508597843173586">Zárolhatja az inkognitó módot, amikor kilép a Chromiumból, vagy másik alkalmazásra vált.</translation>
 <translation id="1791845338122684020">Megnyitja a Chromium-előzmények oldalát.</translation>
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="1843424232666537147">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
@@ -93,6 +92,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4736424910885271643">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 <translation id="4790638144988730920">Továbbra is használhatja a Google-fiókjában lévő Chromium-adatokat.</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
+<translation id="4935539884203837577">A Chromium képes észlelni az Ön által megadott azonosítószámokat, és nyomon tudja követni a csomagjait az Új lap oldalon, miközben segít a Chromium más vásárlási élményeiben is.</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4996471330284142407">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Chromium segítségével.</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
@@ -116,6 +116,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5688047395118852662">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="5777187867430702742">A Chromium oldala</translation>
+<translation id="584303319228224680">Saját csomagok automatikus nyomon követése a Chromiumban</translation>
 <translation id="5889847953983052353">Amikor be van kapcsolva:
 <ph name="BEGIN_INDENT" /> • Segít, hogy továbbfejleszthessük a Chromiumot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" /> 
 

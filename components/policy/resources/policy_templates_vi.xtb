@@ -259,11 +259,6 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
 <translation id="1223789468190631420">Trạng thái bật tính năng Duyệt web an toàn cho các nguồn đáng tin cậy</translation>
 <translation id="123018742985150697">Yêu cầu so khớp người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa</translation>
 <translation id="123081309365616809">Bật tính năng truyền nội dung đến thiết bị</translation>
-<translation id="1233815313234662905">Nếu đặt chính sách này thành 0 (giá trị mặc định), thì bạn có thể truy cập vào công cụ cho nhà phát triển và Bảng điều khiển JavaScript, nhưng bạn sẽ không truy cập được trong trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp hoặc từ phiên bản 114 trở đi. Nếu bạn là người dùng được quản lý, thì các tiện ích sẽ được tích hợp vào trình duyệt của chúng tôi. Nếu đặt giá trị chính sách này thành 1, thì bạn có thể truy cập vào các công cụ cho nhà phát triển và Bảng điều khiển JavaScript trong mọi trường hợp, bao gồm cả trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp. Nếu đặt giá trị chính sách này thành 2, thì bạn không thể truy cập vào các công cụ cho nhà phát triển và không thể kiểm tra các thành phần của trang web.
-
-      Chế độ cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn theo bối cảnh dùng để mở các công cụ cho nhà phát triển hoặc Bảng điều khiển JavaScript.
-
-      Từ phiên bản <ph name="PRODUCT_NAME" /> 99, chế độ cài đặt này cũng kiểm soát điểm truy cập cho tính năng "Xem nguồn trang". Nếu bạn đặt giá trị chính sách này thành "DeveloperToolsDisallowed" (giá trị 2), thì người dùng sẽ không truy cập được chế độ xem nguồn thông qua phím tắt hay trình đơn theo bối cảnh. Để chặn hoàn toàn chế độ xem nguồn, bạn cũng phải thêm "view-source:*" vào chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Định cấu hình quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="GOOGLE_DRIVE_NAME" /> và <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Kiểm soát việc có cho phép các trang web gửi yêu cầu theo cách không an toàn đến các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.
 
@@ -1697,9 +1692,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2439187682308339104">Không cho phép trang web nào yêu cầu quyền truy cập vào thiết bị HID thông qua API WebHID</translation>
 <translation id="2439733504887695659">Bật chế độ đóng cảnh báo mật khẩu bị lộ cho thông tin xác thực đã nhập</translation>
 <translation id="2446244536806499267">Không coi người dùng là không hoạt động khi âm thanh đang phát</translation>
-<translation id="2448315169529769573">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_OS_NAME" /> sẽ báo cáo lại cho Google số liệu sử dụng và dữ liệu chẩn đoán, bao gồm cả báo cáo sự cố. Nếu bạn đặt chính sách này thành Tắt, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt.
-
-       Nếu bạn không đặt chính sách này, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt trên các thiết bị không được quản lý và sẽ bật trên các thiết bị được quản lý.</translation>
 <translation id="2452225615952836461">Luôn viết hoa phương thức yêu cầu</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
 <translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>
@@ -3298,11 +3290,6 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
       Lưu ý: Các thông báo chính sách sẽ buộc làm mới khi chính sách này thay đổi nên không cần phải làm mới thường xuyên. Vì vậy, nếu nền tảng hỗ trợ các thông báo này, thời gian hoãn quá trình làm mới sẽ là 24 giờ (bỏ qua tùy chọn cài đặt mặc định và giá trị của chính sách này).</translation>
 <translation id="382476126209906314">Định cấu hình tiền tố TalkGadget cho máy chủ truy cập từ xa</translation>
 <translation id="3824972131618513497">Kiểm soát các tùy chọn cài đặt liên quan đến quản lý nguồn và khởi động lại.</translation>
-<translation id="3825313562760682300">Chính sách này cho phép quản trị viên chỉ định chế độ cài đặt cho các ứng dụng web đã cài đặt. Chính sách này liên kết một mã nhận dạng ứng dụng web với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt một cấu hình mặc định bằng mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả ứng dụng web chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
-
-Trường <ph name="MANIFEST_ID_FIELD" /> là mã nhận dạng tệp kê khai cho ứng dụng web. Hãy xem <ph name="WEB_APP_ID_REFERENCE_URL" /> để nắm được hướng dẫn về cách xác định mã nhận dạng tệp kê khai cho ứng dụng web đã được cài đặt.
-Trường <ph name="RUN_ON_OS_LOGIN_FIELD" /> cho biết ứng dụng web có thể hoạt động trong lúc đăng nhập vào hệ điều hành hay không. Nếu bạn đặt trường này thành <ph name="BLOCKED" />, ứng dụng web sẽ không chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không thể bật ứng dụng này. Nếu bạn đặt trường này thành <ph name="RUN_WINDOWED" />, ứng dụng web sẽ chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không thể tắt ứng dụng này. Nếu bạn đặt trường này thành <ph name="ALLOWED" />, người dùng sẽ có thể định cấu hình chạy ứng dụng web khi đăng nhập vào hệ điều hành. Cấu hình mặc định chỉ cho phép các giá trị <ph name="ALLOWED" /> và <ph name="BLOCKED" />.
-(Kể từ phiên bản 117) Trường <ph name="PREVENT_CLOSE_FIELD" /> chỉ định liệu một ứng dụng web có bị cấm đóng theo bất kỳ cách nào hay không (ví dụ: do người dùng, trình quản lý tác vụ, API web). Bạn chỉ có thể bật hành vi này nếu đặt <ph name="RUN_ON_OS_LOGIN_FIELD" /> thành <ph name="RUN_WINDOWED" />. Nếu ứng dụng đang chạy, thuộc tính này sẽ chỉ có hiệu lực sau khi khởi động lại ứng dụng. Nếu bạn không xác định trường này, người dùng có thể đóng ứng dụng.</translation>
 <translation id="3825873934240606959">Không cho phép tìm thiết bị cục bộ</translation>
 <translation id="3826475866868158882">Đã bật Dịch vụ vị trí của Google</translation>
 <translation id="3829344785870486923">Danh sách miền phụ được loại trừ khỏi quy tắc phân tách hồ sơ doanh nghiệp</translation>
@@ -3710,11 +3697,6 @@ Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật dấu chèn sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="4181820969510931391">Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, người dùng sẽ thấy bong bóng tải xuống mới xuất hiện trong <ph name="PRODUCT_NAME" />.
-
-      Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ tiếp tục thấy giao diện kệ tải xuống cũ trong <ph name="PRODUCT_NAME" />.
-
-      Lưu ý rằng chính sách này là tạm thời và sẽ bị loại bỏ ngay khi chính thức ra mắt bong bóng tải xuống mới hiển thị cho người dùng.</translation>
 <translation id="4182348537826882258">Nếu bạn đặt chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />, hệ thống sẽ ngừng tải các trang web có URL bị cấm. Quản trị viên có thể chỉ định danh sách mẫu URL cần chặn. Nếu bạn không đặt chính sách này thì hệ thống không chặn URL nào trong trình duyệt. Bạn có thể xác định tối đa 1.000 trường hợp ngoại lệ trong <ph name="URL_ALLOWLIST_POLICY_NAME" />. Xem cách định dạng mẫu URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Lưu ý: Chính sách này không áp dụng với URL JavaScript trong trang có dữ liệu được tải tự động. Nếu bạn đã chặn example.com/abc, example.com vẫn tải được URL đó qua XMLHTTPRequest. Ngoài ra, chính sách này không ngăn các trang web cập nhật URL hiển thị trong thanh địa chỉ thành URL bị chặn bằng API Lịch sử JavaScript.

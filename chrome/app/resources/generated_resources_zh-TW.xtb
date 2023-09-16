@@ -1979,6 +1979,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />發生錯誤，無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">將電量維持在約 80% 以延長電池壽命。系統會在你通常拔除充電線之前將電池充飽電。</translation>
+<translation id="2532146950330687938">正在準備裝置...</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 設定中管理安全 DNS</translation>
 <translation id="2532589005999780174">高反差模式</translation>
 <translation id="2533649878691950253">系統已禁止這個網站取得你的精確位置資訊，因為你通常不允許這麼做</translation>
@@ -3241,7 +3242,6 @@
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
-<translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587438013689771191">進一步瞭解<ph name="SUBPAGE_TITLE" /></translation>
@@ -4184,6 +4184,7 @@
 <translation id="4332976768901252016">設定家長監護功能</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 (使用 RSA 加密)</translation>
 <translation id="4334768748331667190">之後不會再顯示<ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
 <translation id="4339203724549370495">解除安裝應用程式</translation>
 <translation id="4340125850502689798">使用者名稱無效</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 要求與「<ph name="EXTENSION_NAME" />」應用程式通訊</translation>
@@ -4495,7 +4496,6 @@
 <translation id="4580587929153007251">重新登入 Google 密碼管理工具</translation>
 <translation id="4580596421317071374">密碼已儲存至這部裝置上的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
-<translation id="4582217877717474109">系統偏好設定</translation>
 <translation id="4582297591746054421">網站通常會讀取你的剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
@@ -5736,6 +5736,7 @@
 <translation id="5627086634964711283">這個擴充功能也會控管你點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5627676517703583263">使用 Chrome 享有智慧瀏覽體驗</translation>
 <translation id="5627832140542566187">螢幕方向</translation>
+<translation id="5628434207686266338">設定裝置密碼</translation>
 <translation id="562935524653278697">你的管理員停用了書籤、歷史記錄、密碼和其他設定的同步功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5631272057151918206">這麼做最多可釋出離線檔案占用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空間，部分檔案仍可在離線時存取。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6774,7 +6775,6 @@
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選全部語言(&amp;A)</translation>
-<translation id="6498583202177273322">瀏覽這個頁面即可取得額外實用資訊</translation>
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機...</translation>
 <translation id="6499764981457476645">找不到附近的裝置</translation>
 <translation id="6501957628055559556">所有容器</translation>
@@ -8841,6 +8841,7 @@
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
 <translation id="8160775796528709999">只要在設定中啟用即時字幕功能，即可取得音訊和視訊的字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8161604891089629425">輪廓字型</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
@@ -9292,6 +9293,7 @@
 <translation id="8528962588711550376">登入中。</translation>
 <translation id="8529925957403338845">即時網路共用連線失敗</translation>
 <translation id="8531701051932785007">已關閉安全瀏覽強化防護功能</translation>
+<translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534656636775144800">糟糕！嘗試加入網域時發生錯誤，請再試一次。</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
 <translation id="8536713137312218707">快速指令</translation>

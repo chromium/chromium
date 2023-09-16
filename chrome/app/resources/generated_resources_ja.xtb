@@ -3235,7 +3235,6 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" />のジャーニーを再開</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> の詳細</translation>
@@ -4179,6 +4178,7 @@
 <translation id="4332976768901252016">保護者による使用制限を設定する</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 with RSA 暗号化</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> は今後表示されません</translation>
+<translation id="4335835283689002019">セーフ ブラウジングはオフになっています</translation>
 <translation id="4339203724549370495">アプリをアンインストール</translation>
 <translation id="4340125850502689798">ユーザー名が無効です</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> がアプリ「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
@@ -4489,7 +4489,6 @@
 <translation id="4580587929153007251">Google パスワード マネージャーにもう一度ログインしてください</translation>
 <translation id="4580596421317071374">パスワードは、このデバイスの <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
-<translation id="4582217877717474109">システム環境設定</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4585793705637313973">ページの編集</translation>
@@ -6771,7 +6770,6 @@
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
-<translation id="6498583202177273322">このページでは、さまざまなお役立ち情報を確認できます</translation>
 <translation id="6499143127267478107">プロキシ スクリプト内のホストを解決しています...</translation>
 <translation id="6499764981457476645">付近にデバイスは見つかりませんでした</translation>
 <translation id="6501957628055559556">すべてのコンテナ</translation>
@@ -8834,6 +8832,7 @@
 <translation id="816055135686411707">証明書の信頼設定エラー</translation>
 <translation id="8160775796528709999">音声と動画の字幕を生成するには、設定で自動字幕起こしを有効にします</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />（<ph name="TIME_REMAINING" />）</translation>
+<translation id="8161095570253161196">ブラウジングを再開</translation>
 <translation id="8161293209665121583">ウェブページのリーダーモード</translation>
 <translation id="8161604891089629425">アウトライン フォント</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
@@ -9285,6 +9284,7 @@
 <translation id="8528962588711550376">ログインしています。</translation>
 <translation id="8529925957403338845">インスタント テザリングの接続に失敗しました</translation>
 <translation id="8531701051932785007">セーフ ブラウジング保護強化機能はオフになっています</translation>
+<translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>
 <translation id="8534656636775144800">ドメインへの追加中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
 <translation id="8536713137312218707">簡単なコマンド</translation>

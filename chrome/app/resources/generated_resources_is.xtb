@@ -1995,6 +1995,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Eitthvað fór úrskeiðis og ekki tókst að setja upp <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Frekari aðstoð má finna á: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Eykur rafhlöðuendingu með því að halda rafhlöðunni í um 80% hleðslu. Rafhlaðan hleðst að fullu fyrir þann tíma sem þú tekur tækið yfirleitt úr sambandi.</translation>
+<translation id="2532146950330687938">Undirbýr tækið...</translation>
 <translation id="2532198298278778531">Stjórnaðu öruggu DNS í stillingum ChromeOS Flex</translation>
 <translation id="2532589005999780174">Mikil birtuskil</translation>
 <translation id="2533649878691950253">Lokað var á að þetta vefsvæði fengi upplýsingar um nákvæma staðsetningu þína vegna þess að þú leyfir það yfirleitt ekki</translation>
@@ -3257,7 +3258,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3582057310199111521">Notað á villandi vefsvæði og fannst í öryggisbroti</translation>
 <translation id="3582299299336701326">Gerðu ljósar skjámyndir dökkar og dökkar skjámyndir ljósar. Ýttu á Search + Ctrl + H til að kveikja og slökkva á umsnúningi lita.</translation>
 <translation id="3584169441612580296">Lesa og breyta myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
-<translation id="3584527007414070635">Halda áfram með ferli fyrir <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Ekki er hægt að opna þessa skrá</translation>
 <translation id="3586931643579894722">Fela upplýsingar</translation>
 <translation id="3587438013689771191">Nánar um: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4201,6 +4201,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4332976768901252016">Setja upp barnalæsingu</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 með RSA-dulkóðun</translation>
 <translation id="4334768748331667190">Þú munt ekki sjá <ph name="MODULE_NAME" /> aftur</translation>
+<translation id="4335835283689002019">Slökkt er á öruggri vefnotkun</translation>
 <translation id="4339203724549370495">Fjarlægja forrit</translation>
 <translation id="4340125850502689798">Ógilt notandanafn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> vill eiga samskipti við forritið „<ph name="EXTENSION_NAME" />“</translation>
@@ -4513,7 +4514,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4580587929153007251">Skráðu þig aftur inn í Google aðgangsorðastjórnun</translation>
 <translation id="4580596421317071374">Aðgangsorð eru vistuð í <ph name="GOOGLE_PASSWORD_MANAGER" /> í þessu tæki.</translation>
 <translation id="4581774856936278355">Villa við endurheimt á Linux</translation>
-<translation id="4582217877717474109">Kerfisstillingar</translation>
 <translation id="4582297591746054421">Vefsvæði fara yfirleitt yfir klippiborðið í leit að eiginleikum, t.d. til að halda sniði textans sem þú afritaðir</translation>
 <translation id="4582563038311694664">Núllstilla allt</translation>
 <translation id="4585793705637313973">Breyta síðu</translation>
@@ -5756,6 +5756,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5627086634964711283">Hún stýrir því einnig hvaða síða birtist þegar þú smellir á heimahnappinn.</translation>
 <translation id="5627676517703583263">Betri vefskoðun með Chrome</translation>
 <translation id="5627832140542566187">Stefna skjás</translation>
+<translation id="5628434207686266338">Stilltu aðgangsorð tækis</translation>
 <translation id="562935524653278697">Kerfisstjóri hefur gert samstillingu bókamerkja, ferla, aðgangsorða og annarra stillinga óvirka.</translation>
 <translation id="5631017369956619646">Örgjörvanotkun</translation>
 <translation id="5631272057151918206">Þetta fjarlægir allt að <ph name="OFFLINE_STORAGE_SIZE" /> af geymslurými sem þú notar fyrir skrár án nettengingar. Sumar skrár verða áfram tiltækar án nettengingar. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -6796,7 +6797,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
 <translation id="6498249116389603658">Öll &amp;tungumálin þín</translation>
-<translation id="6498583202177273322">Fáðu gagnlegar viðbótarupplýsingar á meðan þú skoðar þessa vefsíðu</translation>
 <translation id="6499143127267478107">Leysir úr hýsli í proxy-skriftu...</translation>
 <translation id="6499764981457476645">Engin nálæg tæki fundust</translation>
 <translation id="6501957628055559556">Allir geymar</translation>
@@ -8863,6 +8863,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="816055135686411707">Villa við að stilla traust vottorðs</translation>
 <translation id="8160775796528709999">Fáðu skjátexta við hljóð og myndskeið með því að virkja skjátexta í rauntíma í stillingunum</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Halda vefskoðun áfram</translation>
 <translation id="8161293209665121583">Lestrarstilling vefsíðna</translation>
 <translation id="8161604891089629425">Útlínuletur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Færa flipa í nýjan glugga}one{Færa flipa í nýjan glugga}other{Færa flipa í nýjan glugga}}</translation>
@@ -9314,6 +9315,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8528962588711550376">Skráir inn.</translation>
 <translation id="8529925957403338845">Tenging skynditjóðrunar mistókst</translation>
 <translation id="8531701051932785007">Slökkt er á enn öruggari vefskoðun</translation>
+<translation id="8533670235862049797">Kveikt er á öruggri vefnotkun</translation>
 <translation id="8534656636775144800">Úbbs! Eitthvað fór úrskeiðis við að tengjast léninu. Reyndu aftur.</translation>
 <translation id="8535005006684281994">Endurnýjunarvefslóð Netscape-vottorðs</translation>
 <translation id="8536713137312218707">Flýtiskipanir</translation>

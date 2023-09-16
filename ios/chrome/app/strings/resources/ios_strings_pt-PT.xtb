@@ -197,6 +197,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="2049727122989709386"><ph name="COUNT" /> contas estão a usar a mesma palavra-passe</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} método de pagamento guardado disponível acima do teclado.}other{{count} métodos de pagamento guardados disponíveis acima do teclado.}}</translation>
 <translation id="2055515971416882518">Abra as "Definições".</translation>
+<translation id="2059166748188874810">Município</translation>
 <translation id="2073572773299281212">Ativo há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anular</translation>
@@ -478,6 +479,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="3599500618468205645">Ocultar Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="3603009562372709545">Copiar URL do Link</translation>
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
 <translation id="3609785682760573515">A sincronizar…</translation>
@@ -488,6 +490,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3646736009628185125">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chrome e sincronizar as respetivas palavras-passe. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Perfil de configuração disponível</translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3680970647557344817">Ocultar Editar marcador</translation>
 <translation id="368329460027487650">Sessão terminada. Abre as opções para iniciar sessão.</translation>
 <translation id="3688815115226493214">Sugestões de separadores</translation>
 <translation id="3700134753671613714">Inicie sessão para obter os seus marcadores em todos os dispositivos.</translation>
@@ -637,6 +640,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="4601095002996233687">Análises detalhadas de transferências suspeitas.</translation>
 <translation id="4606247758155004938">O seu navegador é gerido pela sua organização.</translation>
+<translation id="4611811151908969241">Ocultar Deixar de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
 <translation id="4616391354457235490">Anular</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
@@ -1058,6 +1062,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6753469262000681876">Modo de bloqueio</translation>
 <translation id="6760509555861141183">Volte ao separador Recentes</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
+<translation id="6771287014037609247">Acompanhar sempre os pacotes detetados</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6781405765516175232">Para obter as opções do trajeto, toque em "Obter direções".</translation>
@@ -1409,6 +1414,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8780076847684176174">{count,plural, =1{Rever separador…}other{Rever todos os separadores…}}</translation>
 <translation id="8787968206789828143">Pesquise na Web</translation>
 <translation id="8792626944327216835">microfone</translation>
+<translation id="8793366654064127924">Perguntar-me sempre</translation>
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8806823403540278281">A sua entidade requer que navegue em privado. Os separados não são guardados no Modo de navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
 <translation id="8855781063981781621">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPad.</translation>
+<translation id="886335568110896118">Oculte Pedir site para dispositivos móveis</translation>
 <translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>

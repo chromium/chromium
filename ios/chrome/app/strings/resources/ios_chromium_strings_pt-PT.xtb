@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Definições do Chromium</translation>
 <translation id="1722370509450468186">A palavra-passe será guardada na sua Conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
-<translation id="1758508597843173586">Bloqueie a sua Navegação anónima quando sai do Chromium ou muda para uma app diferente.</translation>
 <translation id="1791845338122684020">Abre a página Histórico do Chromium.</translation>
 <translation id="1838412507805038478">O Chromium confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="1843424232666537147">O Chromium inclui funcionalidades que o ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
@@ -93,6 +92,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="4736424910885271643">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chromium serão limpos deste dispositivo</translation>
 <translation id="4790638144988730920">Continue a usar os dados do Chromium na sua Conta Google.</translation>
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
+<translation id="4935539884203837577">O Chromium pode detetar os números de acompanhamento introduzidos e acompanhar os seus pacotes na página Novo separador, ao mesmo tempo que ajuda outras experiências de compras do Chromium.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4996471330284142407">Faça mais com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
@@ -116,6 +116,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="5688047395118852662">Este cartão mostra sugestões sobre como tirar o máximo partido do Chromium.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
+<translation id="584303319228224680">Acompanhe automaticamente os seus pacotes no Chromium</translation>
 <translation id="5889847953983052353">Quando a opção está ativada:
 <ph name="BEGIN_INDENT" /> • Ajude a melhorar o Chromium para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
 

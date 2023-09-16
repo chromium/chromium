@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1105362920864247682">Chrome'догу серептөө дайындарын өчүрүү.</translation>
 <translation id="1143896152279775643">Cырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="1180362651362502943">Google аккаунтуңуздагы Chrome маалыматын колдоно бериңиз.</translation>
 <translation id="1282031177488366470">Chrome'дун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз</translation>
@@ -28,7 +29,6 @@
 <translation id="1675955119303651351">Chrome'догу айрым маалымат Google аккаунтуңузга сактала элек.
         Аккаунттан чыгуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр чыгып кетсеңиз, бул маалымат өчүрүлөт.</translation>
 <translation id="1682483655351012182">Chrome дайындарын шайкештирүү</translation>
-<translation id="1733654336159102143">Chrome'дон чыкканда же башка колдонмого өткөндө жашыруун өтмөктөрдү кулпулап коюңуз.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Эми билдирүү, документ жана башка колдонмолордогу шилтемелерди автоматтык түрдө Chrome'до ача аласыз.</translation>
 <translation id="1917964099031477364">Бул аккаунт жана башка сакталбаган маалымат Chrome'дон жана ушул түзмөктөгү башка Google колдонмолорунан өчүрүлөт.</translation>
@@ -56,6 +56,7 @@
 <translation id="2736805085127235148">Учурда түзмөгүңүздүн параметрлеринде Chrome билдирмелери күйүп турат.</translation>
 <translation id="2767464022270041271">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Сырсөздөрдү башкаргыч аларды текшерет.</translation>
 <translation id="2840432500933227975">iOS'то Chrome жөндөөлөрүн ачып, андан соң "Серепчинин демейки колдонмосун" таптап, Chrome'ду тандаңыз.</translation>
+<translation id="2868822340714096138">Chrome'догу серептөө дайындарын өчүрүү</translation>
 <translation id="2869959624320573933">Chrome'го кириңиз</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome’ду<ph name="END_BOLD" /> тандаңыз</translation>

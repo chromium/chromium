@@ -756,7 +756,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1596780725094407793">(subdominios incluidos)</translation>
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
-<translation id="1600541617401655593">Ayudar a mejorar las funciones y el rendimiento de ChromeOS Flex. Los datos se agregan y están muy protegidos.</translation>
+<translation id="1600541617401655593">Ayuda a mejorar las funciones y el rendimiento de ChromeOS Flex. Los datos se agregan y están muy protegidos.</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
 <translation id="1601481906560916994">Excluir sitio</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1980,6 +1980,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Se ha producido un error y <ph name="DEVICE_OS" /> no se ha podido instalar.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Aumenta la duración de la batería pausando la carga en torno al 80 %. La batería se cargará al 100 % antes de que llegue el momento en que sueles desenchufar el dispositivo de la fuente de alimentación.</translation>
+<translation id="2532146950330687938">Preparando el dispositivo...</translation>
 <translation id="2532198298278778531">Gestionar DNS seguro en los ajustes de ChromeOS Flex</translation>
 <translation id="2532589005999780174">Modo Contraste alto</translation>
 <translation id="2533649878691950253">Se ha bloqueado el acceso a tu ubicación precisa en este sitio, ya que normalmente no concedes este permiso</translation>
@@ -3242,7 +3243,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una brecha de seguridad de datos</translation>
 <translation id="3582299299336701326">Si la pantalla es clara, la oscurece. Si es oscura, la aclara. Pulsa la tecla de búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y modificar fotos, música y otros archivos multimedia de tu ordenador</translation>
-<translation id="3584527007414070635">Reanuda tu recorrido sobre <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">No se puede abrir el archivo</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Más información sobre <ph name="SUBPAGE_TITLE" /></translation>
@@ -4185,6 +4185,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4332976768901252016">Configurar el control parental</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 con cifrado RSA</translation>
 <translation id="4334768748331667190">No volverás a ver <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">La función Navegación segura está desactivada</translation>
 <translation id="4339203724549370495">Desinstalar aplicación</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quiere comunicarse con la aplicación <ph name="EXTENSION_NAME" /></translation>
@@ -4496,7 +4497,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4580587929153007251">Vuelve a iniciar sesión en el Gestor de contraseñas de Google</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de este dispositivo.</translation>
 <translation id="4581774856936278355">Error al restaurar Linux</translation>
-<translation id="4582217877717474109">Preferencias del sistema</translation>
 <translation id="4582297591746054421">Los sitios suelen leer el contenido del portapapeles para utilizarlo en funciones como conservar el formato del texto que se ha copiado.</translation>
 <translation id="4582563038311694664">Recuperar configuración completa</translation>
 <translation id="4585793705637313973">Editar página</translation>
@@ -5739,6 +5739,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627676517703583263">Navega de forma inteligente con Chrome</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
+<translation id="5628434207686266338">Definir contraseña del dispositivo</translation>
 <translation id="562935524653278697">Tu administrador ha inhabilitado la sincronización de tus marcadores, tus contraseñas, tu historial y otros ajustes.</translation>
 <translation id="5631017369956619646">Uso de la CPU</translation>
 <translation id="5631272057151918206">Se eliminarán hasta <ph name="OFFLINE_STORAGE_SIZE" /> de espacio usado por tus archivos sin conexión. Algunos archivos seguirán estando disponibles sin conexión. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6779,7 +6780,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para ampliar o reducir el tamaño de los elementos que aparecen</translation>
 <translation id="6497789971060331894">Desplazamiento inverso del ratón</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
-<translation id="6498583202177273322">Explora esta página para obtener más información útil</translation>
 <translation id="6499143127267478107">Resolviendo host de la secuencia de comandos de proxy...</translation>
 <translation id="6499764981457476645">No se ha encontrado ningún dispositivo cerca</translation>
 <translation id="6501957628055559556">Todos los contenedores</translation>
@@ -8846,6 +8846,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="816055135686411707">Error al configurar el certificado de confianza</translation>
 <translation id="8160775796528709999">Obtén subtítulos para tu contenido de audio y vídeo habilitando Subtítulos automáticos en los ajustes</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Reanudar navegación</translation>
 <translation id="8161293209665121583">Modo de lectura en páginas web</translation>
 <translation id="8161604891089629425">Fuente de contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestaña a una nueva ventana}other{Mover pestañas a una nueva ventana}}</translation>
@@ -9297,6 +9298,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8528962588711550376">Accediendo</translation>
 <translation id="8529925957403338845">No se ha podido establecer la conexión compartida instantánea</translation>
 <translation id="8531701051932785007">Navegación segura mejorada está desactivada</translation>
+<translation id="8533670235862049797">Navegación segura está activada</translation>
 <translation id="8534656636775144800">¡Vaya! No se ha podido vincular el dominio. Inténtalo de nuevo.</translation>
 <translation id="8535005006684281994">URL de renovación de certificado de Netscape</translation>
 <translation id="8536713137312218707">Comandos rápidos</translation>

@@ -740,6 +740,7 @@
 <translation id="4028481283645788203">আরও নিরাপত্তার জন্য পাসওয়ার্ড দিতে হবে</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + বামদিকের তীরচিহ্ন</translation>
+<translation id="4039699481424758547">উইন্ডো স্ক্রিনশট ক্যাপচার করার জন্য Enter প্রেস করুন: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">আপনার স্ক্রিন শেয়ার করছেন</translation>
 <translation id="404437169852192935">আপডেট করা শেষ হয়েছে</translation>
 <translation id="4049230407053723315">দ্রুত সেটিংস</translation>
@@ -1751,7 +1752,6 @@
 <translation id="8230305195727960608">কালার ইনভার্সন মোড</translation>
 <translation id="8236042855478648955">বিরতির সময় হয়েছে</translation>
 <translation id="8239034820133090126">ডানদিকের ডেস্ক চালু করুন</translation>
-<translation id="8246282815785366524"><ph name="GIVEN_NAME" />, আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, অ্যাপ</translation>
 <translation id="8255234195843591763">আপডেট করতে রিসেট করুন</translation>
@@ -1850,6 +1850,7 @@
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
 <translation id="8704155109538237473">'ছবির-মধ্যে-ছবি' উইন্ডোতে ফোকাস করুন</translation>
 <translation id="870917907284186124">ডিকটেশন চালু/বন্ধ করুন (আপনার ভয়েস দিয়ে টাইপ করুন)</translation>
+<translation id="8714138378966541668">পরিষেবা প্রদানকারী লক করে দিয়েছে</translation>
 <translation id="8717459106217102612">আগের শব্দ অথবা অক্ষরটি বেছে নিন</translation>
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ফুল-স্ক্রিন ক্যাপচার</translation>
@@ -1964,6 +1965,7 @@
 <translation id="9211490828691860325">সব ডেক্স</translation>
 <translation id="9211681782751733685">ব্যাটারি পুরো চার্জ হতে <ph name="TIME_REMAINING" /> বাকি আছে।</translation>
 <translation id="9215934040295798075">ওয়ালপেপার সেট করুন</translation>
+<translation id="9216699844945104164">উইন্ডো রেকর্ড করতে Enter প্রেস করুন: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="921989828232331238">আপনার অভিভাবক এই ডিভাইসটি আজকের জন্য লক করে দিয়েছেন</translation>
 <translation id="9220525904950070496">অ্যাকাউন্ট সরান</translation>

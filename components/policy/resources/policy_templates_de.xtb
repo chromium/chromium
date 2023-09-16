@@ -256,11 +256,6 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1223789468190631420">Safe Browsing-Aktivierungsstatus für vertrauenswürdige Quellen</translation>
 <translation id="123018742985150697">Übereinstimmung von lokalem Nutzer und dem Inhaber des Hosts für den Remote-Zugriff voraussetzen</translation>
 <translation id="123081309365616809">Streamen von Inhalten an das Gerät aktivieren</translation>
-<translation id="1233815313234662905">Wenn die Richtlinie auf 0 gesetzt ist (Standardeinstellung), kannst du auf die Entwicklertools und die JavaScript-Konsole zugreifen. Für Erweiterungen, die über die Unternehmensrichtlinie oder ab Version 114 installiert wurden oder in den Browser eines verwalteten Nutzers integriert sind, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf 1 gesetzt, können die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufgerufen werden, also auch von Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf 2 gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht geprüft werden.
-
-      Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.
-
-      Ab Version 99 von <ph name="PRODUCT_NAME" /> werden durch diese Einstellung auch Einstiegspunkte für die Funktion „Seiten-Quelltext anzeigen“ bestimmt. Wenn du diese Richtlinie auf DeveloperToolsDisallowed (Wert 2) festlegst, können Nutzer sich den Quelltext nicht über Tastenkombinationen oder das Kontextmenü anzeigen lassen. Soll die Anzeige des Quelltexts komplett blockiert werden, musst du der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> auch „view-source:*“ hinzufügen.</translation>
 <translation id="1238868319430505522">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Diese Richtlinie legt fest, ob Websites unsichere Anfragen an eher private Netzwerk-Endpunkte senden dürfen.
 
@@ -1681,9 +1676,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2439187682308339104">Websites nicht erlauben, den Nutzer über die WebHID API um Zugriff auf HID-Geräte zu bitten</translation>
 <translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="2446244536806499267">Nutzer wird während der Audiowiedergabe nicht als inaktiv angesehen</translation>
-<translation id="2448315169529769573">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Nutzungsdaten und Fehlerberichte, inklusive Absturzberichte, an Google. Ist die Richtlinie deaktiviert, werden Nutzungsdaten und Fehlerberichte nicht gemeldet.
-
-       Ist sie nicht konfiguriert, werden Nutzungsdaten und Fehlerberichte nur für verwaltete Geräte gemeldet.</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>
@@ -3258,11 +3250,6 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
       Hinweis: Richtlinienbenachrichtigungen erzwingen eine Aktualisierung, wenn sich die Richtlinie ändert. Häufige Aktualisierungen sind also nicht nötig. Wenn die Plattform Richtlinienbenachrichtigungen unterstützt, wird daher für die Verzögerung der Aktualisierung 24 Stunden festgelegt und alle Standardwerte der Richtlinie werden ignoriert.</translation>
 <translation id="382476126209906314">TalkGadget-Präfix für Remotezugriff-Hosts konfigurieren</translation>
 <translation id="3824972131618513497">Legt die Einstellungen für das Energiesparen und Neustarten fest.</translation>
-<translation id="3825313562760682300">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben. Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> kannst du eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
-
-Das Feld <ph name="MANIFEST_ID_FIELD" /> ist die Manifest-ID der Web-App. Unter <ph name="WEB_APP_ID_REFERENCE_URL" /> findest du eine Anleitung dazu, wie du die Manifest-ID einer installierten Web-App herausfindest.
-Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während OS Login verwendet werden kann. Wenn dieses Feld auf <ph name="BLOCKED" /> gesetzt ist, funktioniert die Web-App während OS Login nicht. Nutzer können dies später nicht aktivieren. Ist es auf <ph name="RUN_WINDOWED" /> gesetzt, funktioniert die Web-App während OS Login. Nutzer können dies später nicht deaktivieren. Wenn das Feld auf <ph name="ALLOWED" /> gesetzt ist, können Nutzer die Web-App so konfigurieren, dass sie während OS Login funktioniert. Die Standardkonfiguration lässt nur die Werte <ph name="ALLOWED" /> und <ph name="BLOCKED" /> zu.
-(Seit Version 117) Mit dem Feld <ph name="PREVENT_CLOSE_FIELD" /> wird angegeben, ob verhindert werden soll, dass eine Web-App geschlossen wird, z. B. durch den Nutzer, den Task-Manager oder Web-APIs. Dieses Verhalten kann nur aktiviert werden, wenn <ph name="RUN_ON_OS_LOGIN_FIELD" /> auf <ph name="RUN_WINDOWED" /> gesetzt ist. Wenn die App gerade ausgeführt wird, wird diese Einstellung erst nach dem Neustart der App wirksam. Ist dieses Feld nicht definiert, können Apps von Nutzern geschlossen werden.</translation>
 <translation id="3825873934240606959">Erkennung lokaler Geräte verhindern</translation>
 <translation id="3826475866868158882">Standortdienste von Google aktiviert</translation>
 <translation id="3829344785870486923">Zulassungsliste für die Unternehmensprofiltrennung bei sekundären Domains</translation>
@@ -3658,11 +3645,6 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="4181820969510931391">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die neue Benutzeroberfläche für das Download-Infofeld in <ph name="PRODUCT_NAME" /> angezeigt.
-
-      Ist sie deaktiviert, wird in <ph name="PRODUCT_NAME" /> weiter die alte Benutzeroberfläche für die Download-Ablage angezeigt.
-
-      Diese Richtlinie ist vorübergehend und wird entfernt, sobald die neue Benutzeroberfläche für das Download-Infofeld vollständig verfügbar ist.</translation>
 <translation id="4182348537826882258">Wenn die Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Ist die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden. Wie ein URL-Muster formatiert wird, siehst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch geladenen Daten. Wenn du etwa „beispiel.de/abc“ blockierst, kann „beispiel.de“ diese URL trotzdem über „XMLHTTPRequest“ laden. Außerdem hindert diese Richtlinie Webseiten nicht daran, die in der Omnibox angezeigte URL über die JavaScript History API in eine blockierte URL zu ändern.

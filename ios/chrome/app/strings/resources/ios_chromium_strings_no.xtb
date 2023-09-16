@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium-innstillinger</translation>
 <translation id="1722370509450468186">Passordet blir lagret i kontoen din (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Slettet Chromium-data</translation>
-<translation id="1758508597843173586">Lås inkognitomodus når du går ut av Chromium eller bytter til en annen app.</translation>
 <translation id="1791845338122684020">Åpner Chromium-loggsiden din.</translation>
 <translation id="1838412507805038478">Chromium har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium har funksjoner som hjelper deg med å administrere Internett-dataene dine og hvor fort du kan laste inn nettsider.
@@ -93,6 +92,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4790638144988730920">Fortsett å bruke Chromium-dataene i Google-kontoen din.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
+<translation id="4935539884203837577">Chromium kan registrere sporingsnumrene du skriver inn, og spore pakkene dine på Ny fane-siden, samtidig som andre handleopplevelser fra Chromium blir bedre.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
@@ -116,6 +116,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5688047395118852662">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
+<translation id="584303319228224680">Spor pakkene dine automatisk i Chromium</translation>
 <translation id="5889847953983052353">Når dette er på,
 <ph name="BEGIN_INDENT" /> • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren slik du gjør.<ph name="END_INDENT" />
 

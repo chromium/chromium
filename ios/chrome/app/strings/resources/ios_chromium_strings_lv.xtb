@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium iestatījumi</translation>
 <translation id="1722370509450468186">Jūsu parole tiks saglabāta jūsu kontā (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium dati dzēsti</translation>
-<translation id="1758508597843173586">Bloķējiet savas inkognito cilnes, izejot no pārlūka Chromium vai pārslēdzoties uz citu lietotni.</translation>
 <translation id="1791845338122684020">Tiek atvērta Chromium vēstures lapa.</translation>
 <translation id="1838412507805038478">Chromium apstiprināja, ka <ph name="ISSUER" /> izsniedza šīs vietnes sertifikātu.</translation>
 <translation id="1843424232666537147">Pārlūkā Chromium ir funkcijas, ko varat izmantot, lai pārvaldītu interneta datus un tīmekļa lapu ielādes ātrumu.
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="3478750326643748149">Paslēpiet kartīti “Pārlūka Chromium pilnvērtīga izmantošana”.</translation>
+<translation id="3554027294407525061">Notīrīt pārlūkošanas datus pārlūkā Chromium.</translation>
 <translation id="3567399274263440288">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chromium un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
@@ -98,6 +98,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="5042011327527167688">Pieskarieties vienumam “Skatīt ar Google Maps pārlūkā Chromium”.</translation>
 <translation id="5044871537677053278">Chromium nosaka adreses un izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju.</translation>
 <translation id="5048795749726991615">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chromium automātiskajai aizpildei.</translation>
+<translation id="5076601183701536878">Notīrīt pārlūkošanas datus pārlūkā Chromium</translation>
 <translation id="5131565040785979529">Jūsu organizācija (<ph name="DOMAIN" />) pārvalda kontu, kurā esat pierakstījies, un to, kā tiek izmantots pārlūks Chromium.</translation>
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5213683223491576284">Pārlūkā Chromium tiek atvērts paroļu pārvaldnieks.</translation>

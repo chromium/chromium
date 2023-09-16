@@ -3242,7 +3242,6 @@
 <translation id="3582057310199111521">มีการป้อนรหัสผ่านนี้ในเว็บไซต์ที่หลอกลวง และพบในการละเมิดข้อมูล</translation>
 <translation id="3582299299336701326">ปรับหน้าจอที่สว่างให้มืดและหน้าจอที่มืดให้สว่าง กดแป้นค้นหา + Ctrl + H เพื่อเปิดและปิดการกลับสี</translation>
 <translation id="3584169441612580296">อ่านและเปลี่ยนแปลงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
-<translation id="3584527007414070635">กลับไปท่องเว็บเกี่ยวกับ<ph name="MODULE_TITLE" />ต่อ</translation>
 <translation id="3586806079541226322">เปิดไฟล์นี้ไม่ได้</translation>
 <translation id="3586931643579894722">ซ่อนรายละเอียด</translation>
 <translation id="3587438013689771191">ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="SUBPAGE_TITLE" /></translation>
@@ -4186,6 +4185,7 @@
 <translation id="4332976768901252016">ตั้งค่าการควบคุมโดยผู้ปกครอง</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 พร้อมการเข้ารหัส RSA</translation>
 <translation id="4334768748331667190">คุณจะไม่เห็น <ph name="MODULE_NAME" /> อีก</translation>
+<translation id="4335835283689002019">Google Safe Browsing ปิดอยู่</translation>
 <translation id="4339203724549370495">ถอนการติดตั้งแอป</translation>
 <translation id="4340125850502689798">ชื่อผู้ใช้ไม่ถูกต้อง</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ต้องการสื่อสารกับแอป "<ph name="EXTENSION_NAME" />"</translation>
@@ -4497,7 +4497,6 @@
 <translation id="4580587929153007251">ลงชื่อเข้าใช้เครื่องมือจัดการรหัสผ่านบน Google อีกครั้ง</translation>
 <translation id="4580596421317071374">รหัสผ่านจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" />บนอุปกรณ์นี้</translation>
 <translation id="4581774856936278355">เกิดข้อผิดพลาดขณะคืนค่า Linux</translation>
-<translation id="4582217877717474109">ค่ากำหนดของระบบ</translation>
 <translation id="4582297591746054421">โดยปกติแล้วเว็บไซต์จะอ่านคลิปบอร์ดของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น คงการจัดรูปแบบข้อความที่คุณคัดลอกไว้</translation>
 <translation id="4582563038311694664">รีเซ็ตการตั้งค่าทั้งหมด</translation>
 <translation id="4585793705637313973">แก้ไขหน้า</translation>
@@ -6778,7 +6777,6 @@
 <translation id="6497784818439587832">เปลี่ยนขนาดการแสดงผลเพื่อทำให้รายการในหน้าจอมีขนาดเล็กลงหรือใหญ่ขึ้น</translation>
 <translation id="6497789971060331894">การเลื่อนเมาส์แบบย้อนกลับ</translation>
 <translation id="6498249116389603658">&amp;ทุกภาษาของคุณ</translation>
-<translation id="6498583202177273322">ดูข้อมูลที่เป็นประโยชน์เพิ่มเติมในขณะที่สำรวจหน้านี้</translation>
 <translation id="6499143127267478107">กำลังแก้ไขปัญหาโฮสต์ในสคริปต์พร็อกซี...</translation>
 <translation id="6499764981457476645">ไม่พบอุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="6501957628055559556">คอนเทนเนอร์ทั้งหมด</translation>
@@ -8844,6 +8842,7 @@
 <translation id="816055135686411707">ข้อผิดพลาดในการตั้งค่าความเชื่อถือใบรับรอง</translation>
 <translation id="8160775796528709999">รับคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายแทนเสียงแบบสดในการตั้งค่า</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">เรียกดูต่อ</translation>
 <translation id="8161293209665121583">โหมดผู้อ่านสำหรับหน้าเว็บ</translation>
 <translation id="8161604891089629425">แบบอักษรเส้นกรอบ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
@@ -9295,6 +9294,7 @@
 <translation id="8528962588711550376">กำลังลงชื่อเข้าใช้</translation>
 <translation id="8529925957403338845">การเชื่อมต่ออินเทอร์เน็ตผ่านมือถือแบบด่วนล้มเหลว</translation>
 <translation id="8531701051932785007">Google Safe Browsing เวอร์ชันปรับปรุงปิดอยู่</translation>
+<translation id="8533670235862049797">Google Safe Browsing เปิดอยู่</translation>
 <translation id="8534656636775144800">อ๊ะ! เกิดข้อผิดพลาดขณะพยายามเข้าร่วมโดเมน โปรดลองอีกครั้ง</translation>
 <translation id="8535005006684281994">URL การต่ออายุใบรับรองของ Netscape</translation>
 <translation id="8536713137312218707">คำสั่งด่วน</translation>

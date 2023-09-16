@@ -1747,7 +1747,6 @@
 <translation id="8230305195727960608">色彩反轉模式</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8239034820133090126">啟動右側桌面</translation>
-<translation id="8246282815785366524">歡迎回來，<ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
 <translation id="8255234195843591763">重設以更新</translation>
@@ -1846,6 +1845,7 @@
 <translation id="8703634754197148428">開始錄製。如要停止已經開始的錄製作業，請按下 Alt + Shift + L 鍵前往檔案櫃，並從中找出停止錄影的按鈕</translation>
 <translation id="8704155109538237473">聚焦在子母畫面視窗</translation>
 <translation id="870917907284186124">開啟/關閉語音輸入功能 (使用語音輸入內容)</translation>
+<translation id="8714138378966541668">已由供應商鎖定</translation>
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>

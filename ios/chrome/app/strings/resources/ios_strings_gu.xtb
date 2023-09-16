@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="2050196510205866090">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}}</translation>
 <translation id="2055515971416882518">"સેટિંગ" ખોલો.</translation>
+<translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="2074131957428911366">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં પસંદ કરી શકો છો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
@@ -313,6 +314,7 @@
 <translation id="2738375676495545665">"નવું શું છે" છુપાવો</translation>
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
+<translation id="2754492786623500387">આ ડિવાઇસ પરના એકાઉન્ટ</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="2772667768515195373">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">છૂપી શોધ</translation>
@@ -477,6 +479,7 @@
 <translation id="3587885837929752825">તમારી સંસ્થા તમે તમારા Google એકાઉન્ટમાં શુંં સાચવી શકો છો તે મર્યાદિત કરે છે.</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
 <translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
+<translation id="3599500618468205645">'<ph name="DOMAIN_NAME" /> ફૉલો કરો' છુપાવો</translation>
 <translation id="3603009562372709545">લિંક URL કૉપિ કરો</translation>
 <translation id="3607167657931203000">સ્વતઃભરણ ડેટા</translation>
 <translation id="3609785682760573515">સમન્વય કરી રહ્યું છે...</translation>
@@ -487,6 +490,7 @@
 <translation id="3646736009628185125">તમારા કુટુંબના સભ્ય અત્યારે પાસવર્ડ મેળવી શકશે નહીં. તેમને Chrome અપડેટ કરવા તેમજ તેમના પાસવર્ડ સિંક કરવા માટે કહો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">કન્ફિગ્યુરેશન પ્રોફાઇલ ઉપલબ્ધ છે</translation>
 <translation id="3670030362669914947">નંબર</translation>
+<translation id="3680970647557344817">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
 <translation id="3688815115226493214">ટૅબ માટેના સૂચનો</translation>
 <translation id="3700134753671613714">તમારા બધા ઉપરકણો પર તમારા બુકમાર્ક્સ મેળવવા માટે સાઇન ઇન કરો.</translation>
@@ -636,6 +640,7 @@
 <translation id="4592368184551360546">કીબોર્ડ</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606247758155004938">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
+<translation id="4611811151908969241">'<ph name="DOMAIN_NAME" />ને અનફૉલો કરો' છુપાવો</translation>
 <translation id="461440297010471931">Google વડે શોધી રહ્યાં છીએ</translation>
 <translation id="4616391354457235490">ફેરફાર રદ કરો</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
@@ -1057,6 +1062,7 @@
 <translation id="6753469262000681876">લૉકડાઉન મોડ</translation>
 <translation id="6760509555861141183">તાજેતરના ટૅબ પર પાછા ફરો</translation>
 <translation id="6762812039470893796">બધાને નાપસંદ કરો</translation>
+<translation id="6771287014037609247">ભાળ મેળવેલા પૅકેજને કાયમ ટ્રૅક કરો</translation>
 <translation id="6780034285637185932">પિન કોડ</translation>
 <translation id="6781260999953472352">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="6781405765516175232">રસ્તાના વિકલ્પો માટે, “દિશાનિર્દેશો મેળવો” પર ટૅપ કરો.</translation>
@@ -1229,6 +1235,7 @@
 <translation id="778855399387580014">નવા Chrome ટૅબમાં શોધ શરૂ કરો.</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
+<translation id="78146569776629510">ડાઉનલોડ</translation>
 <translation id="7839985698273989086">ઑફલાઇન પેજ</translation>
 <translation id="7840771868269352570">તમે પસંદ કરેલી આઇટમ કાઢી નાખવામાં આવશે.</translation>
 <translation id="7845466610722898">વાંચન સૂચિ બતાવો</translation>
@@ -1407,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{ટૅબનો રિવ્યૂ કરો...}one{તમામ ટૅબનો રિવ્યૂ કરો...}other{તમામ ટૅબનો રિવ્યૂ કરો...}}</translation>
 <translation id="8787968206789828143">વેબ પર શોધો</translation>
 <translation id="8792626944327216835">માઇક્રોફોન</translation>
+<translation id="8793366654064127924">દર વખતે મને પૂછો</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>
 <translation id="8806823403540278281">તમારી સંસ્થા માટે જરૂરી છે કે તમે ખાનગી રીતે બ્રાઉઝ કરો. છૂપા મોડમાં ટૅબ સાચવવામાં આવતી નથી.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -1420,6 +1428,7 @@
 <translation id="8849001918648564819">છુપાવેલી</translation>
 <translation id="8855242995793521265">તમારા બ્રાઉઝર અથવા ડિવાઇસને નોંધપાત્ર રીતે ધીમું કરતું નથી.</translation>
 <translation id="8855781063981781621">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPad પર બંધ કરો.</translation>
+<translation id="886335568110896118">'મોબાઇલ સાઇટની વિનંતી કરો' છુપાવો</translation>
 <translation id="8863431381414769983">Google Maps દ્વારા દિશાનિર્દેશો અને સ્થાન માહિતી મેળવો</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>

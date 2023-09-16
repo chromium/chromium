@@ -1993,6 +1993,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />काहीतरी चूक झाली आणि <ph name="DEVICE_OS" /> इंस्टॉल करता आले नाही.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />अधिक मदत मिळवण्यासाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">तुमची बॅटरी ८०% च्या आसपास ठेवून बॅटरी लाइफ वाढवते. तुम्ही सामान्यतः पॉवरमधून डिस्कनेक्ट करण्यापूर्वी बॅटरी पूर्णपणे चार्ज होईल.</translation>
+<translation id="2532146950330687938">डिव्हाइस तयार केले जात आहे...</translation>
 <translation id="2532198298278778531">ChromeOS Flex सेटिंग्जमध्ये सुरक्षित DNS व्यवस्थापित करा</translation>
 <translation id="2532589005999780174">उच्च तीव्रता मोड</translation>
 <translation id="2533649878691950253">तुम्ही सहसा यास परवानगी देत नसल्याने, या साइटला तुमचे अचूक स्थान जाणून घेण्यापासून ब्लॉक केले गेले</translation>
@@ -3255,7 +3256,6 @@
 <translation id="3582057310199111521">फसव्या साइटवर एंटर केला आणि डेटा भंग करत असल्याचे आढळले</translation>
 <translation id="3582299299336701326">फिकट रंगाच्या स्क्रीन गडद आणि गडद रंगाच्या स्क्रीन फिकट करा. कलर इन्व्हर्जन सुरू आणि बंद करण्यासाठी Search + Ctrl + H प्रेस करा.</translation>
 <translation id="3584169441612580296">तुमच्या कॉंप्युटरवरील फोटो, संगीत आणि अन्य मीडिया वाचा आणि बदला</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> साठी तुमचा शोध पुन्हा सुरू करा</translation>
 <translation id="3586806079541226322">ही फाइल उघडू शकत नाही</translation>
 <translation id="3586931643579894722">तपशील लपवा</translation>
 <translation id="3587438013689771191">याबद्दल अधिक जाणून घ्या: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4197,6 +4197,7 @@
 <translation id="4332976768901252016">पालक नियंत्रणे सेट करा</translation>
 <translation id="4333854382783149454">PKCS #1 RSA एंक्रिप्शनसह SHA-1</translation>
 <translation id="4334768748331667190">तुम्हाला <ph name="MODULE_NAME" /> पुन्हा दिसणार नाही</translation>
+<translation id="4335835283689002019">सुरक्षित ब्राउझिंग बंद आहे</translation>
 <translation id="4339203724549370495">अ‍ॅप अनइंस्टॉल करा</translation>
 <translation id="4340125850502689798">चुकीचे वापरकर्ता नाव</translation>
 <translation id="4340515029017875942">"<ph name="EXTENSION_NAME" />" अ‍ॅपसह <ph name="ORIGIN" /> संवाद प्रस्थापित करू इच्छितो</translation>
@@ -4509,7 +4510,6 @@
 <translation id="4580587929153007251">Google Password Manager मध्ये पुन्हा साइन इन करा</translation>
 <translation id="4580596421317071374">पासवर्ड या डिव्हाइसवर <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले जातात.</translation>
 <translation id="4581774856936278355">Linux रिस्टोअर करताना एरर आली</translation>
-<translation id="4582217877717474109">सिस्टीम प्राधान्ये</translation>
 <translation id="4582297591746054421">तुम्ही कॉपी केलेल्या मजकुराचे फॉरमॅटिंग कायम ठेवणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा क्लिपबोर्ड वाचतात</translation>
 <translation id="4582563038311694664">सर्व सेटिंग्ज रीसेट करा</translation>
 <translation id="4585793705637313973">पेज संपादित करा</translation>
@@ -5752,6 +5752,7 @@
 <translation id="5627086634964711283">तुम्ही होम बटण क्लिक करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="5627676517703583263">Chromeसह स्मार्ट ब्राउझ करा</translation>
 <translation id="5627832140542566187">डिस्प्ले ओरिएंटेशन</translation>
+<translation id="5628434207686266338">डिव्हाइसचा पासवर्ड सेट करा</translation>
 <translation id="562935524653278697">तुमच्या ॲडमिनिस्ट्रेटरने तुमचे बुकमार्क, इतिहास, संंकेतशब्द आणि अन्य सेटिंग्ज सिंक करणे अक्षम केले आहे.</translation>
 <translation id="5631017369956619646">CPU वापर</translation>
 <translation id="5631272057151918206">हे तुमच्या ऑफलाइन फाइलद्वारे वापरली जाणारी कमाल <ph name="OFFLINE_STORAGE_SIZE" /> जागा काढून टाकेल. काही फाइल तरीही ऑफलाइन उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -6793,7 +6794,6 @@
 <translation id="6497784818439587832">तुमच्या स्क्रीनवरील आयटम लहान किंवा मोठे करण्यासाठी डिस्प्लेचा आकार बदला</translation>
 <translation id="6497789971060331894">माउस रिव्हर्स स्क्रोलिंग</translation>
 <translation id="6498249116389603658">&amp;आपल्या सर्व भाषा</translation>
-<translation id="6498583202177273322">हे पेज एक्सप्लोर करत असताना अतिरिक्त उपयुक्त माहिती मिळवा</translation>
 <translation id="6499143127267478107">प्रॉक्सी स्क्रिप्टमध्‍ये होस्ट निराकरण करीत आहे...</translation>
 <translation id="6499764981457476645">जवळपास कोणतीही डिव्हाइस आढळली नाहीत</translation>
 <translation id="6501957628055559556">सर्व कंटनेर</translation>
@@ -8858,6 +8858,7 @@
 <translation id="816055135686411707">सर्टिफिकेट विश्वास सेट करताना एरर</translation>
 <translation id="8160775796528709999">सेटिंग्जमध्ये लाइव्ह कॅप्शन सुरू करून तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>
 <translation id="8161293209665121583">वेब पेजसाठी वाचक मोड</translation>
 <translation id="8161604891089629425">आउटलाइन फॉंट</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टॅब नवीन विंडो वर हलवा}other{टॅब नवीन विंडो वर हलवा}}</translation>
@@ -9309,6 +9310,7 @@
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
 <translation id="8529925957403338845">झटपट टेदरिंग कनेक्‍शन अयशस्वी झाले</translation>
 <translation id="8531701051932785007">वर्धित सुरक्षित ब्राउझिंग बंद आहे</translation>
+<translation id="8533670235862049797">सुरक्षित ब्राउझिंग सुरू आहे</translation>
 <translation id="8534656636775144800">अरेरे! डोमेनमध्ये सामील होण्याचा प्रयत्न करताना काहीतरी गडबड झाली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="8535005006684281994">Netscape सर्टिफिकेट रिन्यूअल URL</translation>
 <translation id="8536713137312218707">झटपट कमांड</translation>

@@ -29,7 +29,6 @@ Aspetos a considerar:
 <translation id="1675955119303651351">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
         Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
-<translation id="1733654336159102143">Bloqueie a sua Navegação anónima quando sai do Chrome ou muda para uma app diferente.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Use automaticamente o Chrome quando toca em links de mensagens, documentos e outras apps.</translation>
 <translation id="1917964099031477364">Esta conta e quaisquer dados não guardados serão removidos do Chrome e de outras apps Google neste dispositivo.</translation>
@@ -70,6 +69,7 @@ Aspetos a considerar:
 <translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>
+<translation id="3506309791702511623">O Chrome pode detetar os números de acompanhamento introduzidos e acompanhar os seus pacotes na página Novo separador, ao mesmo tempo que ajuda outras experiências de compras da Google.</translation>
 <translation id="3522659714780527202">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, ative a sincronização.</translation>
 <translation id="3533694711092285624">Não existem palavras-passe guardadas. O Chrome consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="3594076341410558780">Oculte a mensagem "Tire o máximo partido do Chrome"</translation>
@@ -145,6 +145,7 @@ Aspetos a considerar:
 <translation id="6648150602980899529">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="6676840375528380067">Quer limpar os dados do Chrome deste dispositivo?</translation>
 <translation id="6683891932310469419">Abre a página Histórico do Chrome.</translation>
+<translation id="6698978507424537043">Acompanhe automaticamente os seus pacotes no Chrome</translation>
 <translation id="6709398533399187136">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe da Google recomenda que a altere agora.</translation>
 <translation id="6815466750807582739">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
 

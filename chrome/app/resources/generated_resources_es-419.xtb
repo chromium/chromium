@@ -1976,6 +1976,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Hubo un problema y no se pudo instalar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Mantiene la batería alrededor del 80% para extender la duración de batería. La batería se cargará por completo en menos tiempo de lo que suele estar enchufado el dispositivo.</translation>
+<translation id="2532146950330687938">Preparando el dispositivo…</translation>
 <translation id="2532198298278778531">Administrar la función DNS seguro en la configuración de ChromeOS Flex</translation>
 <translation id="2532589005999780174">Modo de contraste alto</translation>
 <translation id="2533649878691950253">No se permitió que este sitio acceda a tu ubicación precisa porque generalmente no otorgas este permiso.</translation>
@@ -3238,7 +3239,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
-<translation id="3584527007414070635">Reanuda tu exploración sobre <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Más información sobre <ph name="SUBPAGE_TITLE" /></translation>
@@ -4182,6 +4182,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4332976768901252016">Configura los controles parentales</translation>
 <translation id="4333854382783149454">PKCS N. º 1, SHA-1 con encriptación RSA</translation>
 <translation id="4334768748331667190">No se volverá a mostrar <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">La Navegación segura está desactivada</translation>
 <translation id="4339203724549370495">Desinstalar app</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quiere comunicarse con la aplicación "<ph name="EXTENSION_NAME" />".</translation>
@@ -4493,7 +4494,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4580587929153007251">Vuelve a acceder al Administrador de contraseñas de Google</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" /> en este dispositivo.</translation>
 <translation id="4581774856936278355">Se produjo un error al restablecer Linux</translation>
-<translation id="4582217877717474109">Preferencias del sistema</translation>
 <translation id="4582297591746054421">Por lo general los sitios leen el portapapeles para habilitar funciones, como la de conservar el formato del texto que copias.</translation>
 <translation id="4582563038311694664">Restablecer toda la configuración</translation>
 <translation id="4585793705637313973">Editar página</translation>
@@ -5736,6 +5736,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627676517703583263">Navega de forma inteligente con Chrome</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
+<translation id="5628434207686266338">Establecer la contraseña del dispositivo</translation>
 <translation id="562935524653278697">Tu administrador inhabilitó la sincronización de tus favoritos, historial, contraseñas y otras opciones de configuración.</translation>
 <translation id="5631017369956619646">Uso de la CPU</translation>
 <translation id="5631272057151918206">Esta acción quitará hasta <ph name="OFFLINE_STORAGE_SIZE" /> de espacio que usan tus archivos sin conexión. Algunos archivos seguirán disponibles sin conexión. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6776,7 +6777,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
-<translation id="6498583202177273322">Obtén más información útil mientras exploras esta página</translation>
 <translation id="6499143127267478107">Resolviendo host en secuencia de comandos de proxy...</translation>
 <translation id="6499764981457476645">No se encontraron dispositivos cercanos</translation>
 <translation id="6501957628055559556">Todos los contenedores</translation>
@@ -8843,6 +8843,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="816055135686411707">Error en la configuración de confiabilidad del certificado</translation>
 <translation id="8160775796528709999">Si quieres obtener subtítulos para el audio y el video, habilita el Subtitulado instantáneo en la configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Reanudar la navegación</translation>
 <translation id="8161293209665121583">Modo de lectura para páginas web</translation>
 <translation id="8161604891089629425">Fuente con contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
@@ -9294,6 +9295,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8528962588711550376">Accediendo.</translation>
 <translation id="8529925957403338845">Se produjo un error en la conexión instantánea mediante dispositivo móvil</translation>
 <translation id="8531701051932785007">Se desactivó la Navegación segura mejorada</translation>
+<translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8534656636775144800">Se produjo un error al intentar unirse al dominio. Vuelve a intentarlo.</translation>
 <translation id="8535005006684281994">URL de renovación del certificado Netscape</translation>
 <translation id="8536713137312218707">Comandos rápidos</translation>

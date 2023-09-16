@@ -1978,6 +1978,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Xəta oldu və <ph name="DEVICE_OS" /> quraşdırılmadı.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Yardım üçün g.co/flex/InstallErrors ünvanına daxil olun.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Batareyanı təxminən 80% saxlamaqla batareyanın ömrünü uzadır. Adətən enerji mənbəyindən ayırmadan əvvəl batareya tam şarj ediləcək.</translation>
+<translation id="2532146950330687938">Cihaz hazırlanır...</translation>
 <translation id="2532198298278778531">ChromeOS Flex ayarlarında güvənli DNS'i idarə edin</translation>
 <translation id="2532589005999780174">Yüksək kontrast rejimi</translation>
 <translation id="2533649878691950253">Adətən icazə vermədiyiniz üçün bu saytın dəqiq yerinizi bilməsi bloklanıb</translation>
@@ -3240,7 +3241,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3582057310199111521">Aldadıcı saytda daxil edilib və data pozulması ilə nəticələnib</translation>
 <translation id="3582299299336701326">İşıqlı ekranlarını qaranlıq, qaranlıq ekranları isə işıqlı edin. Rəng inversiyasını aktiv və deaktiv etmək üçün Axtarış + Ctrl + H düymələrini basın.</translation>
 <translation id="3584169441612580296">Kompüterinizdə foto, musiqi və digər medianı oxuyun və dəyişin</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> üzrə axtarışı davam etdirin</translation>
 <translation id="3586806079541226322">Bu fayl açılmır</translation>
 <translation id="3586931643579894722">Detalları gizlədin</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> haqqında ətraflı məlumat</translation>
@@ -4182,6 +4182,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4332976768901252016">Valideyn Nəzarətləri ayarlayın</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 Şifrələmə ilə</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> göstərilməyəcək</translation>
+<translation id="4335835283689002019">Təhlükəsiz Baxış deaktivdir</translation>
 <translation id="4339203724549370495">Tətbiqi ləğv edin</translation>
 <translation id="4340125850502689798">Yanlış istifadəçi adı</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" tətbiqi ilə bağlantı yaratmaq istəyir</translation>
@@ -4493,7 +4494,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4580587929153007251">Google Parol Menecerinə yenidən daxil olun</translation>
 <translation id="4580596421317071374">Parollar bu cihazda <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanılır.</translation>
 <translation id="4581774856936278355">Linux bərpa edilərkən xəta baş verdi</translation>
-<translation id="4582217877717474109">Sistem tərcihləri</translation>
 <translation id="4582297591746054421">Saytlar adətən kopyaladığınız mətnin formatını saxlamaq kimi xüsusiyyətlər üçün mübadilə buferinizi oxuyur</translation>
 <translation id="4582563038311694664">Bütün ayarları sıfırlayın</translation>
 <translation id="4585793705637313973">Səhifəni redaktə edin</translation>
@@ -5736,6 +5736,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5627086634964711283">Həmçinin, əsas səhifə düyməsinə klikləyəndə göstəriləsi səhifəyə nəzarət edir.</translation>
 <translation id="5627676517703583263">Chrome ilə ağıllı axtarış edin</translation>
 <translation id="5627832140542566187">Displeyin orientasiyası</translation>
+<translation id="5628434207686266338">Cihaz parolu ayarlayın</translation>
 <translation id="562935524653278697">Administratorunuz əlfəcin, tarixçə, parol və digər ayarlar üçün sinxronizasiyanı deaktiv edib.</translation>
 <translation id="5631017369956619646">CPU İstifadəsi</translation>
 <translation id="5631272057151918206">Oflayn faylların tutduğu maksimum <ph name="OFFLINE_STORAGE_SIZE" /> yer təmizlənəcək. Bəzi fayllar oflayn əlçatan qalacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -6774,7 +6775,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6497784818439587832">Ekranınızdakı elementləri kiçiltmək və ya böyütmək üçün ekran ölçüsünü dəyişdirin</translation>
 <translation id="6497789971060331894">Siçanın geri sürüşdürməsi</translation>
 <translation id="6498249116389603658">&amp;Bütün dilləriniz</translation>
-<translation id="6498583202177273322">Bu səhifədə əlavə faydalı məlumat əldə edin</translation>
 <translation id="6499143127267478107">Proksi skriptdə host həll olunur...</translation>
 <translation id="6499764981457476645">Yaxınlıqda heç bir cihaz tapılmadı</translation>
 <translation id="6501957628055559556">Bütün konteynerlər</translation>
@@ -8839,6 +8839,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="816055135686411707">Xəta Ayarı Sertifikat Etibarlılığı</translation>
 <translation id="8160775796528709999">Ayarlarda Canlı Altyazını aktivləşdirməklə audio və videonuz üçün altyazılar əldə edin</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Baxmağa davam edin</translation>
 <translation id="8161293209665121583">Veb səhifələr üçün oxucu rejimi</translation>
 <translation id="8161604891089629425">Konturlu şrift</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabeli Yeni Pəncərəyə Köçürün}other{Tabelləri Yeni Pəncərəyə Köçürün}}</translation>
@@ -9290,6 +9291,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
 <translation id="8529925957403338845">Cəld modem əlaqəsi kəsildi</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
+<translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
 <translation id="8534656636775144800">Ups! Domenə qoşularkən xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="8535005006684281994">Netscape Sertifikat Yeniləmə URL</translation>
 <translation id="8536713137312218707">Sürətli Əmrlər</translation>

@@ -3254,7 +3254,6 @@
 <translation id="3582057310199111521">در سایت فریب‌دهنده وارد و در نقض داده پیدا شد</translation>
 <translation id="3582299299336701326">‏صفحه‌های روشن تیره می‌شوند و صفحه‌های تیره روشن می‌شوند. برای روشن و خاموش کردن وارونگی رنگ، کلیدهای «جستجو + مهار + H» را فشار دهید.</translation>
 <translation id="3584169441612580296">خواندن و تغییر عکس‌ها، موسیقی، و رسانه‌های دیگر از رایانه‌تان</translation>
-<translation id="3584527007414070635">سفر جستجویتان را برای <ph name="MODULE_TITLE" /> ازسر بگیرید</translation>
 <translation id="3586806079541226322">این فایل باز نمی‌شود</translation>
 <translation id="3586931643579894722">عدم نمایش جزئیات</translation>
 <translation id="3587438013689771191">اطلاعات بیشتر درباره: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4198,6 +4197,7 @@
 <translation id="4332976768901252016">راه‌اندازی کنترل‌های والدین</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 با رمزگذاری RSA</translation>
 <translation id="4334768748331667190">دیگر <ph name="MODULE_NAME" /> را نخواهید دید</translation>
+<translation id="4335835283689002019">«مرور ایمن» خاموش است</translation>
 <translation id="4339203724549370495">حذف نصب برنامه</translation>
 <translation id="4340125850502689798">نام کاربری نامعتبر است</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> می‌خواهد با برنامه «<ph name="EXTENSION_NAME" />» ارتباط برقرار کند</translation>
@@ -4510,7 +4510,6 @@
 <translation id="4580587929153007251">‏دوباره به سیستم «مدیر گذرواژه Google» وارد شوید</translation>
 <translation id="4580596421317071374">گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> در این دستگاه ذخیره می‌شود.</translation>
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
-<translation id="4582217877717474109">اولویت‌های سیستم</translation>
 <translation id="4582297591746054421">سایت‌ها معمولاً بریده‌دان را برای ارائه ویژگی‌هایی مانند حفظ قالب نوشتاری که کپی می‌کنید می‌خوانند</translation>
 <translation id="4582563038311694664">بازنشانی همه تنظیمات</translation>
 <translation id="4585793705637313973">ویرایش صفحه</translation>
@@ -6794,7 +6793,6 @@
 <translation id="6497784818439587832">تغییر اندازه نمایش برای کوچک‌تر کردن یا بزرگ‌تر کردن موارد روی صفحه‌نمایش</translation>
 <translation id="6497789971060331894">پیمایش معکوس موشواره</translation>
 <translation id="6498249116389603658">&amp;همه زبان‌های شما</translation>
-<translation id="6498583202177273322">با کاوش این صفحه، اطلاعات مفید بیشتری دریافت کنید</translation>
 <translation id="6499143127267478107">تعیین میزبان در اسکریپت پروکسی...</translation>
 <translation id="6499764981457476645">هیچ دستگاهی دراطراف پیدا نشد</translation>
 <translation id="6501957628055559556">همه محتوی‌ها</translation>
@@ -8862,6 +8860,7 @@
 <translation id="816055135686411707">خطا در تنظیم اعتماد مجوز</translation>
 <translation id="8160775796528709999">با فعال کردن «زیرنویس ناشنوایان زنده» در تنظیمات، برای صدا و ویدیو زیرنویس ناشنوایان دریافت کنید</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ازسر گرفتن مرور</translation>
 <translation id="8161293209665121583">«حالت خواننده» برای صفحه‌های وب</translation>
 <translation id="8161604891089629425">قلم برون‌خط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
@@ -9313,6 +9312,7 @@
 <translation id="8528962588711550376">ورود به برنامه.</translation>
 <translation id="8529925957403338845">اشتراک‌گذاری اینترنت فوری برقرار نشد</translation>
 <translation id="8531701051932785007">«مرور ایمن پیشرفته» خاموش است</translation>
+<translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8534656636775144800">وای!  هنگام اتصال به دامنه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="8535005006684281994">‏نشانی وب تجدید گواهی Netscape</translation>
 <translation id="8536713137312218707">فرمان‌های سریع</translation>

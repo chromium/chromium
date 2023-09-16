@@ -3260,7 +3260,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3582057310199111521">Wedi'i rhoi ar wefan dwyllodrus a'i ddarganfod mewn tor data</translation>
 <translation id="3582299299336701326">Troi sgriniau golau yn dywyll a sgriniau tywyll yn olau. Pwyswch Search + Ctrl + H i droi gwrthdroad lliw ymlaen a'i ddiffodd.</translation>
 <translation id="3584169441612580296">Gallwch ddarllen a newid lluniau, cerddoriaeth a chyfryngau eraill o'ch cyfrifiadur</translation>
-<translation id="3584527007414070635">Parhau â'r daith ar gyfer <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Methu ag agor y ffeil hon</translation>
 <translation id="3586931643579894722">Cuddio'r manylion</translation>
 <translation id="3587438013689771191">Dysgu rhagor am: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4204,6 +4203,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4332976768901252016">Gosod Rheolaethau Rhieni</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 Gydag Amgryptio RSA</translation>
 <translation id="4334768748331667190">Ni fyddwch yn gweld <ph name="MODULE_NAME" /> eto</translation>
+<translation id="4335835283689002019">Mae Pori'n Ddiogel wedi'i ddiffodd</translation>
 <translation id="4339203724549370495">Dadosod yr ap</translation>
 <translation id="4340125850502689798">Enw defnyddiwr annilys</translation>
 <translation id="4340515029017875942">Mae <ph name="ORIGIN" /> eisiau cyfathrebu â'r ap "<ph name="EXTENSION_NAME" />"</translation>
@@ -4516,7 +4516,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4580587929153007251">Mewngofnodwch i Reolwr Cyfrineiriau Google eto</translation>
 <translation id="4580596421317071374">Mae cyfrineiriau'n cael eu cadw o dan <ph name="GOOGLE_PASSWORD_MANAGER" /> ar y ddyfais hon.</translation>
 <translation id="4581774856936278355">Bu gwall wrth adfer Linux</translation>
-<translation id="4582217877717474109">Dewisiadau'r System</translation>
 <translation id="4582297591746054421">Mae gwefannau fel arfer yn darllen eich clipfwrdd ar gyfer nodweddion megis cadw fformat y testun y gwnaethoch ei gopïo</translation>
 <translation id="4582563038311694664">Ailosod pob gosodiad</translation>
 <translation id="4585793705637313973">Golygu tudalen</translation>
@@ -6800,7 +6799,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6497784818439587832">Newidiwch y maint dangos i wneud eitemau ar eich sgrîn yn llai neu'n fwy</translation>
 <translation id="6497789971060331894">Sgrolio tuag yn ôl gyda'r llygoden</translation>
 <translation id="6498249116389603658">&amp;Eich holl ieithoedd</translation>
-<translation id="6498583202177273322">Cewch wybodaeth ddefnyddiol ychwanegol wrth i chi archwilio'r dudalen hon</translation>
 <translation id="6499143127267478107">Wrthi'n datrys y gwesteiwr mewn sgript ddirprwyol...</translation>
 <translation id="6499764981457476645">Ni chanfuwyd unrhyw ddyfeisiau gerllaw</translation>
 <translation id="6501957628055559556">Pob cynhwysydd</translation>
@@ -8873,6 +8871,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="816055135686411707">Bu Gwall Wrth Osod Ymddiriedolaeth Tystysgrif</translation>
 <translation id="8160775796528709999">Cewch gapsiynau ar gyfer eich sain a fideo drwy alluogi Capsiynau Byw yn y gosodiadau</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Parhau i bori</translation>
 <translation id="8161293209665121583">Modd darllenydd ar gyfer tudalennau gwe</translation>
 <translation id="8161604891089629425">Ffont amlinell</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Symud y Tab i Ffenestr Newydd}zero{Symud y Tabiau i Ffenestr Newydd}two{Symud y Tabiau i Ffenestr Newydd}few{Symud y Tabiau i Ffenestr Newydd}many{Symud y Tabiau i Ffenestr Newydd}other{Symud y Tabiau i Ffenestr Newydd}}</translation>
@@ -9324,6 +9323,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8528962588711550376">Wrthi'n mewngofnodi.</translation>
 <translation id="8529925957403338845">Gwnaeth Rhannu Cysylltiad Sydyn fethu</translation>
 <translation id="8531701051932785007">Mae Gwell Pori'n Ddiogel wedi'i ddiffodd</translation>
+<translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="8534656636775144800">Wps!  Aeth rhywbeth o'i le wrth geisio ymuno â'r parth. Rhowch gynnig arall arni.</translation>
 <translation id="8535005006684281994">URL Adnewyddu Tystysgrif Netscape</translation>
 <translation id="8536713137312218707">Gorchmynion Cyflym</translation>

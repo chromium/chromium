@@ -3255,7 +3255,6 @@
 <translation id="3582057310199111521">మోసపూరిత సైట్‌లో ఎంటర్ చేయబడింది, డేటా ఉల్లంఘనలో కనుగొనబడింది</translation>
 <translation id="3582299299336701326">ప్రకాశవంతంగా ఉండే స్క్రీన్‌లను ముదురు రంగులోకి మారుస్తుంది, ముదురు రంగు స్క్రీన్‌లను ప్రకాశవంతంగా మారుస్తుంది. సెర్చ్ + Ctrl + Hని నొక్కి, కలర్ మార్పిడిని ఆన్, ఆఫ్ చేయండి.</translation>
 <translation id="3584169441612580296">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాను చదవడం మరియు మార్చడం</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> కోసం మీ బ్రౌజింగ్ జర్నీని కొనసాగించండి</translation>
 <translation id="3586806079541226322">ఈ ఫైల్‌ను తెరవడం కుదరదు</translation>
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> గురించి మరింత తెలుసుకోండి</translation>
@@ -4199,6 +4198,7 @@
 <translation id="4332976768901252016">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయండి</translation>
 <translation id="4333854382783149454">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-1</translation>
 <translation id="4334768748331667190">మీరు <ph name="MODULE_NAME" />ను మళ్లీ చూడరు</translation>
+<translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4339203724549370495">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయి</translation>
 <translation id="4340125850502689798">చెల్లని యూజర్‌నేమ్</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, <ph name="EXTENSION_NAME" />యాప్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
@@ -4511,7 +4511,6 @@
 <translation id="4580587929153007251">Google Password Managerకు మీరు తిరిగి సైన్ ఇన్ చేయండి</translation>
 <translation id="4580596421317071374">ఈ పరికరంలోని <ph name="GOOGLE_PASSWORD_MANAGER" />‌లో పాస్‌వర్డ్‌లు సేవ్ చేయబడ్డాయి.</translation>
 <translation id="4581774856936278355">Linuxని పునరుద్ధరిస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది</translation>
-<translation id="4582217877717474109">సిస్టమ్ ప్రాధాన్యతలు</translation>
 <translation id="4582297591746054421">మీరు కాపీ చేసిన టెక్స్ట్ యొక్క ఫార్మాటింగ్‌ను అలాగే ఉంచడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు మీ క్లిప్‌బోర్డ్‌ను చదువుతాయి</translation>
 <translation id="4582563038311694664">అన్ని సెట్టింగ్‌లను రీసెట్ చేయండి</translation>
 <translation id="4585793705637313973">పేజీని ఎడిట్ చేయండి</translation>
@@ -6795,7 +6794,6 @@
 <translation id="6497784818439587832">మీ స్క్రీన్‌పై ఉన్న ఐటెమ్‌లను పెద్దగా లేదా చిన్నగా చూపడానికి డిస్‌ప్లే సైజ్‌ను మార్చండి</translation>
 <translation id="6497789971060331894">మౌస్ రివర్స్ స్క్రోలింగ్</translation>
 <translation id="6498249116389603658">&amp;మీ అన్ని భాషలు</translation>
-<translation id="6498583202177273322">ఈ పేజీని అన్వేషిస్తున్నప్పుడు ఉపయోగకరమైన అదనపు సమాచారాన్ని పొందండి</translation>
 <translation id="6499143127267478107">ప్రాక్సీ స్క్రిప్ట్‌లో హోస్ట్‌ను పరిష్కరిస్తోంది...</translation>
 <translation id="6499764981457476645">సమీపంలో పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="6501957628055559556">అన్ని కంటైనర్లు</translation>
@@ -8858,6 +8856,7 @@
 <translation id="816055135686411707">ఎర్రర్ సెట్టింగ్ ప్రమాణపత్ర నమ్మకం</translation>
 <translation id="8160775796528709999">సెట్టింగ్‌లలో లైవ్ క్యాప్షన్‌ను ఎనేబుల్ చేయడం ద్వారా మీ ఆడియోకు, వీడియోకు క్యాప్షన్‌లను పొందండి</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">బ్రౌజింగ్ కొనసాగించండి</translation>
 <translation id="8161293209665121583">వెబ్ పేజీల కోసం రీడర్ మోడ్</translation>
 <translation id="8161604891089629425">అవుట్‌లైన్ ఫాంట్</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ట్యాబ్‌ను కొత్త విండోకు తరలించు}other{ట్యాబ్‌లను కొత్త విండోకు తరలించు}}</translation>
@@ -9309,6 +9308,7 @@
 <translation id="8528962588711550376">సైన్ ఇన్ అవుతోంది.</translation>
 <translation id="8529925957403338845">తక్షణ టెథెరింగ్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8531701051932785007">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది</translation>
+<translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8534656636775144800">అయ్యో!  డొమైన్‌‌ను చేర్చడానికి ప్రయత్నిస్తున్నప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8535005006684281994">Netscape సర్టిఫికెట్ పునరుద్ధరణ URL</translation>
 <translation id="8536713137312218707">క్విక్ కమాండ్స్</translation>

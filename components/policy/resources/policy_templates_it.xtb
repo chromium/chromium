@@ -257,11 +257,6 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123018742985150697">Richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
-<translation id="1233815313234662905">Se il criterio viene impostato su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base ai criteri aziendali o, dalla versione 114 e se si tratta di un utente gestito, estensioni integrate nel browser. Se il criterio viene impostato su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base ai criteri aziendali. Se il criterio viene impostato su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi dei siti web.
-
-      Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.
-
-      A partire dalla versione 99 di <ph name="PRODUCT_NAME" />, questa impostazione consente anche di controllare i punti di ingresso per la funzionalità "Visualizza sorgente pagina". Se imposti questo criterio su "DeveloperToolsDisallowed" (valore 2), gli utenti non possono accedere alla visualizzazione del codice sorgente tramite scorciatoia da tastiera o il menu contestuale. Per bloccare completamente la visualizzazione del codice sorgente, devi anche aggiungere "view-source:*" al criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
 
@@ -1681,9 +1676,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2439187682308339104">Non consentire a nessun sito di richiedere l'accesso ai dispositivi HID tramite l'API WebHID</translation>
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
-<translation id="2448315169529769573">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se il criterio viene impostato su Disattivato, la segnalazione di metriche e dati diagnostici viene disattivata.
-
-       Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
@@ -3259,11 +3251,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
       Nota: le notifiche relative ai criteri forzano un aggiornamento quando cambiano i criteri, rendendo quindi superflui aggiornamenti più frequenti. Quindi, se la piattaforma supporta queste notifiche, il ritardo dell'aggiornamento verrà impostato su 24 ore (vengono ignorati tutti i valori predefiniti e il valore di questo criterio).</translation>
 <translation id="382476126209906314">Configura il prefisso TalkGadget per gli host di accesso remoto</translation>
 <translation id="3824972131618513497">Consente di controllare le impostazioni relative alla gestione dell'alimentazione e al riavvio.</translation>
-<translation id="3825313562760682300">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate. Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
-
-Il campo <ph name="MANIFEST_ID_FIELD" /> è l'ID manifest dell'app web. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID manifest di un'app web installata.
-Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app web può essere eseguita durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-(Dalla versione 117) Il campo <ph name="PREVENT_CLOSE_FIELD" /> consente di specificare se impedire o meno la chiusura di un'app web in qualsiasi modo (ad esempio da parte dell'utente, da Task Manager, da API web). Questo comportamento può essere attivato solo se il criterio <ph name="RUN_ON_OS_LOGIN_FIELD" /> è impostato su <ph name="RUN_WINDOWED" />. Se l'app era già in esecuzione, questa proprietà diventa effettiva solo dopo il suo riavvio. Se questo campo non viene definito, gli utenti potranno chiudere le app.</translation>
 <translation id="3825873934240606959">Impedisci rilevamento del dispositivo locale</translation>
 <translation id="3826475866868158882">Servizi di geolocalizzazione di Google attivi</translation>
 <translation id="3829344785870486923">Lista consentita dei domini secondari per la separazione dei profili aziendali</translation>
@@ -3662,11 +3649,6 @@ Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED" /> (1), le este
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore di testo è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="4181820969510931391">Se il criterio viene impostato su Attivato o se non viene impostato, in <ph name="PRODUCT_NAME" /> viene mostrata l'UI del nuovo fumetto dei download.
-
-      Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> continua a mostrare l'UI della barra dei download precedente.
-
-      Tieni presente che questo criterio è temporaneo e verrà rimosso non appena l'UI del nuovo fumetto dei download sarà disponibile.</translation>
 <translation id="4182348537826882258">Se il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> viene configurato, le pagine web con URL vietati non vengono caricate. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se il criterio non viene configurato, non viene bloccato nessun URL nel browser. Nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Nota: questo criterio non si applica agli URL JavaScript in-page con dati caricati dinamicamente. Se hai bloccato example.com/abc, example.com potrebbe comunque caricarlo utilizzando XMLHTTPRequest. Inoltre, questo criterio non impedisce alle pagine web di aggiornare l'URL mostrato nella omnibox con uno bloccato usando l'API JavaScript History.

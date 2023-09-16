@@ -197,6 +197,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts using same password</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} saved payment method available above your keyboard.}other{{count} saved payment methods available above your keyboard.}}</translation>
 <translation id="2055515971416882518">Open "Settings."</translation>
+<translation id="2059166748188874810">Municipality</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -478,6 +479,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3587885837929752825">Your organisation limits what you can save in your Google Account.</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
+<translation id="3599500618468205645">Hide Follow <ph name="DOMAIN_NAME" /></translation>
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
@@ -488,6 +490,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3646736009628185125">Your family member can't receive passwords right now. Ask them to update Chrome and sync their passwords. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Configuration profile available</translation>
 <translation id="3670030362669914947">Number</translation>
+<translation id="3680970647557344817">Hide Edit Bookmark</translation>
 <translation id="368329460027487650">Signed out. Opens options to sign in.</translation>
 <translation id="3688815115226493214">Tab Suggestions</translation>
 <translation id="3700134753671613714">Sign in to get your bookmarks on all your devices.</translation>
@@ -637,6 +640,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
+<translation id="4611811151908969241">Hide Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Searching with Google</translation>
 <translation id="4616391354457235490">Undo</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
@@ -1058,6 +1062,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6753469262000681876">Lockdown Mode</translation>
 <translation id="6760509555861141183">Return to recent tab</translation>
 <translation id="6762812039470893796">Deselect all</translation>
+<translation id="6771287014037609247">Always track detected packages</translation>
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6781260999953472352">Turn on sync?</translation>
 <translation id="6781405765516175232">For route options, tap 'Get directions'</translation>
@@ -1409,6 +1414,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8780076847684176174">{count,plural, =1{Review the tab...}other{Review all tabs...}}</translation>
 <translation id="8787968206789828143">Search on web</translation>
 <translation id="8792626944327216835">microphone</translation>
+<translation id="8793366654064127924">Ask me every time</translation>
 <translation id="8803639129939845298">Secure</translation>
 <translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8855242995793521265">Doesn't noticeably slow down your browser or device.</translation>
 <translation id="8855781063981781621">To disable Lockdown mode in Chrome, turn it off on your iPad.</translation>
+<translation id="886335568110896118">Hide Request Mobile Site</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>

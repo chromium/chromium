@@ -3259,7 +3259,6 @@
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3582299299336701326">밝은 화면을 어둡게 하고 어두운 화면을 밝게 합니다. 색상 반전을 사용 설정 또는 중지하려면 검색 + Ctrl + H를 누르세요.</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" />에 대한 여정 재개</translation>
 <translation id="3586806079541226322">파일을 열 수 없음</translation>
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />에 관해 자세히 알아보기</translation>
@@ -4201,6 +4200,7 @@
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" />가 다시 표시되지 않습니다.</translation>
+<translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
 <translation id="4339203724549370495">앱 제거</translation>
 <translation id="4340125850502689798">잘못된 사용자 이름</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 앱과 통신하려고 합니다.</translation>
@@ -4513,7 +4513,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4580587929153007251">Google 비밀번호 관리자에 다시 로그인합니다.</translation>
 <translation id="4580596421317071374">비밀번호는 이 기기의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="4581774856936278355">Linux 복원 중 오류 발생</translation>
-<translation id="4582217877717474109">시스템 환경설정</translation>
 <translation id="4582297591746054421">사이트에서는 일반적으로 복사한 텍스트 형식 유지와 같은 기능을 사용하기 위해 클립보드를 읽어 옵니다.</translation>
 <translation id="4582563038311694664">모든 설정 초기화</translation>
 <translation id="4585793705637313973">페이지 수정</translation>
@@ -6797,7 +6796,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
 <translation id="6498249116389603658">모든 언어(&amp;A)</translation>
-<translation id="6498583202177273322">이 페이지를 둘러보면서 유용한 정보를 추가로 얻어 보세요.</translation>
 <translation id="6499143127267478107">프록시 스크립트의 호스트 확인 중...</translation>
 <translation id="6499764981457476645">근처에서 기기를 찾을 수 없음</translation>
 <translation id="6501957628055559556">모든 컨테이너</translation>
@@ -8864,6 +8862,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="816055135686411707">인증서 신뢰를 설정하던 중 오류 발생</translation>
 <translation id="8160775796528709999">설정에서 실시간 자막을 사용 설정하여 음성 및 영상 자막 생성하기</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">둘러보기 재개</translation>
 <translation id="8161293209665121583">웹페이지 리더 모드</translation>
 <translation id="8161604891089629425">윤곽선 글꼴</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
@@ -9315,6 +9314,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
 <translation id="8529925957403338845">인스턴트 테더링 연결 실패</translation>
 <translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
+<translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>
 <translation id="8534656636775144800">도메인에 가입하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536713137312218707">빠른 명령어</translation>

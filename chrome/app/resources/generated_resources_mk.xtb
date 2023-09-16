@@ -3258,7 +3258,6 @@
 <translation id="3582057310199111521">Внесена на измамнички сајт и откриена при упад во податоци</translation>
 <translation id="3582299299336701326">Го претвора светлиот екран во темен и темниот екран во светол. Притиснете Search + Ctrl + H за да се вклучи и исклучи инверзија на боите.</translation>
 <translation id="3584169441612580296">Прочитајте ги и променете ги фотографиите, музиката и другите медиуми од компјутерoт</translation>
-<translation id="3584527007414070635">Продолжете го патувањето за <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Датотекава не може да се отвори</translation>
 <translation id="3586931643579894722">Скриј детали</translation>
 <translation id="3587438013689771191">Дознајте повеќе за: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4202,6 +4201,7 @@
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 со RSA енкрипција</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> веќе нема да се прикажува</translation>
+<translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
 <translation id="4339203724549370495">Деинсталирај ја апликацијата</translation>
 <translation id="4340125850502689798">Неважечко корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> сака да комуницира со апликацијата „<ph name="EXTENSION_NAME" />"</translation>
@@ -4514,7 +4514,6 @@
 <translation id="4580587929153007251">Најавете се повторно на Google Password Manager</translation>
 <translation id="4580596421317071374">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> на уредов.</translation>
 <translation id="4581774856936278355">Грешка при враќањето на Linux</translation>
-<translation id="4582217877717474109">Поставки за системот</translation>
 <translation id="4582297591746054421">Сајтовите обично ја читаат вашата привремена меморија за функциите како што е задржувањето на форматот на текстот што сте го копирале</translation>
 <translation id="4582563038311694664">Ресетирај ги сите поставки</translation>
 <translation id="4585793705637313973">Уредете ја страницата</translation>
@@ -6798,7 +6797,6 @@
 <translation id="6497784818439587832">Променете ја големината на екранот за да се намалат или зголемат ставките на екранот</translation>
 <translation id="6497789971060331894">Обратно лизгање на глувчето</translation>
 <translation id="6498249116389603658">&amp;Сите ваши јазици</translation>
-<translation id="6498583202177273322">Добијте дополнителни корисни податоци додека ја истражувате страницава</translation>
 <translation id="6499143127267478107">Се решава домаќин во скрипта на прокси...</translation>
 <translation id="6499764981457476645">Не се најдени уреди во близина</translation>
 <translation id="6501957628055559556">Сите контејнери</translation>
@@ -8865,6 +8863,7 @@
 <translation id="816055135686411707">Грешка при поставување сертификат на доверба</translation>
 <translation id="8160775796528709999">Добијте титлови за вашите аудио и видеосодржини со овозможување „Автоматски титлови“ во поставките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Продолжи со прелистување</translation>
 <translation id="8161293209665121583">Режим на читач за веб-страници</translation>
 <translation id="8161604891089629425">Фонт со контури</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместете ја картичката во нов прозорец}one{Преместете ги картичките во нов прозорец}other{Преместете ги картичките во нов прозорец}}</translation>
@@ -9319,6 +9318,7 @@
 <translation id="8528962588711550376">Се пријавува.</translation>
 <translation id="8529925957403338845">Неуспешно инстант врзување</translation>
 <translation id="8531701051932785007">„Подобреното безбедно прелистување“ е вклучено</translation>
+<translation id="8533670235862049797">„Безбедното прелистување“ е вклучено</translation>
 <translation id="8534656636775144800">Упс! Нешто тргна наопаку при обидот за приклучување на доменот. Обидете се повторно.</translation>
 <translation id="8535005006684281994">URL за обновување сертификат на Netscape</translation>
 <translation id="8536713137312218707">Брзи команди</translation>

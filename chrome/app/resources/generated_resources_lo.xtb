@@ -768,6 +768,7 @@
 <translation id="1604432177629086300">ບໍ່ສາມາດພິມໄດ້. ກວດເບິ່ງເຄື່ອງພິມ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="1604567162047669454">ຮູ້ຈັກຄວາມໝາຍຂອງໂຄງຮ່າງພາບ</translation>
 <translation id="1604774728851271529">ທ່ານຕ້ອງມີການເຊື່ອມຕໍ່ເຄືອຂ່າຍເພື່ອອັບເກຣດ Linux. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>
+<translation id="1605148987885002237">ແປ້ນພິມ ແລະ ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="1605744057217831567">ເບິ່ງຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດທັງໝົດ</translation>
 <translation id="1606077700029460857">ປ່ຽນການຕັ້ງຄ່າເມົ້າ</translation>
 <translation id="1606307079840340755">ຜູ້ໃຫ້ບໍລິການ Passpoint ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອປ່ຽນແປງການສະໝັກສະມາຊິກຂອງທ່ານ, ໃຫ້ຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການການສະໝັກສະມາຊິກ.</translation>
@@ -1234,6 +1235,7 @@
 <translation id="1956050014111002555">ໄຟລ໌ມີຫຼາຍໃບຢັ້ງຢືນ, ບໍ່ມີອັນໃດທີ່ຖືກນໍາເຂົ້າມາ:</translation>
 <translation id="1956167375087861299">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="1956390763342388273">ນີ້ຈະອັບໂຫຼດໄຟລ໌ທັງໝົດຈາກ "<ph name="FOLDER_PATH" />". ພຽງແຕ່ເຮັດສິ່ງນີ້ຖ້າທ່ານເຊື່ອຖືເວັບໄຊເທົ່ານັ້ນ.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{ກວດສອບສ່ວນຂະຫຍາຍ 1 ລາຍການແລ້ວ}other{ກວດສອບສ່ວນຂະຫຍາຍ {NUM_EXTENSIONS} ລາຍການແລ້ວ}}</translation>
 <translation id="1959421829481337178">ກະລຸນາລະບຸລະຫັດການເປີດນຳໃຊ້ທີ່ໄດ້ຮັບຈາກຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
 <translation id="1962233722219655970">ໜ້ານີ້ໃຊ້ແອັບລູກຂ່າຍເດີມທີ່ບໍ່ເຮັດວຽກຢູ່ໃນຄອມພິວເຕີຂອງທ່ານ.</translation>
 <translation id="1963976881984600709">ການປົກປ້ອງມາດຕະຖານ</translation>
@@ -1948,6 +1950,7 @@
 <translation id="2492461744635776704">ກຳລັງກະກຽມຄຳຂໍເຊັນໃບຮັບຮອງ</translation>
 <translation id="249330843868392562">ເປີດການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="2494555621641843783">ບໍ່ສາມາດຕິດຕັ້ງ Steam ໄດ້</translation>
+<translation id="2495141202137516054">ຈາກ Drive ຂອງທ່ານ</translation>
 <translation id="2495524171012645395">ສູດທີ່ເບິ່ງຫຼ້າສຸດ</translation>
 <translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="2497229222757901769">ຄວາມໄວເມົ້າ</translation>
@@ -2251,6 +2254,7 @@
 <translation id="2738771556149464852">ບໍ່ຫຼັງຈາກ</translation>
 <translation id="2739191690716947896">ແກ້ໄຂບັນຫາ</translation>
 <translation id="2739240477418971307">ປ່ຽນການຕັ້ງຄ່າຄວາມສາມາດເຂົ້າຫາຂອງທ່ານ</translation>
+<translation id="2739331588276254426">ເຊື່ອມຕໍ່ອິນເຕີເນັດຜ່ານທາງ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">ຫຼຸດລົງ</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2740876196999178364">ກະແຈຜ່ານເຫຼົ່ານີ້ຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ. ພວກມັນບໍ່ໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -3208,6 +3212,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ປິດສຽງແລ້ວ</translation>
 <translation id="3537881477201137177">ສາມາດແກ້ໄຂສິ່ງນີ້ໃນພາຍຫຼັງໄດ້ໃນການຕັ້ງຄ່າ</translation>
 <translation id="3538066758857505094">ເກີດຄວາມຜິດພາດໃນຖອນການຕິດຕັ້ງ Linux. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="3540173484406326944">ບໍ່ມີເຄືອຂ່າຍຜ່ານທາງ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">ເຄື່ອງ​ປັບ​ໄຟ AC</translation>
 <translation id="354068948465830244">ນີ້ສາມາດອ່ານ ແລະ ປ່ຽນຂໍ້ມູນເວັບໄຊໄດ້</translation>
 <translation id="3541823293333232175">ກຳນົດແລ້ວ</translation>
@@ -3256,7 +3261,6 @@
 <translation id="3582057310199111521">ປ້ອນໃສ່ເວັບໄຊຫຼອກລວງ ແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3582299299336701326">ປ່ຽນໜ້າຈໍແຈ້ງໃຫ້ມືດ ແລະ ມືດໃຫ້ແຈ້ງ. ກົດຊອກຫາ + Ctrl + H ເພື່ອເປີດ ແລະ ປິດການປີ້ນສີ.</translation>
 <translation id="3584169441612580296">ອ່ານ ແລະປ່ຽນແປງຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
-<translation id="3584527007414070635">ສືບຕໍ່ບັນທຶກຂອງທ່ານສຳລັບ <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">ບໍ່ສາມາດເປີດໄຟລ໌ນີ້ໄດ້</translation>
 <translation id="3586931643579894722">ເຊື່ອງ​ລາຍ​ລະ​ອຽດ</translation>
 <translation id="3587438013689771191">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4200,6 +4204,7 @@
 <translation id="4332976768901252016">ຕັ້ງຄ່າການຄວບຄຸມສຳລັບພໍ່ແມ່</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="4334768748331667190">ທ່ານຈະບໍ່ເຫັນ <ph name="MODULE_NAME" /> ອີກ</translation>
+<translation id="4335835283689002019">Safe Browsing ປິດ</translation>
 <translation id="4339203724549370495">ຖອນການຕິດຕັ້ງແອັບ</translation>
 <translation id="4340125850502689798">ຊື່ຜູ້ໃຊ້ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ຕ້ອງ​ການ​ສື່​ສານ​ກັບ​ແອັບ "<ph name="EXTENSION_NAME" />"</translation>
@@ -4512,7 +4517,6 @@
 <translation id="4580587929153007251">ກັບຄືນເຂົ້າສູ່ລະບົບຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="4580596421317071374">ລະຫັດຜ່ານຖືກບັນທຶກໄປໃສ່ <ph name="GOOGLE_PASSWORD_MANAGER" /> ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="4581774856936278355">ເກີດຄວາມຜິດພາດໃນຂະນະທີ່ກູ້ຄືນ Linux</translation>
-<translation id="4582217877717474109">ການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="4582297591746054421">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະອ່ານຄລິບບອດສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການຮັກສາການຈັດຮູບແບບຂອງຂໍ້ຄວາມທີ່ທ່ານສຳເນົາໄວ້</translation>
 <translation id="4582563038311694664">ຕັ້ງທຸກການຕັ້ງຄ່າ​ຄືນໃໝ່</translation>
 <translation id="4585793705637313973">ແກ້ໄຂໜ້າ</translation>
@@ -6414,6 +6418,7 @@
 <translation id="6169967265765719844">ການອະນຸຍາດສຳລັບເກມ ແລະ ແອັບທີ່ຕິດຕັ້ງຜ່ານ Steam ແມ່ນສາມາດຈັດການໄດ້ໃນ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າແອັບ Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
 <translation id="6170498031581934115">ບໍ່ສາມາດເປີດນຳໃຊ້ການດີບັກ ADB ໄດ້. ໄປທີ່ການຕັ້ງຄ່າ ແລະ ລອງໃໝ່.</translation>
+<translation id="6170675927290506430">ເຂົ້າໄປການຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="6171779718418683144">ຖາມທຸກເທື່ອທີ່ເຂົ້າໄປເວັບໄຊ</translation>
 <translation id="617213288191670920">ບໍ່ໄດ້ເພີ່ມພາສາເທື່ອ</translation>
 <translation id="6173623053897475761">ພິມ PIN ຂອງທ່ານອີກຄັ້ງ</translation>
@@ -6423,6 +6428,7 @@
 <translation id="6177412385419165772">ກຳລັງລຶບອອກ…</translation>
 <translation id="6178664161104547336">ເລືອກ​ໃບ​ຢັ້ງ​ຢືນ​</translation>
 <translation id="6178682841350631965">ອັບເດດຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານແລ້ວ</translation>
+<translation id="6179830757749383456">ໂປຣແກຣມທ່ອງເວັບທີ່ຈັດການໂດຍ <ph name="BROWSER_DOMAIN" />, ໂປຣໄຟລ໌ທີ່ຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{ລຶບສ່ວນຂະຫຍາຍອອກບໍ?}other{ລຶບ # ສ່ວນຂະຫຍາຍອອກບໍ?}}</translation>
 <translation id="6180510783007738939">ເຄື່ອງມືເສັ້ນ</translation>
 <translation id="6180550893222597997">ທ່ານຕ້ອງການໃຊ້ກະແຈຜ່ານໃດສຳລັບ <ph name="APP_NAME" />?</translation>
@@ -6541,6 +6547,7 @@
 <translation id="6271348838875430303">ຍົກເລີກການແກ້ໄຂໃຫ້ຖືກຕ້ອງແລ້ວ</translation>
 <translation id="6271824294945464304">ການແບ່ງປັນລະຫັດຜ່ານ</translation>
 <translation id="6273677812470008672">ຄຸນນະພາບ</translation>
+<translation id="6274089201566806618">ກຳລັງເຊື່ອມຕໍ່ກັບ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">ພຣັອກຊີ <ph name="PROXY_SERVER" /> ກຳນົດໃຫ້ມີຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ.</translation>
 <translation id="6277105963844135994">ການໝົດເວລາເຄືອ​ຂ່າຍ</translation>
@@ -6558,6 +6565,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ບໍ່ຖືກດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດຈະເປັນອັນຕະລາຍ.</translation>
 <translation id="6285770818046456882">ອຸປະກອນທີ່ແບ່ງປັນກັບທ່ານໄດ້ຍົກເລີກການໂອນຍ້າຍແລ້ວ</translation>
 <translation id="628726841779494414">ຈັດການເຄື່ອງພິມຂອງທ່ານໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
+<translation id="6287828400772161253">ໂທລະສັບ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ບໍ່ມີອຸປະກອນທີ່ກຳລັງແບ່ງປັນຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">ກຳລັງຢັ້ງຢືນລະຫັດການເປີດນຳໃຊ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="6291741848715722067">ລະຫັດຢືນຢັນ</translation>
@@ -6795,7 +6803,6 @@
 <translation id="6497784818439587832">ປ່ຽນຂະໜາດການສະແດງຜົນເພື່ອເຮັດໃຫ້ລາຍການຕ່າງໆໃນໜ້າຈໍຂອງທ່ານນ້ອຍລົງ ຫຼື ໃຫຍ່ຂຶ້ນ</translation>
 <translation id="6497789971060331894">ການເລື່ອນເມົ້າຖອຍຫຼັງ</translation>
 <translation id="6498249116389603658">&amp;ທຸກພາສາຂອງທ່ານ</translation>
-<translation id="6498583202177273322">ເບິ່ງຂໍ້ມູນທີ່ເປັນປະໂຫຍດເພີ່ມເຕີມໃນລະຫວ່າງທີ່ທ່ານສຳຫຼວດໜ້ານີ້</translation>
 <translation id="6499143127267478107">ກໍາລັງແກ້ໄຂແມ່ຂ່າຍຢູ່ໃນຕົວໜັງສືພຣັອກຊີ...</translation>
 <translation id="6499764981457476645">ບໍ່ພົບອຸປະກອນຢູ່ໃກ້ຄຽງ</translation>
 <translation id="6501957628055559556">ກ່ອງບັນຈຸທັງໝົດ</translation>
@@ -8561,6 +8568,7 @@
 <translation id="7925285046818567682">ກໍາລັງລໍຖ້າ <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">ນີ້ບໍ່ແມ່ນຂ້ອຍ.</translation>
 <translation id="7926975587469166629">ຊື່ຫຼິ້ນບັດ</translation>
+<translation id="7927610604078150317">ຂະໜາດ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ປ່ຽນລະຫັດຜ່ານນີ້ແລ້ວບໍ?</translation>
 <translation id="7929962904089429003">ເປີດເມນູ</translation>
 <translation id="7930294771522048157">ວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -8858,6 +8866,7 @@
 <translation id="816055135686411707">ການຕັ້ງຄ່າຄວາມເຊື່ອໝັ້ນໃບຢັ້ງຢືນຜິດພາດ</translation>
 <translation id="8160775796528709999">ຮັບຄຳບັນຍາຍສຳລັບສຽງ ແລະ ວິດີໂອຂອງທ່ານໂດຍການເປີດການນຳໃຊ້ຄຳບັນຍາຍສົດໃນການຕັ້ງຄ່າ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ສືບຕໍ່ເລືອກເບິ່ງ</translation>
 <translation id="8161293209665121583">ໂໝດຜູ້ອ່ານສຳລັບໜ້າເວັບ</translation>
 <translation id="8161604891089629425">ຟອນເສັ້ນຂອບ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}}</translation>
@@ -9309,6 +9318,7 @@
 <translation id="8528962588711550376">ກໍາລັງລົງຊື່ເຂົ້າ​ໃຊ້.</translation>
 <translation id="8529925957403338845">ການເຊື່ອມຕໍ່ການປ່ອຍສັນຍາທັນທີບໍ່ສຳເລັດ</translation>
 <translation id="8531701051932785007">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຖືກປິດໄວ້ຢູ່</translation>
+<translation id="8533670235862049797">Safe Browsing ເປີດຢູ່</translation>
 <translation id="8534656636775144800">ອຸ້ຍ!  ມີບາງຢ່າງຜິດພາດໃນເວລາພະຍາຍາມເຂົ້າຮ່ວມໂດເມນ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="8535005006684281994">URL ຕໍ່ໃບຢັ້ງຢືນ Netscape ໃໝ່</translation>
 <translation id="8536713137312218707">ຄຳສັ່ງດ່ວນ</translation>
@@ -9873,6 +9883,7 @@
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8986494364107987395">ສົ່ງສະຖິຕິການໃຊ້ ແລະລາຍງານກາ​ນຂັດຂ້ອງໄປຫາ Google ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8987305927843254629">ແຕ່ລະຄົນສາມາດປັບແຕ່ງປະສົບການຂອງເຂົາເຈົ້າ ແລະ ຮັກສາຂໍ້ມູນໄວ້ເປັນສ່ວນຕົວໄດ້.</translation>
+<translation id="8987321822984361516">ໂປຣແກຣມທ່ອງເວັບທີ່ຈັດການໂດຍອົງກອນ, ໂປຣໄຟລ໌ທີ່ຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">ເດືອນ</translation>
 <translation id="8988539543012086784">ໜ້ານີ້ຖືກບັນທຶກໄວ້ໃນ <ph name="BOOKMARK_FOLDER" /> ແລ້ວ</translation>
 <translation id="8989359959810288806">ໂຫຼດສະຖານະການປ່ອຍສັນຍານຄືນໃໝ່</translation>
@@ -9891,6 +9902,7 @@
 <translation id="8999027165951679951">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້: ເພີ່ມພື້ນທີ່ຫວ່າງ <ph name="MEMORY_SAVINGS" /> ແລ້ວ</translation>
 <translation id="8999560016882908256">ຂໍ້ຜິດພາດທາງໄວຍະກອນຂອງສ່ວນ: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">ແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ເບື້ອງຂວາຂອງ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ຂໍ້ມູນລາຍນິ້ວມືຂອງທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານສະເໝີ.</translation>
+<translation id="9000532564152265066">ແຖບທັງໝົດ</translation>
 <translation id="9003185744423389627">ການເຊື່ອມຕໍ່ຫາເຊີບເວີການຈັດການອຸປະກອນບໍ່ສຳເລັດໂດຍມີສະຖານະ '<ph name="STATUS_TEXT" />' ເວລາ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">ສະແກນຫາໂປຣໄຟລ໌ eSIM ທີ່ມີຢູ່ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="9003647077635673607">ອະ​ນຸ​ຍາດ​ໃຫ້​ຢູ່​ໃນ​ທຸກເວັບ​ໄຊ​ທ​໌​</translation>

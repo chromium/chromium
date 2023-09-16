@@ -1751,7 +1751,6 @@
 <translation id="8230305195727960608">कलर इन्व्हर्जन मोड</translation>
 <translation id="8236042855478648955">विश्रांतीची वेळ</translation>
 <translation id="8239034820133090126">उजवीकडील डेस्‍क अ‍ॅक्टिव्हेट करा</translation>
-<translation id="8246282815785366524"><ph name="GIVEN_NAME" />, तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ॲप</translation>
 <translation id="8255234195843591763">अपडेट करण्यासाठी रीसेट करा</translation>
@@ -1850,6 +1849,7 @@
 <translation id="8703634754197148428">रेकॉर्डिंग सुरू करा. रेकॉर्डिंग सुरू झाल्यानंतर शेल्फवर नेव्हिगेट करण्यासाठी Alt + Shift + L वापरा आणि रेकॉर्डिंग थांबवा बटण शोधा</translation>
 <translation id="8704155109538237473">चित्रात-चित्र च्या विंडोवर फोकस करा</translation>
 <translation id="870917907284186124">डिक्टेशन सुरू/बंद करा (तुमचा आवाज वापरून टाइप करा)</translation>
+<translation id="8714138378966541668">पुरवठादाराने लॉक केले आहे</translation>
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>

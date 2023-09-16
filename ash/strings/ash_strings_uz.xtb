@@ -1751,7 +1751,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8230305195727960608">Ranglarni akslantirish usuli</translation>
 <translation id="8236042855478648955">Tanaffus qilish vaqti keldi</translation>
 <translation id="8239034820133090126">Oʻngdagi ish stolini faollashtirish</translation>
-<translation id="8246282815785366524">Qaytganingizdan mamnunmiz, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781">Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ilova</translation>
 <translation id="8255234195843591763">Yangilash uchun asliga qaytarish</translation>
@@ -1850,6 +1849,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8703634754197148428">Yozib olish. Yozib olish jarayoni boshlansa, javonga oʻtish va yozib olishni toʻxtatish tugmasini topish uchun Alt + Shift + L tugmalaridan foydalaning</translation>
 <translation id="8704155109538237473">Tasvir ustida tasvir oynasini fokuslash</translation>
 <translation id="870917907284186124">Ovoz bilan yozishni yoqish/oʻchirish (ovozingiz bilan yozing)</translation>
+<translation id="8714138378966541668">Taʼminotchi qulflagan</translation>
 <translation id="8717459106217102612">Avvalgi so‘z yoki harfni belgilash</translation>
 <translation id="8721053961083920564">Tovushlar: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Butun ekranni tasvirga olish</translation>

@@ -3250,7 +3250,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3582057310199111521">Unesena na obmanjujućoj web-lokaciji i pronađena među zaporkama otkrivenim u povredi podataka</translation>
 <translation id="3582299299336701326">Potamnite svijetle zaslone i posvijetlite tamne zaslone. Pritisnite Pretraživanje + Ctrl + H da biste uključili ili isključili inverziju boja.</translation>
 <translation id="3584169441612580296">čitati i mijenjati fotografije, glazbu i druge medije s vašeg računala</translation>
-<translation id="3584527007414070635">Nastavite putovanje za: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Datoteku nije moguće otvoriti</translation>
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587438013689771191">Saznajte više o: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4194,6 +4193,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4332976768901252016">Postavljanje roditeljskog nadzora</translation>
 <translation id="4333854382783149454">PKCS br. 1 SHA-1 s RSA enkripcijom</translation>
 <translation id="4334768748331667190">Nećete više vidjeti modul <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Sigurno je pregledavanje isključeno</translation>
 <translation id="4339203724549370495">Deinstaliraj aplikaciju</translation>
 <translation id="4340125850502689798">Nevažeće korisničko ime</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> želi komunicirati s aplikacijom "<ph name="EXTENSION_NAME" />"</translation>
@@ -4505,7 +4505,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4580587929153007251">Ponovo se prijavite na Google upravitelj zaporki</translation>
 <translation id="4580596421317071374">Zaporke se spremaju u <ph name="GOOGLE_PASSWORD_MANAGER" /> na ovom uređaju.</translation>
 <translation id="4581774856936278355">Došlo je do pogreške prilikom vraćanja Linuxa</translation>
-<translation id="4582217877717474109">Postavke sustava</translation>
 <translation id="4582297591746054421">Web-lokacije obično čitaju vaš međuspremnik radi značajki poput zadržavanja formatiranja kopiranog teksta</translation>
 <translation id="4582563038311694664">Vraćanje svih postavki na zadano</translation>
 <translation id="4585793705637313973">Uredi stranicu</translation>
@@ -6790,7 +6789,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6497784818439587832">Promijenite veličinu prikaza kako bi stavke na zaslonu bile manje ili veće</translation>
 <translation id="6497789971060331894">Obrnuto pomicanje pomoću miša</translation>
 <translation id="6498249116389603658">&amp;Svi vaši jezici</translation>
-<translation id="6498583202177273322">Istražite ovu stranicu s dodatnim korisnim informacijama</translation>
 <translation id="6499143127267478107">Rješavanje hosta u proxy skripti...</translation>
 <translation id="6499764981457476645">Nije pronađen nijedan uređaj u blizini</translation>
 <translation id="6501957628055559556">Svi spremnici</translation>
@@ -8862,6 +8860,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="816055135686411707">Pogreška u postavljanju pouzdanosti certifikata</translation>
 <translation id="8160775796528709999">U postavkama omogućite automatske titlove i preuzmite titlove za zvuk i videozapise</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Nastavi pregledavanje</translation>
 <translation id="8161293209665121583">Način čitača za web-stranice</translation>
 <translation id="8161604891089629425">Strukturni font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premjesti karticu u novi prozor}one{Premjesti kartice u novi prozor}few{Premjesti kartice u novi prozor}other{Premjesti kartice u novi prozor}}</translation>
@@ -9313,6 +9312,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8528962588711550376">Prijava.</translation>
 <translation id="8529925957403338845">Automatsko modemsko povezivanje nije uspjelo</translation>
 <translation id="8531701051932785007">Isključeno je poboljšano sigurno pregledavanje</translation>
+<translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="8534656636775144800">Ups! Došlo je do pogreške pri pokušaju pridruživanja domeni. Pokušajte ponovo.</translation>
 <translation id="8535005006684281994">URL za obnavljanje Netscape certifikata</translation>
 <translation id="8536713137312218707">Brze naredbe</translation>

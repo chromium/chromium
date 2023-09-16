@@ -257,11 +257,6 @@ Entretanto, os padrões de correspondência de origem para esta política não p
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
 <translation id="123018742985150697">Exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
-<translation id="1233815313234662905">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas por uma política da empresa ou (da versão 114 em diante), se for um usuário gerenciado, extensões integradas no navegador. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
-
-      Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.
-
-      A partir da versão 99 do <ph name="PRODUCT_NAME" />, essa configuração também vai controlar pontos de entrada para o recurso "Exibir código-fonte da página". Se a política foi definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar a visualização do código-fonte pelo atalho do teclado nem pelo menu de contexto. Para bloquear totalmente a visualização do código-fonte, também é preciso adicionar "view-source:*" à política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Configura o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura.
 
@@ -875,6 +870,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 Se a política for definida como "Desativada" a Varredura do Chrome não fará verificações periódicas e o acionamento manual será desativado.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1736990730683753958">Uma página do histórico do Chrome organizada em grupos não ficará visível em chrome://history/grouped.</translation>
 <translation id="1744340218280697033">Não permitir que os pais adicionem contas supervisionadas</translation>
 <translation id="1751429117283165017">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
 
@@ -1284,6 +1280,7 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
+<translation id="2090712407517297305">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão escolher como usar o recurso.</translation>
@@ -1437,6 +1434,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="2204379573346866896">Minutos decorridos da hora atual.</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
+<translation id="2212011154693551439">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped por padrão.</translation>
 <translation id="2213059592185933570">Permitir a criação de perfis de roaming</translation>
 <translation id="2213342458177721585">Ativar o dispositivo Inscript Layout em todo o dispositivo.</translation>
 <translation id="2215238871726750562">Se a política for definida como verdadeira, a janela do navegador não será aberta no início da sessão.
@@ -1712,9 +1710,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2439187682308339104">Não permitir que nenhum site solicite acesso a dispositivos HID pela API WebHID</translation>
 <translation id="2439733504887695659">Ativar a opção de dispensar alertas de senha comprometida para as credenciais inseridas</translation>
 <translation id="2446244536806499267">Não considerar o usuário como inativo enquanto o áudio é reproduzido</translation>
-<translation id="2448315169529769573">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> informará métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for definida como "Desativada", as informações de métrica e dados de diagnóstico serão desativados.
-
-       Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
 <translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
@@ -1950,6 +1945,10 @@ perfil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2664682171745499686">Suprimir alertas de domínios parecidos em domínios</translation>
 <translation id="2665129863304939984">Permitir que os usuários decidam transferir os dados de navegação para o perfil gerenciado</translation>
 <translation id="2665422249821137126">Ativar o cursor grande na tela de login</translation>
+<translation id="2666177084759967497">
+      Determina se o <ph name="PRODUCT_OS_NAME" /> mantém os dados locais da conta depois que ela é desconectada. Se a política for definida como verdadeira, nenhuma conta persistente será mantida pelo <ph name="PRODUCT_OS_NAME" />, e todos os dados da sessão do usuário serão descartados após a desconexão. Se ela for definida como falsa ou deixada sem definição, o dispositivo vai manter os dados locais do usuário (criptografados).
+
+      Observação: desde a versão M114, aplicativos de quiosque específicos podem modificar o comportamento dessa política para casos de uso especiais, como avaliações de estudantes.</translation>
 <translation id="2667894101494585925">Ativar a busca do guia de otimização</translation>
 <translation id="2669157090883237118">Não mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
@@ -2907,6 +2906,16 @@ utilizam a opção de uso de chave "keyEncipherment". Se você não tiver certez
 incluir os dois em certificados RSA destinados a HTTPS.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3461279434465463233">Informa o status de energia</translation>
+<translation id="3468115890799739909">Esta política controla a visibilidade da página do histórico do Chrome organizada em grupos de páginas.
+
+      Se ela for ativada, uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped.
+
+      Se for desativada, a página não ficará visível em chrome://history/grouped.
+
+      Se a política for deixada sem definição, a página ficará visível em chrome://history/grouped por padrão.
+
+      Se a política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> for desativada, mas a <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> for ativada ou deixada sem definição, uma página do histórico do Chrome organizada em grupos vai continuar disponível em chrome://history/grouped, mas poderá ser menos relevante para o usuário.
+</translation>
 <translation id="3478024346823118645">Limpa os dados do usuário ao sair</translation>
 <translation id="3480961938508521469">Carregar totalmente a bateria na velocidade padrão.</translation>
 <translation id="348110646151632565">Ativar o recurso de acessibilidade "Selecionar para ouvir" na tela de login.
@@ -3325,11 +3334,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
       Observação: notificações sobre políticas forçam uma atualização quando a política muda, tornando as atualizações frequentes desnecessárias. Por isso, se a plataforma oferecer compatibilidade com essas notificações, o atraso de atualização será de 24 horas, ignorando os padrões e os valores desta política.</translation>
 <translation id="382476126209906314">Configurar o prefixo TalkGadget para hosts de acesso remoto</translation>
 <translation id="3824972131618513497">Controla as configurações relacionadas ao gerenciamento de energia e à reinicialização.</translation>
-<translation id="3825313562760682300">Esta política permite que um administrador especifique configurações para apps da Web instalados. Esta política mapeia um ID de app da Web para a própria configuração específica. É possível usar o ID especial <ph name="DEFAULT_SCOPE" /> para definir uma configuração padrão, que será aplicada a todos os apps da Web que não tiverem uma configuração personalizada definida nesta política.
-
-O campo <ph name="MANIFEST_ID_FIELD" /> é o ID do manifesto do app da Web. Consulte <ph name="WEB_APP_ID_REFERENCE_URL" /> para conferir instruções de como determinar esse ID para um app da Web instalado.
-O campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica se um app da Web pode ser executado durante o Login do SO. Se ele for definido como <ph name="BLOCKED" />, o app da Web não será executado durante o Login do SO e o usuário não poderá ativar essa opção mais tarde. Se ele for definido como <ph name="RUN_WINDOWED" />, o app da Web será executado durante o Login do SO e o usuário não poderá desativar essa opção mais tarde. Se ele for definido como <ph name="ALLOWED" />, o usuário poderá configurar o app da Web para ser executado no Login do SO. A configuração padrão permite apenas os valores <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-Na versão 117 e mais recentes, o campo <ph name="PREVENT_CLOSE_FIELD" /> especifica se o fechamento de um app da Web será impedido de alguma forma (por exemplo, pelo usuário, pelo gerenciador de tarefas ou por APIs da Web). Esse comportamento só poderá ser ativado se <ph name="RUN_ON_OS_LOGIN_FIELD" /> for definido como <ph name="RUN_WINDOWED" />. Se o app já estava em execução, essa propriedade só terá efeito após a reinicialização dele. Se esse campo não for definido, os apps poderão ser fechados pelos usuários.</translation>
 <translation id="3825873934240606959">Evitar detecção de dispositivos locais</translation>
 <translation id="3826475866868158882">Serviços de localização do Google ativados</translation>
 <translation id="3829344785870486923">Lista de permissões de domínio secundário para separação de perfis corporativos</translation>
@@ -3739,11 +3743,6 @@ Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as exten
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o destaque de circunflexos ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="4181820969510931391">Se a política for ativada ou deixada sem definição, a nova interface de download em balão será mostrada no <ph name="PRODUCT_NAME" />.
-
-      Se a política for desativada, o <ph name="PRODUCT_NAME" /> vai continuar mostrando a antiga interface de download em estante.
-
-      A política é temporária e será removida assim que a nova interface de download em balão for lançada.</translation>
 <translation id="4182348537826882258">Se a política <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da Web que têm URLs proibidos não vão ser carregadas. Os administradores podem especificar a lista de padrões de URL a serem bloqueados. Se a política for deixada sem definição, nenhum URL será bloqueado no navegador. Até 1.000 exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Observação: esta política não se aplica a URLs JavaScript na página com dados carregados dinamicamente. Se você bloqueou example.com/abc, ainda é possível carregar example.com usando XMLHTTPRequest. Além disso, essa política não impede que as páginas da Web atualizem o URL mostrado na omnibox para um bloqueado usando a API JavaScript History.

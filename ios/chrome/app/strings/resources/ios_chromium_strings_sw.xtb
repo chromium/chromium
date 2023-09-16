@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Mipangilio ya Chromium</translation>
 <translation id="1722370509450468186">Nenosiri lako litahifadhiwa katika Akaunti yako (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Imefuta data ya Chromium</translation>
-<translation id="1758508597843173586">Funga vichupo vyako fiche unapoondoka kwenye Chromium au kubadilisha na kutumia programu nyingine.</translation>
 <translation id="1791845338122684020">Hufungua Ukurasa wa Historia wa Chromium.</translation>
 <translation id="1838412507805038478">Chromium imethibitisha kuwa <ph name="ISSUER" /> ndiye mtoa cheti cha tovuti hii.</translation>
 <translation id="1843424232666537147">Chromium ina vipengele vinavyokusaidia kudhibiti data yako ya intaneti na kasi unayoweza kupakia nayo kurasa za wavuti.
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Chromium imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="3472200483164753384">Haitumiki kwenye Chromium Canary (toleo la jaribio)</translation>
 <translation id="3478750326643748149">Ficha sehemu ya “Nufaika zaidi na Chromium”</translation>
+<translation id="3554027294407525061">Futa Data ya Kuvinjari kwenye Chromium.</translation>
 <translation id="3567399274263440288">Ili unufaike zaidi na Chromium, ingia kwenye Chromium ukitumia Akaunti yako ya Google.</translation>
 <translation id="3639997914391704523">Chromium inaweza kukagua manenosiri yako unapoingia ukitumia Akaunti ya Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> alikuwa akitumia Chromium na akaacha alamisho, manenosiri na mipangilio mingine kwenye kifaa hiki.</translation>
@@ -98,6 +98,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5042011327527167688">Gusa “Angalia kwa kutumia Ramani za Google kwenye Chromium.”</translation>
 <translation id="5044871537677053278">Chromium hutambua anwani na hutumia huduma ya Ramani za Google kukupatia maelekezo na taarifa za eneo husika.</translation>
 <translation id="5048795749726991615">Ili upate manenosiri uliyohifadhi kwa urahisi katika programu zako zingine, tumia Chromium kwa ajili ya Kujaza Kiotomatiki</translation>
+<translation id="5076601183701536878">Futa Data ya Kuvinjari kwenye Chromium</translation>
 <translation id="5131565040785979529">Shirika lako, <ph name="DOMAIN" />, hudhibiti akaunti uliyotumia kuingia na jinsi Chromium inavyotumika.</translation>
 <translation id="5171868502429358653">Ingia Katika Akaunti kwenye Chromium</translation>
 <translation id="5213683223491576284">Hufungua Kidhibiti cha Manenosiri kwenye Chromium.</translation>

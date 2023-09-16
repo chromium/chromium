@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium सेटिंग्ज</translation>
 <translation id="1722370509450468186">तुमचा पासवर्ड तुमचे खाते (<ph name="EMAIL" />) मध्ये सेव्ह केला जाईल.</translation>
 <translation id="1736662517232558588">Chromium डेटा साफ करण्यात आला</translation>
-<translation id="1758508597843173586">तुम्ही Chromium मधून बाहेर पडता किंवा वेगळ्या ॲपवर स्विच करता, तेव्हा तुमचा गुप्त मोड लॉक करा.</translation>
 <translation id="1791845338122684020">तुमचे Chromium इतिहास पेज उघडते.</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chromium ने पडताळले.</translation>
 <translation id="1843424232666537147">Chromium कडे अशी वैशिष्ट्ये आहेत जी तुम्हाला तुमचा इंटरनेट डेटा आणि तुम्ही किती द्रुतपणे वेबपृष्ठे लोड करण्यात सक्षम आहात हे व्यवस्थापित करण्यास मदत करतात.
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="3472200483164753384">Chromium कॅनरी वर सपोर्ट नाही</translation>
 <translation id="3478750326643748149">“Chromium चा पुरेपूर वापर करा” लपवा</translation>
+<translation id="3554027294407525061">Chromium मधील ब्राउझिंग डेटा साफ करा.</translation>
 <translation id="3567399274263440288">Chromium चा पुरेपूर वापर करण्यासाठी, तुमचे Google खाते वापरून Chromium मध्ये साइन इन करा.</translation>
 <translation id="3639997914391704523">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chromium तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> हा Chromium वापरत होता आणि त्याने या डिव्हाइसवर बुकमार्क, पासवर्ड आणि इतर सेटिंग्ज ठेवली आहेत.</translation>
@@ -98,6 +98,7 @@
 <translation id="5042011327527167688">“Chromium वर Google Maps सह पहा” वर टॅप करा.</translation>
 <translation id="5044871537677053278">Chromium पत्ते डिटेक्ट करते आणि तुम्हाला दिशानिर्देश व स्थानिक माहिती देण्यासाठी Google Maps वापरते.</translation>
 <translation id="5048795749726991615">इतर अ‍ॅप्समध्ये तुमचे पासवर्ड सहजरीत्या सेव्ह करण्यासाठी, AutoFill साठी Chromium वापरा</translation>
+<translation id="5076601183701536878">Chromium मधील ब्राउझिंग डेटा साफ करा</translation>
 <translation id="5131565040785979529">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन केलेले खाते आणि Chromium कसे वापरले जाते हे व्यवस्थापित करते.</translation>
 <translation id="5171868502429358653">Chromium वर साइन इन करा</translation>
 <translation id="5213683223491576284">Chromium मध्ये Password Manager उघडते.</translation>

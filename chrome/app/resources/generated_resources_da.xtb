@@ -3258,7 +3258,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3582057310199111521">Adgangskoden blev angivet på et vildledende website og blev fundet i et brud på datasikkerheden</translation>
 <translation id="3582299299336701326">Gør en mørk skærm lys og en lys skærm mørk. Tryk på søgetasten+Ctrl+H for at aktivere eller deaktivere ombytning af farver.</translation>
 <translation id="3584169441612580296">Læs og rediger billeder, musik og andre medier på din computer</translation>
-<translation id="3584527007414070635">Genoptag dit søgeforløb for <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Denne fil kan ikke åbnes</translation>
 <translation id="3586931643579894722">Skjul oplysninger</translation>
 <translation id="3587438013689771191">Få flere oplysninger om: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4202,6 +4201,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4332976768901252016">Konfigurer børnesikring</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 med RSA-kryptering</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> vises ikke igen</translation>
+<translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
 <translation id="4339203724549370495">Afinstaller app</translation>
 <translation id="4340125850502689798">Ugyldigt brugernavn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ønsker at kommunikere med appen "<ph name="EXTENSION_NAME" />"</translation>
@@ -4514,7 +4514,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4580587929153007251">Log ind på Google Adgangskodeadministrator igen</translation>
 <translation id="4580596421317071374">Adgangskoder gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /> på denne enhed.</translation>
 <translation id="4581774856936278355">Der opstod en fejl ved gendannelsen af Linux</translation>
-<translation id="4582217877717474109">Systempræferencer</translation>
 <translation id="4582297591746054421">Websites læser normalt din udklipsholder for at kunne bevare formatet af den tekst, du kopierede</translation>
 <translation id="4582563038311694664">Nulstil alle indstillinger</translation>
 <translation id="4585793705637313973">Rediger side</translation>
@@ -6798,7 +6797,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
-<translation id="6498583202177273322">Få yderligere nyttige oplysninger, mens du udforsker denne side</translation>
 <translation id="6499143127267478107">Værtsløsning i proxyscript...</translation>
 <translation id="6499764981457476645">Der blev ikke fundet nogen enheder i nærheden</translation>
 <translation id="6501957628055559556">Alle containere</translation>
@@ -8866,6 +8864,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="816055135686411707">Fejl under konfiguration af certifikattillid</translation>
 <translation id="8160775796528709999">Få undertekster til dit lyd- og videoindhold ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Genoptag søgning</translation>
 <translation id="8161293209665121583">Læser-tilstand for websider</translation>
 <translation id="8161604891089629425">Skrifttype med kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
@@ -9317,6 +9316,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8528962588711550376">Logger ind...</translation>
 <translation id="8529925957403338845">Øjeblikkelig netdeling mislykkedes</translation>
 <translation id="8531701051932785007">Udvidet beskyttet browsing er deaktiveret</translation>
+<translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8534656636775144800">Ups! Noget gik galt ved forsøget på at tilmelde dig domænet. Prøv igen.</translation>
 <translation id="8535005006684281994">Webadresse for fornyelse af Netscape-certifikat</translation>
 <translation id="8536713137312218707">Hurtige kommandoer</translation>

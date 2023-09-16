@@ -261,11 +261,6 @@ Sin embargo, los patrones de coincidencia de orígenes para esta política no pu
 <translation id="1223789468190631420">La Navegación segura habilita el estado para las fuentes de confianza</translation>
 <translation id="123018742985150697">Solicitar correspondencia entre el usuario local y el propietario del host de acceso remoto</translation>
 <translation id="123081309365616809">Permite transmitir contenido al dispositivo</translation>
-<translation id="1233815313234662905">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript. No obstante, no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, de extensiones integradas en el navegador. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
-
-      Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.
-
-      A partir de la versión 99 de <ph name="PRODUCT_NAME" />, esta configuración también controla los puntos de entrada de la función "Ver el código fuente de la página". Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no podrán ver los códigos fuente de las páginas mediante una combinación de teclas ni el menú contextual. Para bloquear la vista de los códigos fuente, debes agregar "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1238868319430505522">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
 
@@ -1717,9 +1712,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2439187682308339104">No permitir que ningún sitio solicite acceso a los dispositivos HID a través de la API de WebHID</translation>
 <translation id="2439733504887695659">Habilitar la opción de descartar las alertas de contraseña hackeada para las credenciales que hayas ingresado</translation>
 <translation id="2446244536806499267">No considerar al usuario como inactivo mientras se reproduce un audio</translation>
-<translation id="2448315169529769573">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> informará a Google sobre las métricas de uso y los datos de diagnóstico, incluidos los informes de fallas. Si inhabilitas la política, se desactivarán los informes sobre datos de diagnóstico y métricas.
-
-       Si no la estableces, se desactivarán los informes sobre datos de diagnóstico y métricas en dispositivos no administrados y se activarán en dispositivos administrados.</translation>
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
@@ -3330,11 +3322,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
       Nota: Las notificaciones sobre políticas fuerzan una actualización cuando cambia la política, por lo que no es necesario actualizar de manera frecuente. Por lo tanto, si la plataforma admite estas notificaciones, la demora de la actualización será de 24 horas (se ignorarán los valores predeterminados y el de esta política).</translation>
 <translation id="382476126209906314">Configura el prefijo TalkGadget para los hosts de acceso remoto.</translation>
 <translation id="3824972131618513497">Controla la configuración relacionada con el reinicio y la administración de energía.</translation>
-<translation id="3825313562760682300">Esta política permite que un administrador especifique la configuración para las apps web instaladas. Esta política asigna una ID de app web a su parámetro de configuración específico. Es posible establecer una configuración predeterminada usando la ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las apps web que no tengan una configuración personalizada en esta política.
-
-El campo <ph name="MANIFEST_ID_FIELD" /> es la ID del manifiesto para la app web. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para obtener instrucciones para determinar la ID del manifiesto correspondiente a una app web instalada.
-El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una app web puede ejecutarse durante el acceso al SO. Si estableces este campo como <ph name="BLOCKED" />, no se ejecutará la app web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si estableces este campo como <ph name="RUN_WINDOWED" />, se ejecutará la app web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si estableces este campo como <ph name="ALLOWED" />, el usuario podrá configurar la app web para que se ejecute durante el acceso al SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-(A partir de la versión 117) El campo <ph name="PREVENT_CLOSE_FIELD" /> especifica si se debe impedir que una app web se cierre de alguna forma (p. ej., por el usuario, el administrador de tareas o las APIs web). Este comportamiento solo se puede habilitar si estableces <ph name="RUN_ON_OS_LOGIN_FIELD" /> como <ph name="RUN_WINDOWED" />. Si la app ya se estaba ejecutando, esta propiedad solo se aplicará cuando se reinicie la app. Si no se define este campo, los usuarios podrán cerrar las apps.</translation>
 <translation id="3825873934240606959">Evitar el descubrimiento de dispositivos locales</translation>
 <translation id="3826475866868158882">Se habilitaron los Servicios de ubicación de Google</translation>
 <translation id="3829344785870486923">Lista de entidades permitidas del dominio secundario de separación de perfiles de empresa</translation>
@@ -3743,11 +3730,6 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="4181820969510931391">Si habilitas la política o no la estableces, se muestra la nueva IU del cuadro de descarga en <ph name="PRODUCT_NAME" />.
-
-      Si la inhabilitas, <ph name="PRODUCT_NAME" /> seguirá mostrando la antigua IU de la barra de descarga.
-
-      Ten en cuenta que esta política es temporal y se quitará en cuanto se lance por completo la nueva IU del cuadro de descarga.</translation>
 <translation id="4182348537826882258">Si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se detendrá la carga de las páginas web que tengan URLs prohibidas. Los administradores pueden especificar la lista de patrones de URL que se bloquearán. Si no la estableces, no se bloqueará ninguna URL en el navegador. Se pueden definir hasta 1,000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo darle formato a un patrón de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
 Nota: Esta política no se aplica a las URLs de JavaScript en la página con datos cargados de forma dinámica. Si bloqueaste example.com/abc, aún podría cargarse con XMLHTTPRequest. Además, esta política no impide que las páginas web actualicen la URL que se muestra en el cuadro multifunción a una bloqueada mediante la API de JavaScript History.
@@ -5962,7 +5944,7 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
 <translation id="6234177445959386333">Configura la lista de las URLs de acceso empresariales donde el servicio de protección de contraseñas debe capturar los hash con sal de las contraseñas.</translation>
 <translation id="6236880578835238059">Configura una lista de direcciones URL que pueden permanecer en modo pantalla completa sin mostrar una notificación cuando el dispositivo sale de la pantalla de bloqueo.
 
-          En general, el modo pantalla completa se desactiva al salir de la pantalla de bloqueo, a fin de reducir el riesgo de una suplantación de la identidad (phishing). Esta política permite especificar direcciones URL que se consideran fuentes confiables, las cuales pueden permanecer en modo pantalla completa cuando el dispositivo está desbloqueado. Se establece al especificar una lista de patrones de URL que cumplen con el siguiente formato ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). P. ej., es posible permanecer siempre en modo pantalla completa cuando el dispositivo está desbloqueado e inhabilitar las notificaciones por completo al especificar el carácter comodín <ph name="WILDCARD_VALUE" /> que coincida con todas las direcciones URL.
+          En general, el modo pantalla completa se desactiva al salir de la pantalla de bloqueo, a fin de reducir el riesgo de ataques de phishing. Esta política permite especificar direcciones URL que se consideran fuentes confiables, las cuales pueden permanecer en modo pantalla completa cuando el dispositivo está desbloqueado. Se establece al especificar una lista de patrones de URL que cumplen con el siguiente formato ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). P. ej., es posible permanecer siempre en modo pantalla completa cuando el dispositivo está desbloqueado e inhabilitar las notificaciones por completo al especificar el carácter comodín <ph name="WILDCARD_VALUE" /> que coincida con todas las direcciones URL.
 
           Si estableces esta política como una lista vacía o no la estableces, ninguna URL puede permanecer en modo pantalla completa sin mostrar notificaciones.</translation>
 <translation id="624080397610861618">Inhabilitar el diseño InScript Hindi</translation>

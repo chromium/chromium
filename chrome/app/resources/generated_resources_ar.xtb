@@ -3246,7 +3246,6 @@
 <translation id="3582057310199111521">تم إدخال كلمة المرور على موقع إلكتروني مريب وتبيّن أنها مستخدَمة في عملية اختراق البيانات.</translation>
 <translation id="3582299299336701326">‏تحوِّل هذه الميزة الشاشات المضيئة إلى شاشات مُعتمة والعكس. اضغط على مفتاح البحث ‏+ Ctrl ‏+ H لتفعيل ميزة "قلب الألوان" أو إيقافها.</translation>
 <translation id="3584169441612580296">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها</translation>
-<translation id="3584527007414070635">استئناف سجلّ أنشطة البحث والتصفُّح في "<ph name="MODULE_TITLE" />"</translation>
 <translation id="3586806079541226322">يتعذّر فتح هذا الملف</translation>
 <translation id="3586931643579894722">إخفاء التفاصيل</translation>
 <translation id="3587438013689771191">مزيد من المعلومات حول "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4188,6 +4187,7 @@
 <translation id="4332976768901252016">إعداد أدوات الرقابة الأبوية</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 مع ترميز RSA</translation>
 <translation id="4334768748331667190">لن يظهر لك <ph name="MODULE_NAME" /> مرة أخرى.</translation>
+<translation id="4335835283689002019">التصفُّح الآمن غير مُفعّل.</translation>
 <translation id="4339203724549370495">إلغاء تثبيت التطبيق</translation>
 <translation id="4340125850502689798">اسم المستخدم غير صالح</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> يريد التواصل مع التطبيق "<ph name="EXTENSION_NAME" />"</translation>
@@ -4499,7 +4499,6 @@
 <translation id="4580587929153007251">‏يجب إعادة تسجيل الدخول إلى "مدير كلمات المرور في Google".</translation>
 <translation id="4580596421317071374">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" /> على هذا الجهاز.</translation>
 <translation id="4581774856936278355">‏حدث خطأ أثناء استعادة Linux</translation>
-<translation id="4582217877717474109">إعدادات النظام المفضّلة</translation>
 <translation id="4582297591746054421">تقرأ المواقع الإلكترونية عادةً الحافظة لتتيح ميزات، مثل الحفاظ على صيغة النص الذي نسخته.</translation>
 <translation id="4582563038311694664">إعادة ضبط كل الإعدادات</translation>
 <translation id="4585793705637313973">تعديل الصفحة</translation>
@@ -6783,7 +6782,6 @@
 <translation id="6497784818439587832">يمكنك تغيير حجم العرض لتصغير حجم العناصر التي تظهر على الشاشة أو تكبيرها.</translation>
 <translation id="6497789971060331894">التمرير العكسي عبر الماوس</translation>
 <translation id="6498249116389603658">&amp;جميع اللغات</translation>
-<translation id="6498583202177273322">احصل على معلومات إضافية مفيدة أثناء استكشاف هذه الصفحة.</translation>
 <translation id="6499143127267478107">حل المضيف في النص البرمجي للخادم الوكيل...</translation>
 <translation id="6499764981457476645">لم يتم العثور على أي أجهزة جوّالة مجاورة.</translation>
 <translation id="6501957628055559556">جميع الحاويات</translation>
@@ -8858,6 +8856,7 @@
 <translation id="816055135686411707">حدث خطأ أثناء إعداد ثقة الشهادة</translation>
 <translation id="8160775796528709999">يمكنك الحصول على مقاطع شرح لملفات الصوت والفيديو عن طريق تفعيل ميزة "النسخ النصي التلقائي" من خلال الإعدادات.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">استئناف التصفُّح</translation>
 <translation id="8161293209665121583">وضع القارئ لصفحات الويب</translation>
 <translation id="8161604891089629425">خط المخطط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{نقل علامة تبويب واحدة إلى نافذة جديدة}zero{نقل علامات تبويب إلى نافذة جديدة}two{نقل علامتَي تبويب إلى نافذة جديدة}few{نقل علامات تبويب إلى نافذة جديدة}many{نقل علامات تبويب إلى نافذة جديدة}other{نقل علامات تبويب إلى نافذة جديدة}}</translation>
@@ -9310,6 +9309,7 @@
 <translation id="8528962588711550376">جارٍ تسجيل الدخول.</translation>
 <translation id="8529925957403338845">فشل اتصال التوصيل الفوري</translation>
 <translation id="8531701051932785007">ميزة "الحماية المُحسَّنة للتصفّح الآمن" غير مفعَّلة</translation>
+<translation id="8533670235862049797">التصفُّح الآمن مفعّل.</translation>
 <translation id="8534656636775144800">عفوًا،  حدث خطأ ما أثناء محاولة الانضمام إلى النطاق. يُرجى إعادة المحاولة.</translation>
 <translation id="8535005006684281994">‏عنوان URL لتجديد شهادة Netscape</translation>
 <translation id="8536713137312218707">الأوامر السريعة</translation>

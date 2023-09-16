@@ -741,6 +741,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4028481283645788203">Wagwoord word vereis vir meer sekuriteit</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + linkspyl</translation>
+<translation id="4039699481424758547">Druk enter om skermskoot van venster vas te vang: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Jy deel tans jou skerm</translation>
 <translation id="404437169852192935">Opdaterings het geëindig</translation>
 <translation id="4049230407053723315">Kitsinstellings</translation>
@@ -1752,7 +1753,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8230305195727960608">Kleuromkeringmodus</translation>
 <translation id="8236042855478648955">Tyd vir 'n blaaskans</translation>
 <translation id="8239034820133090126">Aktiveer lessenaar aan die regterkant</translation>
-<translation id="8246282815785366524">Welkom terug, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, program</translation>
 <translation id="8255234195843591763">Stel terug na opdatering</translation>
@@ -1966,6 +1966,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9211490828691860325">Alle lessenaars</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> oor totdat battery vol gelaai is.</translation>
 <translation id="9215934040295798075">Stel muurpapier</translation>
+<translation id="9216699844945104164">Druk Enter om venster op te neem: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Prente</translation>
 <translation id="921989828232331238">Jou ouer het jou toestel vir die dag gesluit</translation>
 <translation id="9220525904950070496">Verwyder rekening</translation>

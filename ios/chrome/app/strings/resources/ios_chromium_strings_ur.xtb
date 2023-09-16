@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">‏Chromium کی ترتیبات</translation>
 <translation id="1722370509450468186">آپ کا پاس ورڈ آپ کے اکاؤنٹ (<ph name="EMAIL" />) میں محفوظ ہو جائے گا۔</translation>
 <translation id="1736662517232558588">‏Chromium ڈیٹا کو صاف کر دیا گیا</translation>
-<translation id="1758508597843173586">‏جب آپ Chromium چھوڑیں یا کسی مختلف ایپ پر سوئچ کریں تو اپنے پوشیدگی وضع کو مقفل کریں۔</translation>
 <translation id="1791845338122684020">‏آپ کے Chromium کی سرگزشت کا صفحہ کھولتا ہے۔</translation>
 <translation id="1838412507805038478">‏Chromium نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
 <translation id="1843424232666537147">‏Chromium میں ایسی خصوصیات ہیں جو آپ کے انٹرنیٹ ڈیٹا اور کتنی جلدی آپ ویب صفحات کو لوڈ کرنے کیلئے اہل ہیں اس کا نظم کرنے میں آپ کی مدد کرتی ہیں۔
@@ -93,6 +92,7 @@
 <translation id="4736424910885271643">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے، اسلئے آپ کا Chromium ڈیٹا اس آلے سے صاف کر دیا جائے گا</translation>
 <translation id="4790638144988730920">‏اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کرتے رہیں۔</translation>
 <translation id="4828317641996116749">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="4935539884203837577">‏Chromium ان ٹریکنگ نمبرز کا پتہ لگا سکتا ہے جو آپ داخل کرتے ہیں اور نئے ٹیب صفحہ پر آپ کے پیکیجز کو ٹریک کر سکتا ہے جبکہ Chromium سے خریداری کے دیگر تجربات میں مدد کرتا ہے۔</translation>
 <translation id="4985291216379576555">‏آف لائن، Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="4996471330284142407">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chromium کے ساتھ مزید کام کریں۔</translation>
 <translation id="4999538639245140991">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chromium ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
@@ -116,6 +116,7 @@
 <translation id="5688047395118852662">‏یہ کارڈ آپ کو Chromium سے زیادہ سے زیادہ فائدہ اٹھانے کے بارے میں تجاویز دکھاتا ہے۔</translation>
 <translation id="5700709190537129682">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
 <translation id="5777187867430702742">‏Chromium صفحہ</translation>
+<translation id="584303319228224680">‏Chromium پر اپنے پیکیجز کو خودکار طریقے سے ٹریک کریں</translation>
 <translation id="5889847953983052353">‏آن ہونے پر:
 <ph name="BEGIN_INDENT" />  • Chromium کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کی طرح استعمال کرتے ہیں۔<ph name="END_INDENT" />
 

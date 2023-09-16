@@ -1751,7 +1751,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8230305195727960608">Modul de inversare a culorilor</translation>
 <translation id="8236042855478648955">E timpul pentru o pauză</translation>
 <translation id="8239034820133090126">Activează desktopul din dreapta</translation>
-<translation id="8246282815785366524">Bine ai revenit, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicație</translation>
 <translation id="8255234195843591763">Resetează pentru a actualiza</translation>
@@ -1850,6 +1849,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8704155109538237473">Focalizează fereastra picture-in-picture</translation>
 <translation id="870917907284186124">Activează / dezactivează dictarea (introdu text folosind vocea)</translation>
+<translation id="8714138378966541668">Blocată de furnizor</translation>
 <translation id="8717459106217102612">Selectează cuvântul anterior sau litera anterioară</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>

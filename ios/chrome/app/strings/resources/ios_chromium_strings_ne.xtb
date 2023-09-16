@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium का सेटिङ</translation>
 <translation id="1722370509450468186">तपाईंको पासवर्ड तपाईंको खाता (<ph name="EMAIL" />) मा सेभ गरिने छ।</translation>
 <translation id="1736662517232558588">Chromium सम्बन्धी डेटा हटाइयो</translation>
-<translation id="1758508597843173586">आफूले Chromium छाड्दा वा अर्को एप प्रयोग गर्दा आफ्नो इन्कोग्निटो ट्याब लक गर्नुहोस्।</translation>
 <translation id="1791845338122684020">Chromium को ब्राउजिङ हिस्ट्री पेज खोल्छ।</translation>
 <translation id="1838412507805038478">Chromium ले <ph name="ISSUER" /> ले यस वेबसाइटको प्रमाणपत्र जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
 <translation id="1843424232666537147">Chromimum मा भएका सुविधाहरूले तपाईंलाई आफ्नो इन्टर्नेट डेटा व्यवस्थित गर्न र तपाईंका वेबपृष्ठहरूलाई द्रुत गतिमा लोड गर्न मद्दत गर्दछन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -92,6 +91,7 @@
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ले तपाईंको खाता व्यवस्थापन गर्ने हुनाले Chromium मा भएको तपाईंको डेटा यो यन्त्रबाट हटाइने छ</translation>
 <translation id="4790638144988730920">आफ्नो Google खातामा भएको Chromium को डेटा प्रयोग गरिराख्नुहोस्।</translation>
 <translation id="4828317641996116749">Chromium ले सबै पासवर्डहरू जाँच्न सकेन। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4935539884203837577">Chromium ले "नयाँ ट्याब" पेजमा तपाईंले हाल्नुभएका ट्र्याकिङ नम्बरहरू पत्ता लगाउन र तपाईंका प्याकेजहरू ट्र्याक गर्न सक्छ। यसका साथै यसले Chromium मार्फत किनमेल गर्दा अन्य सुविधाहरू पनि उपलब्ध गराउँछ।</translation>
 <translation id="4985291216379576555">तपाईं अफलाइन हुनुहुन्छ, Chromium ले अपडेटहरू उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सक्दैन</translation>
 <translation id="4996471330284142407">सरल, सुरक्षित र अहिलेसम्मकै छिटो Chromium प्रयोग गरी अझ धेरै काम सकाउनुहोस्।</translation>
 <translation id="4999538639245140991">तपाईंले <ph name="SIGNOUT_MANAGED_DOMAIN" /> ले व्यवस्थापन गरेको खाताबाट साइन आउट गर्दै गरेका कारण, तपाईंको Chromium को डेटा यस कम्प्युटरबाट मेटाइने छ। तर तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
@@ -115,6 +115,7 @@
 <translation id="5688047395118852662">यो कार्डमा तपाईंलाई Chromium बाट बढीभन्दा बढी फाइदा लिने तरिकाका बारेमा सुझाव दिइएको छ।</translation>
 <translation id="5700709190537129682">Chromium ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="5777187867430702742">Chromium को पृष्ठ</translation>
+<translation id="584303319228224680">Chromium मा आफ्ना प्याकेजहरू स्वतः ट्र्याक गर्नुहोस्</translation>
 <translation id="5889847953983052353">अन हुँदा:
 <ph name="BEGIN_INDENT" />  • तपाईंले झैँ Chromium प्रयोग गर्ने मान्छेहरूका लागि Chromium को गुणस्तर अझ राम्रो बनाउन मद्दत गर्नुहोस्।<ph name="END_INDENT" />
 

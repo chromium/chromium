@@ -3240,7 +3240,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3582057310199111521">Është futur në një sajt mashtrues dhe është gjendur në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3582299299336701326">Errëson ekranet e ndritshme dhe ndriçon ekranet e errëta. Shtyp "Kërko" + Ctrl + H për të aktivizuar dhe çaktivizuar anasjelljen e ngjyrës.</translation>
 <translation id="3584169441612580296">Lexo dhe ndrysho fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
-<translation id="3584527007414070635">Vazhdo udhëtimin tënd për <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Ky skedar nuk mund të hapet</translation>
 <translation id="3586931643579894722">Fshih detajet</translation>
 <translation id="3587438013689771191">Mëso më shumë për <ph name="SUBPAGE_TITLE" /></translation>
@@ -4184,6 +4183,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4332976768901252016">Konfiguro "Kontrollet prindërore"</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 me enkriptim RSA</translation>
 <translation id="4334768748331667190">Nuk do ta shohësh më <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Shfletimi i sigurt është joaktiv</translation>
 <translation id="4339203724549370495">Çinstalo aplikacionin</translation>
 <translation id="4340125850502689798">Emri i përdoruesit është i pavlefshëm</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> dëshiron të komunikojë me aplikacionin "<ph name="EXTENSION_NAME" />"</translation>
@@ -4495,7 +4495,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4580587929153007251">Identifikohu përsëri në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="4580596421317071374">Fjalëkalimet ruhen te <ph name="GOOGLE_PASSWORD_MANAGER" /> në këtë pajisje.</translation>
 <translation id="4581774856936278355">Gabim gjatë restaurimit të Linux</translation>
-<translation id="4582217877717474109">Preferencat e sistemit</translation>
 <translation id="4582297591746054421">Sajtet lexojnë zakonisht kujtesën tënde të fragmenteve për veçoritë si ruajtja e formatimit të tekstit që ke kopjuar</translation>
 <translation id="4582563038311694664">Rivendos të gjitha cilësimet</translation>
 <translation id="4585793705637313973">Redakto faqen</translation>
@@ -6779,7 +6778,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6497784818439587832">Ndrysho madhësinë e ekranit për t'i bërë më të vegjël ose më të mëdhenj artikujt në ekran</translation>
 <translation id="6497789971060331894">Lëvizja e kundërt e miut</translation>
 <translation id="6498249116389603658">&amp;Të gjitha gjuhët e tua</translation>
-<translation id="6498583202177273322">Merr informacione shtesë të dobishme kur eksploron në këtë faqe</translation>
 <translation id="6499143127267478107">Po zgjidh pritësin në skriptin e përfaqësuesit...</translation>
 <translation id="6499764981457476645">Nuk u gjet asnjë pajisje në afërsi</translation>
 <translation id="6501957628055559556">Të gjithë kontejnerët</translation>
@@ -8843,6 +8841,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
 <translation id="8160775796528709999">Merr titrat për audion dhe videon tënde duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Vazhdo të shfletosh</translation>
 <translation id="8161293209665121583">Modaliteti i lexuesit për faqet e uebit</translation>
 <translation id="8161604891089629425">Fonti me kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
@@ -9294,6 +9293,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8528962588711550376">Po identifikohesh.</translation>
 <translation id="8529925957403338845">Dështoi lidhja e ndarjes së internetit në çast</translation>
 <translation id="8531701051932785007">"Shfletim i sigurt i përmirësuar" është joaktiv</translation>
+<translation id="8533670235862049797">"Shfletimi i sigurt" është aktiv</translation>
 <translation id="8534656636775144800">Diçka nuk shkoi mirë gjatë përpjekjes për t'u bashkuar me domenin. Provo sërish.</translation>
 <translation id="8535005006684281994">URL-ja e rinovimit të certifikatës së Netscape</translation>
 <translation id="8536713137312218707">Komandat e shpejta</translation>

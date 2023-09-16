@@ -767,6 +767,7 @@
 <translation id="1604432177629086300">پرنٹ نہیں کیا جا سکا۔ پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1604567162047669454">ویژوئل لے آؤٹ کی سیمنٹکس کو پہچانیں</translation>
 <translation id="1604774728851271529">‏Linux اپ گریڈ کرنے کے لیے آپ کو نیٹ ورک کنکشن کی ضرورت ہے۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
+<translation id="1605148987885002237">کی بورڈ اور ان پٹس</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
 <translation id="1606077700029460857">ماؤس کی ترتیبات کو تبدیل کریں</translation>
 <translation id="1606307079840340755">آپ کے پاس پوائنٹ فراہم کنندہ کو صرف اس آلے سے ہٹا دیا جائے گا۔ اپنی سبسکرپشن میں تبدیلیاں کرنے کیلئے، سبسکرپشن فراہم کنندہ سے رابطہ کریں۔</translation>
@@ -1225,6 +1226,7 @@
 <translation id="1956050014111002555">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کسی کو درآمد نہیں کیا گیا:</translation>
 <translation id="1956167375087861299">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت نہیں دی گئی</translation>
 <translation id="1956390763342388273">اس سے "<ph name="FOLDER_PATH" />" کی سبھی فائلز اپ لوڈ ہو جائیں گی۔ سائٹ پر اعتماد ہونے پر ہی ایسا کريں۔</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ایکسٹینشن کا جائزہ لیا گیا}other{{NUM_EXTENSIONS} ایکسٹینشنز کا جائزہ لیا گیا}}</translation>
 <translation id="1959421829481337178">براہ کرم اپنے کیریئر کی طرف سے فراہم کردہ فعالیت کا کوڈ درج کریں۔</translation>
 <translation id="1962233722219655970">‏یہ صفحہ ایک Native Client ایپ استعمال کرتا ہے جو آپ کے کمپیوٹر پر کام نہیں کرتی ہے۔</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
@@ -1936,6 +1938,7 @@
 <translation id="2492461744635776704">سرٹیفیکیٹ پر دستخط کرنے کی درخواست تیار ہو رہی ہے</translation>
 <translation id="249330843868392562">ٹیکسٹ ٹو اسپیچ ترتیبات کھولیں</translation>
 <translation id="2494555621641843783">‏Steam انسٹال نہیں کر سکتے</translation>
+<translation id="2495141202137516054">‏آپ کے Drive سے</translation>
 <translation id="2495524171012645395">حال ہی میں دیکھی گئی ترکیبیں</translation>
 <translation id="2496180316473517155">براؤزنگ سرگزشت</translation>
 <translation id="2497229222757901769">ماؤس کی رفتار</translation>
@@ -2239,6 +2242,7 @@
 <translation id="2738771556149464852">بعد میں نہیں</translation>
 <translation id="2739191690716947896">ڈیبگ کریں</translation>
 <translation id="2739240477418971307">اپنی ایکسیسبیلٹی ترتیبات تبدیل کریں</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> کے ذریعے انٹرنیٹ سے منسلک ہے</translation>
 <translation id="274029851662193272">گھٹا ہوا</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2740876196999178364">‏یہ پاس کیز صرف اس آلہ پر محفوظ ہیں۔ وہ آپ کے Google اکاؤنٹ میں محفوظ نہیں ہیں۔</translation>
@@ -3196,6 +3200,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - آڈیو خاموش ہے</translation>
 <translation id="3537881477201137177">اس کو بعد میں ترتیبات میں تبدیل کیا جا سکتا ہے</translation>
 <translation id="3538066758857505094">‏Linux ان انسٹال کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> کے ذریعے کوئی نیٹ ورک نہیں</translation>
 <translation id="354060433403403521">‏AC اڈاپٹر</translation>
 <translation id="354068948465830244">یہ سائٹ کے ڈیٹا کو پڑھ اور اسے تبدیل کر سکتا ہے</translation>
 <translation id="3541823293333232175">تفویض کردہ</translation>
@@ -3244,7 +3249,6 @@
 <translation id="3582057310199111521">فریب والی سائٹ پر درج کیا گیا اور ڈیٹا کی خلاف ورزی میں پایا گیا</translation>
 <translation id="3582299299336701326">‏اسکرینز کے ہلکے رنگ کو گہرا، اور گہرے رنگ کو ہلکا کریں۔ رنگوں کی تقلیب کو آن اور آف کرنے کے لیے Search + Ctrl + H دبائیں۔</translation>
 <translation id="3584169441612580296">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں اور تبدیل کریں</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> کے لیے اپنا صارف کا تجربہ دوبارہ شروع کریں</translation>
 <translation id="3586806079541226322">یہ فائل نہیں کھول سکتے</translation>
 <translation id="3586931643579894722">تفصیلات چھپائیں</translation>
 <translation id="3587438013689771191">درج ذیل کے بارے میں مزید جانیں: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4188,6 +4192,7 @@
 <translation id="4332976768901252016">پیرنٹل کنٹرولز ترتیب دیں</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 مع RSA مرموز کاری</translation>
 <translation id="4334768748331667190">آپ کو <ph name="MODULE_NAME" /> دوبارہ دکھائی نہیں دے گا</translation>
+<translation id="4335835283689002019">محفوظ براؤزنگ آف ہے</translation>
 <translation id="4339203724549370495">ایپ کو اَن انسٹال کریں</translation>
 <translation id="4340125850502689798">غلط صارف نام</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ایپ "<ph name="EXTENSION_NAME" />" کے ساتھ مواصلت کرنا چاہتی ہے</translation>
@@ -4499,7 +4504,6 @@
 <translation id="4580587929153007251">‏Google پاس ورڈ مینیجر میں دوبارہ سائن ان کریں</translation>
 <translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
-<translation id="4582217877717474109">سسٹم کی ترجیحات</translation>
 <translation id="4582297591746054421">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ برقرار رکھنے جیسی خصوصیات کے لیے سائٹس عام طور پر آپ کی کلپ بورڈ پڑھتی ہیں</translation>
 <translation id="4582563038311694664">سبھی ترتیبات کو دوبارہ سیٹ کریں</translation>
 <translation id="4585793705637313973">صفحہ میں ترمیم کریں</translation>
@@ -6401,6 +6405,7 @@
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
 <translation id="6170498031581934115">‏ADB ڈیبگنگ کو فعال نہیں کیا جا سکا۔ ترتیبات میں جائیں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6170675927290506430">اطلاع کی ترتیبات پر جائیں</translation>
 <translation id="6171779718418683144">ہر دورے پر پوچھیں</translation>
 <translation id="617213288191670920">کوئی زبان شامل نہیں کی گئی</translation>
 <translation id="6173623053897475761">‏اپنا PIN دوبارہ ٹائپ کریں</translation>
@@ -6410,6 +6415,7 @@
 <translation id="6177412385419165772">ہٹایا جا رہا ہے…</translation>
 <translation id="6178664161104547336">ایک سرٹیفکیٹ منتخب کریں</translation>
 <translation id="6178682841350631965">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہوا</translation>
+<translation id="6179830757749383456">براؤزر <ph name="BROWSER_DOMAIN" /> کے زیر انتظام، پروفائل <ph name="PROFILE_DOMAIN" /> کے زیر انتظام</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن ہٹائیں؟}other{# ایکسٹینشنز ہٹائیں؟}}</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> کے لئے آپ کون سی پاس کی استعمال کرنا چاہتے ہیں؟</translation>
@@ -6528,6 +6534,7 @@
 <translation id="6271348838875430303">اصلاح کو کالعدم کیا گیا ہے</translation>
 <translation id="6271824294945464304">پاس ورڈ کا اشتراک کرنا</translation>
 <translation id="6273677812470008672">معیار</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> سے منسلک ہو رہا ہے</translation>
 <translation id="6274202259872570803">اسکرین کاسٹ</translation>
 <translation id="6276210637549544171">پراکسی <ph name="PROXY_SERVER" /> کیلئے ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="6277105963844135994">نیٹ ورک ٹائم آؤٹ</translation>
@@ -6545,6 +6552,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے۔</translation>
 <translation id="6285770818046456882">آپ کے ساتھ اشتراک کرنے والے آلے نے منتقلی کو منسوخ کر دیا</translation>
 <translation id="628726841779494414">پرنٹر کی ترتیبات میں اپنے پرنٹرز کا نظم کریں</translation>
+<translation id="6287828400772161253">‏Android فون (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">قریبی اشتراک کرنے والا کوئی بھی آلہ دستیاب نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">فعالیت کے کوڈ کی توثیق کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="6291741848715722067">توثیقی کوڈ</translation>
@@ -6782,7 +6790,6 @@
 <translation id="6497784818439587832">اپنی اسکرین پر موجود آئٹمز کو چھوٹا یا بڑا کرنے کے لیے ڈسپلے کا سائز تبدیل کریں</translation>
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="6498249116389603658">&amp;آپ کی سبھی زبانیں</translation>
-<translation id="6498583202177273322">اس صفحے کو دریافت کرتے ہوئے اضافی کارآمد معلومات حاصل کریں</translation>
 <translation id="6499143127267478107">میزبان کو پراکسی اسکرپٹ میں حل کیا جا رہا ہے…</translation>
 <translation id="6499764981457476645">کوئی قریبی آلہ نہیں ملا</translation>
 <translation id="6501957628055559556">سبھی کنٹینرز</translation>
@@ -8550,6 +8557,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> کا منتظر…</translation>
 <translation id="7926423016278357561">یہ میں نہیں تھا۔</translation>
 <translation id="7926975587469166629">کارڈ کا عرفی نام</translation>
+<translation id="7927610604078150317">سائز: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">پہلے ہی یہ پاس ورڈ تبدیل کیا ہے؟</translation>
 <translation id="7929962904089429003">مینیو کھولیں</translation>
 <translation id="7930294771522048157">ادائیگی کے محفوظ کردہ طریقے یہاں ظاہر ہوں گے</translation>
@@ -8847,6 +8855,7 @@
 <translation id="816055135686411707">سرٹیفیکیٹ ٹرسٹ کو ترتیب دینے میں خرابی</translation>
 <translation id="8160775796528709999">ترتیبات میں لائیو کیپشن فعال کر کے اپنی آڈیو اور ویڈیو کیلئے کیپشنز حاصل کریں</translation>
 <translation id="816095449251911490">‎<ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" />‎</translation>
+<translation id="8161095570253161196">براؤزنگ دوبارہ شروع کریں</translation>
 <translation id="8161293209665121583">ویب صفحات کے لیے ریڈر وضع</translation>
 <translation id="8161604891089629425">آؤٹ لائن فونٹ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ٹیب کو نئی ونڈو میں منتقل کریں}other{ٹیبز کو نئی ونڈو میں منتقل کریں}}</translation>
@@ -9298,6 +9307,7 @@
 <translation id="8528962588711550376">سائن ان کیا جا رہا ہے۔</translation>
 <translation id="8529925957403338845">فوری ٹیدرنگ کا کنکشن ناکام ہو گیا</translation>
 <translation id="8531701051932785007">بہتر کردہ محفوظ براؤزنگ آف ہے</translation>
+<translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>
 <translation id="8534656636775144800">افوہ!  ڈومین میں شامل ہونے کی کوشش کرتے وقت کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8535005006684281994">‏Netscape سرٹیفیکیٹ تجدید URL</translation>
 <translation id="8536713137312218707">فوری ہدایات</translation>
@@ -9862,6 +9872,7 @@
 <translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="8986494364107987395">‏خود کار طریقے سے Google کو استعمال کے اعداد و شمار اور کریش کی رپورٹیں بھیجیں</translation>
 <translation id="8987305927843254629">ہر فرد اپنے تجربہ کو ذاتی نوعیت کا بنا سکتا ہے اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
+<translation id="8987321822984361516">کسی تنظیم کے زیر انتظام براؤزر، <ph name="PROFILE_DOMAIN" /> کے زیر انتظام پروفائل</translation>
 <translation id="8987927404178983737">ماہ</translation>
 <translation id="8988539543012086784">یہ صفحہ <ph name="BOOKMARK_FOLDER" /> میں محفوظ ہے</translation>
 <translation id="8989359959810288806">ٹیدرنگ کی صورتحال کو ریفریش کریں</translation>
@@ -9880,6 +9891,7 @@
 <translation id="8999027165951679951">غیر فعال ٹیب: <ph name="MEMORY_SAVINGS" /> خالی کیا گیا</translation>
 <translation id="8999560016882908256">سیکشن کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">اپنے <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
+<translation id="9000532564152265066">سبھی ٹیبز</translation>
 <translation id="9003185744423389627">آلے کے مینیجمنٹ کے سرور سے کنکشن <ph name="FAILURE_TIME" /> پر '<ph name="STATUS_TEXT" />' اسٹیٹس کے ساتھ ناکام ہو گیا</translation>
 <translation id="90033698482696970">‏دستیاب eSIM پروفائلز کے لیے خودکار طور پر اسکین کریں؟</translation>
 <translation id="9003647077635673607">سبھی ویب سائٹس پر اجازت دیں</translation>

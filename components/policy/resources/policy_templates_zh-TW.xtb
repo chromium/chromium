@@ -258,11 +258,6 @@
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
 <translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
-<translation id="1233815313234662905">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在企業政策安裝的擴充功能中存取。自 114 版起，如果是受管理的使用者，也無法在瀏覽器內建的擴充功能中存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
-
-      此外，用於開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。
-
-      自 <ph name="PRODUCT_NAME" /> 99 版起，這項設定還可控制「查看網頁原始碼」功能的進入點。如果將這項政策設為「DeveloperToolsDisallowed」(值 2)，使用者就無法透過鍵盤快速鍵或內容選單存取原始碼檢視畫面。如要完全封鎖原始碼檢視畫面，必須同時將「view-source:*」加入 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策中。</translation>
 <translation id="1238868319430505522">設定 <ph name="GOOGLE_DRIVE_NAME" />和 <ph name="GOOGLE_WORKSPACE_NAME" /> 的<ph name="CLOUD_UPLOAD_NAME" />資料流</translation>
 <translation id="1239526922294123540">控管是否允許網站以不安全的方式，向更私密的網路端點傳送要求。如果將這項政策設為 True，系統會為所有來源停用<ph name="PRIVATE_NETWORK_ACCESS" />檢查。這可能會讓攻擊者有機會對私人網路伺服器執行 <ph name="CSRF" /> 攻擊。
 
@@ -1670,9 +1665,6 @@
 <translation id="2439187682308339104">不允許任何網站透過 WebHID API 要求 HID 裝置的存取權</translation>
 <translation id="2439733504887695659">針對已輸入的憑證啟用關閉密碼遭到外洩的防護警示</translation>
 <translation id="2446244536806499267">音訊播放時不要將使用者狀態視為閒置</translation>
-<translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
-
-       如果未設定這項政策，系統會在非受管裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
@@ -3218,11 +3210,6 @@
       注意：政策通知會在政策變更時強制重新整理，因此系統不需要時常重新整理。如果平台支援這類通知，重新整理延遲時間會是 24 小時 (系統會忽略預設值以及這項政策的值)。</translation>
 <translation id="382476126209906314">為遠端存取主機設定 TalkGadget 前置詞</translation>
 <translation id="3824972131618513497">控管電源管理和重新啟動的相關設定。</translation>
-<translation id="3825313562760682300">這項政策允許管理員指定已安裝網頁應用程式的設定，並將網頁應用程式 ID 對應到特定設定。你可以利用特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，所有未透過此政策自訂設定的網頁應用程式一律會套用這項預設設定。
-
-「<ph name="MANIFEST_ID_FIELD" />」欄位是這個網頁應用程式的資訊清單 ID。請參閱 <ph name="WEB_APP_ID_REFERENCE_URL" /> 的操作說明，瞭解如何決定已安裝網頁應用程式的資訊清單 ID。
-「<ph name="RUN_ON_OS_LOGIN_FIELD" />」欄位會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為「<ph name="BLOCKED" />」，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為「<ph name="RUN_WINDOWED" />」，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為「<ph name="ALLOWED" />」，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定值僅限「<ph name="ALLOWED" />」和「<ph name="BLOCKED" />」。
-(自 117 版起)「<ph name="PREVENT_CLOSE_FIELD" />」欄位會指定是否應避免網頁應用程式遭任何方式 (例如使用者、工作管理員、網頁 API) 關閉。必須將 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 設為「<ph name="RUN_WINDOWED" />」，才能啟用這項行為。如果應用程式已在執行，必須重新啟動，這個屬性才會生效。如未定義這個欄位，使用者就可以關閉應用程式。</translation>
 <translation id="3825873934240606959">禁止本機裝置探索</translation>
 <translation id="3826475866868158882">已啟用 Google 定位服務</translation>
 <translation id="3829344785870486923">企業設定檔區隔次要網域許可清單</translation>
@@ -3619,11 +3606,6 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用插入點醒目顯示，但使用者隨時可以啟用。</translation>
-<translation id="4181820969510931391">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 就會顯示新版下載對話框 UI。
-
-      如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 會繼續顯示舊版下載櫃 UI。
-
-      請注意，這項政策僅是暫時性措施，一旦新版下載對話框 UI 正式推出，我們就會立即移除這項政策。</translation>
 <translation id="4182348537826882258">如果設定 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策，系統會禁止載入遭禁止網址的網頁。管理員可以指定要封鎖的網址模式清單。如果未設定，瀏覽器就不會封鎖任何網址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。瞭解如何格式化網址模式 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
 
 注意：這項政策不會套用至含有動態載入資料的網頁內 JavaScript 網址。如果封鎖 example.com/abc，example.com 仍可使用 XMLHTTPRequest 載入內容。此外，這項政策也不會阻止網頁使用 JavaScript History API 將網址列顯示的網址更新為已封鎖的網址。

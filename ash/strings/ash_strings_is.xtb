@@ -1751,7 +1751,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8230305195727960608">umsnúningur lita</translation>
 <translation id="8236042855478648955">Tími til að taka sér hlé</translation>
 <translation id="8239034820133090126">Virkja skrifborð til hægri</translation>
-<translation id="8246282815785366524">Velkomin(n) aftur, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
 <translation id="8255234195843591763">Endurstilltu til að uppfæra</translation>
@@ -1850,6 +1849,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8703634754197148428">Hefja upptöku. Eftir að upptaka hefst geturðu notað Alt + Shift + L til að fara á hilluna og finna hnappinn til að hætta upptöku</translation>
 <translation id="8704155109538237473">Setja glugga með mynd í mynd í fókus</translation>
 <translation id="870917907284186124">Slökkva/kveikja á raddinnslætti (innsláttur með röddinni)</translation>
+<translation id="8714138378966541668">Læst af þjónustuaðila</translation>
 <translation id="8717459106217102612">Velja fyrra orð eða staf</translation>
 <translation id="8721053961083920564">Kveikja/slökkva á hljóði. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Upptaka á öllum skjánum</translation>

@@ -770,6 +770,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1604432177629086300">Couldn't print. Check printer and try again.</translation>
 <translation id="1604567162047669454">Recognise visual layout semantics</translation>
 <translation id="1604774728851271529">You need a network connection to upgrade Linux. Connect to the Internet and try again.</translation>
+<translation id="1605148987885002237">Keyboard and inputs</translation>
 <translation id="1605744057217831567">See all site data and permissions</translation>
 <translation id="1606077700029460857">Change mouse settings</translation>
 <translation id="1606307079840340755">Your Passpoint provider will be removed from this device only. To make changes to your subscription, contact the subscription provider.</translation>
@@ -1237,6 +1238,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1956050014111002555">The file contained multiple certificates, none of which were imported:</translation>
 <translation id="1956167375087861299">Not allowed to use identifiers to play protected content</translation>
 <translation id="1956390763342388273">This will upload all files from '<ph name="FOLDER_PATH" />'. Only do this if you trust the site.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extension reviewed}other{{NUM_EXTENSIONS} extensions reviewed}}</translation>
 <translation id="1959421829481337178">Please enter the activation code provided by your operator.</translation>
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
 <translation id="1963976881984600709">Standard protection</translation>
@@ -1949,6 +1951,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2492461744635776704">Preparing certificate signing request</translation>
 <translation id="249330843868392562">Open text-to-speech settings</translation>
 <translation id="2494555621641843783">Can't install Steam</translation>
+<translation id="2495141202137516054">From your Drive</translation>
 <translation id="2495524171012645395">Recently viewed recipes</translation>
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2497229222757901769">Mouse speed</translation>
@@ -2252,6 +2255,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2738771556149464852">Not After</translation>
 <translation id="2739191690716947896">Debug</translation>
 <translation id="2739240477418971307">Change your accessibility settings</translation>
+<translation id="2739331588276254426">Connected to internet through <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">Depressed</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">These passkeys are only saved on this device. They aren't saved to your Google Account.</translation>
@@ -3209,6 +3213,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Audio muted</translation>
 <translation id="3537881477201137177">This can be modified later in Settings</translation>
 <translation id="3538066758857505094">Error uninstalling Linux. Please try again.</translation>
+<translation id="3540173484406326944">No network through <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">AC adaptor</translation>
 <translation id="354068948465830244">This can read and change site data</translation>
 <translation id="3541823293333232175">Assigned</translation>
@@ -3257,7 +3262,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3582057310199111521">Entered on deceptive site and found in data breach</translation>
 <translation id="3582299299336701326">Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn colour inversion on and off.</translation>
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
-<translation id="3584527007414070635">Resume your journey for <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Can't open this file</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587438013689771191">Learn more about: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4201,6 +4205,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4332976768901252016">Set Up Parental Controls</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 With RSA Encryption</translation>
 <translation id="4334768748331667190">You won't see <ph name="MODULE_NAME" /> again</translation>
+<translation id="4335835283689002019">Safe Browsing is off</translation>
 <translation id="4339203724549370495">Uninstall app</translation>
 <translation id="4340125850502689798">Invalid username</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> wants to communicate with the app "<ph name="EXTENSION_NAME" />"</translation>
@@ -4513,7 +4518,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4580587929153007251">Sign back in to Google Password Manager</translation>
 <translation id="4580596421317071374">Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> on this device.</translation>
 <translation id="4581774856936278355">Error while restoring Linux</translation>
-<translation id="4582217877717474109">System preferences</translation>
 <translation id="4582297591746054421">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4582563038311694664">Reset all settings</translation>
 <translation id="4585793705637313973">Edit page</translation>
@@ -6416,6 +6420,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6169967265765719844">Permissions for games and apps installed via Steam can be managed in the <ph name="LINK_BEGIN" />Steam app settings<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Couldn't enable ADB debugging. Go to Settings and try again.</translation>
+<translation id="6170675927290506430">Go to notification settings</translation>
 <translation id="6171779718418683144">Ask on every visit</translation>
 <translation id="617213288191670920">No languages added</translation>
 <translation id="6173623053897475761">Type your PIN again</translation>
@@ -6425,6 +6430,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6177412385419165772">Removing…</translation>
 <translation id="6178664161104547336">Select a certificate</translation>
 <translation id="6178682841350631965">Your sign-in data was updated</translation>
+<translation id="6179830757749383456">Browser managed by <ph name="BROWSER_DOMAIN" />, profile managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Remove extension?}other{Remove # extensions?}}</translation>
 <translation id="6180510783007738939">Line tool</translation>
 <translation id="6180550893222597997">Which passkey do you want to use for <ph name="APP_NAME" />?</translation>
@@ -6543,6 +6549,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6271348838875430303">correction undone</translation>
 <translation id="6271824294945464304">Sharing password</translation>
 <translation id="6273677812470008672">Quality</translation>
+<translation id="6274089201566806618">Connecting to <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">The proxy <ph name="PROXY_SERVER" /> requires a username and password.</translation>
 <translation id="6277105963844135994">Network timeout</translation>
@@ -6560,6 +6567,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285770818046456882">The device sharing with you cancelled the transfer</translation>
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
+<translation id="6287828400772161253">Android phone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifying activation code. This may take a few minutes.</translation>
 <translation id="6291741848715722067">Confirmation code</translation>
@@ -6797,7 +6805,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
-<translation id="6498583202177273322">Get additional useful info as you explore this page</translation>
 <translation id="6499143127267478107">Resolving host in proxy script...</translation>
 <translation id="6499764981457476645">No devices found nearby</translation>
 <translation id="6501957628055559556">All containers</translation>
@@ -8566,6 +8573,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7925285046818567682">Waiting for <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">This wasn't me.</translation>
 <translation id="7926975587469166629">Card nickname</translation>
+<translation id="7927610604078150317">Size: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Already changed this password?</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930294771522048157">Saved payment methods will appear here</translation>
@@ -8864,6 +8872,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="816055135686411707">Error While Setting Certificate Trust</translation>
 <translation id="8160775796528709999">Get captions for your audio and video by enabling Live Caption in settings</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Resume browsing</translation>
 <translation id="8161293209665121583">Reader mode for web pages</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move Tab to New Window}other{Move Tabs to New Window}}</translation>
@@ -9315,6 +9324,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8528962588711550376">Signing in.</translation>
 <translation id="8529925957403338845">Instant Tethering connection failed</translation>
 <translation id="8531701051932785007">Enhanced Safe Browsing is off</translation>
+<translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="8534656636775144800">Oops!  Something went wrong when trying to join the domain. Please try again.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536713137312218707">Quick Commands</translation>
@@ -9879,6 +9889,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8986494364107987395">Automatically send usage statistics and crash reports to Google</translation>
 <translation id="8987305927843254629">Each person can personalise their experience and keep data private.</translation>
+<translation id="8987321822984361516">Browser managed by an organisation, profile managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Month</translation>
 <translation id="8988539543012086784">This page is saved to <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Refresh tethering status</translation>
@@ -9897,6 +9908,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8999027165951679951">Inactive tab: <ph name="MEMORY_SAVINGS" /> freed up</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Touch the fingerprint sensor at the right hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000532564152265066">All tabs</translation>
 <translation id="9003185744423389627">Connection to Device Management Server failed with status ‘<ph name="STATUS_TEXT" />’ at <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automatically scan for available eSIM profiles?</translation>
 <translation id="9003647077635673607">Allow on all websites</translation>

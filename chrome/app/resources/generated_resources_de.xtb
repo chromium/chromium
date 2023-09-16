@@ -3239,7 +3239,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3582057310199111521">Auf einer betrügerischen Website eingegeben und durch eine Datenpanne preisgegeben</translation>
 <translation id="3582299299336701326">Helle Displays werden dunkel und dunkle Displays hell. Durch Drücken der Suchtaste + Strg + H wird die Farbumkehr aktiviert und deaktiviert.</translation>
 <translation id="3584169441612580296">Fotos, Musik und andere Medien auf deinem Computer lesen und ändern</translation>
-<translation id="3584527007414070635">Weiter nach <ph name="MODULE_TITLE" /> stöbern</translation>
 <translation id="3586806079541226322">Diese Datei kann nicht geöffnet werden</translation>
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587438013689771191">Weitere Informationen: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4183,6 +4182,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4332976768901252016">Jugendschutzeinstellungen einrichten</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 mit RSA-Verschlüsselung</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> wird nicht mehr angezeigt</translation>
+<translation id="4335835283689002019">Safe Browsing ist deaktiviert</translation>
 <translation id="4339203724549370495">App deinstallieren</translation>
 <translation id="4340125850502689798">Ungültiger Nutzername</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> möchte mit der App "<ph name="EXTENSION_NAME" />" kommunizieren.</translation>
@@ -4494,7 +4494,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4580587929153007251">Melde dich wieder im Google Passwortmanager an</translation>
 <translation id="4580596421317071374">Passwörter werden auf diesem Gerät im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="4581774856936278355">Fehler beim Wiederherstellen von Linux</translation>
-<translation id="4582217877717474109">Systemeinstellungen</translation>
 <translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage aus, um Funktionen wie die Beibehaltung der Formatierung von Texten in der Zwischenablage umzusetzen</translation>
 <translation id="4582563038311694664">Alle Einstellungen zurücksetzen</translation>
 <translation id="4585793705637313973">Seite bearbeiten</translation>
@@ -6775,7 +6774,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6497784818439587832">Du kannst die Bildschirmgröße ändern, um Elemente auf dem Bildschirm zu verkleinern oder zu vergrößern</translation>
 <translation id="6497789971060331894">Gegenläufiges Scrollen für Maus</translation>
 <translation id="6498249116389603658">&amp;Alle deine Sprachen</translation>
-<translation id="6498583202177273322">Weitere nützliche Informationen erhalten, während du diese Seite erkundest</translation>
 <translation id="6499143127267478107">Host in Proxy-Script wird aufgelöst...</translation>
 <translation id="6499764981457476645">Es wurden keine Geräte in der Nähe gefunden</translation>
 <translation id="6501957628055559556">Alle Container</translation>
@@ -8842,6 +8840,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="816055135686411707">Fehler beim Festlegen der Vertrauenswürdigkeit des Zertifikats</translation>
 <translation id="8160775796528709999">Aktiviere „Automatische Untertitel“ in den Einstellungen, um deine Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Suche fortsetzen</translation>
 <translation id="8161293209665121583">Lesemodus für Webseiten</translation>
 <translation id="8161604891089629425">Schrift mit Umriss versehen</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
@@ -9293,6 +9292,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
 <translation id="8529925957403338845">Fehler bei Instant Tethering-Verbindung</translation>
 <translation id="8531701051932785007">Erweitertes Safe Browsing ist deaktiviert</translation>
+<translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>
 <translation id="8534656636775144800">Hoppla! Beim Beitritt zur Domain ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
 <translation id="8535005006684281994">Verlängerungs-URL für Netscape-Zertifikate</translation>
 <translation id="8536713137312218707">Schnellbefehle</translation>

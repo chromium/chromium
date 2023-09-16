@@ -770,6 +770,7 @@
 <translation id="1604432177629086300">無法列印。請檢查打印機，然後再試一次</translation>
 <translation id="1604567162047669454">識別視覺版面配置語義</translation>
 <translation id="1604774728851271529">您需要網絡連線才能升級 Linux。請連接互聯網，然後再試一次。</translation>
+<translation id="1605148987885002237">鍵盤和輸入</translation>
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
 <translation id="1606307079840340755">您的 Passpoint 只會從此裝置中移除。如要變更訂閱項目，請聯絡訂閱供應商。</translation>
@@ -1237,6 +1238,7 @@
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956167375087861299">不允許使用識別碼來播放受保護的內容</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已審核 1 個擴充程式}other{已審核 {NUM_EXTENSIONS} 個擴充程式}}</translation>
 <translation id="1959421829481337178">請輸入流動網絡供應商提供的啟動碼。</translation>
 <translation id="1962233722219655970">這個網頁使用無法在您電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963976881984600709">標準保護功能</translation>
@@ -1949,6 +1951,7 @@
 <translation id="2492461744635776704">正在準備憑證簽署要求</translation>
 <translation id="249330843868392562">開啟文字轉語音設定</translation>
 <translation id="2494555621641843783">無法安裝 Steam</translation>
+<translation id="2495141202137516054">來自「雲端硬碟」</translation>
 <translation id="2495524171012645395">最近查看過的食譜</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497229222757901769">滑鼠速度</translation>
@@ -1994,6 +1997,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />發生問題，系統無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請瀏覽：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">將電池電量保持在 80% 左右，以延長電池壽命。電池通常會在您拔除電源前完全充滿。</translation>
+<translation id="2532146950330687938">正在準備裝置…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 設定中管理安全 DNS</translation>
 <translation id="2532589005999780174">高對比度模式</translation>
 <translation id="2533649878691950253">由於您通常不允許網站取得您的精確位置，因此系統已禁止此操作</translation>
@@ -2251,6 +2255,7 @@
 <translation id="2738771556149464852">此日期之前</translation>
 <translation id="2739191690716947896">偵錯</translation>
 <translation id="2739240477418971307">變更您的協助工具設定</translation>
+<translation id="2739331588276254426">已經由 <ph name="HOST_DEVICE_NAME" /> 連接網絡</translation>
 <translation id="274029851662193272">內凹</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2740876196999178364">這些密鑰只會儲存在此裝置上，並不會儲存至您的 Google 帳戶。</translation>
@@ -3208,6 +3213,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 靜音</translation>
 <translation id="3537881477201137177">您可稍後在「設定」再作修改</translation>
 <translation id="3538066758857505094">解除安裝 Linux 時發生錯誤。請再試一次。</translation>
+<translation id="3540173484406326944">沒有經由 <ph name="HOST_DEVICE_NAME" /> 連接的網絡</translation>
 <translation id="354060433403403521">充電火牛</translation>
 <translation id="354068948465830244">可讀取及變更網站資料</translation>
 <translation id="3541823293333232175">已指派</translation>
@@ -3256,7 +3262,6 @@
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
-<translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587438013689771191">進一步了解：<ph name="SUBPAGE_TITLE" /></translation>
@@ -4196,6 +4201,7 @@
 <translation id="4332976768901252016">設定家長監控設定</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 (使用 RSA 加密)</translation>
 <translation id="4334768748331667190">你將不會再看到<ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
 <translation id="4339203724549370495">解除安裝應用程式</translation>
 <translation id="4340125850502689798">使用者名稱無效</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 想與「<ph name="EXTENSION_NAME" />」應用程式保持通訊</translation>
@@ -4508,7 +4514,6 @@
 <translation id="4580587929153007251">重新登入「Google 密碼管理工具」</translation>
 <translation id="4580596421317071374">密碼會儲存至此裝置的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
-<translation id="4582217877717474109">系統偏好設定</translation>
 <translation id="4582297591746054421">網站通常會讀取剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
@@ -5749,6 +5754,7 @@
 <translation id="5627086634964711283">這個擴充功能也會管制您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5627676517703583263">使用 Chrome 享受智能瀏覽體驗</translation>
 <translation id="5627832140542566187">顯示方向</translation>
+<translation id="5628434207686266338">設定裝置密碼</translation>
 <translation id="562935524653278697">您的管理員已停用書籤、記錄、密碼和其他設定的同步處理功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5631272057151918206">這樣做最多會釋放離線檔案佔用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空間，部分檔案仍可在離線時存取。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6408,6 +6414,7 @@
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170470584681422115">三文治</translation>
 <translation id="6170498031581934115">無法啟用 ADB 偵錯。請前往「設定」，然後再試一次。</translation>
+<translation id="6170675927290506430">前往通知設定</translation>
 <translation id="6171779718418683144">每次瀏覽時都詢問</translation>
 <translation id="617213288191670920">沒有新增任何語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN</translation>
@@ -6417,6 +6424,7 @@
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">您的登入資料已更新</translation>
+<translation id="6179830757749383456">瀏覽器由 <ph name="BROWSER_DOMAIN" /> 管理，個人檔案由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除擴充程式嗎？}other{要移除 # 個擴充程式嗎？}}</translation>
 <translation id="6180510783007738939">線條工具</translation>
 <translation id="6180550893222597997">您要在 <ph name="APP_NAME" /> 上使用哪一個密鑰？</translation>
@@ -6535,6 +6543,7 @@
 <translation id="6271348838875430303">復原咗更正內容</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="6273677812470008672">品質</translation>
+<translation id="6274089201566806618">正在連接「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="6274202259872570803">螢幕截圖</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求您提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網絡逾時</translation>
@@ -6552,6 +6561,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
 <translation id="6285770818046456882">正在與您分享的裝置現已取消傳輸</translation>
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
+<translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">正在驗證啟動碼。這項操作可能需時數分鐘。</translation>
 <translation id="6291741848715722067">確認碼</translation>
@@ -6789,7 +6799,6 @@
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
-<translation id="6498583202177273322">瀏覽此頁面即可取得額外實用資料</translation>
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機…</translation>
 <translation id="6499764981457476645">找不到附近的裝置</translation>
 <translation id="6501957628055559556">所有容器</translation>
@@ -8557,6 +8566,7 @@
 <translation id="7925285046818567682">正在等候 <ph name="HOST_NAME" />…</translation>
 <translation id="7926423016278357561">這不是我本人。</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>
+<translation id="7927610604078150317">大小：<ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">已變更此密碼？</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930294771522048157">已儲存的付款方法會在這裡顯示</translation>
@@ -8855,6 +8865,7 @@
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
 <translation id="8160775796528709999">去設定度開著即時字幕，就可以為音訊同影片產生字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8161604891089629425">輪廓字型</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
@@ -9306,6 +9317,7 @@
 <translation id="8528962588711550376">正在登入。</translation>
 <translation id="8529925957403338845">即時網絡共享連線失敗</translation>
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
+<translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>
 <translation id="8534656636775144800">抱歉！嘗試加入網域時發生錯誤，請再試一次。</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
 <translation id="8536713137312218707">快速指令</translation>
@@ -9870,6 +9882,7 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8986494364107987395">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="8987305927843254629">每位使用者都可將體驗個人化，以確保資料私隱。</translation>
+<translation id="8987321822984361516">瀏覽器由機構管理，個人檔案由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988539543012086784">此頁面已儲存至「<ph name="BOOKMARK_FOLDER" />」</translation>
 <translation id="8989359959810288806">重新整理網絡共享狀態</translation>
@@ -9888,6 +9901,7 @@
 <translation id="8999027165951679951">閒置分頁：釋出咗 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">部分語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">請輕觸 <ph name="DEVICE_TYPE" /> 右側的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
+<translation id="9000532564152265066">所有分頁</translation>
 <translation id="9003185744423389627">連線至「裝置管理工具伺服器」失敗，系統在<ph name="FAILURE_TIME" />報告了以下狀態：「<ph name="STATUS_TEXT" />」</translation>
 <translation id="90033698482696970">要自動掃瞄可用的 eSIM 設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>

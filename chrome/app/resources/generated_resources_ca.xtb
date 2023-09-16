@@ -3242,7 +3242,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3582057310199111521">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de les dades</translation>
 <translation id="3582299299336701326">Enfosqueix les pantalles clares i il·lumina'n les fosques. Prem Cerca+Ctrl+H per activar i desactivar la inversió de colors.</translation>
 <translation id="3584169441612580296">Accedeix a fotos, a música i a altres fitxers multimèdia de l'ordinador i modifica'ls</translation>
-<translation id="3584527007414070635">Reprèn el recorregut per a <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">No es pot obrir aquest fitxer</translation>
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587438013689771191">Més informació sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4185,6 +4184,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4332976768901252016">Configura els controls parentals</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 amb encriptació RSA</translation>
 <translation id="4334768748331667190">No tornaràs a veure <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">La funció Navegació segura està desactivada</translation>
 <translation id="4339203724549370495">Desinstal·la l'aplicació</translation>
 <translation id="4340125850502689798">Nom d'usuari no vàlid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> es vol comunicar amb l'aplicació "<ph name="EXTENSION_NAME" />"</translation>
@@ -4496,7 +4496,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4580587929153007251">Torna a iniciar la sessió al gestor de contrasenyes de Google</translation>
 <translation id="4580596421317071374">Les contrasenyes es desen al <ph name="GOOGLE_PASSWORD_MANAGER" /> en aquest dispositiu.</translation>
 <translation id="4581774856936278355">S'ha produït un error en restaurar Linux</translation>
-<translation id="4582217877717474109">Preferències del sistema</translation>
 <translation id="4582297591746054421">Els llocs web solen llegir el porta-retalls per a funcions com ara mantenir el format del text que has copiat</translation>
 <translation id="4582563038311694664">Restableix tota la configuració</translation>
 <translation id="4585793705637313973">Edita la pàgina</translation>
@@ -6779,7 +6778,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6497784818439587832">Canvia la mida de visualització per ampliar o reduir els elements de la pantalla</translation>
 <translation id="6497789971060331894">Desplaçament invers del ratolí</translation>
 <translation id="6498249116389603658">&amp;Tots els vostres idiomes</translation>
-<translation id="6498583202177273322">Obtén informació útil addicional mentre explores aquesta pàgina</translation>
 <translation id="6499143127267478107">S'està resolent l'amfitrió de l'script del servidor intermediari...</translation>
 <translation id="6499764981457476645">No s'ha trobat cap dispositiu a prop</translation>
 <translation id="6501957628055559556">Tots els contenidors</translation>
@@ -8846,6 +8844,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="816055135686411707">Error en configurar la confiança del certificat</translation>
 <translation id="8160775796528709999">Activa Subtítols instantanis a la configuració per obtenir subtítols per als teus àudios i vídeos</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Reprèn la navegació</translation>
 <translation id="8161293209665121583">Mode de lector a les pàgines web</translation>
 <translation id="8161604891089629425">Font perfilada</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mou la pestanya a una finestra nova}other{Mou les pestanyes a una finestra nova}}</translation>
@@ -9298,6 +9297,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8528962588711550376">S'està iniciant la sessió.</translation>
 <translation id="8529925957403338845">S'ha produït un error de connexió en compartir la xarxa de manera instantània</translation>
 <translation id="8531701051932785007">La Navegació segura millorada està desactivada</translation>
+<translation id="8533670235862049797">La funció Navegació segura està activada</translation>
 <translation id="8534656636775144800">S'ha produït un problema en connectar-te al domini. Torna-ho a provar.</translation>
 <translation id="8535005006684281994">URL de renovació de certificat de Netscape</translation>
 <translation id="8536713137312218707">Ordres ràpides</translation>

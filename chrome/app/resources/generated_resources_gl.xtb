@@ -3241,7 +3241,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="3582299299336701326">Escurece as pantallas claras e aclarea as escuras. Para activar e desactivar a inversión da cor, preme Buscar + Control + H.</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
-<translation id="3584527007414070635">Retomar o teu percorrido para <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Non se pode abrir este ficheiro</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Máis información sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4188,6 +4187,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4332976768901252016">Configurar os controis parentais</translation>
 <translation id="4333854382783149454">PKCS n.º 1 SHA-1 con cifrado RSA</translation>
 <translation id="4334768748331667190">Deixarás de ver <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">A navegación segura está desactivada</translation>
 <translation id="4339203724549370495">Desinstalar aplicación</translation>
 <translation id="4340125850502689798">O nome do usuario non é válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quere comunicarse coa aplicación "<ph name="EXTENSION_NAME" />"</translation>
@@ -4499,7 +4499,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4580587929153007251">Inicia sesión de novo no xestor de contrasinais de Google</translation>
 <translation id="4580596421317071374">Os contrasinais gárdanse no <ph name="GOOGLE_PASSWORD_MANAGER" /> neste dispositivo.</translation>
 <translation id="4581774856936278355">Produciuse un erro ao restaurar Linux</translation>
-<translation id="4582217877717474109">Preferencias do sistema</translation>
 <translation id="4582297591746054421">Os sitios adoitan acceder ao portapapeis para ofrecerche determinadas funcións (por exemplo, conservar o formato do texto copiado)</translation>
 <translation id="4582563038311694664">Restablecer toda a configuración</translation>
 <translation id="4585793705637313973">Editar páxina</translation>
@@ -6780,7 +6779,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6497784818439587832">Cambia o tamaño da pantalla para que os elementos que se mostran nela sexan máis pequenos ou máis grandes</translation>
 <translation id="6497789971060331894">Desprazamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os teus idiomas</translation>
-<translation id="6498583202177273322">Recibe información útil adicional mentres exploras esta páxina</translation>
 <translation id="6499143127267478107">Resolvendo host en script de proxy...</translation>
 <translation id="6499764981457476645">Non se atoparon dispositivos preto</translation>
 <translation id="6501957628055559556">Todos os contedores</translation>
@@ -8845,6 +8843,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="816055135686411707">Erro ao establecer o certificado de confianza</translation>
 <translation id="8160775796528709999">Obtén subtítulos para o contido de audio e de vídeo activando a función Subtítulos instantáneos en Configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> (<ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" />)</translation>
+<translation id="8161095570253161196">Retomar navegación</translation>
 <translation id="8161293209665121583">Modo de lector para páxinas web</translation>
 <translation id="8161604891089629425">Tipo de letra con contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
@@ -9296,6 +9295,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8528962588711550376">Iniciando sesión.</translation>
 <translation id="8529925957403338845">Produciuse un erro na conexión compartida instantánea</translation>
 <translation id="8531701051932785007">A función Navegación segura mellorada está desactivada</translation>
+<translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="8534656636775144800">Produciuse un erro ao tentar conectar co dominio. Volve tentalo.</translation>
 <translation id="8535005006684281994">URL de renovación do certificado de Netscape</translation>
 <translation id="8536713137312218707">Comandos rápidos</translation>

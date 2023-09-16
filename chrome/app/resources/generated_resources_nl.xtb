@@ -3242,7 +3242,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3582057310199111521">Ingevoerd op misleidende site en gevonden in gegevenslek</translation>
 <translation id="3582299299336701326">Maak lichte schermen donker en donkere schermen licht. Druk op Zoeken + Ctrl + H om kleurinversie aan en uit te zetten.</translation>
 <translation id="3584169441612580296">Foto's, muziek en andere media van je computer lezen en wijzigen</translation>
-<translation id="3584527007414070635">Je traject hervatten voor <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Kan dit bestand niet openen</translation>
 <translation id="3586931643579894722">Details verbergen</translation>
 <translation id="3587438013689771191">Meer informatie over: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4185,6 +4184,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4332976768901252016">Ouderlijk toezicht instellen</translation>
 <translation id="4333854382783149454">PKCS nr. 1 SHA-1 met RSA-versleuteling</translation>
 <translation id="4334768748331667190">Je krijgt <ph name="MODULE_NAME" /> niet meer te zien</translation>
+<translation id="4335835283689002019">Safe Browsing staat uit</translation>
 <translation id="4339203724549370495">App verwijderen</translation>
 <translation id="4340125850502689798">Ongeldige gebruikersnaam</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> wil communiceren met de app '<ph name="EXTENSION_NAME" />'</translation>
@@ -4496,7 +4496,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4580587929153007251">Log weer in bij Google Wachtwoordmanager</translation>
 <translation id="4580596421317071374">Wachtwoorden worden opgeslagen in <ph name="GOOGLE_PASSWORD_MANAGER" /> op dit apparaat.</translation>
 <translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
-<translation id="4582217877717474109">Systeemvoorkeuren</translation>
 <translation id="4582297591746054421">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4582563038311694664">Alle instellingen opnieuw instellen</translation>
 <translation id="4585793705637313973">Pagina bewerken</translation>
@@ -6775,7 +6774,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6497784818439587832">Wijzig de weergavegrootte om items op het scherm kleiner of groter te maken.</translation>
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
-<translation id="6498583202177273322">Krijg aanvullende nuttige informatie terwijl je deze pagina verkent</translation>
 <translation id="6499143127267478107">Host omzetten in proxyscript...</translation>
 <translation id="6499764981457476645">Geen apparaten gevonden in de buurt</translation>
 <translation id="6501957628055559556">Alle containers</translation>
@@ -8838,6 +8836,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="816055135686411707">Fout bij het instellen van vertrouwde certificaten</translation>
 <translation id="8160775796528709999">Bekijk een ondertiteling voor je audio en video door 'Live ondertiteling' aan te zetten in de instellingen</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Browsen hervatten</translation>
 <translation id="8161293209665121583">Lezermodus voor webpagina's</translation>
 <translation id="8161604891089629425">Lettertype met omtrek</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
@@ -9289,6 +9288,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8528962588711550376">Inloggen.</translation>
 <translation id="8529925957403338845">Verbinding via instant-tethering mislukt</translation>
 <translation id="8531701051932785007">Uitgebreide versie van Safe Browsing staat uit</translation>
+<translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="8534656636775144800">Er is een fout opgetreden bij het verbinden met het domein. Probeer het opnieuw.</translation>
 <translation id="8535005006684281994">URL voor verlengen van Netscape-certificaat</translation>
 <translation id="8536713137312218707">Snelle opdrachten</translation>

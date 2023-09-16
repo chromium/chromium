@@ -17,7 +17,6 @@
 <translation id="1647558790457890304">Chromium ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1722370509450468186">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ (<ph name="EMAIL" />) ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1736662517232558588">ਸਾਫ਼ ਕੀਤਾ Chromium  ਡਾਟਾ </translation>
-<translation id="1758508597843173586">Chromium ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਜਾਂ ਕਿਸੇ ਵੱਖਰੀ ਐਪ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਦੌਰਾਨ ਆਪਣੀ ਇਨਕੋਗਨਿਟੋ ਨੂੰ ਲਾਕ ਕਰੋ।</translation>
 <translation id="1791845338122684020">ਇਸ ਨਾਲ ਤੁਹਾਡਾ Chromium ਇਤਿਹਾਸ ਪੰਨਾ ਖੁੱਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="1838412507805038478">Chromium ਨੇ ਇਹ ਪੁਸ਼ਟੀ ਕੀਤੀ ਹੈ ਕਿ ਇਸ ਵੈੱਬਸਾਈਟ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="ISSUER" /> ਨੇ ਜਾਰੀ ਕੀਤਾ ਹੈ।</translation>
 <translation id="1843424232666537147">Chromium ਵਿੱਚ ਅਜਿਹੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹਨ, ਜੋ ਤੁਹਾਨੂੰ ਤੁਹਾਡਾ ਇੰਟਰਨੈੱਟ ਡਾਟਾ ਅਤੇ ਇਹ ਵਿਵਸਥਿਤ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੀਆਂ ਹਨ ਕਿ ਤੁਸੀਂ ਕਿੰਨੀ ਜਲਦੀ ਵੈੱਬ-ਪੰਨੇ ਲੋਡ ਕਰਨ ਕਰ ਸਕਦੇ ਹੋ।
@@ -60,6 +59,7 @@
 <translation id="3344973607274501920">Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="3472200483164753384">Chromium Canary 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="3478750326643748149">“Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓ” ਨੂੰ ਲੁਕਾਓ</translation>
+<translation id="3554027294407525061">Chromium ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ।</translation>
 <translation id="3567399274263440288">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ, ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="3639997914391704523">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ਵੱਲੋਂ Chromium ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਗਈ ਸੀ ਅਤੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
@@ -98,6 +98,7 @@
 <translation id="5042011327527167688">“Chromium 'ਤੇ Google Maps ਨਾਲ ਦੇਖੋ” 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5044871537677053278">Chromium ਪਤਿਆਂ ਬਾਰੇ ਪਤਾ ਲਗਾਉਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਦਿਸ਼ਾਵਾਂ ਅਤੇ ਸਥਾਨਕ ਜਾਣਕਾਰੀ ਦੇਣ ਲਈ Google Maps ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5048795749726991615">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਆਪਣੀਆਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਸਤੇ, ਆਟੋਫਿਲ ਲਈ Chromium ਵਰਤੋ</translation>
+<translation id="5076601183701536878">Chromium ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5131565040785979529">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="DOMAIN" />, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤੇ ਅਤੇ Chromium ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ।</translation>
 <translation id="5171868502429358653">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5213683223491576284">Chromium ਵਿੱਚ Password Manager ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>

@@ -29,7 +29,6 @@ Wichtige Hinweise:
 <translation id="1675955119303651351">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
         Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
-<translation id="1733654336159102143">Sperre die Inkognitotabs, wenn du Chrome verlässt oder zu einer anderen App wechselst.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Automatisch Chrome verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
@@ -161,6 +160,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
 <translation id="7173660919484573146">Chrome verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="7187993566681480880">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
+<translation id="7200524487407690471">Chrome führt jeden Tag automatisch einen Sicherheitscheck durch, um dich unter anderem vor Datenpannen und unsicheren Websites zu schützen. Weitere Informationen zum Sicherheitscheck findest du in den Einstellungen.</translation>
 <translation id="72119412072970160">Du kannst die im Google Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="7254380941803999489">Chrome als Standardbrowser festlegen</translation>
 <translation id="7261678641327190792">Chrome kann deine Passwörter nicht prüfen</translation>

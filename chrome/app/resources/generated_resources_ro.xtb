@@ -1980,6 +1980,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />A apărut o problemă și <ph name="DEVICE_OS" /> nu s-a putut instala.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Extinde autonomia bateriei, păstrând bateria la aproximativ 80 %. Bateria se va încărca deplin înainte să o deconectezi de la sursa de alimentare.</translation>
+<translation id="2532146950330687938">Se pregătește dispozitivul...</translation>
 <translation id="2532198298278778531">Gestionează DNS-ul securizat în setările sistemului de operare Chrome Flex</translation>
 <translation id="2532589005999780174">Mod de contrast ridicat</translation>
 <translation id="2533649878691950253">Accesul acestui site la locația exactă a fost blocat, deoarece nu acorzi de obicei această permisiune</translation>
@@ -3242,7 +3243,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3582057310199111521">A fost introdusă pe un site înșelător și folosită pentru încălcarea securității datelor</translation>
 <translation id="3582299299336701326">Întunecă ecranele luminoase și deschide ecranele întunecate. Apasă pe tasta de căutare + Ctrl + H pentru a activa și a dezactiva inversarea culorilor.</translation>
 <translation id="3584169441612580296">Citește și modifică fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
-<translation id="3584527007414070635">Continuă-ți parcursul pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Fișierul nu poate fi deschis</translation>
 <translation id="3586931643579894722">Ascunde detaliile</translation>
 <translation id="3587438013689771191">Află mai multe despre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4186,6 +4186,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4332976768901252016">Configurează controlul parental</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 cu criptare RSA</translation>
 <translation id="4334768748331667190">Nu vei mai vedea <ph name="MODULE_NAME" /></translation>
+<translation id="4335835283689002019">Navigarea sigură este dezactivată</translation>
 <translation id="4339203724549370495">Dezinstalează aplicația</translation>
 <translation id="4340125850502689798">Nume de utilizator nevalid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> dorește să comunice cu aplicația „<ph name="EXTENSION_NAME" />”</translation>
@@ -4497,7 +4498,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4580587929153007251">Conectează-te din nou la Managerul de parole Google</translation>
 <translation id="4580596421317071374">Parolele se salvează în <ph name="GOOGLE_PASSWORD_MANAGER" /> pe acest dispozitiv.</translation>
 <translation id="4581774856936278355">Eroare la restabilirea Linux</translation>
-<translation id="4582217877717474109">Preferințe de sistem</translation>
 <translation id="4582297591746054421">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4582563038311694664">Restabilește toate setările</translation>
 <translation id="4585793705637313973">Editează pagina</translation>
@@ -5740,6 +5740,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5627086634964711283">Stabilește și ce pagină se afișează când dai clic pe butonul Pagina principală.</translation>
 <translation id="5627676517703583263">Navighează inteligent folosind Chrome</translation>
 <translation id="5627832140542566187">Orientarea afișajului</translation>
+<translation id="5628434207686266338">Setează parola dispozitivului</translation>
 <translation id="562935524653278697">Administratorul a dezactivat sincronizarea marcajelor, istoricului, parolelor și a altor setări.</translation>
 <translation id="5631017369956619646">Utilizarea procesorului</translation>
 <translation id="5631272057151918206">Astfel, se va elimina până la <ph name="OFFLINE_STORAGE_SIZE" /> din spațiul folosit de fișierele offline. Unele fișiere vor fi disponibile în continuare offline. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -6780,7 +6781,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6497784818439587832">Modifică dimensiunea de afișare pentru a micșora sau a mări elementele de pe ecran</translation>
 <translation id="6497789971060331894">Derularea inversă cu mouse-ul</translation>
 <translation id="6498249116389603658">&amp;Toate limbile tale</translation>
-<translation id="6498583202177273322">Primește informații utile suplimentare pe măsură ce explorezi această pagină</translation>
 <translation id="6499143127267478107">Se rezolvă gazda în scriptul proxy...</translation>
 <translation id="6499764981457476645">Nu s-au găsit dispozitive în apropiere</translation>
 <translation id="6501957628055559556">Toate containerele</translation>
@@ -8849,6 +8849,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="816055135686411707">Eroare la setarea certificatului de încredere</translation>
 <translation id="8160775796528709999">Afișează subtitrări pentru conținutul audio și video activând Subtitrări live în setări</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">Reia navigarea</translation>
 <translation id="8161293209665121583">Modul Cititor pentru pagini web</translation>
 <translation id="8161604891089629425">Font de contur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mută fila în fereastră nouă}few{Mută filele în fereastră nouă}other{Mută filele în fereastră nouă}}</translation>
@@ -9300,6 +9301,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8528962588711550376">Se conectează.</translation>
 <translation id="8529925957403338845">Nu s-a conectat prin Tethering instantaneu</translation>
 <translation id="8531701051932785007">Navigarea sigură îmbunătățită este dezactivată</translation>
+<translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="8534656636775144800">Hopa! A apărut o eroare la asocierea la domeniu. Încearcă din nou.</translation>
 <translation id="8535005006684281994">Adresă URL de reînnoire a certificatului Netscape</translation>
 <translation id="8536713137312218707">Comenzi rapide</translation>

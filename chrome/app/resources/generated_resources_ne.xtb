@@ -764,6 +764,7 @@
 <translation id="1604432177629086300">प्रिन्ट गर्न सकिएन। प्रिन्टरको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1604567162047669454">भिजुअल लेआउट सिम्यान्टिक पहिचान गर्नुहोस्</translation>
 <translation id="1604774728851271529">Linux अपग्रेड गर्न नेटवर्क कनेक्सन चाहिन्छ। इन्टरनेटमा कनेक्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="1605148987885002237">किबोर्ड तथा इनपुटहरू</translation>
 <translation id="1605744057217831567">सबै साइट डेटा र साइटलाई दिइएका अनुमति हेर्नुहोस्</translation>
 <translation id="1606077700029460857">माउससम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="1606307079840340755">तपाईंको पासपोइन्ट प्रदायकलाई यो डिभाइसबाट मात्र हटाइने छ। तपाईं आफ्नो सदस्यता परिवर्तन गर्न चाहनुहुन्छ भने सदस्यता प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -1222,6 +1223,7 @@
 <translation id="1956050014111002555">फाइलमा बहुविध प्रमाणपत्रहरू समावेश गरिएको थियो, जस मध्ये कुनै पनि इम्पोर्ट गरिएका थिएनन्:</translation>
 <translation id="1956167375087861299">संरक्षित सामग्री प्ले गर्न आइडेन्टिफायर प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="1956390763342388273">यस कार्यले "<ph name="FOLDER_PATH" />" मा रहेका सबै फाइलहरू अपलोड गर्ने छ। तपाईंलाई साइटमाथि विश्वास छ भने मात्र यो कार्य गर्नुहोस्‌।</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन समीक्षा गरिएको छ}other{{NUM_EXTENSIONS} वटा एक्स्टेन्सन समीक्षा गरिएका छन्}}</translation>
 <translation id="1959421829481337178">आफ्नो सेवा प्रदायकले उपलब्ध गराएको एक्टिभेसन कोड हाल्नुहोस्।</translation>
 <translation id="1962233722219655970">यस पृष्ठले एक सहज ग्राहक एप प्रयोग गर्छ जुन तपाइँको कम्प्युटरटमा चल्दैन।</translation>
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
@@ -1931,6 +1933,7 @@
 <translation id="2492461744635776704">प्रमाणपत्रमा हस्ताक्षर गर्ने अनुरोध तयार पार्दै</translation>
 <translation id="249330843868392562">पाठवाचकसम्बन्धी सेटिङहरू खोल्नुहोस्</translation>
 <translation id="2494555621641843783">Steam इन्स्टल सकिँदैन</translation>
+<translation id="2495141202137516054">तपाईंको Drive बाट</translation>
 <translation id="2495524171012645395">हालसालै हेरिएका पाकविधिहरू</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2497229222757901769">माउसको गति</translation>
@@ -2234,6 +2237,7 @@
 <translation id="2738771556149464852">पछि होइन</translation>
 <translation id="2739191690716947896">डिबग गर्नुहोस्</translation>
 <translation id="2739240477418971307">आफ्नो पहुँच क्षमता सेटिङहरू परिवर्तन गर्नुहोस्</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> मार्फत इन्टरनेटमा कनेक्ट गरिएको छ</translation>
 <translation id="274029851662193272">दबेको</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2740876196999178364">यी पासकीहरू यस डिभाइसमा मात्र सेभ गरिएका छन्। तिनीहरू तपाईंको Google खातामा भने सेभ गरिएका छैनन्।</translation>
@@ -3192,6 +3196,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - अडियो म्यूट गरिएको छ</translation>
 <translation id="3537881477201137177">यसलाई पछि सेटिङमा गई परिमार्जन गर्न सकिने छ</translation>
 <translation id="3538066758857505094">Linux को स्थापना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> मार्फत कुनै पनि नेटवर्क कनेक्ट गरिएको छैन</translation>
 <translation id="354060433403403521">AC एड्याप्टर</translation>
 <translation id="354068948465830244">यसले साइटको डेटा पढ्न र परिवर्तन गर्न सक्छ</translation>
 <translation id="3541823293333232175">काम तोकियो</translation>
@@ -3240,7 +3245,6 @@
 <translation id="3582057310199111521">यो पासवर्ड भ्रामक साइटमा प्रविष्टि गरिएको थियो र पासवर्डको खुलासा भएको पाइयो</translation>
 <translation id="3582299299336701326">उज्यालो स्क्रिनलाई अँध्यारो र अँध्यारो स्क्रिनलाई उज्यालो बनाउनुहोस्। कलर इन्भर्सन अन र अफ गर्न Search + Ctrl + H थिच्नुहोस्।</translation>
 <translation id="3584169441612580296">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत र अन्य मिडिया पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
-<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> खोज्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="3586806079541226322">यो फाइल खोल्न सकिँदैन</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587438013689771191">यसका बारेमा थप जान्नुहोस्: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4183,6 +4187,7 @@
 <translation id="4332976768901252016">अभिभावकीय नियन्त्रणहरू सेट अप गर्नुहोस्</translation>
 <translation id="4333854382783149454">RSA गुप्तिकरणको साथमा PKCS #1 SHA-1</translation>
 <translation id="4334768748331667190">तपाईं अब उप्रान्त <ph name="MODULE_NAME" /> देख्नु हुने छैन</translation>
+<translation id="4335835283689002019">Safe Browsing अफ छ</translation>
 <translation id="4339203724549370495">एप अनइन्स्टल गर्नुहोस्</translation>
 <translation id="4340125850502689798">युजरनेम अवैध छ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> एपलाई "<ph name="EXTENSION_NAME" />" सँग सञ्चार गर्न चाहन्छ</translation>
@@ -4494,7 +4499,6 @@
 <translation id="4580587929153007251">Google पासवर्ड म्यानेजरमा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="4580596421317071374">पासवर्डहरू यो डिभाइसको <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्।</translation>
 <translation id="4581774856936278355">Linux पुनर्स्थापना गर्ने क्रममा त्रुटि भयो</translation>
-<translation id="4582217877717474109">सिस्टमका प्राथमिकताहरू</translation>
 <translation id="4582297591746054421">साइटहरूले तपाईंले कपी गर्नुभएको पाठको ढाँचा कायमै राख्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको क्लिपबोर्ड पढ्छन्</translation>
 <translation id="4582563038311694664">सबै सेटिङहरू रिसेट गर्नुहोस्</translation>
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
@@ -6396,6 +6400,7 @@
 <translation id="6169967265765719844"><ph name="LINK_BEGIN" />Steam एपका सेटिङ<ph name="LINK_END" />मा गई Steam मार्फत इन्स्टल गरिएका गेम तथा एपहरूका हकमा अनुमतिहरू व्यवस्थापन गर्न सकिन्छ।</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6170498031581934115">ADB डिबग प्रक्रिया सक्षम पार्न सकिएन। सेटिङमा गएर फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6170675927290506430">सूचनाका सेटिङमा जानुहोस्</translation>
 <translation id="6171779718418683144">हरेक पटक साइटमा जाँदा सोधियोस्</translation>
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
 <translation id="6173623053897475761">आफ्नो PIN फेरि टाइप गर्नुहोस्</translation>
@@ -6405,6 +6410,7 @@
 <translation id="6177412385419165772">अनइन्स्टल गरिँदै छ...</translation>
 <translation id="6178664161104547336">एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6178682841350631965">तपाईंको साइन इन डेटा परिवर्तन गरियो</translation>
+<translation id="6179830757749383456">ब्राउजर <ph name="BROWSER_DOMAIN" /> ले व्यवस्थापन गर्छ भने प्रोफाइल <ph name="PROFILE_DOMAIN" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{एक्स्टेन्सन हटाउने हो?}other{# वटा एक्स्टेन्सन हटाउने हो?}}</translation>
 <translation id="6180510783007738939">रेखा बनाउने टुल</translation>
 <translation id="6180550893222597997">तपाईं <ph name="APP_NAME" /> मा कुन पासकी प्रयोग गर्न चाहनुहुन्छ?</translation>
@@ -6523,6 +6529,7 @@
 <translation id="6271348838875430303">भूलसुधार अन्डू गरियो</translation>
 <translation id="6271824294945464304">पासवर्ड सेयर गरिँदै छ</translation>
 <translation id="6273677812470008672">गुण</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="6274202259872570803">स्क्रिनकास्ट</translation>
 <translation id="6276210637549544171">प्रोक्सी <ph name="PROXY_SERVER" /> मा कनेक्ट गर्न युजरनेम र पासवर्ड प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="6277105963844135994">नेटवर्कको समय समाप्त भयो</translation>
@@ -6540,6 +6547,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> लाई सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="6285770818046456882">तपाईंको डिभाइसमा फाइल सेयर गरिरहेको यन्त्रले सार्ने काम रद्द गरेको छ</translation>
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="6287828400772161253">Android फोन (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">वरपर सामग्री सेयर गर्नका निम्ति कुनै पनि यन्त्र उपलब्ध छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">एक्टिभेसन कोड पुष्टि गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="6291741848715722067">पुष्टि कोड</translation>
@@ -6777,7 +6785,6 @@
 <translation id="6497784818439587832">स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो बनाउन डिस्प्लेको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="6497789971060331894">माउस विपरीत दिशामा स्क्रोल गर्ने कार्य</translation>
 <translation id="6498249116389603658">&amp;तपाईँका सबै भाषाहरू</translation>
-<translation id="6498583202177273322">यो पेज हेर्दै गर्दा अतिरिक्त उपयोगी जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6499143127267478107">प्रोक्सी स्क्रिप्टमा होस्ट विघटन गर्दै...</translation>
 <translation id="6499764981457476645">वरपर कुनै पनि डिभाइस भेटिएन</translation>
 <translation id="6501957628055559556">सबै कन्टेनरहरू</translation>
@@ -8545,6 +8552,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> को लागि प्रतिक्षा गर्दै...</translation>
 <translation id="7926423016278357561">यो म थिइन।</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
+<translation id="7927610604078150317">आकार: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="7929962904089429003">मेनु खोल्नुहोस्</translation>
 <translation id="7930294771522048157">सुरक्षित गरिएका भुक्तानी विधिहरू यहाँ देखिने छन्</translation>
@@ -8842,6 +8850,7 @@
 <translation id="816055135686411707">प्रमाणपत्र विश्वास सेट गर्नमा त्रुटि</translation>
 <translation id="8160775796528709999">सेटिङमा गई लाइभ क्याप्सन अन गरेर आफ्ना अडियो तथा भिडियोमा क्याप्सन देखाइने सुविधा प्राप्त गर्नुहोस्</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="8161095570253161196">ब्राउज गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="8161293209665121583">पाठक मोडमा वेब पृष्ठहरू पढ्ने सुविधा</translation>
 <translation id="8161604891089629425">आउटलाइन फन्ट</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ट्याब सारेर नयाँ विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर नयाँ विन्डोमा लैजानुहोस्}}</translation>
@@ -9293,6 +9302,7 @@
 <translation id="8528962588711550376">साइन इन गर्दै।</translation>
 <translation id="8529925957403338845">तात्कालिक टेदरिङको जडान असफल भयो</translation>
 <translation id="8531701051932785007">परिष्कृत Safe Browsing अफ छ</translation>
+<translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534656636775144800">हत्तेरिका! डोमेनमा सामेल हुने प्रयास गर्दा कुनै समस्या आयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8535005006684281994">नेटस्केप प्रमाणपत्र नविकरण URL</translation>
 <translation id="8536713137312218707">द्रुत कमान्डहरू</translation>
@@ -9857,6 +9867,7 @@
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8986494364107987395">Google लाई स्वचालित रूपमा उपयोगको तथ्याङ्कहरू र क्र्यास रिपोर्ट पठाउनुहोस्</translation>
 <translation id="8987305927843254629">हरेक व्यक्ति आफूले प्रयोग गर्ने सुविधा पर्सनलाइज गर्न र जानकारी गोप्य राख्न सक्छन्।</translation>
+<translation id="8987321822984361516">ब्राउजर सङ्गठनले व्यवस्थापन गर्छ भने प्रोफाइल <ph name="PROFILE_DOMAIN" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8988539543012086784">यो पेज <ph name="BOOKMARK_FOLDER" /> मा सेभ गरिएको छ</translation>
 <translation id="8989359959810288806">टेदरिङको स्थिति रिफ्रेस गर्नुहोस्</translation>
@@ -9875,6 +9886,7 @@
 <translation id="8999027165951679951">निष्क्रिय ट्याब: <ph name="MEMORY_SAVINGS" /> खाली गरियो</translation>
 <translation id="8999560016882908256">खण्डको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">आफ्नो <ph name="DEVICE_TYPE" /> को दायाँतिर रहेको फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
+<translation id="9000532564152265066">सबै ट्याबहरू</translation>
 <translation id="9003185744423389627">डिभाइस म्यानेजमेन्ट सर्भरमा कनेक्ट गर्न सकिएन। कनेक्ट गर्न नसकिएको समय: "<ph name="FAILURE_TIME" />", स्थिति: "<ph name="STATUS_TEXT" />"</translation>
 <translation id="90033698482696970">उपलब्ध भएका eSIM प्रोफाइलहरू खोज्न स्वतः स्क्यान गर्ने हो?</translation>
 <translation id="9003647077635673607">सबै वेबसाइटहरूमा अनुमति दिनुहोस्</translation>
