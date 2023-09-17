@@ -783,6 +783,34 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   PolicyMap current_policy_;
 };
 
+// A variant of NetworkPolicyApplicationTest which ensures that
+// the feature DisablePolicyEthernetRecommendedWorkaround is activated.
+class NetworkPolicyApplicationNoEthernetWorkaroundTest
+    : public NetworkPolicyApplicationTest {
+ public:
+  NetworkPolicyApplicationNoEthernetWorkaroundTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        policy::kDisablePolicyEthernetRecommendedWorkaround);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A variant of NetworkPolicyApplicationTest which ensures that
+// the feature DisablePolicyEthernetRecommendedWorkaround is not activated.
+class NetworkPolicyApplicationEthernetWorkaroundTest
+    : public NetworkPolicyApplicationTest {
+ public:
+  NetworkPolicyApplicationEthernetWorkaroundTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        policy::kDisablePolicyEthernetRecommendedWorkaround);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // This test applies a global network policy with
 // AllowOnlyPolicyNetworksToAutoconnect set to true. It then performs a user
 // log-in and simulates that user policy application is slow. This is a
@@ -1742,12 +1770,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
 // Tests that re-applying Ethernet policy retains a manually-set IP address.
 // This is a regression test for b/183676832 and b/180365271.
-//
-// TODO(crbug.com/1483397): This test fails on release builders due to
-// fieldtrial_testing_config.json not being applied there. Make the test
-// independent of that and re-enable it.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
-                       DISABLED_RetainEthernetIPAddr) {
+// This variant of the test runs with
+// "DisablePolicyEthernetRecommendedWorkaround" feature not activated, so the
+// "treat Ethernet IP address as Recommended by default" workaround is applied.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
+                       RetainEthernetIPAddr) {
   constexpr char kEthernetGuid[] = "{EthernetGuid}";
 
   shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
@@ -1756,30 +1783,28 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   {
     base::HistogramTester histogram_tester;
-    // Explicitly allow modifying the IP Address.
+    // For Ethernet, not mentioning "Recommended" currently means that the IP
+    // address is editable by the user.
     std::string kDeviceONC1 = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix"]
-          },
-          "Recommended": ["IPAddressConfigType"]
-        }
-      ]
-    })",
+      {
+        "NetworkConfigurations": [
+          {
+            "GUID": "%s",
+            "Name": "EthernetName",
+            "Type": "Ethernet",
+            "Ethernet": {
+               "Authentication": "None"
+            }
+          }
+        ]
+      })",
+
                                                  kEthernetGuid);
     SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
-    // Expect "Disabled by feature, ONC NetworkConfiguration not eligible".
+    // Expect "Enabled by feature, ONC NetworkConfiguration eligible".
     histogram_tester.ExpectUniqueSample(
         kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kDisabledAndNotAffected*/ 2, /*count=*/1);
+        /*sample=kEnabledAndAffected*/ 1, /*count=*/1);
   }
 
   {
@@ -1852,7 +1877,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     // Expect "Enabled by feature, ONC NetworkConfiguration not eligible".
     histogram_tester.ExpectUniqueSample(
         kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kDisabledAndNotAffected*/ 2, /*count=*/1);
+        /*sample=kEnabledAndNotAffected*/ 0, /*count=*/1);
   }
 
   // Verify that the Static IP is still active, and the custom name server has
@@ -2118,18 +2143,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     EXPECT_EQ(eap->client_cert_type->policy_value, onc::client_cert::kPKCS11Id);
   }
 }
-
-class NetworkPolicyApplicationNoEthernetWorkaroundTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationNoEthernetWorkaroundTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::kDisablePolicyEthernetRecommendedWorkaround);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 // Tests that when the kDisablePolicyEthernetRecommendedWorkaround feature is
 // enabled, Ethernet policy behaves like wifi when nothing is "Recommended" -
