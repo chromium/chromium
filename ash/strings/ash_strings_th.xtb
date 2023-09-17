@@ -736,6 +736,7 @@
 <translation id="4028481283645788203">ต้องป้อนรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรซ้าย</translation>
+<translation id="4039699481424758547">กด Enter เพื่อจับภาพหน้าต่างต่อไปนี้ <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
 <translation id="404437169852192935">การอัปเดตสิ้นสุดแล้ว</translation>
 <translation id="4049230407053723315">การตั้งค่าด่วน</translation>
@@ -1960,6 +1961,7 @@
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
 <translation id="9211681782751733685">อีก <ph name="TIME_REMAINING" />จะชาร์จเต็ม</translation>
 <translation id="9215934040295798075">ตั้งค่าวอลเปเปอร์</translation>
+<translation id="9216699844945104164">กด Enter เพื่อบันทึกหน้าต่างต่อไปนี้ <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="921989828232331238">ผู้ปกครองล็อกอุปกรณ์ของคุณไว้ทั้งวัน</translation>
 <translation id="9220525904950070496">ลบบัญชี</translation>

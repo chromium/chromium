@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> บัญชีใช้รหัสผ่านเดียวกัน</translation>
 <translation id="2050196510205866090">{count,plural, =1{วิธีการชำระเงินที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{วิธีการชำระเงินที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="2055515971416882518">เปิด "การตั้งค่า"</translation>
+<translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2073572773299281212">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
 <translation id="3595252146048399851">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
+<translation id="3599500618468205645">ซ่อน "ติดตาม <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">คัดลอก URL ของลิงก์</translation>
 <translation id="3607167657931203000">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="3609785682760573515">กำลังซิงค์...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chrome และซิงค์รหัสผ่าน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">มีโปรไฟล์การกำหนดค่า</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
+<translation id="3680970647557344817">ซ่อน "การแก้ไขบุ๊กมาร์ก"</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3688815115226493214">คำแนะนำแท็บ</translation>
 <translation id="3700134753671613714">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กบนอุปกรณ์ทั้งหมดของคุณ</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">แป้นพิมพ์</translation>
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606247758155004938">องค์กรของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
+<translation id="4611811151908969241">ซ่อน "เลิกติดตาม <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">กำลังค้นหาด้วย Google</translation>
 <translation id="4616391354457235490">เลิกทำ</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">โหมดปิดล็อก</translation>
 <translation id="6760509555861141183">กลับไปที่แท็บล่าสุด</translation>
 <translation id="6762812039470893796">ยกเลิกการเลือกทั้งหมด</translation>
+<translation id="6771287014037609247">ติดตามแพ็กเกจที่ตรวจพบเสมอ</translation>
 <translation id="6780034285637185932">รหัสไปรษณีย์</translation>
 <translation id="6781260999953472352">เปิดการซิงค์ไหม</translation>
 <translation id="6781405765516175232">สำหรับตัวเลือกเส้นทาง ให้แตะ "ขอเส้นทาง"</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{ดูแท็บ...}other{ดูแท็บทั้งหมด...}}</translation>
 <translation id="8787968206789828143">ค้นหาในเว็บ</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
+<translation id="8793366654064127924">ถามฉันทุกครั้ง</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>
 <translation id="8806823403540278281">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว ระบบจะไม่บันทึกแท็บในโหมดไม่ระบุตัวตน
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8855242995793521265">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
 <translation id="8855781063981781621">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPad ของคุณ</translation>
+<translation id="886335568110896118">ซ่อน "คำขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่"</translation>
 <translation id="8863431381414769983">ขอเส้นทางและข้อมูลในพื้นที่จาก Google Maps</translation>
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>

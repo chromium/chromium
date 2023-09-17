@@ -741,6 +741,7 @@
 <translation id="4028481283645788203">Нэмэлт аюулгүй байдлын үүднээс нууц үг шаардлагатай</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + зүүн сум</translation>
+<translation id="4039699481424758547">Цонхны дэлгэцийн агшныг авахын тулд enter дээр дарна уу: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
 <translation id="404437169852192935">Шинэчлэлтүүд дууссан</translation>
 <translation id="4049230407053723315">Шуурхай тохиргоо</translation>
@@ -1966,6 +1967,7 @@
 <translation id="9211490828691860325">Бүх дэлгэц</translation>
 <translation id="9211681782751733685">Батарейг бүрэн цэнэглэхэд <ph name="TIME_REMAINING" /> үлдсэн байна.</translation>
 <translation id="9215934040295798075">Дэлгэцийн зураг тохируулах</translation>
+<translation id="9216699844945104164">Цонхыг бичихийн тулд enter дээр дарна уу: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="921989828232331238">Таны эцэг эх таны төхөөрөмжийг өдрийн турш түгжсэн байна</translation>
 <translation id="9220525904950070496">Бүртгэлийг хасах</translation>

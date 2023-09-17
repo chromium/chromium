@@ -767,6 +767,7 @@
 <translation id="1604432177629086300">พิมพ์ไม่สำเร็จ ตรวจสอบเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="1604567162047669454">จดจำความหมายของเลย์เอาต์ที่มองเห็น</translation>
 <translation id="1604774728851271529">คุณต้องเชื่อมต่อเครือข่ายเพื่ออัปเกรด Linux เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
+<translation id="1605148987885002237">แป้นพิมพ์และการป้อนข้อมูล</translation>
 <translation id="1605744057217831567">ดูข้อมูลและสิทธิ์ทั้งหมดของเว็บไซต์</translation>
 <translation id="1606077700029460857">เปลี่ยนการตั้งค่าเมาส์</translation>
 <translation id="1606307079840340755">ระบบจะนำผู้ให้บริการ Passpoint ออกจากอุปกรณ์นี้เท่านั้น หากต้องการเปลี่ยนแปลงการสมัครใช้บริการ โปรดติดต่อผู้ให้บริการดังกล่าว</translation>
@@ -1225,6 +1226,7 @@
 <translation id="1956050014111002555">ไฟล์มีใบรับรองหลายใบ แต่ไม่มีการนำเข้าใบรับรอง:</translation>
 <translation id="1956167375087861299">ไม่อนุญาตให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="1956390763342388273">การดำเนินการนี้จะอัปโหลดไฟล์ทั้งหมดจาก "<ph name="FOLDER_PATH" />" ดำเนินการนี้เฉพาะในกรณีที่คุณเชื่อถือเว็บไซต์ดังกล่าวเท่านั้น</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{ตรวจสอบส่วนขยายแล้ว 1 รายการ}other{ตรวจสอบส่วนขยายแล้ว {NUM_EXTENSIONS} รายการ}}</translation>
 <translation id="1959421829481337178">โปรดป้อนรหัสเปิดใช้งานที่ได้รับจากผู้ให้บริการ</translation>
 <translation id="1962233722219655970">หน้าเว็บนี้ใช้แอปพลิเคชัน Native Client ซึ่งไม่สามารถทำงานบนคอมพิวเตอร์ของคุณ</translation>
 <translation id="1963976881984600709">การปกป้องแบบมาตรฐาน</translation>
@@ -1934,6 +1936,7 @@
 <translation id="2492461744635776704">กำลังเตรียมคำขอลงนามใบรับรอง</translation>
 <translation id="249330843868392562">เปิดการตั้งค่าการอ่านออกเสียงข้อความ</translation>
 <translation id="2494555621641843783">ติดตั้ง Steam ไม่ได้</translation>
+<translation id="2495141202137516054">จากไดรฟ์ของคุณ</translation>
 <translation id="2495524171012645395">สูตรอาหารที่ดูล่าสุด</translation>
 <translation id="2496180316473517155">ประวัติการเข้าชมที่เรียกดู</translation>
 <translation id="2497229222757901769">ความเร็วเมาส์</translation>
@@ -2237,6 +2240,7 @@
 <translation id="2738771556149464852">ไม่เกิน</translation>
 <translation id="2739191690716947896">แก้ปัญหา</translation>
 <translation id="2739240477418971307">เปลี่ยนแปลงการตั้งค่าการเข้าถึง</translation>
+<translation id="2739331588276254426">เชื่อมต่ออินเทอร์เน็ตผ่านทาง <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">ลดต่ำ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2740876196999178364">พาสคีย์เหล่านี้จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น โดยจะไม่บันทึกไว้ในบัญชี Google ของคุณ</translation>
@@ -3194,6 +3198,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ปิดเสียงอยู่</translation>
 <translation id="3537881477201137177">แก้ไขค่านี้ในภายหลังได้ในการตั้งค่า</translation>
 <translation id="3538066758857505094">เกิดข้อผิดพลาดขณะถอนการติดตั้ง Linux โปรดลองอีกครั้ง</translation>
+<translation id="3540173484406326944">ไม่มีเครือข่ายผ่านทาง <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">อะแดปเตอร์ AC</translation>
 <translation id="354068948465830244">ส่วนขยายนี้อ่านและเปลี่ยนข้อมูลเว็บไซต์ได้</translation>
 <translation id="3541823293333232175">กำหนดแล้ว</translation>
@@ -6396,6 +6401,7 @@
 <translation id="6169967265765719844">คุณสามารถจัดการสิทธิ์สำหรับเกมและแอปที่ติดตั้งผ่าน Steam ได้ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป Steam<ph name="LINK_END" /></translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
 <translation id="6170498031581934115">ปิดใช้การแก้ไขข้อบกพร่อง ADB ไม่ได้ ไปที่การตั้งค่าแล้วลองอีกครั้ง</translation>
+<translation id="6170675927290506430">ไปที่การตั้งค่าการแจ้งเตือน</translation>
 <translation id="6171779718418683144">ถามทุกครั้งที่ไปยังเว็บไซต์</translation>
 <translation id="617213288191670920">ไม่ได้เพิ่มภาษา</translation>
 <translation id="6173623053897475761">พิมพ์ PIN อีกครั้ง</translation>
@@ -6405,6 +6411,7 @@
 <translation id="6177412385419165772">กำลังนำออก...</translation>
 <translation id="6178664161104547336">เลือกใบรับรอง</translation>
 <translation id="6178682841350631965">อัปเดตข้อมูลการลงชื่อเข้าใช้แล้ว</translation>
+<translation id="6179830757749383456">เบราว์เซอร์ที่จัดการโดย <ph name="BROWSER_DOMAIN" /> โปรไฟล์ที่จัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{นำส่วนขยายออกใช่ไหม}other{นำส่วนขยาย # รายการออกใช่ไหม}}</translation>
 <translation id="6180510783007738939">เครื่องมือขีดเส้น</translation>
 <translation id="6180550893222597997">คุณต้องการใช้พาสคีย์ใดสําหรับ "<ph name="APP_NAME" />"</translation>
@@ -6523,6 +6530,7 @@
 <translation id="6271348838875430303">เลิกทำการแก้ไขแล้ว</translation>
 <translation id="6271824294945464304">การแชร์รหัสผ่าน</translation>
 <translation id="6273677812470008672">คุณภาพ</translation>
+<translation id="6274089201566806618">กำลังเชื่อมต่อกับ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">ต้องป้อนชื่อผู้ใช้และรหัสผ่านเพื่อเชื่อมต่อกับพร็อกซี <ph name="PROXY_SERVER" /></translation>
 <translation id="6277105963844135994">ระยะหมดเวลาของเครือข่าย</translation>
@@ -6540,6 +6548,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ไม่ได้ถูกดาวน์โหลดตามปกติและอาจเป็นอันตราย</translation>
 <translation id="6285770818046456882">อุปกรณ์ที่กำลังแชร์เนื้อหากับคุณยกเลิกการโอนแล้ว</translation>
 <translation id="628726841779494414">จัดการเครื่องพิมพ์ของคุณในการตั้งค่าเครื่องพิมพ์</translation>
+<translation id="6287828400772161253">โทรศัพท์ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ไม่มีอุปกรณ์ที่กำลังแชร์อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">กำลังตรวจสอบรหัสเปิดใช้งาน การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="6291741848715722067">รหัสยืนยัน</translation>
@@ -8544,6 +8553,7 @@
 <translation id="7925285046818567682">กำลังรอ <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">นี่ไม่ใช่ฉัน</translation>
 <translation id="7926975587469166629">ชื่อเล่นของบัตร</translation>
+<translation id="7927610604078150317">ขนาด: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">เปลี่ยนรหัสผ่านนี้แล้วใช่ไหม</translation>
 <translation id="7929962904089429003">เปิดเมนู</translation>
 <translation id="7930294771522048157">วิธีการชำระเงินที่บันทึกไว้จะปรากฏที่นี่</translation>
@@ -9859,6 +9869,7 @@
 <translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="8986494364107987395">ส่งสถิติการใช้งานและรายงานข้อขัดข้องไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="8987305927843254629">โดยแต่ละคนจะปรับเปลี่ยนประสบการณ์การใช้งานในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
+<translation id="8987321822984361516">เบราว์เซอร์ที่จัดการโดยองค์กร โปรไฟล์ที่จัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">เดือน</translation>
 <translation id="8988539543012086784">บันทึกหน้านี้ใน <ph name="BOOKMARK_FOLDER" /> แล้ว</translation>
 <translation id="8989359959810288806">รีเฟรชสถานะการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
@@ -9877,6 +9888,7 @@
 <translation id="8999027165951679951">แท็บที่ไม่ได้ใช้งาน: เพิ่มพื้นที่ว่าง <ph name="MEMORY_SAVINGS" /> แล้ว</translation>
 <translation id="8999560016882908256">ข้อผิดพลาดทางไวยากรณ์ของส่วน: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
+<translation id="9000532564152265066">แท็บทั้งหมด</translation>
 <translation id="9003185744423389627">การเชื่อมต่อกับเซิร์ฟเวอร์การจัดการอุปกรณ์ไม่สำเร็จโดยมีสถานะ "<ph name="STATUS_TEXT" />" เมื่อ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">สแกนหาโปรไฟล์ eSIM ที่ใช้ได้โดยอัตโนมัติไหม</translation>
 <translation id="9003647077635673607">อนุญาตบนทุกเว็บไซต์</translation>

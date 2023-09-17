@@ -765,6 +765,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1604432177629086300">Chop etilmadi. Printerni tekshiring va qayta urining.</translation>
 <translation id="1604567162047669454">Vizual maket semantikasini aniqlash</translation>
 <translation id="1604774728851271529">Linux tizimini yangilash uchun internet aloqasi kerak. Internetga ulanib, qaytadan urining.</translation>
+<translation id="1605148987885002237">Klaviatura va kirish qurilmalari</translation>
 <translation id="1605744057217831567">Barcga sayt maʼlumotlari va ruxsatlarini ochish</translation>
 <translation id="1606077700029460857">Sichqoncha sozlamalarini oʻzgartirish</translation>
 <translation id="1606307079840340755">Passpoint provayderi faqat shu qurilmadan olib tashlanadi. Obunaga oʻzgartirish kiritish uchun obuna provayderiga murojaat qiling.</translation>
@@ -1224,6 +1225,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1956050014111002555">Fayl o‘z ichiga bir necha sertifikatlarni olgan, ulardan hech biri import qilinmadi:</translation>
 <translation id="1956167375087861299">Himoyalangan kontentni ijro etish uchun identifikatorlardan foydalanish taqiqlangan saytlar</translation>
 <translation id="1956390763342388273">“<ph name="FOLDER_PATH" />” jildidagi barcha fayllar yuklanadi. Bu saytga ishonsangiz, davom ettiring.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ta kengaytma tekshirildi}other{{NUM_EXTENSIONS} ta kengaytma tekshirildi}}</translation>
 <translation id="1959421829481337178">Aloqa operatori taqdim qilgan aktivatsiya kodini kiriting.</translation>
 <translation id="1962233722219655970">Bu sahifa Nativ mijoz ilovasidan foydalanadi, u sizning kompyuteringizda ishlamaydi.</translation>
 <translation id="1963976881984600709">Standart himoya</translation>
@@ -1936,6 +1938,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2492461744635776704">Sertifikatni imzolash talabi tayyorlanmoqda</translation>
 <translation id="249330843868392562">Nutq sintezatori sozlamalarini ochish</translation>
 <translation id="2494555621641843783">Steam oʻrnatilmadi</translation>
+<translation id="2495141202137516054">Drive omboridan</translation>
 <translation id="2495524171012645395">Yaqinda ochilgan retseptlar</translation>
 <translation id="2496180316473517155">Kezish tarixi</translation>
 <translation id="2497229222757901769">Sichqoncha tezligi</translation>
@@ -2239,6 +2242,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2738771556149464852">Bundan kechiktirmasdan</translation>
 <translation id="2739191690716947896">Nosozliklarni ko‘rib chiqish</translation>
 <translation id="2739240477418971307">Qulayliklar sozlamalarini o‘zgartirish</translation>
+<translation id="2739331588276254426">Internetga <ph name="HOST_DEVICE_NAME" /> orqali ulandi</translation>
 <translation id="274029851662193272">Botiq</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Bu kodlar faqat bu qurilmaga saqlanadi. Ular Google hisobiga saqlanmaydi.</translation>
@@ -3196,6 +3200,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – ovozsiz qilindi</translation>
 <translation id="3537881477201137177">Buni keyinroq Sozlamalar orqali oʻzgartirish mumkin</translation>
 <translation id="3538066758857505094">Linux o‘chirib tashlanmadi. Qaytadan urining.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> orqali tarmoqqa ulanish yoʻq</translation>
 <translation id="354060433403403521">Quvvatlash moslamasi</translation>
 <translation id="354068948465830244">Sayt ma’lumotlarini ko‘rishi va o‘zgartirishi mumkin</translation>
 <translation id="3541823293333232175">Tayinlandi</translation>
@@ -6402,6 +6407,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6169967265765719844">Steam orqali oʻrnatilgan oʻyin va ilovalar uchun ruxsatlarni <ph name="LINK_BEGIN" />Steam ilovasi sozlamalari<ph name="LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="6170470584681422115">Sendvich</translation>
 <translation id="6170498031581934115">ADB xatolarni tuzatish xizmati yoqilmadi. Sozlamalarni oching va qaytadan urining.</translation>
+<translation id="6170675927290506430">Bildirishnoma sozlamalariga kirish</translation>
 <translation id="6171779718418683144">Har tashrifda soʻralsin</translation>
 <translation id="617213288191670920">Hech qaysi til kiritilmagan</translation>
 <translation id="6173623053897475761">PIN kodni qayta kiriting</translation>
@@ -6411,6 +6417,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6177412385419165772">Olib tashlanmoqda…</translation>
 <translation id="6178664161104547336">Sertifikatni tanlang</translation>
 <translation id="6178682841350631965">Kirish maʼlumotlaringiz yangilandi</translation>
+<translation id="6179830757749383456">Brauzerni <ph name="BROWSER_DOMAIN" /> boshqaradi, profilni <ph name="PROFILE_DOMAIN" /> boshqaradi</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Kengaytma olib tashlansinmi?}other{# ta kengaytma olib tashlansinmi?}}</translation>
 <translation id="6180510783007738939">Chiziq vositasi</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> ilovasida qaysi kod ishlatilsin?</translation>
@@ -6529,6 +6536,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6271348838875430303">tuzatish bekor qilindi</translation>
 <translation id="6271824294945464304">Parol ulashilgan</translation>
 <translation id="6273677812470008672">Sifat</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> bilan ulanmoqda</translation>
 <translation id="6274202259872570803">Skrinkast</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proksi-serveri foydalanuvchi nomi va parolni talab qiladi.</translation>
 <translation id="6277105963844135994">Tarmoqni kutish vaqti tugadi</translation>
@@ -6546,6 +6554,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285770818046456882">Fayl yuborayotgan qurilma uzatmani bekor qildi</translation>
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
+<translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivatsiya kodi tekshirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="6291741848715722067">Tasdiqlash kodi</translation>
@@ -8549,6 +8558,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> kutilmoqda...</translation>
 <translation id="7926423016278357561">Men emasdim.</translation>
 <translation id="7926975587469166629">Karta nomi</translation>
+<translation id="7927610604078150317">Hajmi: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Bu parol allaqachon oʻzgartirilganmi?</translation>
 <translation id="7929962904089429003">Menyuni ochish</translation>
 <translation id="7930294771522048157">Saqlangan to‘lov usullari shu yerda turadi</translation>
@@ -9863,6 +9873,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8986362086234534611">Olib tashlash</translation>
 <translation id="8986494364107987395">Foydalanish statistikasi va ishdan chiqishlar hisobotini avtomatik ravishda Google‘ga jo‘natish</translation>
 <translation id="8987305927843254629">Har bir odamning tajribasi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
+<translation id="8987321822984361516">Brauzerni tashkilot boshqaradi, profilni <ph name="PROFILE_DOMAIN" /> boshqaradi</translation>
 <translation id="8987927404178983737">Oy</translation>
 <translation id="8988539543012086784">Bu sahifa <ph name="BOOKMARK_FOLDER" /> jildiga saqlandi.</translation>
 <translation id="8989359959810288806">Modem rejimi holatini yangilash</translation>
@@ -9881,6 +9892,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8999027165951679951">Nofaol varaq: <ph name="MEMORY_SAVINGS" /> boʻshatildi</translation>
 <translation id="8999560016882908256">Boʻlim bilan bogʻliq imloviy xato: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasidagi barmoq izi skaneriga tegining. Barmoq izlaringiz yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
+<translation id="9000532564152265066">Barcha varaqlar</translation>
 <translation id="9003185744423389627">Qurilmalar boshqaruvi serveriga ulanish “<ph name="STATUS_TEXT" />” holati bilan <ph name="FAILURE_TIME" /> da amalga oshmadi</translation>
 <translation id="90033698482696970">Mavjud eSIM profillari avtomatik skanerlansinmi?</translation>
 <translation id="9003647077635673607">Barcha satlarga ruxsat berish</translation>

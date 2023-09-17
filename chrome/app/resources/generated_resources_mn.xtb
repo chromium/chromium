@@ -766,6 +766,7 @@
 <translation id="1604432177629086300">Хэвлэж чадсангүй. Хэвлэгчийг шалгаад дахин оролдоно уу.</translation>
 <translation id="1604567162047669454">Визуал бүдүүвчийн утга зүйг таних</translation>
 <translation id="1604774728851271529">Linux рүү сайжруулахын тулд танд сүлжээний холболт шаардлагатай. Интернэтэд холбогдоод, дахин оролдоно уу.</translation>
+<translation id="1605148987885002237">Гар болон оролтууд</translation>
 <translation id="1605744057217831567">Сайтын бүх өгөгдөл болон зөвшөөрлийг харах</translation>
 <translation id="1606077700029460857">Хулганын тохиргоог өөрчлөх</translation>
 <translation id="1606307079840340755">Таны Passpoint-н үйлчилгээ үзүүлэгчийг зөвхөн энэ төхөөрөмжөөс хасна. Захиалгадаа өөрчлөлт хийхийн тулд захиалгын үйлчилгээ үзүүлэгчтэйгээ холбогдоно уу.</translation>
@@ -1233,6 +1234,7 @@
 <translation id="1956050014111002555">Файл нь олон тооны гэрчилгээнүүд агуулсан байсан бөгөөд тэдгээрээс алийг нь ч импортолж аваагүй байна:</translation>
 <translation id="1956167375087861299">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="1956390763342388273">Энэ нь "<ph name="FOLDER_PATH" />"-н бүх файлыг байршуулна. Та тэдгээр файлыг зөвхөн энэ сайтад итгэдэг тохиолдолд байршуулна уу.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 өргөтгөлийг шалгасан}other{{NUM_EXTENSIONS} өргөтгөлийг шалгасан}}</translation>
 <translation id="1959421829481337178">Оператор компанийнхаа олгосон идэвхжүүлэх кодыг оруулна уу.</translation>
 <translation id="1962233722219655970">Энэ хуудас нь таны компьютер дээр ажиллах боломжгүй Native Client аппликейшнийг ашиглаж байна.</translation>
 <translation id="1963976881984600709">Стандарт хамгаалалт</translation>
@@ -1945,6 +1947,7 @@
 <translation id="2492461744635776704">Гэрчилгээнд гарын үсэг зурах хүсэлтийг бэлтгэж байна</translation>
 <translation id="249330843868392562">Бичвэрийг ярианд хувиргах тохиргоог нээх</translation>
 <translation id="2494555621641843783">Steam-г суулгах боломжгүй</translation>
+<translation id="2495141202137516054">Таны Драйваас</translation>
 <translation id="2495524171012645395">Саяхан харсан жорууд</translation>
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2497229222757901769">Хулганы хурд</translation>
@@ -2248,6 +2251,7 @@
 <translation id="2738771556149464852">Дараа нь биш</translation>
 <translation id="2739191690716947896">Алдааг засах</translation>
 <translation id="2739240477418971307">Өөрийнхөө нэвтрэх боломжит байдлын тохиргоонуудыг өөрчлөх</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />-р дамжуулан интернэтэд холбогдсон</translation>
 <translation id="274029851662193272">Дарагдсан</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Эдгээр passkey-г зөвхөн энэ төхөөрөмж дээр хадгалсан. Тэдгээрийг таны Google Бүртгэлд хадгалаагүй.</translation>
@@ -3205,6 +3209,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Аудионы дууг хаасан</translation>
 <translation id="3537881477201137177">Үүнийг дараа нь Тохиргоо хэсэгт өөрчлөх боломжтой</translation>
 <translation id="3538066758857505094">Linux-г устгахад алдаа гарлаа. Дахин оролдоно уу.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />-р дамжуулсан ямар ч сүлжээ байхгүй</translation>
 <translation id="354060433403403521">AC адаптэр</translation>
 <translation id="354068948465830244">Энэ нь сайтын өгөгдлийг унших болон өөрчлөх боломжтой</translation>
 <translation id="3541823293333232175">Оноосон</translation>
@@ -6410,6 +6415,7 @@
 <translation id="6169967265765719844">Steam-р суулгасан тоглоомууд болон аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Steam аппын тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">ADB алдаа засахыг идэвхжүүлж чадсангүй Тохиргоо хэсэгт очиж, дахин оролдоно уу.</translation>
+<translation id="6170675927290506430">Мэдэгдлийн тохиргоо руу очих</translation>
 <translation id="6171779718418683144">Зочлох бүрд асуух</translation>
 <translation id="617213288191670920">Нэмсэн хэл байхгүй</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
@@ -6419,6 +6425,7 @@
 <translation id="6177412385419165772">Хасаж байна...</translation>
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
 <translation id="6178682841350631965">Таны нэвтрэх өгөгдлийг шинэчилсэн</translation>
+<translation id="6179830757749383456">Хөтчийг <ph name="BROWSER_DOMAIN" />-с удирддаг, профайлыг <ph name="PROFILE_DOMAIN" />-с удирддаг</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг хасах уу?}other{# өргөтгөлийг хасах уу?}}</translation>
 <translation id="6180510783007738939">Шугамын хэрэгсэл</translation>
 <translation id="6180550893222597997">Та <ph name="APP_NAME" />-д ямар passkey ашиглахыг хүсэж байна вэ?</translation>
@@ -6537,6 +6544,7 @@
 <translation id="6271348838875430303">засварыг буцаасан</translation>
 <translation id="6271824294945464304">Нууц үг хуваалцаж байна</translation>
 <translation id="6273677812470008672">Чанар</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />-д холбогдож байна</translation>
 <translation id="6274202259872570803">Дэлгэцийн видео бичлэг</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
 <translation id="6277105963844135994">Сүлжээний завсарлагаа</translation>
@@ -6554,6 +6562,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" />-г тогтмол татдаггүй бөгөөд аюултай байж болзошгүй.</translation>
 <translation id="6285770818046456882">Тантай хуваалцаж буй төхөөрөмж шилжүүлгийг цуцалсан</translation>
 <translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
+<translation id="6287828400772161253">Android утас (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Ойролцоо хуваалцаж буй боломжтой төхөөрөмж алга. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Идэвхжүүлэх кодыг бататгаж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="6291741848715722067">Баталгаажуулах код</translation>
@@ -8557,6 +8566,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ийг хүлээж байна...</translation>
 <translation id="7926423016278357561">Би байгаагүй.</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
+<translation id="7927610604078150317">Хэмжээ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Энэ нууц үгийг аль хэдийн өөрчилсөн үү?</translation>
 <translation id="7929962904089429003">Цэс нээх</translation>
 <translation id="7930294771522048157">Хадгалсан төлбөрийн хэрэгсэл энд харагдана</translation>
@@ -9868,6 +9878,7 @@
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8986494364107987395">Google рүү хэрэглээний статистик мэдээ болон алдаа ослын тайланг автоматаар илгээ</translation>
 <translation id="8987305927843254629">Хүн бүр хэрэглээгээ хувийн болгох ба өгөгдлийг хувийн байлгах боломжтой.</translation>
+<translation id="8987321822984361516">Хөтчийг байгууллагаас удирддаг, профайлыг <ph name="PROFILE_DOMAIN" />-с удирддаг</translation>
 <translation id="8987927404178983737">Сар</translation>
 <translation id="8988539543012086784">Энэ хуудсыг <ph name="BOOKMARK_FOLDER" />-д хадгалсан</translation>
 <translation id="8989359959810288806">Модем болгох төлөвийг сэргээх</translation>
@@ -9886,6 +9897,7 @@
 <translation id="8999027165951679951">Идэвхгүй таб: <ph name="MEMORY_SAVINGS" />-г сулласан</translation>
 <translation id="8999560016882908256">Хэсгийн дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Таны <ph name="DEVICE_TYPE" />-н баруун гар талд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
+<translation id="9000532564152265066">Бүх таб</translation>
 <translation id="9003185744423389627">'<ph name="STATUS_TEXT" />' төлөвтэй Төхөөрөмжийн менежментийн серверийн холболт <ph name="FAILURE_TIME" />-д амжилтгүй болсон</translation>
 <translation id="90033698482696970">Боломжтой eSIM профайлууд байгаа эсэхийг автоматаар скан хийх үү?</translation>
 <translation id="9003647077635673607">Бүх вебсайт дээр зөвшөөрөх</translation>

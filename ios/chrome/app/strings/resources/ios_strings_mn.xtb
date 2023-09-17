@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> бүртгэл ижил нууц үг ашиглаж байна</translation>
 <translation id="2050196510205866090">{count,plural, =1{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}other{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}}</translation>
 <translation id="2055515971416882518">"Тохиргоо"-г нээнэ үү.</translation>
+<translation id="2059166748188874810">Хотын захиргаа</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">Танай байгууллага Google Бүртгэлдээ юу хадгалж болохыг тань хязгаарлана.</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
 <translation id="3595252146048399851">Та синк хийх зүйлээ <ph name="BEGIN_LINK" />тохиргоо<ph name="END_LINK" /> хэсгээс хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
+<translation id="3599500618468205645"><ph name="DOMAIN_NAME" />-г дагахыг нуух</translation>
 <translation id="3603009562372709545">Холбоосын URL-ыг хуулах</translation>
 <translation id="3607167657931203000">Автоматаар бөглөх хэсгийн өгөгдөл</translation>
 <translation id="3609785682760573515">Sync хийж байна ...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">Танай гэр бүлийн гишүүн одоогоор нууц үгнүүд хүлээн авах боломжгүй байна. Түүнээс Chrome-г шинэчилж, нууц үгнүүдээ синк хийхийг хүснэ үү. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Тохируулгын профайл боломжтой</translation>
 <translation id="3670030362669914947">Тоо</translation>
+<translation id="3680970647557344817">Хавчуурга засахыг нуух</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
 <translation id="3688815115226493214">Табын зөвлөмжүүд</translation>
 <translation id="3700134753671613714">Бүх төхөөрөмж дээр хавчуурга авахын тулд нэвтэрнэ үү.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">Гар</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4606247758155004938">Таны хөтчийг танай байгууллага удирддаг.</translation>
+<translation id="4611811151908969241"><ph name="DOMAIN_NAME" />-г дагахаа болихыг нуух</translation>
 <translation id="461440297010471931">Google-р хайж байна</translation>
 <translation id="4616391354457235490">Болих</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
@@ -1058,6 +1062,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6753469262000681876">Түгжих горим</translation>
 <translation id="6760509555861141183">Сүүлийн таб руу буцах</translation>
 <translation id="6762812039470893796">Бүх сонголтыг цуцлах</translation>
+<translation id="6771287014037609247">Илэрсэн илгээмжүүдийг үргэлж хянах</translation>
 <translation id="6780034285637185932">Зип код</translation>
 <translation id="6781260999953472352">Синк хийхийг асаах уу?</translation>
 <translation id="6781405765516175232">Маршрутын сонголтыг харах бол “Чиглэл авах”-ыг товшино уу.</translation>
@@ -1409,6 +1414,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8780076847684176174">{count,plural, =1{Табыг шалгах...}other{Бүх табыг шалгах...}}</translation>
 <translation id="8787968206789828143">Веб дээр хайх</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8793366654064127924">Надаас тухай бүрд асуух</translation>
 <translation id="8803639129939845298">Аюулгүй</translation>
 <translation id="8806823403540278281">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна. Нууцлалын горимд табуудыг хадгалдаггүй.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8849001918648564819">Нуусан</translation>
 <translation id="8855242995793521265">Таны хөтөч эсвэл төхөөрөмжийг мэдэгдэхүйц хэмжээгээр удаашруулахгүй.</translation>
 <translation id="8855781063981781621">Chrome-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг iPad-даа унтраана уу.</translation>
+<translation id="886335568110896118">Мобайл сайт хүсэхийг нуух</translation>
 <translation id="8863431381414769983">Google Газрын зургаас чиглэл болон орон нутгийн мэдээлэл авна уу</translation>
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
