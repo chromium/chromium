@@ -26,7 +26,7 @@ enum VideoRotation : int {
 // a rotation matrix from a demuxer, and we only support 90 degree rotation
 // increments.
 struct MEDIA_EXPORT VideoTransformation {
-  static VideoTransformation FromFFmpegDisplayMatrix(int32_t* matrix);
+  static VideoTransformation FromFFmpegDisplayMatrix(const int32_t* matrix);
 
   constexpr VideoTransformation(VideoRotation rotation, bool mirrored)
       : rotation(rotation), mirrored(mirrored) {}
@@ -40,7 +40,7 @@ struct MEDIA_EXPORT VideoTransformation {
   // [ sin(Θ),  cos(Θ)]
   // A vertical flip is represented by the cosine's having opposite signs
   // and a horizontal flip is represented by the sine's having the same sign.
-  VideoTransformation(int32_t matrix[4]);
+  VideoTransformation(const int32_t matrix[4]);
 
   // The video rotation value, in 90 degree steps.
   VideoRotation rotation;

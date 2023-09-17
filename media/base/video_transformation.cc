@@ -15,7 +15,7 @@ namespace media {
 namespace {
 
 template <size_t decimal_bits>
-double FixedToFloatingPoint(int32_t i) {
+double FixedToFloatingPoint(int64_t i) {
   return i / static_cast<double>(1 << decimal_bits);
 }
 
@@ -42,8 +42,8 @@ bool operator==(const struct VideoTransformation& first,
 
 // static
 VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
-    int32_t* matrix3x3) {
-  int32_t matrix2x2[4] = {
+    const int32_t* matrix3x3) {
+  const int32_t matrix2x2[4] = {
       matrix3x3[0],
       matrix3x3[1],
       matrix3x3[3],
@@ -52,23 +52,27 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
   return VideoTransformation(matrix2x2);
 }
 
-VideoTransformation::VideoTransformation(int32_t matrix[4]) {
+VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
+  // Promote to int64_t to avoid abs(int32_min) being undefined.
+  const int64_t matrix64[4] = {matrix[0], matrix[1], matrix[2], matrix[3]};
+
   // Rotation by angle Θ is represented in the matrix as:
   // [ cos(Θ), -sin(Θ)]
   // [ sin(Θ),  cos(Θ)]
   // A vertical flip is represented by the cosine's having opposite signs
   // and a horizontal flip is represented by the sine's having the same sign.
   // Check the matrix for validity
-  if (abs(matrix[0]) != abs(matrix[3]) || abs(matrix[1]) != abs(matrix[2])) {
+  if (abs(matrix64[0]) != abs(matrix64[3]) ||
+      abs(matrix64[1]) != abs(matrix64[2])) {
     rotation = VIDEO_ROTATION_0;
     mirrored = false;
     return;
   }
 
   double angle =
-      acos(FixedToFloatingPoint<16>(matrix[0])) * 180 / base::kPiDouble;
+      acos(FixedToFloatingPoint<16>(matrix64[0])) * 180 / base::kPiDouble;
   double check_angle =
-      asin(FixedToFloatingPoint<16>(matrix[1])) * 180 / base::kPiDouble;
+      asin(FixedToFloatingPoint<16>(matrix64[1])) * 180 / base::kPiDouble;
   double offset = abs(abs(angle) - abs(check_angle));
   while (offset >= 180.0)
     offset -= 180.0;
@@ -82,12 +86,12 @@ VideoTransformation::VideoTransformation(int32_t matrix[4]) {
   // Calculate angle offsets for rotation - rotating about the X axis
   // can be expressed as a 180 degree rotation and a Y axis rotation
   mirrored = false;
-  if (matrix[0] != matrix[3] && matrix[0] != 0) {
+  if (matrix64[0] != matrix64[3] && matrix64[0] != 0) {
     mirrored = !mirrored;
     angle += 180;
   }
 
-  if (matrix[1] == matrix[3] && matrix[1] != 0) {
+  if (matrix64[1] == matrix64[3] && matrix64[1] != 0) {
     mirrored = !mirrored;
   }
 
