@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/component_updater/ios_component_updater_configurator.h"
+#import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
 
 #import <stdint.h>
 

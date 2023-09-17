@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("component_updater") {
+source_set("model") {
   sources = [
     "ios_component_updater_configurator.h",
     "ios_component_updater_configurator.mm",

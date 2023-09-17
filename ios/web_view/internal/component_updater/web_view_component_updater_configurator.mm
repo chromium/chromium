@@ -38,7 +38,7 @@ namespace {
 
 // A //ios/web_view specific configurator.
 // See similar implementation at
-// //ios/chrome/browser/component_updater/ios_component_updater_configurator.mm
+// //ios/chrome/browser/component_updater/model/ios_component_updater_configurator.mm
 class WebViewConfigurator : public update_client::Configurator {
  public:
   explicit WebViewConfigurator(const base::CommandLine* cmdline);
