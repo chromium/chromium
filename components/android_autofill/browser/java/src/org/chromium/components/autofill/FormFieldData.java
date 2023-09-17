@@ -50,7 +50,6 @@ public class FormFieldData {
     public final String mHeuristicType;
     public final String[] mDatalistValues;
     public final String[] mDatalistLabels;
-    public final boolean mVisible;
 
     // The bounds in the viewport's coordinates
     private RectF mBounds;
@@ -59,6 +58,7 @@ public class FormFieldData {
 
     private boolean mIsChecked;
     private String mValue;
+    private boolean mVisible;
     // Indicates whether mValue is autofilled.
     private boolean mAutofilled;
     // Indicates whether this fields was autofilled, but changed by user.
@@ -152,6 +152,15 @@ public class FormFieldData {
     private void updateValue(String value) {
         mValue = value;
         updateAutofillState(false);
+    }
+
+    public boolean getVisible() {
+        return mVisible;
+    }
+
+    @CalledByNative
+    private void updateVisible(boolean visible) {
+        mVisible = visible;
     }
 
     @CalledByNative

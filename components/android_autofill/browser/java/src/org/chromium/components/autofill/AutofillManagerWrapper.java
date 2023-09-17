@@ -137,6 +137,14 @@ public class AutofillManagerWrapper {
         mAutofillManager.notifyViewExited(parent, childId);
     }
 
+    public void notifyVirtualViewVisibilityChanged(View parent, int childId, boolean isVisible) {
+        // `notifyViewVisibilityChanged` was added in API level 27.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) return;
+        if (mDisabled || checkAndWarnIfDestroyed()) return;
+        if (isLoggable()) log("notifyVirtualViewVisibilityChanged");
+        mAutofillManager.notifyViewVisibilityChanged(parent, childId, isVisible);
+    }
+
     public void requestAutofill(View parent, int virtualId, Rect absBounds) {
         if (mDisabled || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("requestAutofill");

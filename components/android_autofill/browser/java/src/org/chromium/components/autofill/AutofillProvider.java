@@ -271,6 +271,24 @@ public class AutofillProvider {
     }
 
     /**
+     * Invoked by the native counterpart when one or more fields have changed
+     * their visibility. The (Java) fields' visibility state has at that point
+     * already been updated by direct calls from native to the fields.
+     *
+     * @param indices the indices of the fields with visibility changes.
+     *
+     */
+    @CalledByNative
+    private void onFormFieldVisibilityDidChange(int[] indices) {
+        if (mRequest == null) return;
+
+        for (int index : indices) {
+            notifyVirtualViewVisibilityChanged(
+                    index, mRequest.getField((short) index).getVisible());
+        }
+    }
+
+    /**
      * Invoked when text field is scrolled.
      *
      * @param index index of field in current form.
@@ -315,21 +333,24 @@ public class AutofillProvider {
         return field.mControlType == FormFieldData.ControlType.DATALIST;
     }
 
+    // `ValueChanged`, `ViewVisibilityChanged`, `ViewEntered`, and `ViewExited`
+    // events are not communicated to the Android Autofill service if the focused element is a
+    // datalist. This avoids UI conflicts between the datalist popup (shown by WebView) and the
+    // Android Autofill UI (shown by Android).
+    // On submit and on autofill a `ValueChanged` event is still sent to the Android Autofill
+    // service.
     private void notifyVirtualValueChanged(int index, boolean forceNotify) {
-        // The ValueChanged, ViewEntered and ViewExited aren't notified to the autofill service for
-        // the focused datalist to avoid the potential UI conflict.
-        // The datalist support was added later and the option list is displayed by WebView, the
-        // autofill service might also show its suggestions when the datalist (associated the input
-        // field) is focused, the two UI overlap, the solution is to completely hide the fact that
-        // the datalist is being focused to the autofill service to prevent it from displaying the
-        // suggestion.
-        // The ValueChange will still be sent to autofill service when the form
-        // submitted or autofilled.
         if (!forceNotify && isDatalistField(index)) return;
         AutofillValue autofillValue = mRequest.getFieldNewValue(index);
         if (autofillValue == null) return;
         mAutofillManager.notifyVirtualValueChanged(
                 mContainerView, mRequest.getVirtualId((short) index), autofillValue);
+    }
+
+    private void notifyVirtualViewVisibilityChanged(int index, boolean isVisible) {
+        if (isDatalistField(index)) return;
+        mAutofillManager.notifyVirtualViewVisibilityChanged(
+                mContainerView, mRequest.getVirtualId((short) index), isVisible);
     }
 
     private void notifyVirtualViewEntered(View parent, int index, Rect absBounds) {

@@ -102,7 +102,7 @@ public class AutofillRequest {
             // Field has no scroll.
             child.setDimens((int) bounds.left, (int) bounds.top, 0 /* scrollX*/, 0 /* scrollY */,
                     (int) bounds.width(), (int) bounds.height());
-            child.setVisibility(field.mVisible ? View.VISIBLE : View.INVISIBLE);
+            child.setVisibility(field.getVisible() ? View.VISIBLE : View.INVISIBLE);
 
             ViewStructure.HtmlInfo.Builder builder =
                     child.newHtmlInfoBuilder("input")
