@@ -1501,9 +1501,6 @@
     Google Drive link
   </message>
 
-  <message name="IDS_FILE_BROWSER_ERROR_VIEWING_FILE_TITLE" desc="Title of error message propmt when user attempts to open a non-supported file in file browser.">
-    <ph name="FILENAME">$1</ph>
-  </message>
   <message name="IDS_FILE_BROWSER_ERROR_VIEWING_FILE" desc="Error message when user attempts to open a non-supported file in the Files app via Downloads panel.">
     This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.
   </message>
