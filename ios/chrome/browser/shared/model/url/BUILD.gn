@@ -12,7 +12,7 @@ source_set("url") {
     ":constants",
     "//base",
     "//components/content_settings/core/browser",
-    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//url",

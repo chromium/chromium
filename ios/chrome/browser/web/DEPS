@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/mailto_handler",
   "+ios/chrome/browser/text_selection",
   "+ios/chrome/browser/infobars",
-  "+ios/chrome/browser/content_settings",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/flags/chrome_switches.h",
   "+ios/chrome/browser/follow",
   "+ios/chrome/browser/https_upgrades",

@@ -73,7 +73,7 @@ source_set("coordinator") {
     "//components/ssl_errors",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

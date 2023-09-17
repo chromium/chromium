@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
+#include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
@@ -33,8 +33,7 @@ CookieSettingsFactory::CookieSettingsFactory()
   DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
 }
 
-CookieSettingsFactory::~CookieSettingsFactory() {
-}
+CookieSettingsFactory::~CookieSettingsFactory() {}
 
 void CookieSettingsFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

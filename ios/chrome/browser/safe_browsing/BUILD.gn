@@ -63,7 +63,7 @@ source_set("safe_browsing") {
     "//components/strings",
     "//components/sync_user_events",
     "//components/variations/service",
-    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/passwords:store_factory",

@@ -7,7 +7,7 @@
 #import "base/containers/contains.h"
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {

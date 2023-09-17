@@ -6,7 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"

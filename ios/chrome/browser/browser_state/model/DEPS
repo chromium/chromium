@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/net",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/prefs",
-  "+ios/chrome/browser/content_settings",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/browser_state_metrics/model",
   "+ios/chrome/browser/optimization_guide",
   "+ios/chrome/browser/push_notification",

@@ -97,7 +97,7 @@ source_set("privacy") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/prefs",
-    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

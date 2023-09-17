@@ -5,7 +5,7 @@
 #import "ios/chrome/test/app/settings_test_util.h"
 
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 namespace chrome_test_util {

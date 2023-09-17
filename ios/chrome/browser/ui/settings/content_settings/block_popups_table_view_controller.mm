@@ -13,7 +13,7 @@
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
