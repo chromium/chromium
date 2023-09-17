@@ -45,6 +45,9 @@ specific_include_rules = {
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
+  "edit_address_profile_dialog_controller_impl_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill"
+  ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],
