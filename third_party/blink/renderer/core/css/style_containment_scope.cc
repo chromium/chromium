@@ -4,20 +4,32 @@
 
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
 
+#include "third_party/blink/renderer/core/css/counters_scope_tree.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 
 namespace blink {
+
+StyleContainmentScope::StyleContainmentScope(
+    const Element* element,
+    StyleContainmentScopeTree* style_containment_tree)
+    : element_(element),
+      parent_(nullptr),
+      counters_tree_(MakeGarbageCollected<CountersScopeTree>(this)),
+      style_containment_tree_(style_containment_tree) {}
 
 void StyleContainmentScope::Trace(Visitor* visitor) const {
   visitor->Trace(quotes_);
   visitor->Trace(children_);
   visitor->Trace(parent_);
   visitor->Trace(element_);
+  visitor->Trace(counters_tree_);
+  visitor->Trace(style_containment_tree_);
 }
 
 // If the scope is about to be removed, detach self from the parent,
-// reattach the quotes and the children scopes to the parent scope.
+// reattach the quotes, counters and the children scopes to the parent scope.
 void StyleContainmentScope::ReattachToParent() {
   if (parent_) {
     auto quotes = std::move(quotes_);
@@ -25,6 +37,7 @@ void StyleContainmentScope::ReattachToParent() {
       quote->SetScope(nullptr);
       parent_->AttachQuote(*quote);
     }
+    ReparentCountersToStyleScope(*parent_);
     auto children = std::move(children_);
     for (StyleContainmentScope* child : children) {
       child->SetParent(nullptr);
@@ -129,5 +142,49 @@ void StyleContainmentScope::UpdateQuotes() const {
     }
   }
 }
+
+void StyleContainmentScope::ReparentCountersToStyleScope(
+    StyleContainmentScope& new_parent) {
+  counters_tree_->ReparentCountersToStyleScope(new_parent);
+}
+
+CountersScope* StyleContainmentScope::FindCountersScopeForElement(
+    const Element& element,
+    const AtomicString& identifier) const {
+  return counters_tree_->FindScopeForElement(element, identifier);
+}
+
+void StyleContainmentScope::CreateCounterNodesForLayoutObject(
+    LayoutObject& object) {
+  counters_tree_->CreateCountersForLayoutObject(object);
+}
+
+void StyleContainmentScope::CreateListItemCounterNodeForLayoutObject(
+    LayoutObject& object) {
+  counters_tree_->CreateListItemCounterForLayoutObject(object);
+}
+
+void StyleContainmentScope::CreateCounterNodeForLayoutCounter(
+    LayoutCounter& counter) {
+  counters_tree_->CreateCounterForLayoutCounter(counter);
+}
+
+void StyleContainmentScope::RemoveCounterNodeForLayoutCounter(
+    LayoutCounter& counter) {
+  counters_tree_->RemoveCounterForLayoutCounter(counter);
+}
+
+void StyleContainmentScope::UpdateCounters() const {
+  counters_tree_->UpdateCounters();
+  for (StyleContainmentScope* child : children_) {
+    child->UpdateCounters();
+  }
+}
+
+#if DCHECK_IS_ON()
+String StyleContainmentScope::ScopesTreeToString(wtf_size_t depth) const {
+  return counters_tree_->ToString(depth);
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

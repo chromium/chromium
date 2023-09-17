@@ -3720,10 +3720,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
        old_style->ContainsStyle() != new_style->ContainsStyle())) {
     StyleContainmentScopeTree& tree =
         GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+    if (old_style && old_style->ContainsStyle()) {
+      tree.DestroyScopeForElement(*this);
+    }
     if (new_style && new_style->ContainsStyle()) {
       tree.CreateScopeForElement(*this);
-    } else {
-      tree.DestroyScopeForElement(*this);
     }
   }
 

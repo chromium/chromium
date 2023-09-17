@@ -48,11 +48,13 @@ CounterNode::CounterNode(LayoutObject& o, unsigned type_mask, int value)
 CounterNode::CounterNode(LayoutObject& o,
                          const AtomicString& identifier,
                          unsigned type_mask,
-                         int value)
+                         int value,
+                         bool is_reversed)
     : type_mask_(type_mask),
       value_(value),
       value_before_(0),
       count_in_parent_(0),
+      is_reversed_(is_reversed),
       owner_(&o),
       root_layout_object_(nullptr),
       parent_(nullptr),
@@ -121,6 +123,7 @@ void CounterNode::Trace(Visitor* visitor) const {
   visitor->Trace(first_child_);
   visitor->Trace(last_child_);
   visitor->Trace(scope_);
+  visitor->Trace(previous_in_parent_);
 }
 
 CounterNode* CounterNode::NextInPreOrderAfterChildren(
@@ -279,7 +282,7 @@ CounterNode* CounterNode::ParentCrossingStyleContainment(
 Element& CounterNode::OwnerElement() const {
   LayoutObject* owner = owner_;
   while (owner && !IsA<Element>(owner->GetNode())) {
-    owner = owner->PreviousInPreOrder();
+    owner = owner->Parent();
   }
   CHECK(owner && IsA<Element>(owner->GetNode()));
   return *To<Element>(owner->GetNode());
@@ -468,6 +471,22 @@ static void ShowTreeAndMark(const CounterNode* node) {
 }
 
 #endif
+
+#if DCHECK_IS_ON()
+AtomicString CounterNode::DebugName() const {
+  AtomicString counter_type = AtomicString(
+      HasUseType()
+          ? "USE"
+          : (HasResetType() ? "RESET" : (HasSetType() ? "SET" : "INC")));
+  String counter_name =
+      !OwnerElement().IsPseudoElement()
+          ? OwnerElement().DebugName()
+          : OwnerElement().ParentOrShadowHostElement()->DebugName() +
+                OwnerElement().DebugName();
+  AtomicString result = counter_type + " AT " + counter_name;
+  return result;
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink
 

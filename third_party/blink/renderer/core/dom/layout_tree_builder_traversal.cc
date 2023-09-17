@@ -411,7 +411,8 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
       return 1;
     }
   }
-  return 1;
+  NOTREACHED();
+  return 0;
 }
 
 }  // namespace blink

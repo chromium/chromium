@@ -2849,7 +2849,10 @@ void StyleEngine::EnvironmentVariableChanged() {
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-      tree->ElementWillBeRemoved(*element);
+      if (element->GetComputedStyle() &&
+          element->ComputedStyleRef().ContainsStyle()) {
+        tree->DestroyScopeForElement(*element);
+      }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
         *element);
