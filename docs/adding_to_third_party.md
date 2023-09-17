@@ -88,6 +88,30 @@ guidelines on size increases see
 [//docs/speed/binary_size/binary_size_explainer.md](speed/binary_size/binary_size_explainer.md) and Googlers can
 additionally check [go/chrome-binary-size](https://goto.google.com/chrome-binary-size)
 
+### Binaries, obfuscated or minified code
+
+The addition of third-party dependencies that contain binaries, obfuscated
+code, or minified code is strongly discouraged. Code review is an important
+part of reducing risk to Chromium and a reviewer asked to approve a change
+that contains any of these has no way to determine the legitimacy of what
+they are approving. Minification for performance optimization is
+[usually not necessary](speed/binary_size/optimization_advice.md), and the
+trade-off in terms of understandability and security is rarely worth
+it.
+
+Where your dependency will form part of a release binary where size is a concern,
+there are existing tools which handle [compression for distribution](speed/binary_size/optimization_advice.md).
+
+You should not check in any pre-built binaries where there is an alternate,
+supported solution for getting them. If you need to compile from source,
+consider using [CIPD](cipd_and_3pp.md) instead.
+
+_Accessible to Googlers only. Non-Googlers can email one of the people in
+third_party/OWNERS for help.
+
+See [Chrome Code Policy](https://goto.google.com/chrome-code-policy)
+
+
 ## Get the code
 
 There are two common ways to depend on third-party code: you can reference a
@@ -261,7 +285,7 @@ about:credits page in Google Chrome builds.
 
 If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
-is  not included in about:credits page ([more on this below](#credits)).
+is not included in about:credits page ([more on this below](#credits)).
 
 ## Get a review
 
