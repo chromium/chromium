@@ -3598,7 +3598,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3828029223314399057">Søg i bogmærker</translation>
 <translation id="3828953470056652895">Jeg har læst og accepterer <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />de yderligere vilkår for Chrome og ChromeOS<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />servicevilkårene for Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Højt hukommelsesforbrug –<ph name="MEMORY_VALUE" /></translation>
-<translation id="3829765597456725595">SMV-fildeling</translation>
+<translation id="3829765597456725595">SMB-fildeling</translation>
 <translation id="3830470485672984938">Brug en anden adgangsnøgle</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Din administrator har genaktiveret 1 potentielt skadelig udvidelse}one{Din administrator har genaktiveret {NUM_EXTENSIONS} potentielt skadelig udvidelse}other{Din administrator har genaktiveret {NUM_EXTENSIONS} potentielt skadelige udvidelser}}</translation>
 <translation id="3834728400518755610">Ændringen af mikrofonindstillingen kræver, at Linux skal lukkes ned. Luk Linux ned for at fortsætte.</translation>
@@ -10012,7 +10012,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9075413375877487220">Denne udvidelse er ikke pålidelig ifølge Udvidet beskyttet browsing.</translation>
 <translation id="9076523132036239772">Din mail eller adgangskode blev ikke verificeret. Prøv at oprette forbindelse til et netværk først.</translation>
 <translation id="9076821103818989526">Sidepanel</translation>
-<translation id="9076977315710973122">SMV-deling</translation>
+<translation id="9076977315710973122">SMB-deling</translation>
 <translation id="907779190626433918">Du bør bruge en unik adgangskode til hvert website og hver app. Hvis nogen får kendskab til en genbrugt adgangskode, kan vedkommende bruge den til at få adgang til dine andre konti.</translation>
 <translation id="9078193189520575214">Anvender ændringer...</translation>
 <translation id="9078316009970372699">Deaktiver Automatisk netdeling</translation>
