@@ -6426,9 +6426,6 @@ crbug.com/1449995 [ Mac13-arm64 ] virtual/text-antialias/whitespace/pre-wrap-las
 
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
 
-# Temporarily disable this test to allow DevTools Frontend CSS roll.
-crbug.com/1480415 http/tests/devtools/elements/styles-4/styles-edit-slow-completions.js [ Failure Pass ]
-
 # Sheriff 2023-05-30
 crbug.com/1450020 [ Mac10.15 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
 crbug.com/1450020 [ Mac11 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]

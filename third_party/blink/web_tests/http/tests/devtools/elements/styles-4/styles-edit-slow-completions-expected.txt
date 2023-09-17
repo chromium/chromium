@@ -2,7 +2,7 @@ Tests that slow completions do not interfere with editing styles.
 
 Active element: SPAN, webkit-css-property text-prompt
 element.style {
-   white-space: n
+   white-space:>n
    : 
 }
 div {
