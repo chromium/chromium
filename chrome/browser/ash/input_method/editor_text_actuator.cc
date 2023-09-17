@@ -4,48 +4,27 @@
 
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/text_input_target.h"
-#include "ui/base/ime/text_input_client.h"
+namespace ash::input_method {
 
-namespace ash {
-namespace input_method {
-namespace {
+EditorTextActuator::EditorTextActuator(
+    mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
+    Delegate* delegate)
+    : text_actuator_receiver_(this, std::move(receiver)), delegate_(delegate) {}
 
-void InsertText(std::string_view text) {
-  TextInputTarget* input = IMEBridge::Get()->GetInputContextHandler();
-  if (!input) {
-    return;
-  }
-  input->CommitText(
-      base::UTF8ToUTF16(text),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-}
-
-}  // namespace
-
-EditorTextActuator::EditorTextActuator() = default;
 EditorTextActuator::~EditorTextActuator() = default;
 
-void EditorTextActuator::InsertTextOnNextFocus(std::string_view text) {
-  pending_text_insert_ = PendingTextInsert{std::string(text)};
+void EditorTextActuator::InsertText(const std::string& text) {
+  // We queue the text to be inserted here rather then insert it directly into
+  // the input.
+  inserter_.InsertTextOnNextFocus(text);
+  delegate_->OnTextInserted();
 }
 
 void EditorTextActuator::OnFocus(int context_id) {
-  if (focused_client_.has_value() && focused_client_->id == context_id) {
-    return;
-  }
-  focused_client_ = TextClientContext{context_id};
-  if (pending_text_insert_) {
-    InsertText(pending_text_insert_->text);
-    pending_text_insert_ = absl::nullopt;
-  }
+  inserter_.OnFocus(context_id);
 }
 
 void EditorTextActuator::OnBlur() {
-  focused_client_ = absl::nullopt;
+  inserter_.OnBlur();
 }
-
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method

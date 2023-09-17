@@ -32,6 +32,7 @@ namespace input_method {
 // plumbing to broker mojo connections from WebUIs and other clients, and
 // providing an overall unified interface for the backend of the project.
 class EditorMediator : public EditorInstanceImpl::Delegate,
+                       public EditorTextActuator::Delegate,
                        public EditorPanelManager::Delegate,
                        public EditorEventSink,
                        public ProfileObserver,
@@ -75,8 +76,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void OnTabletModeEnded() override;
   void OnTabletControllerDestroyed() override;
 
-  // EditorInstanceImpl::Delegate overrides
-  void CommitEditorResult(std::string_view text) override;
+  // EditorTextActuator::Delegate overrides
+  void OnTextInserted() override;
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
@@ -101,7 +102,6 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   raw_ptr<Profile> profile_;
 
   EditorInstanceImpl editor_instance_impl_;
-  EditorTextActuator text_actuator_;
   EditorPanelManager panel_manager_;
   MakoPageHandler mako_page_handler_;
 
@@ -112,6 +112,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
   std::unique_ptr<EditorClientConnector> editor_client_connector_;
   std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
+  std::unique_ptr<EditorTextActuator> text_actuator_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 

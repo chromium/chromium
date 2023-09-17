@@ -45,7 +45,6 @@ void EditorInstanceImpl::GetRewritePresetTextQueries(
 void EditorInstanceImpl::CommitEditorResult(
     const std::string& text,
     CommitEditorResultCallback callback) {
-  delegate_->CommitEditorResult(text);
   std::move(callback).Run(/*success=*/true);
 }
 

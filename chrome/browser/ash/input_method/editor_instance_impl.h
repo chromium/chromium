@@ -18,7 +18,6 @@ class EditorInstanceImpl : public mojom::EditorInstance {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual void CommitEditorResult(std::string_view text) = 0;
   };
 
   explicit EditorInstanceImpl(Delegate* delegate);
