@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("consent_auditor") {
+source_set("model") {
   sources = [
     "consent_auditor_factory.h",
     "consent_auditor_factory.mm",
@@ -28,7 +28,7 @@ source_set("test_support") {
     "consent_auditor_test_utils.h",
   ]
   deps = [
-    ":consent_auditor",
+    ":model",
     "//components/consent_auditor:test_support",
     "//components/keyed_service/core",
     "//ios/chrome/browser/sync:test_support",
