@@ -220,8 +220,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
                         !IsAppKitFontWeightBold(substitute_font_weight);
 
   std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
-      substitute_font, platform_data.size(), font_description.SpecifiedSize(),
-      synthetic_bold,
+      substitute_font, font_description.EffectiveFontSize(),
+      font_description.SpecifiedSize(), synthetic_bold,
       (traits & NSFontItalicTrait) &&
           !(substitute_font_traits & NSFontItalicTrait),
       font_description.TextRendering(), ResolvedFontFeatures(),
