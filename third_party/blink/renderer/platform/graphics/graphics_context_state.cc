@@ -67,7 +67,7 @@ void GraphicsContextState::SetStrokeThickness(float thickness) {
 }
 
 void GraphicsContextState::SetStrokeColor(const Color& color) {
-  stroke_flags_.setColor(color.Rgb());
+  stroke_flags_.setColor(color.toSkColor4f());
   stroke_flags_.setShader(nullptr);
 }
 
@@ -87,7 +87,7 @@ void GraphicsContextState::SetMiterLimit(float miter_limit) {
 }
 
 void GraphicsContextState::SetFillColor(const Color& color) {
-  fill_flags_.setColor(color.Rgb());
+  fill_flags_.setColor(color.toSkColor4f());
   fill_flags_.setShader(nullptr);
 }
 

@@ -41,7 +41,7 @@ class CC_PAINT_EXPORT PaintFlags {
     return static_cast<Style>(bitfields_.style_);
   }
   ALWAYS_INLINE void setStyle(Style style) { bitfields_.style_ = style; }
-  // TODO(crbug.com/1308932): Remove this function
+  // TODO(crbug.com/1399566): Remove this function
   ALWAYS_INLINE SkColor getColor() const { return color_.toSkColor(); }
   ALWAYS_INLINE SkColor4f getColor4f() const { return color_; }
   ALWAYS_INLINE void setColor(SkColor color) {

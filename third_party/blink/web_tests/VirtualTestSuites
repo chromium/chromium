@@ -1050,11 +1050,12 @@
   },
   {
     "prefix": "wide-gamut",
+    "owners": ["aaronhk@chromium.org", "ccameron@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--force-color-profile=display-p3-d65",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "split-cache-by-include-credentials",

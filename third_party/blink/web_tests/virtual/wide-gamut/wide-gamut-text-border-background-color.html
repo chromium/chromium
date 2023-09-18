@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Wide Gamut Color Rendering</title>
+    <link rel="help" href="https://www.w3.org/TR/css-color-4/#predefined-display-p3" title="Colors out of srgb gamut are rendered the same. See crbug.com/1439859">
+    <link rel="author" title="Aaron Krajeski">
+    <style type="text/css">
+      div {
+        height: 100px;
+        font: 60px monospace;
+        text-align: center;
+        background-color: color(display-p3 0 1 0);
+        color: color(display-p3 0 1 0);
+        border: 10px dashed color(display-p3 0 1 0);
+      }
+    </style>
+</head>
+
+<body>
+  <div>Test text</div>
+</body>

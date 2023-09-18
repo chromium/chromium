@@ -424,7 +424,7 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
 
   if (use_start_dot || use_end_dot) {
     cc::PaintFlags fill_flags;
-    fill_flags.setColor(flags.getColor());
+    fill_flags.setColor(flags.getColor4f());
     if (use_start_dot) {
       SkRect start_dot;
       if (is_vertical_line) {
@@ -694,7 +694,7 @@ void GraphicsContext::DrawImage(
   const gfx::RectF src = src_ptr ? *src_ptr : gfx::RectF(image.Rect());
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
-  image_flags.setColor(SK_ColorBLACK);
+  image_flags.setColor(SkColors::kBlack);
 
   SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
@@ -732,7 +732,7 @@ void GraphicsContext::DrawImageRRect(
       ComputeSamplingOptions(image, dest.Rect(), src_rect);
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
-  image_flags.setColor(SK_ColorBLACK);
+  image_flags.setColor(SkColors::kBlack);
 
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
