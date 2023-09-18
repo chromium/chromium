@@ -42,7 +42,7 @@
 namespace supervised_user {
 namespace {
 // Controls the retry count of the simple url loader.
-const int kNumFamilyInfoFetcherRetries = 1;
+const int kUrlLoaderRetryCount = 1;
 
 using ::base::BindOnce;
 using ::base::ElapsedTimer;
@@ -123,48 +123,75 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   }
 
   simple_url_loader->SetRetryOptions(
-      kNumFamilyInfoFetcherRetries,
-      network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      kUrlLoaderRetryCount, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   return simple_url_loader;
 }
 
 // Encapsulates metric functionalities.
 class Metrics {
  public:
+  enum class MetricType {
+    kStatus,
+    kLatency,
+    kHttpStatusOrNetError,
+    kRetryCount,
+  };
+
   Metrics() = delete;
   explicit Metrics(StringPiece basename) : basename_(basename) {}
 
   void RecordStatus(ProtoFetcherStatus status) const {
-    base::UmaHistogramEnumeration(GetMetricKey(GetStatusKey()), status.state());
+    base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kStatus),
+                                  status.state());
   }
 
   void RecordLatency() const {
-    base::UmaHistogramTimes(GetMetricKey(GetLatencyKey()),
+    base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency),
                             stopwatch_.Elapsed());
   }
 
   virtual void RecordStatusLatency(ProtoFetcherStatus status) const {
-    base::UmaHistogramTimes(
-        GetMetricKey(GetLatencyKey(), ToMetricEnumLabel(status)),
-        stopwatch_.Elapsed());
+    base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency, status),
+                            stopwatch_.Elapsed());
   }
 
   void RecordHttpStatusOrNetError(ProtoFetcherStatus status) const {
     CHECK(status.state() ==
           ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
-    base::UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
-                             status.http_status_or_net_error().value());
+    base::UmaHistogramSparse(
+        GetFullHistogramName(MetricType::kHttpStatusOrNetError),
+        status.http_status_or_net_error().value());
   }
 
  protected:
-  virtual constexpr StringPiece GetLatencyKey() const { return "Latency"; }
-  virtual constexpr StringPiece GetStatusKey() const { return "Status"; }
-
-  std::string GetMetricKey(StringPiece id) const {
-    return JoinString({basename_, id}, ".");
+  // Translates top-level metric type into a string. ::ToMetricEnumLabel
+  // translates statuses for per-status latency tracking.
+  virtual StringPiece GetMetricKey(MetricType metric_type) const {
+    switch (metric_type) {
+      case MetricType::kStatus:
+        return "Status";
+      case MetricType::kLatency:
+        return "Latency";
+      case MetricType::kHttpStatusOrNetError:
+        return "HttpStatusOrNetError";
+      case MetricType::kRetryCount:
+        NOTREACHED_NORETURN();
+      default:
+        NOTREACHED_NORETURN();
+    }
   }
-  std::string GetMetricKey(StringPiece id, StringPiece suffix) const {
-    return JoinString({basename_, id, suffix}, ".");
+
+  // Returns fully-qualified name of histogram for specified metric_type.
+  std::string GetFullHistogramName(MetricType metric_type) const {
+    return JoinString({basename_, GetMetricKey(metric_type)}, ".");
+  }
+
+  // Returns fully-qualified name of histogram for specified metric_type with
+  // per-status values.
+  std::string GetFullHistogramName(MetricType metric_type,
+                                   ProtoFetcherStatus status) const {
+    return JoinString(
+        {basename_, ToMetricEnumLabel(status), GetMetricKey(metric_type)}, ".");
   }
 
  private:
@@ -207,11 +234,19 @@ class OverallMetrics final : public Metrics {
   }
 
  protected:
-  constexpr StringPiece GetLatencyKey() const override {
-    return "OverallLatency";
-  }
-  constexpr StringPiece GetStatusKey() const override {
-    return "OverallStatus";
+  StringPiece GetMetricKey(MetricType metric_type) const override {
+    switch (metric_type) {
+      case MetricType::kStatus:
+        return "OverallStatus";
+      case MetricType::kLatency:
+        return "OverallLatency";
+      case MetricType::kHttpStatusOrNetError:
+        NOTREACHED_NORETURN();
+      case MetricType::kRetryCount:
+        return "RetryCount";
+      default:
+        NOTREACHED_NORETURN();
+    }
   }
 
  public:
@@ -219,7 +254,8 @@ class OverallMetrics final : public Metrics {
     // It's a prediction that it will take less than 100 retries to get a
     // decisive response. Double exponential backoff set at 4 hour limit
     // shouldn't exhaust this limit too soon.
-    base::UmaHistogramCounts100(GetMetricKey("RetryCount"), count);
+    base::UmaHistogramCounts100(GetFullHistogramName(MetricType::kRetryCount),
+                                count);
   }
 };
 
