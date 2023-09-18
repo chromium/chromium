@@ -6,45 +6,41 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <iterator>
 #include <map>
+#include <memory>
 #include <numeric>
+#include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
+#include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
-#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
-#include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -144,47 +140,6 @@ std::vector<T> Concat(std::vector<T>& v1, const std::vector<T>& v2) {
   return v1;
 }
 
-struct FieldMatches {
-  double weight;
-  String16Vector words;
-  size_t count;
-
-  FieldMatches(double weight, const std::string* string)
-      : FieldMatches(weight, std::vector<const std::string*>{string}) {}
-
-  FieldMatches(double weight, std::vector<const std::string*> strings)
-      : weight(weight),
-        words(std::accumulate(
-            strings.begin(),
-            strings.end(),
-            String16Vector(),
-            [](String16Vector word_vec, const std::string* string) {
-              if (string) {
-                Concat(word_vec,
-                       String16VectorFromString16(
-                           base::UTF8ToUTF16(string->c_str()), nullptr));
-              }
-              return word_vec;
-            })),
-        count(0) {}
-
-  // Increments |count| and returns true if |words| includes a word equal to or
-  // prefixed by |word|.
-  bool Includes(const std::u16string& word) {
-    if (base::ranges::none_of(words, [word](std::u16string w) {
-          return base::StartsWith(w, word,
-                                  base::CompareCase::INSENSITIVE_ASCII);
-        }))
-      return false;
-    count += word.size();
-    return true;
-  }
-
-  // Decreases linearly with respect to |count| for small values, begins at 1,
-  // and asymptotically approaches 0.
-  double InvScore() { return std::pow(1 - weight, count); }
-};
-
 // Extracts a list of pointers to strings from a DictionaryValue containing a
 // list of objects containing a string field of interest. Note that pointers may
 // be `nullptr` if the value at `field_path` is not found or is not a string.
@@ -206,76 +161,6 @@ std::vector<const std::string*> ExtractResultList(
   return extracted;
 }
 
-// Alias for GetFieldTrialParamByFeatureAsDouble for readability.
-double FieldWeight(const std::string& param_name, double default_weight) {
-  return base::GetFieldTrialParamByFeatureAsDouble(omnibox::kDocumentProvider,
-                                                   param_name, default_weight);
-}
-
-int CalculateScore(const std::u16string& input,
-                   const base::Value::Dict& result) {
-  // Suggestions scored lower than |raw_score_cutoff| will be discarded.
-  double raw_score_cutoff = base::GetFieldTrialParamByFeatureAsDouble(
-      omnibox::kDocumentProvider, "RawDocScoreCutoff", .25);
-  // Final score will be between |min_score| and |max_score|, not accounting for
-  // |raw_score_cutoff|.
-  int min_score = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kDocumentProvider, "MinDocScore", 0);
-  int max_score = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kDocumentProvider, "MaxDocScore", 1400);
-
-  std::vector<FieldMatches> field_matches_vec = {
-      {FieldWeight("TitleWeight", .15), result.FindString("title")},
-      {FieldWeight("OwnerNamesWeight", .15),
-       ExtractResultList(result, "metadata.owner.personNames", "displayName")},
-      {FieldWeight("OwnerEmailsWeight", .15),
-       ExtractResultList(result, "metadata.owner.emailAddresses",
-                         "emailAddress")},
-      {FieldWeight("SnippetWeight", .06),
-       result.FindStringByDottedPath("snippet.snippet")},
-      {FieldWeight("UrlWeight", 0), result.FindString("url")},
-      {FieldWeight("MimeWeight", 0),
-       result.FindStringByDottedPath("metadata.mimeType")},
-  };
-  std::stable_sort(field_matches_vec.begin(), field_matches_vec.end(),
-                   [](const FieldMatches& a, const FieldMatches& b) {
-                     return a.weight > b.weight;
-                   });
-
-  String16Vector input_words = String16VectorFromString16(input, nullptr);
-
-  for (const auto& word : input_words) {
-    for (auto& field_matches : field_matches_vec) {
-      // This is calculating the proportion of the user input words that are
-      // included in the suggestion, so break after the first match. Otherwise,
-      // an input like 'wi' would be scored too highly for the suggestion "will
-      // william wilson win the winter windsurfing competition".
-      if (field_matches.Includes(word)) {
-        break;
-      }
-    }
-  }
-
-  // |score| is computed by subtracting the product of each field's inverse
-  // score from 1; |score| begins at 0 and asymptotically approaches 1.
-  // Summing each field's score would grossly favor short multi-field matches
-  // over long single-field matches due to each fields score increasing faster
-  // for small values.
-  double score =
-      1 -
-      std::accumulate(field_matches_vec.begin(), field_matches_vec.end(), 1.0,
-                      [](double inv_score_product, FieldMatches field_matches) {
-                        return inv_score_product * field_matches.InvScore();
-                      });
-
-  if (score > 1)
-    score = 1;
-  if (score < raw_score_cutoff)
-    score = 0;
-
-  return static_cast<int>(min_score + score * (max_score - min_score));
-}
-
 // Return whether `user` owns the doc `result`.
 bool IsOwnedByUser(const std::string& user, const base::Value::Dict& result) {
   std::vector<const std::string*> owner_emails = ExtractResultList(
@@ -287,19 +172,6 @@ bool IsOwnedByUser(const std::string& user, const base::Value::Dict& result) {
       [&](const std::string* email) {
         return base::i18n::ToLower(base::UTF8ToUTF16(*email));
       });
-}
-
-int BoostOwned(const int score,
-               const std::string& user,
-               const base::Value::Dict& result) {
-  int promotion = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kDocumentProvider, "OwnedDocPromotion", 0);
-  int demotion = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kDocumentProvider, "UnownedDocDemotion", 200);
-
-  bool owned = IsOwnedByUser(user, result);
-
-  return std::max(score + (owned ? promotion : -demotion), 0);
 }
 
 // Return whether all words in `input` are contained in either the `result`
@@ -437,9 +309,8 @@ std::string FindStringKeyOrFallback(const base::Value::Dict& value,
 // static
 DocumentProvider* DocumentProvider::Create(
     AutocompleteProviderClient* client,
-    AutocompleteProviderListener* listener,
-    size_t cache_size) {
-  return new DocumentProvider(client, listener, cache_size);
+    AutocompleteProviderListener* listener) {
+  return new DocumentProvider(client, listener);
 }
 
 // static
@@ -449,7 +320,6 @@ void DocumentProvider::RegisterProfilePrefs(
 }
 
 bool DocumentProvider::IsDocumentProviderAllowed(
-    AutocompleteProviderClient* client,
     const AutocompleteInput& input) {
   // Feature must be on.
   if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider)) {
@@ -457,30 +327,30 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // These may seem like search suggestions, so gate on that setting too.
-  if (!client->SearchSuggestEnabled()) {
+  if (!client_->SearchSuggestEnabled()) {
     return false;
   }
 
   // Client-side toggle must be enabled.
   if (!base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting) &&
-      !client->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled)) {
+      !client_->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled)) {
     return false;
   }
 
   // No incognito.
-  if (client->IsOffTheRecord()) {
+  if (client_->IsOffTheRecord()) {
     return false;
   }
 
   // Must be logged in.
-  if (!client->IsAuthenticated()) {
+  if (!client_->IsAuthenticated()) {
     return false;
   }
 
   // Sync must be enabled and active.
   if (!base::FeatureList::IsEnabled(
           omnibox::kDocumentProviderNoSyncRequirement) &&
-      !client->IsSyncActive()) {
+      !client_->IsSyncActive()) {
     return false;
   }
 
@@ -490,7 +360,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // Google must be set as default search provider.
-  auto* template_url_service = client->GetTemplateURLService();
+  auto* template_url_service = client_->GetTemplateURLService();
   if (!search::DefaultSearchProviderIsGoogle(template_url_service)) {
     return false;
   }
@@ -546,7 +416,7 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 
   // Perform various checks - feature is enabled, user is allowed to use the
   // feature, we're not under backoff, etc.
-  if (!IsDocumentProviderAllowed(client_, input))
+  if (!IsDocumentProviderAllowed(input))
     return;
 
   input_ = input;
@@ -623,13 +493,11 @@ void DocumentProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 }
 
 DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
-                                   AutocompleteProviderListener* listener,
-                                   size_t cache_size)
+                                   AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
       backoff_for_session_(false),
       client_(client),
-      cache_size_(cache_size),
-      matches_cache_(MatchesCache::NO_AUTO_EVICT) {
+      matches_cache_(20) {
   AddListener(listener);
 
   debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(true, 300);
@@ -671,30 +539,23 @@ bool DocumentProvider::UpdateResults(const std::string& json_data) {
   if (!response)
     return false;
 
-  // 1) Fill |matches_| with <N> new server matches.
+  // 1) Fill |matches_| with the new server matches.
   matches_ = ParseDocumentSearchResults(*response);
-  // 2) Clear cached matches' scores to ensure cached matches for all but the
+
+  // 2) Limit matches to |provider_max_matches_| unless used for deduping; i.e.
+  // set the scores of matches beyond the limit to 0.
+  DemoteMatchesBeyondMax();
+  // 3) Clear cached matches' scores to ensure cached matches for all but the
   // previous input can only be shown if deduped. E.g., this allows matches for
   // the input 'pari' to be displayed synchronously for the input 'paris', but
   // be hidden if the user clears their input and starts anew 'london'.
   SetCachedMatchesScoresTo0();
-  // 3) Push the <N> new matches to the cache.
+  // 4) Copy the cached matches to |matches_|.
+  CopyCachedMatchesToMatches();
+  // 5) Push the new matches to the cache. Keep their scores so that later
+  // inputs continue showing them until the new doc response returns.
   for (const AutocompleteMatch& match : base::Reversed(matches_))
     matches_cache_.Put(match.stripped_destination_url, match);
-  // 4) Copy the cached matches to |matches_|, skipping the most recent <N>
-  // cached matches since they were already added in step (1). Pass
-  // |set_scores_to_0| as true as we don't trust cached scores since they may no
-  // longer match the current input; if the cached matches were still relevant,
-  // they would have been returned from the server again.
-  CopyCachedMatchesToMatches(matches_.size());
-  // 5) Only now can we shrink the cache to |cache_size_|. Doing this
-  // automatically when pushing the new matches to the cache would reduce it's
-  // effective size, especially if the server returns close to |cache_size_|
-  // matches.
-  matches_cache_.ShrinkToSize(cache_size_);
-  // 6) Limit matches to |provider_max_matches_| unless used for deduping; i.e.
-  // set the scores of matches beyond the limit to 0.
-  DemoteMatchesBeyondMax();
 
   return !matches_.empty();
 }
@@ -787,31 +648,6 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   size_t num_results = results->size();
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
 
-  // During development/quality iteration we may wish to defeat server scores.
-  // If both |use_server_score| and |use_client_score| are true, the min of the
-  // two scores will be used.
-  // If both are false, the server score will be used.
-  bool use_client_score = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentUseClientScore", false);
-  bool use_server_score = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentUseServerScore", true);
-
-  // Cap scores for each suggestion.
-  bool cap_score_per_rank = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentCapScorePerRank", false);
-  std::vector<int> score_caps = {
-      base::GetFieldTrialParamByFeatureAsInt(omnibox::kDocumentProvider,
-                                             "DocumentCapScoreRank1", 1200),
-      base::GetFieldTrialParamByFeatureAsInt(omnibox::kDocumentProvider,
-                                             "DocumentCapScoreRank2", 1100),
-      base::GetFieldTrialParamByFeatureAsInt(omnibox::kDocumentProvider,
-                                             "DocumentCapScoreRank3", 900),
-  };
-
-  // Promotes owned documents and/or demotes unowned documents.
-  bool boost_owned = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentBoostOwned", false);
-
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
 
@@ -832,29 +668,12 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       continue;
     }
 
-    // Both client and server scores are calculated regardless of usage in order
-    // to log them with |AutocompleteMatch::RecordAdditionalInfo| below.
-    int client_score = CalculateScore(input_.text(), result);
-    int server_score = result.FindInt("score").value_or(0);
-    int score = 0;
-
-    if (use_client_score && use_server_score)
-      score = std::min(client_score, server_score);
-    else
-      score = use_client_score ? client_score : server_score;
-
-    if (cap_score_per_rank) {
-      int score_cap = i < score_caps.size() ? score_caps[i] : score_caps.back();
-      score = std::min(score, score_cap);
-    }
-
-    if (boost_owned)
-      score = BoostOwned(score, client_->ProfileUserName(), result);
+    int score = result.FindInt("score").value_or(0);
 
     // Decrement scores if necessary to ensure suggestion order is preserved.
     // Don't decrement client scores which don't necessarily rank suggestions
     // the same order as the server.
-    if (!use_client_score && score >= previous_score)
+    if (score >= previous_score)
       score = std::max(previous_score - 1, 0);
     previous_score = score;
 
@@ -923,8 +742,6 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.TryRichAutocompletion(base::UTF8ToUTF16(match.destination_url.spec()),
                                 match.contents, input_);
     match.transition = ui::PAGE_TRANSITION_GENERATED;
-    match.RecordAdditionalInfo("client score", client_score);
-    match.RecordAdditionalInfo("server score", server_score);
     match.RecordAdditionalInfo("owned", is_owned);
     match.RecordAdditionalInfo("completely matched in title and owner",
                                is_completely_matched_in_title_and_owner);
@@ -939,11 +756,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   return matches;
 }
 
-void DocumentProvider::CopyCachedMatchesToMatches(
-    size_t skip_n_most_recent_matches) {
+void DocumentProvider::CopyCachedMatchesToMatches() {
   base::ranges::transform(
-      std::next(matches_cache_.begin(), skip_n_most_recent_matches),
-      matches_cache_.end(), std::back_inserter(matches_),
+      matches_cache_, std::back_inserter(matches_),
       [this](auto match) {
         match.allowed_to_be_default_match = false;
         match.TryRichAutocompletion(
