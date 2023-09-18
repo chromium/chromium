@@ -15,6 +15,7 @@ namespace arc {
 // Please keep alphabetized.
 BASE_DECLARE_FEATURE(kArcOnDemandFeature);
 BASE_DECLARE_FEATURE(kBootCompletedBroadcastFeature);
+BASE_DECLARE_FEATURE(kContainerAppKiller);
 BASE_DECLARE_FEATURE(kCustomTabsExperimentFeature);
 BASE_DECLARE_FEATURE(kDocumentsProviderUnknownSizeFeature);
 BASE_DECLARE_FEATURE(kEnableArcIdleManager);

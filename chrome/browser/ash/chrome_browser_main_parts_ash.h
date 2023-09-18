@@ -25,6 +25,7 @@ class ImageDownloaderImpl;
 
 namespace arc {
 class ArcServiceLauncher;
+class ContainerAppKiller;
 }  // namespace arc
 
 namespace chromeos {
@@ -299,6 +300,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<memory::ZramWritebackController> zram_writeback_controller_;
 
   std::unique_ptr<ApnMigrator> apn_migrator_;
+
+  std::unique_ptr<arc::ContainerAppKiller> arc_container_app_killer_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should

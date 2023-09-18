@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void FakeArcVmMemoryPressure(PressureLevelArcVm level,
                                uint64_t reclaim_target_kb);
 
+  void AddArcContainerObserver(ArcContainerObserver* observer) override;
+  void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
+
  private:
   absl::optional<GameMode> set_game_mode_response_;
   absl::optional<GameMode> previous_game_mode_state_ = GameMode::OFF;
@@ -72,6 +75,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;
+  base::ObserverList<ArcContainerObserver> arc_container_observers_;
 };
 
 }  // namespace ash

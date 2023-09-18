@@ -66,4 +66,14 @@ void FakeResourcedClient::FakeArcVmMemoryPressure(PressureLevelArcVm level,
   }
 }
 
+void FakeResourcedClient::AddArcContainerObserver(
+    ArcContainerObserver* observer) {
+  arc_container_observers_.AddObserver(observer);
+}
+
+void FakeResourcedClient::RemoveArcContainerObserver(
+    ArcContainerObserver* observer) {
+  arc_container_observers_.RemoveObserver(observer);
+}
+
 }  // namespace ash

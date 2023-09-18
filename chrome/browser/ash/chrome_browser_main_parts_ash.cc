@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
@@ -1433,6 +1435,13 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (memory::ZramWritebackController::IsSupportedAndEnabled()) {
     zram_writeback_controller_ = memory::ZramWritebackController::Create();
     zram_writeback_controller_->Start();
+  }
+
+  // ARCVM defers to Android's LMK to kill apps in low memory situations because
+  // memory can't be reclaimed directly to ChromeOS.
+  if (!arc::IsArcVmEnabled() &&
+      base::FeatureList::IsEnabled(arc::kContainerAppKiller)) {
+    arc_container_app_killer_ = std::make_unique<arc::ContainerAppKiller>();
   }
 
   if (features::IsVideoConferenceEnabled()) {
