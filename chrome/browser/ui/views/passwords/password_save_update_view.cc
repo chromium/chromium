@@ -405,7 +405,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
                                      &Controller::OnSaveClicked));
     SetCancelCallback(base::BindOnce(
         button_clicked, base::Unretained(this),
-        is_update_bubble_ ? &Controller::OnNopeUpdateClicked
+        is_update_bubble_ ? &Controller::OnNoThanksClicked
                           : &Controller::OnNeverForThisSiteClicked));
   }
 

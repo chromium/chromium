@@ -303,7 +303,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
           Return(password_manager::PasswordForm::Store::kProfileStore));
   PretendPasswordWaiting();
 
-  EXPECT_TRUE(controller()->enable_editing());
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
@@ -327,7 +326,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
       .WillByDefault(Return(true));
   PretendPasswordWaiting();
 
-  EXPECT_TRUE(controller()->enable_editing());
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
   EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
@@ -352,7 +350,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileNotOptedIn) {
       .WillByDefault(Return(false));
   PretendPasswordWaiting();
 
-  EXPECT_TRUE(controller()->enable_editing());
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
   EXPECT_TRUE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
@@ -378,7 +375,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
       .WillByDefault(Return(false));
   PretendUpdatePasswordWaiting();
 
-  EXPECT_TRUE(controller()->enable_editing());
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
   EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
@@ -426,7 +422,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickNever) {
 TEST_F(SaveUpdateBubbleControllerTest, ClickUpdate) {
   PretendUpdatePasswordWaiting();
 
-  EXPECT_TRUE(controller()->enable_editing());
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
@@ -460,23 +455,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateInSaveState) {
 TEST_F(SaveUpdateBubbleControllerTest, GetInitialUsername_MatchedUsername) {
   PretendUpdatePasswordWaiting();
   EXPECT_EQ(kUsername, controller()->pending_password().username_value);
-}
-
-TEST_F(SaveUpdateBubbleControllerTest, EditCredential) {
-  PretendPasswordWaiting();
-  EXPECT_CALL(*mock_smart_bubble_stats_store(),
-              RemoveSiteStats(GURL(kSiteOrigin).DeprecatedGetOriginAsURL()));
-
-  const std::u16string kExpectedUsername = u"new_username";
-  const std::u16string kExpectedPassword = u"new_password";
-
-  controller()->OnCredentialEdited(kExpectedUsername, kExpectedPassword);
-  EXPECT_EQ(kExpectedUsername, controller()->pending_password().username_value);
-  EXPECT_EQ(kExpectedPassword, controller()->pending_password().password_value);
-  EXPECT_CALL(*delegate(), SavePassword(kExpectedUsername, kExpectedPassword));
-  EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
-  controller()->OnSaveClicked();
-  DestroyModelAndVerifyControllerExpectations();
 }
 
 class SaveUpdateBubbleControllerUKMTest
@@ -535,7 +513,7 @@ TEST_P(SaveUpdateBubbleControllerUKMTest, RecordUKMs) {
       controller()->OnSaveClicked();
     } else if (interaction == BubbleDismissalReason::kDeclined && update) {
       EXPECT_CALL(*delegate(), SavePassword(_, _)).Times(0);
-      controller()->OnNopeUpdateClicked();
+      controller()->OnNoThanksClicked();
     } else if (interaction == BubbleDismissalReason::kDeclined && !update) {
       EXPECT_CALL(
           *mock_smart_bubble_stats_store(),
@@ -619,8 +597,9 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
   // That state is impossible.
   if (is_manual_fallback_for_saving &&
       (display_reason ==
-       PasswordBubbleControllerBase::DisplayReason::kAutomatic))
+       PasswordBubbleControllerBase::DisplayReason::kAutomatic)) {
     SUCCEED();
+  }
 
   SCOPED_TRACE(
       testing::Message()
@@ -684,16 +663,6 @@ TEST_F(SaveUpdateBubbleControllerTest, PasswordsRevealedReported) {
       mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
   controller()->ShouldRevealPasswords(mock_callback.Get());
-}
-
-TEST_F(SaveUpdateBubbleControllerTest, DisableEditing) {
-  EXPECT_CALL(*delegate(), BubbleIsManualFallbackForSaving())
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(*delegate(), GetCredentialSource())
-      .WillOnce(Return(password_manager::metrics_util::CredentialSourceType::
-                           kCredentialManagementAPI));
-  PretendPasswordWaiting();
-  EXPECT_FALSE(controller()->enable_editing());
 }
 
 TEST_F(SaveUpdateBubbleControllerTest,
