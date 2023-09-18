@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -36,6 +37,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/webdata/common/web_data_results.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
@@ -821,6 +823,104 @@ TEST_F(
               ElementsAre(EqualsSuggestion(
                   PopupItemId::kFieldByFieldFilling,
                   profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale))));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_DiscardDuplicateSuggestions) {
+  std::vector<AutofillProfile> profiles(3);
+  for (AutofillProfile& profile : profiles) {
+    profile.SetRawInfo(NAME_FULL, u"Jon Snow");
+    profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 Beyond-the-Wall Rd");
+  }
+  profiles[1].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profiles[0], &profiles[1], &profiles[2]},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0);
+
+  // Suggestions are sorted from highest to lowest rank, so check that
+  // duplicates with a lower rank are removed.
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Jon Snow",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"2 Beyond-the-Wall Rd")}})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Jon Snow",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_KeepNonDuplicateSuggestions) {
+  AutofillProfile profile_1;
+  profile_1.SetRawInfo(NAME_FIRST, u"Sansa");
+  profile_1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
+
+  AutofillProfile profile_2;
+  profile_2.SetRawInfo(NAME_FIRST, u"Sansa");
+
+  AutofillProfile profile_3;
+  profile_3.SetRawInfo(NAME_FIRST, u"Brienne");
+  profile_3.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile_1, &profile_2, &profile_3},
+          {NAME_FIRST, ADDRESS_HOME_STREET_ADDRESS},
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FIRST),
+          /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Sansa",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Sansa",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Brienne",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_SameStringInValueAndLabel) {
+  AutofillProfile profile;
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Mañana Road");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"manana road");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_STREET_ADDRESS},
+          /*last_targeted_fields=*/absl::nullopt,
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+          /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(AllOf(
+                  Field(&Suggestion::main_text,
+                        Suggestion::Text(u"Mañana Road",
+                                         Suggestion::Text::IsPrimary(true))),
+                  Field(&Suggestion::labels,
+                        std::vector<std::vector<Suggestion::Text>>{}))));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,

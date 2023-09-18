@@ -547,60 +547,6 @@ void RemoveProfilesNotUsedSinceTimestamp(
 
 void PrepareSuggestions(const std::vector<std::u16string>& labels,
                         std::vector<Suggestion>* suggestions,
-                        const AutofillProfileComparator& comparator) {
-  DCHECK_EQ(suggestions->size(), labels.size());
-
-  // This set is used to determine whether duplicate Suggestions exist. For
-  // example, a Suggestion with the value "John" and the label "400 Oak Rd" has
-  // the normalized text "john400oakrd". This text can only be added to the set
-  // once.
-  std::unordered_set<std::u16string> suggestion_text;
-  size_t index_to_add_suggestion = 0;
-
-  // Dedupes Suggestions to show in the dropdown once values and labels have
-  // been created. This is useful when LabelFormatters make Suggestions' labels.
-  //
-  // Suppose profile A has the data John, 400 Oak Rd, and (617) 544-7411 and
-  // profile B has the data John, 400 Oak Rd, (508) 957-5009. If a formatter
-  // puts only 400 Oak Rd in the label, then there will be two Suggestions with
-  // the normalized text "john400oakrd", and the Suggestion with the lower
-  // ranking should be discarded.
-  for (size_t i = 0; i < labels.size(); ++i) {
-    std::u16string label = labels[i];
-
-    bool text_inserted =
-        suggestion_text
-            .insert(AutofillProfileComparator::NormalizeForComparison(
-                (*suggestions)[i].main_text.value + label,
-                AutofillProfileComparator::DISCARD_WHITESPACE))
-            .second;
-
-    if (text_inserted) {
-      if (index_to_add_suggestion != i) {
-        (*suggestions)[index_to_add_suggestion] = (*suggestions)[i];
-      }
-      // The given |suggestions| are already sorted from highest to lowest
-      // ranking. Suggestions with lower indices have a higher ranking and
-      // should be kept.
-      //
-      // We check whether the value and label are the same because in certain
-      // cases, e.g. when a credit card form contains a zip code field and the
-      // user clicks on the zip code, a suggestion's value and the label
-      // produced for it may both be a zip code.
-      if (!comparator.Compare(
-              (*suggestions)[index_to_add_suggestion].main_text.value,
-              labels[i]) &&
-          !labels[i].empty()) {
-        (*suggestions)[index_to_add_suggestion].labels = {
-            {Suggestion::Text(labels[i])}};
-      }
-      ++index_to_add_suggestion;
-    }
-  }
-
-  if (index_to_add_suggestion < suggestions->size()) {
-    suggestions->resize(index_to_add_suggestion);
-  }
-}
+                        const AutofillProfileComparator& comparator) {}
 
 }  // namespace autofill::suggestion_selection
