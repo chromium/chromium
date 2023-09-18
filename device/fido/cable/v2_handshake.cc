@@ -50,24 +50,15 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter,
-                    bool big_endian,
-                    base::span<uint8_t, 12> out_nonce) {
+bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  std::array<uint8_t, sizeof(counter)> counter_bytes;
-  if (big_endian) {
-    std::fill(out_nonce.begin(), out_nonce.end(), 0);
-    counter = base::ByteSwap(counter);
-    memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
-           sizeof(counter));
-  } else {
-    memcpy(counter_bytes.data(), &counter, sizeof(counter));
-    base::ranges::copy(counter_bytes, out_nonce.begin());
-    std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
-  }
+  std::fill(out_nonce.begin(), out_nonce.end(), 0);
+  counter = base::ByteSwap(counter);
+  memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
+         sizeof(counter));
   return true;
 }
 
@@ -101,11 +92,6 @@ std::array<uint8_t, 32> PairingSignature(
 bool ReservedBitsAreZero(const CableEidArray& eid) {
   return eid[0] == 0;
 }
-
-// kAdditionalDataBytes is the AD input to the AEAD used in caBLEv2. We're
-// transitioning away from this towards not supplying an AD in order to better
-// match Noise.
-const uint8_t kAdditionalDataBytes[1] = {/*version=*/2};
 
 }  // namespace
 
@@ -777,7 +763,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_message[padded_message.size() - 1] = static_cast<uint8_t>(num_zeros);
 
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(write_sequence_num_++, new_construction_, nonce)) {
+  if (!ConstructNonce(write_sequence_num_++, nonce)) {
     return false;
   }
 
@@ -786,10 +772,6 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
   base::span<const uint8_t> additional_data;
-  if (!new_construction_) {
-    additional_data = kAdditionalDataBytes;
-  }
-
   std::vector<uint8_t> ciphertext =
       aes_key.Seal(padded_message, nonce, additional_data);
   message_to_encrypt->swap(ciphertext);
@@ -799,7 +781,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
 bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
                       std::vector<uint8_t>* out_plaintext) {
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(read_sequence_num_, new_construction_, nonce)) {
+  if (!ConstructNonce(read_sequence_num_, nonce)) {
     return false;
   }
 
@@ -808,20 +790,10 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
   base::span<const uint8_t> additional_data;
-  if (!new_construction_) {
-    additional_data = kAdditionalDataBytes;
-  }
-
   absl::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(ciphertext, nonce, additional_data);
 
   if (!plaintext) {
-    // We're transitioning to a different construction. If we failed to decrypt
-    // the first message with the old one, try again with the new.
-    if (!new_construction_ && read_sequence_num_ == 0) {
-      new_construction_ = true;
-      return Decrypt(ciphertext, out_plaintext);
-    }
     return false;
   }
   read_sequence_num_++;
@@ -842,16 +814,8 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   return true;
 }
 
-void Crypter::UseNewConstruction() {
-  new_construction_ = true;
-}
-
 bool Crypter::IsCounterpartyOfForTesting(const Crypter& other) const {
   return read_key_ == other.write_key_ && write_key_ == other.read_key_;
-}
-
-bool& Crypter::GetNewConstructionFlagForTesting() {
-  return new_construction_;
 }
 
 HandshakeInitiator::HandshakeInitiator(
