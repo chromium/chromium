@@ -36,7 +36,7 @@
     “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
   </message>
   <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_MULTIPLE_HOSTNAMES" desc="The header used for Journeys that are anchored by multiple host names.">
-    <ph name="HOST_NAME">$1<ex>google.com</ex> and more</ph>
+    <ph name="HOST_NAME">$1<ex>google.com</ex></ph> and more
   </message>
   <message name="IDS_HISTORY_CLUSTERS_HIDE_PAGE" desc="Label of the item in drop-down menu that allows the user to hide a history item.">
     Hide item
