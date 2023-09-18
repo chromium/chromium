@@ -189,7 +189,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -1672,7 +1671,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
-  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
+  v8::Isolate* isolate = page.GetAgentGroupScheduler().Isolate();
 
   // There is generally one probe sink per local frame tree, so for root frames
   // we create a new child sink and for child frames we propagate one from root.

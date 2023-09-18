@@ -159,7 +159,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_request.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -854,16 +853,15 @@ void LocalFrameView::UpdateLayout() {
   Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
 
   absl::optional<RuntimeCallTimerScope> rcs_scope;
-  probe::UpdateLayout probe(GetFrame().GetDocument());
+  probe::UpdateLayout probe(frame_->GetDocument());
   HeapVector<LayoutObjectWithDepth> layout_roots;
 
-  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), &GetFrame(),
-                       BlinkState::LAYOUT);
+  v8::Isolate* isolate = frame_->GetPage()->GetAgentGroupScheduler().Isolate();
+  ENTER_EMBEDDER_STATE(isolate, frame_, BlinkState::LAYOUT);
   TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
   if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) {
-    rcs_scope.emplace(
-        RuntimeCallStats::From(V8PerIsolateData::MainThreadIsolate()),
-        RuntimeCallStats::CounterId::kUpdateLayout);
+    rcs_scope.emplace(RuntimeCallStats::From(isolate),
+                      RuntimeCallStats::CounterId::kUpdateLayout);
   }
   layout_roots = layout_subtree_root_list_.Ordered();
   if (layout_roots.empty())

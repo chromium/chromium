@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/events/mutation_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
@@ -67,7 +68,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -954,7 +954,7 @@ void ContainerNode::ParserAppendChild(Node* new_child) {
   DCHECK(!new_child->IsDocumentFragment());
   DCHECK(!IsA<HTMLTemplateElement>(this));
 
-  RUNTIME_CALL_TIMER_SCOPE(V8PerIsolateData::MainThreadIsolate(),
+  RUNTIME_CALL_TIMER_SCOPE(GetDocument().GetAgent().isolate(),
                            RuntimeCallStats::CounterId::kParserAppendChild);
 
   if (!CheckParserAcceptChild(*new_child))

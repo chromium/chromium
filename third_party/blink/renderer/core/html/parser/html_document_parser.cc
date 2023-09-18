@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -62,7 +63,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -658,6 +658,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   unsigned tokens_parsed = 0;
   int characters_consumed_before_token = 0;
   base::TimeDelta time_executing_script;
+  v8::Isolate* isolate = GetDocument()->GetAgent().isolate();
   while (true) {
     if (should_process_preloading)
       FlushPendingPreloads();
@@ -681,8 +682,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
     HTMLToken* token;
     {
       RUNTIME_CALL_TIMER_SCOPE(
-          V8PerIsolateData::MainThreadIsolate(),
-          RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
+          isolate, RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
       token = tokenizer_.NextToken(input_.Current());
       if (!token)
         break;

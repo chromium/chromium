@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/modules/ml/webnn/fuzzer/webnn.pb.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 
 namespace blink {
@@ -95,8 +94,10 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
       break;
   }
 
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
+  page_holder->GetPage()
+      ->GetAgentGroupScheduler()
+      ->Isolate()
+      ->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

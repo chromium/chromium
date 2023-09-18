@@ -2197,8 +2197,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   SCOPED_UMA_AND_UKM_TIMER(View()->GetUkmAggregator(),
                            LocalFrameUkmAggregator::kStyle);
   FontPerformance::StyleScope font_performance_scope;
-  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), GetFrame(),
-                       BlinkState::STYLE);
+  ENTER_EMBEDDER_STATE(GetAgent().isolate(), GetFrame(), BlinkState::STYLE);
 
   if (needs_slot_assignment) {
     // RecalcSlotAssignments should be done before checking
@@ -2305,7 +2304,7 @@ void Document::InvalidateStyleAndLayoutForFontUpdates() {
 void Document::UpdateStyle() {
   DCHECK(!View()->ShouldThrottleRendering());
   TRACE_EVENT_BEGIN0("blink,blink_style", "Document::updateStyle");
-  RUNTIME_CALL_TIMER_SCOPE(V8PerIsolateData::MainThreadIsolate(),
+  RUNTIME_CALL_TIMER_SCOPE(GetAgent().isolate(),
                            RuntimeCallStats::CounterId::kUpdateStyle);
 
   StyleEngine& style_engine = GetStyleEngine();

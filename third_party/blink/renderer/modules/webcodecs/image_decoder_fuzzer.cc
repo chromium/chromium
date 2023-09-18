@@ -142,7 +142,7 @@ DEFINE_BINARY_PROTO_FUZZER(
 
       // Collect what we can after the first fuzzing loop; this keeps memory
       // pressure down during ReadableStream fuzzing.
-      V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+      script_state->GetIsolate()->RequestGarbageCollectionForTesting(
           v8::Isolate::kFullGarbageCollection);
     }
 

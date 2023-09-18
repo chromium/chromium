@@ -27,11 +27,11 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 namespace blink {
 
@@ -79,7 +79,7 @@ void DocumentFragment::ParseHTML(const String& source,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy) {
   RUNTIME_CALL_TIMER_SCOPE(
-      V8PerIsolateData::MainThreadIsolate(),
+      GetDocument().GetAgent().isolate(),
       RuntimeCallStats::CounterId::kDocumentFragmentParseHTML);
   HTMLDocumentParser::ParseDocumentFragment(source, this, context_element,
                                             parser_content_policy);

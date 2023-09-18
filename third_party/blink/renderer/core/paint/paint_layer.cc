@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -97,7 +98,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
@@ -289,7 +289,7 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
   TRACE_EVENT0("blink,benchmark",
                "PaintLayer::updateLayerPositionsAfterLayout");
   RUNTIME_CALL_TIMER_SCOPE(
-      V8PerIsolateData::MainThreadIsolate(),
+      GetLayoutObject().GetDocument().GetAgent().isolate(),
       RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
 
   UpdateLayerPositionRecursive();

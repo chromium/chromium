@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/styled_markup_serializer.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -79,7 +80,6 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -809,10 +809,10 @@ DocumentFragment* CreateContextualFragment(
 void ReplaceChildrenWithFragment(ContainerNode* container,
                                  DocumentFragment* fragment,
                                  ExceptionState& exception_state) {
-  RUNTIME_CALL_TIMER_SCOPE(
-      V8PerIsolateData::MainThreadIsolate(),
-      RuntimeCallStats::CounterId::kReplaceChildrenWithFragment);
   DCHECK(container);
+  RUNTIME_CALL_TIMER_SCOPE(
+      container->GetDocument().GetAgent().isolate(),
+      RuntimeCallStats::CounterId::kReplaceChildrenWithFragment);
   ContainerNode* container_node(container);
 
   ChildListMutationScope mutation(*container_node);

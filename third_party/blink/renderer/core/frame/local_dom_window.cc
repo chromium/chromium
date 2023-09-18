@@ -221,7 +221,7 @@ class LocalDOMWindow::NetworkStateObserver final
 
 LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
     : DOMWindow(frame),
-      ExecutionContext(V8PerIsolateData::MainThreadIsolate(),
+      ExecutionContext(agent->isolate(),
                        agent,
                        /*Same value as IsWindow(). is_window=*/true),
       script_controller_(MakeGarbageCollected<ScriptController>(
