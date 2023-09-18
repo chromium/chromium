@@ -160,11 +160,11 @@ suite('shortcutUtilsTest', function() {
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
 
-    // No modifier, high priority.
+    // Meta only key, highest priority.
     const standardAcceleratorInfo2 = createStandardAcceleratorInfo(
         Modifier.NONE,
-        /*keyCode=*/ 221,
-        /*keyDisplay=*/ ']');
+        /*keyCode=*/ 91,
+        /*keyDisplay=*/ 'Meta');
 
     // Lots of modifiers, low priority.
     const standardAcceleratorInfo3 = createStandardAcceleratorInfo(
@@ -178,11 +178,12 @@ suite('shortcutUtilsTest', function() {
         /*keyCode=*/ 221,
         /*keyDisplay=*/ ']');
 
-    // Meta only key, highest priority.
+    // No modifier, high priority.
     const standardAcceleratorInfo5 = createStandardAcceleratorInfo(
         Modifier.NONE,
-        /*keyCode=*/ 91,
-        /*keyDisplay=*/ 'Meta');
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
 
     const initialOrder = [
       standardAcceleratorInfo1,
@@ -192,8 +193,8 @@ suite('shortcutUtilsTest', function() {
       standardAcceleratorInfo5,
     ];
     const expectedOrder = [
-      standardAcceleratorInfo5,
       standardAcceleratorInfo2,
+      standardAcceleratorInfo5,
       standardAcceleratorInfo1,
       standardAcceleratorInfo4,
       standardAcceleratorInfo3,

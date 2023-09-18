@@ -253,7 +253,7 @@ export function compareAcceleratorInfos(
 
   if (isSearchOnlyAccelerator(
           second.layoutProperties.standardAccelerator.accelerator)) {
-    return -1;
+    return 1;
   }
 
   const firstModifierCount =
