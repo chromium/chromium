@@ -3339,7 +3339,7 @@ TEST_F(URLLoaderTest, NoSSLInfoOnComplete) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   ASSERT_TRUE(https_server.Start());
-  EXPECT_EQ(net::ERR_INSECURE_RESPONSE, Load(https_server.GetURL("/")));
+  EXPECT_EQ(net::ERR_CERT_DATE_INVALID, Load(https_server.GetURL("/")));
   EXPECT_FALSE(client()->completion_status().ssl_info.has_value());
 }
 
@@ -3350,7 +3350,7 @@ TEST_F(URLLoaderTest, SSLInfoOnComplete) {
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   ASSERT_TRUE(https_server.Start());
   set_send_ssl_for_cert_error();
-  EXPECT_EQ(net::ERR_INSECURE_RESPONSE, Load(https_server.GetURL("/")));
+  EXPECT_EQ(net::ERR_CERT_DATE_INVALID, Load(https_server.GetURL("/")));
   ASSERT_TRUE(client()->completion_status().ssl_info.has_value());
   EXPECT_TRUE(client()->completion_status().ssl_info.value().cert);
   EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,

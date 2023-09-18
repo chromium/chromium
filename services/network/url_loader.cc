@@ -1549,7 +1549,7 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                                       const net::SSLInfo& ssl_info,
                                       bool fatal) {
   if (!url_loader_network_observer_) {
-    OnSSLCertificateErrorResponse(ssl_info, net::ERR_INSECURE_RESPONSE);
+    OnSSLCertificateErrorResponse(ssl_info, net_error);
     return;
   }
   url_loader_network_observer_->OnSSLCertificateError(
