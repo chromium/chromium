@@ -4745,14 +4745,6 @@
     "expiry_milestone": 119
   },
   {
-    "name": "help-app-welcome-tips",
-    "owners": [
-      "angelaxiao",
-      "scalable-iph-eng@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "heuristic-memory-saver-mode",
     "owners": [
       "anthonyvd",
@@ -7253,17 +7245,6 @@
     "name": "sanitizer-api",
     "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "scalable-iph",
-    "owners": [
-      "angelaxiao",
-      "wutao",
-      "xiaohuic",
-      "yawano",
-      "scalable-iph-eng@google.com"
-    ],
-    "expiry_milestone": 125
   },
   {
     "name": "scalable-iph-debug",

@@ -6407,11 +6407,6 @@ const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
 
-const char kHelpAppWelcomeTipsName[] = "Help App Welcome Tips";
-const char kHelpAppWelcomeTipsDescription[] =
-    "Enables showing the welcome tips page in the help app. This feature "
-    "is dependent on the #scalable-iph feature being enabled as well.";
-
 const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
     "Enable diacritics and variant character selection on PK longpress.";
 const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
@@ -6791,11 +6786,6 @@ const char kArcInputOverlayNameAlphaV2[] = "Enable ARC Input Overlay Alpha V2";
 const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
     "on Alpha.";
-
-const char kScalableIphName[] = "Enable ChromeOS scalable IPH.";
-const char kScalableIphDescription[] =
-    "Enable scalable IPH. In addition to this flag, each respective IPH "
-    "trigger condition needs to be met before an IPH notifier is shown.";
 
 const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
