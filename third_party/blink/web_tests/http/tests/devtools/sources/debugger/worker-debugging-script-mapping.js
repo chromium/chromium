@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+
 (async function() {
   TestRunner.addResult(`Tests stopping in debugger in the worker with source mapping.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -23,7 +25,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   function step1() {
     TestRunner.evaluateInPage('installWorker()');
     SourcesTestRunner.waitUntilPaused(paused);
-    TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, 'sourceMapAttachedForTest', sourceMapLoaded);
+    TestRunner.addSniffer(BindingsModule.CompilerScriptMapping.CompilerScriptMapping.prototype, 'sourceMapAttachedForTest', sourceMapLoaded);
   }
 
   var callFrames;

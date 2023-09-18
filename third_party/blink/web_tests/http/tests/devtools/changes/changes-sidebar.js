@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
@@ -14,7 +15,7 @@ import * as Common from 'devtools/core/common/common.js';
   var fulfill = function() {};
   var workspace = new Workspace.Workspace();
   var project =
-      new Bindings.ContentProviderBasedProject(workspace, 'mockProject', Workspace.projectTypes.Network, '', false);
+      new BindingsModule.ContentProviderBasedProject.ContentProviderBasedProject(workspace, 'mockProject', Workspace.projectTypes.Network, '', false);
   var workspaceDiff = new WorkspaceDiff.WorkspaceDiff(workspace);
   TestRunner.addSniffer(
       WorkspaceDiff.WorkspaceDiff.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
