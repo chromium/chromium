@@ -133,7 +133,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   // garbage. Notify V8 about this so it'll have a chance of cleaning
   // it up when idle.
   V8GCForContextDispose::Instance().NotifyContextDisposed(
-      GetFrame()->IsMainFrame(), frame_reuse_status);
+      script_state_->GetIsolate(), GetFrame()->IsMainFrame(),
+      frame_reuse_status);
 
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsInitialized);
   lifecycle_ = next_status;

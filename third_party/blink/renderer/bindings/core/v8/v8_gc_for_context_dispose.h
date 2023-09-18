@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -48,7 +49,9 @@ class V8GCForContextDispose {
   V8GCForContextDispose& operator=(const V8GCForContextDispose&) = delete;
 
   // Notification for context disposal.
-  void NotifyContextDisposed(bool is_main_frame, WindowProxy::FrameReuseStatus);
+  void NotifyContextDisposed(v8::Isolate* isolate,
+                             bool is_main_frame,
+                             WindowProxy::FrameReuseStatus);
 
   // Called by OomInterventionImpl. If intervention runs on the previous page,
   // it means that the memory usage is high and needs gc during navigation to

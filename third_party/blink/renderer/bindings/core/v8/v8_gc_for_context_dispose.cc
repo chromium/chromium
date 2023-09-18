@@ -33,7 +33,6 @@
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -44,13 +43,13 @@ namespace blink {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-size_t GetMemoryUsage() {
+size_t GetMemoryUsage(v8::Isolate* isolate) {
   size_t usage =
       base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage() +
       WTF::Partitions::TotalActiveBytes() +
       ProcessHeap::TotalAllocatedObjectSize();
   v8::HeapStatistics v8_heap_statistics;
-  V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(&v8_heap_statistics);
+  isolate->GetHeapStatistics(&v8_heap_statistics);
   usage += v8_heap_statistics.total_heap_size();
   return usage;
 }
@@ -65,6 +64,7 @@ V8GCForContextDispose& V8GCForContextDispose::Instance() {
 }
 
 void V8GCForContextDispose::NotifyContextDisposed(
+    v8::Isolate* isolate,
     bool is_main_frame,
     WindowProxy::FrameReuseStatus frame_reuse_status) {
 #if BUILDFLAG(IS_ANDROID)
@@ -76,10 +76,9 @@ void V8GCForContextDispose::NotifyContextDisposed(
             IsLowEndDeviceOrPartialLowEndModeEnabled() &&
         MemoryPressureListenerRegistry::IsCurrentlyLowMemory()) ||
        force_page_navigation_gc_)) {
-    const size_t pre_gc_memory_usage = GetMemoryUsage();
-    V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
-        v8::MemoryPressureLevel::kCritical);
-    const size_t post_gc_memory_usage = GetMemoryUsage();
+    const size_t pre_gc_memory_usage = GetMemoryUsage(isolate);
+    isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
+    const size_t post_gc_memory_usage = GetMemoryUsage(isolate);
     const int reduction = static_cast<int>(pre_gc_memory_usage) -
                           static_cast<int>(post_gc_memory_usage);
     DEFINE_STATIC_LOCAL(
@@ -90,8 +89,7 @@ void V8GCForContextDispose::NotifyContextDisposed(
     force_page_navigation_gc_ = false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  V8PerIsolateData::MainThreadIsolate()->ContextDisposedNotification(
-      !is_main_frame);
+  isolate->ContextDisposedNotification(!is_main_frame);
 }
 
 void V8GCForContextDispose::SetForcePageNavigationGC() {
