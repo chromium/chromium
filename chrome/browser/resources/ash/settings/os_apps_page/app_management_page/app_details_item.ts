@@ -86,8 +86,18 @@ export class AppManagementAppDetailsItem extends
     }
   }
 
+  /**
+   * Storage information is shown for every app apart from System apps.
+   */
+  private shouldShowStorage_(app: App): boolean {
+    if (app.installReason === InstallReason.kSystem) {
+      return false;
+    }
+    return true;
+  }
+
   private shouldShowAppSize_(app: App): boolean {
-    return Boolean(app.appSize);
+    return this.shouldShowStorage_(app) && Boolean(app.appSize);
   }
 
   private shouldShowDataSize_(app: App): boolean {
