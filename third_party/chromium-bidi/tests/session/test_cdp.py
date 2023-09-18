@@ -18,7 +18,7 @@ from unittest.mock import ANY
 import pytest
 from anys import ANY_INT
 from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -116,3 +116,44 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
             "session": session_id
         }
     } == resp
+
+
+@pytest.mark.asyncio
+async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id):
+    await subscribe(websocket, ["cdp.Runtime.consoleAPICalled"])
+
+    session_id = await get_cdp_session_id(context_id)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Runtime.evaluate",
+                "params": {
+                    "expression": "console.log(1)",
+                },
+                "session": session_id
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "cdp.Runtime.consoleAPICalled")
+    assert {
+        "type": "event",
+        "method": "cdp.Runtime.consoleAPICalled",
+        "params": {
+            "event": "Runtime.consoleAPICalled",
+            "params": {
+                "type": "log",
+                "args": [{
+                    "type": "number",
+                    "value": 1,
+                    "description": "1"
+                }],
+                "executionContextId": ANY_INT,
+                "timestamp": ANY_TIMESTAMP,
+                "stackTrace": ANY
+            },
+            "session": session_id
+        }
+    } == event_response
