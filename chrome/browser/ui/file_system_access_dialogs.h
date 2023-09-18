@@ -54,4 +54,11 @@ void ShowFileSystemAccessDangerousFileDialog(
         callback,
     content::WebContents* web_contents);
 
+// Displays a dialog to restore permission for recently granted file or
+// directory handles.
+void ShowFileSystemAccessRestorePermissionDialog(
+    const FileSystemAccessPermissionRequestManager::RequestData& request,
+    base::OnceCallback<void(permissions::PermissionAction result)> callback,
+    content::WebContents* web_contents);
+
 #endif  // CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_

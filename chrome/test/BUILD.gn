@@ -7576,6 +7576,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_permission_dialog_unittest.cc",
+      "../browser/ui/views/file_system_access/file_system_access_restore_permission_bubble_view_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_ui_helpers_unittest.cc",
       "../browser/ui/views/passwords/manage_passwords_view_unittest.cc",

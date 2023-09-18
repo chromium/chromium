@@ -4969,6 +4969,8 @@ static_library("ui") {
       "views/file_system_access/file_system_access_icon_view.h",
       "views/file_system_access/file_system_access_permission_dialog.cc",
       "views/file_system_access/file_system_access_permission_dialog.h",
+      "views/file_system_access/file_system_access_restore_permission_bubble_view.cc",
+      "views/file_system_access/file_system_access_restore_permission_bubble_view.h",
       "views/file_system_access/file_system_access_restricted_directory_dialog.cc",
       "views/file_system_access/file_system_access_restricted_directory_dialog.h",
       "views/file_system_access/file_system_access_ui_helpers.cc",

@@ -161,12 +161,27 @@ void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
     return;
   }
 
-  ShowFileSystemAccessPermissionDialog(
-      current_request_->data,
-      base::BindOnce(
-          &FileSystemAccessPermissionRequestManager::OnPermissionDialogResult,
-          weak_factory_.GetWeakPtr()),
-      web_contents());
+  switch (current_request_->data.request_type) {
+    case RequestType::kNewPermission:
+      ShowFileSystemAccessPermissionDialog(
+          current_request_->data,
+          base::BindOnce(&FileSystemAccessPermissionRequestManager::
+                             OnPermissionDialogResult,
+                         weak_factory_.GetWeakPtr()),
+          web_contents());
+      break;
+    case RequestType::kRestorePermissions:
+      ShowFileSystemAccessRestorePermissionDialog(
+          current_request_->data,
+          base::BindOnce(&FileSystemAccessPermissionRequestManager::
+                             OnPermissionDialogResult,
+                         weak_factory_.GetWeakPtr()),
+          web_contents());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 void FileSystemAccessPermissionRequestManager::
