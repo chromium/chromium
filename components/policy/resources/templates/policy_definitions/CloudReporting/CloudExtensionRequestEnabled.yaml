@@ -1,5 +1,6 @@
 caption: Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extension installation
   requests
+default: false
 desc: |-
   This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extension installation requests which allows users to send the requests to the Google Admin console for approval.
 

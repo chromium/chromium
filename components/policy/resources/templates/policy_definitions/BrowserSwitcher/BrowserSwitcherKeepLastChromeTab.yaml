@@ -1,8 +1,9 @@
 caption: Keep last tab open in Chrome.
+default: true
 desc: |-
   Setting the policy to Enabled or leaving it unset has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> keep at least one tab open, after switching to an alternate browser.
 
-        Setting the policy to Disabled has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> close the tab after switching to an alternate browser, even if it was the last tab. This causes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to exit completely.
+  Setting the policy to Disabled has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> close the tab after switching to an alternate browser, even if it was the last tab. This causes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to exit completely.
 example_value: false
 features:
   dynamic_refresh: true

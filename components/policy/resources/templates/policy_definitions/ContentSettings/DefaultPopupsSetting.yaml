@@ -1,8 +1,9 @@
 caption: Default pop-ups setting
+default: null
 desc: |-
   Setting the policy to 1 lets websites display pop-ups. Setting the policy to 2 denies pop-ups.
 
-        Leaving it unset means <ph name="BLOCK_POPUPS_POLICY_NAME">BlockPopups</ph> applies, but users can change this setting.
+  Leaving it unset means <ph name="BLOCK_POPUPS_POLICY_NAME">BlockPopups</ph> applies, but users can change this setting.
 example_value: 1
 features:
   dynamic_refresh: true

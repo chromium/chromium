@@ -1,4 +1,5 @@
 caption: User is enabled to export / import Crostini containers via the UI
+default: true
 desc: Setting the policy to Enabled or leaving it unset makes the export-import UI
   available to users. Setting the policy to Disabled renders the export-import UI
   unavailable to users.
