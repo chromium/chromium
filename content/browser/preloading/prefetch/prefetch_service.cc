@@ -970,8 +970,9 @@ void PrefetchService::ResetPrefetch(
   auto prefetches_ready_to_serve_iter = prefetches_ready_to_serve_.find(
       prefetch_container->GetPrefetchContainerKey());
   if (prefetches_ready_to_serve_iter != prefetches_ready_to_serve_.end() &&
-      prefetches_ready_to_serve_iter->second->GetPrefetchContainerKey() ==
-          prefetch_container->GetPrefetchContainerKey()) {
+      (!prefetches_ready_to_serve_iter->second ||
+       prefetches_ready_to_serve_iter->second->GetPrefetchContainerKey() ==
+           prefetch_container->GetPrefetchContainerKey())) {
     prefetches_ready_to_serve_.erase(prefetches_ready_to_serve_iter);
   }
 
