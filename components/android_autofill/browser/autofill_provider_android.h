@@ -87,6 +87,8 @@ class AutofillProviderAndroid : public AutofillProvider,
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 
  private:
+  friend class AutofillProviderAndroidTestApi;
+
   explicit AutofillProviderAndroid(content::WebContents* web_contents);
 
   // AndroidAutofillProviderBridge::Delegate:

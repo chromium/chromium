@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "autofill_provider_unittest.cc" : [
+  '.*_[a-z]*test\.cc': [
     "+content/public/test",
   ],
 }

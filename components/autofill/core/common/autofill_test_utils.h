@@ -120,6 +120,10 @@ inline FieldGlobalId MakeFieldGlobalId(
   return {MakeLocalFrameToken(randomize), MakeFieldRendererId()};
 }
 
+// Returns a copy of `form` in which the host frame of its and its fields is
+// set to `frame_token`.
+FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token);
+
 // Returns a copy of `form` with cleared values.
 FormData WithoutValues(FormData form);
 

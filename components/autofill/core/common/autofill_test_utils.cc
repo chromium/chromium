@@ -97,6 +97,14 @@ RemoteFrameToken MakeRemoteFrameToken(RandomizeFrame randomize) {
   }
 }
 
+FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
+  form.host_frame = frame_token;
+  for (FormFieldData& field : form.fields) {
+    field.host_frame = frame_token;
+  }
+  return form;
+}
+
 FormData WithoutValues(FormData form) {
   for (FormFieldData& field : form.fields) {
     field.value.clear();
