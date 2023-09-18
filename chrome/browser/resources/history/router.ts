@@ -16,7 +16,7 @@ import {getTemplate} from './router.html.js';
 //  these values for better type check when `loadTimeData` is no longer needed.
 export const Page = {
   HISTORY: 'history',
-  HISTORY_CLUSTERS: loadTimeData.getBoolean('renameJourneys') ? '2' :
+  HISTORY_CLUSTERS: loadTimeData.getBoolean('renameJourneys') ? 'grouped' :
                                                                 'journeys',
   SYNCED_TABS: 'syncedTabs',
 };

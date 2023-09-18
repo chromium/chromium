@@ -10,7 +10,7 @@ namespace history_clusters {
 
 const char* GetChromeUIHistoryClustersURL() {
   return base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-             ? "chrome://history/2"
+             ? "chrome://history/grouped"
              : "chrome://history/journeys";
 }
 
