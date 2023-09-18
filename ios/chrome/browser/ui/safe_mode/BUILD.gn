@@ -61,6 +61,7 @@ source_set("eg2_tests") {
     "//base:base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -194,7 +194,7 @@ id<GREYMatcher> notPracticallyVisible() {
 - (void)testCollectionShortcuts {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
+  config.features_disabled.push_back(kIOSSetUpList);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Check the Bookmarks.
@@ -642,6 +642,15 @@ id<GREYMatcher> notPracticallyVisible() {
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
 - (void)testPositionRestoredWithShiftingOffset {
+  // With Magic Stack and Segmentation enabled, the Magic Stack is added later
+  // to the View Hierarchy. Thus, -heightAboveFeed is inaccurate and is greater
+  // than the saved scrollState, so the scroll offset is just set to the top of
+  // the surface.
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kMagicStack);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   // Scroll a bit to have a position to restore.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 20)];
@@ -677,6 +686,18 @@ id<GREYMatcher> notPracticallyVisible() {
     EARL_GREY_TEST_SKIPPED(
         @"Pinning Fake Omnibox to top of surface is only on iphone");
   }
+
+  // With Magic Stack and Segmentation enabled, the Magic Stack is added later
+  // to the View Hierarchy. Thus, -heightAboveFeed is inaccurate and is greater
+  // than the saved scrollState, so the scroll offset is just set to the top of
+  // the surface.
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kMagicStack);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
   // Scroll enough to naturally pin the omnibox to the top.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];

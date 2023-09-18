@@ -8390,12 +8390,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Magic_Stack_Less_Top_Space_20230912",
                     "params": {
-                        "kReducedSpaceParam": "-30"
+                        "ReducedNTPTopSpace": "20",
+                        "enable_default_model": "true"
                     },
                     "enable_features": [
                         "MagicStack",
+                        "SegmentationPlatformIosModuleRanker",
+                        "SegmentationPlatformUserVisibleTaskRunner",
                         "TabResumption"
                     ]
                 }
