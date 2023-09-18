@@ -199,6 +199,8 @@ source_set("app_service") {
       "publishers/web_apps_crosapi.h",
       "publishers/web_apps_crosapi_factory.cc",
       "publishers/web_apps_crosapi_factory.h",
+      "shortcut_removal_dialog.cc",
+      "shortcut_removal_dialog.h",
       "subscriber_crosapi.cc",
       "subscriber_crosapi.h",
       "subscriber_crosapi_factory.cc",

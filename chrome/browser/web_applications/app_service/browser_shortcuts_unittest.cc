@@ -277,7 +277,7 @@ TEST_F(BrowserShortcutsTest, RemoveShortcut) {
   base::test::TestFuture<apps::ShortcutId> future;
 
   SetOnShortcutRemovedCallback(future.GetCallback());
-  proxy->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown, nullptr);
+  proxy->RemoveShortcutSilently(shortcut_id, apps::UninstallSource::kUnknown);
 
   apps::ShortcutId removed_shortcut_id = future.Get();
   EXPECT_EQ(removed_shortcut_id, shortcut_id);

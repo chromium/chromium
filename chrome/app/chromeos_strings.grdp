@@ -7263,4 +7263,14 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Opening windows from your previous device
   </message>
 
+  <!-- Shortcut Removal Dialog -->
+  <message name="IDS_PROMP_SHORTCUT_REMOVAL_TITLE"
+    desc="Title text for remove a shortcut in its host app. Example: 'Remove Fortnite - GeForce Now shortcut?'">
+    Remove "<ph name="SHORTCUT_NAME">$1<ex>Fortnite</ex></ph> - <ph name="APP_NAME">$2<ex>GeForce Now</ex></ph>" shortcut?
+  </message>
+  <message name="IDS_PROMP_REMOVE_SHORTCUT_BUTTON"
+    desc="Text for the remove button on the shortcut removal prompt">
+    Remove
+  </message>
+
 </grit-part>

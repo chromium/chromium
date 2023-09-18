@@ -27,6 +27,7 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
+#include "chrome/browser/apps/app_service/shortcut_removal_dialog.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
@@ -472,16 +473,30 @@ void AppServiceProxyAsh::LaunchShortcut(const ShortcutId& id,
 void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
                                         UninstallSource uninstall_source,
                                         gfx::NativeWindow parent_window) {
-  std::string host_app_id = ShortcutRegistryCache()->GetShortcutHostAppId(id);
-  std::string local_id = ShortcutRegistryCache()->GetShortcutLocalId(id);
-  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
-
-  auto* shortcut_publisher = GetShortcutPublisher(app_type);
-  if (!shortcut_publisher) {
+  // If the dialog exists for the shortcut id, we bring the dialog to the front
+  auto it = shortcut_removal_dialogs_.find(id);
+  if (it != shortcut_removal_dialogs_.end()) {
+    if (it->second->GetWidget()) {
+      it->second->GetWidget()->Show();
+    }
     return;
   }
-  shortcut_publisher->RemoveShortcut(host_app_id, local_id, uninstall_source);
-  // TODO(crbug.com/1412708): Add remove confirmation dialog.
+
+  // TODO(crbug.com/1412708): Add icon loading code.
+  auto shortcut_removal_dialog_ptr = std::make_unique<ShortcutRemovalDialog>(
+      profile_, id, parent_window,
+      base::BindOnce(&AppServiceProxyAsh::OnShortcutRemovalDialogClosed,
+                     weak_ptr_factory_.GetWeakPtr(), id, uninstall_source));
+  ShortcutRemovalDialog* shortcut_removal_dialog =
+      shortcut_removal_dialog_ptr.get();
+  shortcut_removal_dialogs_.emplace(id, std::move(shortcut_removal_dialog_ptr));
+  shortcut_removal_dialog->PrepareAndShow();
+}
+
+void AppServiceProxyAsh::RemoveShortcutSilently(
+    const ShortcutId& shortcut_id,
+    UninstallSource uninstall_source) {
+  RemoveShortcutImpl(shortcut_id, uninstall_source);
 }
 
 std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
@@ -656,6 +671,20 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   auto it = uninstall_dialogs_.find(app_id);
   DCHECK(it != uninstall_dialogs_.end());
   uninstall_dialogs_.erase(it);
+}
+
+void AppServiceProxyAsh::OnShortcutRemovalDialogClosed(
+    const ShortcutId& shortcut_id,
+    UninstallSource uninstall_source,
+    bool remove,
+    ShortcutRemovalDialog* shortcut_removal_dialog) {
+  if (remove) {
+    RemoveShortcutImpl(shortcut_id, uninstall_source);
+  }
+  CHECK(shortcut_removal_dialog);
+  auto it = shortcut_removal_dialogs_.find(shortcut_id);
+  CHECK(it != shortcut_removal_dialogs_.end());
+  shortcut_removal_dialogs_.erase(it);
 }
 
 void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
@@ -1061,6 +1090,20 @@ void AppServiceProxyAsh::OnHostAppIconForShortcutLoaded(
     apps::LoadShortcutIconWithBadgeCallback callback,
     IconValuePtr host_app_icon) {
   std::move(callback).Run(std::move(shortcut_icon), std::move(host_app_icon));
+}
+
+void AppServiceProxyAsh::RemoveShortcutImpl(const ShortcutId& shortcut_id,
+                                            UninstallSource uninstall_source) {
+  std::string host_app_id =
+      ShortcutRegistryCache()->GetShortcutHostAppId(shortcut_id);
+  std::string local_id =
+      ShortcutRegistryCache()->GetShortcutLocalId(shortcut_id);
+  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
+
+  auto* shortcut_publisher = GetShortcutPublisher(app_type);
+  if (shortcut_publisher) {
+    shortcut_publisher->RemoveShortcut(host_app_id, local_id, uninstall_source);
+  }
 }
 
 }  // namespace apps

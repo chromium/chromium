@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/views/apps/app_dialog/shortcut_removal_dialog_view.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -83,11 +84,11 @@ class AppServiceShortcutItemBrowserTest
   }
 
   apps::ShortcutId CreateWebAppBasedShortcut(
-      const GURL& app_url,
+      const GURL& shortcut_url,
       const std::u16string& shortcut_name) {
     // Create web app based shortcut.
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    web_app_info->start_url = shortcut_url;
     web_app_info->title = shortcut_name;
     auto local_shortcut_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -284,6 +285,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
                 .vector_icon());
 
   menu_model->ActivatedAt(uninstall_command_index.value());
+  ShortcutRemovalDialogView* last_created_dialog =
+      ShortcutRemovalDialogView::GetLastCreatedViewForTesting();
+  last_created_dialog->AcceptDialog();
   base::RunLoop().RunUntilIdle();
   content::RunAllTasksUntilIdle();
   item = model_updater->FindItem(shortcut_id.value());

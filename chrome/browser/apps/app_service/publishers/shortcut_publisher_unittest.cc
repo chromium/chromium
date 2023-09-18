@@ -275,20 +275,20 @@ TEST_F(ShortcutPublisherTest, RemoveShortcut_CallsCorrectPublisher) {
   // based on the parent app app type.
   UninstallSource uninstall_source = UninstallSource::kUnknown;
   ASSERT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[0]->shortcut_id));
-  proxy()->RemoveShortcut(initial_chrome_shortcuts[0]->shortcut_id,
-                          uninstall_source, nullptr);
+  proxy()->RemoveShortcutSilently(initial_chrome_shortcuts[0]->shortcut_id,
+                                  uninstall_source);
   EXPECT_FALSE(cache->HasShortcut(initial_chrome_shortcuts[0]->shortcut_id));
   EXPECT_EQ(cache->GetAllShortcuts().size(), 2u);
 
   ASSERT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[1]->shortcut_id));
-  proxy()->RemoveShortcut(initial_chrome_shortcuts[1]->shortcut_id,
-                          uninstall_source, nullptr);
+  proxy()->RemoveShortcutSilently(initial_chrome_shortcuts[1]->shortcut_id,
+                                  uninstall_source);
   EXPECT_FALSE(cache->HasShortcut(initial_chrome_shortcuts[1]->shortcut_id));
   EXPECT_EQ(cache->GetAllShortcuts().size(), 1u);
 
   ASSERT_TRUE(cache->HasShortcut(initial_web_app_shortcuts[0]->shortcut_id));
-  proxy()->RemoveShortcut(initial_web_app_shortcuts[0]->shortcut_id,
-                          uninstall_source, nullptr);
+  proxy()->RemoveShortcutSilently(initial_web_app_shortcuts[0]->shortcut_id,
+                                  uninstall_source);
   EXPECT_FALSE(cache->HasShortcut(initial_web_app_shortcuts[0]->shortcut_id));
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
 }

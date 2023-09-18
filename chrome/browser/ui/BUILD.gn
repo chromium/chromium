@@ -6033,6 +6033,11 @@ static_library("ui") {
     }
 
     if (is_chromeos_ash) {
+      sources += [
+        "views/apps/app_dialog/shortcut_removal_dialog_view.cc",
+        "views/apps/app_dialog/shortcut_removal_dialog_view.h",
+      ]
+
       deps += [
         "//components/metrics/structured:neutrino_logging",
         "//components/metrics/structured:neutrino_logging_util",

@@ -59,6 +59,7 @@ class PromiseAppRegistryCache;
 class PromiseAppService;
 class ShortcutPublisher;
 class ShortcutRegistryCache;
+class ShortcutRemovalDialog;
 class StandaloneBrowserApps;
 class UninstallDialog;
 
@@ -194,6 +195,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                       UninstallSource uninstall_source,
                       gfx::NativeWindow parent_window);
 
+  // Removes the shortcut for the given 'shortcut_id' without prompting user to
+  // confirm.
+  void RemoveShortcutSilently(const ShortcutId& shortcut_id,
+                              UninstallSource uninstall_source);
+
   // Loads the icon for app service shortcut represented by `shortcut_id`, this
   // icon does not include the host app icon badge.
   // `callback` may be dispatched synchronously if it's possible to quickly
@@ -251,6 +257,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   using UninstallDialogs =
       base::flat_map<std::string, std::unique_ptr<apps::UninstallDialog>>;
+  using ShortcutRemovalDialogs =
+      base::flat_map<apps::ShortcutId,
+                     std::unique_ptr<apps::ShortcutRemovalDialog>>;
 
   bool IsValidProfile() override;
   void Initialize() override;
@@ -287,6 +296,15 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                bool clear_site_data,
                                bool report_abuse,
                                UninstallDialog* uninstall_dialog);
+
+  // Invoked when the shortcut removal dialog is closed. The shortcut for the
+  // given `shortcut_id` will be removed directly if `remove` is true.
+  // `shortcut_removal_dialog` will be removed from `shortcut_removal_dialogs_`.
+  void OnShortcutRemovalDialogClosed(
+      const ShortcutId& shortcut_id,
+      UninstallSource uninstall_source,
+      bool remove,
+      ShortcutRemovalDialog* shortcut_removal_dialog);
 
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
@@ -405,6 +423,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       apps::LoadShortcutIconWithBadgeCallback callback,
       IconValuePtr host_app_icon);
 
+  // Impl method to remove shortcut identified by `shortcut_id` from publishers.
+  void RemoveShortcutImpl(const ShortcutId& shortcut_id,
+                          UninstallSource uninstall_source);
+
   // The LoadIconFromIconKey implementation sends a chained series of requests
   // through each icon loader, starting from the outer and working back to the
   // inner. Fields are listed from inner to outer, the opposite of call order,
@@ -444,6 +466,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   PausedApps pending_pause_requests_;
 
   UninstallDialogs uninstall_dialogs_;
+  ShortcutRemovalDialogs shortcut_removal_dialogs_;
 
   // When the icon folder is being deleted, the `ReadIcons` request is added to
   // `pending_read_icon_requests_` to wait for the deletion. When the icon
