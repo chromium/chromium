@@ -10,6 +10,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
@@ -50,7 +51,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
-  // TODO(crbug.com/1425818): Add AccountBookmarkModelFactory support.
+  DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<
@@ -71,6 +72,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetApplicationLocale(),
       ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
           ->GetForBrowserState(chrome_state),
+      ios::AccountBookmarkModelFactory::GetInstance()->GetForBrowserState(
+          chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       SyncServiceFactory::GetForBrowserState(chrome_state),

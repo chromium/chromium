@@ -91,7 +91,6 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
 // context).
 void GetAllPriceTrackedBookmarks(
     ShoppingService* shopping_service,
-    bookmarks::BookmarkModel* bookmark_model,
     base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
         callback);
 

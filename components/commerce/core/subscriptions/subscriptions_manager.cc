@@ -182,7 +182,7 @@ void SubscriptionsManager::UpdateSyncStates(bool sync_succeeded) {
 }
 
 void SubscriptionsManager::HandleSync() {
-  if (account_checker_ && account_checker_->IsOptedIntoSync() &&
+  if (account_checker_ && account_checker_->IsSignedIn() &&
       account_checker_->IsAnonymizedUrlDataCollectionEnabled()) {
     GetRemoteSubscriptionsAndUpdateStorage(
         SubscriptionType::kPriceTrack,
@@ -454,8 +454,7 @@ void SubscriptionsManager::OnUnsubscribe(
 
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  storage_->DeleteAll();
-  SyncSubscriptions();
+  WipeStorageAndSyncSubscriptions();
 }
 
 bool SubscriptionsManager::HasRequestRunning() {
@@ -484,6 +483,11 @@ void SubscriptionsManager::AddObserver(SubscriptionsObserver* observer) {
 
 void SubscriptionsManager::RemoveObserver(SubscriptionsObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void SubscriptionsManager::WipeStorageAndSyncSubscriptions() {
+  storage_->DeleteAll();
+  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::GetLastSyncSucceededForTesting() {

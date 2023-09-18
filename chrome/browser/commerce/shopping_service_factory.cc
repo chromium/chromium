@@ -82,7 +82,7 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
       GetCurrentCountryCode(g_browser_process->variations_service()),
       g_browser_process->GetApplicationLocale(),
       BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      nullptr, OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()

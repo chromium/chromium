@@ -372,7 +372,9 @@ void MockWebWrapper::RunJavascript(
 }
 
 ShoppingServiceTestBase::ShoppingServiceTestBase()
-    : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
+    : local_or_syncable_bookmark_model_(
+          bookmarks::TestBookmarkClient::CreateModel()),
+      account_bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
       opt_guide_(std::make_unique<MockOptGuideDecider>()),
       pref_service_(std::make_unique<TestingPrefServiceSimple>()),
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
@@ -390,9 +392,9 @@ ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::SetUp() {
   shopping_service_ = std::make_unique<ShoppingService>(
-      "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
-      pref_service_.get(), identity_test_env_->identity_manager(),
-      sync_service_.get(),
+      "us", "en-us", local_or_syncable_bookmark_model_.get(),
+      account_bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
+      identity_test_env_->identity_manager(), sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
       nullptr, nullptr, nullptr, nullptr);

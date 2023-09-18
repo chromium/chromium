@@ -273,10 +273,9 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
 
 void GetAllPriceTrackedBookmarks(
     ShoppingService* shopping_service,
-    bookmarks::BookmarkModel* bookmark_model,
     base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
         callback) {
-  if (!shopping_service || !bookmark_model) {
+  if (!shopping_service) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -288,13 +287,9 @@ void GetAllPriceTrackedBookmarks(
       SubscriptionType::kPriceTrack,
       base::BindOnce(
           [](base::WeakPtr<ShoppingService> service,
-             base::WeakPtr<bookmarks::BookmarkModel> model,
              base::OnceCallback<void(
                  std::vector<const bookmarks::BookmarkNode*>)> callback,
              std::vector<CommerceSubscription> subscriptions) {
-            std::vector<const bookmarks::BookmarkNode*> shopping_bookmarks =
-                GetAllShoppingBookmarks(model.get());
-
             // Get all cluster IDs in a map for easier lookup.
             std::unordered_set<uint64_t> cluster_set;
             for (auto sub : subscriptions) {
@@ -306,10 +301,14 @@ void GetAllPriceTrackedBookmarks(
               }
             }
 
+            bookmarks::BookmarkModel* model =
+                service->GetBookmarkModelUsedForSync();
+            std::vector<const bookmarks::BookmarkNode*> shopping_bookmarks =
+                GetAllShoppingBookmarks(model);
             std::vector<const bookmarks::BookmarkNode*> tracked_bookmarks;
             for (const auto* node : shopping_bookmarks) {
               std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-                  power_bookmarks::GetNodePowerBookmarkMeta(model.get(), node);
+                  power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
               if (!meta || !meta->has_shopping_specifics()) {
                 continue;
@@ -326,8 +325,7 @@ void GetAllPriceTrackedBookmarks(
             }
             std::move(callback).Run(std::move(tracked_bookmarks));
           },
-          shopping_service->AsWeakPtr(), bookmark_model->AsWeakPtr(),
-          std::move(callback)));
+          shopping_service->AsWeakPtr(), std::move(callback)));
 }
 
 std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(

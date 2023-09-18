@@ -119,6 +119,14 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   void AddObserver(SubscriptionsObserver* observer);
   void RemoveObserver(SubscriptionsObserver* observer);
 
+  // Wipes stored subscriptions and syncs again them from the server. Do not add
+  // new calls for this method - this as temporary flow to support switching
+  // BookmarkModel instances.
+  //
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  //     See ConsentLevel::kSync documentation for details.
+  void WipeStorageAndSyncSubscriptions();
+
   // For tests only, return last_sync_succeeded_.
   bool GetLastSyncSucceededForTesting();
 

@@ -18,7 +18,7 @@ class MockAccountChecker : public AccountChecker {
   MockAccountChecker(const MockAccountChecker&) = delete;
   ~MockAccountChecker() override;
 
-  MOCK_METHOD(bool, IsOptedIntoSync, (), (override));
+  MOCK_METHOD(bool, IsSignedIn, (), (override));
 
   MOCK_METHOD(bool, IsSyncingBookmarks, (), (override));
 
@@ -28,7 +28,7 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
-  void SetOptedIntoSync(bool opted_into_sync);
+  void SetSignedIn(bool signed_in);
 
   void SetSyncingBookmarks(bool syncing);
 

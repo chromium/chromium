@@ -272,8 +272,8 @@ class SubscriptionsManagerTest : public testing::Test,
               subscriptions_manager_->HasPendingRequestsForTesting());
   }
 
-  void SetAccountStatus(bool opted_into_sync, bool msbb_enabled) {
-    account_checker_.SetOptedIntoSync(opted_into_sync);
+  void SetAccountStatus(bool signed_in, bool msbb_enabled) {
+    account_checker_.SetSignedIn(signed_in);
     account_checker_.SetAnonymizedUrlDataCollectionEnabled(msbb_enabled);
   }
 

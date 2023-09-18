@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/uuid.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -107,6 +108,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetDiscountInfoForUrls,
               (const std::vector<GURL>& urls, DiscountInfoCallback callback),
               (override));
+  MOCK_METHOD(bookmarks::BookmarkModel*,
+              GetBookmarkModelUsedForSync,
+              (),
+              (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -133,6 +138,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetIsPriceInsightsEligible(bool is_eligible);
   void SetIsDiscountEligibleToShowOnNavigation(bool is_eligible);
   void SetResponseForGetDiscountInfoForUrls(const DiscountsMap& discounts_map);
+  void SetBookmarkModelUsedForSync(bookmarks::BookmarkModel* bookmark_model);
 };
 
 }  // namespace commerce

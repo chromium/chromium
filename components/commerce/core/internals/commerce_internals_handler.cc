@@ -60,7 +60,7 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
   detail->is_account_checker_valid =
       mojom::EligibleEntry::New(true, /*expected_value=*/true);
   detail->is_signed_in =
-      mojom::EligibleEntry::New(account_checker->IsOptedIntoSync(),
+      mojom::EligibleEntry::New(account_checker->IsSignedIn(),
                                 /*expected_value=*/true);
   detail->is_syncing_bookmarks = mojom::EligibleEntry::New(
       account_checker->IsSyncingBookmarks(), /*expected_value=*/true);

@@ -30,6 +30,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -213,12 +214,15 @@ using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
 //         browser()->profile()));
 // clang-format on
 
-class ShoppingService : public KeyedService, public base::SupportsUserData {
+class ShoppingService : public KeyedService,
+                        public base::SupportsUserData,
+                        public syncer::SyncServiceObserver {
  public:
   ShoppingService(
       const std::string& country_on_startup,
       const std::string& locale_on_startup,
-      bookmarks::BookmarkModel* bookmark_model,
+      bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
+      bookmarks::BookmarkModel* account_bookmark_model,
       optimization_guide::OptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
@@ -320,6 +324,14 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // callback-based version |IsSubscribed| is preferred. Information provided
   // by this API is not guaranteed to be correct.
   virtual bool IsSubscribedFromCache(const CommerceSubscription& subscription);
+
+  // The bookmark model to be used by the service. Depending on feature flags
+  // and sync opt-in state, returns either LocalOrSyncable or Account bookmark
+  // model instance.
+  //
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  //     See ConsentLevel::kSync documentation for details.
+  virtual bookmarks::BookmarkModel* GetBookmarkModelUsedForSync();
 
   // Gets all bookmarks that are price tracked. Internally this calls the
   // function by the same name in price_tracking_utils.h.
@@ -586,6 +598,13 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   void SetDiscountsStorageForTesting(std::unique_ptr<DiscountsStorage> storage);
 
+  void OnStateChanged(syncer::SyncService* sync) override;
+
+  // Updates the bookmark model used for sync (and shopping) if needed. Invoked
+  // when sync state changes.
+  void UpdateBookmarkModelUsedForSync();
+  bookmarks::BookmarkModel* CalculateBookmarkModelUsedForSync();
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -600,7 +619,18 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   raw_ptr<syncer::SyncService> sync_service_;
 
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  // Should not be used directly - `bookmark_model_used_for_sync_` should be
+  // used instead.
+  raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
+
+  // Should not be used directly - `bookmark_model_used_for_sync_` should be
+  // used instead.
+  raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
+
+  // The bookmark model to be used by the service. Depending on feature flags
+  // and sync opt-in state, this is equal to either
+  // `local_or_syncable_bookmark_model_` or `account_bookmark_model_`.
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_used_for_sync_;
 
   std::unique_ptr<AccountChecker> account_checker_;
 
@@ -637,6 +667,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.
   unified_consent::ConsentThrottle bookmark_consent_throttle_;
+
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  //     See ConsentLevel::kSync documentation for details.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);
