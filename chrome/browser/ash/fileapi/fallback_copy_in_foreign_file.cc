@@ -8,6 +8,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/safe_base_name.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "net/base/io_buffer.h"
@@ -124,7 +125,7 @@ class Copier {
 
   // Per the async_file_util.h comments, the async_file_util_ reference stays
   // alive as long as the context_ is alive.
-  storage::AsyncFileUtil& async_file_util_;
+  const raw_ref<storage::AsyncFileUtil> async_file_util_;
 
   // This is the FileSystemOperationContext originally passed to
   // FallbackCopyInForeignFile.
@@ -171,7 +172,7 @@ void Copier::Start(storage::AsyncFileUtil::StatusCallback callback) {
 
   callback_ = std::move(callback);
 
-  async_file_util_.EnsureFileExists(
+  async_file_util_->EnsureFileExists(
       DuplicateFileSystemOperationContext(*context_), temp_url_,
       base::BindOnce(&Copier::OnEnsureFileExists,
                      // base::Unretained is safe as callback_ owns this.
@@ -332,7 +333,7 @@ void Copier::OnFlush(int result) {
   // that on files that are still open.
   fs_writer_.reset();
 
-  async_file_util_.GetFileInfo(
+  async_file_util_->GetFileInfo(
       DuplicateFileSystemOperationContext(*context_), dest_url_,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
       base::BindOnce(&Copier::OnGetFileInfo,
@@ -354,7 +355,7 @@ void Copier::OnGetFileInfo(base::File::Error result,
     return;
   }
 
-  async_file_util_.MoveFileLocal(
+  async_file_util_->MoveFileLocal(
       DuplicateFileSystemOperationContext(*context_), temp_url_, dest_url_,
       storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&Copier::OnMoveTempToDest,
@@ -387,7 +388,7 @@ void Copier::Finish(base::File::Error result) {
   // idempotent. A second reset is harmless.
   fs_writer_.reset();
 
-  async_file_util_.DeleteFile(
+  async_file_util_->DeleteFile(
       DuplicateFileSystemOperationContext(*context_), temp_url_,
       base::BindOnce(
           [](storage::AsyncFileUtil::StatusCallback callback,

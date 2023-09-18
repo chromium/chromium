@@ -247,8 +247,9 @@ void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
 
 void NearbyPresenceCredentialManagerImpl::InitializeDeviceMetadata(
     base::OnceClosure on_metadata_initialized_callback) {
-  nearby_presence_->UpdateLocalDeviceMetadata(
-      proto::MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()));
+  (*nearby_presence_)
+      ->UpdateLocalDeviceMetadata(proto::MetadataToMojom(
+          local_device_data_provider_->GetDeviceMetadata()));
   std::move(on_metadata_initialized_callback).Run();
 }
 
@@ -356,11 +357,13 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
   //      4. Download other devices' credentials.
   //      5. Save other devices' credentials.
   // Next, kick off Step 2.
-  nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
-      proto::MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()),
-      base::BindOnce(
-          &NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated,
-          weak_ptr_factory_.GetWeakPtr()));
+  (*nearby_presence_)
+      ->UpdateLocalDeviceMetadataAndGenerateCredentials(
+          proto::MetadataToMojom(
+              local_device_data_provider_->GetDeviceMetadata()),
+          base::BindOnce(&NearbyPresenceCredentialManagerImpl::
+                             OnFirstTimeCredentialsGenerated,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure(
@@ -447,12 +450,13 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
     mojo_credentials.push_back(proto::SharedCredentialToMojom(cred));
   }
 
-  nearby_presence_->UpdateRemoteSharedCredentials(
-      std::move(mojo_credentials),
-      local_device_data_provider_->GetAccountName(),
-      base::BindOnce(&NearbyPresenceCredentialManagerImpl::
-                         OnFirstTimeRemoteCredentialsSaved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  (*nearby_presence_)
+      ->UpdateRemoteSharedCredentials(
+          std::move(mojo_credentials),
+          local_device_data_provider_->GetAccountName(),
+          base::BindOnce(&NearbyPresenceCredentialManagerImpl::
+                             OnFirstTimeRemoteCredentialsSaved,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
@@ -487,11 +491,12 @@ void NearbyPresenceCredentialManagerImpl::StartDailySync() {
   //      4. Save other devices' credentials.
   //
   // Next, kick off Step 1.
-  nearby_presence_->GetLocalSharedCredentials(
-      local_device_data_provider_->GetAccountName(),
-      base::BindOnce(
-          &NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials,
-          weak_ptr_factory_.GetWeakPtr()));
+  (*nearby_presence_)
+      ->GetLocalSharedCredentials(
+          local_device_data_provider_->GetAccountName(),
+          base::BindOnce(
+              &NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
@@ -589,12 +594,13 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload(
     mojo_credentials.push_back(proto::SharedCredentialToMojom(cred));
   }
 
-  nearby_presence_->UpdateRemoteSharedCredentials(
-      std::move(mojo_credentials),
-      local_device_data_provider_->GetAccountName(),
-      base::BindOnce(&NearbyPresenceCredentialManagerImpl::
-                         OnDailySyncRemoteCredentialsSaved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  (*nearby_presence_)
+      ->UpdateRemoteSharedCredentials(
+          std::move(mojo_credentials),
+          local_device_data_provider_->GetAccountName(),
+          base::BindOnce(&NearbyPresenceCredentialManagerImpl::
+                             OnDailySyncRemoteCredentialsSaved,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDailySyncRemoteCredentialsSaved(

@@ -18,7 +18,7 @@ IphSession::IphSession(const base::Feature& feature,
 }
 
 IphSession::~IphSession() {
-  tracker_->Dismissed(feature_);
+  tracker_->Dismissed(*feature_);
 }
 
 void IphSession::PerformAction(ActionType action_type,

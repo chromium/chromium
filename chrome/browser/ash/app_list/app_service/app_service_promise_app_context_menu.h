@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_PROMISE_APP_CONTEXT_MENU_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
 
@@ -43,7 +44,7 @@ class AppServicePromiseAppContextMenu : public app_list::AppContextMenu {
  private:
   const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
 
-  const apps::PackageId& package_id_;
+  const raw_ref<const apps::PackageId> package_id_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_PROMISE_APP_CONTEXT_MENU_H_

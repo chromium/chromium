@@ -38,7 +38,7 @@ AppServicePromiseAppContextMenu::~AppServicePromiseAppContextMenu() = default;
 
 void AppServicePromiseAppContextMenu::GetMenuModel(
     GetMenuModelCallback callback) {
-  if (!proxy_->PromiseAppRegistryCache()->HasPromiseApp(package_id_)) {
+  if (!proxy_->PromiseAppRegistryCache()->HasPromiseApp(*package_id_)) {
     std::move(callback).Run(nullptr);
     return;
   }

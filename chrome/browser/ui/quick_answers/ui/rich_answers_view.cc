@@ -230,7 +230,7 @@ void RichAnswersView::AddResultTypeIcon() {
   vector_icon_ =
       vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
   vector_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(GetResultTypeIcon(result_.result_type),
+      ui::ImageModel::FromVectorIcon(GetResultTypeIcon(result_->result_type),
                                      cros_tokens::kCrosSysSystemBaseElevated,
                                      /*icon_size=*/kResultTypeIconSizeDip));
 }

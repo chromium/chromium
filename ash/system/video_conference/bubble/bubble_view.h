@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 
 namespace views {
@@ -44,7 +45,7 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
   // Unowned by `BubbleView`.
   raw_ptr<VideoConferenceTrayController, ExperimentalAsh> controller_;
 
-  const MediaApps& media_apps_;
+  const raw_ref<const MediaApps> media_apps_;
 };
 
 }  // namespace video_conference

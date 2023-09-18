@@ -118,14 +118,14 @@ void BubbleView::AddedToWidget() {
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).
-  AddChildView(std::make_unique<ReturnToAppPanel>(media_apps_));
+  AddChildView(std::make_unique<ReturnToAppPanel>(*media_apps_));
 
   const bool has_toggle_effects =
       controller_->effects_manager().HasToggleEffects();
   const bool has_set_value_effects =
       controller_->effects_manager().HasSetValueEffects();
 
-  if (HasLinuxApps(media_apps_) &&
+  if (HasLinuxApps(*media_apps_) &&
       (has_toggle_effects || has_set_value_effects)) {
     AddChildView(std::make_unique<LinuxAppWarningView>());
   }

@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
@@ -204,7 +205,7 @@ class NotificationsObserver {
     }
 
     // An additional RunUntilIdle to try catching extra unwanted notifications.
-    task_environment_.RunUntilIdle();
+    task_environment_->RunUntilIdle();
 
     if (notifications_counter_ != notifications) {
       LOG(ERROR) << "Actual notifications: " << notifications_counter_;
@@ -216,7 +217,7 @@ class NotificationsObserver {
   size_t Notifications() const { return notifications_counter_; }
 
  private:
-  base::test::TaskEnvironment& task_environment_;
+  const raw_ref<base::test::TaskEnvironment> task_environment_;
   size_t notifications_counter_ = 0;
   absl::optional<base::RunLoop> run_loop_;
   absl::optional<size_t> expected_notifications_;

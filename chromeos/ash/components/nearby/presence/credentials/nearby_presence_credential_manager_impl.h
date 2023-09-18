@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_NEARBY_PRESENCE_CREDENTIAL_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_NEARBY_PRESENCE_CREDENTIAL_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager.h"
 
 #include "base/memory/raw_ptr.h"
@@ -266,7 +267,8 @@ class NearbyPresenceCredentialManagerImpl
   std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider_;
 
   base::OneShotTimer server_response_timer_;
-  const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence_;
+  const raw_ref<const mojo::SharedRemote<mojom::NearbyPresence>>
+      nearby_presence_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Schedulers used to schedule immediate tasks to communicate with the

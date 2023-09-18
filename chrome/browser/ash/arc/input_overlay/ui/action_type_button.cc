@@ -67,7 +67,7 @@ gfx::ImageSkia ActionTypeButton::GetImage(ButtonState for_state) const {
 }
 
 const gfx::VectorIcon& ActionTypeButton::GetVectorIcon() const {
-  return icon_;
+  return *icon_;
 }
 
 bool ActionTypeButton::IsIconOnTheLeftSide() {

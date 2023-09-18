@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -78,7 +79,7 @@ class RichAnswersView : public views::View {
 
   base::WeakPtr<QuickAnswersUiController> controller_;
 
-  const quick_answers::QuickAnswer& result_;
+  const raw_ref<const quick_answers::QuickAnswer> result_;
 
   raw_ptr<views::View> base_view_ = nullptr;
   raw_ptr<views::View> main_view_ = nullptr;
