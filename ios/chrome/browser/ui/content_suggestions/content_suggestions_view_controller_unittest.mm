@@ -6,6 +6,8 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ntp/features.h"
@@ -341,4 +343,38 @@ TEST_F(ContentSuggestionsViewControllerTest,
   safetyCheckModule = (MagicStackModuleContainer*)subviews[2];
 
   EXPECT_EQ(ContentSuggestionsModuleType::kSafetyCheck, safetyCheckModule.type);
+}
+
+// Test that with Magic Stack and Segmentation enabled, the Magic Stack is
+// created upon surface creation with two placeholder modules even without the
+// Magic Stack order available yet, and that the placeholders are replaced with
+// the real modules once the Magic Stack order is received.
+TEST_F(ContentSuggestionsViewControllerTest, TestMagicStackPlaceholder) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {}}},
+      {});
+
+  [view_controller_ setShortcutTilesWithConfigs:@[ BookmarkActionItem() ]];
+
+  [view_controller_ loadViewIfNeeded];
+
+  // Verify that after initial load with no Magic Stack order, two placeholder
+  // modules are in the Magic Stack.
+  UIStackView* magicStack = FindMagicStack();
+  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
+  ASSERT_EQ(2u, [subviews count]);
+
+  // Verify that after passing the Magic Stack order, the actual module is the
+  // only subview.
+  [view_controller_ setMagicStackOrder:@[
+    @(int(ContentSuggestionsModuleType::kMostVisited)),
+    @(int(ContentSuggestionsModuleType::kShortcuts)),
+  ]];
+  magicStack = FindMagicStack();
+  subviews = magicStack.arrangedSubviews;
+  ASSERT_EQ(1u, [subviews count]);
 }

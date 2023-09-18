@@ -1227,7 +1227,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _magicStackOrderFromSegmentation = magicStackOrder;
   _latestMagicStackOrder = [self segmentationMagicStackOrder];
   [self.consumer setMagicStackOrder:_latestMagicStackOrder];
-  [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
 - (void)addSetUpListToMagicStackOrder:(NSMutableArray*)order {
