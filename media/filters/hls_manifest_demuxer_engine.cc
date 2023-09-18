@@ -267,6 +267,36 @@ void HlsManifestDemuxerEngine::Stop() {
 
   data_source_provider_.Reset();
 
+  // When `AbortPendingReads` is called, it cancels any pending network
+  // requests. If those requests are still in flight, they respond with a
+  // `kAborted` status. It's possible that those requests have just finished on
+  // the renderer main thread, and the next event in the media task runner is to
+  // call ExchangeStreamId. In that case, the response is still valid, but
+  // `data_source_provider_` has been reset and in this case all the pending
+  // callbacks should be stopped to prevent re-entrant calls to `ReadStream`.
+  // A sequence diagram of the issue:
+  // media thread                                   renderer thread
+  // ReadStream
+  //     │
+  //     v
+  // ReadChunk ────────────────────────────────────> ReadChunk
+  //                                                    │
+  // Stop ──────────────────┬───────┐                   │
+  //                        │       │                   v
+  // ExchangeStreamId <───────────────────────────── PostTask
+  //    │                   │       └──────────────> Reset
+  //    v                   │
+  // ... any method call    └────────────────────────┐
+  //    │                                            │
+  //    v                                            │
+  // ReadFromUrl (data_source_provider_ is null!)    │
+  //                                                 │
+  //                                 (post task back to media thread)
+  //                                                 │
+  //                                                 │
+  // WMPI::DestructionHelper (deletes this) <────────┘
+  weak_factory_.InvalidateWeakPtrs();
+
   multivariant_root_.reset();
   rendition_selector_.reset();
   renditions_.clear();
