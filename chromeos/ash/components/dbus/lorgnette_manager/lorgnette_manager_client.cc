@@ -94,6 +94,43 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void OpenScanner(const lorgnette::OpenScannerRequest& request,
+                   chromeos::DBusMethodCallback<lorgnette::OpenScannerResponse>
+                       callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kOpenScannerMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode OpenScannerRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnOpenScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void CloseScanner(
+      const lorgnette::CloseScannerRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse> callback)
+      override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kCloseScannerMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode CloseScannerRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnCloseScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StartScan(
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
@@ -429,6 +466,48 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     }
 
     std::move(callback).Run(std::move(response_proto));
+  }
+
+  // Handles the response received after calling OpenScanner().
+  void OnOpenScannerResponse(
+      chromeos::DBusMethodCallback<lorgnette::OpenScannerResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain OpenScannerResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::OpenScannerResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode OpenScannerResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
+  }
+
+  // Handles the response received after calling CloseScanner().
+  void OnCloseScannerResponse(
+      chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain CloseScannerResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::CloseScannerResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode CloseScannerResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
   }
 
   // Called when scan data read is completed.

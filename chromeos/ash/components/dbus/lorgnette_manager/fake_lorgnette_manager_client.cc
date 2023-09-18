@@ -31,6 +31,20 @@ void FakeLorgnetteManagerClient::GetScannerCapabilities(
       FROM_HERE, base::BindOnce(std::move(callback), capabilities_response_));
 }
 
+void FakeLorgnetteManagerClient::OpenScanner(
+    const lorgnette::OpenScannerRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::OpenScannerResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), open_scanner_response_));
+}
+
+void FakeLorgnetteManagerClient::CloseScanner(
+    const lorgnette::CloseScannerRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
+}
+
 void FakeLorgnetteManagerClient::StartScan(
     const std::string& device_name,
     const lorgnette::ScanSettings& settings,
@@ -94,6 +108,18 @@ void FakeLorgnetteManagerClient::SetScannerCapabilitiesResponse(
     const absl::optional<lorgnette::ScannerCapabilities>&
         capabilities_response) {
   capabilities_response_ = capabilities_response;
+}
+
+void FakeLorgnetteManagerClient::SetOpenScannerResponse(
+    const absl::optional<lorgnette::OpenScannerResponse>&
+        open_scanner_response) {
+  open_scanner_response_ = open_scanner_response;
+}
+
+void FakeLorgnetteManagerClient::SetCloseScannerResponse(
+    const absl::optional<lorgnette::CloseScannerResponse>&
+        close_scanner_response) {
+  close_scanner_response_ = close_scanner_response;
 }
 
 void FakeLorgnetteManagerClient::SetScanResponse(

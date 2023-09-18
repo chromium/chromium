@@ -81,6 +81,20 @@ void FakeLorgnetteScannerManager::GetScannerCapabilities(
       FROM_HERE, base::BindOnce(std::move(callback), scanner_capabilities_));
 }
 
+void FakeLorgnetteScannerManager::OpenScanner(
+    const lorgnette::OpenScannerRequest& request,
+    OpenScannerCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), open_scanner_response_));
+}
+
+void FakeLorgnetteScannerManager::CloseScanner(
+    const lorgnette::CloseScannerRequest& request,
+    CloseScannerCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
+}
+
 bool FakeLorgnetteScannerManager::IsRotateAlternate(
     const std::string& scanner_name,
     const std::string& source_name) {
@@ -143,6 +157,16 @@ void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
     const absl::optional<lorgnette::ScannerCapabilities>&
         scanner_capabilities) {
   scanner_capabilities_ = scanner_capabilities;
+}
+
+void FakeLorgnetteScannerManager::SetOpenScannerResponse(
+    const absl::optional<lorgnette::OpenScannerResponse>& response) {
+  open_scanner_response_ = response;
+}
+
+void FakeLorgnetteScannerManager::SetCloseScannerResponse(
+    const absl::optional<lorgnette::CloseScannerResponse>& response) {
+  close_scanner_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetScanResponse(

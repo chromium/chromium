@@ -28,6 +28,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override;
   void GetScannerCapabilities(const std::string& scanner_name,
                               GetScannerCapabilitiesCallback callback) override;
+  void OpenScanner(const lorgnette::OpenScannerRequest& request,
+                   OpenScannerCallback callback) override;
+  void CloseScanner(const lorgnette::CloseScannerRequest& request,
+                    CloseScannerCallback callback) override;
   bool IsRotateAlternate(const std::string& scanner_name,
                          const std::string& source_name) override;
   void Scan(const std::string& scanner_name,
@@ -46,6 +50,14 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
       const absl::optional<lorgnette::ScannerCapabilities>&
           scanner_capabilities);
 
+  // Sets the response returned by OpenScanner().
+  void SetOpenScannerResponse(
+      const absl::optional<lorgnette::OpenScannerResponse>& response);
+
+  // Sets the response returned by CloseScanner().
+  void SetCloseScannerResponse(
+      const absl::optional<lorgnette::CloseScannerResponse>& response);
+
   // Sets the response returned by Scan().
   void SetScanResponse(
       const absl::optional<std::vector<std::string>>& scan_data);
@@ -53,6 +65,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
  private:
   std::vector<std::string> scanner_names_;
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
+  absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
+  absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   absl::optional<std::vector<std::string>> scan_data_;
 };
 

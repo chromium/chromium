@@ -56,6 +56,20 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
       chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities>
           callback) = 0;
 
+  // Opens the scanner described by |request| and returns the result using the
+  // provided |callback|.
+  virtual void OpenScanner(
+      const lorgnette::OpenScannerRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::OpenScannerResponse>
+          callback) = 0;
+
+  // Closes the scanner described by |request| and returns the result using the
+  // provided |callback|.
+  virtual void CloseScanner(
+      const lorgnette::CloseScannerRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse>
+          callback) = 0;
+
   // Request a scanned image using lorgnette's StartScan API. As each page is
   // completed, calls |page_callback| with the page number and a string
   // containing the image data. Calls |completion_callback| when the scan has

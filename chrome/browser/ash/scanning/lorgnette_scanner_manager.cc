@@ -196,6 +196,24 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   }
 
   // LorgnetteScannerManager:
+  void OpenScanner(const lorgnette::OpenScannerRequest& request,
+                   OpenScannerCallback callback) override {
+    GetLorgnetteManagerClient()->OpenScanner(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnOpenScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
+  void CloseScanner(const lorgnette::CloseScannerRequest& request,
+                    CloseScannerCallback callback) override {
+    GetLorgnetteManagerClient()->CloseScanner(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnCloseScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
   bool IsRotateAlternate(const std::string& scanner_name,
                          const std::string& source_name) override {
     if (!RE2::PartialMatch(source_name, RE2("(?i)adf duplex"))) {
@@ -338,6 +356,18 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
                        << ScannerCapabilitiesToString(capabilities.value());
 
     std::move(callback).Run(capabilities);
+  }
+
+  void OnOpenScannerResponse(
+      OpenScannerCallback callback,
+      absl::optional<lorgnette::OpenScannerResponse> response) {
+    std::move(callback).Run(response);
+  }
+
+  void OnCloseScannerResponse(
+      CloseScannerCallback callback,
+      absl::optional<lorgnette::CloseScannerResponse> response) {
+    std::move(callback).Run(response);
   }
 
   // Uses |response| and zeroconf_scanners_ to rebuild deduped_scanners_.

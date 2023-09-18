@@ -49,6 +49,15 @@ constexpr char kUnknownScannerName[] = "Unknown Scanner";
 // Model which contains the manufacturer.
 constexpr char kModelContainingManufacturer[] = "TEST Model X";
 
+// Matcher that verifies two protobufs contain the same data.
+MATCHER_P(ProtobufEquals, expected_message, "") {
+  std::string arg_dumped;
+  arg.SerializeToString(&arg_dumped);
+  std::string expected_message_dumped;
+  expected_message.SerializeToString(&expected_message_dumped);
+  return arg_dumped == expected_message_dumped;
+}
+
 // Returns a ScannerInfo object with the given |name| and |model|, if provided.
 lorgnette::ScannerInfo CreateLorgnetteScanner(
     std::string name,
@@ -205,6 +214,24 @@ class LorgnetteScannerManagerTest : public testing::Test {
             base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::OpenScanner() and binds a callback to
+  // process the result.
+  void OpenScanner() {
+    lorgnette_scanner_manager_->OpenScanner(
+        lorgnette::OpenScannerRequest(),
+        base::BindOnce(&LorgnetteScannerManagerTest::OpenScannerCallback,
+                       base::Unretained(this)));
+  }
+
+  // Calls LorgnetteScannerManager::CloseScanner() and binds a callback to
+  // process the result.
+  void CloseScanner() {
+    lorgnette_scanner_manager_->CloseScanner(
+        lorgnette::CloseScannerRequest(),
+        base::BindOnce(&LorgnetteScannerManagerTest::CloseScannerCallback,
+                       base::Unretained(this)));
+  }
+
   // Calls LorgnetteScannerManager::IsRotateAlternate() and returns result.
   bool GetRotateAlternate(const std::string& scanner_name,
                           const std::string& source_name) {
@@ -253,6 +280,15 @@ class LorgnetteScannerManagerTest : public testing::Test {
     return scanner_capabilities_;
   }
 
+  absl::optional<lorgnette::OpenScannerResponse> open_scanner_response() const {
+    return open_scanner_response_;
+  }
+
+  absl::optional<lorgnette::CloseScannerResponse> close_scanner_response()
+      const {
+    return close_scanner_response_;
+  }
+
   std::vector<std::string> scan_data() const { return scan_data_; }
   lorgnette::ScanFailureMode failure_mode() const { return failure_mode_; }
   bool cancel_scan_success() const { return cancel_scan_success_; }
@@ -268,6 +304,18 @@ class LorgnetteScannerManagerTest : public testing::Test {
       const absl::optional<lorgnette::ScannerCapabilities>&
           scanner_capabilities) {
     scanner_capabilities_ = scanner_capabilities;
+    run_loop_->Quit();
+  }
+
+  void OpenScannerCallback(
+      const absl::optional<lorgnette::OpenScannerResponse>& response) {
+    open_scanner_response_ = response;
+    run_loop_->Quit();
+  }
+
+  void CloseScannerCallback(
+      const absl::optional<lorgnette::CloseScannerResponse>& response) {
+    close_scanner_response_ = response;
     run_loop_->Quit();
   }
 
@@ -299,6 +347,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   std::vector<std::string> scanner_names_;
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
+  absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
+  absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   lorgnette::ScanFailureMode failure_mode_ =
       lorgnette::SCAN_FAILURE_MODE_NO_FAILURE;
   bool cancel_scan_success_ = false;
@@ -572,6 +622,45 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   EXPECT_EQ(caps.sources_size(), 0);
   ASSERT_EQ(caps.color_modes_size(), 1);
   EXPECT_EQ(caps.color_modes()[0], lorgnette::MODE_COLOR);
+}
+
+// Test opening a scanner.
+TEST_F(LorgnetteScannerManagerTest, OpenScanner) {
+  lorgnette::ScannerHandle handle;
+  handle.set_token("scanner-token");
+
+  lorgnette::ScannerConfig config;
+  *config.mutable_scanner() = std::move(handle);
+
+  lorgnette::ScannerId scanner_id;
+  scanner_id.set_connection_string("connection-string");
+
+  lorgnette::OpenScannerResponse response;
+  *response.mutable_scanner_id() = std::move(scanner_id);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  *response.mutable_config() = std::move(config);
+
+  GetLorgnetteManagerClient()->SetOpenScannerResponse(response);
+  OpenScanner();
+  WaitForResult();
+  ASSERT_TRUE(open_scanner_response());
+  EXPECT_THAT(response, ProtobufEquals(open_scanner_response().value()));
+}
+
+// Test closing a scanner.
+TEST_F(LorgnetteScannerManagerTest, CloseScanner) {
+  lorgnette::ScannerHandle handle;
+  handle.set_token("scanner-token");
+
+  lorgnette::CloseScannerResponse response;
+  *response.mutable_scanner() = std::move(handle);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+
+  GetLorgnetteManagerClient()->SetCloseScannerResponse(response);
+  CloseScanner();
+  WaitForResult();
+  ASSERT_TRUE(close_scanner_response());
+  EXPECT_THAT(response, ProtobufEquals(close_scanner_response().value()));
 }
 
 // Test that scanning fails when GetScannerNames() has never been called.
