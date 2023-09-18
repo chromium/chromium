@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_handler.h"
+#include "ash/webui/status_area_internals/status_area_internals_handler.h"
 
 #include <memory>
 
@@ -16,10 +16,12 @@
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
-#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -36,6 +38,11 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   void SetUp() override {
     handler_ = std::make_unique<StatusAreaInternalsHandler>(
         handler_remote_.BindNewPipeAndPassReceiver());
+
+    // Need to use test resources instead to have `AshTestBase` work on
+    // //ash/webui.
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
 
     AshTestBase::SetUp();
   }

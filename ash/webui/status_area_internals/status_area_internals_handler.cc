@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_handler.h"
+#include "ash/webui/status_area_internals/status_area_internals_handler.h"
+
 #include <utility>
 
 #include "ash/ime/ime_controller_impl.h"

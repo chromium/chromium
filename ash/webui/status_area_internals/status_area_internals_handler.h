@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
+#ifndef ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
+#define ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
 
+#include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,4 +53,4 @@ class StatusAreaInternalsHandler
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_
+#endif  // ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_HANDLER_H_

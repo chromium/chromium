@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
+#ifndef ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
+#define ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
 
-#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -39,4 +39,4 @@ class StatusAreaInternalsUIConfig
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_
+#endif  // ASH_WEBUI_STATUS_AREA_INTERNALS_STATUS_AREA_INTERNALS_UI_H_

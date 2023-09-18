@@ -227,10 +227,6 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [2860],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/status_area_internals/resources.grd": {
-    "META": {"sizes": {"includes": [30]}},
-    "includes": [2865],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/vc_tray_tester/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [2880],
@@ -798,6 +794,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/scanning/resources/resources.grd": {
     "META": {"sizes": {"includes": [100],}},
     "includes": [5640],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/status_area_internals/resources/resources.grd": {
+    "META": {"sizes": {"includes": [30],}},
+    "includes": [5670],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
     "META": {"sizes": {"includes": [10],}},

@@ -66,6 +66,7 @@ source_set("configs") {
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
+      "//ash/webui/status_area_internals",
       "//ash/webui/system_extensions_internals_ui",
       "//chrome/browser/ash",
       "//components/cross_device/logging",

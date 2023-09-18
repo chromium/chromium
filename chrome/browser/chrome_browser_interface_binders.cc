@@ -385,8 +385,8 @@
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
-#include "chrome/browser/ui/webui/ash/status_area_internals/mojom/status_area_internals.mojom.h"
-#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_ui.h"
+#include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
