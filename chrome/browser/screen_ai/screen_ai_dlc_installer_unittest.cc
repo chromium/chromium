@@ -28,8 +28,6 @@ class ScreenAIDlcInstallerTest
  protected:
   void SetUp() override {
     DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ =
-        static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
     install_state_ = screen_ai::ScreenAIInstallState::Create();
   }
 
@@ -46,7 +44,7 @@ class ScreenAIDlcInstallerTest
   }
 
   void SetInstallError(const std::string& error_code) {
-    fake_dlcservice_client_->set_install_error(error_code);
+    fake_dlcservice_client()->set_install_error(error_code);
   }
 
   void ExpectSuccessHistogramCount(int expected_count,
@@ -66,10 +64,12 @@ class ScreenAIDlcInstallerTest
   }
 
  private:
+  FakeDlcserviceClient* fake_dlcservice_client() {
+    return static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
-      fake_dlcservice_client_;
   std::unique_ptr<screen_ai::ScreenAIInstallState> install_state_;
   base::HistogramTester histogram_tester_;
 };
