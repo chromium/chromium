@@ -47,7 +47,6 @@ class PlusAddressService : public KeyedService {
   // Virtual to allow overriding the behavior in tests. This allows external
   // tests (e.g., those in autofill that depend on this class) to substitute
   // their own behavior.
-  // TODO(crbug.com/1467623): react to `origin` parameter.
   virtual bool SupportsPlusAddresses(url::Origin origin);
   // Get a plus address, if one exists, for the passed-in origin. Note that all
   // plus address activity is scoped to eTLD+1. This class owns the conversion
