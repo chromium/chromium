@@ -33,9 +33,7 @@ import type {XfOption} from '../widgets/xf_select.js';
  */
 enum SearchInputState {
   CLOSED = 'closed',
-  OPENING = 'opening',
   OPEN = 'open',
-  CLOSING = 'closing',
 }
 
 /**
@@ -542,8 +540,6 @@ export class SearchContainer extends EventTarget {
         this.openSearch();
       } else if (this.inputState_ === SearchInputState.OPEN) {
         this.closeSearch();
-      } else {
-        console.warn('Search UI is transitioning', this.inputState_);
       }
     });
     this.inputElement_.addEventListener('input', () => {
@@ -589,9 +585,7 @@ export class SearchContainer extends EventTarget {
     // Do not initiate open transition if we are not closed. This would leave us
     // in the OPENING state, without ever getting to OPEN state.
     if (this.inputState_ === SearchInputState.CLOSED) {
-      this.inputState_ = SearchInputState.OPENING;
       this.inputElement_.addEventListener('transitionend', () => {
-        this.inputState_ = SearchInputState.OPEN;
         this.searchWrapper_.removeAttribute('collapsed');
       }, {once: true, passive: true, capture: true});
       this.inputElement_.disabled = false;
@@ -601,6 +595,7 @@ export class SearchContainer extends EventTarget {
       this.searchBox_.classList.add('has-cursor', 'has-text');
       this.searchButton_.tabIndex = -1;
       this.updateClearButton_(this.getQuery());
+      this.inputState_ = SearchInputState.OPEN;
     }
   }
 
@@ -613,9 +608,7 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
-      this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.addEventListener('transitionend', () => {
-        this.inputState_ = SearchInputState.CLOSED;
         this.searchWrapper_.setAttribute('collapsed', '');
       }, {once: true, passive: true, capture: true});
       this.hideOptionsElement_();
@@ -629,6 +622,7 @@ export class SearchContainer extends EventTarget {
       this.searchBox_.classList.remove('has-cursor', 'has-text');
       this.searchButton_.tabIndex = 0;
       this.currentOptions_ = getDefaultSearchOptions();
+      this.inputState_ = SearchInputState.CLOSED;
     }
   }
 
