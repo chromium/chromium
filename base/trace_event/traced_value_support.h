@@ -215,14 +215,6 @@ struct TraceFormatTraits<const wchar_t*> {
 
 // base::StringPiece support.
 template <>
-struct TraceFormatTraits<::base::StringPiece> {
-  static void WriteIntoTrace(perfetto::TracedValue context,
-                             ::base::StringPiece value) {
-    return std::move(context).WriteString(value.data(), value.length());
-  }
-};
-
-template <>
 struct TraceFormatTraits<::base::StringPiece16> {
   static void WriteIntoTrace(perfetto::TracedValue context,
                              ::base::StringPiece16 value) {
