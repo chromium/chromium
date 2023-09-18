@@ -1142,11 +1142,16 @@ void TracingHandler::ReadyToCommitNavigation(
   if (!did_initiate_recording_)
     return;
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  FillFrameData(data.get(), navigation_request->GetRenderFrameHost(),
-                navigation_request->GetURL());
+  RenderFrameHostImpl* frame_host = navigation_request->GetRenderFrameHost();
+  FillFrameData(data.get(), frame_host, navigation_request->GetURL());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));
+  if (frame_host->IsOutermostMainFrame()) {
+    video_consumer_->SetFrameSinkId(navigation_request->GetRenderFrameHost()
+                                        ->GetRenderWidgetHost()
+                                        ->GetFrameSinkId());
+  }
 }
 
 void TracingHandler::FrameDeleted(int frame_tree_node_id) {
