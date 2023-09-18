@@ -46,7 +46,8 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
  public:
   PrivacyHubGeolocationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
   }
 
   ~PrivacyHubGeolocationControllerTest() override = default;

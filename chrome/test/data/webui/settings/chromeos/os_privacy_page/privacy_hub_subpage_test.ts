@@ -23,36 +23,25 @@ import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
 
 const PrivacyHubVersion = {
-  Future: 'Privacy Hub with future (after MVP) features.',
-  MVP: 'Privacy Hub with MVP features.',
-  Dogfood: 'Privacy Hub with dogfooded features (camera and microphone only).',
+  V0: 'Only contains camera and microphone access control.',
+  V0AndLocation:
+      'Privacy Hub location access control along with the V0 features.',
 };
 
 function overriddenValues(privacyHubVersion: string) {
   switch (privacyHubVersion) {
-    case PrivacyHubVersion.Future: {
+    case PrivacyHubVersion.V0: {
       return {
         showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: true,
-        showPrivacyHubFuturePage: true,
+        showPrivacyHubLocationControl: false,
         showSpeakOnMuteDetectionPage: true,
         showAppPermissionsInsidePrivacyHub: false,
       };
     }
-    case PrivacyHubVersion.Dogfood: {
+    case PrivacyHubVersion.V0AndLocation: {
       return {
         showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: false,
-        showPrivacyHubFuturePage: false,
-        showSpeakOnMuteDetectionPage: true,
-        showAppPermissionsInsidePrivacyHub: false,
-      };
-    }
-    case PrivacyHubVersion.MVP: {
-      return {
-        showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: true,
-        showPrivacyHubFuturePage: false,
+        showPrivacyHubLocationControl: true,
         showSpeakOnMuteDetectionPage: true,
         showAppPermissionsInsidePrivacyHub: false,
       };
@@ -218,9 +207,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(
 
     const toggleElement =
         privacyHubSubpage.shadowRoot!.querySelector('#geolocationToggle');
-    if (privacyHubVersion === PrivacyHubVersion.Dogfood) {
+    if (privacyHubVersion === PrivacyHubVersion.V0) {
       assertEquals(null, toggleElement);
-    } else {
+    } else if (privacyHubVersion === PrivacyHubVersion.V0AndLocation) {
       assert(toggleElement);
       const deepLinkElement =
           toggleElement.shadowRoot!.querySelector('cr-toggle');
@@ -638,19 +627,16 @@ async function parametrizedPrivacyHubSubpageTestsuite(
 }
 
 suite(
-    '<settings-privacy-hub-subpage> Dogfood',
+    '<settings-privacy-hub-subpage> Privacy Hub V0',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.V0, false));
+suite(
+    '<settings-privacy-hub-subpage> V0 using camera LED Fallback Mechanism',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.V0, true));
+suite(
+    '<settings-privacy-hub-subpage> Location access control with V0 features.',
     () => parametrizedPrivacyHubSubpageTestsuite(
-        PrivacyHubVersion.Dogfood, false));
-suite(
-    '<settings-privacy-hub-subpage> MVP',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, false));
-suite(
-    '<settings-privacy-hub-subpage> Future',
-    () => parametrizedPrivacyHubSubpageTestsuite(
-        PrivacyHubVersion.Future, false));
-suite(
-    '<settings-privacy-hub-subpage> MVP with LED Fallback',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, true));
+        PrivacyHubVersion.V0AndLocation, false));
+
 
 async function parametrizedTestsuiteForMetricsConsentToggle(
     isPrivacyHubVisible: boolean) {

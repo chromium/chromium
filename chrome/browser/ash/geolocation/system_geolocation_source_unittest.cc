@@ -35,7 +35,8 @@ class SystemGeolocationSourceTests : public AshTestBase {
 };
 
 TEST_F(SystemGeolocationSourceTests, PermissionUpdate) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
 
   SystemGeolocationSource source;
   base::test::TestFuture<device::LocationSystemPermissionStatus> status;

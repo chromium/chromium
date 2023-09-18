@@ -261,7 +261,7 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
     std::vector<SearchConcept> init_tags;
 
-    if (ash::features::IsCrosPrivacyHubEnabled()) {
+    if (ash::features::IsCrosPrivacyHubV0Enabled()) {
       init_tags.push_back({IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
                            mojom::kPrivacyHubSubpagePath,
                            mojom::SearchResultIcon::kShield,
@@ -283,7 +283,7 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
                            {.setting = mojom::Setting::kMicrophoneOnOff}});
     }
 
-    if (ash::features::IsCrosPrivacyHubV1Enabled()) {
+    if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
       init_tags.push_back({IDS_OS_SETTINGS_TAG_GEOLOCATION,
                            mojom::kPrivacyHubSubpagePath,
                            mojom::SearchResultIcon::kGeolocation,
@@ -463,10 +463,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsCrosPrivacyHubAppPermissionsEnabled());
   html_source->AddBoolean("showPrivacyHubPage",
                           ash::features::IsCrosPrivacyHubEnabled());
-  html_source->AddBoolean("showPrivacyHubMVPPage",
-                          ash::features::IsCrosPrivacyHubV1Enabled());
-  html_source->AddBoolean("showPrivacyHubFuturePage",
-                          ash::features::IsCrosPrivacyHubV2Enabled());
+  html_source->AddBoolean("showPrivacyHubLocationControl",
+                          ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",
                           ash::features::IsVideoConferenceEnabled());
 

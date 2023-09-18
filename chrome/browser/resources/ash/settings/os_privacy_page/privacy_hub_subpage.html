@@ -126,8 +126,7 @@
   </settings-toggle-button>
 </template>
 
-<!-- Location toggle is not to be shown in dogfooded version of Privacy Hub -->
-<template is="dom-if" if="[[showPrivacyHubMVPPage_]]" restamp>
+<template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
   <settings-toggle-button
       class="hr"
       pref="{{prefs.ash.user.geolocation_allowed}}"

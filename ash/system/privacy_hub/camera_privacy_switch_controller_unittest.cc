@@ -123,9 +123,9 @@ class PrivacyHubCameraTestBase
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsPrivacyHubEnabled()) {
-      enabled_features.push_back(ash::features::kCrosPrivacyHub);
+      enabled_features.push_back(ash::features::kCrosPrivacyHubV0);
     } else {
-      disabled_features.push_back(ash::features::kCrosPrivacyHub);
+      disabled_features.push_back(ash::features::kCrosPrivacyHubV0);
     }
     if (IsPrivacyIndicatorsEnabled()) {
       enabled_features.push_back(features::kPrivacyIndicators);

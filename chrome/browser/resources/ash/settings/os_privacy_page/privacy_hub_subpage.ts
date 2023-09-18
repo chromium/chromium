@@ -57,13 +57,13 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   static get properties() {
     return {
       /**
-       * Whether the part of privacy hub for dogfooding should be displayed.
+       * Whether the location access control should be displayed in Privacy Hub.
        */
-      showPrivacyHubMVPPage_: {
+      showPrivacyHubLocationControl_: {
         type: Boolean,
         readOnly: true,
         value: function() {
-          return loadTimeData.getBoolean('showPrivacyHubMVPPage');
+          return loadTimeData.getBoolean('showPrivacyHubLocationControl');
         },
       },
 
@@ -166,7 +166,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
   private showAppPermissions_: boolean;
-  private showPrivacyHubMVPPage_: boolean;
+  private showPrivacyHubLocationControl_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {

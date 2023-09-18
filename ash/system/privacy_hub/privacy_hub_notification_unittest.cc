@@ -152,7 +152,8 @@ class PrivacyHubNotificationTextTest
       public testing::WithParamInterface<std::tuple<bool, NotificationType>> {
  public:
   PrivacyHubNotificationTextTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV2);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
     scoped_camera_led_fallback_ = std::make_unique<ScopedLedFallbackForTesting>(
         IsCameraLedFallbackActive());
     sensors_ = [this]() -> SensorDisabledNotificationDelegate::SensorSet {

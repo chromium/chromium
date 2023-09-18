@@ -474,7 +474,7 @@ BASE_FEATURE(kContinuousOverviewScrollAnimation,
              "ContinuousOverviewScrollAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Privacy Hub for ChromeOS.
+// Adds location access control to Privacy Hub.
 BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -484,14 +484,9 @@ BASE_FEATURE(kCrosPrivacyHubAppPermissions,
              "CrosPrivacyHubAppPermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Privacy Hub features selected for dogfooding.
+// Enables Privacy Hub with only the camera and the microphone access control.
 BASE_FEATURE(kCrosPrivacyHubV0,
              "CrosPrivacyHubV0",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables future features for Privacy Hub for ChromeOS.
-BASE_FEATURE(kCrosPrivacyHubV2,
-             "CrosPrivacyHubV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables syncing attestation certificates to cryptauth for use by Cross Device
@@ -3131,26 +3126,22 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 
 bool IsCrosPrivacyHubAppPermissionsEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions) &&
-         IsCrosPrivacyHubEnabled();
+         IsCrosPrivacyHubV0Enabled();
 }
 
 bool IsCrosPrivacyHubEnabled() {
-  return IsCrosPrivacyHubV0Enabled() || IsCrosPrivacyHubV1Enabled() ||
-         IsCrosPrivacyHubV2Enabled();
+  return IsCrosPrivacyHubAppPermissionsEnabled() ||
+         IsCrosPrivacyHubLocationEnabled() || IsCrosPrivacyHubV0Enabled();
+}
+
+bool IsCrosPrivacyHubLocationEnabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHub) &&
+         IsCrosPrivacyHubV0Enabled();
 }
 
 bool IsCrosPrivacyHubV0Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubV0) ||
-         IsCrosPrivacyHubV1Enabled() || IsVideoConferenceEnabled();
-}
-
-bool IsCrosPrivacyHubV2Enabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubV2);
-}
-
-bool IsCrosPrivacyHubV1Enabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
-         IsCrosPrivacyHubV2Enabled();
+         IsVideoConferenceEnabled();
 }
 
 bool IsCryptohomeRecoveryEnabled() {
