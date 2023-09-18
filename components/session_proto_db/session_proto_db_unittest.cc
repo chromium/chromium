@@ -640,6 +640,45 @@ TEST_F(SessionProtoDBTest, TestInitializationFailure) {
   }
 }
 
+TEST_F(SessionProtoDBTest, TestUpdateEntries) {
+  InitPersistedStateDB();
+  base::RunLoop run_loop[4];
+  persisted_state_db()->InsertContent(
+      kMockKeyA, kMockValueA,
+      base::BindOnce(&SessionProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[0].Run();
+
+  // Do one update and one insert for the UpdateEntries call.
+  std::vector<
+      std::pair<std::string, persisted_state_db::PersistedStateContentProto>>
+      entries_to_update;
+  entries_to_update.emplace_back(kMockKeyA, kMockValueB);
+  entries_to_update.emplace_back(kMockKeyB, kMockValueA);
+  persisted_state_db()->UpdateEntries(
+      std::move(entries_to_update),
+      base::BindOnce(&SessionProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[1].Run();
+
+  persisted_state_db()->LoadOneEntry(
+      kMockKeyA,
+      base::BindOnce(&SessionProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     kExpectedB));
+  content_db()->GetCallback(true);
+  run_loop[2].Run();
+  persisted_state_db()->LoadOneEntry(
+      kMockKeyB,
+      base::BindOnce(&SessionProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     kExpectedA));
+  content_db()->GetCallback(true);
+  run_loop[3].Run();
+}
+
 TEST_F(SessionProtoDBTest, TestMaintenanceKeepSomeKeys) {
   InitPersistedStateDB();
   InsertContentAndVerify(kSPTDTab1Key, kSPTDTab1Value);

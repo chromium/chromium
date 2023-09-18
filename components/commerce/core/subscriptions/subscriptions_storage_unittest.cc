@@ -136,6 +136,14 @@ class MockProtoStorage
                SessionProtoStorage<commerce::CommerceSubscriptionProto>::
                    OperationCallback callback),
               (override));
+  MOCK_METHOD(void,
+              UpdateEntries,
+              ((const std::vector<
+                   std::pair<std::string, commerce::CommerceSubscriptionProto>>&
+                    entries_to_update),
+               SessionProtoStorage<commerce::CommerceSubscriptionProto>::
+                   OperationCallback callback),
+              (override));
   MOCK_METHOD(
       void,
       DeleteAllContent,

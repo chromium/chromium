@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 #define COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 
+#include <memory>
 #include <queue>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -95,6 +97,10 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
 
   void DeleteOneEntry(const std::string& key,
                       OperationCallback callback) override;
+
+  void UpdateEntries(
+      const std::vector<std::pair<std::string, T>>& entries_to_update,
+      OperationCallback callback) override;
 
   void DeleteContentWithPrefix(const std::string& key_prefix,
                                OperationCallback callback) override;
@@ -315,6 +321,30 @@ void SessionProtoDB<T>::DeleteOneEntry(const std::string& key,
     keys->push_back(key);
     storage_database_->UpdateEntries(
         std::make_unique<ContentEntry>(), std::move(keys),
+        base::BindOnce(&SessionProtoDB::OnOperationCommitted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+template <typename T>
+void SessionProtoDB<T>::UpdateEntries(
+    const std::vector<std::pair<std::string, T>>& entries_to_update,
+    OperationCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(base::BindOnce(
+        &SessionProtoDB::UpdateEntries, weak_ptr_factory_.GetWeakPtr(),
+        entries_to_update, std::move(callback)));
+  } else if (FailedToInit()) {
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+  } else {
+    auto contents_to_save = std::make_unique<ContentEntry>();
+    for (auto& entry : entries_to_update) {
+      contents_to_save->emplace_back(entry.first, entry.second);
+    }
+    storage_database_->UpdateEntries(
+        std::move(contents_to_save),
+        std::make_unique<std::vector<std::string>>(),
         base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
