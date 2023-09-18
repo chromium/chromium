@@ -13,14 +13,19 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 CLANG_VERSION="14.0.7"
+LIB="lib64"
 
 # Glob patterns to include from the NDK.
 GLOB_INCLUDES=(
   # Used for tracing utilities, see //build/android/pylib/utils/simpleperf.py.
   simpleperf
-  # Used for remote debugging, include both client and server binaries.
+  # Used for remote debugging, include server / client binaries and libs.
   toolchains/llvm/prebuilt/linux-x86_64/bin/lldb
-  toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/${CLANG_VERSION}/lib/linux/*/lldb-server
+  toolchains/llvm/prebuilt/linux-x86_64/bin/lldb.sh
+  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/clang/${CLANG_VERSION}/lib/linux/*/lldb-server
+  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/lib*.*
+  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3
+  toolchains/llvm/prebuilt/linux-x86_64/python3
   # Used for compilation.
   toolchains/llvm/prebuilt/linux-x86_64/sysroot
 )
