@@ -435,6 +435,12 @@ MANDATORY_FIELDS = {
     "Shipped",  # Whether the package is in the shipped product.
 }
 
+# Field aliases (key is the alias, value is the field to map to).
+# Note: if both fields are provided, the alias field value will be used.
+ALIAS_FIELDS = {
+    "Shipped in Chromium": "Shipped",
+}
+
 # The metadata fields that can have multiple values.
 MULTIVALUE_FIELDS = {
     "License File",
@@ -559,7 +565,8 @@ def ParseMetadataFile(filepath: str,
     InvalidMetadata - if the metadata in the file has duplicate fields
                       for a dependency.
   """
-  known_fields = list(MANDATORY_FIELDS) + optional_fields
+  known_fields = (list(MANDATORY_FIELDS) + list(ALIAS_FIELDS.keys()) +
+                  optional_fields)
   field_lookup = {name.lower(): name for name in known_fields}
 
   dependencies = []
@@ -632,6 +639,12 @@ def ProcessMetadata(metadata: Dict[str, Any],
   dep_name = metadata.get("Name")
   if dep_name:
     dep_ref = f"{readme_path}>>{dep_name}"
+
+  # Set field values for fields with aliases.
+  for alias, field in ALIAS_FIELDS.items():
+    if alias in metadata:
+      metadata[field] = metadata[alias]
+      metadata.pop(alias)
 
   # Set the default "License File" value.
   if metadata.get("License File") is None:

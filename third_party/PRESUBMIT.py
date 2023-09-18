@@ -109,8 +109,10 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   license_file_pattern = input_api.re.compile(
     r'^License File: (.+)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  # Matches both 'Shipped' (preferred) and
+  # 'Shipped in Chromium' (for deps that are also standalone projects).
   shipped_pattern = input_api.re.compile(
-    r'^Shipped: (yes|no)\r?$',
+    r'^Shipped(?: in Chromium)?: (yes|no)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   license_android_compatible_pattern = input_api.re.compile(
     r'^License Android Compatible: (yes|no)\r?$',
