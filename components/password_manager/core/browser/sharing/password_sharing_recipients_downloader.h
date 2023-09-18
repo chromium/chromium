@@ -95,7 +95,6 @@ class PasswordSharingRecipientsDownloader {
 
   // Whether there was a retry request for an access token. Used to retry
   // fetching the access token only once.
-  // TODO(crbug.com/1454712): consider using backoff strategy instead.
   bool access_token_retried_ = false;
 
   // Contains the last error code while requesting an access token.

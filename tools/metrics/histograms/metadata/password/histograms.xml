@@ -2628,6 +2628,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult"
+    enum="GoogleServiceAuthError" expires_after="2024-09-15">
+  <owner>rushans@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records the result of access token fetch for the password sharing recipients
+    request. Recorded when a token fetch completes (including retries).
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSharingRecipients.ResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-15">
+  <owner>rushans@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records the response (both HTTP code and net error code) for password
+    sharing recipients URL fetches, recorded when the request completes or fails
+    (does not include transient errors if request is retried).
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
     expires_after="2023-12-10">
   <owner>vsemeniuk@google.com</owner>

@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -30,6 +32,19 @@ constexpr char kPasswordSharingRecipientsOAuthConsumerName[] =
 constexpr char kPasswordSharingRecipientsEndpoint[] =
     "password_sharing_recipients";
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
+
+void LogRequestResult(const network::SimpleURLLoader& url_loader) {
+  int http_status_code = -1;
+  if (url_loader.ResponseInfo() && url_loader.ResponseInfo()->headers) {
+    http_status_code = url_loader.ResponseInfo()->headers->response_code();
+  }
+  const int net_error_code = url_loader.NetError();
+  const bool request_succeeded =
+      net_error_code == net::OK && http_status_code != -1;
+  base::UmaHistogramSparse(
+      "PasswordManager.PasswordSharingRecipients.ResponseOrErrorCode",
+      request_succeeded ? http_status_code : net_error_code);
+}
 
 }  // namespace
 
@@ -86,6 +101,10 @@ void PasswordSharingRecipientsDownloader::AccessTokenFetched(
   DVLOG(1) << "Access token fetch complete, error state: "
            << static_cast<int>(error.state());
 
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult",
+      error.state(), GoogleServiceAuthError::NUM_STATES);
+
   CHECK(ongoing_access_token_fetch_);
   ongoing_access_token_fetch_.reset();
 
@@ -114,6 +133,7 @@ void PasswordSharingRecipientsDownloader::OnSimpleLoaderComplete(
   CHECK(!ongoing_access_token_fetch_);
   CHECK(simple_url_loader_);
 
+  LogRequestResult(*simple_url_loader_);
   net_error_ = simple_url_loader_->NetError();
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -200,10 +220,9 @@ void PasswordSharingRecipientsDownloader::SendRequest(
   simple_url_loader_->AttachStringForUpload(msg, "application/x-protobuf");
   simple_url_loader_->SetTimeoutDuration(kRequestTimeout);
   simple_url_loader_->SetAllowHttpErrorResults(true);
-  // TODO(crbug.com/1454712): implement backoff retries.
   simple_url_loader_->SetRetryOptions(
-      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-             network::SimpleURLLoader::RETRY_ON_5XX);
+      /*max_retries=*/2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                             network::SimpleURLLoader::RETRY_ON_5XX);
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
