@@ -297,6 +297,8 @@ void GameDashboardMainMenuView::OnGameControlsTilePressed() {
           game_window->GetProperty(kArcGameControlsFlagsKey),
           ArcGameControlsFlag::kHint,
           /*enable_flag=*/game_controls_tile_->IsToggled()));
+
+  UpdateGameControlsTileTextAndTooltipText();
 }
 
 void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
@@ -327,6 +329,47 @@ void GameDashboardMainMenuView::OnGameControlsFeatureSwitchButtonPressed() {
               /*enable_flag=*/ArcGameControlsFlag::kEnabled |
               ArcGameControlsFlag::kHint),
           is_toggled));
+
+  UpdateGameControlsTileTextAndTooltipText();
+}
+
+void GameDashboardMainMenuView::UpdateGameControlsTileTextAndTooltipText() {
+  const auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  DCHECK(flags);
+
+  bool is_enabled =
+      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
+  bool is_empty =
+      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty);
+  bool is_hint_on =
+      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kHint);
+
+  if (is_enabled) {
+    if (is_empty) {
+      game_controls_tile_->SetSubLabel(
+          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF));
+      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_SETUP));
+    } else if (is_hint_on) {
+      game_controls_tile_->SetSubLabel(
+          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE));
+      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_HIDE_CONTROLS));
+    } else {
+      game_controls_tile_->SetSubLabel(
+          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_HIDDEN));
+      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_SHOW_CONTROLS));
+    }
+  } else {
+    game_controls_tile_->SetSubLabel(
+        l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF));
+    game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_AVAILABLE));
+  }
+
+  game_controls_tile_->SetSubLabelVisibility(true);
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -428,6 +471,8 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     game_controls_tile_->SetToggled(
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kHint));
   }
+
+  UpdateGameControlsTileTextAndTooltipText();
 }
 
 void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(

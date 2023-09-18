@@ -7121,6 +7121,27 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Game Dashboard / Game Controls strings -->
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE" desc="The sub-label for Game Controls tile when input mapping hint is visible.">
+        Visible
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_HIDDEN" desc="The sub-label for Game Controls tile when input mapping hint is not visible.">
+        Hidden
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF" desc="The sub-label for Game Controls tile when Game Controls is disabled or doesn't set up yet">
+        Off
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_HIDE_CONTROLS" desc="The tooltips for Game Controls tile when input mapping hint is on.">
+        Hide controls
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_SHOW_CONTROLS" desc="The tooltips for Game Controls tile when input mapping hint is off.">
+        Show controls
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_SETUP" desc="The tooltips for Game Controls tile when Game Controls is available, but not set up yet.">
+        Controls not set up
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_AVAILABLE" desc="The tooltips for Game Controls tile when Game Controls is available, but disabled.">
+        Controls not available
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_SUB_TITLE" desc="The subtitle on the menu details row of Game Controls when no action is set up and Setup button shows up.">
         Keys, buttons, and more
       </message>
