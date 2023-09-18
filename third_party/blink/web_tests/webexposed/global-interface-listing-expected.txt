@@ -2040,6 +2040,7 @@ interface Document : Node
     method replaceChildren
     method requestStorageAccess
     method requestStorageAccessFor
+    method setSequentialFocusStartingPoint
     method startViewTransition
     method webkitCancelFullScreen
     method webkitExitFullscreen

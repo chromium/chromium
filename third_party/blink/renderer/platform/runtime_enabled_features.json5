@@ -3362,6 +3362,10 @@
       public: true,
     },
     {
+      name: "SetSequentialFocusStartingPoint",
+      status: "experimental",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,

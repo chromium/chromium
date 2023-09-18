@@ -219,6 +219,10 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
     attribute EventHandler onvisibilitychange;
+
+    // Proposed setter for focus navigation starting point
+    // https://github.com/whatwg/html/issues/5326
+    [RuntimeEnabled=SetSequentialFocusStartingPoint, ImplementedAs=SetSequentialFocusNavigationStartingPoint] void setSequentialFocusStartingPoint(Element element);
 };
 
 Document includes GlobalEventHandlers;
