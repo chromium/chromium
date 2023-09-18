@@ -10974,6 +10974,21 @@
             ]
         }
     ],
+    "OneReadLoginDatabaseMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OneReadLoginDatabaseMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneTimePermission": [
         {
             "platforms": [
