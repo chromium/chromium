@@ -760,8 +760,7 @@ void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   }
 
   for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(pref_service_->GetBoolean(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
+    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
 }
 
@@ -885,17 +884,18 @@ void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
     return;
   }
 
-  bool first_party_sets_enabled = pref_service_->GetBoolean(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
+  for (auto& observer : observers_) {
+    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+  }
+}
+
+bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
   // FPS should be on in the 3PCD experiment unless all 3PC are blocked.
   if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    first_party_sets_enabled =
-        !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
-
-  for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(first_party_sets_enabled);
-  }
+  return pref_service_->GetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 }  // namespace privacy_sandbox

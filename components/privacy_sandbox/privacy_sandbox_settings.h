@@ -289,6 +289,9 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
+
+  // Source of truth for whether related websites are enabled.
+  virtual bool AreRelatedWebsiteSetsEnabled() const = 0;
 };
 
 }  // namespace privacy_sandbox

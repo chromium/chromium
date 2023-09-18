@@ -105,6 +105,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   void RemoveObserver(Observer* observer) override;
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) override;
 
+  bool AreRelatedWebsiteSetsEnabled() const override;
+
  private:
   friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;

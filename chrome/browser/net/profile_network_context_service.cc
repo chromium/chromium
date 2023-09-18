@@ -1064,8 +1064,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->first_party_sets_access_delegate_params =
       network::mojom::FirstPartySetsAccessDelegateParams::New();
   network_context_params->first_party_sets_access_delegate_params->enabled =
-      profile_->GetPrefs()->GetBoolean(
-          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
+      PrivacySandboxSettingsFactory::GetForProfile(profile_)
+          ->AreRelatedWebsiteSetsEnabled();
 
   mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
       fps_access_delegate_remote;

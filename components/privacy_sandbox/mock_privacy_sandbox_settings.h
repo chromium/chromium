@@ -109,6 +109,7 @@ class MockPrivacySandboxSettings
               SetDelegateForTesting,
               (std::unique_ptr<Delegate>),
               (override));
+  MOCK_METHOD(bool, AreRelatedWebsiteSetsEnabled, (), (override, const));
 };
 
 }  // namespace privacy_sandbox_test_util

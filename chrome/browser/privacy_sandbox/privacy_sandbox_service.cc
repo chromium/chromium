@@ -485,8 +485,7 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() const {
-  return pref_service_->GetBoolean(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
+  return privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled();
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() const {
@@ -838,8 +837,7 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   auto fps_status = FirstPartySetsState::kFpsNotRelevant;
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
       cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
-    fps_status = pref_service_->GetBoolean(
-                     prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)
+    fps_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
                      ? FirstPartySetsState::kFpsEnabled
                      : FirstPartySetsState::kFpsDisabled;
   }
