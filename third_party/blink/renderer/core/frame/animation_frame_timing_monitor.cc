@@ -408,7 +408,8 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     ScriptState* script_state,
     bool resolving,
     const char* class_like_name,
-    const String& property_like_name) {
+    const String& property_like_name,
+    const String& script_url) {
   // Make sure we only monitor top-level promise resolvers that are outside the
   // update-the-rendering phase (promise resolvers directly handled from a
   // posted task).
@@ -439,7 +440,8 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .start_time = now,
       .execution_start_time = now,
       .class_like_name = class_like_name,
-      .property_like_name = property_like_name};
+      .property_like_name = property_like_name,
+      .source_location = {.url = script_url}};
 
   user_callback_depth_++;
 }

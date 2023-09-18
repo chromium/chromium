@@ -57,6 +57,7 @@ ScriptPromiseResolver::ScriptPromiseResolver(
     state_ = kDetached;
     resolver_.Clear();
   }
+  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
@@ -146,7 +147,7 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
 
   probe::WillHandlePromise(GetExecutionContext(), script_state_,
                            state_ == kResolving, class_like_name_,
-                           property_like_name_);
+                           property_like_name_, script_url_);
   {
     if (state_ == kResolving) {
       resolver_.Resolve(value_.Get(script_state_->GetIsolate()));

@@ -224,6 +224,7 @@ class CORE_EXPORT ScriptPromiseResolver
   const ExceptionContext exception_context_;
   const char* class_like_name_ = nullptr;
   String property_like_name_;
+  String script_url_;
 
   // To support keepAliveWhilePending(), this object needs to keep itself
   // alive while in that state.
