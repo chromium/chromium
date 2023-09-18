@@ -585,8 +585,9 @@ void NativeWidgetMac::CloseNow() {
 
 void NativeWidgetMac::Show(ui::WindowShowState show_state,
                            const gfx::Rect& restore_bounds) {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
+  }
 
   switch (show_state) {
     case ui::SHOW_STATE_DEFAULT:
@@ -611,7 +612,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
                        ? window_state
                        : WindowVisibilityState::kShowInactive;
   }
-  GetNSWindowMojo()->SetVisibilityState(window_state);
+  GetNSWindowHost()->SetVisibilityState(window_state);
 
   // Ignore the SetInitialFocus() result. BridgedContentView should get
   // firstResponder status regardless.
@@ -619,9 +620,10 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
 }
 
 void NativeWidgetMac::Hide() {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
-  GetNSWindowMojo()->SetVisibilityState(WindowVisibilityState::kHideWindow);
+  }
+  GetNSWindowHost()->SetVisibilityState(WindowVisibilityState::kHideWindow);
 }
 
 bool NativeWidgetMac::IsVisible() const {
@@ -629,9 +631,10 @@ bool NativeWidgetMac::IsVisible() const {
 }
 
 void NativeWidgetMac::Activate() {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
-  GetNSWindowMojo()->SetVisibilityState(
+  }
+  GetNSWindowHost()->SetVisibilityState(
       WindowVisibilityState::kShowAndActivateWindow);
 }
 

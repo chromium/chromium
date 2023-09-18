@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/remote_cocoa/common/application.mojom.h"
@@ -36,7 +38,8 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
         views_application_receiver;
     remote_cocoa_application_host_ =
         std::make_unique<remote_cocoa::ApplicationHost>(
-            &views_application_receiver);
+            &views_application_receiver,
+            web_app::GetBundleIdentifierForShim(app_id, profile_path));
     app_shim_->CreateRemoteCocoaApplication(
         std::move(views_application_receiver));
   }
