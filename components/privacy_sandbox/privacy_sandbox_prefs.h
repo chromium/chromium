@@ -142,7 +142,7 @@ inline constexpr char kPrivacySandboxDisabledInsufficientConfirmation[] =
 // Boolean that indicates the user's FPS data access preference has been init,
 // so named because of the user intent it intends to represent. Currently there
 // is no distinction between FPS for data access, and FPS for other purposes, so
-// this init is applied to the first_party_sets.enabled pref.
+// this init is applied to the "privacy_sandbox.first_party_sets_enabled" pref.
 inline constexpr char
     kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[] =
         "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
