@@ -632,7 +632,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation.{suffix}"
+<histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2024-08-25">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CustomTabs.Startup.TimeToLargestContentfulPaint.{suffix}"
+<histogram name="CustomTabs.Startup.TimeToLargestContentfulPaint2.{suffix}"
     units="ms" expires_after="2024-08-25">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>

@@ -47,6 +47,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -173,6 +174,7 @@ public class CustomTabActivityUrlLoadingTest {
     public void doesntLoadUrl_IfEqualsSpeculatedUrl_AndIsFirstLoad() {
         Tab hiddenTab = env.prepareHiddenTab();
         when(env.intentDataProvider.getUrlToLoad()).thenReturn(SPECULATED_URL);
+        when(env.webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
         env.reachNativeInit(mTabController);
         verify(hiddenTab, never()).loadUrl(any());
     }
@@ -181,6 +183,7 @@ public class CustomTabActivityUrlLoadingTest {
     public void loadUrl_IfEqualsSpeculatedUrl_ButIsntFirstLoad() {
         Tab hiddenTab = env.prepareHiddenTab();
         when(env.intentDataProvider.getUrlToLoad()).thenReturn(OTHER_URL);
+        when(env.webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
         env.reachNativeInit(mTabController);
 
         clearInvocations(env.tabFromFactory);
@@ -192,6 +195,7 @@ public class CustomTabActivityUrlLoadingTest {
     @Test
     public void loadsUrlInHiddenTab_IfExists() {
         Tab hiddenTab = env.prepareHiddenTab();
+        when(env.webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
         env.reachNativeInit(mTabController);
         verify(hiddenTab).loadUrl(any());
     }

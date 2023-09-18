@@ -102,6 +102,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public ChromeBrowserInitializer browserInitializer;
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
     @Mock public TabModelInitializer tabModelInitializer;
+    @Mock public WebContents webContents;
     // clang-format on
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
@@ -257,7 +258,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         TabImpl tab = mock(TabImpl.class);
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
-        WebContents webContents = mock(WebContents.class);
         when(tab.getWebContents()).thenReturn(webContents);
         NavigationController navigationController = mock(NavigationController.class);
         when(webContents.getNavigationController()).thenReturn(navigationController);

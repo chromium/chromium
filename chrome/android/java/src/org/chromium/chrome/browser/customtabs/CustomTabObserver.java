@@ -157,13 +157,17 @@ public class CustomTabObserver extends EmptyTabObserver {
         trackNextLCP();
     }
 
-    public void trackNextPageLoadForHiddenTab(boolean usedSpeculation, Intent sourceIntent) {
+    public void trackNextPageLoadForHiddenTab(
+            boolean usedSpeculation, boolean hasCommitted, Intent sourceIntent) {
         mUsedHiddenTabSpeculation = usedSpeculation;
         mLaunchedForSpeculationRealtimeMillis =
                 BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
         mLaunchedForSpeculationUptimeMillis =
                 BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
         trackNextLCP();
+        if (usedSpeculation && hasCommitted) {
+            recordFirstCommitNavigation(mLaunchedForSpeculationRealtimeMillis);
+        }
     }
 
     @Override
@@ -262,6 +266,10 @@ public class CustomTabObserver extends EmptyTabObserver {
 
         mFirstCommitRealtimeMillis = SystemClock.elapsedRealtime();
 
+        recordFirstCommitNavigation(mFirstCommitRealtimeMillis);
+    }
+
+    private void recordFirstCommitNavigation(long firstCommitRealtimeMillis) {
         // ProcessCreationReason is only available on P+.
         if (mCustomTabsConnection == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -273,21 +281,21 @@ public class CustomTabObserver extends EmptyTabObserver {
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
-            duration = mFirstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
+            duration = firstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
             histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
-                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
+                duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.WarmedUp";
             } else if (processCreationReason == ProcessCreationReason.ACTIVITY
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
-                duration = mFirstCommitRealtimeMillis - Process.getStartElapsedRealtime();
+                duration = firstCommitRealtimeMillis - Process.getStartElapsedRealtime();
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Cold";
             } else {
-                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
+                duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Warm";
             }
         }
