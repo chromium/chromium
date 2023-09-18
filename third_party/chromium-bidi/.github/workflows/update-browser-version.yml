@@ -26,13 +26,8 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
-      - name: Install and build npm dependencies
-        run: npm ci
-      - name: Download the latest version
-        run: |
-          browser_spec="$(npx @puppeteer/browsers install chrome@canary --path /tmp/browsers | cut -f 1 -d' ')"
-          echo "$browser_spec" > .browser
+      - name: Update browser pin and devtools-protocol
+        run: node tools/update_chrome_revision.mjs
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
