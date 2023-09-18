@@ -168,7 +168,8 @@ def expr_from_exposure(exposure,
     # The property exposures are categorized into three.
     # - Unconditional: Always exposed.
     # - Context-independent: Enabled per v8::Isolate.
-    # - Context-dependent: Enabled per v8::Context, e.g. origin trials.
+    # - Context-dependent: Enabled per v8::Context, e.g. origin trials, browser
+    #   controlled features.
     #
     # Context-dependent properties can be installed in two phases.
     # - The first phase installs all the properties that are associated with the
@@ -275,7 +276,7 @@ def expr_from_exposure(exposure,
             matched_global_count += 1
             if entry.feature:
                 cond_exposed_terms.append(ref_enabled(entry.feature))
-                if entry.feature.is_context_dependent:
+                if entry.feature.is_origin_trial:
                     feature_selector_names.append(entry.feature)
         assert (not exposure.global_names_and_features
                 or matched_global_count > 0)
@@ -306,7 +307,7 @@ def expr_from_exposure(exposure,
             else:
                 cond_exposed_terms.append(
                     expr_and([pred_term, ref_enabled(entry.feature)]))
-                if entry.feature.is_context_dependent:
+                if entry.feature.is_origin_trial:
                     exposed_selector_terms.append(
                         expr_and([pred_term,
                                   ref_selected([entry.feature])]))
@@ -315,8 +316,8 @@ def expr_from_exposure(exposure,
     if exposure.runtime_enabled_features:
         feature_enabled_terms.extend(
             map(ref_enabled, exposure.runtime_enabled_features))
-        feature_selector_names.extend(
-            exposure.context_dependent_runtime_enabled_features)
+        if exposure.origin_trial_features:
+            feature_selector_names.extend(exposure.origin_trial_features)
 
     # [ContextEnabled]
     if exposure.context_enabled_features:

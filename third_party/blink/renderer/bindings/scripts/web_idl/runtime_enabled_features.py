@@ -38,6 +38,24 @@ class RuntimeEnabledFeatures(object):
     @classmethod
     def is_context_dependent(cls, feature_name):
         """Returns True if the feature may be enabled per-context."""
+        return (cls.is_browser_controlled(feature_name)
+                or cls.is_origin_trial(feature_name))
+
+    @classmethod
+    def is_browser_controlled(cls, feature_name):
+        """Returns True if the feature can be controlled by the browser."""
+        assert cls._is_initialized, cls._REQUIRE_INIT_MESSAGE
+        assert isinstance(feature_name, str)
+        assert feature_name in cls._features, (
+            "Unknown runtime-enabled feature: {}".format(feature_name))
+        value = cls._features[feature_name].get(
+            "browser_process_read_write_access", False)
+        assert isinstance(value, bool)
+        return value
+
+    @classmethod
+    def is_origin_trial(cls, feature_name):
+        """Returns True if the feature is an origin trial."""
         assert cls._is_initialized, cls._REQUIRE_INIT_MESSAGE
         assert isinstance(feature_name, str)
         assert feature_name in cls._features, (

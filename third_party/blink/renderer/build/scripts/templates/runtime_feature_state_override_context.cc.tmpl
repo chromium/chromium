@@ -59,6 +59,7 @@ void RuntimeFeatureStateOverrideContext::
           true;
 }
 
+{% if feature in origin_trial_controlled_features %}
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
 {% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
@@ -92,7 +93,7 @@ bool RuntimeFeatureStateOverrideContext::
   }
   return false;
 }
-
+{% endif %}
 {% endfor %}
 
 void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(

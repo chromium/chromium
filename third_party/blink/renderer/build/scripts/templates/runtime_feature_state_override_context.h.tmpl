@@ -57,8 +57,9 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
 
   void Set{{feature.name}}ForceEnabled();
 
-  bool Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens);
-
+  {% if feature in origin_trial_controlled_features %}
+  bool Set{{ feature.name }}Enabled(const WTF::Vector<WTF::String>& tokens);
+  {% endif %}
   {% endfor %}
 
   void EnablePersistentTrial(

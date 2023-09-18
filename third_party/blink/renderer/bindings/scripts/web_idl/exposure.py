@@ -15,10 +15,15 @@ class _Feature(str):
         str.__init__(self)
         self._is_context_dependent = (
             RuntimeEnabledFeatures.is_context_dependent(self))
+        self._is_origin_trial = RuntimeEnabledFeatures.is_origin_trial(self)
 
     @property
     def is_context_dependent(self):
         return self._is_context_dependent
+
+    @property
+    def is_origin_trial(self):
+        return self._is_origin_trial
 
 
 class _GlobalNameAndFeature(object):
@@ -56,6 +61,7 @@ class Exposure(object):
                 other.context_independent_runtime_enabled_features)
             self._context_dependent_runtime_enabled_features = tuple(
                 other.context_dependent_runtime_enabled_features)
+            self._origin_trial_features = tuple(other._origin_trial_features)
             self._context_enabled_features = tuple(
                 other.context_enabled_features)
             self._only_in_coi_contexts = other.only_in_coi_contexts
@@ -66,6 +72,7 @@ class Exposure(object):
             self._runtime_enabled_features = tuple()
             self._context_independent_runtime_enabled_features = tuple()
             self._context_dependent_runtime_enabled_features = tuple()
+            self._origin_trial_features = tuple()
             self._context_enabled_features = tuple()
             self._only_in_coi_contexts = False
             self._only_in_isolated_contexts = False
@@ -96,6 +103,13 @@ class Exposure(object):
     def context_dependent_runtime_enabled_features(self):
         """Returns runtime enabled features that are context-dependent."""
         return self._context_dependent_runtime_enabled_features
+
+    @property
+    def origin_trial_features(self):
+        """
+        Returns a list of origin trial features.
+        """
+        return self._origin_trial_features
 
     @property
     def context_enabled_features(self):
@@ -179,6 +193,7 @@ class ExposureMutable(Exposure):
         self._runtime_enabled_features = []
         self._context_independent_runtime_enabled_features = []
         self._context_dependent_runtime_enabled_features = []
+        self._origin_trial_features = []
         self._context_enabled_features = []
         self._only_in_coi_contexts = False
         self._only_in_isolated_contexts = False
@@ -201,6 +216,8 @@ class ExposureMutable(Exposure):
             self._context_dependent_runtime_enabled_features.append(feature)
         else:
             self._context_independent_runtime_enabled_features.append(feature)
+        if feature.is_origin_trial:
+            self._origin_trial_features.append(feature)
         self._runtime_enabled_features.append(feature)
 
     def add_context_enabled_feature(self, name):
