@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.allOf;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -397,8 +404,7 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private void verifyUrl(String expectedUrl) {
-        UrlBar urlBar = mCustomTabActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        Assert.assertEquals(expectedUrl, urlBar.getText().toString());
+        onViewWaiting(allOf(withId(R.id.url_bar), withText(expectedUrl)));
     }
 
     private void verifySecurityIcon(int expectedSecurityIcon) {
