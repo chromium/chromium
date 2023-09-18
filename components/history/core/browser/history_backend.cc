@@ -1659,27 +1659,6 @@ bool HistoryBackend::GetMostRecentVisitsForURL(URLID id,
   return false;
 }
 
-size_t HistoryBackend::UpdateURLs(const URLRows& urls) {
-  if (!db_)
-    return 0;
-
-  URLRows changed_urls;
-  for (auto it = urls.begin(); it != urls.end(); ++it) {
-    DCHECK(it->id());
-    if (db_->UpdateURLRow(it->id(), *it))
-      changed_urls.push_back(*it);
-  }
-
-  // Broadcast notifications for any URLs that have actually been changed. This
-  // will update the in-memory database and the InMemoryURLIndex.
-  size_t num_updated_records = changed_urls.size();
-  if (num_updated_records) {
-    NotifyURLsModified(changed_urls, /*is_from_expiration=*/false);
-    ScheduleCommit();
-  }
-  return num_updated_records;
-}
-
 bool HistoryBackend::AddVisits(const GURL& url,
                                const std::vector<VisitInfo>& visits,
                                VisitSource visit_source) {

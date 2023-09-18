@@ -622,14 +622,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Fetches up to `max_visits` most recent visits for the passed URL.
   bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
 
-  // For each element in `urls`, updates the pre-existing URLRow in the database
-  // with the same ID; or ignores the element if no such row exists. Returns the
-  // number of records successfully updated.
-  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
-  // those tests to other APIs and delete this, or failing that, at least
-  // rename it to *ForTest.
-  size_t UpdateURLs(const URLRows& urls);
-
   // While adding visits in batch, the source needs to be provided.
   // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
   // those tests to other APIs and delete this, or failing that, at least
