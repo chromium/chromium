@@ -509,16 +509,16 @@
             ]
         }
     ],
-    "AndroidRdsDomainSettingsDowngrade": [
+    "AndroidRdsWindow": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230918",
                     "enable_features": [
-                        "RequestDesktopSiteExceptionsDowngrade"
+                        "RequestDesktopSiteWindowSetting"
                     ]
                 }
             ]
