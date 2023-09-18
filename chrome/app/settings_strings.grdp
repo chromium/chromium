@@ -2589,8 +2589,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS" desc="Label for the site settings exceptions.">
     Customized behaviors
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_3PCD_BEHAVIORS" desc="Label for the site settings exceptions if 3PCD enabled." translateable="false">
+    Sites allowed to use third-party cookies
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS_DESCRIPTION" desc="Description for the site settings exceptions.">
     Sites listed below follow a custom setting instead of the default
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_3PCD_BEHAVIORS_DESCRIPTION" desc="Description for the site settings exceptions if 3PCD enabled." translateable="false">
+   Affects the sites listed here and their subdomains. For example, adding “google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS_DESCRIPTION_SHORT" desc="Short description for the site settings exceptions.">
     Sites listed below follow a custom setting

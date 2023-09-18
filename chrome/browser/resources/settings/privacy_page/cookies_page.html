@@ -22,6 +22,11 @@
         padding: 0;
       }
 
+      #exceptionHeader3pcd {
+        padding: 0 var(--cr-section-padding);
+        margin-bottom: -40px;
+      }
+
       .radio-group-sub-heading {
         padding-bottom: 10px;
       }
@@ -361,7 +366,9 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+    <template is="dom-if"
+      if="[[isPrivacySandboxSettings4CookieSettingsEnabled_(
+        isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
       <div id="exceptionHeader">
         <h2>$i18n{thirdPartyCookiesPageCustomizedBehaviorHeading}</h2>
         <div id="exceptionHeaderSubLabel" class="secondary">
@@ -378,7 +385,23 @@
           cookies-exception-type="third-party">
       </site-list>
     </template>
-    <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+    <template is="dom-if"
+      if="[[is3pcdRedesignEnabled_]]">
+      <div id="exceptionHeader3pcd">
+          <h2>$i18n{siteDataPageCustomized3pcdHeading}</h2>
+      </div>
+      <site-list id="allowExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.ALLOW]]"
+          category-header="$i18n{siteSettings3pcdBehaviorsDescription}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="third-party">
+      </site-list>
+    </template>
+    <template is="dom-if"
+      if="[[isPrivacySandboxSettings3CookieSettingsEnabled_(
+        isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
       <div id="exceptionHeader">
         <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
       </div>
