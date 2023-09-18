@@ -16,15 +16,6 @@ DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
 
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
 
-// static
-std::unique_ptr<DeviceAuthenticatorChromeOS>
-DeviceAuthenticatorChromeOS::CreateForTesting(
-    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
-    DeviceAuthenticatorProxy* proxy) {
-  return base::WrapUnique<DeviceAuthenticatorChromeOS>(
-      new DeviceAuthenticatorChromeOS(std::move(authenticator), proxy));
-}
-
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {
   // TODO(crbug.com/1440090): Add implementation of the biometric
   // authentication.

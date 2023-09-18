@@ -19,13 +19,10 @@ class TouchIdContext;
 
 class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:
-  ~DeviceAuthenticatorMac() override;
-
-  // Creates an instance of DeviceAuthenticatorWin for testing purposes
-  // only.
-  static std::unique_ptr<DeviceAuthenticatorMac> CreateForTesting(
+  DeviceAuthenticatorMac(
       std::unique_ptr<AuthenticatorMacInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
+  ~DeviceAuthenticatorMac() override;
 
   bool CanAuthenticateWithBiometrics() override;
 
@@ -57,11 +54,6 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   void Cancel(device_reauth::DeviceAuthRequester requester) override;
 
  private:
-  friend class ChromeDeviceAuthenticatorFactory;
-  DeviceAuthenticatorMac(
-      std::unique_ptr<AuthenticatorMacInterface> authenticator,
-      DeviceAuthenticatorProxy* proxy);
-
   // Called when the authentication completes with the result |success|.
   void OnAuthenticationCompleted(bool success);
 

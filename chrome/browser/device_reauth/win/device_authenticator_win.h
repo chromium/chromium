@@ -14,13 +14,10 @@
 
 class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
  public:
-  ~DeviceAuthenticatorWin() override;
-
-  // Creates an instance of DeviceAuthenticatorWin for testing purposes
-  // only.
-  static std::unique_ptr<DeviceAuthenticatorWin> CreateForTesting(
+  DeviceAuthenticatorWin(
       std::unique_ptr<AuthenticatorWinInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
+  ~DeviceAuthenticatorWin() override;
 
   // Returns true, when biometrics are available.
   bool CanAuthenticateWithBiometrics() override;
@@ -57,12 +54,6 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
       AuthenticatorWinInterface* authenticator);
 
  private:
-  friend class ChromeDeviceAuthenticatorFactory;
-
-  DeviceAuthenticatorWin(
-      std::unique_ptr<AuthenticatorWinInterface> authenticator,
-      DeviceAuthenticatorProxy* proxy);
-
   // Records authentication status and executes |callback| with |success|
   // parameter.
   void OnAuthenticationCompleted(base::OnceCallback<void(bool)> callback,

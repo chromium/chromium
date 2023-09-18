@@ -35,7 +35,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
-    authenticator_ = DeviceAuthenticatorChromeOS::CreateForTesting(
+    authenticator_ = std::make_unique<DeviceAuthenticatorChromeOS>(
         std::move(system_authenticator), &proxy_);
   }
 

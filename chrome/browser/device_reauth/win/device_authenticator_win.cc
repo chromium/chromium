@@ -43,15 +43,6 @@ DeviceAuthenticatorWin::DeviceAuthenticatorWin(
 
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;
 
-// static
-std::unique_ptr<DeviceAuthenticatorWin>
-DeviceAuthenticatorWin::CreateForTesting(
-    std::unique_ptr<AuthenticatorWinInterface> authenticator,
-    DeviceAuthenticatorProxy* proxy) {
-  return base::WrapUnique<DeviceAuthenticatorWin>(
-      new DeviceAuthenticatorWin(std::move(authenticator), proxy));
-}
-
 bool DeviceAuthenticatorWin::CanAuthenticateWithBiometrics() {
   // Setting that pref happens once when the ChromeDeviceAuthenticatorFactory
   // is created and it is async so it can technically happen that this pref

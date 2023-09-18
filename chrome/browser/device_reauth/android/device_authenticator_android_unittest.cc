@@ -55,7 +55,7 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
     std::unique_ptr<MockDeviceAuthenticatorBridge> bridge =
         std::make_unique<MockDeviceAuthenticatorBridge>();
     bridge_ = bridge.get();
-    authenticator_ = DeviceAuthenticatorAndroid::CreateForTesting(
+    authenticator_ = std::make_unique<DeviceAuthenticatorAndroid>(
         std::move(bridge), &proxy_);
   }
 

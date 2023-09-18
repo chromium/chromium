@@ -48,7 +48,7 @@ class DeviceAuthenticatorMacTest
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
-    authenticator_ = DeviceAuthenticatorMac::CreateForTesting(
+    authenticator_ = std::make_unique<DeviceAuthenticatorMac>(
         std::move(system_authenticator), &proxy_);
     ON_CALL(*system_authenticator_, CheckIfBiometricsAvailable)
         .WillByDefault(testing::Return(is_biometric_available()));

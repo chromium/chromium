@@ -28,15 +28,6 @@ DeviceAuthenticatorMac::DeviceAuthenticatorMac(
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
-// static
-std::unique_ptr<DeviceAuthenticatorMac>
-DeviceAuthenticatorMac::CreateForTesting(
-    std::unique_ptr<AuthenticatorMacInterface> authenticator,
-    DeviceAuthenticatorProxy* proxy) {
-  return base::WrapUnique<DeviceAuthenticatorMac>(
-      new DeviceAuthenticatorMac(std::move(authenticator), proxy));
-}
-
 bool DeviceAuthenticatorMac::CanAuthenticateWithBiometrics() {
   bool is_available = authenticator_->CheckIfBiometricsAvailable();
   base::UmaHistogramBoolean("PasswordManager.CanUseBiometricsMac",

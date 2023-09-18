@@ -169,15 +169,6 @@ void DeviceAuthenticatorAndroid::Cancel(
   bridge_->Cancel();
 }
 
-// static
-std::unique_ptr<DeviceAuthenticatorAndroid>
-DeviceAuthenticatorAndroid::CreateForTesting(
-    std::unique_ptr<DeviceAuthenticatorBridge> bridge,
-    DeviceAuthenticatorProxy* proxy) {
-  return base::WrapUnique<DeviceAuthenticatorAndroid>(
-      new DeviceAuthenticatorAndroid(std::move(bridge), proxy));
-}
-
 void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
     DeviceAuthUIResult ui_result) {
   // OnAuthenticationCompleted is called aysnchronously and by the time it's
