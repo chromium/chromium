@@ -45,6 +45,16 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+// Killswitch, can be removed around December 2023. If enabled,
+// IsAuthenticated() will only return true for Sync-consented accounts.
+BASE_FEATURE(kIosAutocompleteProviderRequireSync,
+             "IosAutocompleteProviderRequireSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
@@ -257,13 +267,19 @@ bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state_);
-  return identity_manager &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  signin::ConsentLevel level =
+      base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
+          ? signin::ConsentLevel::kSync
+          : signin::ConsentLevel::kSignin;
+  return identity_manager && identity_manager->HasPrimaryAccount(level);
 }
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
   syncer::SyncService* sync =
       SyncServiceFactory::GetForBrowserState(browser_state_);
+  // TODO(crbug.com/1462552): Remove usage of IsSyncFeatureActive() after kSync
+  // users are migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // documentation for details.
   return sync && sync->IsSyncFeatureActive();
 }
 
