@@ -77,11 +77,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.CodeCacheSizeRatio" units="%" expires_after="2022-05-01">
-  <owner>yangguo@chromium.org</owner>
-  <summary>Cache size to source size ratio when caching compiled code.</summary>
-</histogram>
-
 <histogram name="V8.CollectSourcePositions" units="microseconds"
     expires_after="M85">
   <owner>delphick@chromium.org</owner>

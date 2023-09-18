@@ -297,15 +297,6 @@ static void ProduceCacheInternal(
       if (cached_data) {
         const uint8_t* data = cached_data->data;
         int length = cached_data->length;
-        if (length > 1024) {
-          // Omit histogram samples for small cache data to avoid outliers.
-          int cache_size_ratio =
-              static_cast<int>(100.0 * length / source_text_length);
-          DEFINE_THREAD_SAFE_STATIC_LOCAL(
-              CustomCountHistogram, code_cache_size_histogram,
-              ("V8.CodeCacheSizeRatio", 1, 10000, 50));
-          code_cache_size_histogram.Count(cache_size_ratio);
-        }
         cache_handler->ClearCachedMetadata(
             code_cache_host, CachedMetadataHandler::kClearLocally);
         cache_handler->SetCachedMetadata(
