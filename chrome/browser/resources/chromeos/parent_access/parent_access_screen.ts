@@ -5,9 +5,8 @@
 /**
  * An interface to be implemented by the generic Parent Access screens that
  * render different content depending on flow type.
- * @interface
  */
-export class ParentAccessScreenInterface {
+export interface ParentAccessScreen {
   /** Renders the correct content for the screen depending on the flow type. */
-  async renderFlowSpecificContent() {}
+  renderFlowSpecificContent(): void;
 }

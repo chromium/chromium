@@ -54,13 +54,15 @@ suite(parent_access_app_tests.suiteName, function() {
 
         // Verify online flow is showing and switch to the after screen.
         assertEquals(
-            parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
+            parentAccessApp.getCurrentScreenForTest(),
+            Screens.AUTHENTICATION_FLOW);
         parentAccessApp.dispatchEvent(
             new CustomEvent(ParentAccessEvent.SHOW_AFTER));
         await flushTasks();
 
         // Verify after flow is showing.
-        assertEquals(parentAccessApp.currentScreen_, Screens.AFTER_FLOW);
+        assertEquals(
+            parentAccessApp.getCurrentScreenForTest(), Screens.AFTER_FLOW);
         // Verify the local web approvals after screen is showing.
         const parentAccessAfter =
             parentAccessApp.shadowRoot.querySelector('parent-access-after');
@@ -86,7 +88,8 @@ suite(parent_access_app_tests.suiteName, function() {
 
         // Verify before flow is showing and switch to the authentication
         // screen.
-        assertEquals(parentAccessApp.currentScreen_, Screens.BEFORE_FLOW);
+        assertEquals(
+            parentAccessApp.getCurrentScreenForTest(), Screens.BEFORE_FLOW);
         // Verify the extension approvals before screen is showing.
         const parentAccessBefore =
             parentAccessApp.shadowRoot.querySelector('parent-access-before');
@@ -103,13 +106,15 @@ suite(parent_access_app_tests.suiteName, function() {
 
         // Verify online flow is showing and switch to the after screen.
         assertEquals(
-            parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
+            parentAccessApp.getCurrentScreenForTest(),
+            Screens.AUTHENTICATION_FLOW);
         parentAccessApp.dispatchEvent(
             new CustomEvent(ParentAccessEvent.SHOW_AFTER));
         await flushTasks();
 
         // Verify after flow is showing.
-        assertEquals(parentAccessApp.currentScreen_, Screens.AFTER_FLOW);
+        assertEquals(
+            parentAccessApp.getCurrentScreenForTest(), Screens.AFTER_FLOW);
         // Verify the extension approvals after screen is showing.
         const parentAccessAfter =
             parentAccessApp.shadowRoot.querySelector('parent-access-after');
@@ -137,7 +142,8 @@ suite(parent_access_app_tests.suiteName, function() {
         await flushTasks();
 
         // Verify disabled flow is showing.
-        assertEquals(parentAccessApp.currentScreen_, Screens.DISABLED);
+        assertEquals(
+            parentAccessApp.getCurrentScreenForTest(), Screens.DISABLED);
         // Verify extension approvals disabled screen is showing.
         const parentAccessAfter =
             parentAccessApp.shadowRoot.querySelector('parent-access-disabled');
@@ -149,7 +155,8 @@ suite(parent_access_app_tests.suiteName, function() {
         // Verify disabled screen still showing after triggering offline event.
         window.dispatchEvent(new Event('offline'));
         await flushTasks();
-        assertEquals(parentAccessApp.currentScreen_, Screens.DISABLED);
+        assertEquals(
+            parentAccessApp.getCurrentScreenForTest(), Screens.DISABLED);
       });
 
   test(
@@ -167,7 +174,7 @@ suite(parent_access_app_tests.suiteName, function() {
         await flushTasks();
 
         // Verify error screen is showing.
-        assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+        assertEquals(parentAccessApp.getCurrentScreenForTest(), Screens.ERROR);
       });
 
   test(parent_access_app_tests.TestNames.TestWebApprovalsOffline, async () => {
@@ -183,18 +190,20 @@ suite(parent_access_app_tests.suiteName, function() {
     await flushTasks();
 
     // Verify online flow is showing
-    assertEquals(parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
+    assertEquals(
+        parentAccessApp.getCurrentScreenForTest(), Screens.AUTHENTICATION_FLOW);
 
     // Verify offline screen shows when window triggers offline event
     window.dispatchEvent(new Event('offline'));
     await flushTasks();
-    assertEquals(parentAccessApp.currentScreen_, Screens.OFFLINE);
+    assertEquals(parentAccessApp.getCurrentScreenForTest(), Screens.OFFLINE);
 
     // Verify online screen shows when window triggers online event after being
     // offline
     window.dispatchEvent(new Event('online'));
     await flushTasks();
-    assertEquals(parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
+    assertEquals(
+        parentAccessApp.getCurrentScreenForTest(), Screens.AUTHENTICATION_FLOW);
   });
 
   test(parent_access_app_tests.TestNames.TestErrorStateIsTerminal, async () => {
@@ -210,16 +219,16 @@ suite(parent_access_app_tests.suiteName, function() {
     await flushTasks();
 
     // Verify error screen is showing.
-    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+    assertEquals(parentAccessApp.getCurrentScreenForTest(), Screens.ERROR);
 
     // Verify error screen still showing after triggering offline event.
     window.dispatchEvent(new Event('offline'));
     await flushTasks();
-    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+    assertEquals(parentAccessApp.getCurrentScreenForTest(), Screens.ERROR);
 
     // Verify error screen still showing after triggering online event.
     window.dispatchEvent(new Event('online'));
     await flushTasks();
-    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+    assertEquals(parentAccessApp.getCurrentScreenForTest(), Screens.ERROR);
   });
 });

@@ -6,9 +6,10 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ParentAccessResult} from './parent_access_ui.mojom-webui.js';
+import {getTemplate} from './parent_access_template.html.js';
+import {ParentAccessResult, ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 /**
@@ -18,22 +19,23 @@ import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
  * elements.
  */
 class ParentAccessTemplate extends PolymerElement {
-  constructor() {
-    super();
-    this.parentAccessUIHandler = getParentAccessUiHandler();
-  }
-
   static get is() {
     return 'parent-access-template';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  /** @private */
-  onParentAccessDialogClosed_() {
-    this.parentAccessUIHandler.onParentAccessDone(ParentAccessResult.kCanceled);
+  private parentAccessUiHandler: ParentAccessUiHandlerInterface;
+
+  constructor() {
+    super();
+    this.parentAccessUiHandler = getParentAccessUiHandler();
+  }
+
+  private onParentAccessDialogClosed() {
+    this.parentAccessUiHandler.onParentAccessDone(ParentAccessResult.kCanceled);
   }
 }
 customElements.define(ParentAccessTemplate.is, ParentAccessTemplate);

@@ -8056,15 +8056,12 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/edu_coexistence:web_components",
       "//chrome/browser/resources/chromeos/emulator:web_components",
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
-      "//chrome/browser/resources/chromeos/parent_access:web_components",
-      "//chrome/browser/resources/chromeos/parent_access/flows:web_components",
       "//chrome/browser/resources/chromeos/password_change:html_wrapper_files",
       "//chrome/browser/resources/chromeos/set_time_dialog:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
-      "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
     ]
   }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+type ShouldSendTokenToUrlFunction = (token: string) => boolean;
+type AllowedRequestFunction = (request: string) => boolean;
+type OnBeforeSendHeadersListener = (obj: any) =>
+    chrome.webRequest.BlockingResponse|null;
+
 /**
  * Class that handles managing and configuring a <webview> for use
  * for embedded hosted web apps in system components.  Handles
@@ -11,37 +16,32 @@
  * standardize some common configurations of webview.
  */
 export class WebviewManager {
-  /** @param {!WebView} webview The webview to manage. */
-  constructor(webview) {
-    /**
-     * @private {!WebView} the webview element that this class
-     *     will manage.
-     */
+  private webview_: chrome.webviewTag.WebView;
+  /**
+   * Tracks the current listener used to filter destinations
+   * to which we send access tokens.
+   */
+  private shouldSendTokenToUrlListener_: OnBeforeSendHeadersListener|null;
+  /**
+   * Tracks the current listener used to filter destinations
+   * to which we send allow requests.
+   */
+  private allowedRequestListener_: OnBeforeSendHeadersListener|null;
+
+  constructor(webview: chrome.webviewTag.WebView) {
     this.webview_ = webview;
-
-    /**
-     * Tracks the current function used to filter destinations
-     * to which we send access tokens.
-     * @private {?function(Object):BlockingResponse}
-     */
-    this.shouldSendTokenToUrlListener_ = null;
-
-    /**
-     * Tracks the current function used to filter destinations
-     * to which we send allow requests.
-     * @private {?function(Object):BlockingResponse}
-     */
-    this.allowedRequestListener_ = null;
   }
 
   /**
    * Configures the webview to use the specified token to authenticate the user.
-   * Sets the token as part of the Authorization: Bearer HTTP header.
+   * Sets the token as part of the Auhtorization: Bearer HTTP header.
    * @param {string} accessToken the access token
    * @param {!function(string):boolean} shouldSendTokenToUrlFn function that
    *     returns true if the access token should be sent to the specified host.
    */
-  setAccessToken(accessToken, shouldSendTokenToUrlFn) {
+  setAccessToken(
+      accessToken: string,
+      shouldSendTokenToUrlFn: ShouldSendTokenToUrlFunction) {
     if (this.shouldSendTokenToUrlListener_) {
       this.webview_.request.onBeforeSendHeaders.removeListener(
           this.shouldSendTokenToUrlListener_);
@@ -69,7 +69,7 @@ export class WebviewManager {
    * @param {!function(string):boolean} allowedRequestFn function that returns
    *     true if the request to the specified URL is allowed.
    */
-  setAllowRequestFn(allowedRequestFn) {
+  setAllowRequestFn(allowedRequestFn: AllowedRequestFunction) {
     if (this.allowedRequestListener_) {
       this.webview_.request.onBeforeSendHeaders.removeListener(
           this.allowedRequestListener_);

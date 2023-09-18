@@ -4,11 +4,19 @@
 
 import './extension_permission.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessEvent} from '../parent_access_app.js';
+import {ExtensionApprovalsParams} from '../parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
 import {decodeMojoString16, getBase64EncodedSrcForPng} from '../utils.js';
+
+import {getTemplate} from './extension_approvals_template.html.js';
+
+interface Permission {
+  permission: string;
+  details: string;
+}
 
 export class ExtensionApprovalsTemplate extends PolymerElement {
   static get is() {
@@ -16,7 +24,7 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -29,38 +37,20 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-    /**
-     * The extension icon, represented as a Base64 encoded
-     * string.
-     * @protected {string}
-     */
-    this.extensionIconSrc = '';
-    /**
-     * Display name of the extension.
-     * @protected {string}
-     */
-    this.extensionName = '';
-    /**
-     * Localized permission strings.
-     * @protected {Array<Object>}
-     */
-    this.extensionPermissions = [];
-  }
+  protected extensionIconSrc: string;
+  protected extensionName: string;
+  protected extensionPermissions: Permission[];
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
-    this.configureWithParams_();
+    this.configureWithParams();
   }
 
-  /** @private */
-  async configureWithParams_() {
+  private async configureWithParams() {
     const response = await getParentAccessParams();
-    const params = response.params.flowTypeParams.extensionApprovalsParams;
+    const params = response!.params.flowTypeParams!.extensionApprovalsParams;
     if (params) {
-      this.renderDetails_(params);
+      this.renderDetails(params);
     } else {
       this.dispatchEvent(new CustomEvent(ParentAccessEvent.SHOW_ERROR, {
         bubbles: true,
@@ -70,8 +60,7 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
   }
 
 
-  /** @private */
-  renderDetails_(params) {
+  private renderDetails(params: ExtensionApprovalsParams) {
     this.extensionIconSrc = getBase64EncodedSrcForPng(params.iconPngBytes);
     this.extensionName = decodeMojoString16(params.extensionName);
     this.extensionPermissions = params.permissions.map((permission) => {

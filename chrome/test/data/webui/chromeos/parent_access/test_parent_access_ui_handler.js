@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GetOauthTokenStatus, ParentAccessParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {GetOauthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {ParentAccessUiHandlerInterface} */
@@ -17,7 +17,7 @@ export class TestParentAccessUiHandler extends TestBrowserProxy {
       'onBeforeScreenDone',
     ]);
 
-    /** @private {?ParentAccessParams} */
+    /** @private */
     this.params_ = null;
 
     /** @private {?string} */
@@ -63,9 +63,6 @@ export class TestParentAccessUiHandler extends TestBrowserProxy {
     this.methodCalled('onBeforeScreenDone');
   }
 
-  /**
-   * @param {!ParentAccessParams} params
-   */
   setParentAccessParams(params) {
     this.params_ = params;
   }

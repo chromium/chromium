@@ -20,6 +20,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/parent_access_resources.h"
+#include "chrome/grit/parent_access_resources_map.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
 #include "content/public/browser/web_ui.h"
@@ -79,52 +81,15 @@ void ParentAccessUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePath("parent_access_controller.js",
-                          IDR_PARENT_ACCESS_CONTROLLER_JS);
-  source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
-  source->AddResourcePath("parent_access_template.js",
-                          IDR_PARENT_ACCESS_TEMPLATE_JS);
-  source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
-  source->AddResourcePath("parent_access_ui_handler.js",
-                          IDR_PARENT_ACCESS_UI_HANDLER_JS);
-  source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
-  source->AddResourcePath("flows/local_web_approvals_after.js",
-                          IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
-  source->AddResourcePath("flows/extension_approvals_disabled.js",
-                          IDR_EXTENSION_APPROVALS_DISABLED_JS);
-  source->AddResourcePath("flows/extension_approvals_before.js",
-                          IDR_EXTENSION_APPROVALS_BEFORE_JS);
-  source->AddResourcePath("flows/extension_approvals_after.js",
-                          IDR_EXTENSION_APPROVALS_AFTER_JS);
-  source->AddResourcePath("flows/extension_permission.js",
-                          IDR_EXTENSION_APPROVALS_EXTENSION_PERMISSION_JS);
-  source->AddResourcePath("flows/extension_approvals_template.js",
-                          IDR_EXTENSION_APPROVALS_TEMPLATE_JS);
-  source->AddResourcePath("parent_access_before.js",
-                          IDR_PARENT_ACCESS_BEFORE_JS);
-  source->AddResourcePath("parent_access_disabled.js",
-                          IDR_PARENT_ACCESS_DISABLED_JS);
-  source->AddResourcePath("parent_access_error.js", IDR_PARENT_ACCESS_ERROR_JS);
-  source->AddResourcePath("parent_access_offline.js",
-                          IDR_PARENT_ACCESS_OFFLINE_JS);
-  source->AddResourcePath("parent_access_ui.mojom-webui.js",
-                          IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
-  source->AddResourcePath("webview_manager.js",
-                          IDR_PARENT_ACCESS_WEBVIEW_MANAGER_JS);
-  source->AddResourcePath("utils.js", IDR_PARENT_ACCESS_UTILS_JS);
-  source->AddResourcePath("parent_access_screen.js",
-                          IDR_PARENT_ACCESS_SCREEN_JS);
+  source->AddResourcePaths(
+      base::make_span(kParentAccessResources, kParentAccessResourcesSize));
   source->AddResourcePaths(
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
-  source->AddResourcePath("images/request_approval.svg",
-                          IDR_PARENT_ACCESS_REQUEST_APPROVAL_SVG);
-  source->AddResourcePath("images/request_approval_dark.svg",
-                          IDR_PARENT_ACCESS_REQUEST_APPROVAL_DARK_SVG);
 
   source->UseStringsJs();
   source->AddBoolean("isParentAccessJellyEnabled",
                      features::IsParentAccessJellyEnabled());
-  source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
+  source->SetDefaultResource(IDR_PARENT_ACCESS_PARENT_ACCESS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE},

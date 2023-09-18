@@ -19,4 +19,5 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+  use_typescript_sources = true
 }

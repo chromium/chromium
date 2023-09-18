@@ -17,30 +17,36 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './parent_access_app.html.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
-/** @enum {string} */
-export const Screens = {
-  AUTHENTICATION_FLOW: 'parent-access-ui',
-  BEFORE_FLOW: 'parent-access-before',
-  AFTER_FLOW: 'parent-access-after',
-  DISABLED: 'parent-access-disabled',
-  ERROR: 'parent-access-error',
-  OFFLINE: 'parent-access-offline',
-};
+interface ParentAccessApp {
+  $: {
+    viewManager: CrViewManagerElement,
+  };
+}
 
-/** @enum {string} */
-export const ParentAccessEvent = {
-  SHOW_AFTER: 'show-after',
-  SHOW_AUTHENTICATION_FLOW: 'show-authentication-flow',
-  SHOW_ERROR: 'show-error',
+export enum Screens {
+  AUTHENTICATION_FLOW = 'parent-access-ui',
+  BEFORE_FLOW = 'parent-access-before',
+  AFTER_FLOW = 'parent-access-after',
+  DISABLED = 'parent-access-disabled',
+  ERROR = 'parent-access-error',
+  OFFLINE = 'parent-access-offline',
+}
+
+export enum ParentAccessEvent {
+  SHOW_AFTER = 'show-after',
+  SHOW_AUTHENTICATION_FLOW = 'show-authentication-flow',
+  SHOW_ERROR = 'show-error',
   // Individual screens can listen for this event to be notified when the screen
   // becomes active.
-  ON_SCREEN_SWITCHED: 'on-screen-switched',
-};
+  ON_SCREEN_SWITCHED = 'on-screen-switched',
+}
 
 /**
  * Returns true if the Parent Access Jelly feature flag is enabled.
@@ -57,23 +63,12 @@ class ParentAccessApp extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Specifies what the current screen is.
-       * @private {Screens}
-       */
-      currentScreen_: {
-        type: Screens,
-      },
-    };
-  }
+  private currentScreen: Screens;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     // TODO (b/297564545): Clean up Jelly flag logic after Jelly is enabled.
@@ -89,46 +84,48 @@ class ParentAccessApp extends PolymerElement {
       })();
     }
 
-    this.addEventListeners_();
-    this.getInitialScreen_().then((initialScreen) => {
-      this.switchScreen_(navigator.onLine ? initialScreen : Screens.OFFLINE);
+    this.addEventListeners();
+    this.getInitialScreen().then((initialScreen: Screens) => {
+      this.switchScreen(navigator.onLine ? initialScreen : Screens.OFFLINE);
     });
   }
 
-  /** @private */
-  addEventListeners_() {
+  getCurrentScreenForTest(): Screens {
+    return this.currentScreen;
+  }
+
+  private addEventListeners() {
     this.addEventListener(ParentAccessEvent.SHOW_AFTER, () => {
-      this.switchScreen_(Screens.AFTER_FLOW);
+      this.switchScreen(Screens.AFTER_FLOW);
     });
 
     this.addEventListener(ParentAccessEvent.SHOW_AUTHENTICATION_FLOW, () => {
-      this.switchScreen_(Screens.AUTHENTICATION_FLOW);
+      this.switchScreen(Screens.AUTHENTICATION_FLOW);
       getParentAccessUiHandler().onBeforeScreenDone();
     });
 
     this.addEventListener(ParentAccessEvent.SHOW_ERROR, () => {
-      this.onError_();
+      this.onError();
     });
 
     window.addEventListener('online', () => {
       // If the app comes back online, start from the initial screen.
-      this.getInitialScreen_().then((initialScreen) => {
-        this.switchScreen_(initialScreen);
+      this.getInitialScreen().then((initialScreen: Screens) => {
+        this.switchScreen(initialScreen);
       });
     });
 
     window.addEventListener('offline', () => {
-      this.switchScreen_(Screens.OFFLINE);
+      this.switchScreen(Screens.OFFLINE);
     });
   }
 
-  /** @private */
-  async getInitialScreen_() {
+  private async getInitialScreen() {
     const response = await getParentAccessParams();
-    if (response.params.isDisabled) {
+    if (response!.params.isDisabled) {
       return Screens.DISABLED;
     }
-    switch (response.params.flowType) {
+    switch (response!.params.flowType) {
       case ParentAccessParams_FlowType.kExtensionAccess:
         return Screens.BEFORE_FLOW;
       case ParentAccessParams_FlowType.kWebsiteAccess:
@@ -137,37 +134,26 @@ class ParentAccessApp extends PolymerElement {
     }
   }
 
-  /**
-   * Shows an error screen, which is a terminal state for the flow.
-   * @private
-   */
-  onError_() {
-    this.switchScreen_(Screens.ERROR);
+  /** Shows an error screen, which is a terminal state for the flow. */
+  private onError() {
+    this.switchScreen(Screens.ERROR);
     getParentAccessUiHandler().onParentAccessDone(ParentAccessResult.kError);
   }
 
-  /**
-   * @param {!Screens} screen
-   * @private
-   */
-  switchScreen_(screen) {
-    if (this.isAppInTerminalState_()) {
+  private switchScreen(screen: Screens) {
+    if (this.isAppInTerminalState()) {
       return;
     }
-    this.currentScreen_ = screen;
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView(this.currentScreen_);
-    this.shadowRoot.querySelector(screen).dispatchEvent(
+    this.currentScreen = screen;
+    this.$.viewManager.switchView(this.currentScreen);
+    this.shadowRoot!.querySelector(screen)!.dispatchEvent(
         new CustomEvent(ParentAccessEvent.ON_SCREEN_SWITCHED));
   }
 
-  /**
-   * @returns {boolean} If the app can navigate away from the current screen.
-   * @private
-   */
-  isAppInTerminalState_() {
-    return this.currentScreen_ === Screens.ERROR ||
-        this.currentScreen_ === Screens.DISABLED;
+  /** Returns if the app can navigate away from the current screen. */
+  private isAppInTerminalState(): boolean {
+    return this.currentScreen === Screens.ERROR ||
+        this.currentScreen === Screens.DISABLED;
   }
 }
 customElements.define(ParentAccessApp.is, ParentAccessApp);

@@ -7,57 +7,51 @@ import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cros_components/button/button.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionApprovalsBefore} from './flows/extension_approvals_before.js';
 import {isParentAccessJellyEnabled, ParentAccessEvent} from './parent_access_app.js';
-import {ParentAccessScreenInterface} from './parent_access_screen.js';
+import {getTemplate} from './parent_access_before.html.js';
+import {ParentAccessScreen} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from './parent_access_ui_handler.js';
 
-/** @implements {ParentAccessScreenInterface} */
-class ParentAccessBefore extends PolymerElement {
-  constructor() {
-    super();
-  }
-
+class ParentAccessBefore extends PolymerElement implements ParentAccessScreen {
   static get is() {
     return 'parent-access-before';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.renderFlowSpecificContent();
     this.addEventListener(ParentAccessEvent.ON_SCREEN_SWITCHED, () => {
       // TODO (b/297564545): Clean up Jelly flag logic after Jelly is enabled.
       if (isParentAccessJellyEnabled()) {
-        this.shadowRoot.querySelector('#action-button-jelly').focus();
+        this.shadowRoot!.querySelector<HTMLElement>(
+                            '#action-button-jelly')!.focus();
       } else {
-        this.shadowRoot.querySelector('#action-button').focus();
+        this.shadowRoot!.querySelector<HTMLElement>('#action-button')!.focus();
       }
     });
   }
 
-  /** @override */
   async renderFlowSpecificContent() {
     const response = await getParentAccessParams();
-    switch (response.params.flowType) {
+    switch (response!.params.flowType) {
       case ParentAccessParams_FlowType.kExtensionAccess:
-        this.shadowRoot.querySelector('#before-screen-body')
-            .appendChild(new ExtensionApprovalsBefore());
+        this.shadowRoot!.querySelector('#before-screen-body')!.appendChild(
+            new ExtensionApprovalsBefore());
         return;
       default:
         return;
     }
   }
 
-  /** @private */
-  showParentAccessUI_() {
+  private showParentAccessUi() {
     this.dispatchEvent(
         new CustomEvent(ParentAccessEvent.SHOW_AUTHENTICATION_FLOW, {
           bubbles: true,

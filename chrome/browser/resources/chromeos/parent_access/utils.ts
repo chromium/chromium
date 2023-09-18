@@ -4,19 +4,11 @@
 
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-/**
- * @param {!String16} str
- * @return {string}
- */
-export function decodeMojoString16(str) {
+export function decodeMojoString16(str: String16): string {
   return str.data.map((ch) => String.fromCodePoint(ch)).join('');
 }
 
-/**
- * @param {!Array<number>} pngBytes
- * @return {string}
- */
-export function getBase64EncodedSrcForPng(pngBytes) {
+export function getBase64EncodedSrcForPng(pngBytes: number[]): string {
   const image = btoa(String.fromCharCode(...pngBytes));
   return 'data:image/png;base64,' + image;
 }
