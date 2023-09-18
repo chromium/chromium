@@ -35,7 +35,7 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppManagementAppDetails,
              "AppManagementAppDetails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
