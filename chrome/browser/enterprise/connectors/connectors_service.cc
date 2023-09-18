@@ -162,6 +162,10 @@ BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
              "EnterpriseConnectorsEnabledOnMGS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableRelaxedAffiliationCheck,
+             "EnableRelaxedAffiliationCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // --------------------------------
 // ConnectorsService implementation
 // --------------------------------

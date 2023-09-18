@@ -34,6 +34,9 @@ namespace enterprise_connectors {
 // ConnectorsManager in Managed Guest Sessions.
 BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
 
+// Enable relaxed affiliation checks
+BASE_DECLARE_FEATURE(kEnableRelaxedAffiliationCheck);
+
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public KeyedService {
  public:
