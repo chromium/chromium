@@ -4,14 +4,20 @@
 
 package org.chromium.chrome.browser.ui.system;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -44,12 +50,15 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
@@ -158,6 +167,47 @@ public class StatusBarColorControllerTest {
         });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
+    }
+
+    /**
+     * Test that a polished color is used in NTP with surface polish enabled.
+     */
+    @Test
+    @LargeTest
+    @Feature({"StatusBar"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    public void testPolishStatusBarColorNtp() throws Exception {
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final int expectedPolishedStandardColor = ChromeColors.getSurfaceColor(
+                activity, R.dimen.home_surface_background_color_elevation);
+
+        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
+        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
+
+        // Scroll the toolbar up and let it pinned on top.
+        scrollUpToolbarUntilPinnedAtTop(activity);
+        waitForStatusBarColor(activity, expectedPolishedStandardColor);
+    }
+
+    /**
+     * Test that the default color is used in Start surface without surface polish enabled.
+     */
+    @Test
+    @LargeTest
+    @Feature({"StatusBar"})
+    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    public void testStatusBarColorNtp() throws Exception {
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final int expectedStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
+
+        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
+        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
+
+        // Scroll the toolbar up and let it pinned on top.
+        scrollUpToolbarUntilPinnedAtTop(activity);
+        waitForStatusBarColor(activity, expectedStandardColor);
     }
 
     /**
@@ -451,5 +501,17 @@ public class StatusBarColorControllerTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.getWindow().getStatusBarColor(), Matchers.is(toolbarColor));
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void scrollUpToolbarUntilPinnedAtTop(Activity activity) {
+        Resources resources = activity.getResources();
+        // Drag the Feed header title to scroll the toolbar to the top.
+        int toY = -resources.getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
+                - activity.findViewById(R.id.logo_holder).getHeight();
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                activity.findViewById(R.id.header_title), 0, 0, 0, toY, 10);
+
+        // Toolbar layout view should show.
+        onViewWaiting(withId(R.id.toolbar));
     }
 }
