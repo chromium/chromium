@@ -2403,17 +2403,15 @@ TEST_F(AlternateProtocolServerPropertiesTest, RemoveExpiredBrokenAltSvc3) {
 
 TEST_F(AlternateProtocolServerPropertiesTest,
        GetAlternativeServiceInfoAsValue) {
-  base::Time::Exploded now_exploded;
-  now_exploded.year = 2018;
-  now_exploded.month = 1;
-  now_exploded.day_of_week = 3;
-  now_exploded.day_of_month = 24;
-  now_exploded.hour = 15;
-  now_exploded.minute = 12;
-  now_exploded.second = 53;
-  now_exploded.millisecond = 0;
+  constexpr base::Time::Exploded kNowExploded = {.year = 2018,
+                                                 .month = 1,
+                                                 .day_of_week = 3,
+                                                 .day_of_month = 24,
+                                                 .hour = 15,
+                                                 .minute = 12,
+                                                 .second = 53};
   base::Time now;
-  bool result = base::Time::FromLocalExploded(now_exploded, &now);
+  bool result = base::Time::FromLocalExploded(kNowExploded, &now);
   DCHECK(result);
   test_clock_.SetNow(now);
 
