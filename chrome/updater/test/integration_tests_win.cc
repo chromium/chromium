@@ -1767,31 +1767,27 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
       [&]() {
         if (!found) {
           // Enumerate the top-level dialogs to find the setup dialog.
-          base::win::WindowEnumerator(
+          base::win::EnumerateChildWindows(
               ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
-                if (!base::win::WindowEnumerator::IsSystemDialog(hwnd) ||
-                    !base::Contains(
-                        base::win::WindowEnumerator::GetWindowText(hwnd),
-                        window_title)) {
+                if (!base::win::IsSystemDialog(hwnd) ||
+                    !base::Contains(base::win::GetWindowTextString(hwnd),
+                                    window_title)) {
                   return false;
                 }
                 // Enumerate the child windows to search for
                 // `child_window_text_to_find`. If found, close the dialog.
-                base::win::WindowEnumerator(
+                base::win::EnumerateChildWindows(
                     hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
-                      if (!base::Contains(
-                              base::win::WindowEnumerator::GetWindowText(hwnd),
-                              child_window_text_to_find)) {
+                      if (!base::Contains(base::win::GetWindowTextString(hwnd),
+                                          child_window_text_to_find)) {
                         return false;
                       }
                       found = true;
                       ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
                       return found;
-                    }))
-                    .Run();
+                    }));
                 return found;
-              }))
-              .Run();
+              }));
         }
         return found && !IsUpdaterRunning();
       },

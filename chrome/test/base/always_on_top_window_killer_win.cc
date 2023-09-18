@@ -66,23 +66,22 @@ void KillAlwaysOnTopWindows(RunType run_type,
     }
   }
 
-  base::win::WindowEnumerator(
+  base::win::EnumerateChildWindows(
       ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
         const bool kContinueIterating = false;
 
         if (!::IsWindowVisible(hwnd) || ::IsIconic(hwnd) ||
-            !base::win::WindowEnumerator::IsTopmostWindow(hwnd)) {
+            !base::win::IsTopmostWindow(hwnd)) {
           return kContinueIterating;
         }
 
-        const std::wstring class_name =
-            base::win::WindowEnumerator::GetWindowClass(hwnd);
+        const std::wstring class_name = base::win::GetWindowClass(hwnd);
         if (class_name.empty()) {
           return kContinueIterating;
         }
 
         // Ignore specific windows owned by the shell.
-        if (base::win::WindowEnumerator::IsShellWindow(hwnd)) {
+        if (base::win::IsShellWindow(hwnd)) {
           return kContinueIterating;
         }
 
@@ -95,7 +94,7 @@ void KillAlwaysOnTopWindows(RunType run_type,
         if (LOG_IS_ON(ERROR)) {
           std::wostringstream sstream;
 
-          if (!base::win::WindowEnumerator::IsSystemDialog(hwnd)) {
+          if (!base::win::IsSystemDialog(hwnd)) {
             sstream << " window class name: " << class_name << ";";
           }
 
@@ -131,7 +130,7 @@ void KillAlwaysOnTopWindows(RunType run_type,
 
         // System dialogs may be present if a child process triggers an
         // assert(), for example.
-        if (base::win::WindowEnumerator::IsSystemDialog(hwnd)) {
+        if (base::win::IsSystemDialog(hwnd)) {
           LOG(ERROR) << (run_type == RunType::BEFORE_SHARD
                              ? kDialogFoundBeforeTest
                              : kDialogFoundPostTest)
@@ -163,6 +162,5 @@ void KillAlwaysOnTopWindows(RunType run_type,
         }
 
         return kContinueIterating;
-      }))
-      .Run();
+      }));
 }

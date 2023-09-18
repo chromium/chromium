@@ -15,10 +15,9 @@
 namespace base::win {
 
 TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
-  WindowEnumerator(
+  EnumerateChildWindows(
       ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
-        const std::wstring window_class =
-            WindowEnumerator::GetWindowClass(hwnd);
+        const std::wstring window_class = GetWindowClass(hwnd);
         EXPECT_EQ(window_class, [&]() {
           constexpr int kMaxWindowClassNameLength = 256;
           wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
@@ -29,17 +28,16 @@ TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
           return std::wstring(&buffer[0], static_cast<size_t>(name_len));
         }());
 
-        EXPECT_EQ(WindowEnumerator::IsTopmostWindow(hwnd),
+        EXPECT_EQ(IsTopmostWindow(hwnd),
                   (::GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0);
 
-        EXPECT_EQ(WindowEnumerator::IsSystemDialog(hwnd),
-                  window_class == L"#32770");
+        EXPECT_EQ(IsSystemDialog(hwnd), window_class == L"#32770");
 
-        EXPECT_EQ(WindowEnumerator::IsShellWindow(hwnd),
+        EXPECT_EQ(IsShellWindow(hwnd),
                   window_class == L"Button" ||
                       window_class == L"Shell_TrayWnd" ||
                       window_class == L"Shell_SecondaryTrayWnd");
-        EXPECT_EQ(WindowEnumerator::GetWindowText(hwnd), [&]() {
+        EXPECT_EQ(GetWindowTextString(hwnd), [&]() {
           const int num_chars = ::GetWindowTextLength(hwnd);
           if (!num_chars) {
             return std::wstring();
@@ -49,11 +47,10 @@ TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
                                static_cast<int>(text.size()))) {
             return std::wstring();
           }
-          return std::wstring(text.begin(), text.end());
+          return std::wstring(text.begin(), --text.end());
         }());
         return false;
-      }))
-      .Run();
+      }));
 }
 
 }  // namespace base::win

@@ -12,29 +12,28 @@
 
 namespace base::win {
 
-WindowEnumerator::WindowEnumerator(
-    HWND parent,
-    base::RepeatingCallback<bool(HWND hwnd)> filter)
-    : parent_(parent), filter_(filter) {}
-WindowEnumerator::~WindowEnumerator() = default;
+namespace {
 
-void WindowEnumerator::Run() const {
-  ::EnumChildWindows(parent_, &OnWindowProc, reinterpret_cast<LPARAM>(this));
+BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM lparam) {
+  return !reinterpret_cast<WindowEnumeratorCallback*>(lparam)->Run(hwnd);
 }
 
-// static
-bool WindowEnumerator::IsTopmostWindow(HWND hwnd) {
+}  // namespace
+
+void EnumerateChildWindows(HWND parent, WindowEnumeratorCallback filter) {
+  ::EnumChildWindows(parent, &OnWindowProc, reinterpret_cast<LPARAM>(&filter));
+}
+
+bool IsTopmostWindow(HWND hwnd) {
   return ::GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOPMOST;
 }
 
-// static
-bool WindowEnumerator::IsSystemDialog(HWND hwnd) {
-  constexpr wchar_t kSystemDialogClass[] = L"#32770";
+bool IsSystemDialog(HWND hwnd) {
+  static constexpr wchar_t kSystemDialogClass[] = L"#32770";
   return GetWindowClass(hwnd) == kSystemDialogClass;
 }
 
-// static
-bool WindowEnumerator::IsShellWindow(HWND hwnd) {
+bool IsShellWindow(HWND hwnd) {
   const std::wstring class_name = GetWindowClass(hwnd);
 
   // 'Button' is the start button, 'Shell_TrayWnd' the taskbar, and
@@ -43,12 +42,11 @@ bool WindowEnumerator::IsShellWindow(HWND hwnd) {
          class_name == L"Shell_SecondaryTrayWnd";
 }
 
-// static
-std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
+std::wstring GetWindowClass(HWND hwnd) {
   constexpr int kMaxWindowClassNameLength = 256;
   std::wstring window_class(kMaxWindowClassNameLength, L'\0');
   const int name_len =
-      ::GetClassName(hwnd, &window_class[0], kMaxWindowClassNameLength);
+      ::GetClassName(hwnd, window_class.data(), kMaxWindowClassNameLength);
   if (name_len <= 0 || name_len > kMaxWindowClassNameLength) {
     return {};
   }
@@ -56,23 +54,21 @@ std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
   return window_class;
 }
 
-// static
-std::wstring WindowEnumerator::GetWindowText(HWND hwnd) {
-  int num_chars = ::GetWindowTextLength(hwnd);
-  if (!num_chars) {
+std::wstring GetWindowTextString(HWND hwnd) {
+  auto num_chars = ::GetWindowTextLength(hwnd);
+  if (num_chars <= 0) {
     return {};
   }
-  std::wstring text(static_cast<size_t>(++num_chars), L'\0');
-  return ::GetWindowText(hwnd, &text[0], num_chars) ? text : std::wstring();
-}
-
-bool WindowEnumerator::OnWindow(HWND hwnd) const {
-  return !filter_.Run(hwnd);
-}
-
-// static
-BOOL CALLBACK WindowEnumerator::OnWindowProc(HWND hwnd, LPARAM lparam) {
-  return reinterpret_cast<WindowEnumerator*>(lparam)->OnWindow(hwnd);
+  std::wstring text(static_cast<size_t>(num_chars), L'\0');
+  // MSDN says that GetWindowText will not write anything other than a string
+  // terminator to the last position in the buffer.
+  auto len = ::GetWindowText(hwnd, text.data(), num_chars + 1);
+  if (len <= 0) {
+    return std::wstring();
+  }
+  // GetWindowText may return a shorter string than reported above.
+  text.resize(static_cast<size_t>(len));
+  return text;
 }
 
 }  // namespace base::win
