@@ -1054,4 +1054,146 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
             ConvertToString(*continuation.passthrough_event));
 }
 
+class HardcodedActionRewritingTest
+    : public PeripheralCustomizationEventRewriterTest,
+      public testing::WithParamInterface<
+          std::tuple<mojom::HardCodedAction, ui::KeyEvent>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HardcodedActionRewritingTest,
+    testing::ValuesIn(
+        std::vector<std::tuple<mojom::HardCodedAction, ui::KeyEvent>>({
+            {mojom::HardCodedAction::kCopy,
+             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
+                                  ui::VKEY_C,
+                                  ui::EF_CONTROL_DOWN,
+                                  ui::DomCode::US_C,
+                                  ui::DomKey::Constant<'c'>::Character)},
+            {mojom::HardCodedAction::kPaste,
+             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
+                                  ui::VKEY_V,
+                                  ui::EF_CONTROL_DOWN,
+                                  ui::DomCode::US_V,
+                                  ui::DomKey::Constant<'v'>::Character)},
+        })));
+
+TEST_P(HardcodedActionRewritingTest, HardcodedMouseRewriting) {
+  const auto& [hardcoded_action, expected_key_event] = GetParam();
+
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+
+  TestEventRewriterContinuation continuation;
+  ui::MouseEvent mouse_pressed_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+  ui::KeyEvent expected_mouse_pressed_event = expected_key_event;
+  expected_mouse_pressed_event.set_source_device_id(kMouseDeviceId);
+
+  rewriter_->RewriteEvent(mouse_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_mouse_pressed_event),
+            ConvertToString(*continuation.passthrough_event));
+  ui::MouseEvent mouse_release_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+
+  continuation.reset();
+  rewriter_->RewriteEvent(mouse_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  ui::KeyEvent expected_mouse_release_event = CreateKeyButtonEvent(
+      ui::ET_KEY_RELEASED, expected_key_event.key_code(),
+      expected_key_event.flags(), expected_key_event.code(),
+      expected_key_event.GetDomKey());
+  expected_mouse_release_event.set_source_device_id(kMouseDeviceId);
+  EXPECT_EQ(ConvertToString(expected_mouse_release_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(HardcodedActionRewritingTest, HardcodedGraphicsTabletRewriting) {
+  const auto& [hardcoded_action, expected_key_event] = GetParam();
+  graphics_tablet_settings_->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kForward),
+          mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+  graphics_tablet_settings_->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kBack),
+          mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+
+  TestEventRewriterContinuation continuation;
+
+  ui::MouseEvent pen_pressed_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+      ui::EF_FORWARD_MOUSE_BUTTON, kGraphicsTabletDeviceId);
+  ui::KeyEvent expected_pen_pressed_event = expected_key_event;
+  expected_pen_pressed_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  rewriter_->RewriteEvent(pen_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_pen_pressed_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  ui::MouseEvent pen_release_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_RELEASED, ui::EF_FORWARD_MOUSE_BUTTON,
+      ui::EF_FORWARD_MOUSE_BUTTON, kGraphicsTabletDeviceId);
+  ui::KeyEvent expected_pen_release_event = CreateKeyButtonEvent(
+      ui::ET_KEY_RELEASED, expected_key_event.key_code(),
+      expected_key_event.flags(), expected_key_event.code(),
+      expected_key_event.GetDomKey());
+  expected_pen_release_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  continuation.reset();
+  rewriter_->RewriteEvent(pen_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_pen_release_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  ui::MouseEvent tablet_pressed_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON,
+                             ui::EF_BACK_MOUSE_BUTTON, kGraphicsTabletDeviceId);
+  ui::KeyEvent expected_tablet_pressed_event = expected_key_event;
+  expected_tablet_pressed_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  continuation.reset();
+  rewriter_->RewriteEvent(tablet_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_tablet_pressed_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  ui::MouseEvent tablet_release_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED, ui::EF_BACK_MOUSE_BUTTON,
+                             ui::EF_BACK_MOUSE_BUTTON, kGraphicsTabletDeviceId);
+  ui::KeyEvent expected_tablet_release_event = CreateKeyButtonEvent(
+      ui::ET_KEY_RELEASED, expected_key_event.key_code(),
+      expected_key_event.flags(), expected_key_event.code(),
+      expected_key_event.GetDomKey());
+  expected_tablet_release_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  continuation.reset();
+  rewriter_->RewriteEvent(tablet_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_tablet_release_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
 }  // namespace ash

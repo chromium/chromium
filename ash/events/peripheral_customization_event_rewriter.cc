@@ -36,6 +36,40 @@ constexpr int kGraphicsTabletRemappableFlags =
     ui::EF_RIGHT_MOUSE_BUTTON | ui::EF_BACK_MOUSE_BUTTON |
     ui::EF_FORWARD_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON;
 
+mojom::KeyEvent GetHardCodedAction(mojom::HardCodedAction action) {
+  mojom::KeyEvent key_event;
+  switch (action) {
+    case mojom::HardCodedAction::kCopy:
+      key_event = mojom::KeyEvent(
+          ui::VKEY_C, static_cast<int>(ui::DomCode::US_C),
+          static_cast<int>(ui::DomKey::Constant<'c'>::Character),
+          ui::EF_CONTROL_DOWN);
+      break;
+    case mojom::HardCodedAction::kPaste:
+      key_event = mojom::KeyEvent(
+          ui::VKEY_V, static_cast<int>(ui::DomCode::US_V),
+          static_cast<int>(ui::DomKey::Constant<'v'>::Character),
+          ui::EF_CONTROL_DOWN);
+      break;
+  }
+  return key_event;
+}
+
+std::unique_ptr<ui::Event> RewriteEventToKeyEvent(
+    const ui::Event& event,
+    const mojom::KeyEvent& key_event) {
+  const ui::EventType event_type = (event.type() == ui::ET_MOUSE_PRESSED ||
+                                    event.type() == ui::ET_KEY_PRESSED)
+                                       ? ui::ET_KEY_PRESSED
+                                       : ui::ET_KEY_RELEASED;
+  auto rewritten_event = std::make_unique<ui::KeyEvent>(
+      event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
+      key_event.modifiers | event.flags(),
+      static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
+  rewritten_event->set_source_device_id(event.source_device_id());
+  return rewritten_event;
+}
+
 bool IsMouseButtonEvent(const ui::MouseEvent& mouse_event) {
   return mouse_event.type() == ui::ET_MOUSE_PRESSED ||
          mouse_event.type() == ui::ET_MOUSE_RELEASED;
@@ -346,16 +380,12 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
 
   if (remapping_action->is_key_event()) {
     const auto& key_event = remapping_action->get_key_event();
-    const ui::EventType event_type = (event.type() == ui::ET_MOUSE_PRESSED ||
-                                      event.type() == ui::ET_KEY_PRESSED)
-                                         ? ui::ET_KEY_PRESSED
-                                         : ui::ET_KEY_RELEASED;
-    rewritten_event = std::make_unique<ui::KeyEvent>(
-        event_type, key_event->vkey,
-        static_cast<ui::DomCode>(key_event->dom_code),
-        key_event->modifiers | event.flags(),
-        static_cast<ui::DomKey>(key_event->dom_key), event.time_stamp());
-    rewritten_event->set_source_device_id(event.source_device_id());
+    rewritten_event = RewriteEventToKeyEvent(event, *key_event);
+  }
+
+  if (remapping_action->is_hardcoded_action()) {
+    rewritten_event = RewriteEventToKeyEvent(
+        event, GetHardCodedAction(remapping_action->get_hardcoded_action()));
   }
 
   return false;
