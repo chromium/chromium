@@ -59,7 +59,7 @@ public class SurveyConfig {
     }
 
     /** Clear all the initialized configs. */
-    public static void clearAll() {
+    static void clearAll() {
         Holder.getInstance().destroy();
     }
 
@@ -90,7 +90,7 @@ public class SurveyConfig {
     static class Holder {
         private static Holder sInstance;
         private long mNativeInstance;
-        private Map<String, SurveyConfig> mTriggers;
+        private final Map<String, SurveyConfig> mTriggers;
 
         static Holder getInstance() {
             if (sInstance == null) {

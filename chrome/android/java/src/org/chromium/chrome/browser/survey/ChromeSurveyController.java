@@ -109,12 +109,17 @@ public class ChromeSurveyController {
         assert tabModelSelector != null;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HATS_REFACTOR)) {
+            SurveyConfig config = SurveyConfig.get(TRIGGER_STARTUP_SURVEY);
+            if (config == null) return;
+
+            assert SurveyClientFactory.getInstance() != null;
+
             PropertyModel message = createBasicSurveyMessage(activity.getResources());
             SurveyUiDelegate messageDelegate = new MessageSurveyUiDelegate(message,
                     messageDispatcher, tabModelSelector, ChromeSurveyController::isUMAEnabled);
-            SurveyClient client = SurveyClientFactory.getInstance().createClient(
-                    SurveyConfig.get(TRIGGER_STARTUP_SURVEY), messageDelegate);
-            client.showSurvey(activity, lifecycleDispatcher);
+            SurveyClient client =
+                    SurveyClientFactory.getInstance().createClient(config, messageDelegate);
+            if (client != null) client.showSurvey(activity, lifecycleDispatcher);
             return;
         }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.hats;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.junit.rules.TestRule;
@@ -104,7 +105,9 @@ public class TestSurveyUtils {
             }
 
             @Override
-            public SurveyClient createClient(SurveyConfig config, SurveyUiDelegate uiDelegate) {
+            @Nullable
+            public SurveyClient createClient(
+                    @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
                 return new SurveyClientImpl(
                         config, uiDelegate, mTestController, mCrashUploadPermissionSupplier);
             }
