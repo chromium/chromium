@@ -3,10 +3,14 @@
 // META: script=resources/fledge-util.js
 // META: script=/common/subset-tests.js
 // META: timeout=long
-// META: variant=?1-10
-// META: variant=?11-20
-// META: variant=?21-30
-// META: variant=?31-40
+// META: variant=?1-5
+// META: variant=?6-10
+// META: variant=?11-15
+// META: variant=?16-20
+// META: variant=?21-25
+// META: variant=?26-30
+// META: variant=?31-35
+// META: variant=?36-40
 // META: variant=?41-last
 
 "use strict";
