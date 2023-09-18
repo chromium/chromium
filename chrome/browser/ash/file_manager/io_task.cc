@@ -155,7 +155,7 @@ DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
                          OperationType type,
                          bool show_notifications,
                          bool progress_succeeds)
-    : IOTask(show_notifications) {
+    : IOTask(show_notifications), progress_succeeds_(progress_succeeds) {
   progress_.state = State::kQueued;
   progress_.type = type;
   progress_.SetDestinationFolder(std::move(destination_folder));
