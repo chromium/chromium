@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/plugin_vm_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/plugin_vm_handler.h"
 
 #include <string>
 #include <utility>
