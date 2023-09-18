@@ -55,6 +55,36 @@ void EditorMediator::BindEditorClient(
   }
 }
 
+void EditorMediator::OnEditorServiceConnected(bool is_connection_successful) {}
+
+void EditorMediator::SetUpNewEditorService() {
+  if (editor_service_connector_.SetUpNewEditorService()) {
+    mojo::PendingAssociatedRemote<orca::mojom::TextActuator>
+        text_actuator_remote;
+    mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
+        text_query_provider_remote;
+    mojo::PendingAssociatedReceiver<orca::mojom::EditorClientConnector>
+        editor_client_connector_receiver;
+    mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
+        editor_event_sink_receiver;
+
+    text_actuator_ = std::make_unique<EditorTextActuator>(
+        text_actuator_remote.InitWithNewEndpointAndPassReceiver(), this);
+    text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
+        text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
+        profile_);
+    editor_client_connector_ = std::make_unique<EditorClientConnector>(
+        editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
+    editor_event_proxy_ = std::make_unique<EditorEventProxy>(
+        editor_event_sink_receiver.InitWithNewEndpointAndPassRemote());
+
+    editor_service_connector_.BindEditor(
+        std::move(editor_client_connector_receiver),
+        std::move(editor_event_sink_receiver), std::move(text_actuator_remote),
+        std::move(text_query_provider_remote));
+  }
+}
+
 void EditorMediator::BindEditorPanelManager(
     mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
         pending_receiver) {
@@ -62,6 +92,9 @@ void EditorMediator::BindEditorPanelManager(
 }
 
 void EditorMediator::OnFocus(int context_id) {
+  if (IsAllowedForUse() && !editor_service_connector_.IsBound()) {
+    SetUpNewEditorService();
+  }
   GetTextFieldContextualInfo(
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
@@ -95,6 +96,10 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
  private:
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
+  void SetUpNewEditorService();
+  void BindEditor();
+  void OnEditorServiceConnected(bool is_connection_bound);
+
   bool GetUserPref();
   void SetUserPref(bool value);
 
@@ -107,6 +112,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
 
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;
+  EditorServiceConnector editor_service_connector_;
 
   // TODO: b:298285960 - add the instantiation of this instance.
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
