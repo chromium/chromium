@@ -183,7 +183,9 @@ void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   if (!HasDeviceClient()) {
     DCHECK(!camera_device_ipc_thread_.IsRunning());
-    capture_task_runner_->PostTask(FROM_HERE, std::move(cleanup_callback_));
+    // |cleanup_callback_| will call the destructor, so any access to |this|
+    // after executing |cleanup_callback_| in this function is unsafe.
+    std::move(cleanup_callback_).Run();
   }
 }
 
