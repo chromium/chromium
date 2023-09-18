@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
@@ -34,18 +35,34 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnOnboardingPrefChanged,
           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kTrackingProtectionOnboardingAcked,
+      base::BindRepeating(
+          &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
+          base::Unretained(this)));
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
-  if (GetInternalOnboardingStatus(pref_service_) !=
-      TrackingProtectionOnboardingStatus::kOnboarded) {
-    return;
+  switch (GetInternalOnboardingStatus(pref_service_)) {
+    case tracking_protection::TrackingProtectionOnboardingStatus::kIneligible:
+    case tracking_protection::TrackingProtectionOnboardingStatus::kEligible:
+      for (auto& observer : observers_) {
+        observer.OnShouldShowNoticeUpdated();
+      }
+      break;
+    case tracking_protection::TrackingProtectionOnboardingStatus::kOnboarded:
+      for (auto& observer : observers_) {
+        observer.OnTrackingProtectionOnboarded();
+      }
+      break;
   }
+}
 
+void TrackingProtectionOnboarding::OnOnboardingAckedChanged() const {
   for (auto& observer : observers_) {
-    observer.OnTrackingProtectionOnboarded();
+    observer.OnShouldShowNoticeUpdated();
   }
 }
 
@@ -60,6 +77,18 @@ void TrackingProtectionOnboarding::MaybeMarkEligible() {
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(
           TrackingProtectionOnboarding::OnboardingStatus::kEligible));
+}
+
+void TrackingProtectionOnboarding::MaybeMarkIneligible() {
+  auto status = GetInternalOnboardingStatus(pref_service_);
+  if (status != TrackingProtectionOnboardingStatus::kEligible) {
+    return;
+  }
+  pref_service_->ClearPref(prefs::kTrackingProtectionEligibleSince);
+  pref_service_->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(
+          TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
 }
 
 void TrackingProtectionOnboarding::NoticeShown() {

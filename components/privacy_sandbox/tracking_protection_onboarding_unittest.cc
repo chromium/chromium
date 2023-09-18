@@ -22,6 +22,7 @@ class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
  public:
   MOCK_METHOD(void, OnTrackingProtectionOnboarded, (), (override));
+  MOCK_METHOD(void, OnShouldShowNoticeUpdated, (), (override));
 };
 
 class TrackingProtectionOnboardingTest : public testing::Test {
@@ -49,7 +50,8 @@ class TrackingProtectionOnboardingTest : public testing::Test {
       tracking_protection_onboarding_service_;
 };
 
-TEST_F(TrackingProtectionOnboardingTest, OnboardingProfileCallsObservers) {
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingProfileTriggersOnboardingObservers) {
   MockTrackingProtectionObserver observer;
   tracking_protection_onboarding()->AddObserver(&observer);
   EXPECT_CALL(observer, OnTrackingProtectionOnboarded());
@@ -60,7 +62,8 @@ TEST_F(TrackingProtectionOnboardingTest, OnboardingProfileCallsObservers) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-TEST_F(TrackingProtectionOnboardingTest, EligibleProfileDoesntCallObservers) {
+TEST_F(TrackingProtectionOnboardingTest,
+       EligibleProfileDoesntTriggersOnboardingObservers) {
   MockTrackingProtectionObserver observer;
   tracking_protection_onboarding()->AddObserver(&observer);
   EXPECT_CALL(observer, OnTrackingProtectionOnboarded()).Times(0);
@@ -68,6 +71,69 @@ TEST_F(TrackingProtectionOnboardingTest, EligibleProfileDoesntCallObservers) {
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       MarkingAsEligibleTriggersShouldShowNoticeObservers) {
+  // Setup
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkEligible();
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       MarkingAsIneligibleTriggersShouldShowNoticeObservers) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkIneligible();
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       NoticeActionTriggersShouldShowNoticeObservers) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
+
+  // Action
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kSettings);
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       NoticeShownDoesNotTriggerShouldShowNoticeObservers) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(0);
+
+  // Action
+  tracking_protection_onboarding()->NoticeShown();
+
+  // Verification
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
@@ -103,6 +169,41 @@ TEST_F(TrackingProtectionOnboardingTest,
             TrackingProtectionOnboardingStatus::kEligible);
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionEligibleSince),
             base::Time::Now());
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       MaybeMarkIneligibleDoesNothingIfProfileNotEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkIneligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       MaybeMarkIneligibleMarksIneligibleIfProfileIsEligible) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding()->MaybeMarkIneligible();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kIneligible);
+  EXPECT_TRUE(prefs()
+                  ->FindPreference(prefs::kTrackingProtectionEligibleSince)
+                  ->IsDefaultValue());
 }
 
 TEST_F(TrackingProtectionOnboardingTest,
