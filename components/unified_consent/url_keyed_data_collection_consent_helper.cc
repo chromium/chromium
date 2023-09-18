@@ -207,10 +207,11 @@ UrlKeyedDataCollectionConsentHelper::NewPersonalizedDataCollectionConsentHelper(
 std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
 UrlKeyedDataCollectionConsentHelper::
     NewPersonalizedBookmarksDataCollectionConsentHelper(
-        syncer::SyncService* sync_service) {
+        syncer::SyncService* sync_service,
+        bool require_sync_feature_enabled) {
   return std::make_unique<SyncBasedUrlKeyedDataCollectionConsentHelper>(
       sync_service, std::set<syncer::ModelType>({syncer::ModelType::BOOKMARKS}),
-      /*require_sync_feature_enabled=*/true);
+      require_sync_feature_enabled);
 }
 
 bool UrlKeyedDataCollectionConsentHelper::IsEnabled() {
