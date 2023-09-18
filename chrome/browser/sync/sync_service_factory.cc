@@ -15,7 +15,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -49,7 +48,6 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
-#include "components/network_time/network_time_tracker.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
@@ -103,14 +101,15 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  DCHECK(!profile->IsOffTheRecord());
   // Incognito, guest, or system profiles aren't relevant for Sync, and
-  // eventually no SyncService should even be created for those types of
-  // profiles. For now, they're just excluded from some startup metrics.
-  init_params.is_regular_profile_for_uma = profile->IsRegularProfile();
+  // no SyncService should be created for those types of profiles.
+  CHECK(profile->IsRegularProfile());
+  init_params.is_regular_profile_for_uma = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Ash, there are additional non-interesting profile types (sign-in
   // profile and lockscreen profile).
+  // TODO(crbug.com/1483981): No SyncService should be created for these kinds
+  // of profiles; then the `is_regular_profile_for_uma` param can be retired.
   init_params.is_regular_profile_for_uma =
       init_params.is_regular_profile_for_uma &&
       ash::ProfileHelper::IsUserProfile(profile);
@@ -224,9 +223,8 @@ SyncServiceFactory::SyncServiceFactory()
           "SyncService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1483981): Exclude AshInternals profiles (add
+              // `.WithAshInternals(ProfileSelection::kNone)`).
               .Build()) {
   // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
