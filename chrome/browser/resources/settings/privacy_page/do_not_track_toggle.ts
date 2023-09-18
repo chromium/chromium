@@ -41,11 +41,6 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
         notify: true,
       },
 
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
-
       showDialog_: {
         type: Boolean,
         value: false,

@@ -35,7 +35,7 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions
 import {NetworkPredictionOptions} from '../performance_page/constants.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
-import {ContentSetting, ContentSettingsTypes, CookieControlsMode, TrackingProtectionLevel} from '../site_settings/constants.js';
+import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
 import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './cookies_page.html.js';
@@ -83,12 +83,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       cookiePrimarySettingEnum_: {
         type: Object,
         value: CookiePrimarySetting,
-      },
-
-      /** Tracking protection levels for use in bindings. */
-      trackingProtectionLevelEnum_: {
-        type: Object,
-        value: TrackingProtectionLevel,
       },
 
       /** Cookie control modes for use in bindings. */
@@ -145,6 +139,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
+
+      advancedExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -163,6 +162,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private isPrivacySandboxSettings4_: boolean;
   private showPreloadingSubpage_: boolean;
   private is3pcdRedesignEnabled_: boolean;
+  private advancedExpanded_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -405,11 +405,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
     return this.getPref('generated.cookie_primary_setting').value !==
         CookiePrimarySetting.BLOCK_THIRD_PARTY;
-  }
-
-  private isTrackingProtectionCustom_() {
-    return this.getPref('tracking_protection.tracking_protection_level')
-               .value === TrackingProtectionLevel.CUSTOM;
   }
 
   private isPrivacySandboxSettings4CookieSettingsEnabled_(): boolean {
