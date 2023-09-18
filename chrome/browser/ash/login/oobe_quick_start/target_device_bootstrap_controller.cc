@@ -168,6 +168,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
+                                     Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
@@ -250,6 +251,7 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     base::Value::Dict info =
         authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
+    prefs->CommitPendingWrite();
   }
 
   authenticated_connection_->Close(
