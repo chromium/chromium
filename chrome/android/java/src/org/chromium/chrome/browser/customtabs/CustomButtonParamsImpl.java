@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -50,6 +51,9 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     private String mDescription;
     private boolean mShouldTint;
     private boolean mIsOnToolbar;
+
+    @VisibleForTesting
+    static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
 
     private CustomButtonParamsImpl(int id, Bitmap icon, String description,
             @Nullable PendingIntent pendingIntent, boolean tinted, boolean onToolbar) {
@@ -222,8 +226,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         }
 
         boolean onToolbar = id == CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID
-                || IntentUtils.safeGetBoolean(
-                        bundle, CustomTabsIntent.EXTRA_SHOW_ON_TOOLBAR, false);
+                || IntentUtils.safeGetBoolean(bundle, SHOW_ON_TOOLBAR, false);
         if (onToolbar && !doesIconFitToolbar(context, bitmap)) {
             onToolbar = false;
             Log.w(TAG,
