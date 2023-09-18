@@ -37,7 +37,6 @@ visibility = [ ":*" ]
 js_type_check("closure_compile_jsmodules") {
   deps = [
     ":app_window_wrapper",
-    ":entry_location_impl",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
@@ -124,15 +123,6 @@ js_library("mock_crostini") {
   deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
 }
 
-js_library("entry_location_impl") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_info",
-  ]
-}
-
 js_library("file_operation_handler") {
   deps = [
     "//ui/file_manager/file_manager/common/js:api",
@@ -211,7 +201,6 @@ js_library("launcher") {
 js_library("mock_volume_manager") {
   visibility += related_apps
   deps = [
-    ":entry_location_impl",
     ":volume_info_impl",
     ":volume_info_list_impl",
     ":volume_manager_factory",
@@ -308,7 +297,6 @@ js_library("volume_info_list_impl") {
 
 js_library("volume_manager_impl") {
   deps = [
-    ":entry_location_impl",
     ":volume_info_list_impl",
     ":volume_manager_util",
     "//ash/webui/common/resources:assert",

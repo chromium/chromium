@@ -7,37 +7,31 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
+// To avoid the import being elided, closure requires this name here because of
+// the @implements.
+export const _unused = EntryLocation;
+
 /**
  * Location information which shows where the path points in FileManager's
  * file system.
- *
  * @implements {EntryLocation}
  */
-export class EntryLocationImpl {
-  /**
-   * @param {VolumeInfo} volumeInfo Volume information.
-   * @param {VolumeManagerCommon.RootType} rootType Root type.
-   * @param {boolean} isRootEntry Whether the entry is root entry or not.
-   * @param {boolean} isReadOnly Whether the entry is read only or not.
-   */
-  constructor(volumeInfo, rootType, isRootEntry, isReadOnly) {
-    /** @override */
-    this.volumeInfo = volumeInfo;
+export class EntryLocationImpl implements EntryLocation {
+  isSpecialSearchRoot: boolean;
+  isDriveBased: boolean;
+  hasFixedLabel: boolean;
 
-    /** @override */
-    this.rootType = rootType;
-
-    /** @override */
-    this.isRootEntry = isRootEntry;
-
-    /** @override */
+  constructor(
+      public volumeInfo: VolumeInfo,
+      public rootType: VolumeManagerCommon.RootType,
+      public isRootEntry: boolean, public isReadOnly: boolean) {
     this.isSpecialSearchRoot =
         this.rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
         util.isRecentRootType(this.rootType);
 
-    /** @override */
+
     this.isDriveBased = this.rootType === VolumeManagerCommon.RootType.DRIVE ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
@@ -48,10 +42,6 @@ export class EntryLocationImpl {
         this.rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
         this.rootType === VolumeManagerCommon.RootType.COMPUTER;
 
-    /** @override */
-    this.isReadOnly = isReadOnly;
-
-    /** @type{boolean} */
     this.hasFixedLabel = this.isRootEntry &&
         (rootType !== VolumeManagerCommon.RootType.SHARED_DRIVE &&
          rootType !== VolumeManagerCommon.RootType.COMPUTER &&
