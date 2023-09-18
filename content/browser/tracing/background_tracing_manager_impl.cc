@@ -418,16 +418,18 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
   return true;
 }
 
+void BackgroundTracingManagerImpl::SetReceiveCallback(
+    ReceiveCallback receive_callback) {
+  receive_callback_ = std::move(receive_callback);
+}
+
 bool BackgroundTracingManagerImpl::InitializeScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-    ReceiveCallback receive_callback,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!RequestActivateScenario()) {
     return false;
   }
-
-  receive_callback_ = std::move(receive_callback);
 
   requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
   InitializeTraceReportDatabase();
@@ -447,15 +449,6 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
 
 bool BackgroundTracingManagerImpl::SetActiveScenario(
     std::unique_ptr<BackgroundTracingConfig> config,
-    DataFiltering data_filtering) {
-  // Pass a null ReceiveCallback to use the default upload behaviour.
-  return SetActiveScenarioWithReceiveCallback(
-      std::move(config), ReceiveCallback(), data_filtering);
-}
-
-bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
-    std::unique_ptr<BackgroundTracingConfig> config,
-    ReceiveCallback receive_callback,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -506,7 +499,6 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
     return false;
   }
 
-  receive_callback_ = std::move(receive_callback);
   legacy_active_scenario_ = std::make_unique<BackgroundTracingActiveScenario>(
       std::move(config_impl), delegate_.get(),
       base::BindOnce(&BackgroundTracingManagerImpl::OnScenarioAborted,

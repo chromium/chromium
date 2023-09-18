@@ -92,39 +92,23 @@ void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
                             reason);
 }
 
-bool SetupBackgroundTracingWithOutputFile(
-    std::unique_ptr<content::BackgroundTracingConfig> config,
-    const base::FilePath& output_file) {
-  if (output_file.empty()) {
-    return false;
-  }
-
-  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
-
-  // NO_DATA_FILTERING is set because the trace is saved to a local output file
-  // instead of being uploaded to a metrics server, so there are no PII
-  // concerns.
-  return content::BackgroundTracingManager::GetInstance()
-      .SetActiveScenarioWithReceiveCallback(
-          std::move(config), std::move(receive_callback),
-          content::BackgroundTracingManager::NO_DATA_FILTERING);
-}
-
 bool SetupBackgroundTracingFromJsonConfigFile(
-    const base::FilePath& config_file,
-    const base::FilePath& output_file) {
+    const base::FilePath& config_file) {
   std::unique_ptr<content::BackgroundTracingConfig> config =
       GetBackgroundTracingConfigFromFile(config_file);
   if (!config) {
     return false;
   }
 
-  return SetupBackgroundTracingWithOutputFile(std::move(config), output_file);
+  // NO_DATA_FILTERING is set because the trace is saved to a local output file
+  // instead of being uploaded to a metrics server, so there are no PII
+  // concerns.
+  return content::BackgroundTracingManager::GetInstance().SetActiveScenario(
+      std::move(config), content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 
 bool SetupBackgroundTracingFromProtoConfigFile(
-    const base::FilePath& config_file,
-    const base::FilePath& output_file) {
+    const base::FilePath& config_file) {
   perfetto::protos::gen::ChromeFieldTracingConfig config;
 
   std::string config_text;
@@ -138,19 +122,14 @@ bool SetupBackgroundTracingFromProtoConfigFile(
     return false;
   }
 
-  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
-
   // NO_DATA_FILTERING is set because the trace is saved to a local output file
   // instead of being uploaded to a metrics server, so there are no PII
   // concerns.
   return content::BackgroundTracingManager::GetInstance().InitializeScenarios(
-      std::move(config), std::move(receive_callback),
-      content::BackgroundTracingManager::NO_DATA_FILTERING);
+      std::move(config), content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 
-bool SetupBackgroundTracingFromCommandLine(
-    const std::string& field_trial_name) {
-  auto& manager = content::BackgroundTracingManager::GetInstance();
+bool SetupBackgroundTracingFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   switch (GetBackgroundTracingSetupMode()) {
@@ -159,40 +138,41 @@ bool SetupBackgroundTracingFromCommandLine(
     case BackgroundTracingSetupMode::kFromJsonConfigFile:
       return SetupBackgroundTracingFromJsonConfigFile(
           command_line->GetSwitchValuePath(
-              switches::kEnableLegacyBackgroundTracing),
-          command_line->GetSwitchValuePath(
-              switches::kBackgroundTracingOutputFile));
+              switches::kEnableLegacyBackgroundTracing));
     case BackgroundTracingSetupMode::kFromProtoConfigFile:
       return SetupBackgroundTracingFromProtoConfigFile(
-          command_line->GetSwitchValuePath(switches::kEnableBackgroundTracing),
-          command_line->GetSwitchValuePath(
-              switches::kBackgroundTracingOutputFile));
-    case BackgroundTracingSetupMode::kFromFieldTrialLocalOutput:
-      return SetupBackgroundTracingWithOutputFile(
-          manager.GetBackgroundTracingConfig(field_trial_name),
-          command_line->GetSwitchValuePath(
-              switches::kBackgroundTracingOutputFile));
+          command_line->GetSwitchValuePath(switches::kEnableBackgroundTracing));
     case BackgroundTracingSetupMode::kFromFieldTrial:
       return false;
   }
+}
+
+bool HasBackgroundTracingOutputFile() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(switches::kBackgroundTracingOutputFile);
+}
+
+bool SetBackgroundTracingOutputFile() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputFile)
+          .empty()) {
+    LOG(ERROR) << "--background-tracing-output-file needs an output file path";
+    return false;
+  }
+  auto output_file =
+      command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputFile);
+
+  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
+  content::BackgroundTracingManager::GetInstance().SetReceiveCallback(
+      std::move(receive_callback));
+  return true;
 }
 
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
       !command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing)) {
-    if (!command_line->HasSwitch(switches::kBackgroundTracingOutputFile)) {
-      return BackgroundTracingSetupMode::kFromFieldTrial;
-    }
-
-    if (command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputFile)
-            .empty()) {
-      LOG(ERROR)
-          << "--background-tracing-output-file needs an output file path";
-      return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
-    }
-
-    return BackgroundTracingSetupMode::kFromFieldTrialLocalOutput;
+    return BackgroundTracingSetupMode::kFromFieldTrial;
   }
 
   if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
@@ -214,13 +194,6 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
           ->GetSwitchValueNative(switches::kEnableLegacyBackgroundTracing)
           .empty()) {
     LOG(ERROR) << "--enable-legacy-background-tracing needs a config file path";
-    return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
-  }
-
-  const auto output_file = command_line->GetSwitchValueNative(
-      switches::kBackgroundTracingOutputFile);
-  if (output_file.empty()) {
-    LOG(ERROR) << "--background-tracing-output-file needs an output file path";
     return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
   }
 

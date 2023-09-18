@@ -63,8 +63,7 @@ using tracing::BackgroundTracingStateManager;
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
   if (tracing_mode == BackgroundTracingSetupMode::kFromJsonConfigFile ||
-      tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile ||
-      tracing_mode == BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
+      tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
     return true;
   }
   return false;
@@ -154,10 +153,13 @@ bool ChromeTracingDelegate::IsActionAllowed(BackgroundScenarioAction action,
                                             const std::string& scenario_name,
                                             bool requires_anonymized_data,
                                             bool ignore_trace_limit) const {
-  // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine())
+  // If the background tracing is specified on the command-line, we
+  // allow any scenario to be traced and uploaded.
+  // TODO(crbug.com/1418116): Allow tracing scenarios when a local
+  // output is specified.
+  if (IsBackgroundTracingCommandLine()) {
     return true;
+  }
 
   if (requires_anonymized_data &&
       (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {

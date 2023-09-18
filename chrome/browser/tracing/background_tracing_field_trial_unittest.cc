@@ -176,8 +176,9 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
       switches::kBackgroundTracingOutputFile,
       temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
 
+  ASSERT_TRUE(tracing::HasBackgroundTracingOutputFile());
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrialLocalOutput);
+            BackgroundTracingSetupMode::kFromFieldTrial);
   EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
 
   EXPECT_TRUE(

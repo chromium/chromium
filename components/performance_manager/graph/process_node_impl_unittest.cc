@@ -320,21 +320,15 @@ class LenientFakeBackgroundTracingManager
               (override));
 
   // Functions we don't care about.
+  void SetReceiveCallback(ReceiveCallback receive_callback) override {}
   bool InitializeScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      ReceiveCallback receive_callback,
       DataFiltering data_filtering) override {
     return true;
   }
 
   bool SetActiveScenario(
       std::unique_ptr<content::BackgroundTracingConfig> config,
-      DataFiltering data_filtering) override {
-    return true;
-  }
-  bool SetActiveScenarioWithReceiveCallback(
-      std::unique_ptr<content::BackgroundTracingConfig> config,
-      ReceiveCallback receive_callback,
       DataFiltering data_filtering) override {
     return true;
   }

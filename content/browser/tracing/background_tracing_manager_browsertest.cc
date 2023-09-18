@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
+      ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
+      ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
+      ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::ANONYMIZE_DATA);
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
+      ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   observer.ExpectOnScenarioActive("test_scenario");
@@ -1806,18 +1806,15 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   // SetTraceToUpload. (In production this is used to implement the
   // kBackgroundTracingOutputFile parameter, not to upload traces.)
   std::string received_trace_data;
-  EXPECT_TRUE(
-      BackgroundTracingManager::GetInstance()
-          .SetActiveScenarioWithReceiveCallback(
-              std::move(config),
-              base::BindLambdaForTesting(
-                  [&](std::string proto_content,
-                      BackgroundTracingManager::FinishedProcessingCallback
-                          callback) {
-                    received_trace_data = std::move(proto_content);
-                    std::move(callback).Run(true);
-                  }),
-              BackgroundTracingManager::ANONYMIZE_DATA));
+  BackgroundTracingManager::GetInstance().SetReceiveCallback(
+      base::BindLambdaForTesting(
+          [&](std::string proto_content,
+              BackgroundTracingManager::FinishedProcessingCallback callback) {
+            received_trace_data = std::move(proto_content);
+            std::move(callback).Run(true);
+          }));
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
+      std::move(config), BackgroundTracingManager::ANONYMIZE_DATA));
 
   background_tracing_helper.WaitForTraceStarted();
 

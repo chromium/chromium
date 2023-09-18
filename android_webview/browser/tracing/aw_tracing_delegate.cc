@@ -23,9 +23,7 @@ bool IsBackgroundTracingCommandLine() {
   if (tracing_mode ==
           tracing::BackgroundTracingSetupMode::kFromJsonConfigFile ||
       tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromProtoConfigFile ||
-      tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
+          tracing::BackgroundTracingSetupMode::kFromProtoConfigFile) {
     return true;
   }
   return false;
@@ -45,8 +43,11 @@ bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
     bool is_crash_scenario) {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine())
+  // TODO(crbug.com/1418116): Allow tracing scenarios when a local
+  // output is specified.
+  if (IsBackgroundTracingCommandLine()) {
     return true;
+  }
 
   // We call Initialize() only when a tracing scenario tries to start, and
   // unless this happens we never save state. In particular, if the background
@@ -87,8 +88,9 @@ bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
     bool is_crash_scenario) {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine())
+  if (IsBackgroundTracingCommandLine()) {
     return true;
+  }
 
   tracing::BackgroundTracingStateManager& state =
       tracing::BackgroundTracingStateManager::GetInstance();

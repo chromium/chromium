@@ -95,17 +95,13 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   static void ActivateForProcess(int child_process_id,
                                  mojom::ChildProcess* child_process);
 
+  void SetReceiveCallback(ReceiveCallback receive_callback) override;
   bool InitializeScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      ReceiveCallback receive_callback,
       DataFiltering data_filtering) override;
 
   bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
                          DataFiltering data_filtering) override;
-  bool SetActiveScenarioWithReceiveCallback(
-      std::unique_ptr<BackgroundTracingConfig>,
-      ReceiveCallback receive_callback,
-      DataFiltering data_filtering) override;
   bool HasActiveScenario() override;
   void DeleteTracesInDateRange(base::Time start, base::Time end) override;
 

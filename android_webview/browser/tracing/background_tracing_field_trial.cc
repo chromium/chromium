@@ -18,13 +18,20 @@ using tracing::BackgroundTracingSetupMode;
 const char kBackgroundTracingFieldTrial[] = "BackgroundWebviewTracing";
 
 bool SetupBackgroundTracingFieldTrial(int allowed_modes) {
-  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
+  content::BackgroundTracingManager::DataFiltering data_filtering =
+      content::BackgroundTracingManager::ANONYMIZE_DATA;
+  if (tracing::HasBackgroundTracingOutputFile()) {
+    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+    if (!tracing::SetBackgroundTracingOutputFile()) {
+      return false;
+    }
+  }
 
+  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
   if (tracing_mode == BackgroundTracingSetupMode::kDisabledInvalidCommandLine) {
     return false;
   } else if (tracing_mode != BackgroundTracingSetupMode::kFromFieldTrial) {
-    return tracing::SetupBackgroundTracingFromCommandLine(
-        kBackgroundTracingFieldTrial);
+    return tracing::SetupBackgroundTracingFromCommandLine();
   }
 
   auto& manager = content::BackgroundTracingManager::GetInstance();
@@ -42,8 +49,7 @@ bool SetupBackgroundTracingFieldTrial(int allowed_modes) {
   // go/public-webview-trace-collection).
   config->SetPackageNameFilteringEnabled(
       config->tracing_mode() != content::BackgroundTracingConfig::SYSTEM);
-  return manager.SetActiveScenario(
-      std::move(config), content::BackgroundTracingManager::ANONYMIZE_DATA);
+  return manager.SetActiveScenario(std::move(config), data_filtering);
 }
 
 }  // namespace
