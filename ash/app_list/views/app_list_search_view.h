@@ -51,10 +51,16 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
+
+  // Handles the `key_event` when the focus is moving above the search results,
+  // and returns true if the event is handled. Note that the caller of this
+  // function is responsible to set the event state to handled.
+  bool OverrideKeyNavigationAboveSearchResults(const ui::KeyEvent& key_event);
 
   // Called when the app list search query changes and new search is about to
   // start or cleared.

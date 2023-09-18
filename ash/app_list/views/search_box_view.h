@@ -155,6 +155,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Updates the search box with |new_query| and starts a new search.
   void UpdateQuery(const std::u16string& new_query);
 
+  // Moves the focus back to search box and find a search result to select.
+  void EnterSearchResultSelection(const ui::KeyEvent& event);
+
   // Clears the search query and de-activate the search box.
   void ClearSearchAndDeactivateSearchBox();
 

@@ -718,6 +718,12 @@ bool AppListBubbleView::CanSelectSearchResults() {
          search_page_->search_view()->CanSelectSearchResults();
 }
 
+bool AppListBubbleView::HandleFocusMoveAboveSearchResults(
+    const ui::KeyEvent& key_event) {
+  return search_page_->search_view()->OverrideKeyNavigationAboveSearchResults(
+      key_event);
+}
+
 void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
                                               bool focus_name_input,
                                               base::OnceClosure hide_callback) {

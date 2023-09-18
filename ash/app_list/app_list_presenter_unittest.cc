@@ -281,7 +281,7 @@ class AppListPresenterTest : public AshTestBase,
 
   SearchResultContainerView* GetDefaultSearchResultListView() {
     return search_result_page()
-        ->search_view_for_test()
+        ->search_view()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -404,7 +404,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
           ->result_container_views_for_test()[kBestMatchContainerIndex];
     }
     return GetFullscreenSearchPage()
-        ->search_view_for_test()
+        ->search_view()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -416,7 +416,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
     }
 
     return GetFullscreenSearchPage()
-        ->search_view_for_test()
+        ->search_view()
         ->result_selection_controller_for_test();
   }
 

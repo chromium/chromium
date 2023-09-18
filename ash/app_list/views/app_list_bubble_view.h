@@ -115,6 +115,8 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
+  bool HandleFocusMoveAboveSearchResults(
+      const ui::KeyEvent& key_event) override;
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view,

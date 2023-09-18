@@ -59,7 +59,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   // UI.
   bool CanSelectSearchResults() const;
 
-  AppListSearchView* search_view_for_test() { return search_view_; }
+  AppListSearchView* search_view() { return search_view_; }
 
   SearchResultPageAnchoredDialog* dialog_for_test() {
     return dialog_controller_->dialog();

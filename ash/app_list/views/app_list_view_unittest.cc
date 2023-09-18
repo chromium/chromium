@@ -597,7 +597,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     constexpr int kBestMatchContainerIndex = 1;
     return contents_view()
         ->search_result_page_view()
-        ->search_view_for_test()
+        ->search_view()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -1096,7 +1096,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   ResultSelectionController* selection_controller =
       contents_view()
           ->search_result_page_view()
-          ->search_view_for_test()
+          ->search_view()
           ->result_selection_controller_for_test();
 
   // Ensures the |ResultSelectionController| selects the correct result.

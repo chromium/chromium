@@ -82,6 +82,10 @@ AppListSearchView::AppListSearchView(
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
 
+  // Arrow keys are used for focus updating and the result selection handles the
+  // scrolling.
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
   // Don't paint a background. The bubble already has one.
   scroll_view_->SetBackgroundColor(absl::nullopt);
 
@@ -316,6 +320,38 @@ void AppListSearchView::VisibilityChanged(View* starting_from,
   }
 }
 
+void AppListSearchView::OnKeyEvent(ui::KeyEvent* event) {
+  // Only handle the key event that triggers the focus or result selection
+  // traversal here.
+  if (event->type() != ui::ET_KEY_PRESSED ||
+      !(IsUnhandledArrowKeyEvent(*event) ||
+        event->key_code() == ui::VKEY_TAB)) {
+    return;
+  }
+
+  // Only handle the case when the search notifier has the focus.
+  if (!search_notifier_ || !search_notifier_->toast_button()->HasFocus()) {
+    return;
+  }
+
+  // Left/Right key shouldn't update the focus. Set the event to handled to make
+  // left/right keys no-ops.
+  if (IsUnhandledLeftRightKeyEvent(*event)) {
+    event->SetHandled();
+    return;
+  }
+
+  bool moving_down =
+      (event->key_code() == ui::VKEY_TAB && !event->IsShiftDown()) ||
+      event->key_code() == ui::VKEY_DOWN;
+  if (moving_down) {
+    search_box_view_->EnterSearchResultSelection(*event);
+  } else {
+    search_box_view_->close_button()->RequestFocus();
+  }
+  event->SetHandled();
+}
+
 void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!GetVisible()) {
     return;
@@ -351,6 +387,19 @@ void AppListSearchView::OnActiveAppListModelsChanged(
   for (auto* container : result_container_views_) {
     container->SetResults(search_model->results());
   }
+}
+
+bool AppListSearchView::OverrideKeyNavigationAboveSearchResults(
+    const ui::KeyEvent& key_event) {
+  // The toast button on the search notifier is the only target to check if the
+  // `key_event` should be handled. Other events will be handled by either the
+  // search box or the SearchBoxViewDelegate.
+  if (!search_notifier_) {
+    return false;
+  }
+
+  search_notifier_->toast_button()->RequestFocus();
+  return true;
 }
 
 void AppListSearchView::UpdateForNewSearch(bool search_active) {

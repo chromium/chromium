@@ -17,6 +17,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -143,8 +144,9 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
 void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   app_list_view_->RedirectKeyEventToSearchBox(event);
 
-  if (!IsUnhandledUpDownKeyEvent(*event))
+  if (!IsUnhandledUpDownKeyEvent(*event)) {
     return;
+  }
 
   // Handles arrow key events from the search box while the search box is
   // inactive. This covers both folder traversal and apps grid traversal. Search
@@ -153,19 +155,28 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
       contents_view_->GetPageView(contents_view_->GetActivePageIndex());
   views::View* next_view = nullptr;
 
-  if (event->key_code() == ui::VKEY_UP)
+  if (event->key_code() == ui::VKEY_UP) {
     next_view = page->GetLastFocusableView();
-  else
+  } else {
     next_view = page->GetFirstFocusableView();
+  }
 
-  if (next_view)
+  if (next_view) {
     next_view->RequestFocus();
+  }
   event->SetHandled();
 }
 
 bool AppListMainView::CanSelectSearchResults() {
   // If there's a result, keyboard selection is allowed.
   return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
+}
+
+bool AppListMainView::HandleFocusMoveAboveSearchResults(
+    const ui::KeyEvent& key_event) {
+  return contents_view_->search_result_page_view()
+      ->search_view()
+      ->OverrideKeyNavigationAboveSearchResults(key_event);
 }
 
 void AppListMainView::AssistantButtonPressed() {

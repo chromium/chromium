@@ -68,7 +68,8 @@ class ASH_EXPORT AppListMainView : public views::View,
   void ActiveChanged(SearchBoxViewBase* sender) override;
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
-
+  bool HandleFocusMoveAboveSearchResults(
+      const ui::KeyEvent& key_event) override;
   raw_ptr<AppListViewDelegate, ExperimentalAsh>
       delegate_;  // Owned by parent view (AppListView).
 

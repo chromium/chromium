@@ -1341,7 +1341,7 @@ TEST_F(ResultSelectionTest, MoveNullSelectionForward) {
 }
 
 TEST_F(ResultSelectionTest, MoveNullSelectionBack) {
-  TestMoveNullSelection(left_arrow_, false /*reverse*/,
+  TestMoveNullSelection(left_arrow_, true /*reverse*/,
                         false /*expect_action_selected*/);
 }
 

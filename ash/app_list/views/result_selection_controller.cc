@@ -91,7 +91,9 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
           : nullptr;
   const bool selected_id_preserved = selected_location_details_.get();
 
-  const bool is_up_key = key_event && key_event->key_code() == ui::VKEY_UP;
+  const bool is_previous_key =
+      key_event && (key_event->key_code() == ui::VKEY_UP ||
+                    key_event->key_code() == ui::VKEY_LEFT);
   const bool is_shift_tab = key_event &&
                             key_event->key_code() == ui::VKEY_TAB &&
                             key_event->IsShiftDown();
@@ -101,9 +103,10 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
     // Note: left and right arrows are used primarily for traversal in
     // horizontal containers, so treat "back" arrow as other non-traversal keys
     // when deciding whether to reverse selection direction.
-    if (is_up_key || is_shift_tab)
+    if (is_previous_key || is_shift_tab) {
       ChangeContainer(selected_location_details_.get(),
                       selected_location_details_->container_index - 1);
+    }
   }
 
   SearchResultBaseView* new_selection =

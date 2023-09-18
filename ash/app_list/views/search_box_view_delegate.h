@@ -40,6 +40,12 @@ class SearchBoxViewDelegate {
   // of the buttons is focused).
   virtual void OnSearchBoxKeyEvent(ui::KeyEvent* event) = 0;
 
+  // Handles the `key_event` if the focus is trying to move to the top of the
+  // search view. It could be the focus change moving down from the buttons in
+  // search box or moving up from the search results.
+  virtual bool HandleFocusMoveAboveSearchResults(
+      const ui::KeyEvent& key_event) = 0;
+
   // Returns true if search results can be selected with the keyboard (e.g.
   // search results exist and are visible to the user).
   virtual bool CanSelectSearchResults() = 0;
