@@ -135,7 +135,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     gpu::SyncToken after_raster_sync_token_;
   };
 
-  void PlaybackToStagingBuffer(
+  // Returns true if data has successfully put in the staging buffer.
+  bool PlaybackToStagingBuffer(
       StagingBuffer* staging_buffer,
       const RasterSource* raster_source,
       const gfx::Rect& raster_full_rect,

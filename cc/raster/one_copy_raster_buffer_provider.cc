@@ -298,20 +298,35 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
   DCHECK(staging_buffer->size.width() >= raster_full_rect.width() &&
          staging_buffer->size.height() >= raster_full_rect.height());
 
-  PlaybackToStagingBuffer(staging_buffer.get(), raster_source, raster_full_rect,
-                          raster_dirty_rect, transform, format, color_space,
-                          playback_settings, previous_content_id,
-                          new_content_id);
+  bool put_data_in_staging_buffer = PlaybackToStagingBuffer(
+      staging_buffer.get(), raster_source, raster_full_rect, raster_dirty_rect,
+      transform, format, color_space, playback_settings, previous_content_id,
+      new_content_id);
 
-  gpu::SyncToken sync_token_after_upload = CopyOnWorkerThread(
-      staging_buffer.get(), raster_source, raster_full_rect, format,
-      resource_size, mailbox, mailbox_texture_target,
-      mailbox_texture_is_overlay_candidate, sync_token, color_space);
+  gpu::SyncToken sync_token_after_upload;
+
+  if (put_data_in_staging_buffer) {
+    sync_token_after_upload = CopyOnWorkerThread(
+        staging_buffer.get(), raster_source, raster_full_rect, format,
+        resource_size, mailbox, mailbox_texture_target,
+        mailbox_texture_is_overlay_candidate, sync_token, color_space);
+  } else {
+    // If we failed to put data in the staging buffer
+    // (https://crbug.com/554541), then we don't have anything to give to copy
+    // into the resource. We report a zero mailbox that will result in
+    // checkerboarding, and be treated as OOM which should retry.
+    if (!mailbox->IsZero()) {
+      worker_context_provider_->SharedImageInterface()->DestroySharedImage(
+          sync_token, *mailbox);
+      mailbox->SetZero();
+    }
+  }
+
   staging_pool_.ReleaseStagingBuffer(std::move(staging_buffer));
   return sync_token_after_upload;
 }
 
-void OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
+bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     StagingBuffer* staging_buffer,
     const RasterSource* raster_source,
     const gfx::Rect& raster_full_rect,
@@ -341,36 +356,39 @@ void OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   }
 
   float full_rect_size = raster_full_rect.size().GetArea();
-  if (staging_buffer->gpu_memory_buffer) {
-    gfx::GpuMemoryBuffer* buffer = staging_buffer->gpu_memory_buffer.get();
-    DCHECK_EQ(1u,
-              gfx::NumberOfPlanesForLinearBufferFormat(buffer->GetFormat()));
-    bool rv = buffer->Map();
-    DCHECK(rv);
-    DCHECK(buffer->memory(0));
-    // RasterBufferProvider::PlaybackToMemory only supports unsigned strides.
-    DCHECK_GE(buffer->stride(0), 0);
-
-    // TODO(https://crbug.com/870663): Temporary diagnostics.
-    base::debug::Alias(&playback_rect);
-    base::debug::Alias(&full_rect_size);
-    base::debug::Alias(&rv);
-    void* buffer_memory = buffer->memory(0);
-    base::debug::Alias(&buffer_memory);
-    gfx::Size staging_buffer_size = staging_buffer->size;
-    base::debug::Alias(&staging_buffer_size);
-    gfx::Size buffer_size = buffer->GetSize();
-    base::debug::Alias(&buffer_size);
-
-    DCHECK(!playback_rect.IsEmpty())
-        << "Why are we rastering a tile that's not dirty?";
-    RasterBufferProvider::PlaybackToMemory(
-        buffer->memory(0), format, staging_buffer->size, buffer->stride(0),
-        raster_source, raster_full_rect, playback_rect, transform,
-        dst_color_space, /*gpu_compositing=*/true, playback_settings);
-    buffer->Unmap();
-    staging_buffer->content_id = new_content_id;
+  if (!staging_buffer->gpu_memory_buffer) {
+    return false;
   }
+
+  gfx::GpuMemoryBuffer* buffer = staging_buffer->gpu_memory_buffer.get();
+  DCHECK_EQ(1u, gfx::NumberOfPlanesForLinearBufferFormat(buffer->GetFormat()));
+  bool rv = buffer->Map();
+  DCHECK(rv);
+  DCHECK(buffer->memory(0));
+  // RasterBufferProvider::PlaybackToMemory only supports unsigned strides.
+  DCHECK_GE(buffer->stride(0), 0);
+
+  // TODO(https://crbug.com/870663): Temporary diagnostics.
+  base::debug::Alias(&playback_rect);
+  base::debug::Alias(&full_rect_size);
+  base::debug::Alias(&rv);
+  void* buffer_memory = buffer->memory(0);
+  base::debug::Alias(&buffer_memory);
+  gfx::Size staging_buffer_size = staging_buffer->size;
+  base::debug::Alias(&staging_buffer_size);
+  gfx::Size buffer_size = buffer->GetSize();
+  base::debug::Alias(&buffer_size);
+
+  DCHECK(!playback_rect.IsEmpty())
+      << "Why are we rastering a tile that's not dirty?";
+  RasterBufferProvider::PlaybackToMemory(
+      buffer->memory(0), format, staging_buffer->size, buffer->stride(0),
+      raster_source, raster_full_rect, playback_rect, transform,
+      dst_color_space, /*gpu_compositing=*/true, playback_settings);
+  buffer->Unmap();
+  staging_buffer->content_id = new_content_id;
+
+  return true;
 }
 
 gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
@@ -387,17 +405,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   auto* sii = worker_context_provider_->SharedImageInterface();
   DCHECK(sii);
 
-  if (!staging_buffer->gpu_memory_buffer.get()) {
-    // If GpuMemoryBuffer allocation failed (https://crbug.com/554541), then
-    // we don't have anything to give to copy into the resource. We report a
-    // zero mailbox that will result in checkerboarding, and be treated as OOM
-    // which should retry.
-    if (!mailbox->IsZero()) {
-      sii->DestroySharedImage(sync_token, *mailbox);
-      mailbox->SetZero();
-    }
-    return gpu::SyncToken();
-  }
+  CHECK(staging_buffer->gpu_memory_buffer.get());
 
   bool needs_clear = false;
 
