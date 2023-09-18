@@ -1,0 +1,57 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+ /* The google colors are taken from cr_shared_vars.css
+  * This is done because that file is only available on polymer pages. */
+
+html {
+  --google-blue-300: rgb(138, 180, 248); /* #8ab4f8 */
+  --google-blue-700: rgb(25, 103, 210); /* #1967d2 */
+  --google-grey-50: rgb(248, 249, 250);  /* #f8f9fa */
+  --google-grey-100: rgb(241, 243, 244);  /* #f1f3f4 */
+  --google-grey-200: rgb(232, 234, 237);  /* #e8eaed */
+  --google-grey-500: rgb(154, 160, 166);  /* #9aa0a6 */
+  --google-grey-700: rgb(95, 99, 104);  /* #5f6368 */
+  --google-grey-900: rgb(32, 33, 36);  /* #202124 */
+  --google-grey-800: rgb(60, 64, 67);  /* #3c4043 */
+  --google-grey-900-white-4-percent: #292a2d;
+
+  --action-row-button-background: var(--google-grey-100);
+  --action-row-button-border: rgb(128, 134, 139);
+  --text-color: black;
+  --header-shadow-color: rgba(0, 0, 0, .4);
+  --link-color: var(--google-blue-700);
+  --page-background: white;
+  --search-field-caret-color: var(--google-blue-700);
+  --search-field-container-background: var(--google-grey-100);
+  --search-field-icon-background: var(--google-grey-700);
+  --search-field-input-text-color: rgb(32, 33, 36);
+  --status-box-background: var(--google-grey-100);
+  --table-border: rgba(0, 0, 0, .06);
+  --table-header: rgb(240, 240, 240);
+  --table-row-expanded-background: var(--google-grey-50);
+  --table-row-hover: rgb(250, 250, 250);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --action-row-button-background: var(--google-blue-300);
+    --action-row-button-border: var(--google-blue-300);
+    --text-color: var(--google-grey-200);
+    --header-shadow-color:  rgba(0,0,0,.4);
+    --link-color: var(--google-blue-300);
+    --page-background: var(--google-grey-900);
+    --search-field-caret-color: var(--google-blue-300);
+    --search-field-container-background: var(
+        --google-grey-900-white-4-percent
+    );
+    --search-field-icon-background: var(--google-grey-500);
+    --search-field-input-text-color: var(--text-color);
+    --status-box-background: var(--google-grey-900-white-4-percent);
+    --table-border: rgba(80, 80, 80, 0.6);
+    --table-header: var(--google-grey-900-white-4-percent);
+    --table-row-expanded-background: var(--google-grey-800);
+    --table-row-hover: var(--google-grey-900-white-4-percent);
+  }
+}

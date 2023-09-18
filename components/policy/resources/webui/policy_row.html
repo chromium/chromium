@@ -14,7 +14,7 @@
 }
 
 .row:not(.policy.row) {
-  background-color: rgb(248, 249, 250); /* Google grey 50 */
+  background-color: var(--table-row-expanded-background);
 }
 
 .row > * {
@@ -33,7 +33,7 @@
 .scope,
 .source,
 .policy.row .value {
-  border-inline-end: 1px solid rgba(0, 0, 0, .06);
+  border-inline-end: 1px solid var(--table-border);
 }
 
 .name,
@@ -42,8 +42,8 @@
 }
 
 .row.header {
-  background-color: rgb(240, 240, 240);
-  border-bottom: 1px solid rgba(0, 0, 0, .06);
+  background-color: var(--table-header);
+  border-bottom: 1px solid var(--table-border);
 }
 
 .value.row .value {
@@ -59,7 +59,7 @@
 
 .expanded .policy.row,
 .policy.row:hover {
-  background-color: rgb(250, 250, 250);
+  background-color: var(--table-row-hover);
 }
 
 .warnings.row .value,
@@ -84,7 +84,7 @@
 </if>
 
 a {
-  color: rgb(26, 115, 232);
+  color: var(--link-color);
   cursor: pointer;
   text-decoration: underline;
 }

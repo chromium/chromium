@@ -5,8 +5,14 @@
   <title>Policy Logs</title>
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="../policy_shared_vars.css">
 
   <style>
+    body {
+      background: var(--page-background);
+      color: var(--text-color);
+    }
+
     h2,
     ul,
     .version-info-table-data {
@@ -24,8 +30,8 @@
     button {
       align-items: center;
       border-radius: 4px;
-      border: 1px solid rgb(128, 134, 139);
-      background: rgb(241, 243, 244); /* Google grey 100 */
+      border: 1px solid var(--action-row-button-border);
+      background: var(--action-row-button-background);
       box-sizing: border-box;
       cursor: pointer;
       display: inline-flex;
