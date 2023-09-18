@@ -99,8 +99,8 @@ class BookmarkManagerMediator
                     && mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER;
             if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
                 return enabled
-                        && mBookmarkUiPrefs.getBookmarkRowSortOrder()
-                        == BookmarkRowSortOrder.MANUAL;
+                        && mBookmarkUiPrefs.getBookmarkRowSortOrder() == BookmarkRowSortOrder.MANUAL
+                        && mCurrentPowerFilter.isEmpty();
             }
             return enabled;
         }
