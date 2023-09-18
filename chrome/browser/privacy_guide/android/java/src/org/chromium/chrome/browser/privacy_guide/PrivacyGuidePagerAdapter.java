@@ -64,6 +64,11 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         if (displayHandler.shouldDisplayCookies()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.COOKIES);
         }
+        if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
+                && ChromeFeatureList.sPrivacyGuidePreloadAndroid.isEnabled()
+                && displayHandler.shouldDisplayPreload()) {
+            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.PRELOAD);
+        }
 
         return Collections.unmodifiableSet(fragmentTypesToDisplay);
     }
@@ -84,6 +89,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new CookiesFragment();
             case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
                 return new SearchSuggestionsFragment();
+            case PrivacyGuideFragment.FragmentType.PRELOAD:
+                return new PreloadFragment();
             case PrivacyGuideFragment.FragmentType.DONE:
                 return new DoneFragment();
         }

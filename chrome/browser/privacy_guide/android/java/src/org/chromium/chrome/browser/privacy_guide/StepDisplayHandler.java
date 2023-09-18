@@ -22,4 +22,9 @@ public interface StepDisplayHandler {
      * @return Whether the Privacy Guide Cookies page should be displayed.
      */
     boolean shouldDisplayCookies();
+
+    /**
+     * @return Whether the Privacy Guide Preload page should be displayed.
+     */
+    boolean shouldDisplayPreload();
 }

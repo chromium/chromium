@@ -55,7 +55,7 @@ public class PrivacyGuideFragment
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
             FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.SEARCH_SUGGESTIONS,
-            FragmentType.DONE})
+            FragmentType.PRELOAD, FragmentType.DONE})
     @interface FragmentType {
         int WELCOME = 0;
         int MSBB = 1;
@@ -63,7 +63,8 @@ public class PrivacyGuideFragment
         int SAFE_BROWSING = 3;
         int COOKIES = 4;
         int SEARCH_SUGGESTIONS = 5;
-        int DONE = 6;
+        int PRELOAD = 6;
+        int DONE = 7;
         int MAX_VALUE = DONE;
     }
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER = Collections.unmodifiableList(
@@ -72,7 +73,7 @@ public class PrivacyGuideFragment
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
             Collections.unmodifiableList(Arrays.asList(FragmentType.WELCOME, FragmentType.MSBB,
                     FragmentType.HISTORY_SYNC, FragmentType.COOKIES, FragmentType.SAFE_BROWSING,
-                    FragmentType.SEARCH_SUGGESTIONS, FragmentType.DONE));
+                    FragmentType.SEARCH_SUGGESTIONS, FragmentType.PRELOAD, FragmentType.DONE));
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private CustomTabIntentHelper mCustomTabHelper;
@@ -233,6 +234,10 @@ public class PrivacyGuideFragment
 
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment)
+                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
+        }
+        if (childFragment instanceof PreloadFragment) {
+            ((PreloadFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (childFragment instanceof DoneFragment) {

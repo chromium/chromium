@@ -291,6 +291,10 @@ class PrivacyGuideMetricsDelegate {
                         PrivacyGuideUtils.isSearchSuggestionsEnabled(mProfile);
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.PRELOAD: {
+                // TODO(crbug.com/1482753): Initial state for the preload card should be added here.
+                break;
+            }
             case PrivacyGuideFragment.FragmentType.WELCOME:
             case PrivacyGuideFragment.FragmentType.DONE:
                 // The Welcome and Done cards don't store/update any state.
@@ -329,6 +333,11 @@ class PrivacyGuideMetricsDelegate {
             }
             case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
                 recordMetricsOnNextForSearchSuggestionsCard();
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.PRELOAD: {
+                // TODO(crbug.com/1482753): Metrics on next for preload card should be recorded
+                // here.
                 break;
             }
             default:
@@ -470,6 +479,11 @@ class PrivacyGuideMetricsDelegate {
             }
             case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
                 RecordUserAction.record("Settings.PrivacyGuide.BackClickSearchSuggestions");
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.PRELOAD: {
+                // TODO(crbug.com/1482753): Metrics for preload card back click should be recorded
+                // here.
                 break;
             }
             case PrivacyGuideFragment.FragmentType.DONE: {
