@@ -25,6 +25,9 @@ class EligibilityService : public KeyedService {
   // So EligibilityServiceFactory::BuildServiceInstanceFor can call the
   // constructor.
   friend class EligibilityServiceFactory;
+  friend class EligiblityServiceBrowserTest;
+
+  void OnClientEligibilityChanged();
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
