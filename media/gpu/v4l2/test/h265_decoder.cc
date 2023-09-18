@@ -624,20 +624,11 @@ bool H265Decoder::ProcessCurrentSlice() {
   slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
                     curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
 
-  // TODO(b/298224157): Assumes 1 frame consists of 1 slice here.
-  // Multiple slices per frame support needs to be implemented.
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyInSlice(
       &slice_data[0], slice_data.size(),
       curr_slice_hdr_->first_slice_segment_in_pic_flag);
   OUTPUT_buffer->set_frame_number(global_pic_count_);
-
-  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0)) {
-    VLOG(4) << "VIDIOC_QBUF failed for OUTPUT queue.";
-    return VideoDecoder::kError;
-  }
-
-  global_pic_count_++;
 
   return true;
 }
@@ -1143,6 +1134,11 @@ std::set<uint32_t> H265Decoder::GetReusableReferenceSlots(
 bool H265Decoder::DecodePicture() {
   CHECK(curr_pic_.get());
 
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0)) {
+    VLOG(4) << "VIDIOC_QBUF failed for OUTPUT queue.";
+    return VideoDecoder::kError;
+  }
+
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
   if (!CAPTURE_queue_) {
@@ -1173,6 +1169,8 @@ bool H265Decoder::DecodePicture() {
   uint32_t OUTPUT_queue_buffer_id;
   v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_queue_buffer_id);
   v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
+
+  global_pic_count_++;
 
   return true;
 }
