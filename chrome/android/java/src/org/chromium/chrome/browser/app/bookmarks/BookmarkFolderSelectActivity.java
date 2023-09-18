@@ -166,7 +166,7 @@ public class BookmarkFolderSelectActivity
         setContentView(R.layout.bookmark_folder_select_activity);
         mBookmarkIdsList = (ListView) findViewById(R.id.bookmark_folder_list);
         mBookmarkIdsList.setOnItemClickListener(this);
-        mBookmarkIdsAdapter = new FolderListAdapter(this);
+        mBookmarkIdsAdapter = new FolderListAdapter(this, mModel);
         mBookmarkIdsList.setAdapter(mBookmarkIdsAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -326,13 +326,15 @@ public class BookmarkFolderSelectActivity
 
         private final int mBasePadding;
         private final int mPaddingIncrement;
+        private final BookmarkModel mModel;
 
         List<FolderListEntry> mEntryList = new ArrayList<>();
 
-        public FolderListAdapter(Context context) {
+        public FolderListAdapter(Context context, BookmarkModel bookmarkModel) {
             mBasePadding =
                     context.getResources().getDimensionPixelSize(R.dimen.bookmark_folder_item_left);
             mPaddingIncrement = mBasePadding * 2;
+            mModel = bookmarkModel;
         }
 
         public int getPositionForEntry(FolderListEntry entry) {
@@ -403,7 +405,7 @@ public class BookmarkFolderSelectActivity
             Drawable iconDrawable;
             if (entry.mType == FolderListEntry.TYPE_NORMAL) {
                 iconDrawable = BookmarkUtils.getFolderIcon(
-                        view.getContext(), entry.mId.getType(), BookmarkRowDisplayPref.COMPACT);
+                        view.getContext(), entry.mId, mModel, BookmarkRowDisplayPref.COMPACT);
             } else {
                 // For new folder, start_icon is different.
                 VectorDrawableCompat vectorDrawable = TraceEventVectorDrawableCompat.create(

@@ -566,14 +566,19 @@ public class BookmarkUtils {
 
     /**
      * @param context {@link Context} used to retrieve the drawable.
-     * @param type The bookmark type of the folder.
+     * @param bookmarkId The bookmark id of the folder.
+     * @param bookmarkModel The bookmark model.
      * @return A {@link Drawable} to use for displaying bookmark folders.
      */
-    public static Drawable getFolderIcon(
-            Context context, @BookmarkType int type, @BookmarkRowDisplayPref int displayPref) {
-        ColorStateList tint = getFolderIconTint(context, type);
-        if (type == BookmarkType.READING_LIST) {
+    public static Drawable getFolderIcon(Context context, BookmarkId bookmarkId,
+            BookmarkModel bookmarkModel, @BookmarkRowDisplayPref int displayPref) {
+        ColorStateList tint = getFolderIconTint(context, bookmarkId.getType());
+        if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_reading_list_folder_24dp, tint);
+        } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && bookmarkId.getType() == BookmarkType.NORMAL
+                && Objects.equals(bookmarkId, bookmarkModel.getDesktopFolderId())) {
+            return UiUtils.getTintedDrawable(context, R.drawable.ic_toolbar_24dp, tint);
         }
 
         return UiUtils.getTintedDrawable(context,
@@ -587,6 +592,8 @@ public class BookmarkUtils {
      * @param type The bookmark type of the folder.
      * @return The tint used on the bookmark folder icon.
      */
+    // TODO(crbug.com/1483510): This function isn't used in the new bookmarks manager, remove it
+    // after android-improved-bookmarks is the default.
     public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                 && type == BookmarkType.READING_LIST) {

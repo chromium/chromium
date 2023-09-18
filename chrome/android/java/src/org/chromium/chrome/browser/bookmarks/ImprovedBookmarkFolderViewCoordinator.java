@@ -11,7 +11,6 @@ import android.view.View;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -44,13 +43,13 @@ public class ImprovedBookmarkFolderViewCoordinator {
         mBookmarkItem = bookmarkItem;
         BookmarkId bookmarkId = mBookmarkItem.getId();
 
-        final @BookmarkType int type = bookmarkId.getType();
         mModel.set(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
                 BookmarkUtils.getIconBackground(mContext, mBookmarkModel, mBookmarkItem));
         mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_TINT,
                 BookmarkUtils.getIconTint(mContext, mBookmarkModel, mBookmarkItem));
         mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
-                BookmarkUtils.getFolderIcon(mContext, type, BookmarkRowDisplayPref.VISUAL));
+                BookmarkUtils.getFolderIcon(
+                        mContext, bookmarkId, mBookmarkModel, BookmarkRowDisplayPref.VISUAL));
         mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT,
                 BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel));
         mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,

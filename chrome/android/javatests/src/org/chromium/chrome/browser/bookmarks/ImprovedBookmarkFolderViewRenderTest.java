@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.Mockito.doReturn;
+
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -36,10 +38,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -86,7 +91,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    CurrencyFormatter mFormatter;
+    private CurrencyFormatter mFormatter;
+    @Mock
+    private BookmarkModel mBookmarkModel;
 
     private ImprovedBookmarkFolderView mView;
     private PropertyModel mModel;
@@ -146,7 +153,8 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     new Pair<>(null, null));
             mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                     BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(),
-                            BookmarkType.NORMAL, BookmarkRowDisplayPref.VISUAL));
+                            new BookmarkId(0, BookmarkType.NORMAL), mBookmarkModel,
+                            BookmarkRowDisplayPref.VISUAL));
             mModel.set(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(
                             mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
@@ -160,13 +168,37 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testNoImage_bookmarksBar() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BookmarkId bookmarksBarId = new BookmarkId(1, BookmarkType.NORMAL);
+            doReturn(bookmarksBarId).when(mBookmarkModel).getDesktopFolderId();
+            mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                    new Pair<>(null, null));
+            mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
+                    BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(), bookmarksBarId,
+                            mBookmarkModel, BookmarkRowDisplayPref.VISUAL));
+            mModel.set(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
+                    ChromeColors.getSurfaceColor(
+                            mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
+            mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_TINT,
+                    AppCompatResources.getColorStateList(mActivityTestRule.getActivity(),
+                            R.color.default_icon_color_secondary_tint_list));
+        });
+        mRenderTestRule.render(mContentView, "no_image_bookmarks_bar");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testNoImage_readingList() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
                     new Pair<>(null, null));
             mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                     BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(),
-                            BookmarkType.READING_LIST, BookmarkRowDisplayPref.VISUAL));
+                            new BookmarkId(0, BookmarkType.READING_LIST), mBookmarkModel,
+                            BookmarkRowDisplayPref.VISUAL));
             mModel.set(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
                     SemanticColorUtils.getColorPrimaryContainer(mActivityTestRule.getActivity()));
             mModel.set(ImprovedBookmarkFolderViewProperties.START_ICON_TINT,

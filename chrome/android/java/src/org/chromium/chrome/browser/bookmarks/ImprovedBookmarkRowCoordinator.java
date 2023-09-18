@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -107,7 +106,6 @@ public class ImprovedBookmarkRowCoordinator {
                 item.isFolder() && useImages ? ImageVisibility.FOLDER_DRAWABLE
                                              : ImageVisibility.DRAWABLE);
 
-        final @BookmarkType int type = item.getId().getType();
         if (item.isFolder()) {
             if (displayPref == BookmarkRowDisplayPref.VISUAL) {
                 propertyModel.set(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
@@ -121,7 +119,8 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
                     BookmarkUtils.getIconTint(mContext, mBookmarkModel, item));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                    BookmarkUtils.getFolderIcon(mContext, type, displayPref));
+                    BookmarkUtils.getFolderIcon(
+                            mContext, item.getId(), mBookmarkModel, displayPref));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));

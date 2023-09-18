@@ -36,9 +36,6 @@ public class BookmarkFolderRow extends BookmarkRow {
     /** Constructor for inflating from XML. */
     public BookmarkFolderRow(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        setIconDrawable(BookmarkUtils.getFolderIcon(
-                getContext(), BookmarkType.NORMAL, BookmarkRowDisplayPref.COMPACT));
     }
 
     // BookmarkRow implementation.
@@ -57,7 +54,7 @@ public class BookmarkFolderRow extends BookmarkRow {
                 bookmarkId, mDelegate.getModel(), getContext().getResources()));
 
         setIconDrawable(BookmarkUtils.getFolderIcon(
-                getContext(), item.getId().getType(), BookmarkRowDisplayPref.COMPACT));
+                getContext(), item.getId(), mDelegate.getModel(), BookmarkRowDisplayPref.COMPACT));
         return item;
     }
 
