@@ -57,3 +57,9 @@ std::vector<int64_t> ShareTarget::GetAttachmentIds() const {
 
   return attachment_ids;
 }
+
+bool ShareTarget::CanAutoAccept() const {
+  // Only Self Shares can be auto accepted. Additionally, Wi-Fi credentials
+  // cannot be auto accepted due to the security risk.
+  return for_self_share && wifi_credentials_attachments.empty();
+}

@@ -3858,10 +3858,13 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
   }
 
   if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
-    // Auto-accept self shares when not in high-visibility mode.
-    if (share_target.for_self_share && !IsInHighVisibility()) {
+    // Auto-accept self shares when not in high-visibility mode, unless the
+    // filetype includes WiFi credentials.
+    if (share_target.CanAutoAccept() && !IsInHighVisibility()) {
       CD_LOG(INFO, Feature::NS) << __func__ << ": Auto-accepting self share.";
       Accept(share_target, base::DoNothing());
+    } else {
+      CD_LOG(INFO, Feature::NS) << __func__ << ": Can't auto-accept transfer.";
     }
   }
 

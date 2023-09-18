@@ -46,6 +46,10 @@ struct ShareTarget {
 
   std::vector<int64_t> GetAttachmentIds() const;
 
+  // Returns whether the ShareTarget can auto-accept the transfer, which
+  // is used for Self Share.
+  bool CanAutoAccept() const;
+
   base::UnguessableToken id = base::UnguessableToken::Create();
   std::string device_name;
   // Uri that points to an image of the ShareTarget, if one exists.
