@@ -676,9 +676,8 @@ TEST_F(LocalDataMigrationHelperTest, ShouldIgnoreManagedBookmarks) {
             account_bookmark_model_->bookmark_bar_node()->children().size());
 
   // Managed nodes should be ignored.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
-  account_bookmark_model_->GetNodesByURL(GURL("https://www.facebook.com"),
-                                         &nodes);
+  std::vector<const bookmarks::BookmarkNode*> nodes =
+      account_bookmark_model_->GetNodesByURL(GURL("https://www.facebook.com"));
   EXPECT_TRUE(nodes.empty());
 
   // The local bookmark is not empty since managed bookmarks were not moved.

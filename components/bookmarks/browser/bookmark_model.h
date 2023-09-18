@@ -226,7 +226,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);
 
   // Returns the set of nodes with the `url`.
-  void GetNodesByURL(const GURL& url, std::vector<const BookmarkNode*>* nodes);
+  [[nodiscard]] std::vector<const BookmarkNode*> GetNodesByURL(
+      const GURL& url) const;
 
   // Returns the node with the given UUID or null if no node exists with this
   // UUID.
@@ -235,22 +236,21 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Returns the most recently added user node for the `url`; urls from any
   // nodes that are not editable by the user are never returned by this call.
   // Returns NULL if `url` is not bookmarked.
-  const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(const GURL& url);
+  const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(const GURL& url) const;
 
   // Returns true if there are bookmarks, otherwise returns false.
-  bool HasBookmarks();
+  bool HasBookmarks() const;
 
   // Returns true is there is no user created bookmarks or folders.
-  bool HasNoUserCreatedBookmarksOrFolders();
+  bool HasNoUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
-  bool IsBookmarked(const GURL& url);
+  bool IsBookmarked(const GURL& url) const;
 
-  // Returns, by reference in `bookmarks`, the set of bookmarked urls and their
-  // titles. This returns the unique set of URLs. For example, if two bookmarks
-  // reference the same URL only one entry is added not matter the titles are
-  // same or not.
-  void GetBookmarks(std::vector<UrlAndTitle>* urls);
+  // Return the set of bookmarked urls and their titles. This returns the unique
+  // set of URLs. For example, if two bookmarks reference the same URL only one
+  // entry is added not matter the titles are same or not.
+  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const;
 
   // Returns the type of `folder` as represented in metrics.
   metrics::BookmarkFolderTypeForUMA GetFolderType(
@@ -330,10 +330,10 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Returns up to `max_count` bookmarks containing each term from `query` in
   // either the title, URL, or the titles of ancestors. `matching_algorithm`
   // determines the algorithm used by QueryParser internally to parse `query`.
-  std::vector<TitledUrlMatch> GetBookmarksMatching(
+  [[nodiscard]] std::vector<TitledUrlMatch> GetBookmarksMatching(
       const std::u16string& query,
       size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm);
+      query_parser::MatchingAlgorithm matching_algorithm) const;
 
   // Sets the store to NULL, making it so the BookmarkModel does not persist
   // any changes to disk. This is only useful during testing to speed up

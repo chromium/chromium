@@ -181,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
   GURL url(kPersistBookmarkURL);
-  std::vector<const BookmarkNode*> nodes;
-  bookmark_model->GetNodesByURL(url, &nodes);
+  std::vector<const BookmarkNode*> nodes = bookmark_model->GetNodesByURL(url);
 
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(url, nodes[0]->url());
@@ -211,11 +210,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
 
   bookmarks::AddIfNotBookmarked(bookmark_model1, GURL(kPersistBookmarkURL),
                                 kPersistBookmarkTitle);
-  std::vector<UrlAndTitle> urls1, urls2;
-  bookmark_model1->GetBookmarks(&urls1);
-  bookmark_model2->GetBookmarks(&urls2);
-  ASSERT_EQ(1u, urls1.size());
-  ASSERT_TRUE(urls2.empty());
+
+  ASSERT_EQ(1u, bookmark_model1->GetUniqueUrls().size());
+  ASSERT_TRUE(bookmark_model2->GetUniqueUrls().empty());
 }
 
 #endif
@@ -230,23 +227,17 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, IncognitoPersistence) {
   bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kPersistBookmarkURL),
                                 kPersistBookmarkTitle);
 
-  std::vector<UrlAndTitle> urls;
-  bookmark_model->GetBookmarks(&urls);
-  ASSERT_EQ(1u, urls.size());
+  ASSERT_EQ(1u, bookmark_model->GetUniqueUrls().size());
 
   // Restart Incognito, and check again.
   CloseBrowserSynchronously(incognito_browser);
   incognito_browser = CreateIncognitoBrowser();
   bookmark_model = WaitForBookmarkModel(incognito_browser->profile());
-  urls.clear();
-  bookmark_model->GetBookmarks(&urls);
-  ASSERT_EQ(1u, urls.size());
+  ASSERT_EQ(1u, bookmark_model->GetUniqueUrls().size());
 
   // Ensure it is also available in regular mode.
   bookmark_model = WaitForBookmarkModel(browser()->profile());
-  urls.clear();
-  bookmark_model->GetBookmarks(&urls);
-  ASSERT_EQ(1u, urls.size());
+  ASSERT_EQ(1u, bookmark_model->GetUniqueUrls().size());
 }
 
 // Regression for crash caused by opening folder as a group in an incognito

@@ -628,14 +628,12 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   model->AddURL(model->mobile_node(), 0, title, url);
   model->AddURL(managed_node, 0, title, url);
 
-  std::vector<const BookmarkNode*> nodes;
-  model->GetNodesByURL(url, &nodes);
+  std::vector<const BookmarkNode*> nodes = model->GetNodesByURL(url);
   ASSERT_EQ(4u, nodes.size());
 
   RemoveAllBookmarks(model.get(), url);
 
-  nodes.clear();
-  model->GetNodesByURL(url, &nodes);
+  nodes = model->GetNodesByURL(url);
   ASSERT_EQ(1u, nodes.size());
   EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
   EXPECT_TRUE(model->other_node()->children().empty());

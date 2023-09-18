@@ -248,13 +248,12 @@ BookmarkBridge::GetBookmarkIdForWebContents(
   }
 
   // Get all the nodes for |url| and sort them by date added.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
   bookmarks::ManagedBookmarkService* managed =
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
 
-  model->GetNodesByURL(url, &nodes);
+  std::vector<const bookmarks::BookmarkNode*> nodes = model->GetNodesByURL(url);
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
   // Return the first node matching the search criteria.

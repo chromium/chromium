@@ -123,7 +123,8 @@ bool UrlIndex::IsBookmarked(const GURL& url) {
   return IsBookmarkedNoLock(url);
 }
 
-void UrlIndex::GetBookmarks(std::vector<UrlAndTitle>* bookmarks) {
+std::vector<UrlAndTitle> UrlIndex::GetUniqueUrls() {
+  std::vector<UrlAndTitle> bookmarks;
   base::AutoLock url_lock(url_lock_);
   const GURL* last_url = nullptr;
   for (auto i = nodes_ordered_by_url_set_.begin();
@@ -134,10 +135,11 @@ void UrlIndex::GetBookmarks(std::vector<UrlAndTitle>* bookmarks) {
       UrlAndTitle bookmark;
       bookmark.url = *url;
       bookmark.title = (*i)->GetTitle();
-      bookmarks->push_back(bookmark);
+      bookmarks.push_back(bookmark);
     }
     last_url = url;
   }
+  return bookmarks;
 }
 
 UrlIndex::~UrlIndex() = default;

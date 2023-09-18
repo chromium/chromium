@@ -73,7 +73,7 @@ class UrlIndex : public HistoryBookmarkModel {
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;
-  void GetBookmarks(std::vector<UrlAndTitle>* bookmarks) override;
+  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() override;
 
  private:
   friend class base::RefCountedThreadSafe<UrlIndex>;

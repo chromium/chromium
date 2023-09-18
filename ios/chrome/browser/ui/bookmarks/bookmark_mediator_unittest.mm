@@ -241,8 +241,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLs) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(0U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text, @"0 Bookmarks saved");
@@ -258,8 +258,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageOneValidURL) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(1U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text, @"Bookmark saved");
@@ -278,8 +278,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLs) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(2U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text, @"2 Bookmarks saved");
@@ -300,8 +300,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageValidAndInvalidURLs) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text, @"3 Bookmarks saved");
@@ -322,8 +322,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text, @"3 Bookmarks saved");
@@ -335,8 +335,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks_dupes;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks_dupes);
+  std::vector<bookmarks::UrlAndTitle> bookmarks_dupes =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
   ASSERT_NSEQ(snackbarMessageDuplicates.text, @"0 Bookmarks saved");
@@ -355,8 +355,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLsSyncing) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(0U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
@@ -375,8 +375,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageOneValidURLSyncing) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(1U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
@@ -398,8 +398,8 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLsSyncing) {
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(2U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
@@ -424,8 +424,8 @@ TEST_F(BookmarkMediatorUnitTest,
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
@@ -450,8 +450,8 @@ TEST_F(BookmarkMediatorUnitTest,
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks);
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
@@ -464,8 +464,8 @@ TEST_F(BookmarkMediatorUnitTest,
                                viewAction:^{
                                }];
 
-  std::vector<bookmarks::UrlAndTitle> bookmarks_dupes;
-  local_or_syncable_bookmark_model_->GetBookmarks(&bookmarks_dupes);
+  std::vector<bookmarks::UrlAndTitle> bookmarks_dupes =
+      local_or_syncable_bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
   ASSERT_NSEQ(snackbarMessageDuplicates.text,

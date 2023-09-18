@@ -51,7 +51,7 @@ side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
   // url.
   std::vector<const bookmarks::BookmarkNode*> nodes;
   if (bookmark_model) {
-    bookmark_model->GetNodesByURL(power->url(), &nodes);
+    nodes = bookmark_model->GetNodesByURL(power->url());
   }
   if (nodes.size() > 0) {
     result->title = base::UTF16ToUTF8(nodes[0]->GetTitle());

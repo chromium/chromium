@@ -1543,23 +1543,21 @@ TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURL) {
   ASSERT_EQ(n2, model_->GetMostRecentlyAddedUserNodeForURL(url));
 }
 
-// Makes sure GetBookmarks removes duplicates.
-TEST_F(BookmarkModelTest, GetBookmarksWithDups) {
+// Makes sure GetUniqueUrls removes duplicates.
+TEST_F(BookmarkModelTest, GetUniqueUrlsWithDups) {
   const GURL url("http://foo.com/0");
   const std::u16string title(u"blah");
   model_->AddURL(model_->bookmark_bar_node(), 0, title, url);
   model_->AddURL(model_->bookmark_bar_node(), 1, title, url);
 
-  std::vector<UrlAndTitle> bookmarks;
-  model_->GetBookmarks(&bookmarks);
+  std::vector<UrlAndTitle> bookmarks = model_->GetUniqueUrls();
   ASSERT_EQ(1U, bookmarks.size());
   EXPECT_EQ(url, bookmarks[0].url);
   EXPECT_EQ(title, bookmarks[0].title);
 
   model_->AddURL(model_->bookmark_bar_node(), 2, u"Title2", url);
   // Only one returned, even titles are different.
-  bookmarks.clear();
-  model_->GetBookmarks(&bookmarks);
+  bookmarks = model_->GetUniqueUrls();
   EXPECT_EQ(1U, bookmarks.size());
 }
 

@@ -254,9 +254,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
               ElementsAre(MatchesUrl(kUrl1Title, kUrl1)));
 
   // Managed nodes should be excluded from the merge.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
-  account_model->GetNodesByURL(kUrl2, &nodes);
-  EXPECT_THAT(nodes, IsEmpty());
+  EXPECT_THAT(account_model->GetNodesByURL(kUrl2), IsEmpty());
 }
 
 TEST(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {

@@ -453,9 +453,8 @@ using PriceNotificationItems =
     return false;
   }
 
-  std::vector<const bookmarks::BookmarkNode*> nodes;
-  self.bookmarkModel->GetNodesByURL(URL, &nodes);
-  for (const bookmarks::BookmarkNode* node : nodes) {
+  for (const bookmarks::BookmarkNode* node :
+       self.bookmarkModel->GetNodesByURL(URL)) {
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(self.bookmarkModel, node);
 

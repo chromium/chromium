@@ -41,11 +41,9 @@ CommandSource::CommandResults GetMatchingBookmarks(
       BookmarkModelFactory::GetForBrowserContext(browser->profile());
   // This should have been checked already.
   DCHECK(model && model->loaded());
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  model->GetBookmarks(&bookmarks);
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
-  for (bookmarks::UrlAndTitle& bookmark : bookmarks) {
+  for (bookmarks::UrlAndTitle& bookmark : model->GetUniqueUrls()) {
     double score = finder.Find(bookmark.title, &ranges);
     if (score > 0) {
       auto item = CreateOpenBookmarkItem(bookmark, browser);

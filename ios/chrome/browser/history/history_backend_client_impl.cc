@@ -39,8 +39,8 @@ std::vector<history::URLAndTitle> HistoryBackendClientImpl::GetPinnedURLs() {
     // data is loaded on a separate thread and may not be done when this method
     // is called, therefore blocks until the bookmarks have finished loading.
     model_loader->BlockTillLoaded();
-    std::vector<bookmarks::UrlAndTitle> url_and_titles;
-    model_loader->history_bookmark_model()->GetBookmarks(&url_and_titles);
+    std::vector<bookmarks::UrlAndTitle> url_and_titles =
+        model_loader->history_bookmark_model()->GetUniqueUrls();
     result.reserve(result.size() + url_and_titles.size());
     for (auto& url_and_title : url_and_titles) {
       result.push_back(history::URLAndTitle{std::move(url_and_title.url),

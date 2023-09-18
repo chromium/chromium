@@ -261,8 +261,8 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   size_t url_node_count = 0;
 
   {
-    std::vector<const BookmarkNode*> nodes;
-    local_or_syncable_bookmark_model_->GetNodesByURL(url, &nodes);
+    std::vector<const BookmarkNode*> nodes =
+        local_or_syncable_bookmark_model_->GetNodesByURL(url);
     url_node_count += nodes.size();
   }
 
@@ -270,8 +270,8 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   // take the maximum. This appears more robust against edge cases where a user
   // may have many or all bookmarks duplicated between the two models.
   if (account_bookmark_model_) {
-    std::vector<const BookmarkNode*> nodes;
-    account_bookmark_model_->GetNodesByURL(url, &nodes);
+    std::vector<const BookmarkNode*> nodes =
+        account_bookmark_model_->GetNodesByURL(url);
     url_node_count = std::max(url_node_count, nodes.size());
   }
 

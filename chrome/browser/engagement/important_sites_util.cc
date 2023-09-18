@@ -301,8 +301,7 @@ void PopulateInfoMapWithBookmarks(
       BookmarkModelFactory::GetForBrowserContextIfExists(profile);
   if (!model)
     return;
-  std::vector<UrlAndTitle> untrimmed_bookmarks;
-  model->GetBookmarks(&untrimmed_bookmarks);
+  std::vector<UrlAndTitle> untrimmed_bookmarks = model->GetUniqueUrls();
 
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;

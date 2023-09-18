@@ -440,8 +440,9 @@ void GetBookmarksMatchingProperties(BookmarkModel* model,
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
     std::vector<const BookmarkNode*> url_matched_nodes;
-    if (url.is_valid())
-      model->GetNodesByURL(url, &url_matched_nodes);
+    if (url.is_valid()) {
+      url_matched_nodes = model->GetNodesByURL(url);
+    }
     VectorIterator iterator(&url_matched_nodes);
     GetBookmarksMatchingPropertiesImpl<VectorIterator>(
         iterator, model, query, query_words, max_count, nodes);
@@ -552,12 +553,8 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
 }
 
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
-  std::vector<const BookmarkNode*> bookmarks;
-  model->GetNodesByURL(url, &bookmarks);
-
   // Remove all the user bookmarks.
-  for (size_t i = 0; i < bookmarks.size(); ++i) {
-    const BookmarkNode* node = bookmarks[i];
+  for (const BookmarkNode* node : model->GetNodesByURL(url)) {
     if (model->client()->CanBeEditedByUser(node))
       model->Remove(node, metrics::BookmarkEditSource::kUser);
   }
@@ -589,11 +586,10 @@ bool CanAllBeEditedByUser(BookmarkClient* client,
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
-  std::vector<const BookmarkNode*> nodes;
-  model->GetNodesByURL(url, &nodes);
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    if (model->client()->CanBeEditedByUser(nodes[i]))
+  for (const BookmarkNode* node : model->GetNodesByURL(url)) {
+    if (model->client()->CanBeEditedByUser(node)) {
       return true;
+    }
   }
   return false;
 }

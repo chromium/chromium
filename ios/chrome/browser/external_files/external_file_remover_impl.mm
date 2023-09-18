@@ -259,9 +259,7 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
     return referenced_external_files;
 
   // Add files from Bookmarks.
-  std::vector<bookmarks::UrlAndTitle> bookmarks;
-  bookmark_model->GetBookmarks(&bookmarks);
-  for (const auto& bookmark : bookmarks) {
+  for (const auto& bookmark : bookmark_model->GetUniqueUrls()) {
     GURL bookmark_url = bookmark.url;
     if (UrlIsExternalFileReference(bookmark_url)) {
       [referenced_external_files

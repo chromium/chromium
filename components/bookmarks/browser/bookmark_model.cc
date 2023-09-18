@@ -749,8 +749,7 @@ void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
 
   std::set<const BookmarkNode*> to_update;
   for (const GURL& page_url : page_urls) {
-    std::vector<const BookmarkNode*> nodes;
-    GetNodesByURL(page_url, &nodes);
+    std::vector<const BookmarkNode*> nodes = GetNodesByURL(page_url);
     to_update.insert(nodes.begin(), nodes.end());
   }
 
@@ -791,13 +790,17 @@ void BookmarkModel::SetDateAdded(const BookmarkNode* node, Time date_added) {
   }
 }
 
-void BookmarkModel::GetNodesByURL(const GURL& url,
-                                  std::vector<const BookmarkNode*>* nodes) {
+std::vector<const BookmarkNode*> BookmarkModel::GetNodesByURL(
+    const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::vector<const BookmarkNode*> nodes;
+
   if (url_index_) {
-    url_index_->GetNodesByUrl(url, nodes);
+    url_index_->GetNodesByUrl(url, &nodes);
   }
+
+  return nodes;
 }
 
 const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
@@ -818,11 +821,10 @@ const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
 }
 
 const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
-    const GURL& url) {
+    const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<const BookmarkNode*> nodes;
-  GetNodesByURL(url, &nodes);
+  std::vector<const BookmarkNode*> nodes = GetNodesByURL(url);
   std::sort(nodes.begin(), nodes.end(), &MoreRecentlyAdded);
 
   // Look for the first node that the user can edit.
@@ -835,27 +837,28 @@ const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
   return nullptr;
 }
 
-bool BookmarkModel::HasBookmarks() {
+bool BookmarkModel::HasBookmarks() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_index_ && url_index_->HasBookmarks();
 }
 
-bool BookmarkModel::HasNoUserCreatedBookmarksOrFolders() {
+bool BookmarkModel::HasNoUserCreatedBookmarksOrFolders() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bookmark_bar_node_->children().empty() &&
          other_node_->children().empty() && mobile_node_->children().empty();
 }
 
-bool BookmarkModel::IsBookmarked(const GURL& url) {
+bool BookmarkModel::IsBookmarked(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_index_ && url_index_->IsBookmarked(url);
 }
 
-void BookmarkModel::GetBookmarks(std::vector<UrlAndTitle>* bookmarks) {
+std::vector<UrlAndTitle> BookmarkModel::GetUniqueUrls() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (url_index_) {
-    url_index_->GetBookmarks(bookmarks);
+  if (!url_index_) {
+    return {};
   }
+  return url_index_->GetUniqueUrls();
 }
 
 metrics::BookmarkFolderTypeForUMA BookmarkModel::GetFolderType(
@@ -1047,7 +1050,7 @@ void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
 std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
     const std::u16string& query,
     size_t max_count,
-    query_parser::MatchingAlgorithm matching_algorithm) {
+    query_parser::MatchingAlgorithm matching_algorithm) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!loaded_) {

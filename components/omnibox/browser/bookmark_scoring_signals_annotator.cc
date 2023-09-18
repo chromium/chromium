@@ -65,9 +65,8 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
       continue;
     }
 
-    std::vector<const bookmarks::BookmarkNode*> nodes;
-    local_or_syncable_bookmark_model_->GetNodesByURL(match.destination_url,
-                                                     &nodes);
+    std::vector<const bookmarks::BookmarkNode*> nodes =
+        local_or_syncable_bookmark_model_->GetNodesByURL(match.destination_url);
     if (nodes.empty()) {
       return;
     }
