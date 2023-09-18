@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.util.Size;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -221,6 +222,17 @@ public interface TabSwitcher {
          */
         @NonNull
         Rect getThumbnailLocationOfCurrentTab();
+
+        /**
+         * Returns the {@link Size} of a thumbnail.
+         */
+        @NonNull
+        Size getThumbnailSize();
+
+        /**
+         * Returns the {@link Rect} of the {@link TabListRecyclerView} relative to its container.
+         */
+        Rect getRecyclerViewLocation();
 
         /**
          * Set a hook to receive all the {@link Bitmap}s returned by

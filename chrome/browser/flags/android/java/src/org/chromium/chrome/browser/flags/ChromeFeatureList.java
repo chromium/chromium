@@ -281,6 +281,8 @@ public abstract class ChromeFeatureList {
             "FriendlierSafeBrowsingSettingsEnhancedProtection";
     public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION =
             "FriendlierSafeBrowsingSettingsStandardProtection";
+    public static final String GRID_TAB_SWITCHER_ANDROID_ANIMATIONS =
+            "GridTabSwitcherAndroidAnimations";
     public static final String GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES =
             "GridTabSwitcherLandscapeAspectRatioPhones";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
@@ -546,6 +548,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION, false);
     public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
             new CachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
+    public static final CachedFlag sGridTabSwitcherAndroidAnimations =
+            new CachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sGridTabSwitcherLandscapeAspectRatioPhones =
             new CachedFlag(GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
@@ -646,6 +650,7 @@ public abstract class ChromeFeatureList {
         sFeedLoadingPlaceholder,
         sFriendlierSafeBrowsingSettingsEnhancedProtection,
         sFriendlierSafeBrowsingSettingsStandardProtection,
+        sGridTabSwitcherAndroidAnimations,
         sGridTabSwitcherLandscapeAspectRatioPhones,
         sIncognitoReauthenticationForAndroid,
         sInstanceSwitcher,

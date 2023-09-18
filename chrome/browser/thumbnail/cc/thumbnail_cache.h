@@ -85,6 +85,7 @@ class ThumbnailCache : ThumbnailDelegate {
   void DecompressEtc1ThumbnailFromFile(
       TabId tab_id,
       double jpeg_aspect_ratio,
+      bool save_jpeg,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
   // Called when resident textures were evicted, which requires paging

@@ -247,6 +247,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
+    &kGridTabSwitcherAndroidAnimations,
     &kGridTabSwitcherLandscapeAspectRatioPhones,
     &kHideTabOnTabSwitcher,
     &kImprovedIncognitoScreenshot,
@@ -773,6 +774,10 @@ BASE_FEATURE(kExperimentsForAgsa,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExploreSites, "ExploreSites", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
+             "GridTabSwitcherAndroidAnimations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherLandscapeAspectRatioPhones,
              "GridTabSwitcherLandscapeAspectRatioPhones",

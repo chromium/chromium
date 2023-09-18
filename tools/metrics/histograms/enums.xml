@@ -61295,6 +61295,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowSuffixOnAllSearchSuggestions:disabled"/>
   <int value="-1715158522" label="GuestOSGenericInstaller:enabled"/>
   <int value="-1714128884" label="disable-launcher-search-provider-api"/>
+  <int value="-1713842726" label="GridTabSwitcherAndroidAnimations:enabled"/>
   <int value="-1713602121" label="BentoOffline:enabled"/>
   <int value="-1713564656" label="ProtectSyncCredentialOnReauth:enabled"/>
   <int value="-1712124814" label="NoWakeUpsForCanceledTasks:disabled"/>
@@ -65133,6 +65134,7 @@ from previous Chrome versions.
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>
   <int value="182986882" label="TerminalSSH:disabled"/>
   <int value="183208826" label="TabGroups:enabled"/>
+  <int value="183467994" label="GridTabSwitcherAndroidAnimations:disabled"/>
   <int value="185991204" label="enable-webrtc-srtp-encrypted-headers"/>
   <int value="186463628" label="DnsOverHttps:disabled"/>
   <int value="187109402" label="SyncingCompromisedCredentials:enabled"/>

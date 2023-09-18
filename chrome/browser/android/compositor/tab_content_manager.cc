@@ -442,13 +442,14 @@ void TabContentManager::GetEtc1TabThumbnail(
     JNIEnv* env,
     jint tab_id,
     jdouble aspect_ratio,
+    jboolean save_jpeg,
     const base::android::JavaParamRef<jobject>& j_callback) {
   thumbnail_cache_->DecompressEtc1ThumbnailFromFile(
-      tab_id, aspect_ratio,
+      tab_id, aspect_ratio, save_jpeg,
       base::BindOnce(&TabContentManager::SendThumbnailToJava,
                      weak_factory_.GetWeakPtr(),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     /*need_downsampling=*/true, aspect_ratio));
+                     /*need_downsampling=*/save_jpeg, aspect_ratio));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {
@@ -518,14 +519,15 @@ void TabContentManager::SendThumbnailToJava(
 
     int width = 0;
     int height = 0;
-    if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+    if (base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor) ||
+        aspect_ratio == 0.0) {
+      width = bitmap.width() / scale;
+      height = bitmap.height() / scale;
+    } else {
       width = std::min(bitmap.width() / scale,
                        (int)(bitmap.height() * aspect_ratio / scale));
       height = std::min(bitmap.height() / scale,
                         (int)(bitmap.width() / aspect_ratio / scale));
-    } else {
-      width = bitmap.width() / scale;
-      height = bitmap.height() / scale;
     }
     // When cropping the thumbnails, we want to keep the top center portion.
     int begin_x = (bitmap.width() / scale - width) / 2;

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
@@ -400,7 +402,12 @@ public class TabSwitcherCoordinator
     public void initWithNative() {
         if (mIsInitialized) return;
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherCoordinator.initWithNative")) {
-            mTabListCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
+            final boolean shouldUseDynamicResource = mMode == TabListCoordinator.TabListMode.GRID
+                    && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                    && !(ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
+                            && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity));
+            mTabListCoordinator.initWithNative(
+                    shouldUseDynamicResource ? mDynamicResourceLoaderSupplier.get() : null);
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
                 if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
@@ -568,6 +575,11 @@ public class TabSwitcherCoordinator
     }
 
     @Override
+    public Rect getRecyclerViewLocation() {
+        return mTabListCoordinator.getRecyclerViewLocation();
+    }
+
+    @Override
     public int getListModeForTesting() {
         return mMode;
     }
@@ -612,6 +624,11 @@ public class TabSwitcherCoordinator
         }
         mTabListCoordinator.updateThumbnailLocation();
         return mTabListCoordinator.getThumbnailLocationOfCurrentTab();
+    }
+
+    @Override
+    public @NonNull Size getThumbnailSize() {
+        return mTabListCoordinator.getThumbnailSize();
     }
 
     // TabListDelegate implementation.

@@ -7,6 +7,7 @@ package org.chromium.chrome.features.tasks;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,6 +133,13 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
+            @VisibleForTesting
+            public Rect getRecyclerViewLocation() {
+                return null;
+            }
+
+            @Override
+            @VisibleForTesting
             public int getListModeForTesting() {
                 assert false : "should not reach here";
                 return 0;
@@ -152,6 +160,12 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
 
             @Override
             public Rect getThumbnailLocationOfCurrentTab() {
+                assert false : "should not reach here";
+                return null;
+            }
+
+            @Override
+            public Size getThumbnailSize() {
                 assert false : "should not reach here";
                 return null;
             }

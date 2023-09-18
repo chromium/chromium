@@ -7202,6 +7202,21 @@
             ]
         }
     ],
+    "GridTabSwitcherAndroidAnimations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GridTabSwitcherAndroidAnimations"
+                    ]
+                }
+            ]
+        }
+    ],
     "GridTabSwitcherLandscapeAspectRatioPhones": [
         {
             "platforms": [

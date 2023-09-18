@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
@@ -56,6 +57,8 @@ class TabListContainerViewBinder {
             } else {
                 view.startHiding(model.get(ANIMATE_VISIBILITY_CHANGES));
             }
+        } else if (BLOCK_TOUCH_INPUT == propertyKey) {
+            view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
         } else if (IS_INCOGNITO == propertyKey) {
             int primaryBackgroundColor = ChromeColors.getPrimaryBackgroundColor(
                     view.getContext(), model.get(IS_INCOGNITO));

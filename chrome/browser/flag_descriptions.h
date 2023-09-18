@@ -2360,6 +2360,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kForceOffTextAutosizingName[];
 extern const char kForceOffTextAutosizingDescription[];
 
+extern const char kGridTabSwitcherAndroidAnimationsName[];
+extern const char kGridTabSwitcherAndroidAnimationsDescription[];
+
 extern const char kGridTabSwitcherLandscapeAspectRatioPhonesName[];
 extern const char kGridTabSwitcherLandscapeAspectRatioPhonesDescription[];
 

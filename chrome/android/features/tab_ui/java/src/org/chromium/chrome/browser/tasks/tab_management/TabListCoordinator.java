@@ -339,6 +339,12 @@ public class TabListCoordinator
     }
 
     @NonNull
+    Size getThumbnailSize() {
+        Size size = mMediator.getDefaultGridCardSize();
+        return TabUtils.deriveThumbnailSize(size, mContext);
+    }
+
+    @NonNull
     Rect getRecyclerViewLocation() {
         Rect recyclerViewRect = new Rect();
         mRecyclerView.getGlobalVisibleRect(recyclerViewRect);
@@ -489,7 +495,7 @@ public class TabListCoordinator
         Rect tabListRect = getRecyclerViewLocation();
         Rect parentRect = new Rect();
         mRootView.getGlobalVisibleRect(parentRect);
-        // Offset by CompositeViewHolder top offset and top toolbar height.
+        // Offset by CompositorViewHolder top offset and top toolbar height.
         tabListRect.offset(0,
                 -parentRect.top
                         - (int) mContext.getResources().getDimension(

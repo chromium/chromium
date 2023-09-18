@@ -21,6 +21,7 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -141,6 +142,7 @@ class TabListRecyclerView
     private VisibilityListener mListener;
     private DynamicResourceLoader mLoader;
     private ViewResourceAdapter mDynamicView;
+    private boolean mBlockTouchInput;
     private boolean mIsDynamicViewRegistered;
     private long mLastDirtyTime;
     private ImageView mShadowImageView;
@@ -215,12 +217,29 @@ class TabListRecyclerView
         }
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        if (mBlockTouchInput) return true;
+
+        return super.dispatchTouchEvent(e);
+    }
+
     /**
      * Set the {@link VisibilityListener} that will listen on granular visibility events.
      * @param listener The {@link VisibilityListener} to use.
      */
     void setVisibilityListener(VisibilityListener listener) {
         mListener = listener;
+    }
+
+    /**
+     * Set whether to block touch inputs. For example, during an animated transition the
+     * TabListRecyclerView may still be visible, but interacting with it could trigger repeat
+     * animations or unexpected state changes.
+     * @param blockTouchInput Whether the touch inputs should be blocked.
+     */
+    void setBlockTouchInput(boolean blockTouchInput) {
+        mBlockTouchInput = blockTouchInput;
     }
 
     void setDisableItemAnimations(boolean disable) {

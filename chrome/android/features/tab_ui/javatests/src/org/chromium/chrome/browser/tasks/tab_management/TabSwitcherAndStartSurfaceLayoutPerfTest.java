@@ -8,7 +8,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
@@ -63,6 +65,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -163,6 +167,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void testTabToGridFromLiveTab(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, NTP_URL);
@@ -174,6 +179,19 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    public void testTabToGridFromLiveTab_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
+        prepareTabs(1, NTP_URL);
+        reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab using Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void testTabToGridFromLiveTabWith10Tabs(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(10, NTP_URL);
@@ -185,8 +203,21 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    public void testTabToGridFromLiveTabWith10Tabs_AndroidAnimation(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
+        prepareTabs(10, NTP_URL);
+        reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs using Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void
     testTabToGridFromLiveTabWith10TabsWarm(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -199,9 +230,26 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    public void
+    testTabToGridFromLiveTabWith10TabsWarm_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
+        prepareTabs(10, NTP_URL);
+        reportTabToGridPerf(
+                mUrl, "Tab-to-Grid from live tab with 10 tabs (warm) using Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
             supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
             sdk_is_less_than = VERSION_CODES.Q)
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void
     testTabToGridFromLiveTabWith10TabsSoft(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
@@ -213,28 +261,17 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @EnormousTest
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
-    @CommandLineFlags.Add({BASE_PARAMS + "/downsampling-scale/1"})
-    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
-            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
+            supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
+            sdk_is_less_than = VERSION_CODES.Q)
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void
-    testTabToGridFromLiveTabWith10TabsNoDownsample(boolean isStartSurfaceRefactorEnable)
+    testTabToGridFromLiveTabWith10TabsSoft_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(10, NTP_URL);
-        reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no downsample)");
-    }
-
-    @Test
-    @EnormousTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    @UseMethodParameter(RefactorTestParams.class)
-    @CommandLineFlags.Add({BASE_PARAMS + "/max-duty-cycle/1"})
-    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
-            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
-    public void
-    testTabToGridFromLiveTabWith10TabsNoRateLimit(boolean isStartSurfaceRefactorEnabled)
-            throws InterruptedException {
-        prepareTabs(10, NTP_URL);
-        reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no rate-limit)");
+        reportTabToGridPerf(
+                mUrl, "Tab-to-Grid from live tab with 10 tabs (soft) using Android animation");
     }
 
     @Test
@@ -243,11 +280,27 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @UseMethodParameter(RefactorTestParams.class)
     @DisabledTest(message = "https://crbug.com/1045938")
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void testTabToGridFromLiveTabWith10TabsWithoutThumbnail(
             boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         // Note that most of the tabs won't have thumbnails.
         prepareTabs(10, null);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs without thumbnails");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @DisabledTest(message = "https://crbug.com/1045938")
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    public void testTabToGridFromLiveTabWith10TabsWithoutThumbnail_AndroidAnimation(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
+        // Note that most of the tabs won't have thumbnails.
+        prepareTabs(10, null);
+        reportTabToGridPerf(mUrl,
+                "Tab-to-Grid from live tab with 10 tabs without thumbnails using Android animation");
     }
 
     @Test
@@ -269,10 +322,23 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     public void testTabToGridFromNtp(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, NTP_URL);
         reportTabToGridPerf(NTP_URL, "Tab-to-Grid from NTP");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    public void testTabToGridFromNtp_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
+        prepareTabs(1, NTP_URL);
+        reportTabToGridPerf(NTP_URL, "Tab-to-Grid from NTP using Android animation");
     }
 
     /**
@@ -342,10 +408,14 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
         List<Float> dirtySpans = new LinkedList<>();
-        PerfListener collector = (mFrameCount, elapsedMs, maxFrameInterval, dirtySpan) -> {
-            assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
-                            * CompositorAnimator.sDurationScale);
-            float fps = 1000.f * mFrameCount / elapsedMs;
+        int[] iteration = new int[] {0};
+        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+            assertThat("Elapsed time was less than expected duration for iteration " + iteration[0],
+                    elapsedMs,
+                    greaterThanOrEqualTo(
+                            (long) Math.floor(TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
+                                    * CompositorAnimator.sDurationScale)));
+            float fps = 1000.f * frameRendered / elapsedMs;
             frameRates.add(fps);
             frameInterval.add((float) maxFrameInterval);
             dirtySpans.add((float) dirtySpan);
@@ -355,12 +425,14 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         Thread.sleep(mWaitingTime);
 
         for (int i = 0; i < mRepeat; i++) {
+            iteration[0] = i;
             setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             TestThreadUtils.runOnUiThreadBlocking(
                     ()
                             -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
                                     LayoutType.TAB_SWITCHER, true));
+            Thread.sleep(mWaitingTime);
             final int expectedSize = i + 1;
             CriteriaHelper.pollInstrumentationThread(()
                                                              -> frameRates.size() == expectedSize,
@@ -374,6 +446,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
                     mTabSwitcherLayout, mTabSwitcherAndStartSurfaceLayout);
             LayoutTestUtils.waitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+            Thread.sleep(mWaitingTime);
         }
         assertEquals(mRepeat, frameRates.size());
         Log.i(TAG, "%s: fps = %.2f, maxFrameInterval = %.0f, dirtySpan = %.0f", description,
@@ -385,6 +458,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
     public void testGridToTabToCurrentNTP(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
@@ -397,6 +471,20 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
+    public void testGridToTabToCurrentNTP_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
+        prepareTabs(1, NTP_URL);
+        reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "crbug.com/1087608")
     public void testGridToTabToOtherNTP(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
@@ -409,6 +497,20 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisabledTest(message = "crbug.com/1087608")
+    public void testGridToTabToOtherNTP_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
+        prepareTabs(2, NTP_URL);
+        reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "crbug.com/1087608")
     public void testGridToTabToCurrentLive(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
@@ -421,6 +523,20 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisabledTest(message = "crbug.com/1087608")
+    public void testGridToTabToCurrentLive_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
+        prepareTabs(1, mUrl);
+        reportGridToTabPerf(false, false, "Grid-to-Tab to current live tab Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "https://crbug.com/1225926")
     public void testGridToTabToOtherLive(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
@@ -433,6 +549,20 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisabledTest(message = "https://crbug.com/1225926")
+    public void testGridToTabToOtherLive_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
+        prepareTabs(2, mUrl);
+        reportGridToTabPerf(true, false, "Grid-to-Tab to other live tab Android animation");
+    }
+
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -441,13 +571,32 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         reportGridToTabPerf(true, true, "Grid-to-Tab to other frozen tab");
     }
 
+    @Test
+    @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @UseMethodParameter(RefactorTestParams.class)
+    @CommandLineFlags.Add({BASE_PARAMS})
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testGridToTabToOtherFrozen_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
+        prepareTabs(2, mUrl);
+        reportGridToTabPerf(true, true, "Grid-to-Tab to other frozen tab Android animation");
+    }
+
     private void reportGridToTabPerf(boolean switchToAnotherTab, boolean killBeforeSwitching,
             String description) throws InterruptedException {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
+        int[] iteration = new int[] {0};
         PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
-            assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
-                            * CompositorAnimator.sDurationScale);
+            assertThat("Elapsed time was less than expected duration for iteration " + iteration[0],
+                    elapsedMs,
+                    greaterThanOrEqualTo(
+                            (long) Math.floor(TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
+                                    * CompositorAnimator.sDurationScale)));
             float fps = 1000.f * frameRendered / elapsedMs;
             frameRates.add(fps);
             frameInterval.add((float) maxFrameInterval);
@@ -455,6 +604,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         Thread.sleep(mWaitingTime);
 
         for (int i = 0; i < mRepeat; i++) {
+            iteration[0] = i;
             setPerfListenerForTesting(null);
             LayoutTestUtils.startShowingAndWaitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER,

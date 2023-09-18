@@ -118,6 +118,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       JNIEnv* env,
       jint tab_id,
       jdouble aspect_ratio,
+      jboolean save_jpeg,
       const base::android::JavaParamRef<jobject>& j_callback);
   void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
   jint GetInFlightCapturesForTesting(JNIEnv* env);

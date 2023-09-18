@@ -378,9 +378,10 @@ void ThumbnailCache::ForkToSaveAsJpeg(
 void ThumbnailCache::DecompressEtc1ThumbnailFromFile(
     TabId tab_id,
     double jpeg_aspect_ratio,
+    bool save_jpeg,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
   base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
-  if (save_jpeg_thumbnails_) {
+  if (save_jpeg && save_jpeg_thumbnails_) {
     transcoding_callback = base::BindOnce(
         &ThumbnailCache::ForkToSaveAsJpeg, weak_factory_.GetWeakPtr(),
         std::move(post_decompress_callback), tab_id, jpeg_aspect_ratio);
