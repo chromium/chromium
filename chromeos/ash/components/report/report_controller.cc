@@ -9,6 +9,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -128,9 +129,9 @@ void ReportController::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 base::TimeDelta ReportController::DetermineStartUpDelay(
     base::Time chrome_first_run_ts) {
-  // Wait at least 10 minutes from the first chrome run sentinel file creation
+  // Wait at least 1 hour from the first chrome run sentinel file creation
   // time. This creation time is used as an indicator of when the device last
-  // reset (powerwash/recovery/RMA). PSM servers take 10 minutes from CheckIn
+  // reset (powerwash/recovery/RMA). PSM servers can take 1 hour after CheckIn
   // to return the correct response for CheckMembership requests, since the PSM
   // servers need to update their cache.
   //
@@ -138,9 +139,9 @@ base::TimeDelta ReportController::DetermineStartUpDelay(
   // on device start up, gets the wrong check membership response.
   base::TimeDelta delay_on_first_chrome_run;
   base::Time current_ts = base::Time::Now();
-  if (current_ts < (chrome_first_run_ts + base::Minutes(10))) {
+  if (current_ts < (chrome_first_run_ts + base::Hours(1))) {
     delay_on_first_chrome_run =
-        chrome_first_run_ts + base::Minutes(10) - current_ts;
+        chrome_first_run_ts + base::Hours(1) - current_ts;
   }
 
   return delay_on_first_chrome_run;
