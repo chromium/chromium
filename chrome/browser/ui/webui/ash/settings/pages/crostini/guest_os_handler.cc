@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/guest_os_handler.h"
 
 #include <string>
 #include <utility>
@@ -126,8 +126,9 @@ void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
     const base::Value::List& args) {
   CHECK_EQ(4U, args.size());
   CrosUsbDetector* detector = CrosUsbDetector::Get();
-  if (!detector)
+  if (!detector) {
     return;
+  }
 
   const auto guest_id =
       guest_os::GuestId(args[0].GetString(), args[1].GetString());

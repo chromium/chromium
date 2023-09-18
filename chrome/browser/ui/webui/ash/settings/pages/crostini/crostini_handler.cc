@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_handler.h"
 
 #include <string>
 #include <utility>
@@ -404,8 +404,9 @@ void CrostiniHandler::HandleEnableArcAdbRequest(const base::Value::List& args) {
 
 void CrostiniHandler::OnCanEnableArcAdbSideloading(
     bool can_change_adb_sideloading) {
-  if (!can_change_adb_sideloading)
+  if (!can_change_adb_sideloading) {
     return;
+  }
 
   LogEvent(CrostiniSettingsEvent::kEnableAdbSideloading);
 
@@ -427,8 +428,9 @@ void CrostiniHandler::HandleDisableArcAdbRequest(
 
 void CrostiniHandler::OnCanDisableArcAdbSideloading(
     bool can_change_adb_sideloading) {
-  if (!can_change_adb_sideloading)
+  if (!can_change_adb_sideloading) {
     return;
+  }
 
   LogEvent(CrostiniSettingsEvent::kDisableAdbSideloading);
 

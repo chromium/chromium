@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/crostini_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
@@ -22,9 +22,9 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/guest_os_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/management/management_service.h"
