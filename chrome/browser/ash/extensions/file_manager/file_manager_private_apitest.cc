@@ -1105,3 +1105,77 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
                                {.custom_arg = "dismissIOTask"},
                                {.load_as_component = true}));
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_ProgressPausedTasks) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  std::vector<storage::FileSystemURL> source_urls{
+      storage::FileSystemURL::CreateForTest(
+          GURL("filesystem:chrome-extension://abc/external/foo/src")),
+  };
+  auto dest = storage::FileSystemURL::CreateForTest(
+      GURL("filesystem:chrome-extension://abc/external/foo/dest"));
+
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(browser()->profile());
+  ASSERT_TRUE(volume_manager);
+  file_manager::io_task::IOTaskController* io_task_controller =
+      volume_manager->io_task_controller();
+  ASSERT_TRUE(io_task_controller);
+
+  // Create and pause the task.
+  auto task_id = io_task_controller->Add(
+      std::make_unique<file_manager::io_task::DummyIOTask>(
+          source_urls, dest, file_manager::io_task::OperationType::kCopy,
+          /*show_notification=*/true, /*progress_succeeds=*/false));
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(policy::Policy::kDlp);
+  io_task_controller->Pause(task_id, pause_params);
+
+  // Set up FPNM, but only after creating and pausing the task so that it would
+  // only get notified by the API call.
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+  // Expect the pause status from ProgressPausedTasks.
+  EXPECT_CALL(
+      *fpnm_,
+      OnIOTaskStatus(AllOf(
+          testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                         task_id),
+          testing::Field(&file_manager::io_task::ProgressStatus::state,
+                         file_manager::io_task::State::kPaused),
+          testing::Field(&file_manager::io_task::ProgressStatus::pause_params,
+                         pause_params))));
+  // FPNM should also get notified to show the notification by this call.
+  EXPECT_CALL(
+      *fpnm_,
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kPaused),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::pause_params,
+                    pause_params))));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "progressPausedTasks"},
+                               {.load_as_component = true}));
+}

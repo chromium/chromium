@@ -1965,7 +1965,8 @@ interface Functions {
 
   // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
   // progress status.
-  static void progressPausedTasks();
+  [supportsPromises]
+  static void progressPausedTasks(SimpleCallback callback);
 
   // Lists mountable Guest OSs.
   [supportsPromises]

@@ -181,6 +181,17 @@ chrome.test.getConfig(config => {
         }
       ]);
       break;
+      case 'progressPausedTasks':
+        chrome.test.runTests([
+          async function progressPausedTasks() {
+            // Succeeds and notifies FPNM.
+            chrome.fileManagerPrivate.progressPausedTasks(
+              chrome.test.callbackPass());
+
+            chrome.test.succeed();
+          }
+        ]);
+        break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {
