@@ -64,6 +64,11 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   }
 
   const auto* const promo_spec = registry_.GetParamsForFeature(feature);
+  const bool is_unlimited =
+      promo_spec->promo_subtype() ==
+          user_education::FeaturePromoSpecification::PromoSubtype::kPerApp ||
+      promo_spec->promo_subtype() ==
+          user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice;
 
   switch (promo_spec->promo_type()) {
     case user_education::FeaturePromoSpecification::PromoType::kToast:
@@ -78,12 +83,19 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     case user_education::FeaturePromoSpecification::PromoType::kSnooze:
     case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
-      // Heavyweight IPH can only show once per session.
-      config.session_rate.type = feature_engagement::EQUAL;
-      config.session_rate.value = 0;
-      config.session_rate_impact.type =
-          feature_engagement::SessionRateImpact::Type::ALL;
-      config.session_rate_impact.affected_features.reset();
+      if (is_unlimited) {
+        config.session_rate.type = feature_engagement::ANY;
+        config.session_rate_impact.type =
+            feature_engagement::SessionRateImpact::Type::ALL;
+        config.session_rate_impact.affected_features.reset();
+      } else {
+        // Heavyweight IPH can only show once per session.
+        config.session_rate.type = feature_engagement::EQUAL;
+        config.session_rate.value = 0;
+        config.session_rate_impact.type =
+            feature_engagement::SessionRateImpact::Type::ALL;
+        config.session_rate_impact.affected_features.reset();
+      }
       break;
 
     case user_education::FeaturePromoSpecification::PromoType::kLegacy:
@@ -103,8 +115,13 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   if (config.trigger.name.empty()) {
     config.trigger.name = GetDefaultTriggerName(feature);
   }
-  config.trigger.comparator.type = feature_engagement::LESS_THAN;
-  config.trigger.comparator.value = 3;
+  if (is_unlimited) {
+    config.trigger.comparator.type = feature_engagement::ANY;
+    config.trigger.comparator.value = 0;
+  } else {
+    config.trigger.comparator.type = feature_engagement::LESS_THAN;
+    config.trigger.comparator.value = 3;
+  }
   config.trigger.storage = feature_engagement::kMaxStoragePeriod;
   config.trigger.window = feature_engagement::kMaxStoragePeriod;
 

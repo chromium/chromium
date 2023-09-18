@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/user_education/common/feature_promo_controller.h"
-#include <initializer_list>
+
 #include <string>
 
 #include "base/auto_reset.h"
@@ -12,15 +12,12 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_snooze_service.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial.h"
@@ -32,35 +29,6 @@
 
 namespace user_education {
 
-namespace internal {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Most of these values are internal to the FeaturePromoController. Only
-// a few are made public to users (through FeaturePromoCloseReason) that
-// might call EndPromo in order to provide context for emitting metrics.
-enum class FeaturePromoCloseReasonInternal {
-  // Actions within the FeaturePromo.
-  kDismiss = 0,  // Promo dismissed by user.
-  kSnooze = 1,   // Promo snoozed by user.
-  kAction = 2,   // Custom action taken by user.
-  kCancel = 3,   // Promo was cancelled.
-
-  // Actions outside the FeaturePromo.
-  kTimeout = 4,         // Promo timed out.
-  kAbortPromo = 5,      // Promo aborted by indirect user action.
-  kFeatureEngaged = 6,  // Promo closed by indirect user engagement.
-
-  // Controller system actions.
-  kOverrideForUIRegionConflict = 7,  // Promo aborted to avoid overlap.
-  kOverrideForDemo = 8,              // Promo aborted by the demo system.
-  kOverrideForTesting = 9,           // Promo aborted for tests.
-  kOverrideForPrecedence = 10,       // Promo aborted for higher priority Promo.
-
-  kMaxValue = kOverrideForPrecedence,
-};
-}  // namespace internal
-
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
 
@@ -68,16 +36,16 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     feature_engagement::Tracker* feature_engagement_tracker,
     FeaturePromoRegistry* registry,
     HelpBubbleFactoryRegistry* help_bubble_registry,
-    FeaturePromoSnoozeService* snooze_service,
+    FeaturePromoStorageService* storage_service,
     TutorialService* tutorial_service)
     : registry_(registry),
       feature_engagement_tracker_(feature_engagement_tracker),
       bubble_factory_registry_(help_bubble_registry),
-      snooze_service_(snooze_service),
+      storage_service_(storage_service),
       tutorial_service_(tutorial_service) {
   DCHECK(feature_engagement_tracker_);
   DCHECK(bubble_factory_registry_);
-  DCHECK(snooze_service_);
+  DCHECK(storage_service_);
 }
 
 FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
@@ -97,11 +65,9 @@ bool FeaturePromoControllerCommon::MaybeShowPromo(
 
   const FeaturePromoSpecification* spec =
       registry()->GetParamsForFeature(iph_feature);
-  if (!spec)
+  if (!spec) {
     return false;
-
-  DCHECK_EQ(&iph_feature, spec->feature());
-  DCHECK(spec->anchor_element_id());
+  }
 
   // Fetch the anchor element. For now, assume all elements are Views.
   ui::TrackedElement* const anchor_element =
@@ -111,8 +77,8 @@ bool FeaturePromoControllerCommon::MaybeShowPromo(
     return false;
 
   return MaybeShowPromoFromSpecification(
-      *spec, anchor_element, std::move(close_callback), std::move(body_params),
-      std::move(title_params));
+      *spec, /* for_demo =*/false, anchor_element, std::move(close_callback),
+      std::move(body_params), std::move(title_params));
 }
 
 bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
@@ -122,8 +88,9 @@ bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
     FeaturePromoSpecification::FormatParameters body_params,
     FeaturePromoSpecification::FormatParameters title_params) {
   // If the promo is currently running, fail.
-  if (current_iph_feature_ == &iph_feature)
+  if (GetCurrentPromoFeature() == &iph_feature) {
     return false;
+  }
 
   // If the promo is already queued, fail.
   if (base::Contains(startup_promos_, &iph_feature))
@@ -148,39 +115,49 @@ bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
     BubbleCloseCallback close_callback,
     FeaturePromoSpecification::FormatParameters body_params,
     FeaturePromoSpecification::FormatParameters title_params) {
-  if (current_iph_feature_ && promo_bubble_) {
-    EndPromo(*current_iph_feature_,
-             static_cast<int>(
-                 internal::FeaturePromoCloseReasonInternal::kOverrideForDemo));
-  }
-  iph_feature_bypassing_tracker_ = iph_feature;
-
-  bool showed_promo =
-      MaybeShowPromo(*iph_feature, std::move(close_callback),
-                     std::move(body_params), std::move(title_params));
-
-  if (!showed_promo && iph_feature_bypassing_tracker_) {
-    iph_feature_bypassing_tracker_ = nullptr;
+  if (current_promo_) {
+    EndPromo(*GetCurrentPromoFeature(), CloseReason::kOverrideForDemo);
   }
 
-  return showed_promo;
+  const FeaturePromoSpecification* spec =
+      registry()->GetParamsForFeature(*iph_feature);
+  if (!spec) {
+    return false;
+  }
+
+  // Fetch the anchor element. For now, assume all elements are Views.
+  ui::TrackedElement* const anchor_element =
+      spec->GetAnchorElement(GetAnchorContext());
+
+  if (!anchor_element) {
+    return false;
+  }
+
+  return MaybeShowPromoFromSpecification(
+      *spec, /* for_demo =*/true, anchor_element, std::move(close_callback),
+      std::move(body_params), std::move(title_params));
 }
 
 bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     const FeaturePromoSpecification& spec,
+    bool for_demo,
     ui::TrackedElement* anchor_element,
     BubbleCloseCallback close_callback,
     FeaturePromoSpecification::FormatParameters body_params,
     FeaturePromoSpecification::FormatParameters title_params) {
   CHECK(anchor_element);
 
-  if (promos_blocked_for_testing_) {
-    return false;
-  }
+  const bool is_high_priority =
+      spec.promo_subtype() ==
+      FeaturePromoSpecification::PromoSubtype::kLegalNotice;
+  const bool high_priority_already_showing =
+      critical_promo_bubble_ ||
+      (current_promo_ &&
+       current_promo_->promo_subtype() ==
+           FeaturePromoSpecification::PromoSubtype::kLegalNotice);
 
-  // A normal promo cannot show if a critical promo is displayed. These
-  // are not registered with |tracker_| so check here.
-  if (critical_promo_bubble_) {
+  // A normal promo cannot show if a high priority promo is displayed.
+  if (high_priority_already_showing) {
     return false;
   }
 
@@ -189,8 +166,20 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     return false;
   }
 
-  // Can't show a standard promo if another help bubble is visible.
-  if (bubble_factory_registry_->is_any_bubble_showing()) {
+  if (is_high_priority) {
+    // For high priority promos, close any other promos or help bubbles in this
+    // context.
+    if (const auto* current = GetCurrentPromoFeature()) {
+      EndPromo(*current, CloseReason::kOverrideForPrecedence);
+    }
+    if (auto* help_bubble = bubble_factory_registry_->GetHelpBubble(
+            anchor_element->context())) {
+      help_bubble->Close();
+    }
+  } else if (current_promo_ ||
+             bubble_factory_registry_->is_any_bubble_showing()) {
+    // Can't show a standard promo if another IPH is running or another help
+    // bubble is visible.
     return false;
   }
 
@@ -198,11 +187,12 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
   // trigger the bubble if possible. Put any checks that should be bypassed in
   // demo mode in this block.
   const base::Feature* const feature = spec.feature();
-  const bool feature_is_bypassing_tracker =
-      feature == iph_feature_bypassing_tracker_;
-  const bool is_demo_mode =
+  const bool in_demo_mode =
       base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode);
-  if (!is_demo_mode && !feature_is_bypassing_tracker) {
+  auto lifecycle = std::make_unique<FeaturePromoLifecycle>(
+      storage_service_, GetAppId(), feature, spec.promo_type(),
+      spec.promo_subtype());
+  if (!for_demo && !in_demo_mode) {
     // When not bypassing the normal gating systems, don't try to show promos
     // for disabled features. This prevents us from calling into the Feature
     // Engagement tracker more times than necessary, emitting unnecessary
@@ -210,34 +200,34 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     if (!base::FeatureList::IsEnabled(*feature)) {
       return false;
     }
-    // Don't try to show promos on snooze cooldown or that have hit maximum
-    // snooze count.
-    if (snooze_service_->IsBlocked(*feature)) {
+
+    if (!lifecycle->CanShow()) {
       return false;
     }
   }
 
   // TODO(crbug.com/1258216): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
-  const bool screen_reader_available = CheckScreenReaderPromptAvailable();
+  const bool screen_reader_available =
+      CheckScreenReaderPromptAvailable(for_demo || in_demo_mode);
 
-  if (!feature_is_bypassing_tracker &&
+  if (!for_demo &&
       !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature)) {
     return false;
   }
 
   // If the tracker says we should trigger, but we have a promo
   // currently showing, there is a bug somewhere in here.
-  DCHECK(!current_iph_feature_);
-  current_iph_feature_ = feature;
+  DCHECK(!current_promo_);
+  current_promo_ = std::move(lifecycle);
 
   // Try to show the bubble and bail out if we cannot.
-  promo_bubble_ = ShowPromoBubbleImpl(
+  auto bubble = ShowPromoBubbleImpl(
       spec, anchor_element, std::move(body_params), std::move(title_params),
       screen_reader_available, /* is_critical_promo =*/false);
-  if (!promo_bubble_) {
-    current_iph_feature_ = nullptr;
-    if (!feature_is_bypassing_tracker) {
+  if (!bubble) {
+    current_promo_.reset();
+    if (!for_demo) {
       feature_engagement_tracker_->Dismissed(*feature);
     }
     return false;
@@ -245,8 +235,11 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
 
   bubble_closed_callback_ = std::move(close_callback);
 
-  if (!feature_is_bypassing_tracker) {
-    snooze_service_->OnPromoShown(*feature);
+  if (for_demo) {
+    current_promo_->OnPromoShownForDemo(std::move(bubble));
+  } else {
+    current_promo_->OnPromoShown(std::move(bubble),
+                                 feature_engagement_tracker_);
   }
 
   return true;
@@ -257,20 +250,15 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
     ui::TrackedElement* anchor_element,
     FeaturePromoSpecification::FormatParameters body_params,
     FeaturePromoSpecification::FormatParameters title_params) {
-  if (promos_blocked_for_testing_)
-    return nullptr;
-
   // Don't preempt an existing critical promo.
   if (critical_promo_bubble_)
     return nullptr;
 
   // If a normal bubble is showing, close it. Won't affect a promo continued
   // after its bubble has closed.
-  if (current_iph_feature_)
-    EndPromo(
-        *current_iph_feature_,
-        static_cast<int>(
-            internal::FeaturePromoCloseReasonInternal::kOverrideForPrecedence));
+  if (const auto* current = GetCurrentPromoFeature()) {
+    EndPromo(*current, CloseReason::kOverrideForPrecedence);
+  }
 
   // Snooze and tutorial are not supported for critical promos.
   DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
@@ -279,7 +267,8 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   // Create the bubble.
   auto bubble = ShowPromoBubbleImpl(
       spec, anchor_element, std::move(body_params), std::move(title_params),
-      CheckScreenReaderPromptAvailable(), /* is_critical_promo =*/true);
+      CheckScreenReaderPromptAvailable(/* for_demo =*/false),
+      /* is_critical_promo =*/true);
   critical_promo_bubble_ = bubble.get();
   return bubble;
 }
@@ -288,11 +277,39 @@ FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
     const base::Feature& iph_feature) const {
   if (base::Contains(startup_promos_, &iph_feature))
     return FeaturePromoStatus::kQueuedForStartup;
-  if (current_iph_feature_ != &iph_feature)
+  if (GetCurrentPromoFeature() != &iph_feature) {
     return FeaturePromoStatus::kNotRunning;
-  return (promo_bubble_ && promo_bubble_->is_open())
+  }
+  return current_promo_->is_bubble_visible()
              ? FeaturePromoStatus::kBubbleShowing
              : FeaturePromoStatus::kContinued;
+}
+
+bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
+    const base::Feature& iph_feature,
+    CloseReason* last_close_reason) const {
+  const FeaturePromoSpecification* spec =
+      registry()->GetParamsForFeature(iph_feature);
+  if (!spec) {
+    return false;
+  }
+
+  const auto data = storage_service()->ReadPromoData(iph_feature);
+  if (!data) {
+    return false;
+  }
+
+  if (last_close_reason) {
+    *last_close_reason = data->last_dismissed_by;
+  }
+
+  switch (spec->promo_subtype()) {
+    case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
+    case user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice:
+      return data->is_dismissed;
+    case user_education::FeaturePromoSpecification::PromoSubtype::kPerApp:
+      return base::Contains(data->shown_for_apps, GetAppId());
+  }
 }
 
 bool FeaturePromoControllerCommon::EndPromo(
@@ -302,13 +319,13 @@ bool FeaturePromoControllerCommon::EndPromo(
   // FeaturePromoCloseReasonInternal and call private method.
   auto close_reason_internal =
       close_reason == FeaturePromoCloseReason::kFeatureEngaged
-          ? internal::FeaturePromoCloseReasonInternal::kFeatureEngaged
-          : internal::FeaturePromoCloseReasonInternal::kAbortPromo;
-  return EndPromo(iph_feature, static_cast<int>(close_reason_internal));
+          ? CloseReason::kFeatureEngaged
+          : CloseReason::kAbortPromo;
+  return EndPromo(iph_feature, close_reason_internal);
 }
 
 bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
-                                            int close_reason) {
+                                            CloseReason close_reason) {
   const auto it = startup_promos_.find(&iph_feature);
   if (it != startup_promos_.end()) {
     std::move(it->second).Run(iph_feature, false);
@@ -316,97 +333,41 @@ bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
     return true;
   }
 
-  if (current_iph_feature_ != &iph_feature)
+  if (GetCurrentPromoFeature() != &iph_feature) {
     return false;
+  }
 
-  const bool was_open = promo_bubble_ && promo_bubble_->is_open();
-  if (promo_bubble_) {
-    promo_bubble_->Close();
-    RecordPromoAction(iph_feature, close_reason);
-  }
-  if (!continuing_after_bubble_closed_ &&
-      iph_feature_bypassing_tracker_ == &iph_feature) {
-    iph_feature_bypassing_tracker_ = nullptr;
-  }
+  const bool was_open = current_promo_->is_bubble_visible();
+  current_promo_->OnPromoEnded(close_reason);
+  current_promo_.reset();
   return was_open;
-}
-
-void FeaturePromoControllerCommon::RecordPromoAction(
-    const base::Feature& iph_feature,
-    int action) {
-  std::string action_name = "UserEducation.MessageAction.";
-
-  switch (static_cast<internal::FeaturePromoCloseReasonInternal>(action)) {
-    case internal::FeaturePromoCloseReasonInternal::kDismiss:
-      action_name.append("Dismiss");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kSnooze:
-      action_name.append("Snooze");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kAction:
-      action_name.append("Action");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kCancel:
-      action_name.append("Cancel");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kTimeout:
-      action_name.append("Timeout");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kAbortPromo:
-      action_name.append("Abort");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kFeatureEngaged:
-      action_name.append("FeatureEngaged");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::
-        kOverrideForUIRegionConflict:
-      action_name.append("OverrideForUIRegionConflict");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kOverrideForPrecedence:
-      action_name.append("OverrideForPrecedence");
-      break;
-    case internal::FeaturePromoCloseReasonInternal::kOverrideForDemo:
-      // Not used for metrics.
-      return;
-    case internal::FeaturePromoCloseReasonInternal::kOverrideForTesting:
-      // Not used for metrics.
-      return;
-  }
-  action_name.append(".");
-  action_name.append(iph_feature.name);
-  // Record the user action.
-  base::RecordComputedAction(action_name);
-
-  // Record the histogram.
-  std::string histogram_name =
-      std::string("UserEducation.MessageAction.").append(iph_feature.name);
-  base::UmaHistogramEnumeration(
-      histogram_name,
-      static_cast<internal::FeaturePromoCloseReasonInternal>(action));
 }
 
 bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
     const gfx::Rect& screen_bounds) {
-  if (promo_bubble_ && promo_bubble_->is_open() &&
-      promo_bubble_->GetBoundsInScreen().Intersects(screen_bounds)) {
-    const bool result =
-        EndPromo(*current_iph_feature_,
-                 static_cast<int>(internal::FeaturePromoCloseReasonInternal::
-                                      kOverrideForUIRegionConflict));
-    DCHECK(result);
-    return result;
+  const auto* const bubble = promo_bubble();
+  if (!bubble || !bubble->is_open() ||
+      !bubble->GetBoundsInScreen().Intersects(screen_bounds)) {
+    return false;
   }
-  return false;
+  const bool result = EndPromo(*current_promo_->iph_feature(),
+                               CloseReason::kOverrideForUIRegionConflict);
+  DCHECK(result);
+  return result;
 }
 
 FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
-  DCHECK_EQ(current_iph_feature_, &iph_feature);
-  continuing_after_bubble_closed_ = true;
-  const bool result = EndPromo(
-      iph_feature,
-      static_cast<int>(internal::FeaturePromoCloseReasonInternal::kAction));
-  DCHECK(result);
+  return CloseBubbleAndContinuePromoWithReason(iph_feature,
+                                               CloseReason::kFeatureEngaged);
+}
+
+FeaturePromoHandle
+FeaturePromoControllerCommon::CloseBubbleAndContinuePromoWithReason(
+    const base::Feature& iph_feature,
+    CloseReason close_reason) {
+  DCHECK_EQ(GetCurrentPromoFeature(), &iph_feature);
+  current_promo_->OnPromoEnded(close_reason, /*continue_promo=*/true);
   return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
 }
 
@@ -415,18 +376,8 @@ FeaturePromoControllerCommon::GetAsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-FeaturePromoControllerCommon::TestLock
-FeaturePromoControllerCommon::BlockPromosForTesting() {
-  if (current_iph_feature_)
-    EndPromo(
-        *current_iph_feature_,
-        static_cast<int>(
-            internal::FeaturePromoCloseReasonInternal::kOverrideForTesting));
-  return std::make_unique<base::AutoReset<bool>>(&promos_blocked_for_testing_,
-                                                 true);
-}
-
-bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable() const {
+bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
+    bool for_demo) const {
   if (!ui::AXPlatformNode::GetAccessibilityMode().has_mode(
           ui::AXMode::kScreenReader)) {
     return false;
@@ -436,15 +387,16 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable() const {
   // without querying the FE backend, since the backend will return false for
   // all promos other than the one that's being demoed. If we didn't have this
   // code the screen reader prompt would never play.
-  if (base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode) ||
-      iph_feature_bypassing_tracker_)
+  if (for_demo) {
     return true;
+  }
 
   const base::Feature* const prompt_feature =
       GetScreenReaderPromptPromoFeature();
   if (!prompt_feature ||
-      !feature_engagement_tracker_->ShouldTriggerHelpUI(*prompt_feature))
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(*prompt_feature)) {
     return false;
+  }
 
   // TODO(crbug.com/1258216): Once we have our answer, immediately dismiss
   // so that this doesn't interfere with actually showing the bubble. This
@@ -520,18 +472,22 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   if (spec.feature()) {
     create_params.dismiss_callback = base::BindOnce(
         &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()),
+        /* via_action_button =*/false);
   }
 
+  const bool can_snooze =
+      spec.promo_subtype() == FeaturePromoSpecification::PromoSubtype::kNormal;
   switch (spec.promo_type()) {
     case FeaturePromoSpecification::PromoType::kSnooze:
       CHECK(spec.feature());
+      CHECK(can_snooze);
       create_params.buttons = CreateSnoozeButtons(*spec.feature());
       break;
     case FeaturePromoSpecification::PromoType::kTutorial:
       CHECK(spec.feature());
-      create_params.buttons =
-          CreateTutorialButtons(*spec.feature(), spec.tutorial_id());
+      create_params.buttons = CreateTutorialButtons(*spec.feature(), can_snooze,
+                                                    spec.tutorial_id());
       create_params.dismiss_callback = base::BindOnce(
           &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
           weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()),
@@ -553,7 +509,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   bool had_screen_reader_promo = false;
   if (spec.promo_type() == FeaturePromoSpecification::PromoType::kTutorial) {
     create_params.keyboard_navigation_hint = GetTutorialScreenReaderHint();
-  } else if (CheckScreenReaderPromptAvailable()) {
+  } else if (screen_reader_prompt_available) {
     create_params.keyboard_navigation_hint = GetFocusHelpBubbleScreenReaderHint(
         spec.promo_type(), anchor_element, is_critical_promo);
     had_screen_reader_promo = !create_params.keyboard_navigation_hint.empty();
@@ -582,14 +538,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
 
 void FeaturePromoControllerCommon::FinishContinuedPromo(
     const base::Feature& iph_feature) {
-  DCHECK(continuing_after_bubble_closed_);
-  if (iph_feature_bypassing_tracker_ != &iph_feature)
-    feature_engagement_tracker_->Dismissed(iph_feature);
-  else
-    iph_feature_bypassing_tracker_ = nullptr;
-  if (current_iph_feature_ == &iph_feature) {
-    current_iph_feature_ = nullptr;
-    continuing_after_bubble_closed_ = false;
+  if (GetCurrentPromoFeature() == &iph_feature) {
+    current_promo_->OnContinuedPromoEnded(/*completed_successfully=*/true);
+    current_promo_.reset();
   }
 }
 
@@ -600,58 +551,56 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
   // it.
   if (bubble == critical_promo_bubble_) {
     critical_promo_bubble_ = nullptr;
-  } else if (bubble == promo_bubble_.get()) {
-    if (!continuing_after_bubble_closed_) {
-      if (iph_feature_bypassing_tracker_.get() != current_iph_feature_)
-        feature_engagement_tracker_->Dismissed(*current_iph_feature_);
-      else
-        iph_feature_bypassing_tracker_ = nullptr;
-      current_iph_feature_ = nullptr;
+  } else if (bubble == promo_bubble()) {
+    if (current_promo_->OnPromoBubbleClosed()) {
+      current_promo_.reset();
     }
-    promo_bubble_.reset();
-  } else {
-    NOTREACHED();
   }
 
-  if (bubble_closed_callback_)
+  if (bubble_closed_callback_) {
     std::move(bubble_closed_callback_).Run();
+  }
+}
+
+void FeaturePromoControllerCommon::OnHelpBubbleTimedOut(
+    const base::Feature* feature) {
+  if (feature == GetCurrentPromoFeature()) {
+    current_promo_->OnPromoEnded(CloseReason::kTimeout);
+    current_promo_.reset();
+  }
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleSnoozed(
     const base::Feature* feature) {
-  if (iph_feature_bypassing_tracker_ != feature) {
-    RecordPromoAction(
-        *feature,
-        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kSnooze));
-    snooze_service_->OnUserSnooze(*feature);
+  if (feature == GetCurrentPromoFeature()) {
+    current_promo_->OnPromoEnded(CloseReason::kSnooze);
+    current_promo_.reset();
+  }
+}
+
+void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
+    const base::Feature* feature,
+    bool via_action_button) {
+  if (feature == GetCurrentPromoFeature()) {
+    current_promo_->OnPromoEnded(via_action_button ? CloseReason::kDismiss
+                                                   : CloseReason::kCancel);
+    current_promo_.reset();
   }
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleTimeout(
     const base::Feature* feature) {
-  if (iph_feature_bypassing_tracker_ != feature) {
-    RecordPromoAction(
-        *feature,
-        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kTimeout));
-  }
-}
-
-void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
-    const base::Feature* feature) {
-  if (iph_feature_bypassing_tracker_ != feature) {
-    RecordPromoAction(
-        *feature,
-        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kDismiss));
-    if (snooze_service_) {
-      snooze_service_->OnUserDismiss(*feature);
-    }
+  if (feature == GetCurrentPromoFeature()) {
+    current_promo_->OnPromoEnded(CloseReason::kTimeout);
+    current_promo_.reset();
   }
 }
 
 void FeaturePromoControllerCommon::OnCustomAction(
     const base::Feature* feature,
     FeaturePromoSpecification::CustomActionCallback callback) {
-  callback.Run(GetAnchorContext(), CloseBubbleAndContinuePromo(*feature));
+  callback.Run(GetAnchorContext(), CloseBubbleAndContinuePromoWithReason(
+                                       *feature, CloseReason::kAction));
 }
 
 void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
@@ -664,45 +613,47 @@ void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
 void FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed(
     const base::Feature* iph_feature,
     TutorialIdentifier tutorial_id) {
-  OnHelpBubbleDismissed(iph_feature);
+  OnHelpBubbleDismissed(iph_feature,
+                        /* via_action_button =*/true);
   tutorial_service_->LogIPHLinkClicked(tutorial_id, false);
 }
 
 void FeaturePromoControllerCommon::OnTutorialStarted(
     const base::Feature* iph_feature,
     TutorialIdentifier tutorial_id) {
-  if (!promo_bubble_ || !promo_bubble_->is_open()) {
-    NOTREACHED();
-  } else {
-    DCHECK_EQ(current_iph_feature_, iph_feature);
-    tutorial_promo_handle_ = CloseBubbleAndContinuePromo(*iph_feature);
-    DCHECK(tutorial_promo_handle_.is_valid());
-    tutorial_service_->StartTutorial(
-        tutorial_id, GetAnchorContext(),
-        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(iph_feature)),
-        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(iph_feature)));
-    if (tutorial_service_->IsRunningTutorial()) {
-      tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
-    }
+  DCHECK_EQ(GetCurrentPromoFeature(), iph_feature);
+  tutorial_promo_handle_ =
+      CloseBubbleAndContinuePromoWithReason(*iph_feature, CloseReason::kAction);
+  DCHECK(tutorial_promo_handle_.is_valid());
+  tutorial_service_->StartTutorial(
+      tutorial_id, GetAnchorContext(),
+      base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::Unretained(iph_feature)),
+      base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::Unretained(iph_feature)));
+  if (tutorial_service_->IsRunningTutorial()) {
+    tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
   }
 }
 
 void FeaturePromoControllerCommon::OnTutorialComplete(
     const base::Feature* iph_feature) {
   tutorial_promo_handle_.Release();
-  if (snooze_service_)
-    snooze_service_->OnUserDismiss(*iph_feature);
+  if (GetCurrentPromoFeature() == iph_feature) {
+    current_promo_->OnContinuedPromoEnded(/*completed_successfully=*/true);
+    current_promo_.reset();
+  }
 }
 
 void FeaturePromoControllerCommon::OnTutorialAborted(
     const base::Feature* iph_feature) {
   tutorial_promo_handle_.Release();
-  if (snooze_service_)
-    snooze_service_->OnUserSnooze(*iph_feature);
+  if (GetCurrentPromoFeature() == iph_feature) {
+    current_promo_->OnContinuedPromoEnded(/*completed_successfully=*/false);
+    current_promo_.reset();
+  }
 }
 
 std::vector<HelpBubbleButtonParams>
@@ -710,20 +661,21 @@ FeaturePromoControllerCommon::CreateSnoozeButtons(
     const base::Feature& feature) {
   std::vector<HelpBubbleButtonParams> buttons;
 
-  HelpBubbleButtonParams snooze_button;
-  snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-  snooze_button.is_default = false;
-  snooze_button.callback = base::BindOnce(
+  HelpBubbleButtonParams storage_button;
+  storage_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+  storage_button.is_default = false;
+  storage_button.callback = base::BindOnce(
       &FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
-  buttons.push_back(std::move(snooze_button));
+  buttons.push_back(std::move(storage_button));
 
   HelpBubbleButtonParams dismiss_button;
   dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
   dismiss_button.is_default = true;
-  dismiss_button.callback = base::BindOnce(
-      &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
+  dismiss_button.callback =
+      base::BindOnce(&FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature),
+                     /* via_action_button =*/true);
   buttons.push_back(std::move(dismiss_button));
 
   return buttons;
@@ -752,9 +704,10 @@ FeaturePromoControllerCommon::CreateCustomActionButtons(
   dismiss_button.text =
       l10n_util::GetStringUTF16(custom_action_dismiss_string_id);
   dismiss_button.is_default = !custom_action_is_default;
-  dismiss_button.callback = base::BindOnce(
-      &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
+  dismiss_button.callback =
+      base::BindOnce(&FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature),
+                     /* via_action_button =*/true);
   buttons.push_back(std::move(dismiss_button));
 
   return buttons;
@@ -763,16 +716,26 @@ FeaturePromoControllerCommon::CreateCustomActionButtons(
 std::vector<HelpBubbleButtonParams>
 FeaturePromoControllerCommon::CreateTutorialButtons(
     const base::Feature& feature,
+    bool can_snooze,
     TutorialIdentifier tutorial_id) {
   std::vector<HelpBubbleButtonParams> buttons;
 
-  HelpBubbleButtonParams snooze_button;
-  snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-  snooze_button.is_default = false;
-  snooze_button.callback = base::BindRepeating(
-      &FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed,
-      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature), tutorial_id);
-  buttons.push_back(std::move(snooze_button));
+  HelpBubbleButtonParams dismiss_button;
+  dismiss_button.is_default = false;
+  if (can_snooze) {
+    dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+    dismiss_button.callback = base::BindRepeating(
+        &FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature),
+        tutorial_id);
+  } else {
+    dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+    dismiss_button.callback = base::BindRepeating(
+        &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature),
+        tutorial_id);
+  }
+  buttons.push_back(std::move(dismiss_button));
 
   HelpBubbleButtonParams tutorial_button;
   tutorial_button.text =
@@ -784,6 +747,11 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
   buttons.push_back(std::move(tutorial_button));
 
   return buttons;
+}
+
+const base::Feature* FeaturePromoControllerCommon::GetCurrentPromoFeature()
+    const {
+  return current_promo_ ? current_promo_->iph_feature() : nullptr;
 }
 
 // static

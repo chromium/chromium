@@ -34,8 +34,8 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_snooze_service.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial.h"
@@ -95,9 +95,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 using user_education::FeaturePromoController;
 using user_education::FeaturePromoHandle;
 using user_education::FeaturePromoRegistry;
-using user_education::FeaturePromoSnoozeService;
 using user_education::FeaturePromoSpecification;
 using user_education::FeaturePromoStatus;
+using user_education::FeaturePromoStorageService;
 using user_education::HelpBubble;
 using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleFactoryRegistry;
@@ -188,8 +188,8 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
   }
 
  protected:
-  FeaturePromoSnoozeService* snooze_service() {
-    return controller_->snooze_service();
+  FeaturePromoStorageService* storage_service() {
+    return controller_->storage_service();
   }
 
   FeaturePromoRegistry* registry() { return controller_->registry(); }
@@ -611,13 +611,21 @@ TEST_F(BrowserFeaturePromoControllerTest,
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
-  snooze_service()->OnUserDismiss(kTestIPHFeature);
-  EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
+  // Simulate a snooze by writing data directly.
+  user_education::FeaturePromoStorageService::PromoData data;
+  data.show_count = 1;
+  data.snooze_count = 1;
+  data.last_show_time = base::Time::Now();
+  data.last_snooze_time = base::Time::Now();
+  data.last_snooze_duration = base::Days(7);
+  storage_service()->SavePromoData(kTutorialIPHFeature, data);
+
+  EXPECT_FALSE(controller_->MaybeShowPromo(kTutorialIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTutorialIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
-  snooze_service()->Reset(kTestIPHFeature);
+  storage_service()->Reset(kTutorialIPHFeature);
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
@@ -731,6 +739,24 @@ TEST_F(BrowserFeaturePromoControllerTest,
   // Check handle destruction causes the backend to be notified.
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, ContinuedPromoDismissesOnForceEnd) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  controller_->EndPromo(kTestIPHFeature,
+                        user_education::FeaturePromoCloseReason::kAbortPromo);
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature,
+                                          FeaturePromoStatus::kContinued));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  promo_handle.Release();
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, PromoHandleDismissesPromoOnRelease) {
@@ -853,27 +879,6 @@ TEST_F(BrowserFeaturePromoControllerTest,
                         user_education::FeaturePromoCloseReason::kAbortPromo);
   EXPECT_FALSE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, TestCanBlockPromos) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .Times(0);
-
-  auto lock = controller_->BlockPromosForTesting();
-  EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_FALSE(GetPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, TestCanStopCurrentPromo) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
-
-  auto lock = controller_->BlockPromosForTesting();
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_FALSE(GetPromoBubble());
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoBlocksNormalPromo) {

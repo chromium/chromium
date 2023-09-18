@@ -753,6 +753,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
             .WithAlignment(views::LayoutAlignment::kEnd));
     close_button_->SetProperty(views::kMarginsKey,
                                gfx::Insets::TLBR(0, default_spacing, 0, 0));
+    close_button_->SetProperty(views::kElementIdentifierKey,
+                               kCloseButtonIdForTesting);
   }
 
   // Icon view should have padding between it and the title or body label.

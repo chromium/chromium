@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
@@ -57,6 +58,11 @@ class MockFeaturePromoController : public FeaturePromoController {
               FinishContinuedPromo,
               (const base::Feature& iph_feature),
               (override));
+  MOCK_METHOD(bool,
+              HasPromoBeenDismissed,
+              (const base::Feature& iph_feature,
+               FeaturePromoStorageService::CloseReason* close_reason),
+              (const, override));
 
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
 

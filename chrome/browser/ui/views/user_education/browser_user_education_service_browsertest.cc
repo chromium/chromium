@@ -43,6 +43,8 @@ enum class IPHFailureReason {
   kNotConfigured,
   kWrongSessionRate,
   kWrongSessionImpact,
+  kWrongSessionImpactPerApp,
+  kWrongSessionImpactLegalNotice,
   kLegacyPromoNoScreenReader,
 };
 
@@ -144,6 +146,22 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
          << ". An IPH which runs once per session should also prevent other "
             "similar IPH from running (session rate impact ALL); an IPH which "
             "is not limited should not (session rate impact NONE).";
+      break;
+    case IPHFailureReason::kWrongSessionImpactPerApp:
+      os << " has unexpected per-app session rate impact: "
+         << failure.config->session_rate_impact.type
+         << ". A heavyweight IPH which runs per-app should prevent other IPH "
+            "from running (session rate impact ALL); it may or may not be "
+            "limited by other IPH.";
+      break;
+    case IPHFailureReason::kWrongSessionImpactLegalNotice:
+      os << " has unexpected per-app session rate and/or session rate impact: "
+         << failure.config->session_rate.type << ", "
+         << failure.config->session_rate.value << ", "
+         << failure.config->session_rate_impact.type
+         << ". A heavyweight legal notice should never be prevented from "
+            "running (session rate ANY) but should prevent other IPH from "
+            "running (session rate impact ALL).";
       break;
     case IPHFailureReason::kLegacyPromoNoScreenReader:
       os << " is a legacy promo with inadequate screen reader support. Use a "
@@ -350,15 +368,39 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       case user_education::FeaturePromoSpecification::PromoType::kTutorial:
       case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
       case user_education::FeaturePromoSpecification::PromoType::kSnooze:
-        // Standard promos should be session-limited and should limit other IPH.
-        if (!is_session_limited) {
-          MaybeAddFailure(failures, exceptions, feature,
-                          IPHFailureReason::kWrongSessionRate, feature_config);
-        }
-        if (!limits_other_iph) {
-          MaybeAddFailure(failures, exceptions, feature,
-                          IPHFailureReason::kWrongSessionImpact,
-                          feature_config);
+        switch (spec.promo_subtype()) {
+          case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
+            // Standard promos should be session-limited and should limit other
+            // IPH.
+            if (!is_session_limited) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionRate,
+                              feature_config);
+            }
+            if (!limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpact,
+                              feature_config);
+            }
+            break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::kPerApp:
+            // These can be session limited or not, but they should preclude
+            // other IPH.
+            if (!limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::
+              kLegalNotice:
+            // These should not be session limited, and should limit other IPH.
+            if (is_session_limited || !limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
         }
         break;
       case user_education::FeaturePromoSpecification::PromoType::kLegacy:

@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,12 +34,12 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
     feature_engagement::Tracker* feature_engagement_tracker,
     user_education::FeaturePromoRegistry* registry,
     user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
-    user_education::FeaturePromoSnoozeService* snooze_service,
+    user_education::FeaturePromoStorageService* storage_service,
     user_education::TutorialService* tutorial_service)
     : FeaturePromoControllerCommon(feature_engagement_tracker,
                                    registry,
                                    help_bubble_registry,
-                                   snooze_service,
+                                   storage_service,
                                    tutorial_service),
       browser_view_(browser_view) {}
 
@@ -202,4 +203,12 @@ BrowserFeaturePromoController::GetScreenReaderPromptPromoFeature() const {
 const char* BrowserFeaturePromoController::GetScreenReaderPromptPromoEventName()
     const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
+}
+
+std::string BrowserFeaturePromoController::GetAppId() const {
+  if (const web_app::AppBrowserController* const controller =
+          browser_view_->browser()->app_controller()) {
+    return controller->app_id();
+  }
+  return std::string();
 }

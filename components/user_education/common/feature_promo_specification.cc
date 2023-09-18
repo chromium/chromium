@@ -16,6 +16,23 @@
 
 namespace user_education {
 
+namespace {
+
+// This function provides the list of allowed legal promos.
+// It is not to be modified except by the Frizzle team.
+bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
+  // Add the text names of allowlisted critical promos here:
+  static const char* const kAllowedPromoNames[] = {};
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (!strcmp(promo_feature.name, promo_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo() = default;
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo(
     const AcceleratorInfo& other) = default;
@@ -220,6 +237,19 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
+    PromoSubtype promo_subtype) {
+  CHECK(promo_type_ != PromoType::kUnspecified);
+  CHECK(promo_type_ != PromoType::kSnooze)
+      << "Basic snooze is not compatible with other promo subtypes.";
+  if (promo_subtype == PromoSubtype::kLegalNotice) {
+    CHECK(feature_);
+    CHECK(IsAllowedLegalNotice(*feature_));
+  }
+  promo_subtype_ = promo_subtype;
+  return *this;
+}
+
 FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
     AnchorElementFilter anchor_element_filter) {
   anchor_element_filter_ = std::move(anchor_element_filter);
@@ -268,6 +298,48 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
                : element_tracker->GetFirstMatchingElement(anchor_element_id_,
                                                           context);
   }
+}
+
+std::ostream& operator<<(std::ostream& oss,
+                         FeaturePromoSpecification::PromoType promo_type) {
+  switch (promo_type) {
+    case FeaturePromoSpecification::PromoType::kLegacy:
+      oss << "kLegacy";
+      break;
+    case FeaturePromoSpecification::PromoType::kToast:
+      oss << "kToast";
+      break;
+    case FeaturePromoSpecification::PromoType::kSnooze:
+      oss << "kSnooze";
+      break;
+    case FeaturePromoSpecification::PromoType::kTutorial:
+      oss << "kTutorial";
+      break;
+    case FeaturePromoSpecification::PromoType::kCustomAction:
+      oss << "kCustomAction";
+      break;
+    case FeaturePromoSpecification::PromoType::kUnspecified:
+      oss << "kUnspecified";
+      break;
+  }
+  return oss;
+}
+
+std::ostream& operator<<(
+    std::ostream& oss,
+    FeaturePromoSpecification::PromoSubtype promo_subtype) {
+  switch (promo_subtype) {
+    case FeaturePromoSpecification::PromoSubtype::kNormal:
+      oss << "kNormal";
+      break;
+    case FeaturePromoSpecification::PromoSubtype::kPerApp:
+      oss << "kPerApp";
+      break;
+    case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
+      oss << "kLegalNotice";
+      break;
+  }
+  return oss;
 }
 
 }  // namespace user_education

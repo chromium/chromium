@@ -178,10 +178,6 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   WebUITabStripContainerView* const container = browser_view->webui_tab_strip();
   ASSERT_NE(nullptr, container);
 
-  // IPH may cause a reveal. Stop it.
-  auto lock =
-      browser_view->GetFeaturePromoController()->BlockPromosForTesting();
-
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
   // Try opening the tab strip.
