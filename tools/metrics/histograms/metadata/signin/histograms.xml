@@ -866,7 +866,8 @@ the browser and content area. -->
     This metric captures the latency of one individual call to the Kids
     Management API that might be retried if an error occurs. For the overall
     request latency in retrying fetchers, see
-    Signin.ListFamilyMembersRequest.OverallLatency.
+    Signin.ListFamilyMembersRequest.OverallLatency. Googlers only: See
+    go/chrome-kids-backend-monitoring for backend-related metrics.
   </summary>
 </histogram>
 

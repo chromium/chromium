@@ -287,7 +287,8 @@ chromium-metrics-reviews@google.com.
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Tracks the latency in calls to Kids Management API::ClassifyURL.
+    Tracks the latency in calls to Kids Management API::ClassifyURL. Googlers
+    only: See go/chrome-kids-backend-monitoring for backend-related metrics.
   </summary>
 </histogram>
 
@@ -348,6 +349,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Tracks the latency in calls to Kids Management API::CreatePermissionRequest.
+    Googlers only: See go/chrome-kids-backend-monitoring for backend-related
+    metrics.
   </summary>
 </histogram>
 
