@@ -130,9 +130,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   const Diagnostics& diagnostics() const { return diagnostics_; }
 
-  void set_size(int64_t size) { size_ = size; }
-  int64_t size() const { return size_; }
-
   base::WeakPtr<IndexedDBTransaction> AsWeakPtr() {
     return ptr_factory_.GetWeakPtr();
   }
@@ -226,9 +223,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
   base::WeakPtr<IndexedDBDatabase> database_;
 
   IndexedDBBucketContextHandle bucket_context_;
-
-  // Metrics for quota.
-  int64_t size_ = 0;
 
   base::CheckedNumeric<size_t> in_flight_memory_ = 0;
 

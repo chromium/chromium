@@ -59,6 +59,10 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
 
   base::WeakPtr<IndexedDBTransaction> transaction_;
 
+  // In bytes, the estimated additional space used on disk after this
+  // transaction is committed.
+  int64_t size_ = 0;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TransactionImpl> weak_factory_{this};

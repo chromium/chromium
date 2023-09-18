@@ -147,11 +147,10 @@ void TransactionImpl::Put(
     total_blob_size = CreateExternalObjects(input_value, &external_objects);
   }
 
-  transaction_->set_size(input_value->bits.size() + key.size_estimate() +
-                         total_blob_size);
+  // Increment the total transaction size by the size of this put.
+  size_ += input_value->bits.size() + key.size_estimate() + total_blob_size;
   // Warm up the disk space cache.
-  transaction_->bucket_context()->CheckCanUseDiskSpace(transaction_->size(),
-                                                       {});
+  transaction_->bucket_context()->CheckCanUseDiskSpace(size_, {});
 
   std::unique_ptr<IndexedDBDatabase::PutOperationParams> params(
       std::make_unique<IndexedDBDatabase::PutOperationParams>());
@@ -243,14 +242,14 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   transaction_->SetNumErrorsHandled(num_errors_handled);
 
   // Always allow empty or delete-only transactions.
-  if (transaction_->size() == 0) {
+  if (size_ == 0) {
     transaction_->SetCommitFlag();
     return;
   }
 
   transaction_->bucket_context()->CheckCanUseDiskSpace(
-      transaction_->size(), base::BindOnce(&TransactionImpl::OnQuotaCheckDone,
-                                           weak_factory_.GetWeakPtr()));
+      size_, base::BindOnce(&TransactionImpl::OnQuotaCheckDone,
+                            weak_factory_.GetWeakPtr()));
 }
 
 void TransactionImpl::OnQuotaCheckDone(bool allowed) {
