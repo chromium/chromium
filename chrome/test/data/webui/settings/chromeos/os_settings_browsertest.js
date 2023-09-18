@@ -343,6 +343,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'device_page/power_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ [
+   'DevicePagePrintingSettingsCard',
+   'os_printing_page/printing_settings_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
@@ -777,7 +782,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
    'OsPrintingPagePrintingSettingsCard',
-   'os_printing_page/printing_settings_card_test.js'
+   'os_printing_page/printing_settings_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsPrintingPageCupsPrintServer', 'os_printing_page/cups_print_server_test.js'

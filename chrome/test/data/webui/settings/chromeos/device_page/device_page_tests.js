@@ -4158,5 +4158,12 @@ suite('SettingsDevicePage', function() {
       const storageRow = devicePage.shadowRoot.getElementById('storageRow');
       assertFalse(isVisible(storageRow));
     });
+
+    test('Printing settings card is visible', async () => {
+      await init();
+      const printingSettingsCard =
+          devicePage.shadowRoot.querySelector('printing-settings-card');
+      assertTrue(isVisible(printingSettingsCard));
+    });
   });
 });

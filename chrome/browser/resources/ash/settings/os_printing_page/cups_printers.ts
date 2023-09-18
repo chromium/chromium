@@ -204,6 +204,7 @@ export class SettingsCupsPrintersElement extends
         value: () => new Set<Setting>([
           Setting.kAddPrinter,
           Setting.kSavedPrinters,
+          Setting.kPrintJobs,
         ]),
       },
 

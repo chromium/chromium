@@ -64,7 +64,9 @@ export class PrintingSettingsCardElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route = routes.OS_PRINTING;
+    this.route =
+        this.isRevampWayfindingEnabled_ ? routes.DEVICE : routes.OS_PRINTING;
+
 
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   }

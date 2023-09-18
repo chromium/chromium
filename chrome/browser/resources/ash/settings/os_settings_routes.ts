@@ -525,13 +525,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_PRIVACY, routesMojom.PRIVACY_HUB_MICROPHONE_SUBPAGE_PATH,
       Subpage.kPrivacyHubMicrophone);
 
-  // Printing section.
-  r.OS_PRINTING = createSection(
-      r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
-  r.CUPS_PRINTERS = createSubpage(
-      r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
-      Subpage.kPrintingDetails);
-
   // About section.
   r.ABOUT = createSection(
       /*parent=*/ null, routesMojom.ABOUT_CHROME_OS_SECTION_PATH,
@@ -608,6 +601,11 @@ export function createRoutes(): OsSettingsRoutes {
         Subpage.kExternalStorage);
     r.POWER = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
+
+    // Printing subpage.
+    r.CUPS_PRINTERS = createSubpage(
+        r.DEVICE, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
+        Subpage.kPrintingDetails);
   } else {
     // Date and Time section.
     r.DATETIME = createSection(
@@ -683,6 +681,14 @@ export function createRoutes(): OsSettingsRoutes {
         r.OS_SEARCH, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
     r.GOOGLE_ASSISTANT = createSubpage(
         r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
+
+
+    // Printing section.
+    r.OS_PRINTING = createSection(
+        r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
+    r.CUPS_PRINTERS = createSubpage(
+        r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
+        Subpage.kPrintingDetails);
   }
 
   return r as OsSettingsRoutes;

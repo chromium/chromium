@@ -115,7 +115,7 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
   {
     name: 'kPrinting',
     availableBeforeRevamp: true,
-    availableAfterRevamp: true,
+    availableAfterRevamp: false,
     availableForGuest: true,
   },
   {
