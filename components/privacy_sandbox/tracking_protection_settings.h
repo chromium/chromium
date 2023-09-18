@@ -31,12 +31,6 @@ class TrackingProtectionSettings
   virtual void AddObserver(TrackingProtectionSettingsObserver* observer);
   virtual void RemoveObserver(TrackingProtectionSettingsObserver* observer);
 
-  // Wrapper functions for kTrackingProtectionLevel pref.
-  tracking_protection::TrackingProtectionLevel GetTrackingProtectionLevel()
-      const;
-  bool IsCustomTrackingProtectionLevel() const;
-  bool IsStandardTrackingProtectionLevel() const;
-
   // Returns whether "do not track" is enabled.
   bool IsDoNotTrackEnabled() const;
 
@@ -54,7 +48,6 @@ class TrackingProtectionSettings
 
   // Callbacks for pref observation.
   void OnDoNotTrackEnabledPrefChanged();
-  void OnTrackingProtectionLevelPrefChanged();
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
 

@@ -31,11 +31,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kTrackingProtectionLevel,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnTrackingProtectionLevelPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
@@ -45,6 +40,7 @@ TrackingProtectionSettings::TrackingProtectionSettings(
       base::BindRepeating(
           &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
           base::Unretained(this)));
+  // For enterprise status
   pref_change_registrar_.Add(
       prefs::kCookieControlsMode,
       base::BindRepeating(
@@ -70,32 +66,11 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
          pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
 }
 
-tracking_protection::TrackingProtectionLevel
-TrackingProtectionSettings::GetTrackingProtectionLevel() const {
-  return static_cast<tracking_protection::TrackingProtectionLevel>(
-      pref_service_->GetInteger(prefs::kTrackingProtectionLevel));
-}
-
-bool TrackingProtectionSettings::IsCustomTrackingProtectionLevel() const {
-  return GetTrackingProtectionLevel() ==
-         tracking_protection::TrackingProtectionLevel::kCustom;
-}
-
-bool TrackingProtectionSettings::IsStandardTrackingProtectionLevel() const {
-  return GetTrackingProtectionLevel() ==
-         tracking_protection::TrackingProtectionLevel::kStandard;
-}
-
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
-  return IsCustomTrackingProtectionLevel() &&
-         pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled);
+  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled);
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
-  // If we're not in custom mode, treat DNT as false.
-  if (IsTrackingProtection3pcdEnabled() && !IsCustomTrackingProtectionLevel()) {
-    return false;
-  }
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
 }
 
@@ -113,12 +88,6 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
 
 void TrackingProtectionSettings::OnTrackingProtectionOnboarded() {
   pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  if (pref_service_->GetBoolean(prefs::kEnableDoNotTrack)) {
-    pref_service_->SetInteger(
-        prefs::kTrackingProtectionLevel,
-        static_cast<int>(
-            tracking_protection::TrackingProtectionLevel::kCustom));
-  }
 }
 
 void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
@@ -127,27 +96,15 @@ void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
   }
 }
 
-void TrackingProtectionSettings::OnTrackingProtectionLevelPrefChanged() {
-  for (auto& observer : observers_) {
-    if (pref_service_->GetBoolean(prefs::kEnableDoNotTrack)) {
-      observer.OnDoNotTrackEnabledChanged();
-    }
-    if (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled)) {
-      observer.OnBlockAllThirdPartyCookiesChanged();
-    }
-  }
-}
-
 void TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged() {
   for (auto& observer : observers_) {
-    // Note: this pref can only be changed in the custom level
     observer.OnBlockAllThirdPartyCookiesChanged();
   }
 }
 
 void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
+  // 3PC blocking may change as a result of entering/leaving the experiment.
   for (auto& observer : observers_) {
-    observer.OnDoNotTrackEnabledChanged();
     observer.OnBlockAllThirdPartyCookiesChanged();
   }
 }
