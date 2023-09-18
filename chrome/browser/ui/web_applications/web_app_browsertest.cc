@@ -37,6 +37,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -97,6 +98,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,8 +135,6 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/shell_integration.h"
-#include "net/base/filename_util.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
@@ -2315,9 +2315,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 }
 
 // TODO(crbug.com/1270961): Disabled because it is flaky on Mac.
-#if BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_11_0
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserDenyFileHandlingPermission \
+  DISABLED_UserDenyFileHandlingPermission
+#else
+#define MAYBE_UserDenyFileHandlingPermission UserDenyFileHandlingPermission
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
-                       UserDenyFileHandlingPermission) {
+                       MAYBE_UserDenyFileHandlingPermission) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -2347,14 +2352,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   // Simulate the user permanently denying file handling permission. Regression
   // test for crbug.com/1269387
   base::RunLoop run_loop_remove_file_handlers;
-  PersistFileHandlersUserChoice(browser()->profile(), app_id, /*allowed=*/false,
-                                run_loop_remove_file_handlers.QuitClosure());
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, run_loop_remove_file_handlers.QuitClosure());
   run_loop_remove_file_handlers.Run();
 
+  // temp_dir for creating test files so it works on both Mac and Win.
+  // This folder will be cleaned up.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
-        registration->test_override->chrome_apps_folder().AppendASCII(
-            "test." + extension);
+        temp_dir.GetPath().AppendASCII("test." + extension);
     const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
@@ -2366,15 +2374,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
       delay_loop.Run();
     }
   }
-  ASSERT_TRUE(registration->test_override->DeleteChromeAppsDir());
-
+  ASSERT_TRUE(temp_dir.Delete());
   // Uninstall the web app
   base::test::TestFuture<webapps::UninstallResultCode> future;
   provider().scheduler().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
-#endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
