@@ -6754,12 +6754,6 @@ const char kProductivityLauncherImageSearchDescription[] =
     "To evaluate the viability of image search as part of Productivity "
     "Launcher Search.";
 
-const char kAppListDragAndDropRefactorName[] =
-    "Drag and drop refactor in launcher";
-const char kAppListDragAndDropRefactorDescription[] =
-    "Enables app list drag and drop refactor to use views drag and drop APIs. "
-    "No user visible changes are expected.";
-
 const char kProjectorAppDebugName[] = "Enable Projector app debug";
 const char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";
