@@ -72,6 +72,10 @@ class PrivacySandboxAttestationsFeatureEnabledTest
     base::ScopedTempDir component_install_dir;
     CHECK(component_install_dir.CreateUniqueTempDirUnderPath(
         scoped_temp_dir_.GetPath()));
+    // Note the actual attestations file name required by the Privacy Sandbox
+    // Attestations component is specified by
+    // `kPrivacySandboxAttestationsFileName`. Here because this is a unit test
+    // so it can be any file name.
     base::FilePath attestations_file_path =
         component_install_dir.GetPath().Append(
             FILE_PATH_LITERAL("attestations"));
@@ -91,6 +95,10 @@ class PrivacySandboxAttestationsFeatureEnabledTest
     base::ScopedTempDir component_install_dir;
     CHECK(component_install_dir.CreateUniqueTempDirUnderPath(
         scoped_temp_dir_.GetPath()));
+    // Note the actual attestations file name required by the Privacy Sandbox
+    // Attestations component is specified by
+    // `kPrivacySandboxAttestationsFileName`. Here because this is a unit test
+    // so it can be any file name.
     base::FilePath attestations_file_path =
         component_install_dir.GetPath().Append(
             FILE_PATH_LITERAL("attestations"));
@@ -236,6 +244,132 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_EQ(attestation_status, Status::kAttestationsFileCorrupt);
 }
 
+// When parsing fails or crashes, a sentinel file is left in the installation
+// direction. This file prevents further parsing attempts.
+TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
+       SentinelPreventsSubsequentParsingAfterCrashOrFailure) {
+  base::HistogramTester histogram_tester;
+  // Write an invalid proto file, and try to parse it. Note here we are not
+  // using `WriteAttestationsFileAndWaitForLoading()` because we need the second
+  // attempt to parse to be in the same installation directory.
+  base::ScopedTempDir install_dir;
+  ASSERT_TRUE(install_dir.CreateUniqueTempDir());
+
+  // Note the actual attestations file name required by the Privacy Sandbox
+  // Attestations component is specified by
+  // `kPrivacySandboxAttestationsFileName`. Here because this is a unit test so
+  // it can be any file name.
+  base::FilePath invalid_attestations_file_path =
+      install_dir.GetPath().Append(FILE_PATH_LITERAL("attestations"));
+  ASSERT_TRUE(base::WriteFile(invalid_attestations_file_path, "Invalid proto"));
+  ASSERT_FALSE(
+      base::PathExists(install_dir.GetPath().Append(kSentinelFileName)));
+
+  base::RunLoop parsing_invalid_attestations;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(
+          parsing_invalid_attestations.QuitClosure());
+
+  // Load an attestations file that is invalid.
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("0.0.1"), invalid_attestations_file_path);
+  parsing_invalid_attestations.Run();
+
+  // The parsing should fail.
+  EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
+                   ->GetVersionForTesting()
+                   .IsValid());
+  histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 0);
+
+  // Attempts to check attestation status should return that the file is
+  // corrupt.
+  std::string site = "https://example.com";
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileCorrupt);
+  ASSERT_TRUE(
+      base::PathExists(install_dir.GetPath().Append(kSentinelFileName)));
+
+  // Failed parsing creates a sentinel file, which prevents subsequent attempts
+  // to parse the attestations file. Since it is difficult to check the parsing
+  // will not take place with a sentinel file present, we parse again with a
+  // valid attestations file. By checking the attestations map is still absent
+  // after attempts to load, we can verify that the sentinel file is working as
+  // intended.
+  // Note: We do not overwrite the previous attestations file because it will
+  // make this test flaky on windows bot.
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_TRUE(proto.site_attestations_size() == 0);
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
+      site_attestation;
+  site_attestation.add_attested_apis(TOPICS);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  // Create the new valid attestations file in the same directory of the
+  // previous attestations.
+  base::FilePath valid_attestations_file_path =
+      install_dir.GetPath().Append(FILE_PATH_LITERAL("valid_attestations"));
+
+  // Override the attestations file with the valid serialized proto.
+  ASSERT_TRUE(base::WriteFile(valid_attestations_file_path, serialized_proto));
+
+  // Attempt to load with a valid attestations file.
+  base::RunLoop parsing_valid_attestations_with_sentinel;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(
+          parsing_valid_attestations_with_sentinel.QuitClosure());
+
+  // Try to load again, use the valid attestations file instead.
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("0.0.1"), valid_attestations_file_path);
+  parsing_valid_attestations_with_sentinel.Run();
+
+  // Sentinel file should prevent parsing. The query result should stay the same
+  // as before.
+  attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileCorrupt);
+  histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 0);
+
+  // Create a new version valid attestations file which is in a different
+  // directory.
+  base::ScopedTempDir new_version_dir;
+  ASSERT_TRUE(new_version_dir.CreateUniqueTempDir());
+  base::FilePath new_version_file_path =
+      new_version_dir.GetPath().Append(FILE_PATH_LITERAL("attestations"));
+  ASSERT_TRUE(base::WriteFile(new_version_file_path, serialized_proto));
+
+  base::RunLoop parsing_new_version;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(
+          parsing_new_version.QuitClosure());
+
+  // Try to load the new version. The new version does not have a sentinel file.
+  ASSERT_FALSE(
+      base::PathExists(new_version_dir.GetPath().Append(kSentinelFileName)));
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("0.0.2"), new_version_file_path);
+  parsing_new_version.Run();
+
+  histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+
+  // The new version should be loaded successfully.
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
+            base::Version("0.0.2"));
+  attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAllowed);
+}
+
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   base::HistogramTester histogram_tester;
   PrivacySandboxAttestationsProto proto;
@@ -270,6 +404,38 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics),
+            Status::kAllowed);
+  // For API not in the attestations list, the result should be
+  // `kAttestationFailed`.
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
+            Status::kAttestationFailed);
+
+  // Add attestation for Protected Audience.
+  site_attestation.add_attested_apis(PROTECTED_AUDIENCE);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  // Parse the new version.
+  proto.SerializeToString(&serialized_proto);
+  WriteAttestationsFileAndWaitForLoading(base::Version("0.0.2"),
+                                         serialized_proto);
+  histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 2);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 2);
+
+  // Now the site should be attested for both APIs.
+  ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
+            base::Version("0.0.2"));
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            Status::kAllowed);
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
             Status::kAllowed);
 }
 

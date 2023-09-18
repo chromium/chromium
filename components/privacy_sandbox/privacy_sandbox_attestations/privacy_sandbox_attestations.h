@@ -12,6 +12,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -20,10 +21,6 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace privacy_sandbox {
 
 constexpr char kAttestationsFileParsingUMA[] =
@@ -31,6 +28,9 @@ constexpr char kAttestationsFileParsingUMA[] =
 
 constexpr char kAttestationsMapMemoryUsageUMA[] =
     "PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap";
+
+const base::FilePath::CharType kSentinelFileName[] =
+    FILE_PATH_LITERAL("attestations_sentinel");
 
 using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
