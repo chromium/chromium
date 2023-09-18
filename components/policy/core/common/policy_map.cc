@@ -495,8 +495,7 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
     *policy = std::move(other_policy_copy);
 }
 
-void PolicyMap::MergeFrom(const PolicyMap& other,
-                          bool merge_precedence_metapolicies) {
+void PolicyMap::MergeFrom(const PolicyMap& other) {
   DCHECK_NE(this, &other);
   // Set affiliation IDs before merging policy values because user affiliation
   // affects the policy precedence check.
@@ -506,18 +505,15 @@ void PolicyMap::MergeFrom(const PolicyMap& other,
       CombineIds(GetDeviceAffiliationIds(), other.GetDeviceAffiliationIds()));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (merge_precedence_metapolicies) {
-    // Precedence metapolicies are merged before all other policies, including
-    // merging metapolicies, because their value affects policy overriding.
-    for (auto* policy : metapolicy::kPrecedence) {
-      // Default precedence is used during merging of precedence metapolicies to
-      // prevent circular dependencies.
-      MergePolicy(policy, other, true);
-    }
-
-    UpdateStoredComputedMetapolicies();
-    return;
+  // Precedence metapolicies are merged before all other policies, including
+  // merging metapolicies, because their value affects policy overriding.
+  for (auto* policy : metapolicy::kPrecedence) {
+    // Default precedence is used during merging of precedence metapolicies to
+    // prevent circular dependencies.
+    MergePolicy(policy, other, true);
   }
+
+  UpdateStoredComputedMetapolicies();
 #endif
 
   for (const auto& policy_and_entry : other) {
