@@ -73,8 +73,7 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
 void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
                                               base::OnceClosure load_cb) {
   extension_id_ = extension_id;
-  extensions::ExtensionHostTestHelper host_helper(browser()->profile(),
-                                                  extension_id);
+  extensions::ExtensionHostTestHelper host_helper(GetProfile(), extension_id);
   std::move(load_cb).Run();
   extensions::ExtensionHost* extension_host =
       host_helper.WaitForHostCompletedFirstLoad();

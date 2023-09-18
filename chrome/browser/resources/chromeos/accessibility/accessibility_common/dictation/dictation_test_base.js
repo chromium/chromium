@@ -140,7 +140,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     super.testGenPreamble();
 
     GEN(`
-  browser()->profile()->GetPrefs()->SetBoolean(
+  GetProfile()->GetPrefs()->SetBoolean(
         ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
 
   base::OnceClosure load_cb =

@@ -52,6 +52,8 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   test::AshBrowserTestStarter* ash_starter() { return ash_starter_.get(); }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  Profile* GetProfile() const;
+
  private:
   // User added libraries.
   std::vector<base::FilePath> user_libraries_;

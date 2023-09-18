@@ -8,6 +8,8 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
@@ -138,4 +140,18 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
                        .Append(function_name)
                        .Append(std::move(test_func_args));
   return content::WebUI::GetJavascriptCall(std::string("runTest"), arguments);
+}
+
+Profile* JavaScriptBrowserTest::GetProfile() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(ash_starter_);
+  if (ash_starter_->HasLacrosArgument()) {
+    // In LacrosOnly mode, ash web browser is disabled, don't access profile via
+    // browser().
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    CHECK(profile) << "Failed to get a valid profile in Ash.";
+    return profile;
+  }
+#endif
+  return browser()->profile();
 }

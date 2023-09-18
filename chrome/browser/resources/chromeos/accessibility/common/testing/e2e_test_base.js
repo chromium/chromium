@@ -66,7 +66,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     }
     // For ChromeVoxBackgroundTest.NewWindowWebSpeech:
     // chrome.runtime.openOptionsPage opens a SWA when Lacros is enabled.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
       `);
   }
@@ -90,7 +90,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
     extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(browser()->profile())
+        extensions::ProcessManager::Get(GetProfile())
             ->GetBackgroundHostForExtension(
                 extension_misc::${extensionIdName});
 

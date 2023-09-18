@@ -23,7 +23,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
   /** @override */
   testGenPreamble() {
     GEN(`
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(GetProfile())
         ->InstallSystemAppsForTesting();
   `);
     super.testGenPreamble();
