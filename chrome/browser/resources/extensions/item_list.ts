@@ -8,7 +8,6 @@ import './shared_style.css.js';
 import './review_panel.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -111,13 +110,24 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   /**
    * Focus the remove button for the item matching `id`. If the remove button is
    * not visible, focus the details button instead.
+   * return: If an item's button has been focused, see comment below.
    */
-  focusItemButton(id: string) {
+  focusItemButton(id: string): boolean {
     const item =
         this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
-    assert(item);
+    // This function is called from a setTimeout() inside manager.ts. Rarely,
+    // the list of extensions rendered in this element may not match the list of
+    // extensions stored in manager.ts for a brief moment (not visible to the
+    // user). As a result, `item` here may be null even though `id` points to
+    // an extension inside `manager.ts`. If this happens, do not focus anything.
+    // Observed in crbug.com/1482580.
+    if (!item) {
+      return false;
+    }
+
     const buttonToFocus = item.getRemoveButton() || item.getDetailsButton();
     buttonToFocus!.focus();
+    return true;
   }
 
   /**

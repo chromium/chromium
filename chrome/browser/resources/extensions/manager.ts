@@ -546,7 +546,12 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       if (this.get(listId).length) {
         const focusIndex = Math.min(this.get(listId).length - 1, index);
         const itemToFocusId = this.get([listId, focusIndex])!.id;
-        this.$['items-list'].focusItemButton(itemToFocusId);
+
+        // In the rare case where the item cannot be focused despite existing,
+        // focus the search bar.
+        if (!this.$['items-list'].focusItemButton(itemToFocusId)) {
+          this.$.toolbar.focusSearchInput();
+        }
       } else {
         this.$.toolbar.focusSearchInput();
       }
