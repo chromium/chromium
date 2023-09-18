@@ -19,6 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -118,10 +119,35 @@ class FuchsiaVideoDecoder::OutputMailbox {
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
-    mailbox_ =
-        raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-            gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder");
+
+    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+      auto buffer_format = gmb->GetFormat();
+
+      // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
+      auto shared_image_format = viz::MultiPlaneFormat::kNV12;
+      switch (buffer_format) {
+        case gfx::BufferFormat::YUV_420_BIPLANAR:
+          break;
+        case gfx::BufferFormat::YVU_420:
+          shared_image_format = viz::MultiPlaneFormat::kYV12;
+          break;
+        default:
+          NOTREACHED_NORETURN();
+      }
+      shared_image_format.SetPrefersExternalSampler();
+
+      mailbox_ =
+          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
+              shared_image_format, gmb->GetSize(), color_space,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+              "FuchsiaVideoDecoder", gmb->CloneHandle());
+    } else {
+      mailbox_ =
+          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
+              gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
+              kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder");
+    }
+
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
                              ->GenVerifiedSyncToken();
   }
@@ -163,6 +189,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
+
+    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+      frame->set_shared_image_format_type(
+          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
+    }
 
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;

@@ -136,8 +136,9 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
-    ADD_FAILURE();
-    return gpu::Mailbox();
+    auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
+    mailboxes_.insert(result);
+    return result;
   }
 
   gpu::Mailbox CreateSharedImage(
@@ -149,18 +150,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label) override {
-    gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
-    CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
-
-    zx_koid_t id = base::GetRelatedKoid(
-                       handle.native_pixmap_handle.buffer_collection_handle)
-                       .value();
-    auto collection_it = sysmem_buffer_collections_.find(id);
-    CHECK(collection_it != sysmem_buffer_collections_.end());
-    CHECK_LT(handle.native_pixmap_handle.buffer_index,
-             collection_it->second->GetNumBuffers());
-
-    auto result = gpu::Mailbox::GenerateForSharedImage();
+    auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
     mailboxes_.insert(result);
     return result;
   }
@@ -239,6 +229,22 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
  private:
+  gpu::Mailbox GenerateMailboxForGMBHandle(
+      gfx::GpuMemoryBufferHandle buffer_handle) {
+    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
+
+    zx_koid_t id =
+        base::GetRelatedKoid(
+            buffer_handle.native_pixmap_handle.buffer_collection_handle)
+            .value();
+    auto collection_it = sysmem_buffer_collections_.find(id);
+    CHECK(collection_it != sysmem_buffer_collections_.end());
+    CHECK_LT(buffer_handle.native_pixmap_handle.buffer_index,
+             collection_it->second->GetNumBuffers());
+
+    return gpu::Mailbox::GenerateForSharedImage();
+  }
+
   base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
       sysmem_buffer_collections_;
 
