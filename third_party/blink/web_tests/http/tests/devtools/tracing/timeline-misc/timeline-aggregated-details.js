@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Test timeline aggregated details.\n`);
   await TestRunner.loadLegacyModule('timeline');
@@ -602,7 +604,7 @@ import {NetworkTestRunner} from 'network_test_runner';
       name = treeView.displayInfoForGroupNode(node).name;
     } else {
       name = node.event.name === TimelineModel.TimelineModel.RecordType.JSFrame ?
-          UI.beautifyFunctionName(node.event.args['data']['functionName']) :
+          UIModule.UIUtils.beautifyFunctionName(node.event.args['data']['functionName']) :
           Timeline.TimelineUIUtils.eventTitle(node.event);
     }
     TestRunner.addResult('  '.repeat(padding) + `${name}: ${node.selfTime.toFixed(3)}  ${node.totalTime.toFixed(3)}`);

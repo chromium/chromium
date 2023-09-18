@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -51,7 +52,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.completeTest();
   };
 
-  UI.inspectorView.tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
+  UI.inspectorView.tabbedPane.addEventListener(UIModule.TabbedPane.Events.TabSelected, panelChanged);
 
   function panelChanged() {
     TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened');

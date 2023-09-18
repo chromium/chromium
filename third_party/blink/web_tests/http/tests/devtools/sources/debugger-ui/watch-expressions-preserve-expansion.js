@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(
@@ -98,7 +99,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   function expandProperties(watchExpressionTreeElement, path, callback) {
     const treeOutline = watchExpressionTreeElement.treeOutline;
     treeOutline.addEventListener(
-        UI.TreeOutline.Events.ElementAttached, elementAttached);
+        UIModule.TreeOutline.Events.ElementAttached, elementAttached);
     watchExpressionTreeElement.expand();
 
     function elementAttached(event) {
@@ -119,7 +120,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       }
 
       treeOutline.removeEventListener(
-          UI.TreeOutline.Events.ElementAttached, elementAttached);
+          UIModule.TreeOutline.Events.ElementAttached, elementAttached);
       callback();
     }
   }

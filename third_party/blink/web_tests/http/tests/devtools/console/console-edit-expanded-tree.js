@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult('Tests that expanded tree element is editable in console.\n');
 
@@ -32,7 +34,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       var node = message.contentElement();
 
       for (var node = message.contentElement(); node; node = node.traverseNextNode(message.contentElement())) {
-        const treeElement = UI.TreeElement.getTreeElementBylistItemNode(node);
+        const treeElement = UIModule.TreeOutline.TreeElement.getTreeElementBylistItemNode(node);
         if (treeElement) {
           onTreeElement(treeElement.firstChild());
           return;

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {DeviceModeTestRunner} from 'device_mode_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Test that device mode's responsive mode behaves correctly when adjusting inputs.\n`);
 
@@ -14,7 +16,7 @@ import {DeviceModeTestRunner} from 'device_mode_test_runner';
   var view = new Emulation.DeviceModeView();
   var toolbar = view.toolbar;
   var model = view.model;
-  var viewportSize = new UI.Size(320, 480);
+  var viewportSize = new UIModule.Geometry.Size(320, 480);
   model.setAvailableSize(viewportSize, viewportSize);
 
   TestRunner.addResult(

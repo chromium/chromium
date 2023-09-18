@@ -1,5 +1,7 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function () {
   var items = [
     {
@@ -74,8 +76,8 @@ import {TestRunner} from 'test_runner';
     TestRunner.addResult(key);
     element.dispatchEvent(TestRunner.createKeyEvent(key));
   }
-  var model = new UI.ListModel();
-  var dropDown = new UI.SoftDropDown(model, new Delegate());
+  var model = new UIModule.ListModel.ListModel();
+  var dropDown = new UIModule.SoftDropDown.SoftDropDown(model, new Delegate());
   for (var i = items.length - 1; i >= 0; i--)
     model.insertWithComparator(items[i], (a, b) => a.index - b.index);
 

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests that styles sidebar can be navigated with arrow keys.\n');
@@ -75,7 +76,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 
   function dumpState() {
-    TestRunner.addResult('Editing: ' + UI.isEditing())
+    TestRunner.addResult('Editing: ' + UIModule.UIUtils.isEditing())
     TestRunner.addResult(Platform.DOMUtilities.deepActiveElement(document).textContent);
     TestRunner.addResult('');
   }

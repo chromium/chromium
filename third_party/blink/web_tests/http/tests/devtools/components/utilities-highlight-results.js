@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests how utilities functions highlight text and then revert/re-apply highlighting changes.\n`);
 
@@ -37,11 +39,11 @@ import {TestRunner} from 'test_runner';
   function performTestForElement(element, ranges) {
     var changes = [];
     TestRunner.addResult('--------- Running test: ----------');
-    UI.highlightRangesWithStyleClass(element, ranges, 'highlighted', changes);
+    UIModule.UIUtils.highlightRangesWithStyleClass(element, ranges, 'highlighted', changes);
     TestRunner.addResult('After highlight: ' + dumpTextNodesAsString(element));
-    UI.revertDomChanges(changes);
+    UIModule.UIUtils.revertDomChanges(changes);
     TestRunner.addResult('After revert: ' + dumpTextNodesAsString(element));
-    UI.applyDomChanges(changes);
+    UIModule.UIUtils.applyDomChanges(changes);
     TestRunner.addResult('After apply: ' + dumpTextNodesAsString(element));
   }
 

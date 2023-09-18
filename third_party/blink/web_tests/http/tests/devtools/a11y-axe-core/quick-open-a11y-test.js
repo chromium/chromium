@@ -5,13 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult('Test accessibility in Quick Open dialog\n');
   await TestRunner.loadLegacyModule('quick_open');
 
   QuickOpen.QuickOpen.show('');
 
-  const dialogWidget = UI.Dialog.instance.widget();
+  const dialogWidget = UIModule.Dialog.Dialog.instance.widget();
   const filteredListWidget = dialogWidget.defaultFocusedChild;
   TestRunner.assertTrue(filteredListWidget instanceof QuickOpen.FilteredListWidget);
 

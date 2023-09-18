@@ -1,7 +1,9 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
-  TestRunner.addResult("Tests that the hint displays properly on a UI.TextPrompt with autocomplete.");
+  TestRunner.addResult("Tests that the hint displays properly on a UIModule.TextPrompt.TextPrompt with autocomplete.");
 
   var suggestions = [{text:"testTextPrompt"}];
   var waitingForAutocomplete = null;
@@ -9,7 +11,7 @@ import {TestRunner} from 'test_runner';
       console.error("completionsDone called too early!");
       TestRunner.completeTest();
   }
-  var prompt = new UI.TextPrompt();
+  var prompt = new UIModule.TextPrompt.TextPrompt();
   prompt.initialize(completions);
   var element = createElement("div");
   UI.inspectorView.element.appendChild(element);

@@ -7,6 +7,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
@@ -27,7 +28,7 @@ import * as Network from 'devtools/panels/network/network.js';
     var previewView = new Network.RequestPreviewView.RequestPreviewView(request, null);
     previewView.wasShown();
     var previewer = await previewView.contentViewPromise;
-    TestRunner.addResult('Its previewer is searchable: ' + (previewer && previewer instanceof UI.SearchableView));
+    TestRunner.addResult('Its previewer is searchable: ' + (previewer && previewer instanceof UIModule.SearchableView.SearchableView));
     TestRunner.addResult(
         'Its previewer is the JSON previewer: ' +
         (previewer && previewer.searchProvider && previewer.searchProvider instanceof SourceFrame.JSONView));

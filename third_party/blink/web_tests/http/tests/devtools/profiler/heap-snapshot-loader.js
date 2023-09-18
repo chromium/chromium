@@ -7,6 +7,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
@@ -44,8 +45,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.addSniffer(
         Profiler.HeapProfileHeader.prototype, 'didWriteToTempFile',
         tempFileReady);
-    if (!UI.context.flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
-      await new Promise(resolve => UI.context.addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
+    if (!UIModule.Context.Context.instance().flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
+      await new Promise(resolve => UIModule.Context.Context.instance().addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
     }
     profileType.takeHeapSnapshot();
   }

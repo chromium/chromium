@@ -8,6 +8,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   'use strict';
@@ -30,7 +31,7 @@ import * as Network from 'devtools/panels/network/network.js';
       return '** NONE **';
     if (previewer instanceof SourceFrame.ResourceSourceFrame.SearchableContainer)
       return 'SearchableContainer > ' + getViewName(previewer.children()[0]);
-    if (previewer instanceof UI.SearchableView)
+    if (previewer instanceof UIModule.SearchableView.SearchableView)
       return 'SearchableView > ' + getViewName(previewer.searchProvider);
     return previewer.contentElement.className;
   }

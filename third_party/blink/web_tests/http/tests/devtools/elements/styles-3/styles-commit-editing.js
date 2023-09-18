@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests that editing is canceled properly after incremental editing.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -48,7 +50,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     function testNewPropertyEditorIsCreated(next) {
       var blankTreeElement = treeOutline.rootElement().childAt(1);
-      if (!UI.isBeingEdited(blankTreeElement.nameElement)) {
+      if (!UIModule.UIUtils.isBeingEdited(blankTreeElement.nameElement)) {
         TestRunner.addResult('No new property editor active!');
         TestRunner.completeTest();
         return;
@@ -60,7 +62,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     },
 
     function testCycleThroughPropertyEditing(next) {
-      if (!UI.isBeingEdited(treeOutline.firstChild().nameElement)) {
+      if (!UIModule.UIUtils.isBeingEdited(treeOutline.firstChild().nameElement)) {
         TestRunner.addResult('Original property name editor not active!');
         TestRunner.completeTest();
         return;

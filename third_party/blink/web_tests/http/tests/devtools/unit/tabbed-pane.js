@@ -1,9 +1,11 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult("This tests if the TabbedPane is keyboard navigable.");
 
-  class FocusableWidget extends UI.Widget {
+  class FocusableWidget extends UIModule.Widget.Widget {
     constructor(name) {
       super();
       this.element.tabIndex = -1;
@@ -12,7 +14,7 @@ import {TestRunner} from 'test_runner';
     }
   }
 
-  var tabbedPane = new UI.TabbedPane();
+  var tabbedPane = new UIModule.TabbedPane.TabbedPane();
   tabbedPane.show(UI.inspectorView.element);
   TestRunner.addSnifferPromise(tabbedPane, 'innerUpdateTabElements').then(tabsAdded);
   for (var i = 0; i < 10; i++)

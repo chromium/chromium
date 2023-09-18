@@ -7,12 +7,13 @@ import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as Main from 'devtools/entrypoints/main/main.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests how execution context and target are selected.\n`);
   await TestRunner.showPanel('sources');
 
-  var context = new UI.Context();
+  var context = new UIModule.Context.Context();
   context.addFlavorChangeListener(SDK.RuntimeModel.ExecutionContext, executionContextChanged, this);
   context.addFlavorChangeListener(SDK.Target.Target, targetChanged, this);
   new Main.ExecutionContextSelector.ExecutionContextSelector(SDK.TargetManager.TargetManager.instance(), context);

@@ -1,7 +1,9 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
-  var menu = new UI.SoftContextMenu([{
+  var menu = new UIModule.SoftContextMenu.SoftContextMenu([{
     type: 'item',
     label: 'First',
     enabled: true

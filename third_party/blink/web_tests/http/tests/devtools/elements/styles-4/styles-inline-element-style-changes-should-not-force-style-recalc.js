@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that inspector doesn't force styles recalc on operations with inline element styles that result in no changes.\n`);
@@ -23,6 +25,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
       }
   `);
 
-  UI.context.setFlavor(Timeline.TimelinePanel, UI.panels.timeline);
+  UIModule.Context.Context.instance().setFlavor(Timeline.TimelinePanel, UI.panels.timeline);
   PerformanceTestRunner.performActionsAndPrint('performActions()', 'RecalculateStyles');
 })();

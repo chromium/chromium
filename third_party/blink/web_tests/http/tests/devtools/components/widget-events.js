@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`This tests that events are properly propagated through Widget hierarchy.\n`);
 
 
-  var TestWidget = class extends UI.Widget {
+  var TestWidget = class extends UIModule.Widget.Widget {
     constructor(widgetName) {
       super();
       this.widgetName = widgetName;

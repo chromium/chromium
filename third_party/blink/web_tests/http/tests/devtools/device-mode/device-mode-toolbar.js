@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {DeviceModeTestRunner} from 'device_mode_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Test toolbar state when switching modes.\n`);
 
@@ -12,7 +14,7 @@ import {DeviceModeTestRunner} from 'device_mode_test_runner';
   var view = new Emulation.DeviceModeView();
   var toolbar = view.toolbar;
   var model = view.model;
-  var viewportSize = new UI.Size(800, 600);
+  var viewportSize = new UIModule.Geometry.Size(800, 600);
   model.setAvailableSize(viewportSize, viewportSize);
 
   // Check that default model has type None.

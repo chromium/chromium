@@ -7,6 +7,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests console execution context selector for paintworklet.\n`);
@@ -32,7 +33,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var selector = consoleView.consoleContextSelector;
   TestRunner.addResult('Console context selector:');
   for (var executionContext of selector._items) {
-    var selected = UI.context.flavor(SDK.RuntimeModel.ExecutionContext) === executionContext;
+    var selected = UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext) === executionContext;
     var text = '____'.repeat(selector.depthFor(executionContext)) + selector.titleFor(executionContext) + " / " + selector._subtitleFor(executionContext);
     var disabled = !selector.isItemSelectable(executionContext);
     TestRunner.addResult(`${selected ? '*' : ' '} ${text} ${disabled ? '[disabled]' : ''}`);

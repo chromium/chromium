@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests that "Show Function Definition" jumps to the correct location.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -22,7 +24,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.runTestSuite([
     function testRevealFunctionDefinition(next) {
       TestRunner.addSniffer(panel, 'showUISourceCode', showUISourceCodeHook);
-      UI.context.flavor(SDK.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
+      UIModule.Context.Context.instance().flavor(SDK.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
 
       function didGetFunction(result) {
         var error = !result.object || !!result.exceptionDetails;

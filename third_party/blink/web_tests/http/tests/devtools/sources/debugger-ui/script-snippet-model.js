@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -176,7 +178,7 @@ doesNothing;
 
       async function contextCreated() {
         // Take the only execution context from the worker's RuntimeModel.
-        UI.context.setFlavor(SDK.ExecutionContext, this.executionContexts()[0]);
+        UIModule.Context.Context.instance().setFlavor(SDK.ExecutionContext, this.executionContexts()[0]);
 
         const uiSourceCode1 = await snippetsProject.createFile('', null, '');
         await uiSourceCode1.rename('Snippet1');

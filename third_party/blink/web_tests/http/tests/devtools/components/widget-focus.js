@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests whether focus is properly remembered on widgets.\n`);
 
@@ -22,15 +24,15 @@ import {TestRunner} from 'test_runner';
 
   UI.inspectorView.element.appendChild(outerInput);
 
-  var mainWidget = new UI.Widget();
+  var mainWidget = new UIModule.Widget.Widget();
   mainWidget.show(UI.inspectorView.element);
 
-  var widget1 = new UI.Widget();
+  var widget1 = new UIModule.Widget.Widget();
   widget1.show(mainWidget.element);
   widget1.element.appendChild(input1);
   widget1.setDefaultFocusedElement(input1);
 
-  var widget2 = new UI.Widget();
+  var widget2 = new UIModule.Widget.Widget();
   widget2.show(mainWidget.element);
   widget2.element.appendChild(input2);
   widget2.setDefaultFocusedElement(input2);
@@ -64,15 +66,15 @@ import {TestRunner} from 'test_runner';
   mainWidget.focus();
   dumpFocus();
 
-  var splitWidget = new UI.SplitWidget();
+  var splitWidget = new UIModule.SplitWidget.SplitWidget();
   splitWidget.show(mainWidget.element);
 
-  var widget3 = new UI.Widget();
+  var widget3 = new UIModule.Widget.Widget();
   widget3.element.appendChild(input3);
   widget3.setDefaultFocusedElement(input3);
   splitWidget.setSidebarWidget(widget3);
 
-  var widget4 = new UI.Widget();
+  var widget4 = new UIModule.Widget.Widget();
   widget4.element.appendChild(input4);
   widget4.setDefaultFocusedElement(input4);
   splitWidget.setMainWidget(widget4);

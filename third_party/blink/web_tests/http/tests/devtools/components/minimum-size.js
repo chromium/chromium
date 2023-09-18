@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests how widget minimum size works.\n`);
 
@@ -29,14 +31,14 @@ import {TestRunner} from 'test_runner';
   }
 
   TestRunner.addResult('Creating simple hierarchy');
-  var splitWidget = new UI.SplitWidget(true, true, 'splitWidgetStateSettingName.splitWidget', 250, 250);
+  var splitWidget = new UIModule.SplitWidget.SplitWidget(true, true, 'splitWidgetStateSettingName.splitWidget', 250, 250);
   showRootSplitWidget(splitWidget);
 
-  var mainWidget = new UI.Widget();
+  var mainWidget = new UIModule.Widget.Widget();
   mainWidget.setMinimumSize(100, 80);
   splitWidget.setMainWidget(mainWidget);
 
-  var firstSidebarWidget = new UI.Widget();
+  var firstSidebarWidget = new UIModule.Widget.Widget();
   firstSidebarWidget.setMinimumSize(40, 70);
   splitWidget.setSidebarWidget(firstSidebarWidget);
 
@@ -65,7 +67,7 @@ import {TestRunner} from 'test_runner';
   dumpBoundingBoxes(widgets);
 
   TestRunner.addResult('Wrapping main widget to a split widget');
-  var childsplitWidget = new UI.SplitWidget(false, true, 'splitWidgetStateSettingName.childsplitWidget', 100, 100);
+  var childsplitWidget = new UIModule.SplitWidget.SplitWidget(false, true, 'splitWidgetStateSettingName.childsplitWidget', 100, 100);
   childsplitWidget.hideSidebar();
   childsplitWidget.setMainWidget(mainWidget);
   splitWidget.setMainWidget(childsplitWidget);
@@ -73,7 +75,7 @@ import {TestRunner} from 'test_runner';
   dumpBoundingBoxes(widgets);
 
   TestRunner.addResult('Adding invisble sidebar');
-  var secondSidebarWidget = new UI.Widget();
+  var secondSidebarWidget = new UIModule.Widget.Widget();
   secondSidebarWidget.setMinimumSize(60, 60);
   childsplitWidget.setSidebarWidget(secondSidebarWidget);
   widgets['secondSidebarWidget'] = secondSidebarWidget;
@@ -89,7 +91,7 @@ import {TestRunner} from 'test_runner';
   dumpBoundingBoxes(widgets);
 
   TestRunner.addResult('Attaching another sidebar');
-  var thirdSidebarWidget = new UI.Widget();
+  var thirdSidebarWidget = new UIModule.Widget.Widget();
   thirdSidebarWidget.setMinimumSize(80, 80);
   childsplitWidget.setSidebarWidget(thirdSidebarWidget);
   widgets['thirdSidebarWidget'] = thirdSidebarWidget;

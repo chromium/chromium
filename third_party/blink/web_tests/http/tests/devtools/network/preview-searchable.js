@@ -7,6 +7,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
@@ -36,7 +37,7 @@ import * as Network from 'devtools/panels/network/network.js';
   }
 
   async function previewViewHandled(searches, callback, view) {
-    var isSearchable = (view instanceof UI.SearchableView);
+    var isSearchable = (view instanceof UIModule.SearchableView.SearchableView);
     var compontentView = view;
     var typeName = 'unknown';
     var searchableView = view;
@@ -62,7 +63,7 @@ import * as Network from 'devtools/panels/network/network.js';
       typeName = 'JSONView';
     } else if (compontentView instanceof Network.RequestHTMLView.RequestHTMLView) {
       typeName = 'RequestHTMLView';
-    } else if (compontentView instanceof UI.EmptyWidget) {
+    } else if (compontentView instanceof UIModule.EmptyWidget.EmptyWidget) {
       typeName = 'EmptyWidget';
     } else if (compontentView instanceof Network.RequestHTMLView.RequestHTMLView) {
       typeName = 'RequestHTMLView';

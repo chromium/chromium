@@ -10,6 +10,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
@@ -40,7 +41,7 @@ import * as Common from 'devtools/core/common/common.js';
       BrowserDebugger.ObjectEventListenersSidebarPane.instance();
 
   function isServiceWorker() {
-    var target = UI.context.flavor(SDK.RuntimeModel.ExecutionContext).target();
+    var target = UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext).target();
     return target.type() === SDK.Target.Type.ServiceWorker;
   }
 

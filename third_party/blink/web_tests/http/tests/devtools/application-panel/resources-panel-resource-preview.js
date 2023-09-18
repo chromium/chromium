@@ -8,6 +8,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);
@@ -44,7 +45,7 @@ import * as Common from 'devtools/core/common/common.js';
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
     var visibleView = view.visibleView;
-    if (visibleView instanceof UI.SearchableView)
+    if (visibleView instanceof UIModule.SearchableView.SearchableView)
       visibleView = visibleView.children()[0];
     var typeLabel = 'unknown';
     for (var type of types) {

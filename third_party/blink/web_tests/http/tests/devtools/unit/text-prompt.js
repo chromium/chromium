@@ -1,10 +1,12 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult("This tests if the TextPrompt autocomplete works properly.\n");
 
   var suggestions = ["heyoo", "hey it's a suggestion", "hey another suggestion"].map(s => ({text: s}));
-  var prompt = new UI.TextPrompt();
+  var prompt = new UIModule.TextPrompt.TextPrompt();
   let expression, query;
   prompt.initialize(async (e, q) => {
     expression = e;
