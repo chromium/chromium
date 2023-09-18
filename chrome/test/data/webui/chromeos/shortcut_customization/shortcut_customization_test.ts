@@ -888,6 +888,123 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(1, textLookup.length);
   });
 
+  test('DialogAcceleratorUpdateOnAcceleartorsUpdated', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+
+    // Set up test to only have one shortcut.
+    // Category: Windows and Desks, Subcategory: Desks.
+    // Shortcut: Create Desk - [search shift +].
+    const testLayoutInfo: MojoLayoutInfo[] = [
+      {
+        category: AcceleratorCategory.kWindowsAndDesks,
+        subCategory: AcceleratorSubcategory.kDesks,
+        description: stringToMojoString16('Create Desk'),
+        style: LayoutStyle.kDefault,
+        source: AcceleratorSource.kAsh,
+        action: 2,
+      },
+    ];
+
+    const testAcceleratorConfig: MojoAcceleratorConfig = {
+      [AcceleratorSource.kAsh]: {
+        [2]: [{
+          type: AcceleratorType.kDefault,
+          state: AcceleratorState.kEnabled,
+          locked: false,
+          layoutProperties: {
+            standardAccelerator: {
+              keyDisplay: stringToMojoString16('+'),
+              accelerator: {
+                modifiers: Modifier.COMMAND | Modifier.SHIFT,
+                keyCode: 187,
+                keyState: 0,
+                timeStamp: {
+                  internalValue: BigInt(0),
+                },
+              },
+            },
+          },
+        }],
+      },
+    };
+
+    provider.setFakeAcceleratorLayoutInfos(testLayoutInfo);
+    provider.setFakeAcceleratorConfig(testAcceleratorConfig);
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    // Open dialog for the shortcut.
+    await openDialogForAcceleratorInSubsection(0);
+
+    let editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+    const dialogAccels =
+        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+            'accelerator-edit-view');
+
+    // Expect only 1 accelerator initially.
+    assertEquals(1, dialogAccels!.length);
+
+    // Update shortcut: Create Desk - [search shift +] and [search a].
+    const testUpdatedAcceleratorConfig: MojoAcceleratorConfig = {
+      [AcceleratorSource.kAsh]: {
+        [2]: [
+          {
+            type: AcceleratorType.kDefault,
+            state: AcceleratorState.kEnabled,
+            locked: false,
+            layoutProperties: {
+              standardAccelerator: {
+                keyDisplay: stringToMojoString16('+'),
+                accelerator: {
+                  modifiers: Modifier.COMMAND | Modifier.SHIFT,
+                  keyCode: 187,
+                  keyState: 0,
+                  timeStamp: {
+                    internalValue: BigInt(0),
+                  },
+                },
+              },
+            },
+          },
+          {
+            type: AcceleratorType.kDefault,
+            state: AcceleratorState.kEnabled,
+            locked: false,
+            layoutProperties: {
+              standardAccelerator: {
+                keyDisplay: stringToMojoString16('a'),
+                accelerator: {
+                  modifiers: Modifier.COMMAND,
+                  keyCode: 65,
+                  keyState: 0,
+                  timeStamp: {
+                    internalValue: BigInt(0),
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    // Now simulate an update.
+    provider.setFakeAcceleratorsUpdated([testUpdatedAcceleratorConfig]);
+    provider.setFakeHasLauncherButton(true);
+    await triggerOnAcceleratorUpdated();
+    await provider.getAcceleratorsUpdatedPromiseForTesting();
+
+    // Dialog should be still open.
+    editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+    // Verify the number of dialog accelerators has increased to 2.
+    const updatedDialogAccels =
+        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+            'accelerator-edit-view');
+    assertEquals(2, updatedDialogAccels!.length);
+  });
+
   test('BottomNavContentPresentInSideNav', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();

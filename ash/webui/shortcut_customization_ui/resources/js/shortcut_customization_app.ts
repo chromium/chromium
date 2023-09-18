@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -31,7 +32,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
+import {getAcceleratorId, getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
 const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
@@ -191,7 +192,13 @@ export class ShortcutCustomizationAppElement extends
   // AcceleratorsUpdatedObserverInterface:
   onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
     this.acceleratorlookupManager.setAcceleratorLookup(config);
+    // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
+    // Update dialog accelerators.
+    if (this.acceleratorlookupManager.isStandardAcceleratorById(
+            getAcceleratorId(this.dialogSource, this.dialogAction))) {
+      this.updateDialogAccelerators(this.dialogSource, this.dialogAction);
+    }
 
     // Update the hasLauncherButton value every time accelerators are updated.
     this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
@@ -243,13 +250,13 @@ export class ShortcutCustomizationAppElement extends
   }
 
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {
+    // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
-    const updatedAccels =
-        this.acceleratorlookupManager.getStandardAcceleratorInfos(
-            e.detail.source, e.detail.action);
-
-    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
-        .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
+    // Update dialog accelerators.
+    if (this.acceleratorlookupManager.isStandardAcceleratorById(
+            getAcceleratorId(e.detail.source, e.detail.action))) {
+      this.updateDialogAccelerators(e.detail.source, e.detail.action);
+    }
   }
 
   protected onRestoreAllDefaultClicked(): void {
@@ -276,6 +283,17 @@ export class ShortcutCustomizationAppElement extends
 
   protected shouldHideRestoreAllButton(): boolean {
     return isCustomizationDisabled();
+  }
+
+  protected updateDialogAccelerators(
+      source: number|string, action: number|string): void {
+    assert(this.acceleratorlookupManager.isStandardAcceleratorById(
+        getAcceleratorId(source, action)));
+    const updatedAccels =
+        this.acceleratorlookupManager.getStandardAcceleratorInfos(
+            source, action);
+    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
+        .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
   }
 
   static get template(): HTMLTemplateElement {
