@@ -24,6 +24,14 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "linux-arm64-rel-cft",
+    mirrors = [
+        "ci/linux-arm64-rel-cft",
+    ],
+    os = os.LINUX_DEFAULT,
+)
+
+try_.builder(
     name = "linux-rel-cft",
     mirrors = [
         "ci/linux-rel-cft",

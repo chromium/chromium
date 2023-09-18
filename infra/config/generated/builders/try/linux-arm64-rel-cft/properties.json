@@ -38,18 +38,12 @@
           "builder": "linux-arm64-rel-cft",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-arm64-rel-cft",
-          "group": "tryserver.chromium.cft"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -60,9 +54,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.cft",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "cft"
-  ]
+  "builder_group": "tryserver.chromium.cft",
+  "recipe": "chromium_trybot"
 }

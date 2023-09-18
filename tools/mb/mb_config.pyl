@@ -1136,6 +1136,7 @@
     },
 
     'tryserver.chromium.cft': {
+      'linux-arm64-rel-cft': 'gpu_tests_release_trybot_no_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
       'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient',
       'win-rel-cft': 'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing_reclient',
@@ -2911,6 +2912,11 @@
 
     'gpu_tests_release_trybot_minimal_symbols_reclient': [
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'gpu_tests_release_trybot_no_symbols_chrome_for_testing_reclient_arm64': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
+      'chrome_for_testing', 'arm64',
     ],
 
     'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient': [
