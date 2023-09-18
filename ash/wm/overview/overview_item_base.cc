@@ -58,7 +58,6 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.visible_on_all_workspaces = true;
-  params.layer_type = ui::LAYER_NOT_DRAWN;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
   params.accept_events = true;

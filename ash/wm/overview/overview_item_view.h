@@ -54,7 +54,11 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // if `visibility` is kVisible, out otherwise. Sets
   // `current_header_visibility_` to `visibility`. Fades in if `animate` is
   // true, otherwise shows immediately.
+  // TODO(https://b/291622042): Remove this function and the layer associated
+  // with the header once Jelly cannot be disabled.
   void SetHeaderVisibility(HeaderVisibility visibility, bool animate);
+
+  void SetCloseButtonVisible(bool visible);
 
   // Hides the close button instantaneously, and then fades it in slowly and
   // with a long delay. Sets `current_header_visibility_` to kVisible. Assumes

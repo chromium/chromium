@@ -43,6 +43,11 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
     : WindowMiniView(window) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
+
+  // The parent of these views is not drawn due to its size, so we need to need
+  // to make this a layer.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 void WindowCycleItemView::OnMouseEntered(const ui::MouseEvent& event) {

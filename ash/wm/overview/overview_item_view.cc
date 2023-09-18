@@ -86,7 +86,7 @@ OverviewItemView::OverviewItemView(
               chromeos::features::IsJellyrollEnabled()
                   ? CloseButton::Type::kMediumFloating
                   : CloseButton::Type::kLargeFloating))) {
-  DCHECK(overview_item_);
+  CHECK(overview_item_);
   // This should not be focusable. It's also to avoid accessibility error when
   // |window->GetTitle()| is empty.
   SetFocusBehavior(FocusBehavior::NEVER);
@@ -97,10 +97,6 @@ OverviewItemView::OverviewItemView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  // Call this last as it calls `Layout()` which relies on the some of the other
-  // elements existing.
-  SetShowPreview(show_preview);
-
   // Do not show header if the current overview item is the drop target widget.
   if (overview_item_->overview_grid()->IsDropTargetWindow(
           overview_item_->GetWindow())) {
@@ -109,16 +105,25 @@ OverviewItemView::OverviewItemView(
   }
 
   header_view()->UpdateIconView(window);
+  if (!chromeos::features::IsJellyrollEnabled()) {
+    header_view()->SetPaintToLayer();
+    header_view()->layer()->SetFillsBoundsOpaquely(false);
+  }
 
-  close_button_->SetPaintToLayer();
-  close_button_->layer()->SetFillsBoundsOpaquely(false);
+  // Call this last as it calls `Layout()` which relies on the some of the other
+  // elements existing.
+  SetShowPreview(show_preview);
 }
 
 OverviewItemView::~OverviewItemView() = default;
 
 void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility,
                                            bool animate) {
-  DCHECK(header_view()->layer());
+  if (chromeos::features::IsJellyrollEnabled()) {
+    return;
+  }
+
+  CHECK(header_view()->layer());
   if (visibility == current_header_visibility_) {
     return;
   }
@@ -135,6 +140,11 @@ void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility,
   // If there is not a `close_button_`, then we are done.
   if (!close_button_) {
     return;
+  }
+
+  if (!close_button_->layer()) {
+    close_button_->SetPaintToLayer();
+    close_button_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   // If the whole header is fading out and there is a `close_button_`, then
@@ -159,11 +169,27 @@ void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility,
   close_button_->SetEnabled(close_button_visible);
 }
 
+void OverviewItemView::SetCloseButtonVisible(bool visible) {
+  CHECK(chromeos::features::IsJellyrollEnabled());
+
+  if (!close_button_->layer()) {
+    close_button_->SetPaintToLayer();
+    close_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  AnimateLayerOpacity(close_button_->layer(), visible);
+  close_button_->SetEnabled(visible);
+}
+
 void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
   DCHECK(close_button_);
   DCHECK_NE(HeaderVisibility::kInvisible, current_header_visibility_);
+
+  if (!close_button_->layer()) {
+    close_button_->SetPaintToLayer();
+    close_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
   ui::Layer* layer = close_button_->layer();
-  DCHECK(layer);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)

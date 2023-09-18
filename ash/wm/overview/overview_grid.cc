@@ -586,7 +586,7 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
       // Keep the overview header, backdrop, etc. and rounded corners and shadow
       // hidden during the trackpad swipe. They will be shown after the swipe is
       // completed.
-      overview_item->GetFocusableView()->GetView()->layer()->SetOpacity(0.f);
+      overview_item->item_widget()->GetLayer()->SetOpacity(0.f);
       overview_item->UpdateRoundedCornersAndShadow();
     }
   }

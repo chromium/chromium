@@ -1068,7 +1068,7 @@ bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
   // animating all windows into their final positions.
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
     for (const auto& window_item : overview_grid->window_list()) {
-      window_item->GetFocusableView()->GetView()->layer()->SetOpacity(1.f);
+      window_item->item_widget()->GetLayer()->SetOpacity(1.f);
       window_item->UpdateRoundedCornersAndShadow();
     }
     overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},

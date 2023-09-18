@@ -264,14 +264,8 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
 
 WindowMiniView::WindowMiniView(aura::Window* source_window)
     : source_window_(source_window) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
   window_observation_.Observe(source_window);
-
   header_view_ = AddChildView(std::make_unique<WindowMiniViewHeaderView>(this));
-  header_view_->SetPaintToLayer();
-  header_view_->layer()->SetFillsBoundsOpaquely(false);
 }
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {

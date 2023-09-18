@@ -2467,15 +2467,16 @@ TEST_P(OverviewSessionTest, OverviewItemTitleCloseVisibilityOnDrag) {
   base::RunLoop().RunUntilIdle();
 
   if (chromeos::features::IsJellyEnabled()) {
-    // When Jellyroll is enabled, we show the title and hide the close button
-    // only for the overview item being dragged.
-    EXPECT_EQ(1.f, GetTitlebarOpacity(item1));
+    // When Jellyroll is enabled, the title is always shown and the layer is
+    // created only after the drag has started moving.
+    EXPECT_TRUE(GetCloseButton(item1)->layer());
     EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
   } else {
     EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
     EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+    EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
   }
-  EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
+
   EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
 
   // Drag |item1| in a way so that |window1| does not get activated (drags
@@ -3169,11 +3170,13 @@ TEST_P(OverviewSessionTest, FadeIn) {
   const gfx::Rect bounds = gfx::ToEnclosedRect(item->target_bounds());
   EXPECT_TRUE(GetGridBounds().Contains(bounds));
 
-  // Header is expected to be shown immediately.
-  // Header is expected to be shown immediately.
-  EXPECT_EQ(
-      1.0f,
-      item->overview_item_view()->header_view()->layer()->GetTargetOpacity());
+  // Header is expected to be shown immediately without Jelly. With Jelly, the
+  // header isn't painted to layer until dragged.
+  if (!chromeos::features::IsJellyrollEnabled()) {
+    EXPECT_EQ(
+        1.0f,
+        item->overview_item_view()->header_view()->layer()->GetTargetOpacity());
+  }
 
   EXPECT_EQ(OverviewEnterExitType::kFadeInEnter,
             GetOverviewSession()->enter_exit_overview_type());
@@ -5931,8 +5934,8 @@ TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
   // Confirm the opacity of minimized windows is not 100%.
   float opacity = GetOverviewItemForWindow(minimized_window.get())
                       ->GetLeafItemForWindow(minimized_window.get())
-                      ->overview_item_view()
-                      ->layer()
+                      ->item_widget()
+                      ->GetLayer()
                       ->opacity();
   EXPECT_NE(opacity, 1.f);
   EXPECT_NE(opacity, 0.f);

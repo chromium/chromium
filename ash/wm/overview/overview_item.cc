@@ -703,22 +703,26 @@ void OverviewItem::PrepareForOverview() {
 
 void OverviewItem::OnStartingAnimationComplete() {
   DCHECK(item_widget_);
+
   if (transform_window_.IsMinimizedOrTucked()) {
     // Fade the title in if minimized or tucked. The rest of `item_widget_`
     // should already be shown.
     overview_item_view_->SetHeaderVisibility(
         OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
+  } else if (!Shell::Get()
+                  ->overview_controller()
+                  ->is_continuous_scroll_in_progress() &&
+             overview_session_->enter_exit_overview_type() ==
+                 OverviewEnterExitType::
+                     kContinuousAnimationEnterOnScrollUpdate) {
+    // If a continuous scroll has ended, make the header visible again.
+    item_widget_->GetLayer()->SetOpacity(1.f);
   } else {
     FadeInWidgetToOverview(item_widget_.get(),
                            OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
                            /*observe=*/false);
-    // If a continuous scroll has ended, make the header visible again.
-    if (!Shell::Get()
-             ->overview_controller()
-             ->is_continuous_scroll_in_progress()) {
-      overview_item_view_->layer()->SetOpacity(1.f);
-    }
   }
+
   const bool show_backdrop =
       GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
@@ -927,11 +931,15 @@ void OverviewItem::OnFocusedViewClosed() {
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
 
-  overview_item_view_->SetHeaderVisibility(
-      is_being_dragged_ && !chromeos::features::IsJellyrollEnabled()
-          ? OverviewItemView::HeaderVisibility::kInvisible
-          : OverviewItemView::HeaderVisibility::kCloseButtonInvisibleOnly,
-      /*animate=*/true);
+  if (chromeos::features::IsJellyrollEnabled()) {
+    overview_item_view_->SetCloseButtonVisible(false);
+  } else {
+    overview_item_view_->SetHeaderVisibility(
+        is_being_dragged_
+            ? OverviewItemView::HeaderVisibility::kInvisible
+            : OverviewItemView::HeaderVisibility::kCloseButtonInvisibleOnly,
+        /*animate=*/true);
+  }
 }
 
 void OverviewItem::OnOverviewItemDragEnded(bool snap) {
@@ -940,8 +948,12 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
       overview_item_view_->HideCloseInstantlyAndThenShowItSlowly();
     }
   } else {
-    overview_item_view_->SetHeaderVisibility(
-        OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
+    if (chromeos::features::IsJellyrollEnabled()) {
+      overview_item_view_->SetCloseButtonVisible(true);
+    } else {
+      overview_item_view_->SetHeaderVisibility(
+          OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
+    }
   }
   is_being_dragged_ = false;
 }
@@ -950,7 +962,6 @@ void OverviewItem::OnOverviewItemContinuousScroll(
     const gfx::Transform& target_transform,
     float scroll_ratio) {
   auto* window = GetWindow();
-  auto* item_layer = overview_item_view_->layer();
 
   // TODO(sammiequon): This should use
   // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
@@ -961,7 +972,7 @@ void OverviewItem::OnOverviewItemContinuousScroll(
   // no-ops if the windows are at their final opacity and transform, which can
   // happen if the windows were completely occluded before entering overview.
   if (WindowState::Get(window)->IsMinimized()) {
-    item_layer->SetOpacity(std::clamp(0.01f, scroll_ratio, 1.f));
+    item_widget()->GetLayer()->SetOpacity(std::clamp(0.01f, scroll_ratio, 1.f));
   } else {
     gfx::Transform transform = gfx::Tween::TransformValueBetween(
         scroll_ratio, gfx::Transform(), target_transform);
@@ -1519,13 +1530,20 @@ void OverviewItem::UpdateHeaderLayoutCrOSNext(
   }
   widget_window->SetTransform(gfx::Transform());
 
+  // The header doesn't need to be painted to a layer unless dragged.
+  WindowMiniViewHeaderView* header_view = overview_item_view_->header_view();
+  if (!header_view->layer()) {
+    header_view->SetPaintToLayer();
+    header_view->layer()->SetFillsBoundsOpaquely(false);
+  }
+  ui::Layer* header_layer = overview_item_view_->header_view()->layer();
+
   // Since header view is a child of the overview item view, the bounds
   // animation is appled to the header as well when it's applied to the overview
   // item. However, when calculating the target bounds for the window, it's
   // always assumed that the header's height is 40, there's a gap between the
   // header and the window during the animation. In order to neutralize the gap,
   // apply the reversed vertical transform to the header separately.
-  ui::Layer* header_layer = overview_item_view_->header_view()->layer();
   float vertical_scale = item_bounds_transform.To2dScale().y();
   gfx::Transform vertical_reverse_transform =
       gfx::Transform::MakeScale(1.f, 1.f / vertical_scale);
