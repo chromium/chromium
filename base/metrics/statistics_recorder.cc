@@ -27,7 +27,7 @@ namespace base {
 namespace {
 
 // Whether a 50/50 trial for using a R/W lock should be run.
-constexpr bool kRunRwLockTrial = true;
+constexpr bool kRunRwLockTrial = false;
 
 bool EnableBenchmarking() {
   // TODO(asvitkine): If this code ends up not being temporary, refactor it to
@@ -316,7 +316,7 @@ bool StatisticsRecorder::SrLock::ShouldUseSharedMutex() {
   if (kRunRwLockTrial && !EnableBenchmarking()) {
     return RandInt(0, 1) == 1;
   }
-  return true;
+  return false;
 }
 
 // static
