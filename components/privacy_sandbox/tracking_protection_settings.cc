@@ -6,7 +6,9 @@
 
 #include "base/check.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
@@ -43,6 +45,20 @@ TrackingProtectionSettings::TrackingProtectionSettings(
       base::BindRepeating(
           &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCookieControlsMode,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
+          base::Unretained(this)));
+
+  // It's possible enterprise status changed while profile was shut down, so
+  // check on startup.
+  OnEnterpriseControlForPrefsChanged();
 }
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
@@ -81,6 +97,18 @@ bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
     return false;
   }
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
+}
+
+void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
+  if (!IsTrackingProtection3pcdEnabled()) {
+    return;
+  }
+  // Stop showing users new UX and using new prefs if old prefs become managed.
+  if (pref_service_->IsManagedPreference(prefs::kCookieControlsMode) ||
+      pref_service_->IsManagedPreference(
+          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)) {
+    pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+  }
 }
 
 void TrackingProtectionSettings::OnTrackingProtectionOnboarded() {

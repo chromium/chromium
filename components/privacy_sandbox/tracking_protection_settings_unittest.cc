@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
@@ -26,7 +27,7 @@ class MockTrackingProtectionSettingsObserver
 class TrackingProtectionSettingsTest : public testing::Test {
  public:
   TrackingProtectionSettingsTest() {
-    tracking_protection::RegisterProfilePrefs(prefs()->registry());
+    RegisterProfilePrefs(prefs()->registry());
     onboarding_service_ =
         std::make_unique<TrackingProtectionOnboarding>(&prefs_);
   }
@@ -74,6 +75,19 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
   EXPECT_FALSE(tracking_protection_settings()->IsDoNotTrackEnabled());
   prefs()->SetBoolean(prefs::kEnableDoNotTrack, true);
   EXPECT_TRUE(tracking_protection_settings()->IsDoNotTrackEnabled());
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       DisablesTrackingProtection3pcdWhenEnterpriseControlEnabled) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_TRUE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+
+  prefs()->SetManagedPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+                          std::make_unique<base::Value>(false));
+  EXPECT_FALSE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {

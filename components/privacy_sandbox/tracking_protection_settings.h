@@ -50,6 +50,8 @@ class TrackingProtectionSettings
   void OnTrackingProtectionOnboarded() override;
 
  private:
+  void OnEnterpriseControlForPrefsChanged();
+
   // Callbacks for pref observation.
   void OnDoNotTrackEnabledPrefChanged();
   void OnTrackingProtectionLevelPrefChanged();
