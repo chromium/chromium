@@ -245,6 +245,10 @@ class NET_EXPORT URLRequestContext final {
     return cookie_deprecation_label_;
   }
 
+  void set_cookie_deprecation_label(const absl::optional<std::string>& label) {
+    cookie_deprecation_label_ = label;
+  }
+
  private:
   friend class URLRequestContextBuilder;
 
@@ -304,10 +308,6 @@ class NET_EXPORT URLRequestContext final {
   }
   void set_bound_network(handles::NetworkHandle network) {
     bound_network_ = network;
-  }
-
-  void set_cookie_deprecation_label(const std::string& label) {
-    cookie_deprecation_label_ = label;
   }
 
   void set_transport_security_persister(

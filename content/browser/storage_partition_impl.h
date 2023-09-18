@@ -74,7 +74,7 @@ class BrowsingDataFilterBuilder;
 class KeepAliveURLLoaderService;
 class BucketManager;
 class CacheStorageControlWrapper;
-class CookieDeprecationLabelManager;
+class CookieDeprecationLabelManagerImpl;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
@@ -209,6 +209,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Use outside content.
   AttributionDataModel* GetAttributionDataModel() override;
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
+  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
 
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
@@ -281,7 +282,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
   ResourceCacheManager* GetResourceCacheManager();
-  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -713,7 +713,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   std::unique_ptr<ResourceCacheManager> resource_cache_manager_;
 
-  std::unique_ptr<CookieDeprecationLabelManager>
+  std::unique_ptr<CookieDeprecationLabelManagerImpl>
       cookie_deprecation_label_manager_;
 
   // ReceiverSet for DomStorage, using the

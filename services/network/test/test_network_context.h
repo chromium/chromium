@@ -345,6 +345,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void VerifyIpProtectionConfigGetterForTesting(
       VerifyIpProtectionConfigGetterForTestingCallback callback) override {}
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override {}
+  void SetCookieDeprecationLabel(
+      const absl::optional<std::string>& label) override {}
 };
 
 }  // namespace network

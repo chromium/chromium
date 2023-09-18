@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 
 #include <string>
 
@@ -22,13 +22,14 @@ const base::FeatureParam<std::string> kCookieDeprecationLabel{
 
 }  // namespace
 
-CookieDeprecationLabelManager::CookieDeprecationLabelManager(
+CookieDeprecationLabelManagerImpl::CookieDeprecationLabelManagerImpl(
     BrowserContext* browser_context)
     : browser_context_(*browser_context) {}
 
-CookieDeprecationLabelManager::~CookieDeprecationLabelManager() = default;
+CookieDeprecationLabelManagerImpl::~CookieDeprecationLabelManagerImpl() =
+    default;
 
-absl::optional<std::string> CookieDeprecationLabelManager::GetValue() {
+absl::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue() {
   if (!GetContentClient()->browser()->IsCookieDeprecationLabelAllowed(
           &*browser_context_)) {
     return absl::nullopt;
@@ -37,7 +38,7 @@ absl::optional<std::string> CookieDeprecationLabelManager::GetValue() {
   return GetValueInternal();
 }
 
-absl::optional<std::string> CookieDeprecationLabelManager::GetValue(
+absl::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue(
     const url::Origin& top_frame_origin,
     const url::Origin& context_origin) {
   if (!GetContentClient()->browser()->IsCookieDeprecationLabelAllowedForContext(
@@ -48,7 +49,7 @@ absl::optional<std::string> CookieDeprecationLabelManager::GetValue(
   return GetValueInternal();
 }
 
-std::string CookieDeprecationLabelManager::GetValueInternal() {
+std::string CookieDeprecationLabelManagerImpl::GetValueInternal() {
   if (!label_value_.has_value()) {
     label_value_ = kCookieDeprecationLabel.Get();
   }

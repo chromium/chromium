@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h"
@@ -17,9 +17,9 @@
 namespace content {
 namespace {
 
-class CookieDeprecationLabelManagerTest : public testing::Test {
+class CookieDeprecationLabelManagerImplTest : public testing::Test {
  public:
-  CookieDeprecationLabelManagerTest() : label_manager_(&browser_context_) {
+  CookieDeprecationLabelManagerImplTest() : label_manager_(&browser_context_) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kCookieDeprecationFacilitatedTestingLabels,
         {{"label", "label_test"}});
@@ -28,11 +28,11 @@ class CookieDeprecationLabelManagerTest : public testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  CookieDeprecationLabelManager label_manager_;
+  CookieDeprecationLabelManagerImpl label_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CookieDeprecationLabelManagerTest, NotAllowed_NoLabelReturned) {
+TEST_F(CookieDeprecationLabelManagerImplTest, NotAllowed_NoLabelReturned) {
   MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
       browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowed)
@@ -42,7 +42,7 @@ TEST_F(CookieDeprecationLabelManagerTest, NotAllowed_NoLabelReturned) {
   EXPECT_FALSE(label_manager_.GetValue().has_value());
 }
 
-TEST_F(CookieDeprecationLabelManagerTest, Allowed_LabelReturned) {
+TEST_F(CookieDeprecationLabelManagerImplTest, Allowed_LabelReturned) {
   MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
       browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowed)
@@ -52,7 +52,7 @@ TEST_F(CookieDeprecationLabelManagerTest, Allowed_LabelReturned) {
   EXPECT_EQ(label_manager_.GetValue(), "label_test");
 }
 
-TEST_F(CookieDeprecationLabelManagerTest,
+TEST_F(CookieDeprecationLabelManagerImplTest,
        NotAllowedForContext_NoLabelReturned) {
   MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
       browser_client;
@@ -68,7 +68,7 @@ TEST_F(CookieDeprecationLabelManagerTest,
           .has_value());
 }
 
-TEST_F(CookieDeprecationLabelManagerTest, AllowedForContext_LabelReturned) {
+TEST_F(CookieDeprecationLabelManagerImplTest, AllowedForContext_LabelReturned) {
   MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
       browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowedForContext)

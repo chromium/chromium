@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_H_
-#define CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_H_
+#ifndef CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_IMPL_H_
 
 #include <string>
 
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
@@ -20,18 +21,21 @@ namespace content {
 class BrowserContext;
 
 // Maintaining a per-partition label to be used for 3PCD experimentation.
-class CONTENT_EXPORT CookieDeprecationLabelManager {
+class CONTENT_EXPORT CookieDeprecationLabelManagerImpl
+    : public CookieDeprecationLabelManager {
  public:
-  explicit CookieDeprecationLabelManager(BrowserContext* browser_context);
-  CookieDeprecationLabelManager(const CookieDeprecationLabelManager&) = delete;
-  CookieDeprecationLabelManager(CookieDeprecationLabelManager&&) = delete;
-  CookieDeprecationLabelManager& operator=(
-      const CookieDeprecationLabelManager&) = delete;
-  CookieDeprecationLabelManager& operator=(CookieDeprecationLabelManager&&) =
+  explicit CookieDeprecationLabelManagerImpl(BrowserContext* browser_context);
+  CookieDeprecationLabelManagerImpl(const CookieDeprecationLabelManagerImpl&) =
       delete;
-  ~CookieDeprecationLabelManager();
+  CookieDeprecationLabelManagerImpl(CookieDeprecationLabelManagerImpl&&) =
+      delete;
+  CookieDeprecationLabelManagerImpl& operator=(
+      const CookieDeprecationLabelManagerImpl&) = delete;
+  CookieDeprecationLabelManagerImpl& operator=(
+      CookieDeprecationLabelManagerImpl&&) = delete;
+  ~CookieDeprecationLabelManagerImpl() override;
 
-  absl::optional<std::string> GetValue();
+  absl::optional<std::string> GetValue() override;
 
   absl::optional<std::string> GetValue(const url::Origin& top_frame_origin,
                                        const url::Origin& context_origin);
@@ -50,4 +54,4 @@ class CONTENT_EXPORT CookieDeprecationLabelManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_H_
+#endif  // CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_IMPL_H_

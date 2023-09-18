@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
@@ -3184,6 +3185,12 @@ void NetworkContext::FlushCachedClientCertIfNeeded(
     http_session->ssl_client_context()->ClearClientCertificateIfNeeded(
         host, certificate);
   }
+}
+
+void NetworkContext::SetCookieDeprecationLabel(
+    const absl::optional<std::string>& label) {
+  CHECK(url_request_context_);
+  url_request_context_->set_cookie_deprecation_label(label);
 }
 
 }  // namespace network

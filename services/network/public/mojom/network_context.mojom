@@ -1665,4 +1665,7 @@ interface NetworkContext {
   // Will flush cached client certificate for `host` if `certificate`
   // doesn't match the corresponding cached certificate.
   FlushCachedClientCertIfNeeded(HostPortPair host, X509Certificate certificate);
+
+ // Sets cookie deprecation label.
+  SetCookieDeprecationLabel(string? label);
 };

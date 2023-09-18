@@ -2343,7 +2343,7 @@ test("content_unittests") {
     "../browser/compute_pressure/compute_pressure_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
-    "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_unittest.cc",
+    "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
     "../browser/devtools/devtools_frontend_host_impl_unittest.cc",

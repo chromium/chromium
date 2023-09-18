@@ -127,6 +127,7 @@ source_set("browser_sources") {
     "context_menu_params.h",
     "cookie_access_details.cc",
     "cookie_access_details.h",
+    "cookie_deprecation_label_manager.h",
     "cookie_store_factory.h",
     "cors_origin_pattern_setter.cc",
     "cors_origin_pattern_setter.h",

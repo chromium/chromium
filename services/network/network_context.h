@@ -536,6 +536,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void VerifyIpProtectionConfigGetterForTesting(
       VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+  void SetCookieDeprecationLabel(
+      const absl::optional<std::string>& label) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);

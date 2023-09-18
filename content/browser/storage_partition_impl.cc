@@ -64,7 +64,7 @@
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1455,7 +1455,7 @@ void StoragePartitionImpl::Initialize(
   if (base::FeatureList::IsEnabled(
           net::features::kCookieDeprecationFacilitatedTestingLabels)) {
     cookie_deprecation_label_manager_ =
-        std::make_unique<CookieDeprecationLabelManager>(browser_context_);
+        std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }
 
   url_loader_factory_getter_ = new URLLoaderFactoryGetter();

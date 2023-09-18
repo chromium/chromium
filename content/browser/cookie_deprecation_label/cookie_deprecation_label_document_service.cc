@@ -8,10 +8,11 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -40,9 +41,10 @@ CookieDeprecationLabelDocumentService::
 
 void CookieDeprecationLabelDocumentService::GetValue(
     GetValueCallback callback) {
-  auto* label_manager = static_cast<StoragePartitionImpl*>(
-                            render_frame_host().GetStoragePartition())
-                            ->GetCookieDeprecationLabelManager();
+  auto* label_manager = static_cast<CookieDeprecationLabelManagerImpl*>(
+      render_frame_host()
+          .GetStoragePartition()
+          ->GetCookieDeprecationLabelManager());
   if (!label_manager) {
     std::move(callback).Run(absl::nullopt);
     return;

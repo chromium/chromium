@@ -70,6 +70,7 @@ class BrowserContext;
 class BrowsingDataFilterBuilder;
 class BrowsingTopicsSiteDataManager;
 class ContentIndexContext;
+class CookieDeprecationLabelManager;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
@@ -166,6 +167,7 @@ class CONTENT_EXPORT StoragePartition : public base::SupportsUserData {
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
   virtual AttributionDataModel* GetAttributionDataModel() = 0;
   virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
+  virtual CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new
