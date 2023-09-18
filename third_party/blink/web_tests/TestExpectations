@@ -2861,7 +2861,6 @@ crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/sc
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/animation/offset-path-interpolation-006.html [ Crash ]
