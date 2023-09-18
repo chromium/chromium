@@ -67,8 +67,6 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
   AutofillContextMenuManagerFeedbackUIBrowserTest() {
-    iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHAutofillFeedbackNewBadgeFeature});
     feature_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillFeedback},
         /*disabled_features=*/{});
@@ -105,7 +103,6 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
-  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   base::test::ScopedFeatureList feature_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
