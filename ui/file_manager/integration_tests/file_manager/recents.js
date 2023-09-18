@@ -1278,8 +1278,10 @@ testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([txtFile1]));
 
-  // Switch to "Document" filter.
-  await navigateToRecent(appId, RecentFilterType.DOCUMENT);
+  // Switch to "Document" filter. Since search is active, use search options.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'type', 3),
+      'Failed to click "Documents" type selector');
 
   // Check there is still only tall.txt in the file list (no utf8.txt).
   await remoteCall.waitForFiles(

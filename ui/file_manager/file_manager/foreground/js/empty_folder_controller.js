@@ -8,7 +8,6 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
@@ -302,11 +301,9 @@ export class EmptyFolderController {
       // non-interactive.
       svgRef = ODFS_REAUTHENTICATION_REQUIRED;
     } else {
-      if (util.isSearchV2Enabled()) {
-        const {search} = getStore().getState();
-        if (search && search.query) {
-          svgRef = SEARCH_EMPTY_RESULTS;
-        }
+      const {search} = getStore().getState();
+      if (search && search.query) {
+        svgRef = SEARCH_EMPTY_RESULTS;
       }
     }
 

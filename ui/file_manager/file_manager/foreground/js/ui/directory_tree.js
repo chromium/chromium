@@ -2078,10 +2078,8 @@ export class DirectoryTree extends Tree {
     // For Search V2 subscribe to the store so that we can listen to search
     // becoming active and inactive. We use this to hide or show the highlight
     // of the active item in the directory tree.
-    if (util.isSearchV2Enabled()) {
-      /** @type {!SearchData|undefined} */
-      this.cachedSearchState_ = {};
-    }
+    /** @type {!SearchData|undefined} */
+    this.cachedSearchState_ = {};
 
     /**
      * Subscribe to the store so that we can listen to ODFS getting enabled or

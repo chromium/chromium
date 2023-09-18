@@ -42,7 +42,7 @@ import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';
 import {updateDriveConnectionStatus} from '../../state/ducks/drive.js';
 import {updatePreferences} from '../../state/ducks/preferences.js';
-import {updateSearch} from '../../state/ducks/search.js';
+import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {trashRootKey} from '../../state/ducks/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';
@@ -1193,8 +1193,6 @@ export class FileManager extends EventTarget {
     this.searchController_ = new SearchController(
         this.ui_.searchContainer,
         this.directoryModel_,
-        this.volumeManager_,
-        assert(this.taskController_),
         assert(this.ui_),
     );
 
@@ -1614,7 +1612,8 @@ export class FileManager extends EventTarget {
           this.directoryModel_.selectEntry(opt_selectionEntry);
         }
         if (this.launchParams_.searchQuery) {
-          this.searchController_.setSearchQuery(this.launchParams_.searchQuery);
+          this.searchController_.setSearchQuery(
+              this.launchParams_.searchQuery, getDefaultSearchOptions());
         }
       } else {
         console.warn('No entry for finishSetupCurrentDirectory_');
@@ -1759,10 +1758,6 @@ export class FileManager extends EventTarget {
     }
 
     this.updateOfficePrefs_(prefs);
-
-    if (util.isSearchV2Enabled()) {
-      this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
-    }
 
     if (redraw && !util.isFilesAppExperimental()) {
       this.ui_.directoryTree.redraw(false);

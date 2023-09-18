@@ -803,7 +803,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("driveOpenSidebarOffline").EnableGenericDocumentsProvider(),
         TestCase("driveOpenSidebarSharedWithMe"),
-        TestCase("driveAutoCompleteQuery"),
         TestCase("drivePinMultiple"),
         TestCase("drivePinHosted"),
         // TODO(b/296960734): Enable
@@ -815,10 +814,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
             .EnableBulkPinning()
             .EnableCrosComponents(),
-        TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
-        TestCase("driveSearchAlwaysDisplaysMyDrive"),
         TestCase("drivePressCtrlAFromSearch"),
         TestCase("driveAvailableOfflineGearMenu"),
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
@@ -1441,7 +1438,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchPartitionedRemovableDevice").EnableSearchV2(),
         TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
         TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
-        TestCase("showsEducationNudge").EnableSearchV2(),
         TestCase("searchFromMyFiles").EnableSearchV2(),
         TestCase("selectionPath").EnableSearchV2(),
         TestCase("searchHierarchy").EnableSearchV2(),

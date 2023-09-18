@@ -50,38 +50,6 @@ async function getDismissButtonId(appId) {
 }
 
 /**
- * Returns the steps to start a search for 'hello' and wait for the
- * autocomplete results to appear.
- */
-async function startDriveSearchWithAutoComplete() {
-  // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
-
-  // Focus the search box.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box cr-input', 'focus']));
-
-  // Input a text.
-  await remoteCall.inputText(appId, '#search-box cr-input', 'hello');
-
-  // Notify the element of the input.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box cr-input', 'input']));
-
-  // Wait for the auto complete list getting the expected contents.
-  const caller = getCaller();
-  await repeatUntil(async () => {
-    const elements = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, ['#autocomplete-list li']);
-    const list = elements.map((element) => element.text);
-    return chrome.test.checkDeepEq(EXPECTED_AUTOCOMPLETE_LIST, list) ?
-        undefined :
-        pending(caller, 'Current auto complete list: %j.', list);
-  });
-  return appId;
-}
-
-/**
  * Opens the Enable Docs Offline dialog and waits for it to appear in the given
  * |appId| window.
  *
@@ -194,42 +162,15 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
 };
 
 /**
- * Tests autocomplete with a query 'hello'.
- */
-testcase.driveAutoCompleteQuery = async () => {
-  return startDriveSearchWithAutoComplete();
-};
-
-/**
- * Tests that clicking the first option in the autocomplete box shows all of
- * the results for that query.
- */
-testcase.driveClickFirstSearchResult = async () => {
-  const appId = await startDriveSearchWithAutoComplete();
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'fakeKeyDown', appId,
-      ['#autocomplete-list', 'ArrowDown', false, false, false]));
-
-  await remoteCall.waitForElement(appId, ['#autocomplete-list li[selected]']);
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'fakeMouseDown', appId, ['#autocomplete-list li[selected]']));
-
-  await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
-
-  // Fetch A11y messages.
-  const a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
-  chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
-  chrome.test.assertEq('Showing results for hello.', a11yMessages[0]);
-};
-
-/**
  * Tests that pressing enter after typing a search shows all of
  * the results for that query.
  */
 testcase.drivePressEnterToSearch = async () => {
-  const appId = await startDriveSearchWithAutoComplete();
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  remoteCall.typeSearchText(appId, 'hello');
+
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeEvent', appId, ['#search-box cr-input', 'focus']));
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -248,10 +189,10 @@ testcase.drivePressEnterToSearch = async () => {
 };
 
 /**
- * Tests that the breadcrumbs always shows "My Drive" when searching inside any
- * folder in Drive.
+ * Tests that pressing the clear search button announces an a11y message and
+ * shows all files/folders.
  */
-testcase.driveSearchAlwaysDisplaysMyDrive = async () => {
+testcase.drivePressClearSearch = async () => {
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -263,30 +204,9 @@ testcase.driveSearchAlwaysDisplaysMyDrive = async () => {
   // Search the text.
   remoteCall.typeSearchText(appId, 'hello');
 
-  // Wait for the auto complete list to appear;
-  await remoteCall.waitForSearchAutoComplete(appId);
-
-  // Send Enter to perform the search.
-  const enterKey = ['Enter', false, false, false];
-  await remoteCall.fakeKeyDown(appId, searchBox, ...enterKey);
-
   // Wait for the result in the file list.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
-
-  // When displaying the search result the breadcrumbs should always display "My
-  // drive".
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
-
-  return appId;
-};
-
-/**
- * Tests that pressing the clear search button announces an a11y message and
- * shows all files/folders.
- */
-testcase.drivePressClearSearch = async () => {
-  const appId = await testcase.driveSearchAlwaysDisplaysMyDrive();
 
   // Click on the clear search button.
   await remoteCall.waitAndClickElement(appId, '#search-box cr-input .clear');

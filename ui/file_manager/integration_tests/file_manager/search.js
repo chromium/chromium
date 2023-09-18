@@ -647,18 +647,6 @@ testcase.showSearchResultMessageWhenSearching = async () => {
 };
 
 /**
- * Tests that the educational nudge is displayed when the files
- * app is started with V2 version of search enabled.
- */
-testcase.showsEducationNudge = async () => {
-  // Open the Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
-
-  // Check that the nudge and its text is visible.
-  await remoteCall.waitNudge(appId, 'New search features available');
-};
-
-/**
  * Checks that search works correctly when starting in My Files.
  */
 testcase.searchFromMyFiles = async () => {

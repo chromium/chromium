@@ -121,19 +121,15 @@ export class FileTypeFiltersController {
      */
     this.inRecent_ = false;
 
-    if (util.isSearchV2Enabled()) {
-      getStore().subscribe(this);
-    }
+    getStore().subscribe(this);
   }
 
 
   /** @param {!State} state latest state from the store. */
   onStateChanged(state) {
-    if (util.isSearchV2Enabled()) {
-      if (this.inRecent_) {
-        const search = state.search;
-        this.container_.hidden = !!(search?.query);
-      }
+    if (this.inRecent_) {
+      const search = state.search;
+      this.container_.hidden = !!(search?.query);
     }
   }
 

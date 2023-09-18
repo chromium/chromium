@@ -276,7 +276,6 @@ export async function testShownForODFS(done) {
  * @suppress {accessControls} access private method in test.
  */
 export function testShowNoSearchResult() {
-  util.isSearchV2Enabled = () => true;
   const store = getStore();
   store.init(getEmptyState());
   // Test 1: Store indicates we are not searching. No matter if the directory is

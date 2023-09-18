@@ -1158,14 +1158,6 @@ util.isMirrorSyncEnabled = () => {
       loadTimeData.getBoolean('DRIVEFS_MIRRORING');
 };
 
-/**
- * Returns true if search v2 feature flag is enabled.
- * @return {boolean}
- */
-util.isSearchV2Enabled = () => {
-  return loadTimeData.getBoolean('FILES_SEARCH_V2');
-};
-
 util.isGoogleOneOfferFilesBannerEligibleAndEnabled = () => {
   return loadTimeData.getBoolean(
       'ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER');

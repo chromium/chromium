@@ -6,7 +6,7 @@ import '../widgets/xf_breadcrumb.js';
 
 import {metrics} from '../common/js/metrics.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
-import {str, util} from '../common/js/util.js';
+import {str} from '../common/js/util.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import type {FileKey} from '../state/file_key.js';
@@ -40,20 +40,18 @@ export class BreadcrumbContainer {
       return;
     }
 
-    if (util.isSearchV2Enabled()) {
-      if (search && search.status !== undefined) {
-        // Search results do not have the corresponding directory in the
-        // directory tree. When V2 version of search is active, we short-circuit
-        // the process to show the correct label and exit.
-        this.show_(SEARCH_RESULTS_KEY, [
-          {
-            name: 'search',
-            label: str('SEARCH_RESULTS_LABEL'),
-            key: SEARCH_RESULTS_KEY,
-          },
-        ]);
-        return;
-      }
+    if (search && search.status !== undefined) {
+      // Search results do not have the corresponding directory in the
+      // directory tree. When V2 version of search is active, we short-circuit
+      // the process to show the correct label and exit.
+      this.show_(SEARCH_RESULTS_KEY, [
+        {
+          name: 'search',
+          label: str('SEARCH_RESULTS_LABEL'),
+          key: SEARCH_RESULTS_KEY,
+        },
+      ]);
+      return;
     }
 
     // If the current location is somewhere in Drive, all files in Drive can

@@ -355,18 +355,16 @@ export class ToolbarController {
           locationInfo.rootType !== VolumeManagerCommon.RootType.CROSTINI &&
           locationInfo.rootType !== VolumeManagerCommon.RootType.GUEST_OS);
 
-    if (util.isSearchV2Enabled()) {
-      const newDirectory = event.newDirEntry;
-      if (newDirectory) {
-        const locationInfo = this.volumeManager_.getLocationInfo(newDirectory);
-        const bodyClassList =
-            this.filesSelectedLabel_.ownerDocument.body.classList;
-        if (locationInfo &&
-            locationInfo.rootType === VolumeManagerCommon.RootType.TRASH) {
-          bodyClassList.add('check-select-v1');
-        } else {
-          bodyClassList.remove('check-select-v1');
-        }
+    const newDirectory = event.newDirEntry;
+    if (newDirectory) {
+      const locationInfo = this.volumeManager_.getLocationInfo(newDirectory);
+      const bodyClassList =
+          this.filesSelectedLabel_.ownerDocument.body.classList;
+      if (locationInfo &&
+          locationInfo.rootType === VolumeManagerCommon.RootType.TRASH) {
+        bodyClassList.add('check-select-v1');
+      } else {
+        bodyClassList.remove('check-select-v1');
       }
     }
   }
@@ -443,9 +441,7 @@ export class ToolbarController {
           /** @type {!FileListSelectionModel} */
           (this.directoryModel_.getFileListSelection()).getCheckSelectMode()) {
         bodyClassList.toggle('check-select');
-        if (!util.isSearchV2Enabled()) {
-          bodyClassList.toggle('check-select-v1');
-        }
+        bodyClassList.toggle('check-select-v1');
       }
     }
   }

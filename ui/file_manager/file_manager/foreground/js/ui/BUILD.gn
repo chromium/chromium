@@ -23,7 +23,6 @@ group("js_modules") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
-    ":autocomplete_list",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -78,7 +77,6 @@ js_type_check("closure_compile_jsmodules") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
-    ":autocomplete_list",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -795,17 +793,6 @@ js_unittest("splitter_unittest") {
 
 js_library("tree") {
   deps = [ "//ash/webui/common/resources:assert" ]
-}
-
-js_library("autocomplete_list") {
-  deps = [
-    ":list",
-    ":list_item",
-    ":list_single_selection_model",
-    ":position_util",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ui/file_manager/file_manager/common/js:array_data_model",
-  ]
 }
 
 js_test_type_check("js_test_type_check") {
