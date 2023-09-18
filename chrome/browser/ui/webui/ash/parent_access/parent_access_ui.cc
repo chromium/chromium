@@ -134,7 +134,8 @@ void ParentAccessUI::SetUpResources() {
 
   // Allows loading of local content into an iframe for testing.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
+      network::mojom::CSPDirectiveName::FrameSrc,
+      "frame-src chrome://webui-test/;");
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ParentAccessUI)

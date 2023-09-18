@@ -24,7 +24,14 @@ export async function getParentAccessParams():
   return parentAccessParams;
 }
 
+// Sets a ParentAccessUIHandler for testing.
 export function setParentAccessUiHandlerForTest(
     handler: ParentAccessUiHandlerInterface) {
   parentAccessUIHandler = handler;
+}
+
+// Clears the cached handler and params for testing.
+export function resetParentAccessHandlerForTest() {
+  parentAccessUIHandler = null;
+  parentAccessParams = null;
 }

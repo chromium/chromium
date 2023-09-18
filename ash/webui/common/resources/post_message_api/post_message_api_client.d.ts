@@ -21,7 +21,7 @@
  *
  */
 export class PostMessageApiClient {
-  constructor(serverOriginUrlFilter: string, targetWindow: Window);
+  constructor(serverOriginUrlFilter: string, targetWindow: Window|null);
 
   /**
    * Virtual method called when the client is initialized and it knows the

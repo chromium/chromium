@@ -15,7 +15,7 @@ import {GetOauthTokenStatus, ParentAccessServerMessageType, ParentAccessUiHandle
 import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 import {WebviewManager} from './webview_manager.js';
 
-interface ParentAccessUi {
+export interface ParentAccessUi {
   $: {
     webview: chrome.webviewTag.WebView,
   };
@@ -38,7 +38,7 @@ const ALLOWED_HOSTS: string[] = [
  */
 const LOCAL_DEV_SERVER_HOST: string = 'localhost:9879';
 
-class ParentAccessUi extends PolymerElement {
+export class ParentAccessUi extends PolymerElement {
   static get is() {
     return 'parent-access-ui';
   }

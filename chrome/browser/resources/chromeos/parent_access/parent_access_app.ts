@@ -24,7 +24,7 @@ import {getTemplate} from './parent_access_app.html.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
-interface ParentAccessApp {
+export interface ParentAccessApp {
   $: {
     viewManager: CrViewManagerElement,
   };
@@ -57,7 +57,7 @@ export function isParentAccessJellyEnabled() {
       loadTimeData.getBoolean('isParentAccessJellyEnabled');
 }
 
-class ParentAccessApp extends PolymerElement {
+export class ParentAccessApp extends PolymerElement {
   static get is() {
     return 'parent-access-app';
   }

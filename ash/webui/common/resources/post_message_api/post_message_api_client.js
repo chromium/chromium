@@ -42,7 +42,7 @@ export class PostMessageApiClient {
   /**
    * @param {!string} serverOriginURLFilter  Only messages from this origin
    *     will be accepted.
-   * @param {Window} targetWindow, If the connection is already established,
+   * @param {?Window} targetWindow, If the connection is already established,
    *     then provide the target window.
    */
   constructor(serverOriginURLFilter, targetWindow) {
@@ -65,7 +65,7 @@ export class PostMessageApiClient {
 
     /**
      * The parent window.
-     * @private {Window}
+     * @private {?Window}
      */
     this.targetWindow_ = targetWindow;
 

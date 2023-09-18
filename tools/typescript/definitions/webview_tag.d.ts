@@ -256,6 +256,7 @@ declare global {
         // Manually added to match the webview_tag.js Closure externs file.
         onBeforeRequest: webRequest.WebRequestOptionallySynchronousEvent;
         onBeforeSendHeaders: webRequest.WebRequestOptionallySynchronousEvent;
+        onSendHeaders: webRequest.WebRequestBaseEvent<(obj: any) => void>;
       }
 
       // Manually added to match the webview_tag.js Closure externs file.

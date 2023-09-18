@@ -43,6 +43,8 @@ build_webui("build") {
   mojo_files_deps = [
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_ts__generator",
   ]
+
+  ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
