@@ -27,11 +27,13 @@ extern const size_t kMaxUniqueSuggestedProfilesCount;
 // `last_filling_granularity`. If the `last_filling_granularity` for a certain
 // form was group filling, also add labels to give users feedback about the next
 // filling behaviour.
+// `last_targeted_fields` specified the last set of fields target by the user.
+// When not present, we default to full form.
 // TODO(crbug.com/1466116): Add tests when this is actually used.
 // TODO(crbug.com/1466116): Add labels when `last_filling_granularity` is group
 // filling.
 void AddSuggestionDetailsForCurrentFillingGranularity(
-    const ServerFieldTypeSet& last_targetted_fields,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
     const AutofillType& triggering_field_type,
     Suggestion& suggestion);
 
@@ -39,6 +41,8 @@ void AddSuggestionDetailsForCurrentFillingGranularity(
 // information. Uses `type` to define what group filling suggestion to add
 // (name, address or phone). The existence of child suggestions defines whether
 // the autofill popup will have submenus.
+// `last_targeted_fields` specified the last set of fields target by the user.
+// When not present, we default to full form.
 void AddGranularFillingChildSuggestions(const AutofillType& type,
                                         const AutofillProfile& profile,
                                         const std::string& app_locale,

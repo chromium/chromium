@@ -2807,7 +2807,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           : std::vector<SkipStatus>(form_structure.field_count(),
                                     SkipStatus::kNotSkipped);
   return suggestion_generator_->GetSuggestionsForProfiles(
-      form_structure, field, autofill_field.Type(), skip_statuses, app_locale_);
+      form_structure, field, last_address_fields_to_fill_for_section,
+      autofill_field.Type(), skip_statuses, app_locale_);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(

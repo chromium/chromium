@@ -53,13 +53,17 @@ class AutofillSuggestionGenerator {
   // Generates suggestions for all available profiles based on the `form` and
   // the value of `field` of type `field_type`. `app_locale` is the locale used
   // by the application.
-  // `skip_statuses` is used to know which fields are skipped during filling and
-  // which are not, and only use fillable fields for suggestion deduplication
-  // and label generation.
+  // `last_targeted_fields` is used to know which fields were targeted on a
+  // prior form interaction. In the context of granular filling, this could lead
+  // the user to be in one of the available filling granularities, field by
+  // field filling, group filling or full form (default). `skip_statuses` is
+  // used to know which fields are skipped during filling and which are not, and
+  // only use fillable fields for suggestion deduplication and label generation.
   // It is assumed that skip_statuses and form_structure have the sane size.
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FormStructure& form,
       const FormFieldData& field,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
       AutofillType field_type,
       base::span<SkipStatus> skip_statuses,
       const std::string& app_locale);
@@ -72,6 +76,7 @@ class AutofillSuggestionGenerator {
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<AutofillProfile*>& profiles,
       const ServerFieldTypeSet& field_types,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
       const AutofillType& trigger_field_type,
       uint64_t trigger_field_max_length);
 

@@ -324,10 +324,13 @@ std::u16string GetSuggestionMainText(const AutofillProfile* profile,
 }
 
 void AddSuggestionDetailsForCurrentFillingGranularity(
-    const ServerFieldTypeSet& last_targetted_fields,
+    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
     const AutofillType& triggering_field_type,
     Suggestion& suggestion) {
-  if (AreFieldsGranularFillingGroup(last_targetted_fields)) {
+  const ServerFieldTypeSet& last_targeted_fields =
+      optional_last_targeted_fields.value_or(kAllServerFieldTypes);
+
+  if (AreFieldsGranularFillingGroup(last_targeted_fields)) {
     switch (triggering_field_type.group()) {
       case FieldTypeGroup::kName:
         suggestion.popup_item_id = PopupItemId::kFillFullName;
@@ -345,14 +348,14 @@ void AddSuggestionDetailsForCurrentFillingGranularity(
         // behaviour/pre-granular filling popup id.
         suggestion.popup_item_id = PopupItemId::kAddressEntry;
     }
-  } else if (last_targetted_fields == kAllServerFieldTypes) {
+  } else if (last_targeted_fields == kAllServerFieldTypes) {
     suggestion.popup_item_id = PopupItemId::kAddressEntry;
-  } else if (last_targetted_fields.size() == 1) {
+  } else if (last_targeted_fields.size() == 1) {
     // Note: This does not affect SingleFieldFormFillers such
     // Autocomplete, IBANs and merchand promo. Even though they also fill only
     // one field, they have different code paths, therefore their suggestions
     // are not generated here. Furthermore, we do not store
-    // `last_targetted_fields` for them.
+    // `last_targeted_fields` for them.
     suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
   } else {
     NOTREACHED_NORETURN();

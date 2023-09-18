@@ -208,7 +208,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
 
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, {}, AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+          {&profile}, {}, /*last_targeted_fields=*/absl::nullopt,
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS),
           /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
@@ -229,7 +230,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+          {&profile}, {}, /*last_targeted_fields=*/absl::nullopt,
+          AutofillType(PHONE_HOME_WHOLE_NUMBER),
           /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
@@ -250,7 +252,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+          {&profile}, {}, /*last_targeted_fields=*/absl::nullopt,
+          AutofillType(PHONE_HOME_WHOLE_NUMBER),
           /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
@@ -274,7 +277,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile},
           {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(NAME_FIRST),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FIRST),
           /*trigger_field_max_length=*/0),
       ElementsAre(testing::Field(
           &Suggestion::main_text,
@@ -300,7 +303,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile},
           {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(NAME_FIRST),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FIRST),
           /*trigger_field_max_length=*/0),
       ElementsAre(AllOf(
           testing::Field(&Suggestion::labels,
@@ -322,17 +325,18 @@ TEST_F(AutofillSuggestionGeneratorTest,
   scoped_features.InitAndEnableFeature(
       features::kAutofillUseImprovedLabelDisambiguation);
 
-  EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
-                  {&profile},
-                  {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP},
-                  AutofillType(NAME_FULL),
-                  /*trigger_field_max_length=*/0),
-              ElementsAre(AllOf(
-                  testing::Field(&Suggestion::labels,
-                                 ConstructLabelLineMatrix(
-                                     {u"401 Merrimack St, Lowell, MA 01852"})),
-                  testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+           ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP},
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix(
+                                   {u"401 Merrimack St, Lowell, MA 01852"})),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -352,7 +356,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile},
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(NAME_FULL),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -377,7 +381,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS},
-          AutofillType(NAME_FULL),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
           /*trigger_field_max_length=*/0),
       ElementsAre(AllOf(
           testing::Field(&Suggestion::labels,
@@ -404,7 +408,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           {&profile},
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
            PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(NAME_FULL),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -449,7 +453,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           {&profile1, &profile2},
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
            PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(NAME_FULL),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FULL),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -499,7 +503,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2},
           {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(EMAIL_ADDRESS),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(EMAIL_ADDRESS),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -517,7 +521,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           {&profile1, &profile2},
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
            EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(EMAIL_ADDRESS),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(EMAIL_ADDRESS),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -565,7 +569,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2},
           {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(EMAIL_ADDRESS),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(EMAIL_ADDRESS),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
@@ -585,7 +589,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           {&profile1, &profile2},
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
            EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
-          AutofillType(EMAIL_ADDRESS),
+          /*last_targeted_fields=*/absl::nullopt, AutofillType(EMAIL_ADDRESS),
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(
@@ -616,7 +620,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile = test::GetFullProfile();
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
-      {&profile}, {}, AutofillType(NAME_FIRST),
+      {&profile}, /*field_types=*/{}, /*last_targeted_fields=*/absl::nullopt,
+      AutofillType(NAME_FIRST),
       /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(1U, suggestions.size());
@@ -682,7 +687,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile = test::GetFullProfile();
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
-      {&profile}, {}, AutofillType(NAME_FIRST),
+      {&profile}, /*field_types=*/{}, /*last_targeted_fields=*/absl::nullopt,
+      AutofillType(NAME_FIRST),
       /*trigger_field_max_length=*/0);
 
   // Suggestions should have two levels of children, The address line 1 (sixth
@@ -722,7 +728,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
-      {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+      {&profile}, {}, /*last_targeted_fields=*/absl::nullopt,
+      AutofillType(PHONE_HOME_WHOLE_NUMBER),
       /*trigger_field_max_length=*/0);
 
   // The child suggestions should be:
@@ -755,7 +762,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   AutofillProfile profile = test::GetFullProfile();
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
-      {&profile}, {}, AutofillType(ADDRESS_HOME_LINE1),
+      {&profile}, /*field_types=*/{}, /*last_targeted_fields=*/absl::nullopt,
+      AutofillType(ADDRESS_HOME_LINE1),
       /*trigger_field_max_length=*/0);
 
   // The child suggestions should be:
@@ -797,7 +805,8 @@ TEST_F(
   profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
-      {&profile}, {}, AutofillType(ADDRESS_HOME_LINE1),
+      {&profile}, /*field_types=*/{}, /*last_targeted_fields=*/absl::nullopt,
+      AutofillType(ADDRESS_HOME_LINE1),
       /*trigger_field_max_length=*/0);
   ASSERT_EQ(1u, suggestions.size());
   ASSERT_LE(3u, suggestions[0].children.size());

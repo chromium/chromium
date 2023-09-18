@@ -114,6 +114,7 @@ AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormStructure& form,
     const FormFieldData& field,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillType field_type,
     base::span<SkipStatus> skip_statuses,
     const std::string& app_locale) {
@@ -129,7 +130,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
       personal_data_->GetProfilesForSuggestions(
           field_type, field.value, field.is_autofilled, field_types);
 
-  return CreateSuggestionsFromProfiles(profiles, field_types, field_type,
+  return CreateSuggestionsFromProfiles(profiles, field_types,
+                                       last_targeted_fields, field_type,
                                        field.max_length);
 }
 
@@ -137,6 +139,7 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const std::vector<AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
     const AutofillType& trigger_field_type,
     uint64_t trigger_field_max_length) {
   std::vector<Suggestion> suggestions;
@@ -153,7 +156,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       suggestion_selection::AddGranularFillingChildSuggestions(
           trigger_field_type, *profile, app_locale, suggestions.back());
       suggestion_selection::AddSuggestionDetailsForCurrentFillingGranularity(
-          kAllServerFieldTypes, trigger_field_type, suggestions.back());
+          last_targeted_fields, trigger_field_type, suggestions.back());
     }
   }
   std::unique_ptr<LabelFormatter> formatter;
