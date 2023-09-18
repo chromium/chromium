@@ -915,7 +915,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 (Voor <ph name="PRODUCT_OS_NAME" /> raadpleeg je DeviceMetricsReportingEnabled.)</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
-<translation id="1810261428246410396">Het gebruik van instant-tethering toestaan</translation>
+<translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
 <translation id="1813638828646876133">Automatisch versturen van pincode op het vergrendel- en inlogscherm aanzetten</translation>
 <translation id="1813672770917912317">Hiermee kun je instellen of <ph name="PRODUCT_NAME" /> de v8 JavaScript-engine uitvoert met de JIT-compiler (Just In Time) aangezet of niet.
 
@@ -2036,7 +2036,7 @@ Het beleid <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> kan het gedrag van di
 <translation id="2866387633548787857">Fast Transition uitzetten</translation>
 <translation id="2866619962692161453">Type beleid over ander beleid</translation>
 <translation id="2866726566162790531">Lijst met herkomsten waarvoor alle HTTP-verificatie is toegestaan</translation>
-<translation id="2868756546751652023">Toestaan dat gebruikers instant-tethering gebruiken</translation>
+<translation id="2868756546751652023">Toestaan dat gebruikers instant tethering gebruiken</translation>
 <translation id="286898786908566256">Toestaan dat gebruikers telefoonnummers van Chrome naar hun Android-apparaat sturen</translation>
 <translation id="2872098849906555324">Google Drive-synchronisatie uitzetten</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
@@ -5049,9 +5049,9 @@ Als je het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> inste
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant-tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
+<translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
 
-      Als deze instelling uitstaat, kunnen gebruikers instant-tethering niet gebruiken.
+      Als deze instelling uitstaat, kunnen gebruikers instant tethering niet gebruiken.
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="5584132346604748282">Beheer van Google-locatieservices op Android</translation>
@@ -5094,7 +5094,7 @@ Als je het beleid niet instelt, hebben alle domeinen geen toegang tot file://-UR
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
 <translation id="5634032995857968056">De sandbox voor de app-container van het weergaveprogramma aanzetten</translation>
-<translation id="5638334542697444045">Niet toestaan dat gebruikers instant-tethering gebruiken</translation>
+<translation id="5638334542697444045">Niet toestaan dat gebruikers instant tethering gebruiken</translation>
 <translation id="5639454129004500060">Als dit beleid wordt ingesteld, bevat het informatie om een bureautemplate-bestand te downloaden.  Het bestand bevat een bureautemplate dat aan de huidige gebruiker kan worden geleverd.
       Als het niet wordt ingesteld, bevat de lijst met bureautemplates geen vooraf ingestelde bureautemplate.  Als het beleid <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> niet op True wordt ingesteld, heeft dit beleid geen effect.</translation>
 <translation id="5644038505105689131">Afbeeldingsbron van de screensaver voor het inlogscherm.</translation>

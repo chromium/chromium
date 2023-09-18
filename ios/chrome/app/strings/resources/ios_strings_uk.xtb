@@ -139,7 +139,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадійний пароль}one{{count} ненадійний пароль}few{{count} ненадійні паролі}many{{count} ненадійних паролів}other{{count} ненадійного пароля}}</translation>
 <translation id="1767766085187034454">Google Перекладач</translation>
 <translation id="1789803444939621101">З поверненням, <ph name="USER_NAME" />!</translation>
-<translation id="1803264062614276815">Ім’я та прізвище власника картки</translation>
+<translation id="1803264062614276815">Ім’я і прізвище власника картки</translation>
 <translation id="1809939268435598390">Видалити папку</translation>
 <translation id="1813414402673211292">Очистити історію</translation>
 <translation id="1815941218935345331">Код доступу</translation>
