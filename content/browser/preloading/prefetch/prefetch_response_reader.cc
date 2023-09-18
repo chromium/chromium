@@ -66,7 +66,7 @@ PrefetchResponseReader::~PrefetchResponseReader() {
 
 void PrefetchResponseReader::SetStreamingURLLoader(
     base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader) {
-  DCHECK(!streaming_url_loader_);
+  CHECK(!streaming_url_loader_);
   streaming_url_loader_ = std::move(streaming_url_loader);
 }
 
@@ -249,8 +249,8 @@ void PrefetchResponseReader::OnComplete(
       break;
   }
 
-  DCHECK(!response_complete_time_);
-  DCHECK(!completion_status_);
+  CHECK(!response_complete_time_);
+  CHECK(!completion_status_);
   response_complete_time_ = base::TimeTicks::Now();
   completion_status_ = completion_status;
 
@@ -367,7 +367,7 @@ void PrefetchResponseReader::OnReceiveResponse(
 
 void PrefetchResponseReader::ForwardCompletionStatus(
     ServingUrlLoaderClientId client_id) {
-  DCHECK(completion_status_);
+  CHECK(completion_status_);
   if (network::mojom::URLLoaderClient* client =
           serving_url_loader_clients_.Get(client_id)) {
     client->OnComplete(completion_status_.value());

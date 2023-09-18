@@ -1089,7 +1089,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
                             [](std::unique_ptr<mojo::DataPipeProducer> producer,
                                bool* producer_completed, MojoResult result) {
                               *producer_completed = true;
-                              DCHECK_EQ(result, MOJO_RESULT_OK);
+                              CHECK_EQ(result, MOJO_RESULT_OK);
                               // `producer` is deleted here.
                             },
                             std::move(producer), &producer_completed));

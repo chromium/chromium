@@ -776,7 +776,7 @@ PrefetchRequestHandler PrefetchContainer::Reader::CreateRequestHandler() {
 
 PrefetchRequestHandler PrefetchContainer::CreateRequestHandlerInternal(
     Reader& reader) {
-  DCHECK_EQ(reader.GetPrefetchContainer(), this);
+  CHECK_EQ(reader.GetPrefetchContainer(), this);
 
   // Create a `PrefetchRequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
@@ -911,7 +911,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
 
 bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
     const GURL& url) const {
-  DCHECK(index_redirect_chain_to_serve_ >= 1);
+  CHECK(index_redirect_chain_to_serve_ >= 1);
   return GetCurrentSinglePrefetchToServe().url_ == url;
 }
 
@@ -928,17 +928,17 @@ PrefetchContainer::GetPreviousSinglePrefetchToPrefetch() const {
 }
 
 bool PrefetchContainer::Reader::IsEnd() const {
-  DCHECK(index_redirect_chain_to_serve_ <=
-         prefetch_container_->redirect_chain_.size());
+  CHECK(index_redirect_chain_to_serve_ <=
+        prefetch_container_->redirect_chain_.size());
   return index_redirect_chain_to_serve_ >=
          prefetch_container_->redirect_chain_.size();
 }
 
 const PrefetchContainer::SinglePrefetch&
 PrefetchContainer::Reader::GetCurrentSinglePrefetchToServe() const {
-  DCHECK(index_redirect_chain_to_serve_ >= 0 &&
-         index_redirect_chain_to_serve_ <
-             prefetch_container_->redirect_chain_.size());
+  CHECK(index_redirect_chain_to_serve_ >= 0 &&
+        index_redirect_chain_to_serve_ <
+            prefetch_container_->redirect_chain_.size());
   return *prefetch_container_->redirect_chain_[index_redirect_chain_to_serve_];
 }
 
@@ -1035,7 +1035,7 @@ bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop()
 base::WeakPtr<PrefetchResponseReader>
 PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
   const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
-  DCHECK(this_prefetch.response_reader_);
+  CHECK(this_prefetch.response_reader_);
   return this_prefetch.response_reader_->GetWeakPtr();
 }
 
@@ -1176,7 +1176,7 @@ PrefetchContainer::SinglePrefetch::SinglePrefetch(
       response_reader_(base::MakeRefCounted<PrefetchResponseReader>()) {}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
-  DCHECK(response_reader_);
+  CHECK(response_reader_);
   base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(response_reader_));
 }

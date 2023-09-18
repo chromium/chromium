@@ -59,7 +59,7 @@ PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     const GlobalRenderFrameHostId& referring_render_frame_host_id)
     : frame_tree_node_id_(frame_tree_node_id),
       referring_render_frame_host_id_(referring_render_frame_host_id) {
-  DCHECK(referring_render_frame_host_id_);
+  CHECK(referring_render_frame_host_id_);
 }
 
 PrefetchURLLoaderInterceptor::~PrefetchURLLoaderInterceptor() = default;
@@ -71,7 +71,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!loader_callback_);
+  CHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
 
   FrameTreeNode* frame_tree_node =

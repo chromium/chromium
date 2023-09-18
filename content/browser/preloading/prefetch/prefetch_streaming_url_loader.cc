@@ -152,7 +152,7 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
   head->was_in_prefetch_cache = true;
 
   // Checks head to determine if the prefetch can be served.
-  DCHECK(on_prefetch_response_started_callback_);
+  CHECK(on_prefetch_response_started_callback_);
   PrefetchStreamingURLLoaderStatus status =
       std::move(on_prefetch_response_started_callback_).Run(head.get());
 
@@ -172,7 +172,7 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
-  DCHECK(on_prefetch_redirect_callback_);
+  CHECK(on_prefetch_redirect_callback_);
   on_prefetch_redirect_callback_.Run(redirect_info, std::move(redirect_head));
 }
 
@@ -180,7 +180,7 @@ void PrefetchStreamingURLLoader::HandleRedirect(
     PrefetchRedirectStatus redirect_status,
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
-  DCHECK(redirect_head);
+  CHECK(redirect_head);
 
   // If the prefetch_url_loader_ is no longer connected, mark this as failed.
   if (!prefetch_url_loader_) {
@@ -189,7 +189,7 @@ void PrefetchStreamingURLLoader::HandleRedirect(
 
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
-      DCHECK(prefetch_url_loader_);
+      CHECK(prefetch_url_loader_);
       prefetch_url_loader_->FollowRedirect(
           /*removed_headers=*/std::vector<std::string>(),
           /*modified_headers=*/net::HttpRequestHeaders(),

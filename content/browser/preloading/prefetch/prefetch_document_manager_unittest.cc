@@ -369,7 +369,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
   // which the PrefetchContainer WeakPtr is not valid anymore.
   prefetch_document_manager->ReleasePrefetchContainer(
       GetPrefetchesPreparedToServe()[1].second->GetURL());
-  DCHECK(!GetPrefetchesPreparedToServe()[1].second);
+  CHECK(!GetPrefetchesPreparedToServe()[1].second);
   NavigateMainframeRendererTo(
       GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5"));
   EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 3u);
