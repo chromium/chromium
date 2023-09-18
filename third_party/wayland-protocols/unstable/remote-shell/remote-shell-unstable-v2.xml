@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v2" version="4">
+  <interface name="zcr_remote_shell_v2" version="5">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -162,7 +162,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v2" version="4">
+  <interface name="zcr_remote_surface_v2" version="5">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -853,6 +853,26 @@
         This is double buffered state and will be applied in the next commit.
       </description>
       <arg name="scale_factor_as_uint" type="uint"/>
+    </request>
+
+     <!-- Version 5 additions -->
+    <request name="set_window_corner_radii" since="5">
+      <description summary="Request to apply rounded corners to the window of the surface.">
+        The client specifies the radius of each corner to be applied to the
+        window in DPs (device independent pixels).
+
+        The window radius is double buffered, and will be applied at the
+        time wl_surface.commit of the corresponding wl_surface is called.
+
+        Note: Rounded corner radii affects the wl_surface tree, including
+        subsurfaces. Once this protocol is called, surfaces cannot set
+        their own rounded corner bounds because rounded window bounds will be
+        applied to the whole surface tree.
+      </description>
+      <arg name="upper_left_radius" type="uint"/>
+      <arg name="upper_right_radius" type="uint"/>
+      <arg name="lower_right_radius" type="uint"/>
+      <arg name="lower_left_radius" type="uint"/>
     </request>
   </interface>
 

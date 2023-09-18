@@ -362,6 +362,13 @@ void remote_surface_set_scale_factor(wl_client* client,
                                      wl_resource* resource,
                                      uint mode);
 
+void remote_surface_set_window_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius);
+
 void remote_surface_set_float(wl_client* client, wl_resource* resource);
 
 void remote_surface_block_ime(wl_client* client, wl_resource* resource);

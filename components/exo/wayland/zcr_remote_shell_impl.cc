@@ -1485,6 +1485,17 @@ void remote_surface_set_scale_factor(wl_client* client,
       scale_factor);
 }
 
+void remote_surface_set_window_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius) {
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetWindowCornerRadii(
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // notification_surface_interface:
 

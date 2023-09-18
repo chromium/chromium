@@ -108,6 +108,7 @@ const struct zcr_remote_surface_v2_interface remote_surface_implementation_v2 =
         zcr_remote_shell::remote_surface_set_resize_lock_type,
         zcr_remote_shell::remote_surface_set_float,
         zcr_remote_shell::remote_surface_set_scale_factor,
+        zcr_remote_shell::remote_surface_set_window_corner_radii,
 };
 
 const struct zcr_notification_surface_v2_interface
