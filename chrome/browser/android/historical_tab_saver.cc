@@ -161,7 +161,11 @@ ScopedWebContents::ScopedWebContents(content::WebContents* unowned_web_contents)
 ScopedWebContents::ScopedWebContents(
     std::unique_ptr<content::WebContents> owned_web_contents)
     : unowned_web_contents_(nullptr),
-      owned_web_contents_(std::move(owned_web_contents)) {}
+      owned_web_contents_(std::move(owned_web_contents)) {
+  if (owned_web_contents_) {
+    owned_web_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
+}
 
 ScopedWebContents::~ScopedWebContents() = default;
 

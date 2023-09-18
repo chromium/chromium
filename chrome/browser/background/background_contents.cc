@@ -60,6 +60,7 @@ BackgroundContents::BackgroundContents(
   } else {
     web_contents_ = WebContents::Create(create_params);
   }
+  web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   extensions::SetViewType(web_contents_.get(),
                           extensions::mojom::ViewType::kBackgroundContents);
   web_contents_->SetDelegate(this);

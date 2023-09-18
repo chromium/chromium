@@ -23,6 +23,7 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   // could kill the background offliner while it was running.
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(browser_context_));
+  web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetAudioMuted(true);
   web_contents_->SetDelegate(this);
 }

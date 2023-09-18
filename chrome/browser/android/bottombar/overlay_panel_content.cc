@@ -111,6 +111,7 @@ void OverlayPanelContent::SetWebContents(
   // TODO(pedrosimonetti): Confirm with dtrainor@ if the comment above
   // is accurate.
   web_contents_.reset(web_contents);
+  web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
   web_contents_->SetIsOverlayContent(true);
   // TODO(pedrosimonetti): confirm if we need this after promoting it

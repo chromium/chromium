@@ -732,6 +732,9 @@ void Portal::WebContentsHolder::SetOwned(
     std::unique_ptr<WebContents> web_contents) {
   SetUnowned(static_cast<WebContentsImpl*>(web_contents.get()));
   owned_contents_ = std::move(web_contents);
+  if (owned_contents_) {
+    owned_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
 }
 
 void Portal::WebContentsHolder::Clear() {

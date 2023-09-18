@@ -14,6 +14,9 @@ WebContentsStateSyncedTabDelegate::WebContentsStateSyncedTabDelegate(
   web_contents_ = WebContentsState::RestoreContentsFromByteBuffer(
       web_contents_buffer_.get(), /*initially_hidden=*/true,
       /*no_renderer=*/true);
+  if (web_contents_) {
+    web_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
   TabContentsSyncedTabDelegate::SetWebContents(web_contents_.get());
 }
 

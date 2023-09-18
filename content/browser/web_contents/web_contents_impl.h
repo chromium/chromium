@@ -885,6 +885,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
           url_match_predicate = absl::nullopt) override;
   void BackNavigationLikely(PreloadingPredictor predictor,
                             WindowOpenDisposition disposition) override;
+  void SetOwnerLocationForDebug(
+      absl::optional<base::Location> owner_location) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 
@@ -1376,6 +1378,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
+
+  const absl::optional<base::Location>& ownership_location() const {
+    return ownership_location_;
+  }
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
@@ -2404,6 +2410,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   int disallow_custom_cursor_scope_count_ = 0;
 
   base::WeakPtr<FileChooserImpl> active_file_chooser_;
+
+  absl::optional<base::Location> ownership_location_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

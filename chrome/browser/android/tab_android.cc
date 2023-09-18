@@ -307,6 +307,8 @@ void TabAndroid::InitWebContents(
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
   DCHECK(web_contents_.get());
 
+  web_contents_->SetOwnerLocationForDebug(FROM_HERE);
+
   TabAndroidHelper::SetTabForWebContents(web_contents(), this);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
@@ -398,6 +400,9 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
   // Ownership of |released_contents| is assumed by the code that initiated the
   // release.
   content::WebContents* released_contents = web_contents_.release();
+  if (released_contents) {
+    released_contents->SetOwnerLocationForDebug(absl::nullopt);
+  }
 
   // Remove the link from the native WebContents to |this|, since the
   // lifetimes of the two objects are no longer intertwined.

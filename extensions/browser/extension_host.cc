@@ -63,7 +63,8 @@ ExtensionHost::ExtensionHost(const Extension* extension,
          host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
   host_contents_ = WebContents::Create(
-      WebContents::CreateParams(browser_context_, site_instance)),
+      WebContents::CreateParams(browser_context_, site_instance));
+  host_contents_->SetOwnerLocationForDebug(FROM_HERE);
   content::WebContentsObserver::Observe(host_contents_.get());
   host_contents_->SetDelegate(this);
   SetViewType(host_contents_.get(), host_type);

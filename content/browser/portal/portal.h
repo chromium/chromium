@@ -176,6 +176,9 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
     // caller.
     std::unique_ptr<WebContents> ReleaseOwnership() {
       DCHECK(OwnsContents());
+      if (owned_contents_) {
+        owned_contents_->SetOwnerLocationForDebug(absl::nullopt);
+      }
       return std::move(owned_contents_);
     }
 

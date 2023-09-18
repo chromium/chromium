@@ -476,6 +476,9 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
   std::unique_ptr<WebContents> owned_guest_contents =
       std::move(owned_guest_contents_);
   DCHECK_EQ(owned_guest_contents.get(), web_contents());
+  if (owned_guest_contents) {
+    owned_guest_contents->SetOwnerLocationForDebug(absl::nullopt);
+  }
 
   // Since this inner WebContents is created from the browser side we do
   // not have RemoteFrame mojo channels so we pass in
@@ -726,6 +729,9 @@ void GuestViewBase::TakeGuestContentsOwnership(
     std::unique_ptr<WebContents> guest_web_contents) {
   DCHECK(!owned_guest_contents_);
   owned_guest_contents_ = std::move(guest_web_contents);
+  if (owned_guest_contents_) {
+    owned_guest_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
 }
 
 void GuestViewBase::ClearOwnedGuestContents() {

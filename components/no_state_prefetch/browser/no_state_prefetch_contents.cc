@@ -283,6 +283,7 @@ void NoStatePrefetchContents::StartPrerendering(
       attempt_.get(), content::PreloadingTriggeringOutcome::kRunning);
 
   no_state_prefetch_contents_ = CreateWebContents(session_storage_namespace);
+  no_state_prefetch_contents_->SetOwnerLocationForDebug(FROM_HERE);
   content::WebContentsObserver::Observe(no_state_prefetch_contents_.get());
   delegate_->OnNoStatePrefetchContentsCreated(
       no_state_prefetch_contents_.get());

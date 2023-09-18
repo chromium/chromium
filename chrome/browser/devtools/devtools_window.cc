@@ -1333,6 +1333,7 @@ void DevToolsWindow::AddNewContents(
     bool* was_blocked) {
   if (new_contents.get() == toolbox_web_contents_) {
     owned_toolbox_web_contents_ = std::move(new_contents);
+    owned_toolbox_web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
     toolbox_web_contents_->SetDelegate(new DevToolsToolboxDelegate(
         toolbox_web_contents_, inspected_web_contents_));
