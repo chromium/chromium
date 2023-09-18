@@ -160,6 +160,9 @@ public class ImportOrderer {
     if (prev.isAndroid() && !curr.isAndroid()) {
       return true;
     }
+    if (prev.isChromium() != curr.isChromium()) {
+      return true;
+    }
     return !prev.topLevel().equals(curr.topLevel());
   }
 

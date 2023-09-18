@@ -30,11 +30,4 @@ To update local modifications:
   curl -o local_modifications/java/com/google/googlejavaformat/java/ImportOrderer.java 'https://raw.githubusercontent.com/google/google-java-format/master/core/src/main/java/com/google/googlejavaformat/java/ImportOrderer.java'
   (cd local_modifications && patch -p1 < ../chromium.patch && rm ../chromium.patch)
 3) Rebuild chromium-overrides.jar:
-  ../jdk/current/bin/javac \
-      -d tmp \
-      --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
-      -cp google-java-format.jar \
-      local_modifications/java/com/google/googlejavaformat/java/*.java
-  rm chromium-overrides.jar
-  (cd tmp && zip -r0 ../chromium-overrides.jar *)
-  rm -r tmp
+  ./recreate_chromium_overrides_jar.sh

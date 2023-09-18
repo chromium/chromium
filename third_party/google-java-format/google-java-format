@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Exports list taken from google-java-format.jar/META-INF/MANIFEST.MG
 THIS_DIR=$(dirname "$0")
