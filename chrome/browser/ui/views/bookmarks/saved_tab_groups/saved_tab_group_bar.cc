@@ -472,12 +472,6 @@ void SavedTabGroupBar::Layout() {
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
-  // Happens when the browser is in incognito mode.
-  // TODO(crbug/1467894): Only add SavedTabGroupBar with regular profiles.
-  if (children().empty()) {
-    return 0;
-  }
-
   // Early return if the only button is the overflow button. It should be
   // invisible in this case. Happens when saved tab groups is enabled and no
   // groups are saved yet.
