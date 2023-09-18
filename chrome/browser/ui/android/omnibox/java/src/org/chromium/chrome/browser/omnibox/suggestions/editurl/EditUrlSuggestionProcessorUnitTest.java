@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -103,7 +101,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     private @Mock ShareDelegate mShareDelegate;
     private @Mock Tab mTab;
-    private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock ClipboardManager mClipboardManager;
@@ -134,8 +131,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
                          .setUrl(SEARCH_URL_1)
                          .build();
 
-        mProcessor = new EditUrlSuggestionProcessor(mContext, mSuggestionHost, mUrlBarDelegate,
-                mImageSupplier, mTabSupplier, mShareDelegateSupplier);
+        mProcessor = new EditUrlSuggestionProcessor(
+                mContext, mSuggestionHost, mImageSupplier, mTabSupplier, mShareDelegateSupplier);
         mModel = mProcessor.createModel();
 
         doReturn(mTab).when(mTabSupplier).get();
@@ -163,47 +160,47 @@ public final class EditUrlSuggestionProcessorUnitTest {
         // URLs don't match - this suggestion should be ignored.
         doReturn(SEARCH_URL_2).when(mTab).getUrl();
         assertFalse(mProcessor.doesProcessSuggestion(match, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_acceptMatchingUrlWhatYouTyped() {
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_rejectMatchWhenTabIsMissing() {
         doReturn(null).when(mTabSupplier).get();
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_rejectMatchForNativeTab() {
         doReturn(true).when(mTab).isNativePage();
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_rejectMatchForSadTab() {
         ShadowSadTab.reportSadTab = true;
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_rejectMatchForUninitializedTab() {
         doReturn(false).when(mTab).isInitialized();
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
     public void doesProcessSuggestion_rejectNonTopMatch() {
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 1));
-        verifyNoMoreInteractions(mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
@@ -214,7 +211,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         // Suggestion should be rejected even though URLs match.
         when(mTab.getUrl()).thenReturn(SEARCH_URL_1);
         assertFalse(mProcessor.doesProcessSuggestion(match, 0));
-        verify(mUrlBarDelegate, never()).setOmniboxEditingText(any());
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
@@ -252,85 +249,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public void editButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-        verify(mUrlBarDelegate).setOmniboxEditingText(SEARCH_URL_1.getSpec());
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
-    }
-
-    @Test
-    public void editButton_unescapesUrl() {
-        mMatch = new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
-                         .setIsSearch(false)
-                         .setDisplayText("test")
-                         .setDescription(MATCH_TITLE)
-                         .setUrl(ESCAPED_PATH_URL)
-                         .build();
-        doReturn(ESCAPED_PATH_URL).when(mTab).getUrl();
-
-        mProcessor.populateModel(mMatch, mModel, 0);
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-
-        // Expect the decoded content.
-        verify(mUrlBarDelegate).setOmniboxEditingText(ESCAPED_PATH_URL_STRING);
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
-    }
-
-    @Test
-    public void editButton_fallsBackToMalformedUrlIfUnsecapeFails() {
-        mMatch = new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
-                         .setIsSearch(false)
-                         .setDisplayText("test")
-                         .setDescription(MATCH_TITLE)
-                         .setUrl(INVALID_ESCAPED_PATH_URL)
-                         .build();
-        doReturn(INVALID_ESCAPED_PATH_URL).when(mTab).getUrl();
-
-        mProcessor.populateModel(mMatch, mModel, 0);
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-
-        // Expect the original content.
-        verify(mUrlBarDelegate).setOmniboxEditingText(INVALID_ESCAPED_PATH_URL.getSpec());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
-    public void editButton_click_populatesOriginalQueryWhenPossible() {
-        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
-        mProcessor.populateModel(mMatch, mModel, 0);
-        doReturn("Query").when(mSuggestionHost).queryFromGurl(any());
-
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-
-        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
-        verify(mUrlBarDelegate).setOmniboxEditingText("Query");
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
-    public void editButton_click_showsOriginalUrlWhenQueryIsNull() {
-        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
-        mProcessor.populateModel(mMatch, mModel, 0);
-        doReturn(null).when(mSuggestionHost).queryFromGurl(any());
-
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-
-        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
-        verify(mUrlBarDelegate).setOmniboxEditingText(SEARCH_URL_1.getSpec());
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
-    public void editButton_click_showsOriginalUrlWhenQueryIsEmpty() {
-        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
-        mProcessor.populateModel(mMatch, mModel, 0);
-        doReturn("").when(mSuggestionHost).queryFromGurl(any());
-
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-
-        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
-        verify(mUrlBarDelegate).setOmniboxEditingText(SEARCH_URL_1.getSpec());
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
+        verify(mSuggestionHost).onRefineSuggestion(mMatch);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
@@ -391,7 +311,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         ClipData clip = new ClipData("url", new String[] {"text/x-moz-url", "text/plain"},
                 new ClipData.Item(SEARCH_URL_1.getSpec()));
         assertEquals(clip.toString(), argument.getValue().toString());
-        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test

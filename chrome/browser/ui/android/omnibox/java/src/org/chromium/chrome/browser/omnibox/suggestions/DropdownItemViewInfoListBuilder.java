@@ -71,11 +71,10 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param context Current context.
      * @param host Component creating suggestion view delegates and responding to suggestion events.
-     * @param delegate Component facilitating interactions with UI and Autocomplete mechanism.
      * @param textProvider Provider of querying/editing the Omnibox.
      */
-    void initDefaultProcessors(Context context, SuggestionHost host, AutocompleteDelegate delegate,
-            UrlBarEditingTextStateProvider textProvider) {
+    void initDefaultProcessors(
+            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         final Supplier<ShareDelegate> shareSupplier =
@@ -93,7 +92,7 @@ class DropdownItemViewInfoListBuilder {
         }
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, mImageSupplier, mActivityTabSupplier, shareSupplier));
+                context, host, mImageSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, mImageSupplier));
         registerSuggestionProcessor(

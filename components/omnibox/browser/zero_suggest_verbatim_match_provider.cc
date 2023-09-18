@@ -9,6 +9,8 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
@@ -85,11 +87,23 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
 
-  // In the case of native pages, the classifier may replace the URL with an
-  // empty content, resulting with a verbatim match that does not point
-  // anywhere.
-  if (!match.destination_url.is_valid())
-    return;
+  // If the URL suggestion comes from the default search engine, extract the
+  // original search query and place it in fill_into_edit, to permit re-use of
+  // the query for manual refinement.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kSearchReadyOmniboxAllowQueryEdit)) {
+    auto* const url_service = client_->GetTemplateURLService();
+    if (url_service->IsSearchResultsPageFromDefaultSearchProvider(
+            match.destination_url)) {
+      auto* const dse = url_service->GetDefaultSearchProvider();
+      if (dse->url_ref().SupportsReplacement(
+              url_service->search_terms_data())) {
+        dse->ExtractSearchTermsFromURL(match.destination_url,
+                                       url_service->search_terms_data(),
+                                       &match.fill_into_edit);
+      }
+    }
+  }
 
   match.provider = this;
   matches_.push_back(std::move(match));

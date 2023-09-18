@@ -203,7 +203,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     void initDefaultProcessors() {
         mDropdownViewInfoListBuilder.initDefaultProcessors(
-                mContext, this, mDelegate, mUrlBarEditingTextProvider);
+                mContext, this, mUrlBarEditingTextProvider);
     }
 
     /**
