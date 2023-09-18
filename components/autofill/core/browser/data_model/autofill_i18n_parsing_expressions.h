@@ -174,7 +174,7 @@ constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7_Pieces
 
 // A lookup map for parsing expressions for countries and field types.
 constexpr auto kAutofillParsingRulesMap =
-    base::MakeFixedFlatMap<CountryAndFieldType, raw_ptr<const AutofillParsingProcess>>({
+    base::MakeFixedFlatMap<CountryAndFieldType, const AutofillParsingProcess*>({
       {{"BR", NAME_FULL}, &kDecompositionCascade_3},
       {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[8]},
       {{"BR", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_0},
