@@ -55,6 +55,11 @@ constexpr char kClassifyUrlDataContentType[] =
 
 constexpr char kClassifyUrlAuthErrorMetric[] =
     "FamilyLinkUser.ClassifyUrlRequest.AuthError";
+constexpr char kClassifyUrlHttpStatusOrNetErrorMetric[] =
+    "FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError";
+// This duplicates the metric above, which was renamed. To allow A/B comparison
+// with proto_fetcher.cc, both will be recorded until the feature is released
+// and this unit removed.
 constexpr char kClassifyUrlNetOrHttpStatusMetric[] =
     "FamilyLinkUser.ClassifyUrlRequest.NetOrHttpStatus";
 constexpr char kClassifyUrlParsingResultMetric[] =
@@ -387,6 +392,8 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
   if (net_error != net::OK) {
     DLOG(WARNING) << "Network error " << net_error;
     base::UmaHistogramSparse(kClassifyUrlNetOrHttpStatusMetric, net_error);
+    base::UmaHistogramSparse(kClassifyUrlHttpStatusOrNetErrorMetric, net_error);
+
     DispatchResult(
         it, std::move(response_proto),
         KidsChromeManagementClient::ErrorCode::kNetworkError,
@@ -397,6 +404,9 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "Response: " << response_body.get();
     base::UmaHistogramSparse(kClassifyUrlNetOrHttpStatusMetric, response_code);
+    base::UmaHistogramSparse(kClassifyUrlHttpStatusOrNetErrorMetric,
+                             response_code);
+
     DispatchResult(
         it, std::move(response_proto),
         KidsChromeManagementClient::ErrorCode::kHttpError,
