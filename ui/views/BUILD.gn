@@ -694,6 +694,7 @@ component("views") {
       "win/hwnd_message_handler.h",
       "win/hwnd_message_handler_delegate.h",
       "win/hwnd_util.h",
+      "win/pen_event_handler_util.h",
       "win/pen_event_processor.h",
       "win/pen_id_handler.h",
       "win/scoped_enable_unadjusted_mouse_events_win.h",

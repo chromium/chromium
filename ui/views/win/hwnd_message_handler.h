@@ -192,6 +192,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Updates the window style to reflect whether it can be resized or maximized.
   void SizeConstraintsChanged();
 
+  // Lets pen events fall through to the default window handler until the next
+  // WM_POINTERUP event.
+  static void UseDefaultHandlerForPenEventsUntilPenUp();
+
   // Returns true if content is rendered to a child window instead of directly
   // to this window.
   bool HasChildRenderingWindow();
@@ -737,6 +741,12 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // over the client area, where it is not in sync with the mouse position.
   // Reset to false when we get user mouse input again.
   static bool is_pen_active_in_client_area_;
+
+  // If true, all pen events in the client area should be handled. If false,
+  // unhandled pen events will be allowed to fall through to the default
+  // handler. This should only be false in limited cases, as the default handler
+  // generates duplicate WM_MOUSE compatibility events for pen events it sees.
+  static bool handle_pen_events_in_client_area_;
 
   // Time the last WM_MOUSEHWHEEL message is received. Please refer to the
   // HandleMouseEventInternal function as to why this is needed.

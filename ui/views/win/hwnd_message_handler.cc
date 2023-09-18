@@ -72,6 +72,7 @@
 #include "ui/views/win/fullscreen_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/views/win/hwnd_util.h"
+#include "ui/views/win/pen_event_handler_util.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
 
 namespace views {
@@ -421,6 +422,7 @@ base::LazyInstance<HWNDMessageHandler::FullscreenWindowMonitorMap>::
 
 LONG HWNDMessageHandler::last_touch_or_pen_message_time_ = 0;
 bool HWNDMessageHandler::is_pen_active_in_client_area_ = false;
+bool HWNDMessageHandler::handle_pen_events_in_client_area_ = true;
 
 HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                                        const std::string& debugging_id)
@@ -1195,6 +1197,11 @@ void HWNDMessageHandler::SizeConstraintsChanged() {
     style &= ~WS_MINIMIZEBOX;
   }
   SetWindowLong(hwnd(), GWL_STYLE, style);
+}
+
+// static
+void HWNDMessageHandler::UseDefaultHandlerForPenEventsUntilPenUp() {
+  handle_pen_events_in_client_area_ = false;
 }
 
 bool HWNDMessageHandler::HasChildRenderingWindow() {
@@ -3566,10 +3573,15 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePen(
     is_pen_active_in_client_area_ = true;
   }
 
-  // Always mark as handled as we don't want to generate WM_MOUSE compatiblity
-  // events.
   if (ref)
-    SetMsgHandled(TRUE);
+    SetMsgHandled(handle_pen_events_in_client_area_);
+
+  // When not dragging, always mark pen events as handled so as not to generate
+  // WM_MOUSE compatibility events.
+  if (message == WM_POINTERUP) {
+    handle_pen_events_in_client_area_ = true;
+  }
+
   return 0;
 }
 
@@ -3829,6 +3841,11 @@ void HWNDMessageHandler::SetHeadlessWindowBounds(const gfx::Rect& bounds) {
     headless_mode_window_->bounds = bounds;
     delegate_->HandleHeadlessWindowBoundsChanged(bounds);
   }
+}
+
+// Declared in pen_event_handler_util.h.
+void UseDefaultHandlerForPenEventsUntilPenUp() {
+  HWNDMessageHandler::UseDefaultHandlerForPenEventsUntilPenUp();
 }
 
 }  // namespace views
