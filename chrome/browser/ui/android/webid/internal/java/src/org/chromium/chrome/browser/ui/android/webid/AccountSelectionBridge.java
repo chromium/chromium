@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -117,6 +118,27 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
         mAccountSelectionComponent.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+    }
+
+    /**
+     * Shows a bottomsheet detailing the error that has occurred in the user's attempt to sign-in
+     * through federated login.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     * @param IdentityCredentialTokenError is contains the error code and url to display in the
+     *         FedCM prompt.
+     */
+    @CalledByNative
+    private void showErrorDialog(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext,
+            IdentityCredentialTokenError error) {
+        mAccountSelectionComponent.showErrorDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @CalledByNative

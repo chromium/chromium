@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -165,6 +166,14 @@ public class AccountSelectionCoordinator
             String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
         mMediator.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+    }
+
+    @Override
+    public void showErrorDialog(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext,
+            IdentityCredentialTokenError error) {
+        mMediator.showErrorDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @Override

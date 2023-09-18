@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -224,6 +225,43 @@ class AccountSelectionViewBinder {
     }
 
     /**
+     * Called whenever error summary is bound to this view.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindErrorSummaryView(PropertyModel model, View view, PropertyKey key) {
+        if (key != ErrorProperties.IDP_FOR_DISPLAY) {
+            assert false : "Unhandled update to property: " + key;
+            return;
+        }
+        String idpForDisplay = model.get(ErrorProperties.IDP_FOR_DISPLAY);
+        Context context = view.getContext();
+        TextView textView = view.findViewById(R.id.error_summary);
+        textView.setText(String.format(
+                context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay)));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Called whenever error description is bound to this view.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindErrorDescriptionView(PropertyModel model, View view, PropertyKey key) {
+        if (key != ErrorProperties.IDP_FOR_DISPLAY) {
+            assert false : "Unhandled update to property: " + key;
+            return;
+        }
+        Context context = view.getContext();
+        TextView textView = view.findViewById(R.id.error_description);
+        textView.setText(
+                String.format(context.getString(R.string.signin_generic_error_dialog_description)));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
      * Called whenever a continue button for a single account is bound to this view.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
@@ -302,6 +340,12 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.IDP_SIGNIN) {
             itemView = view.findViewById(R.id.idp_signin);
             itemBinder = AccountSelectionViewBinder::bindIdpSignInView;
+        } else if (key == ItemProperties.ERROR_SUMMARY) {
+            itemView = view.findViewById(R.id.error_summary);
+            itemBinder = AccountSelectionViewBinder::bindErrorSummaryView;
+        } else if (key == ItemProperties.ERROR_DESCRIPTION) {
+            itemView = view.findViewById(R.id.error_description);
+            itemBinder = AccountSelectionViewBinder::bindErrorDescriptionView;
         } else {
             assert false : "Unhandled update to property:" + key;
             return;

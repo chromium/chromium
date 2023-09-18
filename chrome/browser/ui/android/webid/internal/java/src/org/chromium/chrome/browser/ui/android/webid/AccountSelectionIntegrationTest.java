@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -86,6 +87,10 @@ public class AccountSelectionIntegrationTest {
 
     private static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null);
+
+    private static final String TEST_ERROR_CODE = "invalid_request";
+    private static final IdentityCredentialTokenError TOKEN_ERROR =
+            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
 
     private AccountSelectionComponent mAccountSelection;
 
@@ -304,6 +309,37 @@ public class AccountSelectionIntegrationTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityTestRule.getActivity().isDestroyed(), Matchers.is(false));
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorDialogBackDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showErrorDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */, TOKEN_ERROR);
+        });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        Espresso.pressBack();
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorDialogSwipeDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showErrorDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */, TOKEN_ERROR);
+        });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(() -> {
+            sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+        });
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
     public static <T> T waitForEvent(T mock) {

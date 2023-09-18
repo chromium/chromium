@@ -53,11 +53,13 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -87,11 +89,13 @@ public class AccountSelectionControllerTest {
     private static final String TEST_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private static final String TEST_ETLD_PLUS_ONE_1 = JUnitTestGURLs.URL_1.getSpec();
     private static final String TEST_ETLD_PLUS_ONE_2 = JUnitTestGURLs.URL_2.getSpec();
+    private static final String TEST_ERROR_CODE = "invalid_request";
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.URL_1_WITH_PATH;
     private static final GURL TEST_URL_TERMS_OF_SERVICE = JUnitTestGURLs.RED_1;
     private static final GURL TEST_URL_PRIVACY_POLICY = JUnitTestGURLs.RED_2;
     private static final GURL TEST_IDP_BRAND_ICON_URL = JUnitTestGURLs.RED_3;
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_2;
+    private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_2;
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);
@@ -106,6 +110,8 @@ public class AccountSelectionControllerTest {
             new String[] {"signin", "signup", "use", "continue"};
     private static final ClientIdMetadata CLIENT_ID_METADATA =
             new ClientIdMetadata(TEST_URL_TERMS_OF_SERVICE, TEST_URL_PRIVACY_POLICY);
+    private static final IdentityCredentialTokenError TOKEN_ERROR =
+            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_ERROR_URL);
 
     private static final @Px int DESIRED_AVATAR_SIZE = 100;
 
@@ -528,6 +534,32 @@ public class AccountSelectionControllerTest {
                     .get(ContinueButtonProperties.ON_CLICK_LISTENER)
                     .onResult(null);
             verify(mMockDelegate, times(++count)).onSignInToIdp();
+        }
+    }
+
+    @Test
+    public void testShowErrorDialog() {
+        for (String rpContext : RP_CONTEXTS) {
+            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
+                    .thenReturn(true);
+            mMediator.showErrorDialog(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, rpContext, TOKEN_ERROR);
+            assertEquals(0, mSheetAccountItems.size());
+            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+            // For error dialog, we expect header + error summary + error description
+            assertEquals(3, countAllItems());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
+
+            String errorSummaryIdpEtldPlusOne =
+                    mModel.get(ItemProperties.ERROR_SUMMARY).get(ErrorProperties.IDP_FOR_DISPLAY);
+            assertEquals(
+                    "Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, errorSummaryIdpEtldPlusOne);
+            String errorDescriptionIdpEtldPlusOne = mModel.get(ItemProperties.ERROR_DESCRIPTION)
+                                                            .get(ErrorProperties.IDP_FOR_DISPLAY);
+            assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,
+                    errorDescriptionIdpEtldPlusOne);
         }
     }
 

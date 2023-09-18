@@ -38,6 +38,7 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
@@ -337,14 +338,14 @@ public class AccountSelectionViewTest {
         final String idpEtldPlusOne = "idp.org";
         mModel.set(ItemProperties.IDP_SIGNIN, buildIdpSignInItem(idpEtldPlusOne));
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView consent = mContentView.findViewById(R.id.idp_signin);
-        assertTrue(consent.isShown());
+        TextView idpSignin = mContentView.findViewById(R.id.idp_signin);
+        assertTrue(idpSignin.isShown());
         String expectedText = mResources.getString(
                 R.string.idp_signin_status_mismatch_dialog_body, idpEtldPlusOne);
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
         assertEquals("Incorrect IDP sign in mismatch body dialog text", expectedText,
-                consent.getText().toString());
+                idpSignin.getText().toString());
 
         mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(null, null));
         ButtonCompat continueButton =
@@ -354,6 +355,32 @@ public class AccountSelectionViewTest {
         continueButton.performClick();
 
         waitForEvent(mAccountCallback).onResult(eq(null));
+    }
+
+    @Test
+    public void testErrorDisplayed() {
+        final String idpEtldPlusOne = "idp.org";
+        mModel.set(ItemProperties.ERROR_SUMMARY, buildErrorItem(idpEtldPlusOne));
+        mModel.set(ItemProperties.ERROR_DESCRIPTION, buildErrorItem(idpEtldPlusOne));
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+
+        TextView errorSummary = mContentView.findViewById(R.id.error_summary);
+        assertTrue(errorSummary.isShown());
+        String expectedErrorSummaryText =
+                mResources.getString(R.string.signin_generic_error_dialog_summary, idpEtldPlusOne);
+        // We use toString() here because otherwise getText() returns a
+        // Spanned, which is not equal to the string we get from the resources.
+        assertEquals("Incorrect error summary text", expectedErrorSummaryText,
+                errorSummary.getText().toString());
+
+        TextView errorDescription = mContentView.findViewById(R.id.error_description);
+        assertTrue(errorDescription.isShown());
+        String expectedErrorDescriptionText =
+                mResources.getString(R.string.signin_generic_error_dialog_description);
+        // We use toString() here because otherwise getText() returns a
+        // Spanned, which is not equal to the string we get from the resources.
+        assertEquals("Incorrect error description text", expectedErrorDescriptionText,
+                errorDescription.getText().toString());
     }
 
     private RecyclerView getAccounts() {
@@ -409,6 +436,12 @@ public class AccountSelectionViewTest {
     private PropertyModel buildIdpSignInItem(String idpEtldPlusOne) {
         return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpEtldPlusOne)
+                .build();
+    }
+
+    private PropertyModel buildErrorItem(String idpEtldPlusOne) {
+        return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
+                .with(ErrorProperties.IDP_FOR_DISPLAY, idpEtldPlusOne)
                 .build();
     }
 }

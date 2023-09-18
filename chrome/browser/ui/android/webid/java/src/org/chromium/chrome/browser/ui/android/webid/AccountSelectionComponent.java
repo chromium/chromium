@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content_public.browser.WebContents;
@@ -77,6 +78,23 @@ public interface AccountSelectionComponent {
      */
     void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
             IdentityProviderMetadata idpMetadata, String rpContext);
+
+    /**
+     * Displays a dialog telling the user that an error has occurred in their attempt to sign-in to
+     * a website with an IDP.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     * @param IdentityCredentialTokenError is contains the error code and url to display in the
+     *         FedCM prompt.
+     */
+    void showErrorDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
+            IdentityProviderMetadata idpMetadata, String rpContext,
+            IdentityCredentialTokenError error);
 
     /**
      * Closes the outstanding bottom sheet.

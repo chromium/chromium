@@ -137,6 +137,19 @@ class AccountSelectionProperties {
     }
 
     /**
+     * Properties defined here reflect the state of the error text in the AccountSelection
+     * sheet.
+     */
+    static class ErrorProperties {
+        static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("idp_for_display");
+
+        static final PropertyKey[] ALL_KEYS = {IDP_FOR_DISPLAY};
+
+        private ErrorProperties() {}
+    }
+
+    /**
      * Properties defined here reflect sections in the FedCM bottom sheet.
      */
     static class ItemProperties {
@@ -148,9 +161,13 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("header");
         static final WritableObjectPropertyKey<PropertyModel> IDP_SIGNIN =
                 new WritableObjectPropertyKey<>("idp_signin");
+        static final WritableObjectPropertyKey<PropertyModel> ERROR_SUMMARY =
+                new WritableObjectPropertyKey<>("error_summary");
+        static final WritableObjectPropertyKey<PropertyModel> ERROR_DESCRIPTION =
+                new WritableObjectPropertyKey<>("error_description");
 
-        static final PropertyKey[] ALL_KEYS = {
-                CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER, IDP_SIGNIN};
+        static final PropertyKey[] ALL_KEYS = {CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER,
+                IDP_SIGNIN, ERROR_SUMMARY, ERROR_DESCRIPTION};
 
         private ItemProperties() {}
     }

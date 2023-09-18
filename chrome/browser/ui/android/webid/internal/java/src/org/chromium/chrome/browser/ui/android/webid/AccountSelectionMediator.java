@@ -23,12 +23,14 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -312,6 +314,35 @@ class AccountSelectionMediator {
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
     }
 
+    /* Used to show placeholder icon so that the header text wrapping does not change when the icon
+     * is fetched.
+     */
+    private void showPlaceholderIcon(IdentityProviderMetadata idpMetadata) {
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            Canvas brandIconCanvas = new Canvas(mBrandIcon);
+            brandIconCanvas.drawColor(Color.TRANSPARENT);
+        }
+    }
+
+    private void showBrandIcon(IdentityProviderMetadata idpMetadata) {
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
+            ImageFetcher.Params params =
+                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
+                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
+                            brandIconIdealSize, brandIconIdealSize);
+
+            mImageFetcher.fetchImage(params, bitmap -> {
+                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
+                        && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
+                    mBrandIcon = bitmap;
+                    updateHeader();
+                }
+            });
+        }
+    }
+
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN) {
             mHeaderType = HeaderType.VERIFY;
@@ -331,45 +362,17 @@ class AccountSelectionMediator {
     void showAccounts(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
             List<Account> accounts, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            // Use placeholder icon so that the header text wrapping does not change when the icon
-            // is fetched.
-            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            Canvas brandIconCanvas = new Canvas(mBrandIcon);
-            brandIconCanvas.drawColor(Color.TRANSPARENT);
-        }
-
+        showPlaceholderIcon(idpMetadata);
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(topFrameForDisplay, iframeForDisplay, idpForDisplay, accounts,
                 idpMetadata, clientMetadata, isAutoReauthn, rpContext);
         setComponentShowTime(SystemClock.elapsedRealtime());
-
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
-            ImageFetcher.Params params =
-                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
-                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                            brandIconIdealSize, brandIconIdealSize);
-
-            mImageFetcher.fetchImage(params, bitmap -> {
-                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
-                        && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
-                    mBrandIcon = bitmap;
-                    updateHeader();
-                }
-            });
-        }
+        showBrandIcon(idpMetadata);
     }
 
     void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
             IdentityProviderMetadata idpMetadata, String rpContext) {
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            // Use placeholder icon so that the header text wrapping does not change when the icon
-            // is fetched.
-            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            Canvas brandIconCanvas = new Canvas(mBrandIcon);
-            brandIconCanvas.drawColor(Color.TRANSPARENT);
-        }
+        showPlaceholderIcon(idpMetadata);
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mIdpForDisplay = idpForDisplay;
@@ -378,21 +381,22 @@ class AccountSelectionMediator {
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
         updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
         setComponentShowTime(SystemClock.elapsedRealtime());
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
-            ImageFetcher.Params params =
-                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
-                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                            brandIconIdealSize, brandIconIdealSize);
+        showBrandIcon(idpMetadata);
+    }
 
-            mImageFetcher.fetchImage(params, bitmap -> {
-                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
-                        && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
-                    mBrandIcon = bitmap;
-                    updateHeader();
-                }
-            });
-        }
+    void showErrorDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
+            IdentityProviderMetadata idpMetadata, String rpContext,
+            IdentityCredentialTokenError error) {
+        showPlaceholderIcon(idpMetadata);
+        mTopFrameForDisplay = topFrameForDisplay;
+        mIframeForDisplay = iframeForDisplay;
+        mIdpForDisplay = idpForDisplay;
+        mIdpMetadata = idpMetadata;
+        mRpContext = rpContext;
+        mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
+        updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
+        setComponentShowTime(SystemClock.elapsedRealtime());
+        showBrandIcon(idpMetadata);
     }
 
     @VisibleForTesting
@@ -455,6 +459,11 @@ class AccountSelectionMediator {
             isContinueButtonVisible = true;
         }
 
+        if (mHeaderType == HeaderType.SIGN_IN_ERROR) {
+            assert !isDataSharingConsentVisible;
+            isContinueButtonVisible = false;
+        }
+
         mModel.set(ItemProperties.CONTINUE_BUTTON,
                 isContinueButtonVisible ? createContinueBtnItem(mSelectedAccount, mIdpMetadata)
                                         : null);
@@ -466,6 +475,10 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
                         ? createIdpSignInItem(mIdpForDisplay)
                         : null);
+        mModel.set(ItemProperties.ERROR_SUMMARY,
+                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorItem(mIdpForDisplay) : null);
+        mModel.set(ItemProperties.ERROR_DESCRIPTION,
+                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorItem(mIdpForDisplay) : null);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         showContent();
@@ -622,6 +635,12 @@ class AccountSelectionMediator {
     private PropertyModel createIdpSignInItem(String idpForDisplay) {
         return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpForDisplay)
+                .build();
+    }
+
+    private PropertyModel createErrorItem(String idpForDisplay) {
+        return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
+                .with(ErrorProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .build();
     }
 
