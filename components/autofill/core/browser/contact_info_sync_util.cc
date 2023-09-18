@@ -212,9 +212,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
 
   specifics.set_guid(profile.guid());
   specifics.set_use_count(profile.use_count());
-  specifics.set_use_date_windows_epoch_micros(profile.use_date().ToTimeT());
-  specifics.set_date_modified_windows_epoch_micros(
-      profile.modification_date().ToTimeT());
+  specifics.set_use_date_unix_epoch_seconds(
+      (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
+  specifics.set_date_modified_unix_epoch_seconds(
+      (profile.modification_date() - base::Time::UnixEpoch()).InSeconds());
   specifics.set_language_code(profile.language_code());
   specifics.set_profile_label(profile.profile_label());
 
@@ -324,10 +325,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
       specifics.guid(), AutofillProfile::Source::kAccount);
 
   profile->set_use_count(specifics.use_count());
-  profile->set_use_date(
-      base::Time::FromTimeT(specifics.use_date_windows_epoch_micros()));
+  profile->set_use_date(base::Time::UnixEpoch() +
+                        base::Seconds(specifics.use_date_unix_epoch_seconds()));
   profile->set_modification_date(
-      base::Time::FromTimeT(specifics.date_modified_windows_epoch_micros()));
+      base::Time::UnixEpoch() +
+      base::Seconds(specifics.date_modified_unix_epoch_seconds()));
   profile->set_language_code(specifics.language_code());
   profile->set_profile_label(specifics.profile_label());
   profile->set_initial_creator_id(specifics.initial_creator_id());
@@ -399,8 +401,8 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   trimmed_specifics.clear_guid();
   trimmed_specifics.clear_use_count();
-  trimmed_specifics.clear_use_date_windows_epoch_micros();
-  trimmed_specifics.clear_date_modified_windows_epoch_micros();
+  trimmed_specifics.clear_use_date_unix_epoch_seconds();
+  trimmed_specifics.clear_date_modified_unix_epoch_seconds();
   trimmed_specifics.clear_language_code();
   trimmed_specifics.clear_profile_label();
   trimmed_specifics.clear_initial_creator_id();

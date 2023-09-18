@@ -144,8 +144,8 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
 
   specifics.set_guid(kGuid);
   specifics.set_use_count(123);
-  specifics.set_use_date_windows_epoch_micros(kUseDate.ToTimeT());
-  specifics.set_date_modified_windows_epoch_micros(kModificationDate.ToTimeT());
+  specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
+  specifics.set_date_modified_unix_epoch_seconds(kModificationDate.ToTimeT());
   specifics.set_language_code("en");
   specifics.set_profile_label("profile_label");
   specifics.set_initial_creator_id(

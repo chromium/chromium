@@ -81,10 +81,10 @@ message ContactInfoSpecifics {
   optional int64 use_count = 3;
 
   // The last time this profile was used.
-  optional int64 use_date_windows_epoch_micros = 4;
+  optional int64 use_date_unix_epoch_seconds = 4;
 
   // The last time the profile was modified.
-  optional int64 date_modified_windows_epoch_micros = 37;
+  optional int64 date_modified_unix_epoch_seconds = 37;
 
   // The BCP 47 language code used to format the address for display.
   optional string language_code = 38;

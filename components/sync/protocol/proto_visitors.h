@@ -324,8 +324,8 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(guid);
   VISIT(use_count);
-  VISIT(use_date_windows_epoch_micros);
-  VISIT(date_modified_windows_epoch_micros);
+  VISIT(use_date_unix_epoch_seconds);
+  VISIT(date_modified_unix_epoch_seconds);
   VISIT(language_code);
   VISIT(profile_label);
   VISIT(initial_creator_id);
