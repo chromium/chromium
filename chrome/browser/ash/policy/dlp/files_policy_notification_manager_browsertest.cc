@@ -987,6 +987,8 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   // Skip the warning timeout.
   task_runner->FastForwardBy(kWarningTimeout);
+  // Wait till IO task is complete.
+  base::RunLoop().RunUntilIdle();
 
   const std::u16string timeout_title =
       action == dlp::FileAction::kCopy

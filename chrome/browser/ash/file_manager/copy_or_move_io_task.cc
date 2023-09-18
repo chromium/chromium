@@ -121,9 +121,8 @@ void CopyOrMoveIOTask::Cancel() {
 }
 
 void CopyOrMoveIOTask::CompleteWithError(PolicyError policy_error) {
-  progress_.policy_error = policy_error;
   if (impl_) {
-    impl_->Complete(State::kError);
+    impl_->CompleteWithError(std::move(policy_error));
   }
 }
 

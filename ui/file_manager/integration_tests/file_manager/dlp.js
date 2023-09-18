@@ -994,6 +994,55 @@ testcase.warnShowsPanelItem = async () => {
 };
 
 /**
+ * Test for http://b/299583281.
+ * Tests that after DLP warning times out, the copy or move IO task
+ * properly updates the task state and shows a correct panel item.
+ */
+testcase.warnTimeoutShowsPanelItem = async () => {
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Set the mock to pause the first task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 1,
+    fileNames: [entry.nameText],
+    action: 'copy',
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, PanelType.INFO, 'Review is required before copying',
+      `${entry.nameText} may contain sensitive content`,
+      StatusIndicator.WARNING);
+
+  // Fast forward to time out the warning.
+  await sendTestMessage({name: 'timeoutWarning'});
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, PanelType.ERROR, 'Copying timed out',
+      'Try copying your files again', StatusIndicator.FAILURE);
+  await verifyPanelButtonsAndClick(appId, 'dismiss', 'secondary');
+};
+
+/**
  * Tests that the summary panel shows the correct title when it contains a mix
  * of warning (paused copy or move IO task) and error (blocked copy or move IO
  * task) panels, or multiple warnings, but is not shown if only one panel is

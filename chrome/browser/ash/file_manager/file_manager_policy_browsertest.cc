@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
@@ -267,6 +268,8 @@ class DlpFilesAppBrowserTestBase {
           policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
               profile);
       EXPECT_TRUE(fpnm);
+      // Might be needed to time out the warning.
+      fpnm->SetTaskRunnerForTesting(task_runner);
 
       auto cb = base::BindLambdaForTesting(
           [task_id, warning_files, action, profile](
@@ -287,6 +290,11 @@ class DlpFilesAppBrowserTestBase {
           cb);
       return true;
     }
+    if (name == "timeoutWarning") {
+      // Fast forward by 5 minutes to time out the DLP warning.
+      task_runner->FastForwardBy(base::Minutes(5));
+      return true;
+    }
     return false;
   }
 
@@ -303,6 +311,9 @@ class DlpFilesAppBrowserTestBase {
       const ::dlp::AddFilesRequest request,
       chromeos::DlpClient::AddFilesCallback callback)>
       add_files_cb;
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
   // Maps |component| to data_controls::Component.
   data_controls::Component MapToPolicyComponent(const std::string& component) {
@@ -992,6 +1003,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableDlp()
             .EnableFilesPolicyNewUX(),
         file_manager::test::TestCase("warnShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX(),
+        file_manager::test::TestCase("warnTimeoutShowsPanelItem")
             .EnableDlp()
             .EnableFilesPolicyNewUX(),
         file_manager::test::TestCase("mixedSummaryDisplayPanel")

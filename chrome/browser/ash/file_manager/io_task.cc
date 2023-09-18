@@ -153,7 +153,8 @@ void ProgressStatus::SetDestinationFolder(storage::FileSystemURL folder,
 DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
                          storage::FileSystemURL destination_folder,
                          OperationType type,
-                         bool show_notifications)
+                         bool show_notifications,
+                         bool progress_succeeds)
     : IOTask(show_notifications) {
   progress_.state = State::kQueued;
   progress_.type = type;
@@ -196,7 +197,7 @@ void DummyIOTask::Cancel() {
 
 void DummyIOTask::CompleteWithError(PolicyError policy_error) {
   progress_.state = State::kError;
-  progress_.policy_error = policy_error;
+  progress_.policy_error.emplace(std::move(policy_error));
 }
 
 void DummyIOTask::DoProgress() {
@@ -207,9 +208,11 @@ void DummyIOTask::DoProgress() {
   progress_.bytes_transferred = 1;
   progress_callback_.Run(progress_);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DummyIOTask::DoComplete, weak_ptr_factory_.GetWeakPtr()));
+  if (progress_succeeds_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&DummyIOTask::DoComplete,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void DummyIOTask::DoComplete() {

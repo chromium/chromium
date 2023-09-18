@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -250,8 +251,9 @@ TEST_F(IOTaskControllerTest, CompleteWithError) {
                             Field(&ProgressStatus::state, State::kInProgress),
                             base_matcher)));
 
-  auto task_id = io_task_controller_.Add(
-      std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kMove));
+  auto task_id = io_task_controller_.Add(std::make_unique<DummyIOTask>(
+      source_urls, dest, OperationType::kMove,
+      /*show_notification=*/true, /*progress_succeeds=*/false));
 
   // CompleteWithError should synchronously send a progress status.
   EXPECT_CALL(observer,

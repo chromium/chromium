@@ -85,6 +85,10 @@ class CopyOrMoveIOTaskImpl {
   // method, make sure to explicitly call CopyOrMoveIOTaskImpl::Complete.
   virtual void Complete(State state);
 
+  // Aborts the copy or move because of policy error (does not run completion
+  // callback).
+  void CompleteWithError(PolicyError policy_error);
+
   // Helper function for copy or move tasks that determines whether or not
   // entries identified by their URLs should be considered as being on the
   // different file systems or not. The entries are seen as being on different

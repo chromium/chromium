@@ -237,6 +237,11 @@ void CopyOrMoveIOTaskImpl::Complete(State state) {
       base::BindOnce(std::move(complete_callback_), std::move(*progress_)));
 }
 
+void CopyOrMoveIOTaskImpl::CompleteWithError(PolicyError policy_error) {
+  progress_->state = State::kError;
+  progress_->policy_error.emplace(std::move(policy_error));
+}
+
 void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // TODO(b/280947989) remove this code once Multi-user sign-in is deprecated.
   // Prevent files being copied or moved to ODFS if there is a managed user
