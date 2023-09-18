@@ -11,10 +11,16 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace {
 
@@ -48,6 +54,118 @@ bool ShouldFindNewCheckTime(Profile* profile) {
 
   return uninitialized || !interval_used_for_scheduling.has_value() ||
          update_interval != interval_used_for_scheduling.value();
+}
+
+// Helper functions for displaying passwords in the UI
+base::Value::Dict GetCompromisedPasswordCardData(int compromised_count) {
+  base::Value::Dict result;
+
+  result.Set(safety_hub::kCardHeaderKey,
+             l10n_util::GetPluralStringFUTF16(
+                 IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
+                 compromised_count));
+  result.Set(safety_hub::kCardSubheaderKey,
+             l10n_util::GetStringUTF16(
+                 IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
+  return result;
+}
+
+base::Value::Dict GetReusedPasswordCardData(int reused_count, bool signed_in) {
+  base::Value::Dict result;
+
+  result.Set(safety_hub::kCardHeaderKey,
+             l10n_util::GetPluralStringFUTF16(
+                 IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT, reused_count));
+  result.Set(
+      safety_hub::kCardSubheaderKey,
+      l10n_util::GetStringUTF16(
+          signed_in
+              ? IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS
+              : IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
+  return result;
+}
+
+base::Value::Dict GetWeakPasswordCardData(int weak_count, bool signed_in) {
+  base::Value::Dict result;
+
+  result.Set(safety_hub::kCardHeaderKey,
+             l10n_util::GetPluralStringFUTF16(
+                 IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_count));
+  result.Set(
+      safety_hub::kCardSubheaderKey,
+      l10n_util::GetStringUTF16(
+          signed_in
+              ? IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS
+              : IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
+  return result;
+}
+
+base::Value::Dict GetSafePasswordCardData(base::Time last_check) {
+  base::Value::Dict result;
+
+  result.Set(safety_hub::kCardHeaderKey,
+             l10n_util::GetPluralStringFUTF16(
+                 IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT, 0));
+  // The subheader string depends on how much time has passed since the last
+  // check.
+  base::TimeDelta time_delta = base::Time::Now() - last_check;
+  if (time_delta < base::Minutes(1)) {
+    result.Set(safety_hub::kCardSubheaderKey,
+               l10n_util::GetStringUTF16(
+                   IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY));
+  } else {
+    std::u16string last_check_string =
+        ui::TimeFormat::Simple(ui::TimeFormat::Format::FORMAT_DURATION,
+                               ui::TimeFormat::Length::LENGTH_LONG, time_delta);
+    result.Set(
+        safety_hub::kCardSubheaderKey,
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO,
+            last_check_string));
+  }
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
+  return result;
+}
+
+base::Value::Dict GetNoWeakOrReusedPasswordCardData(bool signed_in) {
+  base::Value::Dict result;
+  result.Set(
+      safety_hub::kCardHeaderKey,
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_WEAK_OR_REUSED));
+  result.Set(
+      safety_hub::kCardSubheaderKey,
+      l10n_util::GetStringUTF16(
+          signed_in
+              ? IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_GO_TO_PASSWORD_MANAGER
+              : IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kInfo));
+  return result;
+}
+
+base::Value::Dict GetNoPasswordCardData(bool password_saving_allowed) {
+  base::Value::Dict result;
+
+  result.Set(safety_hub::kCardHeaderKey,
+             l10n_util::GetStringUTF16(
+                 IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_PASSWORDS));
+  result.Set(
+      safety_hub::kCardSubheaderKey,
+      l10n_util::GetStringUTF16(
+          password_saving_allowed
+              ? IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS
+              : IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kInfo));
+  return result;
 }
 
 }  // namespace
@@ -154,6 +272,9 @@ void PasswordStatusCheckService::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(IsInfrastructureReady());
+
+  no_passwords_saved_ =
+      saved_passwords_presenter_->GetSavedCredentials().size() == 0;
 
   base::RepeatingClosure on_done = base::BarrierClosure(
       /*num_closures=*/2,
@@ -343,4 +464,38 @@ base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
       check_schedule_dict.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
   CHECK(check_interval.has_value());
   return check_interval.value();
+}
+
+base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
+    bool signed_in) {
+  if (no_passwords_saved_) {
+    bool password_saving_allowed = profile_->GetPrefs()->GetBoolean(
+        password_manager::prefs::kCredentialsEnableService);
+    return GetNoPasswordCardData(password_saving_allowed);
+  }
+
+  if (compromised_credential_count_ > 0) {
+    return GetCompromisedPasswordCardData(compromised_credential_count_);
+  }
+
+  if (reused_credential_count_ > 0) {
+    return GetReusedPasswordCardData(reused_credential_count_, signed_in);
+  }
+
+  if (weak_credential_count_ > 0) {
+    return GetWeakPasswordCardData(weak_credential_count_, signed_in);
+  }
+
+  CHECK(compromised_credential_count_ == 0);
+  CHECK(reused_credential_count_ == 0);
+  CHECK(weak_credential_count_ == 0);
+
+  base::Time last_check_completed =
+      base::Time::FromTimeT(profile_->GetPrefs()->GetDouble(
+          password_manager::prefs::kLastTimePasswordCheckCompleted));
+  if (!last_check_completed.is_null() && signed_in) {
+    return GetSafePasswordCardData(last_check_completed);
+  }
+
+  return GetNoWeakOrReusedPasswordCardData(signed_in);
 }

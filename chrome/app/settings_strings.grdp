@@ -4339,6 +4339,21 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO" desc="Subtitle of the passwords card in the Safety Hub page which explains how recently passwords were checked for issues. The passwords card contains information about password issues which are detected automatically. This text is shown below a header which explains there are no issues and indicates that passwords were checked for issues some time ago.">
     Checked <ph name="NUM_DAYS_HOURS_MINUTES">$1<ex>2 days</ex></ph> ago
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_WEAK_OR_REUSED" desc="SafetyHub has checked the user's passwords for issues and has determined the passwords are not weak or reused, which is positive. However we cannot state that there are no issues with the passwords, because one of Chrome's password checks (whether a password is known to be leaked) was not performed. The string should explicitly specify weak and reused passwords. These are Chrome Password Manager terms and should be translated the same way. This text is shown as the header of the passwords card in SafetyHub which is in a neutral state. The subheader below this explains why not all of Chrome's protections were applied here and a call to action on how to do that (e.g. 'To check for compromised passwords, sign in').">
+    No weak or reused passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN" desc="This text conveys to the user that they currently do not have the full protection for their passwords and informs the user that additional protection (in form of Chrome checking whether saved passwords are compromised) is available by signing into Chrome. Compromised passwords are concepts in Chrome Password Manager, this should be translated the same way. It is shown only to signed-out users. This text appears in the subtitle of the passwords card on the Safety Hub page, below a title that lists already known password issues. The title above this may read e.g. '2 weak passwords', or 'No weak or reused passwords').">
+    To check for compromised passwords, sign in to your Google Account
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_GO_TO_PASSWORD_MANAGER" desc="This text conveys to the user that they currently do not have the full protection for their passwords and informs the user that additional protection (in form of Chrome checking whether saved passwords are compromised) is available by clicking on the card containing this text, which will redirect to Google Password Manager. Compromised passwords are a concept in Chrome password manager, this should be translated the same way. This text appears in the subtitle of the passwords card one the Safety Hub page, below the title 'No weak or reused passwords'.">
+    To check for compromised passwords, go to Google Password Manager
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_PASSWORDS" desc="This text is the header of the passwords card of SafetyHub when the user has no passwords saved in Chrome. Below this text there is a subheader that give the user more details: 'Chrome can check your passwords when you save them' or 'Your organization turned off saving passwords'. The card this text is part of is in a neutral state.">
+    No saved passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY" desc="Subtitle of the passwords card in SafetyHub when there are no saved passwords and saving of passwords is disabled through enterprise policy. This text is shown below the header 'No saved passwords'. It explains that the SafetyHub features for passwords are not available since the user's organization has a policy in place that prevents the user from saving passwords in Chrome.">
+    Your organization turned off saving passwords
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Enhanced protection.">
     Enhanced Safe Browsing is on
   </message>

@@ -43,6 +43,8 @@ class PasswordStatusCheckService
 
   bool is_password_check_running() const { return is_password_check_running_; }
 
+  bool no_passwords_saved() const { return no_passwords_saved_; }
+
   // Returns the time at which the password check is currently scheduled to run.
   base::Time GetScheduledPasswordCheckTime() const;
 
@@ -55,6 +57,9 @@ class PasswordStatusCheckService
 
   // Bring cached credential issues up to date with data from Password Manager.
   void UpdateInsecureCredentialCountAsync();
+
+  // Helper function for displaying the current status in the UI.
+  base::Value::Dict GetPasswordCardData(bool signed_in);
 
   // Testing functions.
   bool IsObservingSavedPasswordsPresenterForTesting() const {
@@ -173,6 +178,9 @@ class PasswordStatusCheckService
   size_t compromised_credential_count_ = 0;
   size_t weak_credential_count_ = 0;
   size_t reused_credential_count_ = 0;
+
+  // True when password stores are empty and there are no saved passwords.
+  bool no_passwords_saved_ = true;
 
   // Flags to indicate which async operations are currently ongoing. Memory
   // intensive objects will be reset after all have finished.

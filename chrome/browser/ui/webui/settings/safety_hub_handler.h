@@ -141,12 +141,6 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Returns the data for the password card.
   void HandleGetPasswordCardData(const base::Value::List& args);
 
-  // Helper function for determining password card strings and state.
-  base::Value::Dict GetPasswordCardData(int compromised_count,
-                                        int weak_count,
-                                        int reused_count,
-                                        base::Time last_check);
-
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 

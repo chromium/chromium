@@ -10,17 +10,22 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -43,6 +48,7 @@ using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
+using safety_hub::SafetyHubCardState;
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
     signin::IdentityManager* identity_manager,
@@ -136,6 +142,13 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     RunUntilIdle();
   }
 
+  void SetLastCheckTime(base::TimeDelta time_ago) {
+    base::Time check_time = base::Time::Now() - time_ago;
+    profile().GetPrefs()->SetDouble(
+        password_manager::prefs::kLastTimePasswordCheckCompleted,
+        check_time.ToDoubleT());
+  }
+
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
   TestPasswordStore& profile_store() { return *profile_store_; }
@@ -197,6 +210,9 @@ class PasswordStatusCheckServiceParameterizedIssueTest
   bool include_weak() const { return std::get<0>(GetParam()); }
   bool include_compromised() const { return std::get<1>(GetParam()); }
   bool include_reused() const { return std::get<2>(GetParam()); }
+  bool any_issue_included() const {
+    return include_weak() || include_compromised() || include_reused();
+  }
 };
 
 class PasswordStatusCheckServiceParameterizedStoreTest
@@ -208,11 +224,39 @@ class PasswordStatusCheckServiceParameterizedStoreTest
   }
 };
 
+class PasswordStatusCheckServiceParameterizedCardTest
+    : public PasswordStatusCheckServiceBaseTest,
+      public testing::WithParamInterface<
+          testing::tuple</*include_compromised*/ bool,
+                         /*include_weak*/ bool,
+                         /*include_reused*/ bool,
+                         /*check_ran_previously*/ bool,
+                         /*signed_in*/ bool,
+                         /*include_safe_password*/ bool,
+                         /*password_saving_allowed*/ bool>> {
+ public:
+  int include_compromised() const { return std::get<0>(GetParam()); }
+  int include_weak() const { return std::get<1>(GetParam()); }
+  int include_reused() const { return std::get<2>(GetParam()); }
+  bool check_ran_previously() const { return std::get<3>(GetParam()); }
+  bool signed_in() const { return std::get<4>(GetParam()); }
+  bool include_safe_password() const { return std::get<5>(GetParam()); }
+  bool password_saving_allowed() const { return std::get<6>(GetParam()); }
+
+  bool any_issue_included() const {
+    return include_weak() || include_compromised() || include_reused();
+  }
+  bool any_password_saved() const {
+    return any_issue_included() || include_safe_password();
+  }
+};
+
 TEST_F(PasswordStatusCheckServiceBaseTest, NoIssuesInitially) {
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
   EXPECT_EQ(service()->reused_credential_count(), 0UL);
+  EXPECT_TRUE(service()->no_passwords_saved());
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
@@ -235,6 +279,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
   EXPECT_EQ(service()->compromised_credential_count(),
             include_compromised() ? 1UL : 0UL);
   EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
+  EXPECT_EQ(any_issue_included(), !service()->no_passwords_saved());
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
@@ -258,6 +303,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
   EXPECT_EQ(service()->compromised_credential_count(),
             include_compromised() ? 1UL : 0UL);
   EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
+  EXPECT_EQ(any_issue_included(), !service()->no_passwords_saved());
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
@@ -296,6 +342,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
   EXPECT_EQ(service()->reused_credential_count(), 0UL);
+  EXPECT_TRUE(service()->no_passwords_saved());
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
@@ -549,6 +596,211 @@ TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
     RunUntilIdle();
   }
 }
+
+TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
+  // Setup test based on parameters.
+  profile().GetPrefs()->SetBoolean(
+      password_manager::prefs::kCredentialsEnableService,
+      password_saving_allowed());
+  if (check_ran_previously()) {
+    profile().GetPrefs()->SetDouble(
+        password_manager::prefs::kLastTimePasswordCheckCompleted,
+        base::Time::Now().ToDoubleT());
+  }
+  if (include_safe_password()) {
+    profile_store().AddLogin(MakeForm(kUsername1, kPassword));
+  }
+  if (include_weak()) {
+    profile_store().AddLogin(WeakForm());
+  }
+  if (include_compromised()) {
+    profile_store().AddLogin(LeakedForm());
+  }
+  if (include_reused()) {
+    profile_store().AddLogin(ReusedForm1());
+    profile_store().AddLogin(ReusedForm2());
+  }
+  RunUntilIdle();
+
+  size_t weak_count = service()->weak_credential_count();
+  size_t compromised_count = service()->compromised_credential_count();
+  size_t reused_count = service()->reused_credential_count();
+
+  base::Value::Dict card = service()->GetPasswordCardData(signed_in());
+
+  std::u16string header =
+      base::UTF8ToUTF16(*card.FindString(safety_hub::kCardHeaderKey));
+  std::u16string subheader =
+      base::UTF8ToUTF16(*card.FindString(safety_hub::kCardSubheaderKey));
+  int state = card.FindInt(safety_hub::kCardStateKey).value();
+
+  // User doesn't have passwords.
+  if (!any_password_saved() && password_saving_allowed()) {
+    EXPECT_EQ(header,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_PASSWORDS));
+    EXPECT_EQ(
+        subheader,
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kInfo));
+    return;
+  }
+
+  // Saving passwords disabled due to enterprise policy.
+  if (!any_password_saved() && !password_saving_allowed()) {
+    EXPECT_EQ(header,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_PASSWORDS));
+    EXPECT_EQ(
+        subheader,
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kInfo));
+    return;
+  }
+
+  CHECK(any_password_saved());
+
+  // Compromised passwords show a warning regardless of sign-in status.
+  if (compromised_count > 0) {
+    EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
+                          IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
+                          compromised_count));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWarning));
+    return;
+  }
+
+  if (reused_count > 0 && signed_in()) {
+    EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
+                          IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT,
+                          reused_count));
+    EXPECT_EQ(subheader, l10n_util::GetStringUTF16(
+                             IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  if (weak_count > 0 && signed_in()) {
+    EXPECT_EQ(header,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_count));
+    EXPECT_EQ(subheader, l10n_util::GetStringUTF16(
+                             IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  if (!any_issue_included() && check_ran_previously() && signed_in()) {
+    EXPECT_EQ(header,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT, 0));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kSafe));
+    return;
+  }
+
+  if (!any_issue_included() && !check_ran_previously() && signed_in()) {
+    EXPECT_EQ(
+        header,
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_WEAK_OR_REUSED));
+    EXPECT_EQ(
+        subheader,
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_GO_TO_PASSWORD_MANAGER));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kInfo));
+    return;
+  }
+
+  if (reused_count > 0 && !signed_in()) {
+    EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
+                          IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT,
+                          reused_count));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  if (weak_count > 0 && !signed_in()) {
+    EXPECT_EQ(header,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_count));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  if (!any_issue_included() && !signed_in()) {
+    EXPECT_EQ(
+        header,
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_WEAK_OR_REUSED));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kInfo));
+    return;
+  }
+
+  NOTREACHED();
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
+  // Add a password without issues to reach safe state.
+  profile_store().AddLogin(MakeForm(kUsername1, kPassword));
+  RunUntilIdle();
+
+  SetLastCheckTime(base::TimeDelta(base::Seconds(0)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked just now"));
+
+  SetLastCheckTime(base::TimeDelta(base::Seconds(3)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked just now"));
+
+  SetLastCheckTime(base::TimeDelta(base::Minutes(3)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked 3 minutes ago"));
+
+  SetLastCheckTime(base::TimeDelta(base::Hours(3)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked 3 hours ago"));
+
+  SetLastCheckTime(base::TimeDelta(base::Days(3)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked 3 days ago"));
+
+  SetLastCheckTime(base::TimeDelta(base::Days(300)));
+  EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
+                safety_hub::kCardSubheaderKey),
+            std::string("Checked 300 days ago"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordStatusCheckServiceParameterizedCardTest,
+    ::testing::Combine(/*include_compromised*/ ::testing::Bool(),
+                       /*include_weak*/ ::testing::Bool(),
+                       /*include_reused*/ ::testing::Bool(),
+                       /*check_ran_previously*/ ::testing::Bool(),
+                       /*signed_in*/ ::testing::Bool(),
+                       /*include_safe_password*/ ::testing::Bool(),
+                       /*password_saving_allowed*/ ::testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     All,

@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -32,6 +33,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -432,17 +435,13 @@ void SafetyHubHandler::HandleGetPasswordCardData(
 
   PasswordStatusCheckService* service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile_);
-  base::Time last_check_completed =
-      base::Time::FromTimeT(profile_->GetPrefs()->GetDouble(
-          password_manager::prefs::kLastTimePasswordCheckCompleted));
 
-  // TODO(crbug.com/1443466): The UI should be able to observe when password
-  // issues change.
-  base::Value::Dict result = GetPasswordCardData(
-      /*compromised_count=*/service->compromised_credential_count(),
-      /*weak_count=*/service->weak_credential_count(),
-      /*reused_count=*/service->reused_credential_count(),
-      /*last_check=*/last_check_completed);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
+                                           signin::ConsentLevel::kSignin);
+
+  base::Value::Dict result = service->GetPasswordCardData(signed_in);
 
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
@@ -540,79 +539,6 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
   FireWebUIListener(
       site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
       service->PopulateNotificationPermissionReviewData(profile_));
-}
-
-base::Value::Dict SafetyHubHandler::GetPasswordCardData(int compromised_count,
-                                                        int weak_count,
-                                                        int reused_count,
-                                                        base::Time last_check) {
-  base::Value::Dict result;
-
-  // TODO(crbug.com/1443466): Handle edge cases: User is signed out, passwords
-  // are disabled due to enterprise policy, or no check has yet taken place.
-  if (compromised_count > 0) {
-    result.Set(safety_hub::kCardHeaderKey,
-               l10n_util::GetPluralStringFUTF16(
-                   IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
-                   compromised_count));
-    result.Set(safety_hub::kCardSubheaderKey,
-               l10n_util::GetStringUTF16(
-                   IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
-    result.Set(safety_hub::kCardStateKey,
-               static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
-    return result;
-  }
-
-  if (reused_count > 0) {
-    result.Set(
-        safety_hub::kCardHeaderKey,
-        l10n_util::GetPluralStringFUTF16(
-            IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT, reused_count));
-    result.Set(safety_hub::kCardSubheaderKey,
-               l10n_util::GetStringUTF16(
-                   IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS));
-    result.Set(safety_hub::kCardStateKey,
-               static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
-    return result;
-  }
-
-  if (weak_count > 0) {
-    result.Set(safety_hub::kCardHeaderKey,
-               l10n_util::GetPluralStringFUTF16(
-                   IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_count));
-    result.Set(
-        safety_hub::kCardSubheaderKey,
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS));
-    result.Set(safety_hub::kCardStateKey,
-               static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
-    return result;
-  }
-
-  // No issues, the card is in the safe state.
-  result.Set(safety_hub::kCardHeaderKey,
-             l10n_util::GetPluralStringFUTF16(
-                 IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT, 0));
-  // The subheader string depends on how much time has passed since the last
-  // check.
-  base::TimeDelta time_delta = base::Time::Now() - last_check;
-  if (time_delta < base::Minutes(1)) {
-    result.Set(safety_hub::kCardSubheaderKey,
-               l10n_util::GetStringUTF16(
-                   IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY));
-  } else {
-    std::u16string last_check_string =
-        ui::TimeFormat::Simple(ui::TimeFormat::Format::FORMAT_DURATION,
-                               ui::TimeFormat::Length::LENGTH_LONG, time_delta);
-    result.Set(
-        safety_hub::kCardSubheaderKey,
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO,
-            last_check_string));
-  }
-  result.Set(safety_hub::kCardStateKey,
-             static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
-
-  return result;
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
