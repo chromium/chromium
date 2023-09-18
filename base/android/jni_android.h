@@ -123,8 +123,11 @@ BASE_EXPORT bool ClearException(JNIEnv* env);
 BASE_EXPORT void CheckException(JNIEnv* env);
 
 // This returns a string representation of the java stack trace.
-BASE_EXPORT std::string GetJavaExceptionInfo(JNIEnv* env,
-                                             jthrowable java_throwable);
+BASE_EXPORT std::string GetJavaExceptionInfo(
+    JNIEnv* env,
+    const JavaRef<jthrowable>& throwable);
+// This returns a string representation of the java stack trace.
+BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
 }  // namespace android
 }  // namespace base

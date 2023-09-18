@@ -6,8 +6,12 @@
 
 #include "base/at_exit.h"
 #include "base/logging.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::StartsWith;
 
 namespace base {
 namespace android {
@@ -57,6 +61,33 @@ TEST(JNIAndroidMicrobenchmark, MethodId) {
   LOG(ERROR) << "JNI " << o;
 }
 
+TEST(JNIAndroidTest, GetJavaStackTraceIfPresent) {
+  // The main thread should always have Java frames in it.
+  EXPECT_THAT(GetJavaStackTraceIfPresent(), StartsWith("\tat"));
+
+  class HelperThread : public Thread {
+   public:
+    HelperThread()
+        : Thread("TestThread"), java_stack_1_("X"), java_stack_2_("X") {}
+
+    void Init() override {
+      // Test without a JNIEnv.
+      java_stack_1_ = GetJavaStackTraceIfPresent();
+
+      // Test with a JNIEnv but no Java frames.
+      AttachCurrentThread();
+      java_stack_2_ = GetJavaStackTraceIfPresent();
+    }
+
+    std::string java_stack_1_;
+    std::string java_stack_2_;
+  };
+
+  HelperThread t;
+  t.StartAndWaitForTesting();
+  EXPECT_EQ(t.java_stack_1_, "");
+  EXPECT_EQ(t.java_stack_2_, "");
+}
 
 }  // namespace android
 }  // namespace base

@@ -105,6 +105,7 @@ typedef FILE* FileHandle;
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
+#include "base/android/jni_android.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -725,6 +726,13 @@ LogMessage::~LogMessage() {
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
     stack_trace.OutputToStream(&stream_);
+#if BUILDFLAG(IS_ANDROID)
+    std::string java_stack = base::android::GetJavaStackTraceIfPresent();
+    if (!java_stack.empty()) {
+      stream_ << "Java stack (may interleave with native stack):\n";
+      stream_ << java_stack;
+    }
+#endif
     base::debug::TaskTrace task_trace;
     if (!task_trace.empty())
       task_trace.OutputToStream(&stream_);
