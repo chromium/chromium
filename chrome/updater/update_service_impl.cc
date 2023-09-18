@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -267,8 +268,9 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
                   .policy_or(false);
             }(),
             [&config, &id, &is_foreground, update_blocked]() {
-              if (update_blocked)
+              if (update_blocked) {
                 return true;
+              }
               PolicyStatus<int> app_updates =
                   config->GetPolicyService()->GetPolicyForAppUpdates(id);
               return app_updates &&
@@ -467,14 +469,13 @@ void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
   VLOG(1) << __func__ << ": app_ids_to_install: "
           << base::JoinString(app_ids_to_install, " ");
 
-  const Priority priority = Priority::kBackground;
   ShouldBlockUpdateForMeteredNetwork(
-      priority,
-      base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
-                     this, app_ids_to_install, AppClientInstallData(),
-                     AppInstallDataIndex(), priority,
-                     UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                     state_update, std::move(callback)));
+      Priority::kBackground,
+      base::BindOnce(
+          &UpdateServiceImpl::OnShouldBlockForceInstallForMeteredNetwork, this,
+          app_ids_to_install, AppClientInstallData(), AppInstallDataIndex(),
+          UpdateService::PolicySameVersionUpdate::kNotAllowed, state_update,
+          std::move(callback)));
 }
 
 void UpdateServiceImpl::CheckForUpdate(
@@ -745,16 +746,18 @@ bool UpdateServiceImpl::IsUpdateDisabledByPolicy(const std::string& app_id,
   if (is_install) {
     PolicyStatus<int> app_install_policy_status =
         config_->GetPolicyService()->GetPolicyForAppInstalls(app_id);
-    if (app_install_policy_status)
+    if (app_install_policy_status) {
       policy = app_install_policy_status.policy();
+    }
     return app_install_policy_status &&
            (policy == kPolicyDisabled || (config_->IsPerUserInstall() &&
                                           policy == kPolicyEnabledMachineOnly));
   } else {
     PolicyStatus<int> app_update_policy_status =
         config_->GetPolicyService()->GetPolicyForAppUpdates(app_id);
-    if (app_update_policy_status)
+    if (app_update_policy_status) {
       policy = app_update_policy_status.policy();
+    }
     return app_update_policy_status &&
            (policy == kPolicyDisabled ||
             ((policy == kPolicyManualUpdatesOnly) &&
@@ -832,6 +835,43 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
                                                  state_update),
           priority == Priority::kForeground,
           MakeUpdateClientCallback(std::move(callback))));
+}
+
+void UpdateServiceImpl::OnShouldBlockForceInstallForMeteredNetwork(
+    const std::vector<std::string>& app_ids,
+    const AppClientInstallData& app_client_install_data,
+    const AppInstallDataIndex& app_install_data_index,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback,
+    bool update_blocked) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The result from Install is only used for logging. Thus, arbitrarily pick
+  // the first non-success result to propagate.
+  auto barrier_callback = base::BarrierCallback<Result>(
+      app_ids.size(),
+      base::BindOnce([](const std::vector<Result>& results) {
+        auto error_it = base::ranges::find_if(
+            results, [](Result result) { return result != Result::kSuccess; });
+        return error_it == std::end(results) ? Result::kSuccess : *error_it;
+      }).Then(std::move(callback)));
+
+  for (const std::string& id : app_ids) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&update_client::UpdateClient::Install),
+            update_client_, id,
+            base::BindOnce(&GetComponents, config_, persisted_data_,
+                           app_client_install_data, app_install_data_index,
+                           Priority::kBackground, update_blocked,
+                           policy_same_version_update),
+            MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
+                                                   /*new_install=*/false,
+                                                   state_update),
+            MakeUpdateClientCallback(barrier_callback)));
+  }
 }
 
 UpdateServiceImpl::~UpdateServiceImpl() {

@@ -930,8 +930,8 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   const std::string kAppId("test1");
   base::Version v0point1("0.1");
   base::Version v1("1");
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.0.0.0"), v0point1));
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kAppId, "",
@@ -1760,12 +1760,10 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       {
-          // TODO(crbug.com/1476655): change `is_install` to `true` after
-          // the issue is fixed.
           AppUpdateExpectation(
               BuildCommandLineArgs(GetTestScope(), kAppId1, kApp1Version),
               kAppId1, base::Version({0, 0, 0, 0}), kApp1Version,
-              /*is_install=*/false,
+              /*is_install=*/true,
               /*should_update=*/true, false, "", crx_path),
       });
   ExpectUpdateCheckRequest(test_server_.get());
