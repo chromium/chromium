@@ -54,7 +54,7 @@ class MediaGpuChannelManager
   gpu::GpuChannel* LookupChannel(const base::UnguessableToken& channel_token);
 
 #if BUILDFLAG(IS_WIN)
-  const Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device() const {
+  const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device() const {
     return d3d11_device_;
   }
 #endif
