@@ -2220,8 +2220,10 @@ public class ExternalNavigationHandler {
                         if (data.getAction().equals(Intent.ACTION_CREATE_SHORTCUT)) {
                             // Ensure we don't loop asking the user to choose an app, then
                             // re-asking when we navigate to the same URL.
-                            params.getRedirectHandler()
-                                    .setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
+                            if (params.getRedirectHandler().isOnNavigation()) {
+                                params.getRedirectHandler()
+                                        .setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
+                            }
 
                             // It's pretty arbitrary whether to prefer the data URL or the fallback
                             // URL here. We could consider preferring the fallback URL, as the URL
