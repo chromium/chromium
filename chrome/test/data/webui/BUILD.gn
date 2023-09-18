@@ -247,6 +247,7 @@ if (include_js2gtest_tests) {
         "chromeos/ash_common/ash_common_resources_browsertest.js",
         "chromeos/ash_common/post_message_api/post_message_api_browsertest.js",
         "chromeos/bluetooth_pairing_dialog_browsertest.js",
+        "chromeos/borealis_installer/borealis_installer_browsertest.js",
         "chromeos/cloud_upload/cloud_upload_dialog_browsertest.js",
         "chromeos/cloud_upload/connect_onedrive_browsertest.js",
         "chromeos/cloud_upload/file_handler_page_browsertest.js",
@@ -606,6 +607,7 @@ generate_grd("build_grd") {
       ":build_web_ui_test_mojo_lite_grdp",
       "chromeos:build_grdp",
       "chromeos/ash_common:build_grdp",
+      "chromeos/borealis_installer:build_grdp",
       "chromeos/cloud_upload:build_grdp",
       "chromeos/diagnostics:build_grdp",
       "chromeos/emoji_picker:build_grdp",
@@ -623,6 +625,7 @@ generate_grd("build_grd") {
     grdp_files += [
       "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
+      "$target_gen_dir/chromeos/borealis_installer/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/diagnostics/resources.grdp",
       "$target_gen_dir/chromeos/emoji_picker/resources.grdp",

@@ -1,4 +1,151 @@
-<div>
-  Borealis Installer :D
-  <cr-button on-click="onInstallButtonClick">Install</cr-button>
+<style>
+  #main {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    padding: 70px 40px 36px 40px;
+    width: 800px;
+  }
+
+  #icon {
+    height: 32px;
+    margin-bottom: 40px;
+    width: 32px;
+  }
+
+  #img-gaming-illustration {
+    display: block;
+    width: 100%;
+    margin-top: 65px;
+  }
+
+  #title {
+    color: var(--cr-primary-text-color);
+    font: var(--cros-display-4-font);
+    margin-bottom: 16px;
+  }
+
+  #message-container {
+    color: var(--cr-secondary-text-color);
+    flex-grow: 1;
+    font: var(--cros-body-1-font);
+    margin-bottom: 16px;
+  }
+
+  #progress-container {
+    color: var(--cr-secondary-text-color);
+    flex-grow: 1;
+    font: var(--cros-display-7-font);
+    margin-bottom: 16px;
+  }
+
+  paper-progress {
+    margin-top: 31px;
+    width: 100%;
+    --paper-progress-active-color: var(--cros-color-prominent);
+    --paper-progress-container-color: var(--cros-highlight-color)
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+    font: var(--cros-button-1-font);
+    line-height: 20px;
+    margin-top: 80px;
+  }
+
+  .two-column-layout {
+    display: flex;
+  }
+
+  .two-column-layout .left-column {
+    flex: 45%;
+    padding-right: 80px;
+  }
+
+  .two-column-layout .right-column {
+    flex: 55%;
+  }
+
+  .action-button {
+    border-radius: 24px;
+  }
+
+  .cancel-button {
+    border-radius: 24px;
+  }
+  .beta-badge {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 3px;
+    width: fit-content;
+  }
+  .chip {
+    font-family: Google Sans;
+    font: var(--cros-button-1-font);
+    background-color: var(--cros-highlight-color);
+    color: var(--cros-color-selection);
+    border-radius: 10px;
+    width: fit-content;
+    padding: 2px 6px;
+  }
+}
+
+</style>
+
+<div id="main">
+  <div id="status-container" class="two-column-layout" role="status">
+    <div class="left-column">
+      <img id="icon" src="images/icon.svg">
+      <div id="title">
+        [[getTitle(state)]]
+        <div class="beta-badge" hidden="[[eq(state, 'completed')]]">
+          <div hidden="[[eq(state, 'completed')]]" class="chip">
+            $i18n{beta}
+          </div>
+        </div>
+      </div>
+      <div id="message-container">
+        <div>[[getMessage(state)]]</div>
+      </div>
+      <div id="progress-container" hidden="[[!eq(state, 'installing')]]">
+        <div id= "progress-message">
+          [[getProgressMessage(installerProgress)]] | [[getProgressLabel(
+              progressLabel)]]
+        </div>
+        <paper-progress class="progress-bar" value="[[installerProgress]]">
+        </paper-progress>
+      </div>
+    </div>
+    <div class="right-column" >
+      <picture hidden="[[eq(state, 'completed')]]">
+        <source srcset="images/start_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img src="images/start.svg" id="img-gaming-illustration">
+      </picture>
+      <picture hidden="[[!eq(state, 'completed')]]">
+        <source srcset="images/success_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img src="images/success.svg" id="img-gaming-illustration">
+      </picture>
+    </div>
+  </div>
+  <div id="button-container">
+    <cr-button id ="cancel" class="cancel-button"
+        on-click="onCancelButtonClicked">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="install" class="action-button"
+        on-click="onInstallButtonClicked"
+        aria-describedby="title" aria-details="prompt-message"
+        autofocus="true" hidden="[[!eq(state, 'welcome')]]">
+      $i18n{install}
+    </cr-button>
+    <cr-button id="launch" class="action-button" on-click="onOpenButtonClicked"
+        aria-describedby="title" aria-details="prompt-message"
+        autofocus="true" hidden="[[!eq(state, 'completed')]]">
+      $i18n{launch}
+    </cr-button>
+  </div>
 </div>

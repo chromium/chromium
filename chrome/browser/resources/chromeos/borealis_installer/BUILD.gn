@@ -5,7 +5,11 @@ build_webui("build") {
 
   static_files = [
     "borealis_installer.html",
-    "borealis_installer.css",
+    "images/start.svg",
+    "images/start_dark.svg",
+    "images/success.svg",
+    "images/success_dark.svg",
+    "images/icon.svg",
   ]
 
   web_component_files = [ "app.ts" ]
@@ -15,6 +19,7 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom-webui.ts" ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/ash/borealis_installer:mojo_bindings_ts__generator" ]
+  ts_composite = true
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

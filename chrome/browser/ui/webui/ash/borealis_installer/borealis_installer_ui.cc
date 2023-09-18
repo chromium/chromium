@@ -43,6 +43,7 @@ BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
       {"finishedTitle", IDS_BOREALIS_INSTALLER_FINISHED_TITLE},
       {"finishedMessage", IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE},
       {"launch", IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON},
+      {"beta", IDS_BOREALIS_BETA_BADGE},
   };
   html_source->AddLocalizedStrings(kStrings);
 
