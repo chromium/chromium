@@ -209,7 +209,13 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -5));
         verifyNoMoreInteractions(mDropdownScrollListener);
 
-        // Overscroll to top. Expect the keyboard to be called in.
+        // Overscroll to top. This is part of the same gesture.
+        // Expect to see keyboard state unchanged.
+        assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -10));
+        verifyNoMoreInteractions(mDropdownScrollToTopListener);
+
+        // Overscroll to top again, but this time as a new gesture.
+        mListener.onNewGesture();
         assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -10));
         verify(mDropdownScrollToTopListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollToTopListener);
@@ -232,7 +238,13 @@ public class OmniboxSuggestionsDropdownUnitTest {
         // Confirm that we're hiding the keyboard.
         verify(mDropdownScrollListener).run();
 
+        // Simulate scroll up as part of the same gesture. Observe that no events are emitted.
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, -10));
+        verifyNoMoreInteractions(mDropdownScrollToTopListener);
+
+        // Begin a new gesture.
         // Pretend we're scrolling up now (delta=-10) but we're already on top and can't move.
+        mListener.onNewGesture();
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, -10));
         // Confirm that we're not trying to show the keyboard.
         verify(mDropdownScrollToTopListener).run();
@@ -251,7 +263,12 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(1, 10));
         verify(mDropdownScrollListener).run();
 
-        // Reset keyboard state.
+        // Expect no more events emitted during the same gesture.
+        assertEquals(-9, mListener.updateKeyboardVisibilityAndScroll(-9, -10));
+        verifyNoMoreInteractions(mDropdownScrollToTopListener);
+
+        // Reset keyboard state as part of the new gesture.
+        mListener.onNewGesture();
         assertEquals(-9, mListener.updateKeyboardVisibilityAndScroll(-9, -10));
         verify(mDropdownScrollToTopListener).run();
 
