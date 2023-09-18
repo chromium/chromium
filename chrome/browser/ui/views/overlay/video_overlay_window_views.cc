@@ -328,10 +328,7 @@ VideoOverlayWindowViews::VideoOverlayWindowViews(
           VideoOverlayWindowViews::kControlHideDelayAfterMove,
           base::BindRepeating(
               &VideoOverlayWindowViews::ReEnableControlsAfterMove,
-              base::Unretained(this))),
-      get_overlay_view_cb_(base::BindRepeating(
-          &PictureInPictureWindowManager::GetOverlayView,
-          base::Unretained(PictureInPictureWindowManager::GetInstance()))) {
+              base::Unretained(this))) {
   display::Screen::GetScreen()->AddObserver(this);
 }
 
@@ -1237,12 +1234,20 @@ void VideoOverlayWindowViews::ShowInactive() {
     overlay_view_ = nullptr;
   }
 
+  // TODO(crbug.com/1472386): Confirm whether the anchor should remain as FLOAT.
+  auto overlay_view =
+      get_overlay_view_cb_
+          ? get_overlay_view_cb_.Run()
+          : PictureInPictureWindowManager::GetInstance()->GetOverlayView(
+                /*browser_view_overridden_bounds=*/gfx::Rect(),
+                window_background_view_, views::BubbleBorder::Arrow::FLOAT);
   // Re-add it if needed.
-  if (auto overlay_view = get_overlay_view_cb_.Run()) {
+  if (overlay_view) {
     overlay_view_ = GetContentsView()->AddChildView(std::move(overlay_view));
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
+    overlay_view_->ShowBubble(GetNativeView());
   }
 
   // If this is not the first time the window is shown, this will be a no-op.

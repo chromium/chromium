@@ -6,18 +6,18 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_VIEW_H_
 
 #include "base/functional/callback.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-// Creates and manages the content setting |BubbleDialogDelegateView| for
+// Creates and manages the content setting |BubbleDialogDelegate| for
 // autopip.  This view contains the setting optioms and text displayed to the
 // user.
-class AutoPipSettingView : public views::BubbleDialogDelegateView {
+class AutoPipSettingView : public views::BubbleDialogDelegate {
  public:
-  METADATA_HEADER(AutoPipSettingView);
   enum class UiResult {
     // User selected 'Allow this time'.
-    kAllowOnce,
+    // These values are also used as the AutoPiP setting view button ID's,
+    // starting from 1 because 0 is the default view ID.
+    kAllowOnce = 1,
 
     // User selected 'Allow on every visit'.
     kAllowOnEveryVisit,
@@ -45,49 +45,63 @@ class AutoPipSettingView : public views::BubbleDialogDelegateView {
   //   accommodate the |AutoPipSettingView|.
   //   * anchor_view: Anchor view for the bubble.
   //   * arrow: The arrow position for the bubble.
-  //   * parent: The bubble's parent window.
   explicit AutoPipSettingView(ResultCb result_cb,
                               HideViewCb hide_view_cb,
                               const gfx::Rect& browser_view_overridden_bounds,
                               views::View* anchor_view,
-                              views::BubbleBorder::Arrow arrow,
-                              gfx::NativeView parent);
+                              views::BubbleBorder::Arrow arrow);
   AutoPipSettingView(const AutoPipSettingView&) = delete;
   AutoPipSettingView(AutoPipSettingView&&) = delete;
   AutoPipSettingView& operator=(const AutoPipSettingView&) = delete;
   ~AutoPipSettingView() override;
 
-  // Create the bubble and show the widget.
-  void Show();
-
   // Set the bubble dialog title. Needed to propagate the origin, which is
   // included in the title, from the Picture-in-Picture frame view.
   void SetDialogTitle(const std::u16string& text);
-
-  const views::Label* get_autopip_description_for_testing() const {
-    return autopip_description_;
-  }
-  const views::MdTextButton* get_allow_once_button_for_testing() const {
-    return allow_once_button_;
-  }
-  const views::MdTextButton*
-  get_allow_on_every_visit_button_button_for_testing() const {
-    return allow_on_every_visit_button_;
-  }
-  const views::MdTextButton* get_block_button_for_testing() const {
-    return block_button_;
-  }
 
   // Override |GetAnchorRect| to allow overlapping the bubble with the window
   // title bar.
   gfx::Rect GetAnchorRect() const override;
 
+  // views::WidgetDelegate:
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override;
+
  private:
+  // AnchorViewObserver observes the anchor widget view. When the anchor view is
+  // removed from from the widget or the view is being deleted, the observer
+  // will close the bubble widget (if the widget exists and is visible). This
+  // guarantees that a single bubble widget exists for the cases mentioned
+  // above.
+  //
+  // As a side effect, this also guarantees that a single bubble widgte exists
+  // for the cases where the PiP browser frame view is re-created.
+  class AnchorViewObserver : public views::ViewObserver {
+   public:
+    explicit AnchorViewObserver(views::View* anchor_view,
+                                AutoPipSettingView* bubble);
+    AnchorViewObserver(const AnchorViewObserver&) = delete;
+    AnchorViewObserver& operator=(const AnchorViewObserver&) = delete;
+    ~AnchorViewObserver() override;
+
+   private:
+    // views::ViewObserver:
+    void OnViewRemovedFromWidget(views::View*) override;
+    void OnViewIsDeleting(views::View*) override;
+
+    void CloseWidget();
+
+    const raw_ptr<AutoPipSettingView> bubble_;
+    base::ScopedObservation<views::View, views::ViewObserver> observation_{
+        this};
+  };
+
   ResultCb result_cb_;
   raw_ptr<views::Label> autopip_description_ = nullptr;
   raw_ptr<views::MdTextButton> allow_once_button_ = nullptr;
   raw_ptr<views::MdTextButton> allow_on_every_visit_button_ = nullptr;
   raw_ptr<views::MdTextButton> block_button_ = nullptr;
+  std::unique_ptr<AutoPipSettingView::AnchorViewObserver> anchor_view_observer_;
 
   // Initialize bubble with all it's child views. Called at construction time.
   void InitBubble();

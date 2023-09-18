@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 
 // Represents the bubble top border offset, with respect to the
 // Picture-in-Picture window tittle bar. Used to allow the Bubble to overlap the
@@ -36,7 +35,7 @@ constexpr int kBubbleFixedWidth = 320;
 constexpr int kBubbleBorderCornerRadius = 15;
 
 // Bubble border MD shadow elevation.
-constexpr int kBubbleBorderMdShadowElevation = 3;
+constexpr int kBubbleBorderMdShadowElevation = 2;
 
 // Bubble margins.
 constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 15, 15, 20);
@@ -46,25 +45,29 @@ constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 10, 10, 10);
 
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
-    base::OnceCallback<void()> hide_view_cb,
+    HideViewCb hide_view_cb,
     const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
-    views::BubbleBorder::Arrow arrow,
-    gfx::NativeView parent)
-    : views::BubbleDialogDelegateView(anchor_view, arrow),
+    views::BubbleBorder::Arrow arrow)
+    : views::BubbleDialogDelegate(anchor_view, arrow),
       result_cb_(std::move(result_cb)) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
-  DCHECK(parent);
   CHECK(result_cb_);
-  set_parent_window(parent);
   SetAnchorView(anchor_view);
   set_fixed_width(kBubbleFixedWidth);
+
   // Set up callback to hide AutoPiP overlay view semi-opaque background layer.
   SetCloseCallback(std::move(hide_view_cb));
-  set_fixed_width(kBubbleFixedWidth);
+
   set_use_custom_frame(true);
   set_margins(kBubbleMargins);
   set_title_margins(kBubbleTitleMargins);
+
+  set_close_on_deactivate(false);
+
+  anchor_view_observer_ =
+      std::make_unique<AutoPipSettingView::AnchorViewObserver>(anchor_view,
+                                                               this);
 
   // Initialize Bubble.
   InitBubble();
@@ -73,14 +76,18 @@ AutoPipSettingView::AutoPipSettingView(
 AutoPipSettingView::~AutoPipSettingView() {
   autopip_description_ = nullptr;
   allow_once_button_ = allow_on_every_visit_button_ = block_button_ = nullptr;
+  anchor_view_observer_.reset();
 }
 
 void AutoPipSettingView::InitBubble() {
-  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  std::unique_ptr<views::View> primary_view = std::make_unique<views::View>();
+
+  auto* layout_manager =
+      primary_view->SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout_manager->set_between_child_spacing(kLayoutBetweenChildSpacing);
 
-  auto* description_view = AddChildView(
+  auto* description_view = primary_view->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(kLayoutBetweenChildSpacing)
@@ -98,7 +105,7 @@ void AutoPipSettingView::InitBubble() {
   autopip_description_->SetSize(
       gfx::Size(kDescriptionViewWidth, kDescriptionViewHeight));
 
-  auto* controls_view = AddChildView(
+  auto* controls_view = primary_view->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(kLayoutBetweenChildSpacing)
@@ -113,6 +120,8 @@ void AutoPipSettingView::InitBubble() {
       controls_view, UiResult::kAllowOnEveryVisit, u"Allow on every visit");
   block_button_ =
       InitControlViewButton(controls_view, UiResult::kBlock, u"Don't allow");
+
+  SetContentsView(std::move(primary_view));
 }
 
 raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
@@ -130,21 +139,8 @@ raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
   button->SetMinSize(
       gfx::Size(kControlViewButtonWidth, kControlViewButtonHeight));
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  button->SetID(static_cast<int>(ui_result));
   return button;
-}
-
-void AutoPipSettingView::Show() {
-  auto* widget = BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
-
-  // Customize Bubble border.
-  auto bubble_border = std::make_unique<views::BubbleBorder>(
-      arrow(), views::BubbleBorder::STANDARD_SHADOW);
-  bubble_border->SetCornerRadius(kBubbleBorderCornerRadius);
-  bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
-  bubble_border->set_draw_border_stroke(true);
-  GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
-
-  widget->Show();
 }
 
 void AutoPipSettingView::SetDialogTitle(const std::u16string& text) {
@@ -157,15 +153,14 @@ void AutoPipSettingView::OnButtonPressed(UiResult result) {
 
   std::move(result_cb_).Run(result);
 
-  // Hide the View and close the widget.
-  SetVisible(false);
+  // Close the widget.
   GetWidget()->Close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// views::BubbleDialogDelegateView:
+// views::BubbleDialogDelegate:
 gfx::Rect AutoPipSettingView::GetAnchorRect() const {
-  const auto anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
+  const auto anchor_rect = BubbleDialogDelegate::GetAnchorRect();
   const auto old_origin = anchor_rect.origin();
   const auto old_size = anchor_rect.size();
   const auto new_anchor_rect =
@@ -174,5 +169,45 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
   return new_anchor_rect;
 }
 
-BEGIN_METADATA(AutoPipSettingView, views::BubbleDialogDelegateView)
-END_METADATA
+///////////////////////////////////////////////////////////////////////////////
+// views::WidgetDelegate:
+std::unique_ptr<views::NonClientFrameView>
+AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
+  // Create the customized bubble border.
+  std::unique_ptr<views::BubbleBorder> bubble_border =
+      std::make_unique<views::BubbleBorder>(
+          arrow(), views::BubbleBorder::STANDARD_SHADOW);
+  bubble_border->SetCornerRadius(kBubbleBorderCornerRadius);
+  bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
+  bubble_border->set_draw_border_stroke(true);
+
+  auto frame = BubbleDialogDelegate::CreateNonClientFrameView(widget);
+  static_cast<views::BubbleFrameView*>(frame.get())
+      ->SetBubbleBorder(std::move(bubble_border));
+  return frame;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AnchorViewObserver:
+AutoPipSettingView::AnchorViewObserver::AnchorViewObserver(
+    views::View* anchor_view,
+    AutoPipSettingView* bubble)
+    : bubble_(bubble) {
+  observation_.Observe(anchor_view);
+}
+AutoPipSettingView::AnchorViewObserver::~AnchorViewObserver() = default;
+
+void AutoPipSettingView::AnchorViewObserver::OnViewRemovedFromWidget(
+    views::View*) {
+  CloseWidget();
+}
+void AutoPipSettingView::AnchorViewObserver::OnViewIsDeleting(views::View*) {
+  CloseWidget();
+}
+
+void AutoPipSettingView::AnchorViewObserver::CloseWidget() {
+  observation_.Reset();
+  if (bubble_->GetWidget() && !bubble_->GetWidget()->IsClosed()) {
+    bubble_->GetWidget()->Close();
+  }
+}

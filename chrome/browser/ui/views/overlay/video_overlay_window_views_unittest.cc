@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -39,6 +40,17 @@ constexpr gfx::Size kMinWindowSize(200, 100);
 }  // namespace
 
 using testing::_;
+
+// Mock of AutoPipSettingOverlayView. Used for injection during tests.
+class MockOverlayView : public AutoPipSettingOverlayView {
+ public:
+  explicit MockOverlayView(views::View* anchor_view)
+      : AutoPipSettingOverlayView(base::DoNothing(),
+                                  gfx::Rect(),
+                                  anchor_view,
+                                  views::BubbleBorder::Arrow::FLOAT) {}
+  MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
+};
 
 class TestVideoPictureInPictureWindowController
     : public content::VideoPictureInPictureWindowController {
@@ -137,8 +149,11 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     return pip_window_controller_;
   }
 
-  views::View* SetOverlayView(std::unique_ptr<views::View> overlay_view) {
-    overlay_view_ = std::move(overlay_view);
+  views::View* SetOverlayView() {
+    std::unique_ptr<MockOverlayView> mock_overlay_view =
+        std::make_unique<MockOverlayView>(
+            overlay_window().window_background_view_for_testing());
+    overlay_view_ = std::move(mock_overlay_view);
     return overlay_view_.get();
   }
 
@@ -152,7 +167,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   }
 
  private:
-  std::unique_ptr<views::View> GetOverlayViewImpl() {
+  std::unique_ptr<AutoPipSettingOverlayView> GetOverlayViewImpl() {
     return std::move(overlay_view_);
   }
 
@@ -164,7 +179,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   display::test::TestScreen test_screen_;
 
   // Overlay view that we'll send to the window.  May be null.
-  std::unique_ptr<views::View> overlay_view_;
+  std::unique_ptr<AutoPipSettingOverlayView> overlay_view_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
@@ -546,7 +561,7 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayViewIsSizedCorrectly) {
   overlay_window().SetBounds(bounds);
   // Setting the overlay view before show should be sufficient for it to take
   // effect when shown.
-  auto* overlay_view = SetOverlayView(std::make_unique<views::View>());
+  auto* overlay_view = SetOverlayView();
   overlay_window().ShowInactive();
   EXPECT_TRUE(overlay_view->GetVisible());
   EXPECT_EQ(overlay_view->bounds(), bounds);
@@ -554,7 +569,7 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayViewIsSizedCorrectly) {
 
 TEST_F(VideoOverlayWindowViewsTest, OverlayViewCanBeClicked) {
   // Make sure that the overlay view is z-ordered to get input events.
-  auto* overlay_view = SetOverlayView(std::make_unique<views::View>());
+  auto* overlay_view = SetOverlayView();
 
   // Add a button!
   base::MockRepeatingCallback<void(const ui::Event&)> cb;
@@ -576,7 +591,7 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayViewCanBeClicked) {
 TEST_F(VideoOverlayWindowViewsTest, OverlayWindowBlocksInput) {
   // Make sure that the playback controls don't receive input events while the
   // overlay view is visible.
-  SetOverlayView(std::make_unique<views::View>());
+  SetOverlayView();
   overlay_window().ShowInactive();
 
   // When the play/pause controls are visible, closing via the close button

@@ -9,7 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -21,72 +23,64 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
+
+    // Create setting overlay widget.
     widget_ = CreateTestWidget();
     widget_->Show();
 
-    setting_overlay_ = widget_->SetContentsView(
-        std::make_unique<AutoPipSettingOverlayView>(cb().Get()));
+    // Create parent Widget.
+    parent_widget_ = CreateTestWidget();
+    parent_widget_->Show();
 
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        views::GetRootWindow(widget_.get()));
+    // Create the anchor Widget.
+    anchor_view_widget_ = CreateTestWidget();
+    anchor_view_widget_->Show();
+    auto* anchor_view =
+        anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
+
+    // Define the browser view overridden bounds.
+    const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
+
+    setting_overlay_ =
+        widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
+            cb().Get(), browser_view_overridden_bounds, anchor_view,
+            views::BubbleBorder::TOP_CENTER));
   }
 
   void TearDown() override {
+    anchor_view_widget_.reset();
+    parent_widget_.reset();
     setting_overlay_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
 
-  ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
-
-  const views::View* block_button() const {
-    return setting_overlay_->get_block_button_for_testing();
+  const AutoPipSettingOverlayView* setting_overlay() const {
+    return setting_overlay_;
   }
 
-  const views::View* allow_button() const {
-    return setting_overlay_->get_allow_button_for_testing();
+  const views::View* background() const {
+    return setting_overlay_->get_background_for_testing();
   }
 
-  const views::View* setting_overlay() const { return setting_overlay_; }
+  const views::Widget* widget() const { return widget_.get(); }
 
-  using UiResult = AutoPipSettingOverlayView::UiResult;
+  using UiResult = AutoPipSettingView::UiResult;
 
   base::MockOnceCallback<void(UiResult)>& cb() { return cb_; }
 
  private:
   base::MockOnceCallback<void(UiResult)> cb_;
-
+  std::unique_ptr<views::Widget> parent_widget_;
+  std::unique_ptr<views::Widget> anchor_view_widget_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-TEST_F(AutoPipSettingOverlayViewTest, BlockCallsBackWithFalse) {
-  EXPECT_CALL(cb(), Run(UiResult::kBlock));
-  EXPECT_TRUE(setting_overlay()->GetVisible());
-  event_generator()->MoveMouseTo(
-      block_button()->GetBoundsInScreen().CenterPoint());
-  event_generator()->ClickLeftButton();
-  // The button should auto-hide.
-  EXPECT_FALSE(setting_overlay()->GetVisible());
-}
-
-TEST_F(AutoPipSettingOverlayViewTest, AllowCallsBackWithTrue) {
-  EXPECT_CALL(cb(), Run(UiResult::kAllow));
-  event_generator()->MoveMouseTo(
-      allow_button()->GetBoundsInScreen().CenterPoint());
-  event_generator()->ClickLeftButton();
-  EXPECT_FALSE(setting_overlay()->GetVisible());
-}
-
-TEST_F(AutoPipSettingOverlayViewTest, MultipleClicksDontCrash) {
-  EXPECT_CALL(cb(), Run(UiResult::kAllow));
-  event_generator()->MoveMouseTo(
-      allow_button()->GetBoundsInScreen().CenterPoint());
-  event_generator()->ClickLeftButton();
-  event_generator()->ClickLeftButton();
-  event_generator()->MoveMouseTo(
-      block_button()->GetBoundsInScreen().CenterPoint());
-  event_generator()->ClickLeftButton();
-  event_generator()->ClickLeftButton();
+TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
+  EXPECT_TRUE(widget()->IsVisible());
+  EXPECT_EQ(
+      background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
+      background()->GetBackground()->get_color());
 }

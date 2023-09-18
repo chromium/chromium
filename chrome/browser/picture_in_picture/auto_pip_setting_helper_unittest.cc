@@ -13,7 +13,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -27,6 +26,14 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     widget_ = CreateTestWidget();
     widget_->Show();
 
+    // Create parent Widget for AutoPiP setting view.
+    parent_widget_ = CreateTestWidget();
+    parent_widget_->Show();
+
+    // Create the anchor Widget for AutoPiP setting view.
+    anchor_view_widget_ = CreateTestWidget();
+    anchor_view_widget_->Show();
+
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
@@ -34,12 +41,11 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
     setting_helper_ = std::make_unique<AutoPipSettingHelper>(
         origin_, settings_map_.get(), close_cb_.Get());
-
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        views::GetRootWindow(widget_.get()));
   }
 
   void TearDown() override {
+    anchor_view_widget_.reset();
+    parent_widget_.reset();
     setting_overlay_ = nullptr;
     widget_.reset();
     setting_helper_.reset();
@@ -47,29 +53,18 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     settings_map_->ShutdownOnUIThread();
   }
 
-  void click_allow() const {
-    event_generator_->MoveMouseTo(
-        setting_overlay_->get_allow_button_for_testing()
-            ->GetBoundsInScreen()
-            .CenterPoint());
-    event_generator_->ClickLeftButton();
-  }
-
-  void click_block() const {
-    event_generator_->MoveMouseTo(
-        setting_overlay_->get_block_button_for_testing()
-            ->GetBoundsInScreen()
-            .CenterPoint());
-    event_generator_->ClickLeftButton();
-  }
-
   AutoPipSettingHelper* setting_helper() { return setting_helper_.get(); }
-  const views::View* setting_overlay() const { return setting_overlay_; }
+  const AutoPipSettingOverlayView* setting_overlay() const {
+    return setting_overlay_;
+  }
 
   base::MockOnceCallback<void()>& close_cb() { return close_cb_; }
 
   void AttachOverlayView() {
-    auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded();
+    auto* anchor_view =
+        anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
+    auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
+        gfx::Rect(), anchor_view, views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
           widget_->SetContentsView(std::move(setting_overlay)));
@@ -92,7 +87,8 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  std::unique_ptr<views::Widget> parent_widget_;
+  std::unique_ptr<views::Widget> anchor_view_widget_;
 
   const GURL origin_{"https://example.com"};
 
@@ -114,6 +110,15 @@ TEST_F(AutoPipSettingHelperTest, NoUiIfContentSettingIsAllow) {
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
+TEST_F(AutoPipSettingHelperTest, UiShownIfContentSettingIsAsk) {
+  set_content_setting(CONTENT_SETTING_ASK);
+
+  EXPECT_CALL(close_cb(), Run()).Times(0);
+  AttachOverlayView();
+  EXPECT_TRUE(setting_overlay());
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
 TEST_F(AutoPipSettingHelperTest,
        NoUiButCallbackIsCalledIfContentSettingIsBlock) {
   set_content_setting(CONTENT_SETTING_BLOCK);
@@ -124,25 +129,33 @@ TEST_F(AutoPipSettingHelperTest,
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }
 
-// TODO(crbug.com/1472386): Add "allow once" and "allow on every visit" tests.
-TEST_F(AutoPipSettingHelperTest, AllowDoesNotCallCloseCb) {
+TEST_F(AutoPipSettingHelperTest, AllowOnceDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
-  AttachOverlayView();
-  EXPECT_TRUE(setting_overlay());
 
-  // Click allow.  Nothing should happen.
+  // Run result callback with "allow once" UiResult.  Nothing should happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
-  click_allow();
+  std::move(setting_helper()->take_result_cb_for_testing())
+      .Run(AutoPipSettingView::UiResult::kAllowOnce);
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
+TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+
+  // Run result callback with "allow on every visit" UiResult.  Nothing should
+  // happen.
+  EXPECT_CALL(close_cb(), Run()).Times(0);
+  std::move(setting_helper()->take_result_cb_for_testing())
+      .Run(AutoPipSettingView::UiResult::kAllowOnEveryVisit);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
-  AttachOverlayView();
-  EXPECT_TRUE(setting_overlay());
 
-  // Click block.  The close cb should be called.
+  // Run result callback with "block" UiResult.  The close cb should be called.
   EXPECT_CALL(close_cb(), Run()).Times(1);
-  click_block();
+  std::move(setting_helper()->take_result_cb_for_testing())
+      .Run(AutoPipSettingView::UiResult::kBlock);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }

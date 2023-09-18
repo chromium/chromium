@@ -333,7 +333,11 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
     pip_window_controller_ = nullptr;
 }
 
-std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
+std::unique_ptr<AutoPipSettingOverlayView>
+PictureInPictureWindowManager::GetOverlayView(
+    const gfx::Rect& browser_view_overridden_bounds,
+    views::View* anchor_view,
+    views::BubbleBorder::Arrow arrow) {
   // This should probably CHECK, but tests often can't set the controller.
   if (!pip_window_controller_) {
     return nullptr;
@@ -360,7 +364,8 @@ std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
       web_contents,
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
 
-  auto overlay_view = auto_pip_setting_helper->CreateOverlayViewIfNeeded();
+  auto overlay_view = auto_pip_setting_helper->CreateOverlayViewIfNeeded(
+      browser_view_overridden_bounds, anchor_view, arrow);
   if (overlay_view) {
     // Retain the setting helper for the overlay view, and add the overlay view.
     auto_pip_setting_helper_ = std::move(auto_pip_setting_helper);

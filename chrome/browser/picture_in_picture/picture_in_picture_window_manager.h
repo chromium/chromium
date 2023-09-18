@@ -12,9 +12,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "url/origin.h"
 
 namespace content {
@@ -146,7 +148,10 @@ class PictureInPictureWindowManager {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<views::View> GetOverlayView();
+  std::unique_ptr<AutoPipSettingOverlayView> GetOverlayView(
+      const gfx::Rect& browser_view_overridden_bounds,
+      views::View* anchor_view,
+      views::BubbleBorder::Arrow arrow);
 #endif
 
   // Get the origins for initiators of active Picture-in-Picture sessions.

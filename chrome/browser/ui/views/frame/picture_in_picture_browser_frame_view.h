@@ -362,10 +362,8 @@ class PictureInPictureBrowserFrameView
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 
-#if !BUILDFLAG(IS_ANDROID)
   // If non-null, this displays the allow / block setting overlay for autopip.
-  raw_ptr<views::View> auto_pip_setting_overlay_ = nullptr;
-#endif
+  raw_ptr<AutoPipSettingOverlayView> auto_pip_setting_overlay_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

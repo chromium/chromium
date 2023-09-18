@@ -25,6 +25,8 @@ class HostContentSettingsMap;
 // permissions embargo.
 class AutoPipSettingHelper {
  public:
+  using ResultCb =
+      base::OnceCallback<void(AutoPipSettingView::UiResult result)>;
   // Convenience function.
   static std::unique_ptr<AutoPipSettingHelper> CreateForWebContents(
       content::WebContents* web_contents,
@@ -41,11 +43,19 @@ class AutoPipSettingHelper {
   AutoPipSettingHelper(const AutoPipSettingHelper&) = delete;
   AutoPipSettingHelper(AutoPipSettingHelper&&) = delete;
 
-  // Create a views::View that should be used as the overlay view when the
-  // content setting is ASK.  This view will call back to us, so we should
-  // outlive it.  Will return nullptr if no UI is needed, and will optionally
-  // call `close_pip_cb_` if AutoPiP is blocked.
-  std::unique_ptr<views::View> CreateOverlayViewIfNeeded();
+  // Create an AutoPipSettingOverlayView that should be used as the overlay view
+  // when the content setting is ASK.  This view will call back to us, so we
+  // should outlive it.  Will return nullptr if no UI is needed, and will
+  // optionally call `close_pip_cb_` if AutoPiP is blocked.
+  std::unique_ptr<AutoPipSettingOverlayView> CreateOverlayViewIfNeeded(
+      const gfx::Rect& browser_view_overridden_bounds,
+      views::View* anchor_view,
+      views::BubbleBorder::Arrow arrow);
+
+  // Only used for testing. Having access to the result callback during testing
+  // allows us to test the behaviour of clicking the various UI buttons, without
+  // the need to perform clicks.
+  ResultCb take_result_cb_for_testing() { return std::move(result_cb_); }
 
  private:
   // Returns the content setting, modified as needed by any embargo.
@@ -56,11 +66,12 @@ class AutoPipSettingHelper {
 
   // Notify us that the user has interacted with the content settings UI that's
   // displayed in the pip window.
-  void OnUiResult(AutoPipSettingOverlayView::UiResult result);
+  void OnUiResult(AutoPipSettingView::UiResult result);
 
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   base::OnceClosure close_pip_cb_;
+  ResultCb result_cb_;
 
   base::WeakPtrFactory<AutoPipSettingHelper> weak_factory_{this};
 };

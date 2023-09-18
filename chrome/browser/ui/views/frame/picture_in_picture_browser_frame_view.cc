@@ -531,15 +531,15 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   hide_close_button_animation_.set_continuous(false);
   hide_close_button_animation_.set_delegate(this);
 
-#if !BUILDFLAG(IS_ANDROID)
   // If the window manager wants us to display an overlay, get it.  In practice,
   // this is the auto-pip Allow / Block content setting UI.
   if (auto auto_pip_setting_overlay =
-          PictureInPictureWindowManager::GetInstance()->GetOverlayView()) {
+          PictureInPictureWindowManager::GetInstance()->GetOverlayView(
+              browser_view->browser()->override_bounds(),
+              top_bar_container_view_, views::BubbleBorder::TOP_CENTER)) {
     auto_pip_setting_overlay_ =
         AddChildView(std::move(auto_pip_setting_overlay));
   }
-#endif
 
 #if BUILDFLAG(IS_LINUX)
   frame_background_ = std::make_unique<views::FrameBackground>();
@@ -763,9 +763,10 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   show_close_button_animation_.SetContainer(animation_container);
   hide_close_button_animation_.SetContainer(animation_container);
 
-  // TODO(https://crbug.com/1475419): Don't force dark mode once we support a
-  // light mode window.
-  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  // If the AutoPiP setting overlay is set, show the permission settings bubble.
+  if (auto_pip_setting_overlay_) {
+    auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
+  }
 
   BrowserNonClientFrameView::AddedToWidget();
 }
@@ -776,6 +777,11 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+
+  // Clear the AutoPiP setting overlay view.
+  if (auto_pip_setting_overlay_) {
+    auto_pip_setting_overlay_ = nullptr;
+  }
 
   BrowserNonClientFrameView::RemovedFromWidget();
 }

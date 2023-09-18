@@ -25,7 +25,10 @@ AutoPipSettingHelper::AutoPipSettingHelper(const GURL& origin,
                                            base::OnceClosure close_pip_cb)
     : origin_(origin),
       settings_map_(settings_map),
-      close_pip_cb_(std::move(close_pip_cb)) {}
+      close_pip_cb_(std::move(close_pip_cb)) {
+  result_cb_ = base::BindOnce(&AutoPipSettingHelper::OnUiResult,
+                              weak_factory_.GetWeakPtr());
+}
 
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 
@@ -44,12 +47,17 @@ void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
       ContentSettingsType::AUTO_PICTURE_IN_PICTURE, new_setting, constraints);
 }
 
-std::unique_ptr<views::View> AutoPipSettingHelper::CreateOverlayViewIfNeeded() {
+std::unique_ptr<AutoPipSettingOverlayView>
+AutoPipSettingHelper::CreateOverlayViewIfNeeded(
+    const gfx::Rect& browser_view_overridden_bounds,
+    views::View* anchor_view,
+    views::BubbleBorder::Arrow arrow) {
   switch (GetEffectiveContentSetting()) {
     case CONTENT_SETTING_ASK:
       // Create and return the UI to ask the user.
-      return std::make_unique<AutoPipSettingOverlayView>(base::BindOnce(
-          &AutoPipSettingHelper::OnUiResult, weak_factory_.GetWeakPtr()));
+      return std::make_unique<AutoPipSettingOverlayView>(
+          std::move(result_cb_), browser_view_overridden_bounds, anchor_view,
+          arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
       return nullptr;
@@ -64,18 +72,18 @@ std::unique_ptr<views::View> AutoPipSettingHelper::CreateOverlayViewIfNeeded() {
   }
 }
 
-void AutoPipSettingHelper::OnUiResult(
-    AutoPipSettingOverlayView::UiResult result) {
+void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
   switch (result) {
-    case AutoPipSettingOverlayView::UiResult::kBlock:
+    case AutoPipSettingView::UiResult::kBlock:
       UpdateContentSetting(CONTENT_SETTING_BLOCK);
       // Also close the pip window.
       std::move(close_pip_cb_).Run();
       break;
-    case AutoPipSettingOverlayView::UiResult::kAllow:
+    case AutoPipSettingView::UiResult::kAllowOnEveryVisit:
       UpdateContentSetting(CONTENT_SETTING_ALLOW);
       break;
-    case AutoPipSettingOverlayView::UiResult::kDismissed:
+    case AutoPipSettingView::UiResult::kDismissed:
+    case AutoPipSettingView::UiResult::kAllowOnce:
       // Leave at 'ASK'.
       break;
   }
