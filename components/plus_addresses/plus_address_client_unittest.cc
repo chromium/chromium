@@ -118,15 +118,13 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
                                                             R"(
     {
-      "plusProfile": [
-        {
+      "plusProfile": {
           "unwanted": 123,
           "facet": "youtube.com",
           "plusEmail" : {
             "plusAddress": "plusone@plus.plus"
           }
-        }
-      ],
+        },
       "unwanted": "abc"
     }
     )");

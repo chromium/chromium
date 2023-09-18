@@ -21,17 +21,11 @@ absl::optional<std::string> PlusAddressParser::ParsePlusAddressFromV1Create(
   for (const std::pair<const std::string&, const base::Value&>
            first_level_entry : response.value().GetDict()) {
     const auto& [first_key, first_val] = first_level_entry;
-    if (base::MatchPattern(first_key, "*Profile") && first_val.is_list()) {
-      // Parse the list of profiles and add the result to the mapping.
-      const std::vector<PlusProfile> profiles =
-          ParsePlusProfilesFromV1ProfileList(first_val.GetIfList());
-
-      // Note: assumes server will only return 1 profile. This is what we
-      // expect in v1.
-      if (profiles.size() != 1) {
-        return absl::nullopt;
-      }
-      return profiles[0].plus_address;
+    if (base::MatchPattern(first_key, "*Profile") && first_val.is_dict()) {
+      const absl::optional<PlusProfile> profile =
+          ParsePlusProfileFromV1Dict(first_val.GetIfDict());
+      return profile.has_value() ? absl::make_optional(profile->plus_address)
+                                 : absl::nullopt;
     }
   }
   return absl::nullopt;

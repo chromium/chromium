@@ -26,15 +26,13 @@ TEST(PlusAddressParsing, NotValidJson) {
 TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   absl::optional<base::Value> perfect = base::JSONReader::Read(R"(
     {
-      "plusProfile": [
-        {
-          "unwanted": 123,
-          "facet": "apple.com",
-          "plusEmail" : {
-            "plusAddress": "fubar@plus.com"
-          }
+      "plusProfile":  {
+        "unwanted": 123,
+        "facet": "apple.com",
+        "plusEmail" : {
+          "plusAddress": "fubar@plus.com"
         }
-      ],
+      },
       "unwanted": "abc"
     }
     )");
@@ -45,15 +43,13 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
 }
 
 // Validate that there is a plusAddress field in the plusEmail object.
-TEST(PlusAddressParsing, FromV1Create_FailsWithoutAddress) {
+TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"(
     {
-      "plusProfile": [
-        {
-          "plusEmail" : {
-          }
+      "plusProfile":  {
+        "plusEmail" : {
         }
-      ]
+      }
     }
     )");
   ASSERT_TRUE(json.has_value());
@@ -66,11 +62,9 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutAddress) {
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"(
     {
-      "plusProfile": [
-        {
-          "address": "foobar"
-        }
-      ]
+      "plusProfile":  {
+        "address": "foobar"
+      }
     }
     )");
   ASSERT_TRUE(json.has_value());
@@ -79,35 +73,10 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
             absl::nullopt);
 }
 
-TEST(PlusAddressParsing, FromV1Create_FailsWhenGivenNoProfiles) {
+TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"(
     {
-      "plusProfile": []
-    }
-    )");
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusAddressFromV1Create(std::move(value)),
-            absl::nullopt);
-}
-
-TEST(PlusAddressParsing, FromV1Create_FailsWhenGivenTooManyProfiles) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
-    {
-      "plusProfile": [
-        {
-          "facet": "google.com",
-          "plusEmail": {
-            "plusAddress": "mini@plus.com"
-          }
-        },
-        {
-          "facet": "bing.com",
-          "plusEmail": {
-            "plusAddress": "wumbo@plus.com"
-          }
-        }
-      ]
+      "plusProfile": {}
     }
     )");
   ASSERT_TRUE(json.has_value());
@@ -119,7 +88,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsWhenGivenTooManyProfiles) {
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"(
       {
-        "address": "wouldnt this be nice?"
+        "plusAddress": "wouldnt this be nice?"
       }
     )");
   ASSERT_TRUE(json.has_value());
@@ -128,10 +97,10 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
             absl::nullopt);
 }
 
-TEST(PlusAddressParsing, FromV1Create_FromV1List_FailsIfPlusProfileIsNotList) {
+TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"(
       {
-        "plusProfile": "not a list"
+        "plusProfile": "not a dict"
       }
     )");
   ASSERT_TRUE(json.has_value());

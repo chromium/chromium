@@ -23,12 +23,9 @@ class PlusAddressParser {
   //         "plusEmail": {
   //           "plusAddress": string,
   //         }
-  //       }[]
+  //       }
   //   }
   //  This method returns nullopt otherwise or if `response` is an error.
-  //
-  // Note: 'plusProfile' is a list that always has exactly one element due to
-  // server-side idiosyncrasies.
   static absl::optional<std::string> ParsePlusAddressFromV1Create(
       const data_decoder::DataDecoder::ValueOrError response);
 
