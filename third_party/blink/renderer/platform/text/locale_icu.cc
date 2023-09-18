@@ -34,10 +34,12 @@
 #include <unicode/udisplaycontext.h>
 #include <unicode/uloc.h>
 
+#include <iterator>
 #include <limits>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -228,14 +230,8 @@ Vector<String> LocaleICU::CreateLabelVector(const UDateFormat* date_format,
 
 static Vector<String> CreateFallbackWeekDayShortLabels() {
   Vector<String> labels;
-  labels.reserve(7);
-  labels.push_back("Sun");
-  labels.push_back("Mon");
-  labels.push_back("Tue");
-  labels.push_back("Wed");
-  labels.push_back("Thu");
-  labels.push_back("Fri");
-  labels.push_back("Sat");
+  labels.reserve(std::size(WTF::kWeekdayName));
+  base::ranges::copy(WTF::kWeekdayName, std::back_inserter(labels));
   return labels;
 }
 
@@ -263,8 +259,7 @@ void LocaleICU::InitializeCalendar() {
 static Vector<String> CreateFallbackMonthLabels() {
   Vector<String> labels;
   labels.reserve(std::size(WTF::kMonthFullName));
-  for (unsigned i = 0; i < std::size(WTF::kMonthFullName); ++i)
-    labels.push_back(WTF::kMonthFullName[i]);
+  base::ranges::copy(WTF::kMonthFullName, std::back_inserter(labels));
   return labels;
 }
 
@@ -299,14 +294,6 @@ bool LocaleICU::IsRTL() {
          ULOC_LAYOUT_RTL;
 }
 
-static Vector<String> CreateFallbackAMPMLabels() {
-  Vector<String> labels;
-  labels.reserve(2);
-  labels.push_back("AM");
-  labels.push_back("PM");
-  return labels;
-}
-
 void LocaleICU::InitializeDateTimeFormat() {
   if (did_create_time_format_)
     return;
@@ -335,7 +322,7 @@ void LocaleICU::InitializeDateTimeFormat() {
   time_ampm_labels_ =
       CreateLabelVector(medium_time_format_, UDAT_AM_PMS, UCAL_AM, 2);
   if (time_ampm_labels_.empty()) {
-    time_ampm_labels_ = CreateFallbackAMPMLabels();
+    time_ampm_labels_ = {"AM", "PM"};
   }
 
   did_create_time_format_ = true;
@@ -422,8 +409,7 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
     }
   }
   short_month_labels_.reserve(std::size(WTF::kMonthName));
-  for (unsigned i = 0; i < std::size(WTF::kMonthName); ++i)
-    short_month_labels_.push_back(WTF::kMonthName[i]);
+  base::ranges::copy(WTF::kMonthName, std::back_inserter(short_month_labels_));
   return short_month_labels_;
 }
 

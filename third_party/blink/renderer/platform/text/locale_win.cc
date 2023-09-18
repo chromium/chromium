@@ -30,10 +30,12 @@
 
 #include "third_party/blink/renderer/platform/text/locale_win.h"
 
+#include <iterator>
 #include <limits>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
@@ -260,8 +262,8 @@ const Vector<String>& LocaleWin::MonthLabels() {
     if (month_labels_.back().empty()) {
       month_labels_.Shrink(0);
       month_labels_.reserve(std::size(WTF::kMonthFullName));
-      for (unsigned m = 0; m < std::size(WTF::kMonthFullName); ++m)
-        month_labels_.push_back(WTF::kMonthFullName[m]);
+      base::ranges::copy(WTF::kMonthFullName,
+                         std::back_inserter(month_labels_));
       break;
     }
   }
@@ -283,9 +285,8 @@ const Vector<String>& LocaleWin::WeekDayShortLabels() {
     if (week_day_short_labels_.back().empty()) {
       week_day_short_labels_.Shrink(0);
       week_day_short_labels_.reserve(std::size(WTF::kWeekdayName));
-      for (unsigned w = 0; w < std::size(WTF::kWeekdayName); ++w) {
-        week_day_short_labels_.push_back(WTF::kWeekdayName[w]);
-      }
+      base::ranges::copy(WTF::kWeekdayName,
+                         std::back_inserter(week_day_short_labels_));
       break;
     }
   }
@@ -394,9 +395,8 @@ const Vector<String>& LocaleWin::ShortMonthLabels() {
     if (short_month_labels_.back().empty()) {
       short_month_labels_.Shrink(0);
       short_month_labels_.reserve(std::size(WTF::kMonthName));
-      for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m) {
-        short_month_labels_.push_back(WTF::kMonthName[m]);
-      }
+      base::ranges::copy(WTF::kMonthName,
+                         std::back_inserter(short_month_labels_));
       break;
     }
   }
