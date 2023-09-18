@@ -348,14 +348,12 @@
   </message>
 
   <!-- Chrome Root Store -->
-  <if expr="chrome_root_store_supported">
-    <message name="IDS_SETTINGS_CHROME_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
-      Certificates managed by Chromium
-    </message>
-    <message name="IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL certificates and settings in Privacy options">
-      Information about how Chromium manages its root certificates
-    </message>
-  </if>
+  <message name="IDS_SETTINGS_CHROME_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
+    Certificates managed by Chromium
+  </message>
+  <message name="IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL certificates and settings in Privacy options">
+    Information about how Chromium manages its root certificates
+  </message>
 
   <!-- Safety Hub -->
   <!-- TODO(crbug/1443466): Change all strings to translatable once it's final. -->

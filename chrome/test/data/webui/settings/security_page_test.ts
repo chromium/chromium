@@ -6,20 +6,15 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-// <if expr="chrome_root_store_supported">
-import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
-// </if>
+import {MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-// <if expr="chrome_root_store_supported">
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
-// </if>
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 // clang-format on
@@ -48,9 +43,7 @@ suite('Main', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
-  // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
-  // </if>
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -64,10 +57,8 @@ suite('Main', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    // <if expr="chrome_root_store_supported">
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
@@ -89,7 +80,6 @@ suite('Main', function() {
   });
   // </if>
 
-  // <if expr="chrome_root_store_supported">
   test('ChromeRootStorePage', async function() {
     const row =
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
@@ -98,7 +88,6 @@ suite('Main', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
-  // </if>
 
   // <if expr="not chromeos_lacros">
   // TODO(crbug.com/1148302): This class directly calls
@@ -274,9 +263,7 @@ suite('SafeBrowsing', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
-  // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
-  // </if>
 
   function setUpPage() {
     page = document.createElement('settings-security-page');
@@ -296,10 +283,8 @@ suite('SafeBrowsing', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    // <if expr="chrome_root_store_supported">
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setUpPage();
   });

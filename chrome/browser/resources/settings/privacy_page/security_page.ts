@@ -23,9 +23,7 @@ import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/p
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-// <if expr="is_chromeos or chrome_root_store_supported">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-// </if>
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -83,11 +81,12 @@ export class SettingsSecurityPageElement extends
         notify: true,
       },
 
-      // <if expr="chrome_root_store_supported">
       /**
        * Whether we should adjust Manage Certificates links to indicate
        * support for Chrome Root Store.
        */
+      // TODO(crbug.com/1412591): remove when CRS enterprise policy is removed
+      // for ChromeOS and Linux
       showChromeRootStoreCertificates_: {
         type: Boolean,
         readOnly: true,
@@ -95,7 +94,6 @@ export class SettingsSecurityPageElement extends
           return loadTimeData.getBoolean('showChromeRootStoreCertificates');
         },
       },
-      // </if>
 
       /**
        * Whether the secure DNS setting should be displayed.
@@ -173,9 +171,7 @@ export class SettingsSecurityPageElement extends
       showDisableSafebrowsingDialog_: Boolean,
     };
   }
-  // <if expr="chrome_root_store_supported">
   private showChromeRootStoreCertificates_: boolean;
-  // </if>
   private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
@@ -367,12 +363,10 @@ export class SettingsSecurityPageElement extends
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }
 
-  // <if expr="chrome_root_store_supported">
   private onChromeCertificatesClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   }
-  // </if>
 
   private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));
