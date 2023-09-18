@@ -1845,17 +1845,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ZygoteChildState.FAILED_TO_CREATE_BUNDLE, ZygoteChildState.FIRST_USABLE_ZYGOTE, ZygoteChildState.ZYGOTE_RESTARTED, ZygoteChildState.ZYGOTE_SEEN"
-        errorLine1="                &quot;ChromiumAndroidLinker.ChildProcessZygoteState&quot;, state, ZygoteChildState.COUNT);"
-        errorLine2="                                                                                         ~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/ChildProcessLauncherHelperImpl.java"
-            line="268"
-            column="90"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: RestoreStatus.NO_RESTORE, RestoreStatus.RESTORE_COMPLETED, RestoreStatus.RESTORE_AFTER_FIRST_RUN, RestoreStatus.BROWSER_STARTUP_FAILED, RestoreStatus.NOT_SIGNED_IN, RestoreStatus.RESTORE_STATUS_RECORDED"
         errorLine1="                    HISTOGRAM_ANDROID_RESTORE_RESULT, restoreStatus, RestoreStatus.NUM_ENTRIES);"
         errorLine2="                                                                                   ~~~~~~~~~~~">

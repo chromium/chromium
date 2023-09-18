@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -31,7 +30,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessConstants;
@@ -48,8 +46,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -244,30 +240,6 @@ public final class ChildProcessLauncherHelperImpl {
                 }
             };
 
-    @IntDef({ZygoteChildState.FAILED_TO_CREATE_BUNDLE, ZygoteChildState.FIRST_USABLE_ZYGOTE,
-            ZygoteChildState.ZYGOTE_RESTARTED, ZygoteChildState.ZYGOTE_SEEN})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ZygoteChildState {
-        // These values are persisted to logs. Entries should not be renumbered and numeric values
-        // should never be reused.
-        int FAILED_TO_CREATE_BUNDLE = 0;
-        int FIRST_USABLE_ZYGOTE = 1;
-        int ZYGOTE_RESTARTED = 2;
-        int ZYGOTE_SEEN = 3;
-        int COUNT = 4;
-    }
-
-    /**
-     * Records a histogram telling what is known about the App Zygote that the
-     * current isolated process was forked from. Must be called once per
-     * isolated process (but only if it comes from the app zygote (S+) and RELRO
-     * sharing with the app zygote is working.
-     */
-    private static void recordChildStateHistogram(@ZygoteChildState int state) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "ChromiumAndroidLinker.ChildProcessZygoteState", state, ZygoteChildState.COUNT);
-    }
-
     /**
      * Called for every new child connection. Receives a possibly null bundle inherited from the App
      * Zygote. Sends the bundle to existing processes that did not have usable bundles or sends
@@ -291,7 +263,6 @@ public final class ChildProcessLauncherHelperImpl {
         // If the process was created from the app zygote, but failed to generate the the zygote
         // bundle - ignore it.
         if (zygoteBundle == null) {
-            recordChildStateHistogram(ZygoteChildState.FAILED_TO_CREATE_BUNDLE);
             return;
         }
 
@@ -302,7 +273,6 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         Log.d(TAG, "Encountered the first usable RELRO bundle.");
-        recordChildStateHistogram(ZygoteChildState.FIRST_USABLE_ZYGOTE);
         sZygotePid = connection.getZygotePid();
         sZygoteBundle = zygoteBundle;
 
@@ -319,10 +289,8 @@ public final class ChildProcessLauncherHelperImpl {
     private static void onObtainedUsableZygoteBundle(ChildProcessConnection connection) {
         if (sZygotePid != connection.getZygotePid()) {
             Log.d(TAG, "Zygote restarted.");
-            recordChildStateHistogram(ZygoteChildState.ZYGOTE_RESTARTED);
             return;
         }
-        recordChildStateHistogram(ZygoteChildState.ZYGOTE_SEEN);
         // TODO(pasko): To avoid accumulating open file descriptors close the received RELRO FD
         // if it cannot be used.
     }

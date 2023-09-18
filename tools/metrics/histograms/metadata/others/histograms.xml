@@ -2472,21 +2472,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChromiumAndroidLinker.ChildProcessZygoteState"
-    enum="ZygoteChildState" expires_after="2022-12-04">
-  <owner>pasko@chromium.org</owner>
-  <owner>boliu@chromium.org</owner>
-  <summary>
-    Recorded when a new child process becomes known to the browser process. Only
-    recorded on S+, and only when the child process inherits from the app
-    zygote, and only when the feature of sharing RELRO between the Browser and
-    the App Zygote is enabled.
-
-    Describes whether the App Zygote PID discovered from the child belongs to a
-    known App Zygote, or the App Zygote was restarted.
-  </summary>
-</histogram>
-
 <histogram name="ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.{LoadKind}"
     units="ms" expires_after="2022-10-01">
   <owner>pasko@chromium.org</owner>
