@@ -144,6 +144,14 @@ export class SettingsCustomizePenButtonsSubpageElement extends
           this.selectedTablet!.id, this.selectedTablet!.settings);
     }
   }
+
+  private getDescription_(): string {
+    if (!this.selectedTablet?.name) {
+      return '';
+    }
+    return this.i18n(
+        'customizeButtonSubpageDescription', this.selectedTablet!.name);
+  }
 }
 
 declare global {

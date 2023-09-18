@@ -176,6 +176,14 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     this.inputDeviceSettingsProvider_.setMouseSettings(
         this.selectedMouse!.id, this.selectedMouse!.settings);
   }
+
+  private getDescription_(): string {
+    if (!this.selectedMouse?.name) {
+      return '';
+    }
+    return this.i18n(
+        'customizeButtonSubpageDescription', this.selectedMouse!.name);
+  }
 }
 
 declare global {
