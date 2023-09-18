@@ -72,8 +72,11 @@ constexpr uint32_t kFlagCorrupt = 1 << 0;
 constexpr uint32_t kFlagFull = 1 << 1;
 
 // Errors that are logged in "errors" histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum AllocatorError : int {
   kMemoryIsCorrupt = 1,
+  kMaxValue = kMemoryIsCorrupt,
 };
 
 bool CheckFlag(const volatile std::atomic<uint32_t>* flags, uint32_t flag) {
@@ -499,8 +502,9 @@ void PersistentMemoryAllocator::CreateTrackingHistograms(
       HistogramBase::kUmaTargetedHistogramFlag);
 
   DCHECK(!errors_histogram_);
-  errors_histogram_ = SparseHistogram::FactoryGet(
-      "UMA.PersistentAllocator." + name_string + ".Errors",
+  errors_histogram_ = LinearHistogram::FactoryGet(
+      "UMA.PersistentAllocator." + name_string + ".Errors", 1,
+      AllocatorError::kMaxValue + 1, AllocatorError::kMaxValue + 2,
       HistogramBase::kUmaTargetedHistogramFlag);
 }
 
