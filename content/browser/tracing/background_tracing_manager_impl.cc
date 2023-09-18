@@ -63,8 +63,9 @@ BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 void OpenDatabaseOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     absl::optional<base::FilePath> database_dir,
-    base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
-        on_database_created) {
+    base::OnceCallback<void(BackgroundTracingManagerImpl::ScenarioCountMap,
+                            absl::optional<BaseTraceReport>,
+                            bool)> on_database_created) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
   if (database->is_initialized()) {
     return;
@@ -78,53 +79,59 @@ void OpenDatabaseOnDatabaseTaskRunner(
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(on_database_created),
+                     database->GetScenarioCounts(),
                      database->GetNextReportPendingUpload(), success));
 }
 
-absl::optional<NewTraceReport> AddTraceOnDatabaseTaskRunner(
+void AddTraceOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     std::string&& serialized_trace,
-    const std::string& scenario_name,
-    const std::string& rule_name,
-    SkipUploadReason skip_reason) {
+    BaseTraceReport base_report,
+    base::OnceCallback<void(absl::optional<NewTraceReport>, bool)>
+        on_trace_saved) {
+  if (!database->is_initialized()) {
+    return;
+  }
   std::string compressed_trace;
   bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
   if (success) {
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
                                 compressed_trace.size() / 1024);
-
-    NewTraceReport trace_report;
-    trace_report.uuid = base::Uuid::GenerateRandomV4();
-    trace_report.creation_time = base::Time::Now();
-    trace_report.scenario_name = scenario_name;
-    trace_report.upload_rule_name = rule_name;
-    trace_report.total_size = serialized_trace.size();
+    NewTraceReport trace_report = base_report;
     trace_report.proto = std::move(compressed_trace);
-    trace_report.skip_reason = skip_reason;
 
-    // The database may be created even if BackgroundTracingDatabase is
-    // disabled due to DeleteTracesInDateRange(). The trace is saved
-    // only if BackgroundTracingDatabase is enabled and the database was
-    // open successfully.
-    if (database && database->is_initialized() &&
-        base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
-      success = database->AddTrace(std::move(trace_report));
-    } else {
-      // Return the report as-is to hold the trace content in memory until it
-      // can be uploaded.
-      if (skip_reason == SkipUploadReason::kNoSkip) {
-        return std::move(trace_report);
-      }
-    }
+    success = database->AddTrace(std::move(trace_report));
   }
-  if (database && database->is_initialized() &&
-      base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
-    BackgroundTracingManagerImpl::RecordMetric(
-        success ? BackgroundTracingManagerImpl::Metrics::SAVE_TRACE_SUCCEEDED
-                : BackgroundTracingManagerImpl::Metrics::SAVE_TRACE_FAILED);
-    return database->GetNextReportPendingUpload();
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_trace_saved),
+                     database->GetNextReportPendingUpload(), success));
+}
+
+void CompressTraceOnDatabaseTaskRunner(
+    std::string&& serialized_trace,
+    BaseTraceReport base_report,
+    base::OnceCallback<void(absl::optional<NewTraceReport>, bool)>
+        on_trace_compressed) {
+  DCHECK_EQ(SkipUploadReason::kNoSkip, base_report.skip_reason);
+  std::string compressed_trace;
+  if (!compression::GzipCompress(serialized_trace, &compressed_trace)) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_trace_compressed), absl::nullopt, false));
+    return;
   }
-  return absl::nullopt;
+  UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
+                              compressed_trace.size() / 1024);
+
+  NewTraceReport trace_report = base_report;
+  trace_report.proto = std::move(compressed_trace);
+
+  // Return the report as-is to hold the trace content in memory until it
+  // can be uploaded.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_trace_compressed),
+                                std::move(trace_report), true));
 }
 
 void GetProtoValueOnDatabaseTaskRunner(
@@ -345,9 +352,11 @@ void BackgroundTracingManagerImpl::DownloadTrace(const base::Uuid& trace_uuid,
 }
 
 void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
+    ScenarioCountMap scenario_saved_counts,
     absl::optional<BaseTraceReport> trace_to_upload,
     bool creation_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  scenario_saved_counts_ = std::move(scenario_saved_counts);
   trace_report_to_upload_ = std::move(trace_to_upload);
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
@@ -359,10 +368,23 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
                           weak_factory_.GetWeakPtr()));
 }
 
-void BackgroundTracingManagerImpl::OnTraceSaved(
-    absl::optional<NewTraceReport> trace_to_upload) {
+void BackgroundTracingManagerImpl::OnTraceDatabaseUpdated(
+    ScenarioCountMap scenario_saved_counts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  scenario_saved_counts_ = std::move(scenario_saved_counts);
+}
+
+void BackgroundTracingManagerImpl::OnTraceSaved(
+    const std::string& scenario_name,
+    absl::optional<NewTraceReport> trace_to_upload,
+    bool success) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RecordMetric(success ? Metrics::SAVE_TRACE_SUCCEEDED
+                       : Metrics::SAVE_TRACE_FAILED);
   trace_report_to_upload_ = std::move(trace_to_upload);
+  if (success && base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+    ++scenario_saved_counts_[scenario_name];
+  }
   for (auto* observer : background_tracing_observers_) {
     observer->OnTraceSaved();
   }
@@ -519,7 +541,7 @@ void BackgroundTracingManagerImpl::InitializeTraceReportDatabase(
     if (!open_in_memory) {
       database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
       if (!database_dir.has_value()) {
-        OnTraceDatabaseCreated(absl::nullopt, false);
+        OnTraceDatabaseCreated({}, absl::nullopt, false);
         return;
       }
     }
@@ -717,6 +739,15 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name);
 }
 
+size_t BackgroundTracingManagerImpl::GetScenarioSavedCount(
+    const std::string& scenario_name) {
+  auto it = scenario_saved_counts_.find(scenario_name);
+  if (it != scenario_saved_counts_.end()) {
+    return it->second;
+  }
+  return 0;
+}
+
 void BackgroundTracingManagerImpl::OnProtoDataComplete(
     std::string&& serialized_trace,
     const std::string& scenario_name,
@@ -742,14 +773,32 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.FinalizingTraceSizeInKB2",
                                 serialized_trace.size() / 1024);
 
-    database_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(AddTraceOnDatabaseTaskRunner,
-                       base::Unretained(trace_database_.get()),
-                       std::move(serialized_trace), scenario_name, rule_name,
-                       skip_reason),
-        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
-                       weak_factory_.GetWeakPtr()));
+    BaseTraceReport base_report;
+    base_report.uuid = base::Uuid::GenerateRandomV4();
+    base_report.creation_time = base::Time::Now();
+    base_report.scenario_name = scenario_name;
+    base_report.upload_rule_name = rule_name;
+    base_report.total_size = serialized_trace.size();
+    base_report.skip_reason = skip_reason;
+    if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+      DCHECK(trace_database_);
+      database_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              AddTraceOnDatabaseTaskRunner,
+              base::Unretained(trace_database_.get()),
+              std::move(serialized_trace), std::move(base_report),
+              base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
+                             weak_factory_.GetWeakPtr(), scenario_name)));
+    } else if (skip_reason == SkipUploadReason::kNoSkip) {
+      database_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              CompressTraceOnDatabaseTaskRunner, std::move(serialized_trace),
+              std::move(base_report),
+              base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
+                             weak_factory_.GetWeakPtr(), scenario_name)));
+    }
   } else {
     BackgroundTracingManagerImpl::RecordMetric(
         Metrics::FINALIZATION_STARTED_WITH_LOCAL_OUTPUT);
@@ -843,11 +892,16 @@ void BackgroundTracingManagerImpl::OnScenarioAborted() {
 void BackgroundTracingManagerImpl::CleanDatabase() {
   DCHECK(trace_database_);
 
-  database_task_runner_->PostTask(
+  database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          base::IgnoreResult(&TraceReportDatabase::DeleteTracesOlderThan),
-          base::Unretained(trace_database_.get()), kTraceTimeToLive));
+          [](TraceReportDatabase* trace_database) {
+            trace_database->DeleteTracesOlderThan(kTraceTimeToLive);
+            return trace_database->GetScenarioCounts();
+          },
+          base::Unretained(trace_database_.get())),
+      base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseUpdated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
@@ -857,18 +911,22 @@ void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
   absl::optional<base::FilePath> database_dir;
   if (!trace_database_) {
     database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
-    if (!database_dir.has_value()) {
+    if (database_dir.has_value()) {
       return;
     }
     trace_database_ = {new TraceReportDatabase,
                        base::OnTaskRunnerDeleter(database_task_runner_)};
   }
+  auto on_database_updated =
+      base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseUpdated,
+                     weak_factory_.GetWeakPtr());
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](TraceReportDatabase* trace_database,
              absl::optional<base::FilePath> database_dir, base::Time start,
-             base::Time end) {
+             base::Time end,
+             base::OnceCallback<void(ScenarioCountMap)> on_database_updated) {
             if (database_dir.has_value() &&
                 !trace_database->OpenDatabaseIfExists(database_dir.value())) {
               return;
@@ -876,11 +934,17 @@ void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
             if (!trace_database->is_initialized()) {
               return;
             }
-            if (!trace_database->DeleteTracesInDateRange(start, end)) {
+            if (trace_database->DeleteTracesInDateRange(start, end)) {
+              GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(on_database_updated),
+                                 trace_database->GetScenarioCounts()));
+            } else {
               RecordMetric(Metrics::DATABASE_CLEANUP_FAILED);
             }
           },
-          base::Unretained(trace_database_.get()), database_dir, start, end));
+          base::Unretained(trace_database_.get()), database_dir, start, end,
+          std::move(on_database_updated)));
 }
 
 // static

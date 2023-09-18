@@ -53,6 +53,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
         tracing::mojom::BackgroundTracingAgent* agent) = 0;
   };
 
+  using ScenarioCountMap = base::flat_map<std::string, size_t>;
+
   // These values are used for a histogram. Do not reorder.
   enum class Metrics {
     SCENARIO_ACTIVATION_REQUESTED = 0,
@@ -123,6 +125,10 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
 
+  CONTENT_EXPORT size_t GetScenarioSavedCount(const std::string& scenario_name);
+  CONTENT_EXPORT void InitializeTraceReportDatabase(
+      bool open_in_memory = false);
+
   // TraceUploadList
   void OpenDatabaseIfExists() override;
   void GetAllTraceReports(GetReportsCallback callback) override;
@@ -191,12 +197,15 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
           provider);
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
-  void InitializeTraceReportDatabase(bool open_in_memory = false);
   void OnFinalizeComplete(absl::optional<BaseTraceReport> trace_to_upload,
                           bool success);
-  void OnTraceDatabaseCreated(absl::optional<BaseTraceReport> trace_to_upload,
+  void OnTraceDatabaseCreated(ScenarioCountMap scenario_saved_counts,
+                              absl::optional<BaseTraceReport> trace_to_upload,
                               bool success);
-  void OnTraceSaved(absl::optional<NewTraceReport> trace_to_upload);
+  void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
+  void OnTraceSaved(const std::string& scenario_name,
+                    absl::optional<NewTraceReport> trace_to_upload,
+                    bool success);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
 
@@ -219,6 +228,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
+
+  ScenarioCountMap scenario_saved_counts_;
 
   // Task runner on which |trace_database_| lives.
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
