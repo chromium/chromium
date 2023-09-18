@@ -206,6 +206,21 @@
       <message name="IDS_WEBAPK_INSTALL_FAILED" desc="Indicates that a WebAPK has not been added to Home screen.">
         Failed to install
       </message>
+
+      <!-- PWA Restore Bottom Sheet UI -->
+      <message name="IDS_PWA_RESTORE_BUTTON_PEEKING" desc="The button label when the PWA Restore BottomSheet UI is in peeking state.">
+         Review web apps
+      </message>
+      <message name="IDS_PWA_RESTORE_DESCRIPTION_PEEKING" desc="The sheet description when the PWA Restore BottomSheet UI is in peeking state.">
+         Restore web apps you have recently used on devices connected to this account
+      </message>
+      <message name="IDS_PWA_RESTORE_TITLE_PEEKING" desc="The sheet title when the PWA Restore BottomSheet UI is in peeking state.">
+         Restore your web apps
+      </message>
+
+      <message name="IDS_PWA_RESTORE_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+         Review which web apps to restore
+      </message>
     </messages>
   </release>
 </grit>
