@@ -7095,6 +7095,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The title of the main Game Dashboard button.">
         Game Dashboard
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS" translateable="false" desc="The hidden state for compact Game Dashboard tile sub-labels.">
+        Hidden
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile.">
         Record game
       </message>
@@ -7112,6 +7115,9 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS" translateable="false" desc="The visible state for compact Game Dashboard tile sub-labels.">
+        Visible
       </message>
 
       <!-- Game Dashboard / Game Controls strings -->

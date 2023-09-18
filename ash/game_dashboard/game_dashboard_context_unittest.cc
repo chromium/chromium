@@ -53,6 +53,10 @@ using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 static const int kToolbarEdgePadding = 10;
 static constexpr gfx::Rect kAppBounds = gfx::Rect(50, 50, 800, 400);
 
+// Sub-label strings.
+const std::u16string& hidden_label = u"Hidden";
+const std::u16string& visible_label = u"Visible";
+
 enum class Movement { kTouch, kMouse };
 
 class GameDashboardContextTest : public GameDashboardTestBase {
@@ -796,13 +800,16 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
 
   test_api_->OpenTheMainMenu();
 
-  // Retrieve the toolbar button and verify the toolbar widget is not available.
+  // Retrieve the toolbar button and verify the toolbar widget is not enabled.
   auto* toolbar_tile = test_api_->GetMainMenuToolbarTile();
   ASSERT_TRUE(toolbar_tile);
   EXPECT_FALSE(toolbar_tile->IsToggled());
+  EXPECT_EQ(toolbar_tile->sub_label()->GetText(), hidden_label);
 
-  // Open the toolbar and verify available feature buttons.
+  // Open the toolbar, verify the main menu toolbar tile's sub-label is updated,
+  // and verify available feature buttons.
   test_api_->OpenTheToolbar();
+  EXPECT_EQ(toolbar_tile->sub_label()->GetText(), visible_label);
   EXPECT_TRUE(test_api_->GetToolbarGamepadButton());
   EXPECT_TRUE(test_api_->GetToolbarRecordGameButton());
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton());
@@ -812,11 +819,20 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
     EXPECT_FALSE(test_api_->GetToolbarGameControlsButton());
   }
 
+  // Verify toggling the main menu visibility doesn't affect the toolbar.
+  test_api_->CloseTheMainMenu();
+  EXPECT_TRUE(test_api_->GetToolbarWidget());
+  test_api_->OpenTheMainMenu();
+  toolbar_tile = test_api_->GetMainMenuToolbarTile();
+  EXPECT_EQ(toolbar_tile->sub_label()->GetText(), visible_label);
+  EXPECT_TRUE(test_api_->GetToolbarWidget());
+
   test_api_->CloseTheToolbar();
 
   // Verify that the toolbar widget is no longer available and is toggled off.
   EXPECT_FALSE(test_api_->GetToolbarWidget());
   EXPECT_FALSE(toolbar_tile->IsToggled());
+  EXPECT_EQ(toolbar_tile->sub_label()->GetText(), hidden_label);
 }
 
 // Verifies the toolbar screenshot button will take a screenshot of the game
