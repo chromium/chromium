@@ -284,8 +284,7 @@ const Vector<String>& LocaleWin::WeekDayShortLabels() {
       week_day_short_labels_.Shrink(0);
       week_day_short_labels_.reserve(std::size(WTF::kWeekdayName));
       for (unsigned w = 0; w < std::size(WTF::kWeekdayName); ++w) {
-        // weekdayName starts with Monday.
-        week_day_short_labels_.push_back(WTF::kWeekdayName[(w + 6) % 7]);
+        week_day_short_labels_.push_back(WTF::kWeekdayName[w]);
       }
       break;
     }

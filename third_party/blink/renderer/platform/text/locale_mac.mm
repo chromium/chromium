@@ -143,8 +143,7 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
     return week_day_short_labels_;
   }
   for (unsigned i = 0; i < std::size(WTF::kWeekdayName); ++i) {
-    // weekdayName starts with Monday.
-    week_day_short_labels_.push_back(WTF::kWeekdayName[(i + 6) % 7]);
+    week_day_short_labels_.push_back(WTF::kWeekdayName[i]);
   }
   return week_day_short_labels_;
 }
