@@ -31,7 +31,7 @@ export class QuickStartEntryPoint extends PolymerElement {
 
   static get properties() {
     return {
-      quickStartTextkey: {
+      quickStartTextKey: {
         type: String,
         value: '',
       },

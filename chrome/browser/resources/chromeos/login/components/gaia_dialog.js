@@ -25,6 +25,7 @@ import './buttons/oobe_text_button.js';
 import './common_styles/oobe_common_styles.css.js';
 import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_content_dialog.js';
+import './quick_start_entry_point.js';
 
 import {sendWithPromise} from '//resources/ash/common/cr.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
