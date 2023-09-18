@@ -1461,7 +1461,6 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-
 crbug.com/1412278 http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
 crbug.com/1412278 http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-disabled.js [ Slow ]
 
-crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Slow ]
 crbug.com/1404951 [ Debug Mac ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Linux ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Mac10.15 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
