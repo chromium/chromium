@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 
+#include <string>
 #include <unordered_map>
 
 #include "base/functional/callback_forward.h"
