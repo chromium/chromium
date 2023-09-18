@@ -129,8 +129,10 @@ suite('ExtensionItemListTest', function() {
 
   test('SafetyCheckPanel', function() {
     // The extension review panel should not be visible if
-    // safetyCheckShowReviewPanel is set to false.
+    // safetyCheckShowReviewPanel and safetyHubShowReviewPanel are set to
+    // false.
     loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': false});
 
     // set up the element again to capture the updated value of
     // safetyCheckShowReviewPanel.
