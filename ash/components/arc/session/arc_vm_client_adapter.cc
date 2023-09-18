@@ -353,7 +353,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       const int ram_mib = info.total / 1024;
       const int shift_mib = kVmMemorySizeShiftMiB.Get();
       const int max_mib = kVmMemorySizeMaxMiB.Get();
-      int vm_ram_mib = std::min(max_mib, ram_mib + shift_mib);
+      const int ram_percentage = kVmMemorySizePercentage.Get();
+      int vm_ram_mib =
+          std::min(max_mib, ram_percentage * ram_mib / 100 + shift_mib);
       constexpr int kVmRamMinMib = 2048;
 
       if (delegate->IsCrosvm32bit()) {

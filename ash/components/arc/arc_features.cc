@@ -314,7 +314,7 @@ const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
 
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
-//  min(max_mib, RAM + shift_mib)
+//  min(max_mib, ram_percentage / 100 * RAM + shift_mib)
 // If disabled, memory is sized by concierge which, at the time of writing, uses
 // RAM - 1024 MiB.
 BASE_FEATURE(kVmMemorySize,
@@ -330,6 +330,12 @@ const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
 // INT32_MAX means that ARCVM's memory is not capped.
 const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
                                                   INT32_MAX};
+
+// Controls the percentage of system RAM for calculation of ARCVM size. The
+// default value of 100 means the whole system RAM will be used in ARCM size
+// calculation.
+const base::FeatureParam<int> kVmMemorySizePercentage{&kVmMemorySize,
+                                                      "ram_percentage", 100};
 
 // Controls experimental key to enable pre-ANR handling for BroadcastQueue in
 // ARCVM.
