@@ -12,7 +12,16 @@
     background: grey;
   }
 
-  html::view-transition-group(root) { animation-duration: 3s; }
+  html::view-transition-group(root) { animation-duration: 300s; }
+  /* Hold the old image for the entire duration. */
+  html::view-transition-old(root) {
+    animation: none;
+    opacity: 1;
+  }
+  html::view-transition-new(root) {
+    animation: none;
+    opacity: 0;
+  }
 
   html::view-transition-old(root) {
     animation-duration: 3s;
