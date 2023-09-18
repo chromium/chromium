@@ -2809,10 +2809,11 @@ enum class ToolbarKind {
          baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    // NTPCoordinator should be started at this point. If for some reason it is
-    // not, the DCHECK will let us know and we will fall back to using the
-    // webState's view.
-    DCHECK(_NTPCoordinator.started);
+    // If NTPCoordinator is not started yet, fall back to using the
+    // webState's view. `_NTPCoordinator.started` should be true in most cases
+    // but it can be false when the app will be terminated or the browser data
+    // is removed. In particular, it can be false when this method is called as
+    // a delayed task while the app is being terminated.
     if (_NTPCoordinator.started) {
       return _NTPCoordinator.viewController.view;
     }
