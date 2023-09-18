@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
   // a background task runner `owning_task_runner`.
   std::vector<AppPtr> ReadFromFile();
 
+  const base::FilePath& GetFilePath() { return file_path_; }
+
  private:
   friend class base::RefCountedDeleteOnSequence<AppStorageFileHandler>;
   friend class base::DeleteHelper<AppStorageFileHandler>;
