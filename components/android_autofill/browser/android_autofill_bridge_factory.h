@@ -35,12 +35,12 @@ class AndroidAutofillBridgeFactory {
   std::unique_ptr<FormFieldDataAndroidBridge>
   CreateFormFieldDataAndroidBridge();
 
-  // Sets a testing factory for `FormDataAndroidBridge`s. If set, the
+  // Sets a testing factory for `AutofillProviderAndroidBridge`s. If set, the
   // testing factory is used in the factory method.
   using AutofillProviderAndroidBridgeTestingFactory =
       base::RepeatingCallback<std::unique_ptr<AutofillProviderAndroidBridge>(
           AutofillProviderAndroidBridge::Delegate* delegate)>;
-  void SetFormDataAndroidTestingFactory(
+  void SetAutofillProviderAndroidTestingFactory(
       AutofillProviderAndroidBridgeTestingFactory factory) {
     autofill_provider_android_bridge_testing_factory_ = std::move(factory);
   }

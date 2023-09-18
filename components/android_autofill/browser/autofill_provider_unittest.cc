@@ -4,9 +4,15 @@
 
 #include "components/android_autofill/browser/autofill_provider.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
-#include "components/android_autofill/browser/test_autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -14,9 +20,12 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+namespace {
 
 class TestAndroidAutofillManager : public AndroidAutofillManager {
  public:
@@ -29,68 +38,93 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
                     Observer::FieldTypeSource::kAutofillServer);
   }
 
-  void SimulateOnAskForValuesToFillImpl(FormGlobalId form_id) {
-    FormData form;
-    form.host_frame = form_id.frame_token;
-    form.unique_renderer_id = form_id.renderer_id;
-
-    FormFieldData field;
-    field.host_frame = form.host_frame;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+  void SimulateOnAskForValuesToFill(const FormData& form,
+                                    const FormFieldData& field) {
     OnAskForValuesToFillImpl(
         form, field, gfx::RectF(),
         AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 };
 
-class FakeAutofillProvider : public TestAutofillProvider {
+class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
  public:
-  using TestAutofillProvider::TestAutofillProvider;
+  explicit MockAutofillProviderAndroidBridge() = default;
 
-  static void CreateForWebContents(content::WebContents* web_contents) {
-    if (!FromWebContents(web_contents)) {
-      web_contents->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new FakeAutofillProvider(web_contents)));
-    }
-  }
+  ~MockAutofillProviderAndroidBridge() override = default;
 
-  bool HasServerPrediction(FormGlobalId form_id) const {
-    return manager_->has_server_prediction(form_id);
-  }
-
- private:
-  // AutofillProvider:
-  void OnAskForValuesToFill(
-      AndroidAutofillManager* manager,
-      const FormData& form,
-      const FormFieldData& field,
-      const gfx::RectF& bounding_box,
-      AutofillSuggestionTriggerSource trigger_source) override {
-    manager_ = manager;
-  }
-
-  void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                 FormSignature form_signature) override {}
-
-  raw_ptr<AndroidAutofillManager> manager_ = nullptr;
+  MOCK_METHOD(void,
+              AttachToJavaAutofillProvider,
+              (JNIEnv*, const base::android::JavaRef<jobject>&),
+              (override));
+  MOCK_METHOD(void,
+              StartAutofillSession,
+              (FormDataAndroid&, const FieldInfo&, bool),
+              (override));
+  MOCK_METHOD(void, OnServerPredictionQueryDone, (bool success), (override));
+  MOCK_METHOD(void,
+              ShowDatalistPopup,
+              (base::span<const std::u16string>,
+               base::span<const std::u16string>,
+               bool),
+              (override));
+  MOCK_METHOD(void, HideDatalistPopup, (), (override));
+  MOCK_METHOD(void,
+              OnFocusChanged,
+              (const absl::optional<FieldInfo>&),
+              (override));
+  MOCK_METHOD(void, OnFormFieldDidChange, (const FieldInfo&), (override));
+  MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
+  MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
+  MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
 };
+
+}  // namespace
 
 class AutofillProviderTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    FakeAutofillProvider::CreateForWebContents(web_contents());
+
+    // Set up mock bridges.
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetFormFieldDataAndroidTestingFactory(base::BindLambdaForTesting(
+            []() -> std::unique_ptr<FormFieldDataAndroidBridge> {
+              return std::make_unique<MockFormFieldDataAndroidBridge>();
+            }));
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetAutofillProviderAndroidTestingFactory(base::BindLambdaForTesting(
+            [&bridge_ptr = provider_bridge_](
+                AutofillProviderAndroidBridge::Delegate* delegate)
+                -> std::unique_ptr<AutofillProviderAndroidBridge> {
+              auto bridge =
+                  std::make_unique<MockAutofillProviderAndroidBridge>();
+              bridge_ptr = bridge.get();
+              return bridge;
+            }));
+
+    // Create the provider.
+    AutofillProviderAndroid::CreateForWebContents(web_contents());
+
+    // Navigation forces the creation of an AndroidAutofillManager for the main
+    // frame.
     NavigateAndCommit(GURL("about:blank"));
+  }
+
+  void TearDown() override {
+    provider_bridge_ = nullptr;
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   TestAndroidAutofillManager& android_autofill_manager() {
     return *autofill_manager_injector_[web_contents()];
   }
 
-  FakeAutofillProvider& autofill_provider() {
-    return *static_cast<FakeAutofillProvider*>(
-        FakeAutofillProvider::FromWebContents(web_contents()));
+  AutofillProvider& autofill_provider() {
+    return *AutofillProvider::FromWebContents(web_contents());
+  }
+
+  MockAutofillProviderAndroidBridge& provider_bridge() {
+    return *provider_bridge_;
   }
 
  private:
@@ -100,27 +134,24 @@ class AutofillProviderTest : public content::RenderViewHostTestHarness {
       autofill_client_injector_;
   TestAutofillManagerInjector<TestAndroidAutofillManager>
       autofill_manager_injector_;
+  raw_ptr<MockAutofillProviderAndroidBridge> provider_bridge_ = nullptr;
 };
 
-TEST_F(AutofillProviderTest, HasServerPredictionAfterQuery) {
-  // Simulate the result arrives after starting autofill.
-  FormGlobalId form_id = test::MakeFormGlobalId();
-  android_autofill_manager().SimulateOnAskForValuesToFillImpl(form_id);
-  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
-  android_autofill_manager().SimulatePropagateAutofillPredictions(form_id);
-  EXPECT_TRUE(autofill_provider().HasServerPrediction(form_id));
-  android_autofill_manager().Reset();
-  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
-}
+// Tests that AndroidAutofillManager keeps track of the predictions it is
+// informed about.
+TEST_F(AutofillProviderTest, HasServerPrediction) {
+  FormData form = test::CreateTestPersonalInformationFormData();
+  EXPECT_FALSE(
+      android_autofill_manager().has_server_prediction(form.global_id()));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  EXPECT_TRUE(
+      android_autofill_manager().has_server_prediction(form.global_id()));
 
-TEST_F(AutofillProviderTest, HasServerPredictionBeforeQuery) {
-  // Simulate the result arrives before starting autofill.
-  FormGlobalId form_id = test::MakeFormGlobalId();
-  android_autofill_manager().SimulatePropagateAutofillPredictions(form_id);
-  android_autofill_manager().SimulateOnAskForValuesToFillImpl(form_id);
-  EXPECT_TRUE(autofill_provider().HasServerPrediction(form_id));
+  // Resetting removes prediction state.
   android_autofill_manager().Reset();
-  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
+  EXPECT_FALSE(
+      android_autofill_manager().has_server_prediction(form.global_id()));
 }
 
 }  // namespace autofill
