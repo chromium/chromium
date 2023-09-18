@@ -136,14 +136,16 @@ public class NewTabPageUma {
     // the ContentSuggestionsDisplayStatus enum defined in tools/metrics/enums.xml.
     @IntDef({ContentSuggestionsDisplayStatus.VISIBLE, ContentSuggestionsDisplayStatus.COLLAPSED,
             ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY,
-            ContentSuggestionsDisplayStatus.DISABLED})
+            ContentSuggestionsDisplayStatus.DISABLED,
+            ContentSuggestionsDisplayStatus.DISABLED_BY_DSE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ContentSuggestionsDisplayStatus {
         int VISIBLE = 0;
         int COLLAPSED = 1;
         int DISABLED_BY_POLICY = 2;
         int DISABLED = 3;
-        int NUM_ENTRIES = 4;
+        int DISABLED_BY_DSE = 4;
+        int NUM_ENTRIES = 5;
     }
 
     private final TabModelSelector mTabModelSelector;
@@ -220,6 +222,9 @@ public class NewTabPageUma {
         if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS)) {
             // Disabled by policy.
             status = ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY;
+        } else if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)) {
+            // Disabled when swapping NTP is enabled and the default search engine isn't Google.
+            status = ContentSuggestionsDisplayStatus.DISABLED_BY_DSE;
         } else if (!FeedFeatures.isFeedEnabled()) {
             status = ContentSuggestionsDisplayStatus.DISABLED;
         } else if (!UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {

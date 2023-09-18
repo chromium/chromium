@@ -36,7 +36,9 @@ public final class FeedFeatures {
      * change.
      */
     public static boolean isFeedEnabled() {
-        return FeedServiceBridge.isEnabled();
+        return FeedServiceBridge.isEnabled()
+                && (!ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
+                        || getPrefService().getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE));
     }
 
     /**
