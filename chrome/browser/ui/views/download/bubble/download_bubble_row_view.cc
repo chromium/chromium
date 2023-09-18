@@ -617,8 +617,14 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     if (file_icon_.IsEmpty()) {
       file_icon_ = GetDefaultIconImage(GetColorProvider());
     }
+    if (!download_dragging_pin_ && navigation_handler_) {
+      download_dragging_pin_ =
+          navigation_handler_->PreventDialogCloseOnDeactivate();
+    }
     DragDownloadItem(model_->GetDownloadItem(), &file_icon_,
                      widget ? widget->GetNativeView() : nullptr);
+    // DragDownloadItem returns when the drag is over.
+    download_dragging_pin_.reset();
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;

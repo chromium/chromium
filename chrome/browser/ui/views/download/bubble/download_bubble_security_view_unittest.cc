@@ -55,6 +55,10 @@ class MockDownloadBubbleNavigationHandler
   void CloseDialog(views::Widget::ClosedReason) override { was_closed_ = true; }
   void ResizeDialog() override {}
   void OnDialogInteracted() override {}
+  std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
+  PreventDialogCloseOnDeactivate() override {
+    return nullptr;
+  }
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }

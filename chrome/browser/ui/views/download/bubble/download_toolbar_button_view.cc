@@ -539,6 +539,14 @@ void DownloadToolbarButtonView::OnBubbleClosing() {
   bubble_contents_ = nullptr;
 }
 
+std::unique_ptr<DownloadBubbleNavigationHandler::CloseOnDeactivatePin>
+DownloadToolbarButtonView::PreventDialogCloseOnDeactivate() {
+  if (!bubble_delegate_) {
+    return nullptr;
+  }
+  return bubble_delegate_->PreventCloseOnDeactivate();
+}
+
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   std::vector<DownloadUIModel::DownloadUIModelPtr> primary_view_models =
       GetPrimaryViewModels();
