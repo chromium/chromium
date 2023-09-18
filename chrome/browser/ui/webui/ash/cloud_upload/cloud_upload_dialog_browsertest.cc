@@ -158,6 +158,20 @@ void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 }
 
+// A matcher to verify that absl::optional<TaskDescriptor> corresponds to a Web
+// Drive Office Task.
+auto IsWebDriveOfficeTask() {
+  return testing::Optional(testing::ResultOf(
+      &file_manager::file_tasks::IsWebDriveOfficeTask, testing::Eq(true)));
+}
+
+// A matcher to verify that absl::optional<TaskDescriptor> corresponds to an
+// Open in Office Task.
+auto IsOpenInOfficeTask() {
+  return testing::Optional(testing::ResultOf(
+      &file_manager::file_tasks::IsOpenInOfficeTask, testing::Eq(true)));
+}
+
 }  // namespace
 
 // Tests the `kFileHandlerDialog` dialog page of the `CloudUploadDialog`.
@@ -442,15 +456,12 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   navigation_observer_task.StartWatchingNewWebContents();
 
   // Check that there is not a default task for doc files.
-  file_manager::file_tasks::TaskDescriptor default_task;
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension));
 
   // Check that there is not a default task for pptx files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension));
 
   // Expand local tasks accordion.
   EXPECT_TRUE(content::ExecJs(
@@ -476,23 +487,20 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
                                                                       ".docx"));
 
   // Check that the selected task has been made the default for doc files.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
-      &default_task));
-  ASSERT_EQ(tasks_[selected_task], default_task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension),
+            tasks_[selected_task]);
 
   // Check that the selected task has been made the default for pptx files.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
-      &default_task));
-  ASSERT_EQ(tasks_[selected_task], default_task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension),
+            tasks_[selected_task]);
 
   // Check that the selected task has not been made the default for xlsx files
   // because there was not an xlsx file selected by the user, even though the
   // task supports xlsx files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension));
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
@@ -538,19 +546,16 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
   }
 
   // Check that there is not a default task for doc/x files.
-  file_manager::file_tasks::TaskDescriptor default_task;
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension));
 
   // Check that there is not a default task for ppt/x files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
+      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension));
 
   // Click the Docs task.
   EXPECT_TRUE(content::ExecJs(
@@ -578,24 +583,21 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
   // Check that the Docs/Slides task has been made the default for doc/x and
   // ppt/x files, but the Sheets task has not been made default for xlsx files,
   // because there was not an xlsx file selected by the user.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
-  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
-      &default_task));
-  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
-  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
-      &default_task));
-  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kDocMimeType, kDocFileExtension),
+              IsWebDriveOfficeTask());
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension),
+              IsWebDriveOfficeTask());
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kPptMimeType, kPptFileExtension),
+              IsWebDriveOfficeTask());
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension),
+              IsWebDriveOfficeTask());
 
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension));
 }
 
 // Helper to launch Files app and return its NativeWindow.
@@ -669,10 +671,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
     navigation_observer_task.Wait();
 
     // Check that the selected task has been made the default.
-    ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-        *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
-        &default_task));
-    ASSERT_EQ(tasks_[selected_task], default_task);
+    ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension),
+              tasks_[selected_task]);
   }
 }
 
@@ -892,12 +893,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Check that there is not a default task for doc or xlsx files.
-  file_manager::file_tasks::TaskDescriptor default_task;
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
-      &default_task));
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension));
 
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will lead to the Office PWA being set as the default task.
@@ -924,13 +923,12 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 
   // Check that the Office PWA has been made the default for doc and xlsx files.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
-  ASSERT_TRUE(IsOpenInOfficeTask(default_task));
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
-      &default_task));
-  ASSERT_TRUE(IsOpenInOfficeTask(default_task));
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kDocMimeType, kDocFileExtension),
+              IsOpenInOfficeTask());
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension),
+              IsOpenInOfficeTask());
 }
 
 // Test that entering and completing the Setup flow from the OneDrive Set Up
@@ -994,10 +992,11 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   // Check that the default task for doc files is still Drive, and not OneDrive,
   // despite running fixup setup.
-  file_manager::file_tasks::TaskDescriptor default_task;
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
-  ASSERT_TRUE(default_task.action_id.ends_with(kActionIdWebDriveOfficeWord));
+  ASSERT_THAT(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                  *profile()->GetPrefs(), kDocMimeType, kDocFileExtension),
+              testing::Optional(testing::Field(
+                  &file_manager::file_tasks::TaskDescriptor::action_id,
+                  testing::EndsWith(kActionIdWebDriveOfficeWord))));
 }
 
 class CloudOpenTaskBrowserTest : public InProcessBrowserTest {

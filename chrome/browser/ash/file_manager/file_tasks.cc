@@ -196,19 +196,6 @@ inline bool IsFilesAppId(const std::string& app_id) {
   return app_id == kFileManagerAppId || app_id == kFileManagerSwaAppId;
 }
 
-// The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
-// sub-string compatible with the extension/legacy e.g.: "view-pdf".
-std::string ParseFilesAppActionId(const std::string& action_id) {
-  if (base::StartsWith(action_id, kChromeUIFileManagerURL)) {
-    // Length of `chrome://file-manager/?`.
-    constexpr static size_t kOffset =
-        std::char_traits<char>::length(kChromeUIFileManagerURL) + 1;
-    return action_id.substr(kOffset);
-  }
-
-  return action_id;
-}
-
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
   return base::ranges::any_of(entries, &drive::util::HasHostedDocumentExtension,
@@ -322,11 +309,6 @@ Profile* GetProfileForExtensionTask(Profile* profile,
     return profile->GetOriginalProfile();
   }
   return profile;
-}
-
-std::string ToSwaActionId(const std::string& action_id) {
-  return base::StrCat(
-      {ash::file_manager::kChromeUIFileManagerURL, "?", action_id});
 }
 
 void ExecuteTaskAfterMimeTypesCollected(
@@ -689,6 +671,22 @@ std::string TaskTypeToString(TaskType task_type) {
   return "";
 }
 
+std::string ParseFilesAppActionId(const std::string& action_id) {
+  if (base::StartsWith(action_id, kChromeUIFileManagerURL)) {
+    // Length of `chrome://file-manager/?`.
+    constexpr static size_t kOffset =
+        std::char_traits<char>::length(kChromeUIFileManagerURL) + 1;
+    return action_id.substr(kOffset);
+  }
+
+  return action_id;
+}
+
+std::string ToSwaActionId(base::StringPiece action_id) {
+  return base::StrCat(
+      {ash::file_manager::kChromeUIFileManagerURL, "?", action_id});
+}
+
 bool TaskDescriptor::operator<(const TaskDescriptor& other) const {
   return std::make_tuple(app_id, task_type, action_id) <
          std::make_tuple(other.app_id, other.task_type, other.action_id);
@@ -795,10 +793,10 @@ void UpdateDefaultTask(Profile* profile,
                                suffixes_to_set);
 }
 
-bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
-                             const std::string& mime_type,
-                             const std::string& suffix,
-                             TaskDescriptor* task_out) {
+absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
+    const PrefService& pref_service,
+    const std::string& mime_type,
+    const std::string& suffix) {
   VLOG(1) << "Looking for default for MIME type: " << mime_type
           << " and suffix: " << suffix;
   if (!mime_type.empty()) {
@@ -807,7 +805,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
     const std::string* task_id = mime_task_prefs.FindString(mime_type);
     if (task_id) {
       VLOG(1) << "Found MIME default handler: " << *task_id;
-      return ParseTaskID(*task_id, task_out);
+      return ParseTaskID(*task_id);
     }
   }
 
@@ -818,11 +816,11 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
   const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);
 
   if (!task_id || task_id->empty()) {
-    return false;
+    return absl::nullopt;
   }
 
   VLOG(1) << "Found suffix default handler: " << *task_id;
-  return ParseTaskID(*task_id, task_out);
+  return ParseTaskID(*task_id);
 }
 
 std::string MakeTaskID(const std::string& app_id,
@@ -838,36 +836,29 @@ std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor) {
                     task_descriptor.action_id);
 }
 
-bool ParseTaskID(const std::string& task_id, TaskDescriptor* task) {
-  DCHECK(task);
-
+absl::optional<TaskDescriptor> ParseTaskID(const std::string& task_id) {
   std::vector<std::string> result = base::SplitString(
       task_id, "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Parse a legacy task ID that only contain two parts. The legacy task IDs
   // can be stored in preferences.
   if (result.size() == 2) {
-    task->task_type = TASK_TYPE_FILE_BROWSER_HANDLER;
-    task->app_id = result[0];
-    task->action_id = result[1];
-
-    return true;
+    return TaskDescriptor(/*in_app_id=*/result[0],
+                          TASK_TYPE_FILE_BROWSER_HANDLER,
+                          /*in_action_id=*/result[1]);
   }
 
   if (result.size() != 3) {
-    return false;
+    return absl::nullopt;
   }
 
   TaskType task_type = StringToTaskType(result[1]);
   if (task_type == TASK_TYPE_UNKNOWN) {
-    return false;
+    return absl::nullopt;
   }
 
-  task->app_id = result[0];
-  task->task_type = task_type;
-  task->action_id = result[2];
-
-  return true;
+  return TaskDescriptor(/*in_app_id=*/result[0], task_type,
+                        /*in_action_id=*/result[2]);
 }
 
 bool ExecuteFileTask(Profile* profile,
@@ -1192,20 +1183,19 @@ void ChooseAndSetDefaultTask(Profile* profile,
   for (const extensions::EntryInfo& entry : entries) {
     const base::FilePath& file_path = entry.path;
     const std::string& mime_type = entry.mime_type;
-    TaskDescriptor default_task;
-    if (file_tasks::GetDefaultTaskFromPrefs(*profile->GetPrefs(), mime_type,
-                                            file_path.Extension(),
-                                            &default_task)) {
-      default_tasks.insert(default_task);
+    if (absl::optional<TaskDescriptor> default_task =
+            file_tasks::GetDefaultTaskFromPrefs(*profile->GetPrefs(), mime_type,
+                                                file_path.Extension())) {
+      default_tasks.insert(*default_task);
       if (ash::features::ShouldArcFileTasksUseAppService() &&
-          default_task.task_type == TASK_TYPE_ARC_APP) {
+          default_task->task_type == TASK_TYPE_ARC_APP) {
         // Default preference Task Descriptors for Android apps are stored in a
         // legacy format (app id: "<package>/<activity>", action id: "view"). To
         // match against ARC app task descriptors (which use app id: "<app
         // service id>", action id: "<activity>"), we translate the default Task
         // Descriptors into the new format.
         std::vector<std::string> app_id_info =
-            base::SplitString(default_task.app_id, "/", base::KEEP_WHITESPACE,
+            base::SplitString(default_task->app_id, "/", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY);
         if (app_id_info.size() != 2) {
           continue;

@@ -816,15 +816,14 @@ bool DownloadItemNotification::IsGalleryAppPdfEditNotificationEligible() const {
     }
   }
 
-  file_manager::file_tasks::TaskDescriptor task_descriptor;
-  if (!file_manager::file_tasks::GetDefaultTaskFromPrefs(
-          *prefs, "application/pdf", ".pdf", &task_descriptor)) {
+  auto task_descriptor = file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *prefs, "application/pdf", ".pdf");
+  if (!task_descriptor) {
     // GetDefaultTaskFromPrefs returns false if no default app is specified. If
     // no default app is specified, a pdf will be opened with Gallery app.
     return true;
   }
-
-  return task_descriptor.app_id == web_app::kMediaAppId;
+  return task_descriptor->app_id == web_app::kMediaAppId;
 #else
   return false;
 #endif

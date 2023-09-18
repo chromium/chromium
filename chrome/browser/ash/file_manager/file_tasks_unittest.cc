@@ -97,39 +97,30 @@ TEST(FileManagerFileTasksTest, TaskDescriptorToId) {
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_FileBrowserHandler) {
-  TaskDescriptor task;
-  EXPECT_TRUE(ParseTaskID("app-id|file|action-id", &task));
-  EXPECT_EQ("app-id", task.app_id);
-  EXPECT_EQ(TASK_TYPE_FILE_BROWSER_HANDLER, task.task_type);
-  EXPECT_EQ("action-id", task.action_id);
+  EXPECT_EQ(
+      ParseTaskID("app-id|file|action-id"),
+      TaskDescriptor("app-id", TASK_TYPE_FILE_BROWSER_HANDLER, "action-id"));
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_FileHandler) {
-  TaskDescriptor task;
-  EXPECT_TRUE(ParseTaskID("app-id|app|action-id", &task));
-  EXPECT_EQ("app-id", task.app_id);
-  EXPECT_EQ(TASK_TYPE_FILE_HANDLER, task.task_type);
-  EXPECT_EQ("action-id", task.action_id);
+  EXPECT_EQ(ParseTaskID("app-id|app|action-id"),
+            TaskDescriptor("app-id", TASK_TYPE_FILE_HANDLER, "action-id"));
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_Legacy) {
-  TaskDescriptor task;
   // A legacy task ID only has two parts. The task type should be
   // TASK_TYPE_FILE_BROWSER_HANDLER.
-  EXPECT_TRUE(ParseTaskID("app-id|action-id", &task));
-  EXPECT_EQ("app-id", task.app_id);
-  EXPECT_EQ(TASK_TYPE_FILE_BROWSER_HANDLER, task.task_type);
-  EXPECT_EQ("action-id", task.action_id);
+  EXPECT_EQ(
+      ParseTaskID("app-id|action-id"),
+      TaskDescriptor("app-id", TASK_TYPE_FILE_BROWSER_HANDLER, "action-id"));
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_Invalid) {
-  TaskDescriptor task;
-  EXPECT_FALSE(ParseTaskID("invalid", &task));
+  EXPECT_FALSE(ParseTaskID("invalid"));
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_UnknownTaskType) {
-  TaskDescriptor task;
-  EXPECT_FALSE(ParseTaskID("app-id|unknown|action-id", &task));
+  EXPECT_FALSE(ParseTaskID("app-id|unknown|action-id"));
 }
 
 TEST(FileManagerFileTasksTest, BaseContainsFindsTaskDescriptors) {
@@ -890,75 +881,72 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
 // Test the setting of a default file task for Office files to a Files App SWA.
 TEST_F(FileManagerFileTaskPreferencesTest, SetOfficeFileHandlersToFilesSWA) {
-  file_manager::file_tasks::TaskDescriptor default_task;
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       "chrome://file-manager/?a");
 
   // Check no default tasks exist for Doc files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/msword", ".doc", &default_task));
+      *profile()->GetPrefs(), "application/msword", ".doc"));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(),
       "application/"
       "vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ".docx", &default_task));
+      ".docx"));
   // Set default task for Doc files as a Files App SWA with action id "a".
   SetWordFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Doc files is `task`.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/msword", ".doc", &default_task));
-  ASSERT_EQ(task, default_task);
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
-      "application/"
-      "vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ".docx", &default_task));
-  ASSERT_EQ(task, default_task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), "application/msword", ".doc"),
+            task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(),
+                "application/"
+                "vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".docx"),
+            task);
 
   // Check no default tasks exist for Excel files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls",
-      &default_task));
+      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls"));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(),
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      ".xlsx", &default_task));
+      ".xlsx"));
   // Set default task for Excel files as a Files App SWA with action id "a".
   SetExcelFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Excel files is `task`.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls",
-      &default_task));
-  ASSERT_EQ(task, default_task);
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      ".xlsx", &default_task));
-  ASSERT_EQ(task, default_task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls"),
+            task);
+  ASSERT_EQ(
+      file_manager::file_tasks::GetDefaultTaskFromPrefs(
+          *profile()->GetPrefs(),
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ".xlsx"),
+      task);
 
   // Check no default tasks exist for Powerpoint files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt",
-      &default_task));
+      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"));
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(),
       "application/"
       "vnd.openxmlformats-officedocument.presentationml.presentation",
-      ".pptx", &default_task));
+      ".pptx"));
   // Set default task for Powerpoint files as a Files App SWA with action id
   // "a".
   SetPowerPointFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Powerpoint files is `task`.
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt",
-      &default_task));
-  ASSERT_EQ(task, default_task);
-  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
-      "application/"
-      "vnd.openxmlformats-officedocument.presentationml.presentation",
-      ".pptx", &default_task));
-  ASSERT_EQ(task, default_task);
+  ASSERT_EQ(
+      file_manager::file_tasks::GetDefaultTaskFromPrefs(
+          *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"),
+      task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(),
+                "application/"
+                "vnd.openxmlformats-officedocument.presentationml.presentation",
+                ".pptx"),
+            task);
 }
 
 }  // namespace file_manager::file_tasks

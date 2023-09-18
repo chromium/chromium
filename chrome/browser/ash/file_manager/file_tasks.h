@@ -158,6 +158,13 @@ enum TaskType {
 TaskType StringToTaskType(const std::string& str);
 std::string TaskTypeToString(TaskType task_type);
 
+// The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
+// sub-string compatible with the extension/legacy e.g.: "view-pdf".
+std::string ParseFilesAppActionId(const std::string& action_id);
+
+// Turns the provided |action_id| into chrome://file-manager/?ACTION_ID.
+std::string ToSwaActionId(base::StringPiece action_id);
+
 constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
 constexpr char kOneDriveErrorMetricName[] =
     "FileBrowser.OfficeFiles.Errors.OneDrive";
@@ -340,11 +347,11 @@ void UpdateDefaultTask(Profile* profile,
 
 // Returns the default task for the given |mime_type|/|suffix| combination in
 // |task_out|. If it finds a MIME type match, then it prefers that over a suffix
-// match. If a default can't be found, then it returns false.
-bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
-                             const std::string& mime_type,
-                             const std::string& suffix,
-                             TaskDescriptor* task_out);
+// match. If a default can't be found, then it returns absl::nullopt.
+absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
+    const PrefService& pref_service,
+    const std::string& mime_type,
+    const std::string& suffix);
 
 // Generates task id for the task specified by |app_id|, |task_type| and
 // |action_id|.
@@ -358,13 +365,12 @@ std::string MakeTaskID(const std::string& app_id,
 // Converts |task_descriptor| to a task ID.
 std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor);
 
-// Parses the task ID and extracts app ID, task type, and action ID into
-// |task|. On failure, returns false, and the contents of |task| are
-// undefined.
+// Parses the task ID, extracts app ID, task type, action ID and returns the
+// created TaskDescriptor. On failure, returns absl::nullopt.
 //
 // See also the comment at the beginning of the file for details for how
 // "task_id" looks like.
-bool ParseTaskID(const std::string& task_id, TaskDescriptor* task);
+absl::optional<TaskDescriptor> ParseTaskID(const std::string& task_id);
 
 // The callback is used for ExecuteFileTask().
 typedef base::OnceCallback<void(
