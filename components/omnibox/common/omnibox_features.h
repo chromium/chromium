@@ -114,7 +114,6 @@ BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextColor);
 
-BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);
 BASE_DECLARE_FEATURE(kRedoCurrentMatch);
 BASE_DECLARE_FEATURE(kRevertModelBeforeClosingPopup);
 BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);

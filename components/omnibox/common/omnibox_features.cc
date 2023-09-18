@@ -452,12 +452,6 @@ BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, switching tabs will not restore the omnibox state.
-// TODO(manukh): Should also blur the omnibox on tab switch.
-BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
-             "OmniboxDiscardTemporaryInputOnTabSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable new Omnibox & Suggestions visual style.
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",

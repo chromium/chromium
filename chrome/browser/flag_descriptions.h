@@ -1323,9 +1323,6 @@ extern const char kOmniboxCR23SteadyStateIconsDescription[];
 extern const char kOmniboxCR23SuggestionHoverFillShapeName[];
 extern const char kOmniboxCR23SuggestionHoverFillShapeDescription[];
 
-extern const char kOmniboxDiscardTemporaryInputOnTabSwitchName[];
-extern const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[];
-
 extern const char kOmniboxActionsUISimplificationName[];
 extern const char kOmniboxActionsUISimplificationDescription[];
 

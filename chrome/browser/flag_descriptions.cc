@@ -2316,11 +2316,6 @@ const char kOmniboxCR23SuggestionHoverFillShapeDescription[] =
     "Updates Omnibox suggestion hover fill shape to comply with CR23 "
     "guidelines.";
 
-const char kOmniboxDiscardTemporaryInputOnTabSwitchName[] =
-    "Omnibox discard temporary input on tab switch";
-const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[] =
-    "Discards temporary input in the omnibox when switching tabs.";
-
 const char kOmniboxActionsUISimplificationName[] =
     "Omnibox Actions UI Simplification";
 const char kOmniboxActionsUISimplificationDescription[] =
