@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 
@@ -18,7 +20,8 @@ class PrefsTabHelper;
 
 // Watches updates in WebKitPreferences and blink::RendererPreferences, and
 // notifies tab helpers and registered watchers of those updates.
-class PrefWatcher : public KeyedService {
+class PrefWatcher : public KeyedService,
+                    public privacy_sandbox::TrackingProtectionSettingsObserver {
  public:
   explicit PrefWatcher(Profile* profile);
   ~PrefWatcher() override;
@@ -34,6 +37,8 @@ class PrefWatcher : public KeyedService {
   // KeyedService overrides:
   void Shutdown() override;
 
+  void OnDoNotTrackEnabledChanged() override;
+
   void UpdateRendererPreferences();
   void OnWebPrefChanged(const std::string& pref_name);
   void OnLiveCaptionEnabledPrefChanged(const std::string& pref_name);
@@ -41,6 +46,12 @@ class PrefWatcher : public KeyedService {
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
+
+  base::ScopedObservation<privacy_sandbox::TrackingProtectionSettings,
+                          privacy_sandbox::TrackingProtectionSettingsObserver>
+      tracking_protection_settings_observation_{this};
 
   // |tab_helpers_| observe changes in WebKitPreferences and
   // blink::RendererPreferences.
