@@ -1003,7 +1003,7 @@ static StyleBaseData* GetBaseData(const StyleResolverState& state) {
     return nullptr;
   }
   auto* old_style = animating_element->GetComputedStyle();
-  return old_style ? old_style->BaseData().Get() : nullptr;
+  return old_style ? old_style->BaseData() : nullptr;
 }
 
 static const ComputedStyle* CachedAnimationBaseComputedStyle(

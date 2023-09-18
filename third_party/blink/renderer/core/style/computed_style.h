@@ -3363,7 +3363,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // BaseData
   const ComputedStyle* GetBaseComputedStyle() const {
-    if (auto* base_data = BaseData().Get()) {
+    if (auto* base_data = BaseData()) {
       return base_data->GetBaseComputedStyle();
     }
     return nullptr;

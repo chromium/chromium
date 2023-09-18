@@ -753,7 +753,7 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
     return;
   }
 
-  if (auto& base_data = builder.BaseData()) {
+  if (StyleBaseData* base_data = builder.BaseData()) {
     if (RuntimeEnabledFeatures::InertDisplayTransitionEnabled() &&
         base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
       // Elements which are transitioning to display:none should become inert:

@@ -680,14 +680,14 @@ void ComputedStyle::ClearCachedPseudoElementStyles() const {
 }
 
 const ComputedStyle* ComputedStyle::GetBaseComputedStyle() const {
-  if (auto* base_data = BaseData().Get()) {
+  if (StyleBaseData* base_data = BaseData()) {
     return base_data->GetBaseComputedStyle();
   }
   return nullptr;
 }
 
 const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
-  if (auto* base_data = BaseData().Get()) {
+  if (StyleBaseData* base_data = BaseData()) {
     return base_data->GetBaseImportantSet();
   }
   return nullptr;
