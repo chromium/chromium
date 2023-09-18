@@ -4151,28 +4151,22 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   return false;
 }
 
-// We can't use `Element::IsKeyboardFocusable()` since the downstream
-// `Element::IsFocusableStyle()` call will reset the document lifecycle.
-// TODO(crbug.com/1444450) This should be replaced with just a call to
-// element->IsKeyboardFocusable(). This function can be guarded by a
-// DocumentLifecycle::DisallowTransitionScope().
 bool AXObject::IsKeyboardFocusable() const {
-  if (!CanSetFocusAttribute())
-    return false;
-
-  Element* element = GetElement();
-  if (!element) {
-    // TODO(crbug.com/1480563) It is possible to reach this line, though it
-    // isn't clear how. See the linked bug for crash reports. Since we would
-    // prefer not to crash in this case, return false here instead.
-    LOG(ERROR) << "Cannot be focusable without an element: "
-               << ToString(true, true);
+  auto* document = GetDocument();
+  auto* element = GetElement();
+  if (!document || !element) {
     return false;
   }
-  if (element->IsScrollableContainerThatShouldBeKeyboardFocusable()) {
-    return true;
+  DocumentLifecycle::DisallowTransitionScope scope(document->Lifecycle());
+  if (IsA<HTMLFrameOwnerElement>(element)) {
+    // TODO(crbug.com/1444450) Frame owner elements return true for
+    // IsFocusable(), because the logic in focus_controller.cc requires them to
+    // be focusable in order to find them and navigate to their contents.
+    // However, frames are not actually focusable. Remove this special-case once
+    // frame owner elements have SupportsFocus() == false.
+    return false;
   }
-  return element->tabIndex() >= 0 || IsRootEditableElement(*element);
+  return element->IsKeyboardFocusable();
 }
 
 bool AXObject::CanSetSelectedAttribute() const {

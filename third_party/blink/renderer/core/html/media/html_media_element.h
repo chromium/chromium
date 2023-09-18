@@ -497,6 +497,7 @@ class CORE_EXPORT HTMLMediaElement
   bool SupportsFocus() const final;
   bool IsFocusable() const final;
   bool IsKeyboardFocusable() const final;
+  int DefaultTabIndex() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void DidNotifySubtreeInsertionsToDocument() override;

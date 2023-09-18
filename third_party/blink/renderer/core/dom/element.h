@@ -783,16 +783,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                       const FocusOptions*);
   virtual void blur();
 
-  // SupportsFocus is true if the element is *capable* of being focused. An
-  // element supports focus if, e.g. it has a tabindex attribute, or it is
-  // editable, or other conditions. Note that the element might *support* focus
-  // while not *being focusable*, for example if the element is disconnected
-  // from the document. This method can be called when layout is not clean, and
-  // it will *not* update layout itself.
- protected:
-  virtual bool SupportsFocus() const;
-
- public:
   // IsFocusable is true if the element SupportsFocus(), and is currently
   // focusable (using the mouse). This method can be called when layout is not
   // clean, but the method might trigger a lifecycle update in that case. This
@@ -1257,6 +1247,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual NamedItemType GetNamedItemType() const {
     return NamedItemType::kNone;
   }
+
+  // SupportsFocus is true if the element is *capable* of being focused. An
+  // element supports focus if, e.g. it has a tabindex attribute, or it is
+  // editable, or other conditions. Note that the element might *support* focus
+  // while not *being focusable*, for example if the element is disconnected
+  // from the document. This method can be called when layout is not clean, and
+  // it will *not* update layout itself.
+  // This method should stay protected - it is only for use by the Element
+  // class hierarchy. Outside callers should use `IsFocusable()` and/or
+  // `IsKeyboardFocusable()`.
+  virtual bool SupportsFocus() const;
 
   bool SupportsSpatialNavigationFocus() const;
 

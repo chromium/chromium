@@ -732,8 +732,13 @@ bool HTMLMediaElement::IsFocusable() const {
 }
 
 bool HTMLMediaElement::IsKeyboardFocusable() const {
-  // Media elements are keyboard focusable if they are focusable at all.
-  return IsFocusable();
+  // Media elements are keyboard focusable if they are focusable at all,
+  // and don't have a negative tabindex set.
+  return IsFocusable() && tabIndex() >= 0;
+}
+
+int HTMLMediaElement::DefaultTabIndex() const {
+  return 0;
 }
 
 void HTMLMediaElement::ParseAttribute(

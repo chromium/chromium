@@ -214,6 +214,16 @@ bool HTMLFrameElementBase::SupportsFocus() const {
 }
 
 int HTMLFrameElementBase::DefaultTabIndex() const {
+  // The logic in focus_controller.cc requires frames to return
+  // true for IsFocusable(). However, frames are not actually
+  // focusable, and focus_controller.cc takes care of moving
+  // focus within the frame focus scope.
+  // TODO(crbug.com/1444450) It would be better to remove this
+  // override entirely, and make SupportsFocus() return false.
+  // That would require adding logic in focus_controller.cc that
+  // ignores IsFocusable for HTMLFrameElementBase. At that point,
+  // AXObject::IsKeyboardFocusable() can also have special case
+  // code removed.
   return 0;
 }
 

@@ -717,8 +717,9 @@ bool InputType::CanSetStringValue() const {
 }
 
 bool InputType::IsKeyboardFocusable() const {
-  // Inputs are always keyboard focusable if they are focusable at all.
-  return GetElement().IsFocusable();
+  // Inputs are always keyboard focusable if they are focusable at all,
+  // and don't have a negative tabindex set.
+  return GetElement().IsFocusable() && GetElement().tabIndex() >= 0;
 }
 
 bool InputType::MayTriggerVirtualKeyboard() const {

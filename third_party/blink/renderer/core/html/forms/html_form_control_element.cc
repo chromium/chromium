@@ -302,8 +302,8 @@ bool HTMLFormControlElement::IsKeyboardFocusable() const {
     return HTMLElement::IsKeyboardFocusable();
 
   // Form control elements are always keyboard focusable if they are focusable
-  // at all.
-  return IsFocusable();
+  // at all, and don't have a negative tabindex set.
+  return IsFocusable() && tabIndex() >= 0;
 }
 
 bool HTMLFormControlElement::MayTriggerVirtualKeyboard() const {
