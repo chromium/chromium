@@ -451,13 +451,21 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                                      gfx::Insets::TLBR(0, 8, 0, 4));
   }
 
+  // For file URLs, we want to elide the tail, since the file name and/or query
+  // part of the file URL can be made to look like an origin for spoofing. For
+  // HTTPS URLs, we elide the head to prevent spoofing via long origins, since
+  // in the HTTPS case everything besides the origin is removed for display.
+  auto elide_behavior = location_bar_model_->GetURL().SchemeIsFile()
+                            ? gfx::ELIDE_TAIL
+                            : gfx::ELIDE_HEAD;
+
   // Creates the window title.
   top_bar_container_view_->AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&window_title_)
           .SetText(location_bar_model_->GetURLForDisplay())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetElideBehavior(gfx::ELIDE_HEAD)
+          .SetElideBehavior(elide_behavior)
           .SetProperty(
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
