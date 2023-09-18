@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "text_classifier_model_service.h",
+    "text_classifier_model_service_factory.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/text_selection" ]
+}
+
+source_set("model_utils") {
+  sources = [ "text_selection_util.h" ]
+  public_deps = [ "//ios/chrome/browser/text_selection:text_selection_utils" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "text_classifier_model_service_fake.h" ]
+  public_deps = [
+    "//ios/chrome/browser/text_selection",
+    "//ios/chrome/browser/text_selection:test_support",
+  ]
+}
