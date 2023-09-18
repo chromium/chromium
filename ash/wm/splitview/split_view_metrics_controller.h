@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -27,6 +28,11 @@ class Window;
 
 namespace ash {
 class SplitViewController;
+
+// Public so it can be used by unit tests.
+constexpr char kSnapTwoWindowsDurationHistogramName[] =
+    "Ash.Window.SnapTwoWindowsDuration";
+constexpr int kSnapTwoWindowsDurationHistogramMaxCount = 10000000;
 
 // SplitViewMetricsController:
 // Manages split view related metrics. Tablet mode split view and clamshell
@@ -107,6 +113,7 @@ class SplitViewMetricsController : public TabletModeObserver,
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
   void OnResizeLoopEnded(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
@@ -163,6 +170,15 @@ class SplitViewMetricsController : public TabletModeObserver,
   // return false.
   bool MaybePauseRecordBothSnappedClamshellSplitView();
 
+  // Records and resets the duration between two windows getting snapped. Does
+  // nothing if there was no first snapped window and first snapped time.
+  void MaybeRecordSnapTwoWindowsDuration(const int duration);
+
+  // Starts recording the time if `window_state` was the first snapped window,
+  // otherwise ends recording if either: 1. the second snapped window is found,
+  // or 2. the first snapped window was unsnapped.
+  void MaybeStartOrEndRecordSnapTwoWindowsDuration(WindowState* window_state);
+
   // Resets the variables related to time and counter metrics.
   void ResetTimeAndCounter();
 
@@ -190,6 +206,8 @@ class SplitViewMetricsController : public TabletModeObserver,
   void StopRecordClamshellMultiDisplaySplitView();
   void StartRecordTabletMultiDisplaySplitView();
   void StopRecordTabletMultiDisplaySplitView();
+
+  void StartRecordFirstSnappedTime();
 
   // Called when the display orientation or mode changes to report device mode
   // and orientation the user uses split screen in. This updates UMA metric
@@ -242,6 +260,12 @@ class SplitViewMetricsController : public TabletModeObserver,
 
   // Counter of swapping windows in split view.
   int swap_count_ = 0;
+
+  // The first window that gets snapped and the time it's snapped at. Used by
+  // `Ash.Window.SnapTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  raw_ptr<aura::Window> first_snapped_window_;
+  base::TimeTicks first_snapped_time_;
 };
 
 }  // namespace ash
