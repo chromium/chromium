@@ -369,6 +369,13 @@ bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
     return true;
   }
 
+  // PHONE_HOME_EXTENSION is not stored or filled, but it's still classified to
+  // prevent misclassifying such fields as something else.
+  if (storable_type == PHONE_HOME_EXTENSION) {
+    return true;
+  }
+
+  CHECK_NE(type.group(), FieldTypeGroup::kPhone);
   return false;
 }
 

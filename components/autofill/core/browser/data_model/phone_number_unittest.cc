@@ -290,6 +290,23 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 
+TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
+  AutofillProfile profile;
+  PhoneNumber phone_number(&profile);
+
+  ServerFieldTypeSet types;
+  profile.GetSupportedTypes(&types);
+  std::vector<ServerFieldType> fields{types.begin(), types.end()};
+  base::EraseIf(fields, [](ServerFieldType type) {
+    return AutofillType(type).group() != FieldTypeGroup::kPhone;
+  });
+
+  base::ranges::for_each(fields, [](ServerFieldType type) {
+    PhoneNumber::PhoneCombineHelper helper;
+    EXPECT_TRUE(helper.SetInfo(AutofillType(type), u"123"));
+  });
+}
+
 TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_US) {
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
@@ -497,29 +514,6 @@ TEST(PhoneNumberTest, CountryCodeNotInMatchingTypes) {
 
     EXPECT_THAT(matching_types, testing::IsEmpty());
   }
-}
-
-// TODO(crbug.com/1479741): Fix a flaky timeout for Windows debug builds.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_DerivedTypesNotSetDirectly DISABLED_DerivedTypesNotSetDirectly
-#else
-#define MAYBE_DerivedTypesNotSetDirectly DerivedTypesNotSetDirectly
-#endif
-TEST(PhoneNumberTest, MAYBE_DerivedTypesNotSetDirectly) {
-  AutofillProfile profile;
-  PhoneNumber phone_number(&profile);
-
-  ServerFieldTypeSet types;
-  profile.GetSupportedTypes(&types);
-  std::vector<ServerFieldType> fields{types.begin(), types.end()};
-  base::EraseIf(fields, [](ServerFieldType type) {
-    return AutofillType(type).group() != FieldTypeGroup::kPhone ||
-           base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(),
-                          type);
-  });
-  base::ranges::for_each(fields, [&phone_number](ServerFieldType type) {
-    EXPECT_DEATH_IF_SUPPORTED(phone_number.SetRawInfo(type, u"123"), "");
-  });
 }
 
 }  // namespace autofill
