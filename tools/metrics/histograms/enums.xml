@@ -89645,6 +89645,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Probe with fallback url"/>
 </enum>
 
+<enum name="ProcessCreationReason">
+  <int value="0" label="Activity"/>
+  <int value="1" label="Service"/>
+  <int value="2" label="Content Provider"/>
+  <int value="3" label="Broadcast Receiver"/>
+</enum>
+
 <enum name="ProcessIntegrityResult">
   <int value="0" label="Low integrity level"/>
   <int value="1" label="Medium integrity level from Open GL"/>

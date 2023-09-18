@@ -40,6 +40,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.BrowserProcessCreationReason"
+    enum="ProcessCreationReason" expires_after="2024-09-13">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Records the first type of component created after process creation - most
+    likely the reason the process was created - at the time the component is
+    created on Android P+.
+
+    Differences in distribution between Android versions (particularly with
+    respect to ContentProviders) likely indicate a change to Android startup
+    that broke our detection.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.CachedFeedVisibilityConsistency"
     enum="BooleanConsistent" expires_after="2024-01-14">
   <owner>hanxi@chromium.org</owner>
