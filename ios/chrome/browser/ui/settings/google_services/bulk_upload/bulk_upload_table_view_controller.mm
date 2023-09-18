@@ -73,6 +73,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.separatorInset =
+      UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
   TableViewSwitchCell* switchCell =
       base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
   [switchCell.switchView addTarget:self
