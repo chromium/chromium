@@ -83,8 +83,7 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
       base::CreateDirectory(statistics_dir);
     }
 
-    std::string file_name = base::StringPrintf(
-        "%s.json", TimeToLocalString(base::Time::Now()).c_str());
+    std::string file_name = TimeToLocalString(base::Time::Now()) + ".json";
 
     base::FilePath statistics_file_path = statistics_dir.Append(file_name);
     base::File statistics_file(
