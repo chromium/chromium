@@ -99,6 +99,11 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_LESS_BRAND_SPACE_PARAM, false);
 
+    private static final String SURFACE_POLISH_SCROLLABLE_MVT_PARAM = "scrollable_mvt";
+    public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_SCROLLABLE_MVT =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, false);
+
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_USE_MAGIC_SPACE =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.SURFACE_POLISH, "use_magic_space", false);

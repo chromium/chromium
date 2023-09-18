@@ -944,6 +944,25 @@ public final class ReturnToChromeUtil {
         RecordHistogram.recordBooleanHistogram(HOME_SURFACE_SHOWN_UMA, true);
     }
 
+    public static boolean isScrollableMvtEnabled(Context context) {
+        boolean isScrollableMvtEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
+        boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            // On phones, parameter SURFACE_POLISH_SCROLLABLE_MVT is checked when feature flag
+            // surface polish is enabled; otherwise, feature flag SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID
+            // is checked.
+            return isSurfacePolishEnabled
+                    ? StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue()
+                    : isScrollableMvtEnabled;
+        }
+        // On tablets, only show the scrollable MV tiles on NTP if feature flag surface polish is
+        // enabled.
+        return isSurfacePolishEnabled
+                ? true
+                : isScrollableMvtEnabled && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
+    }
+
     /**
      * Shows the home surface UI on the given Ntp on tablets.
      */

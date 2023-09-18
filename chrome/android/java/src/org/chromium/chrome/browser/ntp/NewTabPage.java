@@ -1169,9 +1169,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     static boolean isScrollableMvtEnabled(Context context) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-                && (ChromeFeatureList.sStartSurfaceOnTablet.isEnabled()
-                        || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
+        return ReturnToChromeUtil.isScrollableMvtEnabled(context);
     }
 
     public boolean isSingleTabCardVisibleForTesting() {

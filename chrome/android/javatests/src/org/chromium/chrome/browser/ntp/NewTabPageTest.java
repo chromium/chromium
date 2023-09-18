@@ -161,6 +161,8 @@ public class NewTabPageTest {
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
 
+    private static final String SURFACE_POLISH_PARAMS = "force-fieldtrial-params=Study.Group:";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
@@ -1075,8 +1077,10 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH,
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,",
             ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", SURFACE_POLISH_PARAMS + "scrollable_mvt/true"})
     // clang-format off
     public void test1RowMvtOnNtpAfterPolish() {
         // clang-format on
@@ -1099,8 +1103,7 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-            ChromeFeatureList.FEED_POSITION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
     // clang-format off
     public void test2RowMvtOnNtpAfterPolish() {
         // clang-format on

@@ -2476,15 +2476,22 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
 
 const FeatureEntry::FeatureParam kSurfacePolish_mvp[] = {
     {"polish_omnibox_color", "true"},
+    {"scrollable_mvt", "true"},
     {"move_down_logo", "true"}};
 
 const FeatureEntry::FeatureParam kSurfacePolish_white_omnibox[] = {
+    {"scrollable_mvt", "true"},
     {"move_down_logo", "true"}};
 
 const FeatureEntry::FeatureParam kSurfacePolish_less_brand_space[] = {
     {"polish_omnibox_color", "true"},
+    {"scrollable_mvt", "true"},
     {"move_down_logo", "true"},
     {"less_brand_space", "true"}};
+
+const FeatureEntry::FeatureParam kSurfacePolish_mvp_2row_mvt[] = {
+    {"polish_omnibox_color", "true"},
+    {"move_down_logo", "true"}};
 
 const FeatureEntry::FeatureParam kSurfacePolish_logo_in_toolbar[] = {
     {"polish_omnibox_color", "true"}};
@@ -2500,6 +2507,8 @@ const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
      std::size(kSurfacePolish_white_omnibox), nullptr},
     {"Arm 3: Less brand space", kSurfacePolish_less_brand_space,
      std::size(kSurfacePolish_less_brand_space), nullptr},
+    {"Arm 4: MVP with 2 row MVT", kSurfacePolish_mvp_2row_mvt,
+     std::size(kSurfacePolish_mvp_2row_mvt), nullptr},
     {"Arm 5: Logo in toolbar", kSurfacePolish_logo_in_toolbar,
      std::size(kSurfacePolish_logo_in_toolbar), nullptr},
     {"Use magic space", kSurfacePolish_use_magic_space,
