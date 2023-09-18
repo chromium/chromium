@@ -111,15 +111,6 @@ void AudioEffectsController::OnEffectControlActivated(
 
 void AudioEffectsController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
-
-  // Invoked when the user initially logs in and on user switching in
-  // multi-profile. If the delegate is already registered, no need to continue.
-  if (effects_manager.IsDelegateRegistered(this)) {
-    return;
-  }
-
   noise_cancellation_supported_ =
       IsEffectSupported(VcEffectId::kNoiseCancellation);
   if (noise_cancellation_supported_) {
@@ -171,13 +162,19 @@ void AudioEffectsController::RefreshNoiseCancellationSupported() {
 }
 
 void AudioEffectsController::AddNoiseCancellationEffect() {
+  const auto noise_cancellation_id = VcEffectId::kNoiseCancellation;
+
+  // Do nothing if the effect was already added.
+  if (GetEffectById(noise_cancellation_id)) {
+    return;
+  }
+
   std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
       /*type=*/VcEffectType::kToggle,
       /*get_state_callback=*/
       base::BindRepeating(&AudioEffectsController::GetEffectState,
-                          base::Unretained(this),
-                          VcEffectId::kNoiseCancellation),
-      /*effect_id=*/VcEffectId::kNoiseCancellation);
+                          base::Unretained(this), noise_cancellation_id),
+      /*effect_id=*/noise_cancellation_id);
 
   auto effect_state = std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceNoiseCancellationOnIcon,
@@ -189,7 +186,7 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
       /*button_callback=*/
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
-                          /*effect_id=*/VcEffectId::kNoiseCancellation,
+                          /*effect_id=*/noise_cancellation_id,
                           /*value=*/0));
   effect_state->set_disabled_icon(&kVideoConferenceNoiseCancellationOffIcon);
   effect->AddState(std::move(effect_state));
@@ -208,12 +205,19 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
 }
 
 void AudioEffectsController::AddLiveCaptionEffect() {
+  const auto live_caption_id = VcEffectId::kLiveCaption;
+
+  // Do nothing if the effect was already added.
+  if (GetEffectById(live_caption_id)) {
+    return;
+  }
+
   std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
       /*type=*/VcEffectType::kToggle,
       /*get_state_callback=*/
       base::BindRepeating(&AudioEffectsController::GetEffectState,
-                          base::Unretained(this), VcEffectId::kLiveCaption),
-      /*effect_id=*/VcEffectId::kLiveCaption);
+                          base::Unretained(this), live_caption_id),
+      /*effect_id=*/live_caption_id);
 
   auto effect_state = std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceLiveCaptionOnIcon,
@@ -224,7 +228,7 @@ void AudioEffectsController::AddLiveCaptionEffect() {
       /*button_callback=*/
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
-                          /*effect_id=*/VcEffectId::kLiveCaption,
+                          /*effect_id=*/live_caption_id,
                           /*value=*/0));
   effect_state->set_disabled_icon(&kVideoConferenceLiveCaptionOffIcon);
 
