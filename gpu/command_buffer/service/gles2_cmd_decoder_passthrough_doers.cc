@@ -2373,7 +2373,13 @@ error::Error GLES2DecoderPassthroughImpl::DoLinkProgram(GLuint program) {
   TRACE_EVENT0("gpu", "GLES2DecoderPassthroughImpl::DoLinkProgram");
   SCOPED_UMA_HISTOGRAM_TIMER("GPU.PassthroughDoLinkProgramTime");
   GLuint program_service_id = GetProgramServiceID(program, resources_);
+
+  // Call report progress to delay GPU Watchdog timeout.
+  group_->ReportProgress();
+
   api()->glLinkProgramFn(program_service_id);
+
+  group_->ReportProgress();
 
   // Program linking can be very slow.  Exit command processing to allow for
   // context preemption and GPU watchdog checks.
