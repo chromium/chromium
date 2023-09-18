@@ -48,6 +48,8 @@ enum class DeviceAuthFinalResult {
 // Android implementation of the DeviceAuthenticator interface.
 class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
  public:
+  ~DeviceAuthenticatorAndroid() override;
+
   bool CanAuthenticateWithBiometrics() override;
 
   bool CanAuthenticateWithBiometricOrScreenLock() override;
@@ -75,7 +77,7 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
 
   // Creates an instance of DeviceAuthenticatorAndroid for testing purposes
   // only.
-  static scoped_refptr<DeviceAuthenticatorAndroid> CreateForTesting(
+  static std::unique_ptr<DeviceAuthenticatorAndroid> CreateForTesting(
       std::unique_ptr<DeviceAuthenticatorBridge> bridge,
       DeviceAuthenticatorProxy* proxy);
 
@@ -84,7 +86,6 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
 
   DeviceAuthenticatorAndroid(std::unique_ptr<DeviceAuthenticatorBridge> bridge,
                              DeviceAuthenticatorProxy* proxy);
-  ~DeviceAuthenticatorAndroid() override;
 
   // Called when the authentication compeletes with the result
   void OnAuthenticationCompleted(device_reauth::DeviceAuthUIResult ui_result);

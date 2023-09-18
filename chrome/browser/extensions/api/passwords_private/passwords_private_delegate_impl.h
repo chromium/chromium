@@ -291,7 +291,7 @@ class PasswordsPrivateDelegateImpl
   raw_ptr<content::WebContents> web_contents_;
 
   // Device authenticator used to authenticate users in settings.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

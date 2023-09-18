@@ -60,7 +60,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   DeviceAuthenticatorProxy proxy_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<DeviceAuthenticatorChromeOS> authenticator_;
+  std::unique_ptr<DeviceAuthenticatorChromeOS> authenticator_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;

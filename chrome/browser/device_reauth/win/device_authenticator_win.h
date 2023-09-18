@@ -14,9 +14,11 @@
 
 class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
  public:
+  ~DeviceAuthenticatorWin() override;
+
   // Creates an instance of DeviceAuthenticatorWin for testing purposes
   // only.
-  static scoped_refptr<DeviceAuthenticatorWin> CreateForTesting(
+  static std::unique_ptr<DeviceAuthenticatorWin> CreateForTesting(
       std::unique_ptr<AuthenticatorWinInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
 
@@ -60,7 +62,6 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
   DeviceAuthenticatorWin(
       std::unique_ptr<AuthenticatorWinInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
-  ~DeviceAuthenticatorWin() override;
 
   // Records authentication status and executes |callback| with |success|
   // parameter.

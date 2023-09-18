@@ -67,7 +67,7 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
 
  private:
   DeviceAuthenticatorProxy proxy_;
-  scoped_refptr<DeviceAuthenticatorAndroid> authenticator_;
+  std::unique_ptr<DeviceAuthenticatorAndroid> authenticator_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

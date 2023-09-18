@@ -80,7 +80,7 @@ class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD(scoped_refptr<device_reauth::DeviceAuthenticator>,
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
               (override));
@@ -167,10 +167,6 @@ class AllPasswordsBottomSheetControllerTest
     return *mock_pwd_manager_client_.get();
   }
 
-  scoped_refptr<MockDeviceAuthenticator> authenticator() {
-    return mock_authenticator_;
-  }
-
   MockPasswordReuseDetectionManagerClient&
   password_reuse_detection_manager_client() {
     return *mock_pwd_reuse_detection_manager_client_.get();
@@ -191,8 +187,6 @@ class AllPasswordsBottomSheetControllerTest
   std::unique_ptr<AllPasswordsBottomSheetController> all_passwords_controller_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_ =
       std::make_unique<MockPasswordManagerClient>();
-  scoped_refptr<MockDeviceAuthenticator> mock_authenticator_ =
-      base::MakeRefCounted<MockDeviceAuthenticator>();
   std::unique_ptr<MockPasswordReuseDetectionManagerClient>
       mock_pwd_reuse_detection_manager_client_ =
           std::make_unique<MockPasswordReuseDetectionManagerClient>();
@@ -257,10 +251,12 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
-  EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+  auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
@@ -269,14 +265,16 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
-  EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+  auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator().get(),
+  EXPECT_CALL(*authenticator,
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(true));
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
@@ -286,14 +284,16 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
-  EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+  auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator().get(),
+  EXPECT_CALL(*authenticator,
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(false));
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)))
       .Times(0);
@@ -304,13 +304,16 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
-  EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+  auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* authenticator_ptr = authenticator.get();
+
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator().get(),
+  EXPECT_CALL(*authenticator_ptr,
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true));
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)))
       .Times(0);
@@ -318,7 +321,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 
-  EXPECT_CALL(*authenticator().get(),
+  EXPECT_CALL(*authenticator_ptr,
               Cancel(DeviceAuthRequester::kAllPasswordsList));
 }
 

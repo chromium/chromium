@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -99,22 +98,16 @@ class MandatoryReauthManager {
   // logging.
   virtual MandatoryReauthAuthenticationMethod GetAuthenticationMethod();
 
-  scoped_refptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticatorForTesting() {
-    return device_authenticator_;
+  device_reauth::DeviceAuthenticator* GetDeviceAuthenticatorPtrForTesting() {
+    return device_authenticator_.get();
   }
 
  private:
   // Raw pointer to the web content's AutofillClient.
   raw_ptr<AutofillClient> client_;
 
-  // Used for authentication related to mandatory re-auth. This class must keep
-  // this reference to `device_authenticator_` alive while an authentication is
-  // in progress. Set any time we initiate an authentication, and reset once the
-  // authentication has finished. It is stored as a `scoped_refptr` so that
-  // `device_authenticator_` is destroyed if the tab owning this
-  // MandatoryReauthManager is destroyed.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+  // Used for authentication related to mandatory re-auth.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   // Used to store the opt in source for logging purposes.
   autofill_metrics::MandatoryReauthOptInOrOutSource opt_in_source_ =

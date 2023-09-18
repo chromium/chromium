@@ -34,8 +34,7 @@ class AutofillExperimentsTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
                                                   false);
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
-    mock_device_authenticator_ =
-        base::MakeRefCounted<MockDeviceAuthenticator>();
+    mock_device_authenticator_ = std::make_unique<MockDeviceAuthenticator>();
   }
 
   bool IsCreditCardUploadEnabled(
@@ -65,7 +64,7 @@ class AutofillExperimentsTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::HistogramTester histogram_tester;
   std::unique_ptr<LogManager> log_manager_;
-  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
 };
 
@@ -395,9 +394,9 @@ TEST_F(
   ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 
-  EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_));
+  EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #else
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));
+  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #endif
 }
 
@@ -410,7 +409,7 @@ TEST_F(
   ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 #endif
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));
+  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 }
 
 }  // namespace autofill

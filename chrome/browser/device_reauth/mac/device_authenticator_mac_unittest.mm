@@ -101,7 +101,7 @@ class DeviceAuthenticatorMacTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState testing_local_state_;
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
   device::fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};

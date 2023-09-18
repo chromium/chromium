@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_FACTORY_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_FACTORY_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -58,8 +57,7 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
   // Create an instance of the DeviceAuthenticator. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error.
-  // TODO(crbug.com/1476842): Use unique_ptr instead of scoperd_refptr.
-  static scoped_refptr<device_reauth::DeviceAuthenticator> GetForProfile(
+  static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
       Profile* profile);
 
  private:

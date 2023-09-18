@@ -118,7 +118,7 @@ class AllPasswordsBottomSheetController
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
 
   // Authenticator used to trigger a biometric re-auth before password filling.
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   // The type of field on which the user is focused, e.g. PASSWORD.
   autofill::mojom::FocusedFieldType focused_field_type_;

@@ -229,7 +229,7 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
     return true;
   }
 
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       client_->GetDeviceAuthenticator();
   if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
                                                  client_)) {

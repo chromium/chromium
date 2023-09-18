@@ -951,7 +951,8 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
     return false;
   }
 
-  return autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator());
+  return autofill::IsDeviceAuthAvailable(
+      client->GetDeviceAuthenticator().get());
 }
 
 bool CheckCvcStorageAvailability() {

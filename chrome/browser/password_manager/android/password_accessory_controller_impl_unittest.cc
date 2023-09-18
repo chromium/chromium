@@ -135,7 +135,7 @@ class MockPasswordManagerClient
               (const GURL&),
               (const, override));
 
-  MOCK_METHOD(scoped_refptr<device_reauth::DeviceAuthenticator>,
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
               (override));
@@ -309,8 +309,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       PasswordAccessoryControllerImpl::ShowMigrationWarningCallback>
       show_migration_warning_callback_;
   scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
-  scoped_refptr<MockDeviceAuthenticator> mock_authenticator_ =
-      base::MakeRefCounted<MockDeviceAuthenticator>();
 
  private:
   password_manager::PasswordManagerDriver* GetBaseDriver(
@@ -940,10 +938,13 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
+
+  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())));
@@ -970,14 +971,26 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
+
+  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_.get(),
+
+  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator2.get(),
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+
+  // Expect calls for the same method need to be listed in reverse order.
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+      .RetiresOnSaturation();
+
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())));
@@ -1004,14 +1017,26 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
+
+  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_.get(),
+
+  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator2.get(),
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+
+  // Expect calls for the same method need to be listed in reverse order.
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+      .RetiresOnSaturation();
+
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())))
@@ -1039,13 +1064,25 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
+
+  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_.get(),
+
+  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr2 = mock_authenticator2.get();
+
+  EXPECT_CALL(*mock_authenticator_ptr2,
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true));
+
+  // Expect calls for the same method need to be listed in reverse order.
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+      .RetiresOnSaturation();
 
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
@@ -1053,7 +1090,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 
-  EXPECT_CALL(*mock_authenticator_.get(),
+  EXPECT_CALL(*mock_authenticator_ptr2,
               Cancel(DeviceAuthRequester::kFallbackSheet));
 }
 

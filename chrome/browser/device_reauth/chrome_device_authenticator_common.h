@@ -16,9 +16,6 @@ class ChromeDeviceAuthenticatorCommon
  public:
   explicit ChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy);
 
-  // Returns a weak pointer to this authenticator.
-  base::WeakPtr<ChromeDeviceAuthenticatorCommon> GetWeakPtr();
-
  protected:
   ~ChromeDeviceAuthenticatorCommon() override;
 
@@ -31,9 +28,6 @@ class ChromeDeviceAuthenticatorCommon
  private:
   // Used to obtain/update the last successful authentication timestamp.
   base::WeakPtr<DeviceAuthenticatorProxy> device_authenticator_proxy_;
-
-  // Factory for weak pointers to this class.
-  base::WeakPtrFactory<ChromeDeviceAuthenticatorCommon> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_

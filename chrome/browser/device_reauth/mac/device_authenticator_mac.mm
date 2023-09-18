@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
@@ -28,10 +29,11 @@ DeviceAuthenticatorMac::DeviceAuthenticatorMac(
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
 // static
-scoped_refptr<DeviceAuthenticatorMac> DeviceAuthenticatorMac::CreateForTesting(
+std::unique_ptr<DeviceAuthenticatorMac>
+DeviceAuthenticatorMac::CreateForTesting(
     std::unique_ptr<AuthenticatorMacInterface> authenticator,
     DeviceAuthenticatorProxy* proxy) {
-  return base::WrapRefCounted(
+  return base::WrapUnique<DeviceAuthenticatorMac>(
       new DeviceAuthenticatorMac(std::move(authenticator), proxy));
 }
 

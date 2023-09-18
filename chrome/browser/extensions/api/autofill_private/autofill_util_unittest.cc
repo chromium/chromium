@@ -30,12 +30,12 @@ class AutofillUtilTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     mock_device_authenticator_ =
-        base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
+        std::make_unique<device_reauth::MockDeviceAuthenticator>();
   }
 
  protected:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
 };
 

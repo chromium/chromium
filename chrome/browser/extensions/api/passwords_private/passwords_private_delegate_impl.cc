@@ -212,7 +212,7 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
+std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);

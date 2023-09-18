@@ -72,7 +72,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // If the device authenticator is not present or we can not authenticate with
   // biometric or screen lock, there will be no way to re-auth if the user
   // enrolls, so return that we should not offer mandatory re-auth opt-in.
-  if (scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
+  if (std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
           client_->GetDeviceAuthenticator();
       !device_authenticator ||
       !device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
@@ -190,7 +190,7 @@ void MandatoryReauthManager::OnUserClosedOptInPrompt() {
 
 MandatoryReauthAuthenticationMethod
 MandatoryReauthManager::GetAuthenticationMethod() {
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
       client_->GetDeviceAuthenticator();
   if (!device_authenticator) {
     return MandatoryReauthAuthenticationMethod::kUnknown;

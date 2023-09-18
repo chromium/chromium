@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -479,13 +478,30 @@ class TestAutofillClientTemplate : public T {
     return {};
   }
 
-  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
-      const override {
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-    return mock_device_authenticator_;
+    if (device_authenticator_) {
+      return std::move(device_authenticator_);
+    }
+    return std::make_unique<device_reauth::MockDeviceAuthenticator>();
 #else
     return nullptr;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  }
+
+  device_reauth::MockDeviceAuthenticator* GetDeviceAuthenticatorPtr() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+    return device_authenticator_.get();
+#else
+    return nullptr;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  }
+
+  void SetDeviceAuthenticator(
+      std::unique_ptr<device_reauth::MockDeviceAuthenticator>
+          device_authenticator) {
+    device_authenticator_ = std::move(device_authenticator);
   }
 
   void ShowMandatoryReauthOptInPrompt(
@@ -703,11 +719,10 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
-  scoped_refptr<device_reauth::MockDeviceAuthenticator>
-      mock_device_authenticator_ =
-          base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   std::unique_ptr<::testing::NiceMock<payments::MockMandatoryReauthManager>>
       mock_payments_mandatory_reauth_manager_;
+  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
+      device_authenticator_ = nullptr;
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

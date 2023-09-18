@@ -14,9 +14,10 @@
 
 class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
  public:
+  ~DeviceAuthenticatorChromeOS() override;
   // Creates an instance of DeviceAuthenticatorChromeOS for testing purposes
   // only.
-  static scoped_refptr<DeviceAuthenticatorChromeOS> CreateForTesting(
+  static std::unique_ptr<DeviceAuthenticatorChromeOS> CreateForTesting(
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
 
@@ -39,7 +40,6 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
   DeviceAuthenticatorChromeOS(
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
-  ~DeviceAuthenticatorChromeOS() override;
 
   // Records authentication status and executes |callback| with |success|
   // parameter.

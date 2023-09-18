@@ -616,7 +616,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     return false;
   }
 
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_->GetDeviceAuthenticator();
   return password_manager_util::CanUseBiometricAuth(authenticator.get(),
                                                     password_client_);

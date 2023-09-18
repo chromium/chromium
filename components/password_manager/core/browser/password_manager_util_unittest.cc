@@ -75,7 +75,7 @@ class MockPasswordManagerClient
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
-  MOCK_METHOD(scoped_refptr<device_reauth::DeviceAuthenticator>,
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
               (override));
@@ -347,8 +347,7 @@ using testing::Return;
 class PasswordManagerUtilTest : public testing::Test {
  public:
   PasswordManagerUtilTest() {
-    authenticator_ =
-        base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
+    authenticator_ = std::make_unique<device_reauth::MockDeviceAuthenticator>();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     pref_service_.registry()->RegisterBooleanPref(
@@ -369,9 +368,7 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(mock_client_, GetLocalStatePrefs())
         .WillByDefault(Return(&pref_service_));
     ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
-    ON_CALL(mock_client_, GetDeviceAuthenticator())
-        .WillByDefault(Return(authenticator_));
-    ON_CALL(*authenticator_, CanAuthenticateWithBiometrics)
+    ON_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
 #endif
   }
@@ -386,7 +383,7 @@ class PasswordManagerUtilTest : public testing::Test {
 
  protected:
   MockPasswordManagerClient mock_client_;
-  scoped_refptr<device_reauth::MockDeviceAuthenticator> authenticator_;
+  std::unique_ptr<device_reauth::MockDeviceAuthenticator> authenticator_;
   TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
 };
@@ -962,16 +959,20 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
 
 TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
   SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_, CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator_))));
   EXPECT_FALSE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }
 
 TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
   SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator_))));
   EXPECT_TRUE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }

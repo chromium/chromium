@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_DEVICE_REAUTH_DEVICE_AUTHENTICATOR_H_
 #define COMPONENTS_DEVICE_REAUTH_DEVICE_AUTHENTICATOR_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 
 namespace device_reauth {
 
@@ -75,12 +76,14 @@ enum class DeviceAuthRequester {
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.
-class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
+class DeviceAuthenticator {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
   DeviceAuthenticator();
   DeviceAuthenticator(const DeviceAuthenticator&) = delete;
+  virtual ~DeviceAuthenticator() = default;
+
   DeviceAuthenticator& operator=(const DeviceAuthenticator&) = delete;
 
   // Returns whether biometrics are available for a given device.
@@ -110,12 +113,6 @@ class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
   // the cancelation corresponds to the one for which the ongoing auth was
   // triggered.
   virtual void Cancel(DeviceAuthRequester requester) = 0;
-
- protected:
-  virtual ~DeviceAuthenticator() = default;
-
- private:
-  friend class base::RefCounted<DeviceAuthenticator>;
 };
 
 }  // namespace device_reauth

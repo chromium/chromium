@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -16,11 +17,11 @@ DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
 
 // static
-scoped_refptr<DeviceAuthenticatorChromeOS>
+std::unique_ptr<DeviceAuthenticatorChromeOS>
 DeviceAuthenticatorChromeOS::CreateForTesting(
     std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
     DeviceAuthenticatorProxy* proxy) {
-  return base::WrapRefCounted(
+  return base::WrapUnique<DeviceAuthenticatorChromeOS>(
       new DeviceAuthenticatorChromeOS(std::move(authenticator), proxy));
 }
 

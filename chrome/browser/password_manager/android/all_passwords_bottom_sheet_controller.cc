@@ -120,7 +120,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     // WebContents. And AllPasswordBottomSheetController is owned by
     // PasswordAccessoryController.
     DCHECK(client_);
-    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
         client_->GetDeviceAuthenticator();
     if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
                                                    client_)) {

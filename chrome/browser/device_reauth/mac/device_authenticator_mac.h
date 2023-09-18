@@ -19,9 +19,11 @@ class TouchIdContext;
 
 class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:
+  ~DeviceAuthenticatorMac() override;
+
   // Creates an instance of DeviceAuthenticatorWin for testing purposes
   // only.
-  static scoped_refptr<DeviceAuthenticatorMac> CreateForTesting(
+  static std::unique_ptr<DeviceAuthenticatorMac> CreateForTesting(
       std::unique_ptr<AuthenticatorMacInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
 
@@ -59,7 +61,6 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   DeviceAuthenticatorMac(
       std::unique_ptr<AuthenticatorMacInterface> authenticator,
       DeviceAuthenticatorProxy* proxy);
-  ~DeviceAuthenticatorMac() override;
 
   // Called when the authentication completes with the result |success|.
   void OnAuthenticationCompleted(bool success);

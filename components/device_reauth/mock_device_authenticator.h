@@ -15,6 +15,7 @@ namespace device_reauth {
 class MockDeviceAuthenticator : public DeviceAuthenticator {
  public:
   MockDeviceAuthenticator();
+  ~MockDeviceAuthenticator() override;
 
   MOCK_METHOD(bool, CanAuthenticateWithBiometrics, (), (override));
   MOCK_METHOD(bool, CanAuthenticateWithBiometricOrScreenLock, (), (override));
@@ -27,9 +28,6 @@ class MockDeviceAuthenticator : public DeviceAuthenticator {
               (const std::u16string&, AuthenticateCallback),
               (override));
   MOCK_METHOD(void, Cancel, (DeviceAuthRequester), (override));
-
- private:
-  ~MockDeviceAuthenticator() override;
 };
 
 }  // namespace device_reauth

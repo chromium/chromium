@@ -490,7 +490,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
 
       CancelBiometricReauthIfOngoing();
-      scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+      std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
           password_client_->GetDeviceAuthenticator();
       // Note: this is currently only implemented on Android, Mac and Windows.
       // For other platforms, the `authenticator` will be null.

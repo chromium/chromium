@@ -841,8 +841,8 @@ AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (client) {
-    return RespondNow(WithArguments(
-        autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator())));
+    return RespondNow(WithArguments(autofill::IsDeviceAuthAvailable(
+        client->GetDeviceAuthenticator().get())));
   }
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
   return RespondNow(Error(kErrorDeviceAuthUnavailable));

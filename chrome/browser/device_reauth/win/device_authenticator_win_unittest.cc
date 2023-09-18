@@ -82,8 +82,7 @@ class DeviceAuthenticatorWinTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   DeviceAuthenticatorProxy proxy_;
-  scoped_refptr<DeviceAuthenticatorWin> authenticator_;
-
+  std::unique_ptr<DeviceAuthenticatorWin> authenticator_;
   ScopedTestingLocalState testing_local_state_;
 
   // This is owned by the authenticator.

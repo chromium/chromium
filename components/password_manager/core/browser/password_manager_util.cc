@@ -414,8 +414,10 @@ bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
 
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client) {
-  return client && client->GetDeviceAuthenticator() &&
-         client->GetDeviceAuthenticator()->CanAuthenticateWithBiometrics() &&
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
+      client->GetDeviceAuthenticator();
+  return client && device_authenticator &&
+         device_authenticator->CanAuthenticateWithBiometrics() &&
          !client->GetPrefs()->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 }

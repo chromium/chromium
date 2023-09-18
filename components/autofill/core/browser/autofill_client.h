@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -873,8 +872,8 @@ class AutofillClient : public RiskDataLoader {
 
   // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
   // platform is not supported.
-  virtual scoped_refptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticator() const;
+  virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
+  GetDeviceAuthenticator();
 };
 
 }  // namespace autofill

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -153,7 +152,7 @@ class ChromePasswordManagerClient
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all
   // other platforms this will always be null.
-  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
   void GeneratePassword(
       autofill::password_generation::PasswordGenerationType type) override;

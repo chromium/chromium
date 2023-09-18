@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,10 +44,11 @@ DeviceAuthenticatorWin::DeviceAuthenticatorWin(
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;
 
 // static
-scoped_refptr<DeviceAuthenticatorWin> DeviceAuthenticatorWin::CreateForTesting(
+std::unique_ptr<DeviceAuthenticatorWin>
+DeviceAuthenticatorWin::CreateForTesting(
     std::unique_ptr<AuthenticatorWinInterface> authenticator,
     DeviceAuthenticatorProxy* proxy) {
-  return base::WrapRefCounted(
+  return base::WrapUnique<DeviceAuthenticatorWin>(
       new DeviceAuthenticatorWin(std::move(authenticator), proxy));
 }
 

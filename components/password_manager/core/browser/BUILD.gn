@@ -560,6 +560,7 @@ static_library("test_support") {
     ":password_hash_data",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/device_reauth:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/leak_detection",

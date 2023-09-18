@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -135,8 +136,10 @@ void DeviceAuthenticatorAndroid::Authenticate(
 
   if (use_last_valid_auth && !NeedsToAuthenticate()) {
     LogAuthResult(requester, DeviceAuthFinalResult::kAuthStillValid);
-    std::move(callback_).Run(/*success=*/true);
     requester_ = absl::nullopt;
+    // No code should be run after the callback as the callback could already be
+    // destroying "this".
+    std::move(callback_).Run(/*success=*/true);
     return;
   }
   // `this` owns the bridge so it's safe to use base::Unretained.
@@ -167,11 +170,11 @@ void DeviceAuthenticatorAndroid::Cancel(
 }
 
 // static
-scoped_refptr<DeviceAuthenticatorAndroid>
+std::unique_ptr<DeviceAuthenticatorAndroid>
 DeviceAuthenticatorAndroid::CreateForTesting(
     std::unique_ptr<DeviceAuthenticatorBridge> bridge,
     DeviceAuthenticatorProxy* proxy) {
-  return base::WrapRefCounted(
+  return base::WrapUnique<DeviceAuthenticatorAndroid>(
       new DeviceAuthenticatorAndroid(std::move(bridge), proxy));
 }
 
@@ -188,6 +191,8 @@ void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
   RecordAuthenticationTimeIfSuccessful(success);
 
   LogAuthResult(requester_.value(), MapUIResultToFinal(ui_result));
-  std::move(callback_).Run(success);
   requester_ = absl::nullopt;
+  // No code should be run after the callback as the callback could already be
+  // destroying "this".
+  std::move(callback_).Run(success);
 }

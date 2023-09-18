@@ -85,7 +85,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
 
   // Authenticator used to trigger a biometric re-auth before passing the
   // credential to the site.
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   ManagePasswordsState passwords_data_;
   url::Origin origin_;

@@ -50,7 +50,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::PassKey<TouchToFillControllerAutofillTest>,
     password_manager::PasswordManagerClient* password_client,
     content::WebContents* web_contents,
-    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
+    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator,
     base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
         webauthn_delegate,
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
@@ -67,7 +67,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     ChromePasswordManagerClient* password_client,
-    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
+    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator,
     base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
         webauthn_delegate,
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,

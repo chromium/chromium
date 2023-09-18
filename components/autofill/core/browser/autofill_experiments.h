@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
@@ -64,7 +63,7 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
 // Returns true if we can use device authentication to authenticate the user.
 // We currently only support biometric authentication for the same.
 bool IsDeviceAuthAvailable(
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator);
+    device_reauth::DeviceAuthenticator* device_authenticator);
 
 }  // namespace autofill
 

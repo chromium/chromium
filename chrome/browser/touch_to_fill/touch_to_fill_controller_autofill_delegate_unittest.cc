@@ -201,7 +201,7 @@ class TouchToFillControllerAutofillTest
         .WillByDefault(Return(submission_readiness));
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
-        web_contents(), authenticator_,
+        web_contents(), std::move(authenticator_),
         webauthn_credentials_delegate_.AsWeakPtr(), std::move(filler),
         should_show_hybrid_option, show_password_migration_warning().Get());
   }
@@ -233,8 +233,8 @@ class TouchToFillControllerAutofillTest
 
  private:
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
-  scoped_refptr<MockDeviceAuthenticator> authenticator_ =
-      base::MakeRefCounted<MockDeviceAuthenticator>();
+  std::unique_ptr<MockDeviceAuthenticator> authenticator_ =
+      std::make_unique<MockDeviceAuthenticator>();
   MockPasswordManagerClient client_;
   password_manager::MockWebAuthnCredentialsDelegate
       webauthn_credentials_delegate_;
@@ -451,6 +451,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -468,7 +469,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd")));
-  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -484,6 +485,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
 TEST_F(TouchToFillControllerAutofillTest,
        Show_And_Fill_Auth_Available_Success) {
   auto filler_to_pass = CreateMockFiller();
+  auto* authenticator_ptr = authenticator();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   ON_CALL(*last_mock_filler(), ShouldTriggerSubmission())
@@ -507,9 +509,9 @@ TEST_F(TouchToFillControllerAutofillTest,
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd")));
 
-  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator(),
+  EXPECT_CALL(*authenticator_ptr,
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(true));
@@ -520,6 +522,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 
 TEST_F(TouchToFillControllerAutofillTest,
        Show_And_Fill_Auth_Available_Failure) {
+  auto* authenticator_ptr = authenticator();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
@@ -537,9 +540,9 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _)).Times(0);
 
-  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator(),
+  EXPECT_CALL(*authenticator_ptr,
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(false));
@@ -600,6 +603,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
           .time_since_last_use = base::Minutes(3),
       }),
   };
+  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -617,7 +621,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"bob"),
                                       std::u16string(u"s3cr3t")));
-  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
 
@@ -741,6 +745,7 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
 TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -754,14 +759,14 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*render_widget_host=*/nullptr);
 
-  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator(),
+  EXPECT_CALL(*authenticator_ptr,
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator(), Cancel(DeviceAuthRequester::kTouchToFill));
+  EXPECT_CALL(*authenticator_ptr, Cancel(DeviceAuthRequester::kTouchToFill));
 }
 
 TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {

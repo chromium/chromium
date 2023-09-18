@@ -39,7 +39,7 @@ void PasswordManagerClient::ShowKeyboardReplacingSurface(
     bool is_webauthn_form) {}
 #endif
 
-scoped_refptr<device_reauth::DeviceAuthenticator>
+std::unique_ptr<device_reauth::DeviceAuthenticator>
 PasswordManagerClient::GetDeviceAuthenticator() {
   return nullptr;
 }
