@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::input_method {
 
@@ -25,6 +26,10 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
+    virtual void BindEditorClient(
+        mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) = 0;
+
     virtual void OnPromoCardDeclined() = 0;
     virtual void HandleTrigger() = 0;
   };
@@ -58,9 +63,12 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   void BindReceiver(mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
                         pending_receiver);
 
+  void BindEditorClient();
+
  private:
   raw_ptr<Delegate> delegate_;
   mojo::ReceiverSet<crosapi::mojom::EditorPanelManager> receivers_;
+  mojo::Remote<orca::mojom::EditorClient> editor_client_remote_;
 };
 
 }  // namespace ash::input_method

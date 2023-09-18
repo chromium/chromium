@@ -14,7 +14,9 @@
 namespace ash::input_method {
 
 EditorPanelManager::EditorPanelManager(Delegate* delegate)
-    : delegate_(delegate) {}
+    : delegate_(delegate) {
+  BindEditorClient();
+}
 
 EditorPanelManager::~EditorPanelManager() = default;
 
@@ -22,6 +24,11 @@ void EditorPanelManager::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
         pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
+}
+
+void EditorPanelManager::BindEditorClient() {
+  delegate_->BindEditorClient(
+      editor_client_remote_.BindNewPipeAndPassReceiver());
 }
 
 void EditorPanelManager::GetEditorPanelContext(
