@@ -17,9 +17,8 @@ namespace file_manager {
 FileManagerCopyOrMoveHookFileCheckDelegate::
     FileManagerCopyOrMoveHookFileCheckDelegate(
         scoped_refptr<storage::FileSystemContext> file_system_context,
-        ProgressCallback progress_callback,
         FileCheckCallback file_check_callback)
-    : FileManagerCopyOrMoveHookDelegate(progress_callback),
+    : CopyOrMoveHookDelegate(),
       file_system_context_(file_system_context),
       file_check_callback_(file_check_callback) {
   DCHECK(!file_check_callback.is_null());
@@ -33,10 +32,6 @@ void FileManagerCopyOrMoveHookFileCheckDelegate::OnBeginProcessFile(
     const storage::FileSystemURL& destination_url,
     storage::FileSystemOperation::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Issue `progress_callback_` to notify of the start of the copy or move
-  // operation.
-  progress_callback_.Run(ProgressType::kBegin, source_url, destination_url,
-                         /*size_t=*/0);
 
   // On BeginProcessFile is also called for the root directory, so we check
   // whether the passed source_url is a directory or not.

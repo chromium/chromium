@@ -102,6 +102,11 @@ class CopyOrMoveIOTaskImpl {
       const storage::FileSystemURL& destination_url);
 
  protected:
+  // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
+  // operation.
+  virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
+      size_t idx);
+
   // Starts the actual file transfer. Should be called after the checks of
   // `VerifyTransfer` are completed. Protected to be called from child classes.
   void StartTransfer();
@@ -134,10 +139,6 @@ class CopyOrMoveIOTaskImpl {
   virtual void VerifyTransfer();
   // Returns the error behavior to be used for the copy or move operation.
   virtual storage::FileSystemOperation::ErrorBehavior GetErrorBehavior();
-  // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
-  // operation.
-  virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
-      size_t idx);
 
   void GetFileSize(size_t idx);
   void GotFileSize(size_t idx,

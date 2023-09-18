@@ -29,6 +29,7 @@
 #include "components/enterprise/data_controls/component.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -278,16 +279,12 @@ CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
 
 std::unique_ptr<storage::CopyOrMoveHookDelegate>
 CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
-  // For all callbacks, we are using CreateRelayCallback to ensure that the
-  // callbacks are executed on the current (i.e., UI) thread.
-  auto progress_callback = google_apis::CreateRelayCallback(
-      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::OnCopyOrMoveProgress,
-                          weak_ptr_factory_.GetWeakPtr(), idx));
+  auto defaultHook = CopyOrMoveIOTaskImpl::GetHookDelegate(idx);
+
   if (settings_.empty() || report_only_scans_) {
     // For DLP only restrictions or report-only scans, no blocking should be
     // performed, so we use the normal delegate.
-    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
-        progress_callback);
+    return defaultHook;
   }
 
   DCHECK_LT(idx, file_transfer_analysis_delegates_.size());
@@ -296,15 +293,18 @@ CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
     // Scanning can be disabled if some source_urls lie on a file system for
     // which scanning is enabled, while other source_urls lie on a file system
     // for which scanning is disabled.
-    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
-        progress_callback);
+    return defaultHook;
   }
 
+  // For all callbacks, we are using CreateRelayCallback to ensure that the
+  // callbacks are executed on the current (i.e., UI) thread.
   auto file_check_callback = google_apis::CreateRelayCallback(
       base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed,
                           weak_ptr_factory_.GetWeakPtr(), idx));
-  return std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
-      file_system_context_, progress_callback, file_check_callback);
+  auto checkHook = std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
+      file_system_context_, file_check_callback);
+  return storage::CopyOrMoveHookDelegateComposite::CreateOrAdd(
+      std::move(defaultHook), std::move(checkHook));
 }
 
 void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
