@@ -11,8 +11,8 @@ desc: |-
 
   This policy can be set to an empty string so that all account logins are required to create a new separate profile.
 
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:119-
 
 features:
   dynamic_refresh: true

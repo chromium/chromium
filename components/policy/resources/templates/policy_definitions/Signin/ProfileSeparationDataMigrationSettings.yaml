@@ -19,8 +19,8 @@ desc: |-
 
   This policy requires the <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME">ProfileSeparationSettings</ph> policy to be set to take effect.
 
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:119-
 
 features:
   cloud_only: true

@@ -16,8 +16,9 @@ desc: |-
   If this policy is set to Disabled or unset, after a managed account sign in, the user may see a bubble asking them to create a new profile. The bubble can be dismissed and the user may continue their browsing in an unmanaged environment. The bubble is controlled by the <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME">SigninInterceptionEnabled</ph> policy.
 
   This policy has no effect when set on a machine level.
-future_on:
-- chrome.*
+
+supported_on:
+- chrome.*:119-
 
 features:
   cloud_only: true
