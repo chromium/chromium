@@ -543,6 +543,13 @@ void AmbientAshTestBase::SetExternalPowerConnected() {
   ambient_controller()->OnPowerStatusChanged();
 }
 
+void AmbientAshTestBase::SetExternalUsbPowerConnected() {
+  proto_.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_USB);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
 void AmbientAshTestBase::SetExternalPowerDisconnected() {
   proto_.set_external_power(
       power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);

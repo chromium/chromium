@@ -703,68 +703,47 @@ TEST_F(AmbientControllerTest,
 
 TEST_F(AmbientControllerTest,
        CheckAcquireAndReleaseWakeLockWhenBatteryStateChanged) {
+  // When the battery is not charging
+  // No power connected, should not acquire wake lock
   SetPowerStateDischarging();
-  SetExternalPowerConnected();
-  SetBatteryPercent(50.f);
-
-  // Lock screen to start ambient mode.
+  SetExternalPowerDisconnected();
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
 
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
-  // Should not acquire wake lock when device is not charging and with low
-  // battery.
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
-  // Connect the device with a charger.
+  // External official power connected, should acquire wake lock.
+  SetExternalPowerConnected();
+  base::RunLoop().RunUntilIdle();
+  HideAmbientScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // External USB power connected, should not acquire wake lock because the
+  // power is not strong enough.
+  SetExternalUsbPowerConnected();
+  base::RunLoop().RunUntilIdle();
+  HideAmbientScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // When the battery is charging, should acquire wake lock.
   SetPowerStateCharging();
   base::RunLoop().RunUntilIdle();
+  HideAmbientScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
 
-  // Should acquire the wake lock when battery is charging.
   EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  // Simulates a full battery.
-  SetBatteryPercent(100.f);
-
-  // Should keep the wake lock as the charger is still connected.
-  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  // Disconnects the charger again.
-  SetPowerStateDischarging();
-  base::RunLoop().RunUntilIdle();
-
-  // Should keep the wake lock when battery is high.
-  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  SetBatteryPercent(50.f);
-  base::RunLoop().RunUntilIdle();
-
-  // Should release the wake lock when battery is not charging and low.
-  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  SetBatteryPercent(100.f);
-  base::RunLoop().RunUntilIdle();
-
-  // Should take the wake lock when battery is not charging and high.
-  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  SetExternalPowerDisconnected();
-  base::RunLoop().RunUntilIdle();
-
-  // Should release the wake lock when power is not connected.
-  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  // An unbalanced release should do nothing.
-  UnlockScreen();
-  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
@@ -977,6 +956,7 @@ TEST_F(AmbientControllerTest,
   // mode since we do not prevent the device go to sleep which will natually
   // lock the device.
   SetPowerStateDischarging();
+  SetExternalPowerDisconnected();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Should not lock the device but still enter ambient mode when the screen is
@@ -1138,6 +1118,7 @@ TEST_F(AmbientControllerTest,
        ShouldHideAmbientScreenWhenDisplayIsOffAndNotStartWhenLockScreen) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateDischarging();
+  SetExternalPowerDisconnected();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Should not lock the device and enter ambient mode when the screen is
@@ -2314,6 +2295,7 @@ TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBatteryMode) {
 
   // Set power to battery mode.
   SetPowerStateDischarging();
+  SetExternalPowerDisconnected();
 
   SetAmbientModeEnabled(true);
   SetScreenSaverDuration(0);
@@ -2333,6 +2315,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockWhileOnAcMode) {
 
   // Set power to AC mode, charging.
   SetPowerStateCharging();
+  SetExternalPowerConnected();
 
   SetAmbientModeEnabled(true);
   SetScreenSaverDuration(0);
@@ -2366,6 +2349,7 @@ TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenUnplugged) {
 
   // Set power to battery mode. Verify that wake lock is released.
   SetPowerStateDischarging();
+  SetExternalPowerDisconnected();
   FastForwardTiny();
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));

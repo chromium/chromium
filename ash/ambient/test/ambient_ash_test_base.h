@@ -179,8 +179,16 @@ class AmbientAshTestBase : public AshTestBase {
   void SetPowerStateCharging();
   void SetPowerStateDischarging();
   void SetPowerStateFull();
+
+  // An official, non-USB external power is connected.
   void SetExternalPowerConnected();
+
+  // A USB external power is connected.
+  void SetExternalUsbPowerConnected();
+
+  // No external power of any form is connected.
   void SetExternalPowerDisconnected();
+
   void SetBatteryPercent(double percent);
 
   // Returns the number of active wake locks of type |type|.

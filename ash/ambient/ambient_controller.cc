@@ -119,12 +119,12 @@ bool IsChargerConnected() {
   DCHECK(PowerStatus::IsInitialized());
   auto* power_status = PowerStatus::Get();
   if (power_status->IsBatteryPresent()) {
-    // If battery is full or battery is charging, that implies power is
-    // connected. Also return true if a power source is connected and
-    // battery is not discharging.
+    // If battery is charging, that implies sufficient power is connected. If
+    // battery is not charging, return true only if an official, non-USB charger
+    // is connected. This will happen if the battery is fully charged or
+    // charging is delayed by Adaptive Charging.
     return power_status->IsBatteryCharging() ||
-           (power_status->IsLinePowerConnected() &&
-            power_status->GetBatteryPercent() > 95.f);
+           power_status->IsMainsChargerConnected();
   } else {
     // Chromeboxes have no battery.
     return power_status->IsLinePowerConnected();
