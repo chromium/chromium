@@ -286,6 +286,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "crbug.com/1404658")
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
         // This test depends on preloading the content - which is loaded and not made visible.
