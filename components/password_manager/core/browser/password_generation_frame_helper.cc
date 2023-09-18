@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -65,7 +64,7 @@ void PasswordGenerationFrameHelper::PrefetchSpec(const GURL& origin) {
 }
 
 void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
-    base::span<const FormData* const> forms,
+    const FormData& form,
     const base::flat_map<autofill::FieldGlobalId,
                          AutofillType::ServerPrediction>& predictions) {
   // IsGenerationEnabled is called multiple times and it is sufficient to
@@ -81,19 +80,14 @@ void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
     return;
 
   // Store password requirements from the autofill server.
-  for (const FormData* form : forms) {
-    absl::optional<FormSignature> form_signature;
-    for (const FormFieldData& field : form->fields) {
-      if (auto it = predictions.find(field.global_id());
-          it != predictions.end() && it->second.password_requirements) {
-        if (!form_signature) {
-          form_signature = autofill::CalculateFormSignature(*form);
-        }
-        password_requirements_service->AddSpec(
-            form->url.DeprecatedGetOriginAsURL(), *form_signature,
-            CalculateFieldSignatureForField(field),
-            *it->second.password_requirements);
-      }
+  FormSignature form_signature = autofill::CalculateFormSignature(form);
+  for (const FormFieldData& field : form.fields) {
+    if (auto it = predictions.find(field.global_id());
+        it != predictions.end() && it->second.password_requirements) {
+      password_requirements_service->AddSpec(
+          form.url.DeprecatedGetOriginAsURL(), form_signature,
+          CalculateFieldSignatureForField(field),
+          *it->second.password_requirements);
     }
   }
 }

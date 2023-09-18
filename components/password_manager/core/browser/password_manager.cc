@@ -1224,7 +1224,7 @@ void PasswordManager::MaybeSavePasswordHash(
 
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
-    base::span<const autofill::FormData* const> forms,
+    const autofill::FormData& form,
     const base::flat_map<autofill::FieldGlobalId,
                          autofill::AutofillType::ServerPrediction>&
         predictions) {
@@ -1236,68 +1236,59 @@ void PasswordManager::ProcessAutofillPredictions(
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
         client_->GetLogManager());
+    logger->LogFormDataWithServerPredictions(Logger::STRING_SERVER_PREDICTIONS,
+                                             form, predictions);
   }
 
-  for (const FormData* form : forms) {
-    if (logger) {
-      logger->LogFormDataWithServerPredictions(
-          Logger::STRING_SERVER_PREDICTIONS, *form, predictions);
-    }
+  // `driver` might be null in tests.
+  int driver_id = driver ? driver->GetId() : 0;
+  // Update the `predictions_` stored as a member.
+  const FormPredictions& form_predictions =
+      predictions_
+          .insert_or_assign(
+              CalculateFormSignature(form),
+              ConvertToFormPredictions(driver_id, form, predictions))
+          .first->second;
 
-    // `driver` might be null in tests.
-    int driver_id = driver ? driver->GetId() : 0;
-    const FormPredictions& form_predictions =
-        predictions_
-            .insert_or_assign(
-                CalculateFormSignature(*form),
-                ConvertToFormPredictions(driver_id, *form, predictions))
-            .first->second;
-    PasswordFormManager* manager =
-        GetMatchedManager(driver, form->global_id().renderer_id);
-
-    if (!manager) {
-      // If the renderer recognizes `form` as a credential form, then we will
-      // be informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
-      if (!IsRelevantForPasswordManagerButNotRecognizedByRenderer(
-              *form, form_predictions)) {
-        continue;
-      }
-      // Otherwise, create it and use predictions (which may trigger filling).
-      manager = CreateFormManager(driver, *form);
-      manager->ProcessServerPredictions(predictions_);
-      continue;
-    }
-
-    // If the observed form has changed and is not recognized by the renderer,
-    // update the manager and trigger filling.
-    if (IsRelevantForPasswordManagerButNotRecognizedByRenderer(
-            *form, form_predictions) &&
-        HasObservedFormChanged(*form, *manager)) {
-      manager->UpdateFormManagerWithFormChanges(*form, predictions_);
-      manager->Fill();
-      continue;
-    }
-
-    // Otherwise, just process predictions (which may also trigger filling).
-    manager->ProcessServerPredictions(predictions_);
-  }
-
-
-  PasswordGenerationFrameHelper* password_generation_manager =
-      driver ? driver->GetPasswordGenerationHelper() : nullptr;
-  if (password_generation_manager) {
-    password_generation_manager->ProcessPasswordRequirements(forms,
-                                                             predictions);
+  if (PasswordGenerationFrameHelper* password_generation_manager =
+          driver ? driver->GetPasswordGenerationHelper() : nullptr) {
+    password_generation_manager->ProcessPasswordRequirements(form, predictions);
   }
 
   // Process predictions in case they arrived after the user interacted with
-  // potential username fields.
-  FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
-  // The manager might not exist in incognito.
-  if (!field_info_manager) {
+  // potential username fields. The manager might not exist in incognito.
+  if (FieldInfoManager* field_info_manager = client_->GetFieldInfoManager()) {
+    field_info_manager->ProcessServerPredictions(predictions_);
+  }
+
+  // Create or update the `PasswordFormManager` corresponding to `form`.
+  PasswordFormManager* manager =
+      GetMatchedManager(driver, form.global_id().renderer_id);
+  if (!manager) {
+    // If the renderer recognizes `form` as a credential form, then we will
+    // be informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
+    if (!IsRelevantForPasswordManagerButNotRecognizedByRenderer(
+            form, form_predictions)) {
+      return;
+    }
+    // Otherwise, create it and use predictions (which may trigger filling).
+    manager = CreateFormManager(driver, form);
+    manager->ProcessServerPredictions(predictions_);
     return;
   }
-  field_info_manager->ProcessServerPredictions(predictions_);
+
+  // If the observed form has changed and is not recognized by the renderer,
+  // update the manager and trigger filling.
+  if (IsRelevantForPasswordManagerButNotRecognizedByRenderer(
+          form, form_predictions) &&
+      HasObservedFormChanged(form, *manager)) {
+    manager->UpdateFormManagerWithFormChanges(form, predictions_);
+    manager->Fill();
+    return;
+  }
+
+  // Otherwise, just process predictions (which may also trigger filling).
+  manager->ProcessServerPredictions(predictions_);
 }
 
 PasswordFormManager* PasswordManager::GetSubmittedManager() const {

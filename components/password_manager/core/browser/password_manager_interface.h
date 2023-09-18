@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -68,7 +67,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // Processes the server predictions received from Autofill.
   virtual void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
-      base::span<const autofill::FormData* const> forms,
+      const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
           field_predictions) = 0;

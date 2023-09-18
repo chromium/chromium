@@ -1236,13 +1236,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           WebContents())
           ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  const std::vector<const autofill::FormData*> forms = {&form_data};
   const base::flat_map<autofill::FieldGlobalId,
                        autofill::AutofillType::ServerPrediction>
       field_predictions = {
           {form_data.fields[0].global_id(), std::move(username_prediction)},
           {form_data.fields[1].global_id(), std::move(password_prediction)}};
-  driver->GetPasswordManager()->ProcessAutofillPredictions(driver, forms,
+  driver->GetPasswordManager()->ProcessAutofillPredictions(driver, form_data,
                                                            field_predictions);
 
   // Check original values before interaction
@@ -1300,14 +1299,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           WebContents())
           ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  const std::vector<const autofill::FormData*> forms = {&form_data};
-  const base::flat_map<autofill::FieldGlobalId,
-                       autofill::AutofillType::ServerPrediction>
-      field_predictions = {
-          {form_data.fields[0].global_id(), std::move(username_prediction)},
-          {form_data.fields[1].global_id(), std::move(password_prediction)}};
-  driver->GetPasswordManager()->ProcessAutofillPredictions(driver, forms,
-                                                           field_predictions);
+  driver->GetPasswordManager()->ProcessAutofillPredictions(
+      driver, form_data,
+      {{form_data.fields[0].global_id(), std::move(username_prediction)},
+       {form_data.fields[1].global_id(), std::move(password_prediction)}});
 
   // Check original values before interaction
   CheckElementValue("username_field", "example@example.com");

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/signatures.h"
@@ -47,9 +46,9 @@ class PasswordGenerationFrameHelper {
   void PrefetchSpec(const GURL& origin);
 
   // Stores password requirements received from the autofill server for the
-  // `forms` and fetches domain-wide requirements.
+  // `form` and fetches domain-wide requirements.
   void ProcessPasswordRequirements(
-      base::span<const autofill::FormData* const> forms,
+      const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
           predictions);

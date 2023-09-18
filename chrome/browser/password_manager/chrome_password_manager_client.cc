@@ -1440,9 +1440,8 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     if (!driver) {
       continue;
     }
-    std::array<const autofill::FormData*, 1> form_pointers = {&form};
     password_manager_.ProcessAutofillPredictions(
-        driver, form_pointers, forms_and_predictions->predictions);
+        driver, form, forms_and_predictions->predictions);
   }
 }
 

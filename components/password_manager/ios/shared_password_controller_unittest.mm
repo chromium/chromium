@@ -137,7 +137,7 @@ class MockPasswordManager : public PasswordManagerInterface {
       void,
       ProcessAutofillPredictions,
       (PasswordManagerDriver * driver,
-       base::span<const autofill::FormData* const>,
+       const autofill::FormData&,
        (const base::flat_map<autofill::FieldGlobalId,
                              autofill::AutofillType::ServerPrediction>)&),
       (override));

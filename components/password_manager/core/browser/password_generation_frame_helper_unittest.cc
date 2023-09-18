@@ -325,8 +325,8 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     predictions.insert({username.global_id(), std::move(username_prediction)});
     predictions.insert({password.global_id(), std::move(password_prediction)});
 
-    std::vector<const FormData*> forms = {&account_creation_form};
-    GetGenerationHelper()->ProcessPasswordRequirements(forms, predictions);
+    GetGenerationHelper()->ProcessPasswordRequirements(account_creation_form,
+                                                       predictions);
 
     // Validate the result.
     FormSignature form_signature =

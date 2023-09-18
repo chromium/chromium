@@ -103,7 +103,7 @@ class PasswordManager : public PasswordManagerInterface {
       const std::u16string& generated_password) override;
   void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
-      base::span<const autofill::FormData* const> forms,
+      const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
           field_predictions) override;
