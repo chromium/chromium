@@ -6,15 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/public/cpp/notification_utils.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/contains.h"
-#include "base/strings/escape.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
@@ -25,9 +18,6 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification_types.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
@@ -85,50 +75,7 @@ std::vector<ApnType> GetMigratedApnTypes(
   return {ApnType::kDefault};
 }
 
-// Clicking on the notification will bring the user to the APN subpage.
-void ShowApnConfigurationDisabledNotification(
-    const std::string& access_point_name,
-    const std::string& guid) {
-  const std::string notification_id =
-      ApnMigrator::kShowApnConfigurationDisabledNotificationIdPrefix + guid;
-  auto on_click = base::BindRepeating(
-      [](const std::string& guid, const std::string& notification_id) {
-        message_center::MessageCenter::Get()->RemoveNotification(
-            notification_id, /*by_user=*/false);
-        const std::string apn_subpage =
-            ::chromeos::settings::mojom::kApnSubpagePath +
-            std::string("?guid=") +
-            base::EscapeUrlEncodedData(guid, /*use_plus=*/true);
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(), apn_subpage);
-      },
-      guid, notification_id);
-
-  // TODO(b/162365553): Get final strings after string meeting.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotificationPtr(
-          message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-          notification_id,
-          u"Title for " + base::ASCIIToUTF16(access_point_name),
-          u"Message for " + base::ASCIIToUTF16(access_point_name),
-          /*display_source=*/std::u16string(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
-              ash::NotificationCatalogName::kMobileData),
-          message_center::RichNotificationData(),
-          new message_center::HandleNotificationClickDelegate(on_click),
-          kNotificationCellularAlertIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-
-  message_center::MessageCenter::Get()->AddNotification(
-      std::move(notification));
-}
-
 }  // namespace
-
-// static
-const char ApnMigrator::kShowApnConfigurationDisabledNotificationIdPrefix[] =
-    "show_apn_configuration_disabled_notification_";
 
 ApnMigrator::ApnMigrator(
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
@@ -431,12 +378,8 @@ void ApnMigrator::OnGetManagedProperties(
         CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
             CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
                 kDoesNotMatchLastGoodApn);
-
-        // Surfaces a notification that indicates that the Network's last good
-        // APN does not match the saved custom APN, and that the APN will be
-        // migrated in a disabled state to the new UI.
-        ShowApnConfigurationDisabledNotification(
-            pre_revamp_custom_apn->access_point_name, guid);
+        // TODO(b/162365553): Surface a notification to the user indicating that
+        // their APN configuration was changed.
       }
       pre_revamp_custom_apn->apn_types =
           GetMigratedApnTypes(pre_revamp_custom_apn);

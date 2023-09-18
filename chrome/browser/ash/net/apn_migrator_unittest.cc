@@ -5,16 +5,12 @@
 #include "chrome/browser/ash/net/apn_migrator.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
@@ -37,11 +33,9 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -86,34 +80,29 @@ constexpr char kUiData[] =
 constexpr char kAttachAccessPointName[] = "apn_attach_access_point_name";
 constexpr char kDefaultAccessPointName[] = "apn_default_access_point_name";
 
-constexpr char kProfileName[] = "user@gmail.com";
-constexpr char kGaiaId[] = "1234567890";
-
 }  // namespace
 
-class ApnMigratorTest : public AshTestBase {
+class ApnMigratorTest : public testing::Test {
  protected:
-  ApnMigratorTest()
-      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>())) {}
+  ApnMigratorTest() = default;
 
   ApnMigratorTest(const ApnMigratorTest&) = delete;
   ApnMigratorTest& operator=(const ApnMigratorTest&) = delete;
   ~ApnMigratorTest() override = default;
 
-  // AshTestBase:
+  // testing::Test
   void SetUp() override {
-    AshTestBase::SetUp();
+    // TODO(b/278643115) Remove LoginState dependency.
+    LoginState::Initialize();
 
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), kGaiaId);
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    const AccountId account_id = AccountId::FromUserEmail("test@test");
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
+    fake_user_manager->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
@@ -146,10 +135,7 @@ class ApnMigratorTest : public AshTestBase {
     managed_network_configuration_handler_.reset();
     managed_cellular_pref_handler_.reset();
     scoped_user_manager_.reset();
-    profile_manager_->DeleteTestingProfile(kProfileName);
-    testing_profile_ = nullptr;
-    profile_manager_.reset();
-    ash::AshTestBase::TearDown();
+    LoginState::Shutdown();
   }
 
   void TriggerNetworkListChanged() {
@@ -202,15 +188,11 @@ class ApnMigratorTest : public AshTestBase {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/true};
   NetworkHandlerTestHelper handler_test_helper_;
   FakeStubCellularNetworksProvider stub_cellular_networks_provider_;
-
-  raw_ptr<FakeChromeUserManager> user_manager_ = nullptr;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      testing_profile_ = nullptr;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
@@ -299,7 +281,6 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   // Invoke the function again. |cellular_service_path_1|'s property shouldn't
   // be attempted to be cleared again.
   TriggerNetworkListChanged();
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
@@ -493,7 +474,6 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   // The revamp APN lists will not be sent to any of the networks in shill as
   // they have all been successfully sent now.
   TriggerNetworkListChanged();
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
@@ -565,7 +545,6 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
 
   // Function under test.
   TriggerNetworkListChanged();
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
@@ -660,7 +639,6 @@ TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
           })));
   // Function under test.
   TriggerNetworkListChanged();
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
@@ -741,7 +719,6 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
            /*error=*/absl::nullopt);
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
@@ -858,7 +835,6 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
            /*error=*/absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest,
@@ -975,8 +951,6 @@ TEST_F(ApnMigratorTest,
            /*error=*/absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::ManagedApnMigrationType::
@@ -1048,8 +1022,6 @@ TEST_F(ApnMigratorTest,
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::ManagedApnMigrationType::
@@ -1136,8 +1108,6 @@ TEST_F(ApnMigratorTest,
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1213,8 +1183,6 @@ TEST_F(
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1290,19 +1258,11 @@ TEST_F(
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(1u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
           kDoesNotMatchLastGoodApn,
       1);
-  const std::string notification_id =
-      ApnMigrator::kShowApnConfigurationDisabledNotificationIdPrefix +
-      std::string(kTestCellularGuid1);
-  message_center::MessageCenter::Get()->ClickOnNotification(notification_id);
-
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
 
 TEST_F(ApnMigratorTest,
@@ -1376,8 +1336,6 @@ TEST_F(ApnMigratorTest,
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1454,8 +1412,6 @@ TEST_F(
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1535,8 +1491,6 @@ TEST_F(
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1629,8 +1583,6 @@ TEST_F(
   EXPECT_EQ(kDefaultAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1710,8 +1662,6 @@ TEST_F(
   EXPECT_EQ(kAttachAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
@@ -1786,8 +1736,6 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
   EXPECT_EQ(1u, custom_apns[0]->apn_types.size());
-  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
-
   histogram_tester().ExpectBucketCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
