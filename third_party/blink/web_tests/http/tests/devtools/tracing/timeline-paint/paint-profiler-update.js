@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(`Tests that paint profiler is properly update when an event is selected in Flame Chart\n`);
   await TestRunner.loadLegacyModule('timeline');
@@ -59,12 +61,12 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
   TestRunner.addSniffer(
       panel.flameChart.detailsView, 'appendDetailsTabsForTraceEventAndShowDetails', onRecordDetailsReady, false);
-  panel.select(Timeline.TimelineSelection.fromTraceEvent(paintEvents[0]));
+  panel.select(TimelineModule.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[0]));
 
   function onRecordDetailsReady() {
     var updateCount = 0;
 
-    panel.flameChart.detailsView.tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.PaintProfiler, true);
+    panel.flameChart.detailsView.tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.PaintProfiler, true);
     var paintProfilerView = panel.flameChart.detailsView.lazyPaintProfilerView.paintProfilerView;
     TestRunner.addSniffer(paintProfilerView, 'update', onPaintProfilerUpdate, true);
 
@@ -78,7 +80,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
         TestRunner.completeTest();
       else
         panel.select(
-            Timeline.TimelineSelection.fromTraceEvent(paintEvents[1]), Timeline.TimelineDetailsView.Tab.PaintProfiler);
+            TimelineModule.TimelineSelection.TimelineSelection.fromTraceEvent(paintEvents[1]), TimelineModule.TimelineDetailsView.Tab.PaintProfiler);
     }
   }
 })();

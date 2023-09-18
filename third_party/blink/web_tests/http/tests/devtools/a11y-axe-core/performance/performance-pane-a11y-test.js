@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
+
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 (async function() {
   await TestRunner.showPanel('timeline');
 
@@ -52,7 +54,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
     detailsView.setModel(model, null, PerformanceTestRunner.mainTrackEvents());
 
     const tabbedPane = detailsView.tabbedPane;
-    tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.Details);
+    tabbedPane.selectTab(TimelineModule.TimelineDetailsView.Tab.Details);
     const detailsTab = tabbedPane.visibleView;
 
     await AxeCoreTestRunner.runValidation(detailsTab.element);
@@ -66,7 +68,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
     // update child views with the same test data
     detailsTab.setModel(model, PerformanceTestRunner.mainTrack());
-    detailsTab.updateContents(Timeline.TimelineSelection.fromRange(
+    detailsTab.updateContents(TimelineModule.TimelineSelection.TimelineSelection.fromRange(
         model.timelineModel().minimumRecordTime(),
         model.timelineModel().maximumRecordTime()));
 
@@ -74,11 +76,11 @@ import {PerformanceTestRunner} from 'performance_test_runner';
   }
 
   function testBottomUpView() {
-    return testViewWithName(Timeline.TimelineDetailsView.Tab.BottomUp);
+    return testViewWithName(TimelineModule.TimelineDetailsView.Tab.BottomUp);
   }
 
   function testCallTreeView() {
-    return testViewWithName(Timeline.TimelineDetailsView.Tab.CallTree);
+    return testViewWithName(TimelineModule.TimelineDetailsView.Tab.CallTree);
   }
 
   TestRunner.runAsyncTestSuite([

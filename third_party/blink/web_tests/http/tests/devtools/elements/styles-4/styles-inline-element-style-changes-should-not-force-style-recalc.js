@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(
@@ -25,6 +26,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       }
   `);
 
-  UIModule.Context.Context.instance().setFlavor(Timeline.TimelinePanel, UI.panels.timeline);
+  UIModule.Context.Context.instance().setFlavor(TimelineModule.TimelinePanel.TimelinePanel, UI.panels.timeline);
   PerformanceTestRunner.performActionsAndPrint('performActions()', 'RecalculateStyles');
 })();

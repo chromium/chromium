@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(`Tests that aggregated summary in Timeline is properly computed.\n`);
   await TestRunner.loadLegacyModule('timeline');
@@ -114,7 +116,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
     for (var endTime = startTime + 1000; endTime <= 109000; endTime += 1000) {
       dumpStats(
           startTime, endTime,
-          Timeline.TimelineUIUtils.statsForTimeRange(PerformanceTestRunner.mainTrackEvents(), startTime / 1000, endTime / 1000));
+          TimelineModule.TimelineUIUtils.TimelineUIUtils.statsForTimeRange(PerformanceTestRunner.mainTrackEvents(), startTime / 1000, endTime / 1000));
     }
   }
   function dumpStats(t1, t2, obj) {

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(`Test the frames are correctly built based on trace events\n`);
   await TestRunner.loadLegacyModule('timeline');
@@ -1899,7 +1901,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
     TestRunner.addResult('Test: ' + testName);
 
     for (var frame of performanceModel.frameModel().getFrames()) {
-      TestRunner.addResult(Timeline.TimelineUIUtils.frameDuration(frame).textContent);
+      TestRunner.addResult(TimelineModule.TimelineUIUtils.TimelineUIUtils.frameDuration(frame).textContent);
       PerformanceTestRunner.dumpFrame(frame);
     }
   }
