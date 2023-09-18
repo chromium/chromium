@@ -44,7 +44,6 @@ bool IsDriveEnabledForProfile(const Profile* profile);
 [[nodiscard]] bool IsDriveFsBulkPinningAvailable();
 [[nodiscard]] bool IsOobeDrivePinningAvailable(const Profile* profile);
 [[nodiscard]] bool IsOobeDrivePinningAvailable();
-[[nodiscard]] bool IsOobeDrivePinningScreenEnabled();
 
 // Connection status to Drive.
 enum class ConnectionStatus {

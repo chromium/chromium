@@ -879,7 +879,7 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (drive::util::IsOobeDrivePinningScreenEnabled()) {
+  if (drive::util::IsOobeDrivePinningAvailable()) {
     append(std::make_unique<DrivePinningScreen>(
         oobe_ui->GetView<DrivePinningScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnDrivePinningScreenExit,
