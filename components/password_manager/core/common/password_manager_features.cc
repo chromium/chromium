@@ -144,9 +144,11 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables showing the warning about UPM migrating local passwords.
+// The feature is limited to Canary/Dev/Beta by a check in
+// local_passwords_migration_warning_util::ShouldShowWarning.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
              "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
@@ -205,7 +207,7 @@ BASE_FEATURE(kPasswordManagerPasskeys,
 extern const base::FeatureParam<int>
     kLocalPasswordMigrationWarningPrefsVersion = {
         &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
-        "pwd_migration_warning_prefs_version", 0};
+        "pwd_migration_warning_prefs_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.

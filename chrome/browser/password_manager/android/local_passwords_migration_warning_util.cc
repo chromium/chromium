@@ -14,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/android/channel_getter.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -77,6 +78,12 @@ void ShowWarningWithActivity(
 }
 
 bool ShouldShowWarning(Profile* profile) {
+  // The warning should not show up on stable builds.
+  version_info::Channel channel = version_info::android::GetChannel();
+  if (channel == version_info::Channel::STABLE) {
+    return false;
+  }
+
   if (profile->IsOffTheRecord()) {
     return false;
   }

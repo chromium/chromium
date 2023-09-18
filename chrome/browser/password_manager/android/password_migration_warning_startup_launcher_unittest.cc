@@ -106,6 +106,9 @@ TEST_F(PasswordMigrationWarningStartupLauncherTest, DoesntFetchIfAlreadyShown) {
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
       true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion, 1);
+
   scoped_refptr<MockPasswordStoreInterface> mock_store(
       new MockPasswordStoreInterface());
 

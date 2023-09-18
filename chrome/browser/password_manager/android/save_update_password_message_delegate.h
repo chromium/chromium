@@ -26,6 +26,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace password_manager {
+class PasswordManagerClient;
+}  // namespace password_manager
+
 // This class provides simplified interface for ChromePasswordManagerClient to
 // display a prompt to save and update password through Messages API. The class
 // is responsible for populating message properties, managing message's
@@ -79,7 +83,8 @@ class SaveUpdatePasswordMessageDelegate {
   void DisplaySaveUpdatePasswordPrompt(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      bool update_password);
+      bool update_password,
+      password_manager::PasswordManagerClient* password_manager_client);
 
   // Dismisses currently displayed message or dialog. Because the implementation
   // uses some of the dependencies (e.g. log manager) this method needs to be
@@ -104,7 +109,8 @@ class SaveUpdatePasswordMessageDelegate {
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       absl::optional<AccountInfo> account_info,
-      bool update_password);
+      bool update_password,
+      password_manager::PasswordManagerClient* password_manager_client);
   void CreateMessage(bool update_password);
   void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
                     bool update_password);

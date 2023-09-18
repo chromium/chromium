@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -251,6 +252,7 @@ class SaveUpdatePasswordMessageDelegateTest
   raw_ptr<TestDeviceLockBridge> test_bridge_;
   std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   bool is_password_saved_ = false;
+  password_manager::StubPasswordManagerClient password_manager_client_;
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
@@ -259,7 +261,6 @@ SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
 void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-  ChromePasswordManagerClient::CreateForWebContents(web_contents());
   ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
   metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
       true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
@@ -341,7 +342,8 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
   }
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   delegate_->DisplaySaveUpdatePasswordPromptInternal(
-      web_contents(), std::move(form_to_save), account_info, update_password);
+      web_contents(), std::move(form_to_save), account_info, update_password,
+      &password_manager_client_);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick() {

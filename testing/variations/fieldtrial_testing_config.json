@@ -11716,24 +11716,6 @@
             ]
         }
     ],
-    "PasswordMigrationWarningStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230807",
-                    "params": {
-                        "pwd_migration_warning_prefs_version": "1"
-                    },
-                    "enable_features": [
-                        "UnifiedPasswordManagerLocalPasswordsMigrationWarning"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [

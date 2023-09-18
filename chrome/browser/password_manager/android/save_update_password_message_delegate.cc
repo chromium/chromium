@@ -141,7 +141,8 @@ SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() {
 void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    bool update_password) {
+    bool update_password,
+    password_manager::PasswordManagerClient* password_manager_client) {
   DCHECK_NE(nullptr, web_contents);
   DCHECK(form_to_save);
 
@@ -150,9 +151,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
 
   absl::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(profile);
-  DisplaySaveUpdatePasswordPromptInternal(web_contents, std::move(form_to_save),
-                                          std::move(account_info),
-                                          update_password);
+  DisplaySaveUpdatePasswordPromptInternal(
+      web_contents, std::move(form_to_save), std::move(account_info),
+      update_password, password_manager_client);
 }
 
 void SaveUpdatePasswordMessageDelegate::DismissSaveUpdatePasswordPrompt() {
@@ -174,15 +175,15 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     absl::optional<AccountInfo> account_info,
-    bool update_password) {
+    bool update_password,
+    password_manager::PasswordManagerClient* password_manager_client) {
   // Dismiss previous message if it is displayed.
   DismissSaveUpdatePasswordPrompt();
   DCHECK(message_ == nullptr);
   DCHECK(password_edit_dialog_ == nullptr);
 
   web_contents_ = web_contents;
-  passwords_state_.set_client(
-      ChromePasswordManagerClient::FromWebContents(web_contents_));
+  passwords_state_.set_client(password_manager_client);
   if (update_password) {
     passwords_state_.OnUpdatePassword(std::move(form_to_save));
   } else {
