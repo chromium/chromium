@@ -57,8 +57,8 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~CancellingSelectFileDialog() override = default;
-  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
+  ~CancellingSelectFileDialog() override { out_params_ = nullptr; }
+  raw_ptr<SelectFileDialogParams> out_params_;
 };
 
 class FakeSelectFileDialog : public ui::SelectFileDialog {
@@ -130,8 +130,9 @@ CancellingSelectFileDialogFactory::CancellingSelectFileDialogFactory(
     SelectFileDialogParams* out_params)
     : out_params_(out_params) {}
 
-CancellingSelectFileDialogFactory::~CancellingSelectFileDialogFactory() =
-    default;
+CancellingSelectFileDialogFactory::~CancellingSelectFileDialogFactory() {
+  out_params_ = nullptr;
+}
 
 ui::SelectFileDialog* CancellingSelectFileDialogFactory::Create(
     ui::SelectFileDialog::Listener* listener,
