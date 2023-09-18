@@ -64,7 +64,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
-
+      {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
+      {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
   };
   webui::SetupChromeRefresh2023(source);
   source->AddLocalizedStrings(kStrings);

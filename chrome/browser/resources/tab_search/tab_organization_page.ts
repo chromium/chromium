@@ -11,6 +11,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './tab_organization_page.html.js';
 
+enum TabOrganizationState {
+  NOT_STARTED = 0,
+  IN_PROGRESS = 1,
+  SUCCESS = 2,
+  FAILURE = 3,
+}
+
 export class TabOrganizationPageElement extends PolymerElement {
   static get is() {
     return 'tab-organization-page';
@@ -18,14 +25,51 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      title_: String,
+      state_: Object,
     };
   }
 
-  private title_: string = 'Placeholder';
+  private state_: TabOrganizationState = TabOrganizationState.NOT_STARTED;
 
   static get template() {
     return getTemplate();
+  }
+
+  private isNotStarted_(): boolean {
+    return this.state_ === TabOrganizationState.NOT_STARTED;
+  }
+
+  private isInProgress_(): boolean {
+    return this.state_ === TabOrganizationState.IN_PROGRESS;
+  }
+
+  private isSuccess_(): boolean {
+    return this.state_ === TabOrganizationState.SUCCESS;
+  }
+
+  private isFailure_(): boolean {
+    return this.state_ === TabOrganizationState.FAILURE;
+  }
+
+  private onDismissClicked_() {
+    this.state_ = TabOrganizationState.NOT_STARTED;
+  }
+
+  private onCreateGroupClicked_() {
+    // TODO(emshack): Implement this.
+  }
+
+  // TODO(emshack): Remove once there's another way to move between states.
+  private onCycleStateClicked_() {
+    if (this.state_ === TabOrganizationState.NOT_STARTED) {
+      this.state_ = TabOrganizationState.IN_PROGRESS;
+    } else if (this.state_ === TabOrganizationState.IN_PROGRESS) {
+      this.state_ = TabOrganizationState.SUCCESS;
+    } else if (this.state_ === TabOrganizationState.SUCCESS) {
+      this.state_ = TabOrganizationState.FAILURE;
+    } else if (this.state_ === TabOrganizationState.FAILURE) {
+      this.state_ = TabOrganizationState.NOT_STARTED;
+    }
   }
 }
 
