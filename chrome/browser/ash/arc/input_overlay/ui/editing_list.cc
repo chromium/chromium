@@ -58,6 +58,14 @@ void EditingList::UpdateWidget() {
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
 }
 
+void EditingList::ShowEduNudgeForEditingTip() {
+  DCHECK_EQ(scroll_content_->children().size(), 1u);
+  DCHECK(!is_zero_state_);
+
+  static_cast<ActionViewListItem*>(scroll_content_->children()[0])
+      ->ShowEduNudgeForEditingTip();
+}
+
 bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
   OnDragStart(event);
   return true;

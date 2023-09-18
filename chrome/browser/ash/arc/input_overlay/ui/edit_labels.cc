@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 
+#include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
@@ -95,6 +96,15 @@ void EditLabels::FocusLabel() {
     }
   }
   labels_[0]->RequestFocus();
+}
+
+void EditLabels::ShowEduNudgeForEditingTip() {
+  size_t size = labels_.size();
+  DCHECK_GE(size, 1u);
+  // TODO(b/274690042): Replace it with localized strings.
+  controller_->AddNudgeWidget(labels_[size - 1],
+                              u"You can easily click and swap this key. To "
+                              u"edit the details, tap the row.");
 }
 
 void EditLabels::InitForActionTapKeyboard() {

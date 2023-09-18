@@ -759,6 +759,15 @@ void DisplayOverlayController::RemoveNudgeWidget(views::Widget* widget) {
   }
 }
 
+void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
+  if (GetActiveActionsSize() != 1u) {
+    return;
+  }
+  DCHECK(editing_list_widget_);
+  static_cast<EditingList*>(editing_list_widget_->GetContentsView())
+      ->ShowEduNudgeForEditingTip();
+}
+
 void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
     Action* action) {
   if (!button_options_widget_) {

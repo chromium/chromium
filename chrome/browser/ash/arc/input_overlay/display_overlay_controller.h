@@ -114,6 +114,10 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddNudgeWidget(views::View* anchor_view, const std::u16string& text);
   void RemoveNudgeWidget(views::Widget* widget);
 
+  // Show education nudge for editing tip. It only shows up for the first new
+  // action after closing `ButtonOptionsMenu`.
+  void MayShowEduNudgeForEditingTip();
+
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
   void UpdateButtonOptionsMenuWidgetBounds(Action* action);

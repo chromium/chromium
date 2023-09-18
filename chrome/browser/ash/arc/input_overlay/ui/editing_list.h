@@ -41,6 +41,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   void UpdateWidget();
 
+  void ShowEduNudgeForEditingTip();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

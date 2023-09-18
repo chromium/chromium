@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/style/icon_button.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
@@ -94,8 +95,22 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->editing_list_widget_.get();
   }
 
+  views::Widget* GetInputMappingWidget() {
+    return controller_->input_mapping_widget_.get();
+  }
+
   bool ButtonOptionsMenuExists() {
     return !!controller_->button_options_widget_;
+  }
+
+  void PressDoneButtonOnButtonOptionsMenu() {
+    auto* menu = controller_->button_options_widget_.get();
+    if (!menu) {
+      return;
+    }
+
+    LeftClickOn(
+        static_cast<ButtonOptionsMenu*>(menu->GetContentsView())->done_button_);
   }
 
   Action* GetButtonOptionsAction() {
@@ -104,11 +119,11 @@ class EditingListTest : public OverlayViewTestBase {
         ->action();
   }
 
-  bool EducationNudgeExists() {
-    auto* editing_list_ = GetEditingListWidget();
-    DCHECK(editing_list_);
-    return controller_->nudge_widgets_.find(editing_list_) !=
-           controller_->nudge_widgets_.end();
+  views::Widget* GetEducationNudge(views::Widget* widget) {
+    DCHECK(controller_);
+    auto& widgets_map = controller_->nudge_widgets_;
+    return widgets_map.contains(widget) ? widgets_map.find(widget)->second.get()
+                                        : nullptr;
   }
 
   void CloseButtonOptionsMenu() {
@@ -230,15 +245,52 @@ TEST_F(EditingListTest, TestReposition) {
 }
 
 TEST_F(EditingListTest, TestEducationNudge) {
-  // Education nudge only shows up when there is no active action in the list.
-  EXPECT_FALSE(EducationNudgeExists());
+  // 1. Education nudge shows up for `EditingList` by "+" button when there is
+  // no active action in the list.
+  // 2. After adding the first action, the education nudge shows up for input
+  // mapping by the touch point.
+  // 3. After closing `ButtonOptionsMenu`, the education nudge shows up for
+  // `EditingList`.
+  auto* editing_list = GetEditingListWidget();
+  auto* input_mapping = GetInputMappingWidget();
+  DCHECK(editing_list);
+  DCHECK(input_mapping);
+  EXPECT_FALSE(GetEducationNudge(editing_list));
+  EXPECT_FALSE(GetEducationNudge(input_mapping));
   // Remove all actions.
   for (const auto& action : touch_injector_->actions()) {
     controller_->RemoveAction(action.get());
   }
-  EXPECT_TRUE(EducationNudgeExists());
+  // The education nudge for `editing_list` shows up.
+  auto* editing_list_nudge = GetEducationNudge(editing_list);
+  EXPECT_TRUE(editing_list);
+  EXPECT_TRUE(
+      editing_list_nudge->IsStackedAbove(editing_list->GetNativeView()));
+  EXPECT_FALSE(GetEducationNudge(input_mapping));
+
+  // Add an action, the previous education nudge for `editing_list` is removed.
   PressAddButton();
-  EXPECT_FALSE(EducationNudgeExists());
+  EXPECT_FALSE(GetEducationNudge(editing_list));
+  // The education nudge for `input_mapping` shows up.
+  auto* input_mapping_nudge = GetEducationNudge(input_mapping);
+  EXPECT_TRUE(input_mapping_nudge);
+  EXPECT_TRUE(
+      input_mapping_nudge->IsStackedAbove(input_mapping->GetNativeView()));
+
+  // After editing the first action, which means closing `ButtonOptionsMenu`,
+  // education nudge shows up for editing tip.
+  PressDoneButtonOnButtonOptionsMenu();
+  editing_list_nudge = GetEducationNudge(editing_list);
+  EXPECT_TRUE(editing_list_nudge);
+  EXPECT_TRUE(
+      editing_list_nudge->IsStackedAbove(editing_list->GetNativeView()));
+  EXPECT_FALSE(GetEducationNudge(input_mapping));
+
+  // No education nudge after adding another action.
+  PressAddButton();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_FALSE(GetEducationNudge(editing_list));
+  EXPECT_FALSE(GetEducationNudge(input_mapping));
 }
 
 }  // namespace arc::input_overlay

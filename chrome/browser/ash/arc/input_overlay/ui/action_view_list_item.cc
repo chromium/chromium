@@ -31,4 +31,8 @@ void ActionViewListItem::ClickCallback() {
   controller_->AddButtonOptionsMenuWidget(action_);
 }
 
+void ActionViewListItem::ShowEduNudgeForEditingTip() {
+  labels_view_->ShowEduNudgeForEditingTip();
+}
+
 }  // namespace arc::input_overlay

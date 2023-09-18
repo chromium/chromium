@@ -60,6 +60,8 @@ class EditLabels : public views::View {
     should_update_title_ = should_update_title;
   }
 
+  void ShowEduNudgeForEditingTip();
+
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;

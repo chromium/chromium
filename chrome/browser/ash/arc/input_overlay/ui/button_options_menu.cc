@@ -194,7 +194,7 @@ void ButtonOptionsMenu::AddHeader() {
       ash::TypographyToken::kCrosTitle1, u"Button options",
       cros_tokens::kCrosSysOnSurface));
 
-  container->AddChildView(std::make_unique<ash::IconButton>(
+  done_button_ = container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnDoneButtonPressed,
                           base::Unretained(this)),
       ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
@@ -252,6 +252,9 @@ void ButtonOptionsMenu::OnDoneButtonPressed() {
     controller_->RemoveActionNewState(action_);
   }
   controller_->SaveToProtoFile();
+  controller_->MayShowEduNudgeForEditingTip();
+
+  // Remove this view at last.
   controller_->RemoveButtonOptionsMenuWidget();
 }
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -152,8 +153,17 @@ void InputMappingView::OnActionAdded(Action& action) {
 
   OnActionAddedInternal(action);
   // A new button options menu corresponding to the action is
-  // added when the action is first added.
+  // added when the action is newly added.
   controller_->AddButtonOptionsMenuWidget(&action);
+
+  // When adding the first action, show the education nudge.
+  if (children().size() == 1u) {
+    auto* touch_point = static_cast<ActionView*>(children()[0])->touch_point();
+    DCHECK(touch_point);
+    // TODO(b/274690042): Replace placeholder text with localized strings.
+    controller_->AddNudgeWidget(
+        touch_point, u"Move this to where you want your action to map to");
+  }
 }
 
 void InputMappingView::OnActionRemoved(const Action& action) {

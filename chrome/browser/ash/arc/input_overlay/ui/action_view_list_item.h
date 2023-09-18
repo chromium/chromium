@@ -25,6 +25,8 @@ class ActionViewListItem : public ActionEditView {
   // ActionEditView:
   void OnActionNameUpdated() override;
 
+  void ShowEduNudgeForEditingTip();
+
  private:
   friend class EditLabelTest;
 

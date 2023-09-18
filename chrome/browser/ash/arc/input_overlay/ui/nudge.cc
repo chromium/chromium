@@ -138,7 +138,7 @@ void Nudge::UpdateBounds() {
   anchor_point.Offset(anchor_view_->bounds().width() / 2, 0);
   anchor_point.Offset(-kDotLeftMargin - kDotContainerSize / 2, 0);
   widget->SetBounds(gfx::Rect(anchor_point, GetPreferredSize()));
-  widget->StackAboveWidget(anchor_view_->GetWidget());
+  widget->StackAtTop();
 }
 
 }  // namespace arc::input_overlay
