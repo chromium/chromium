@@ -49,7 +49,7 @@ const ready = new WaitableEvent();
  * @param event The event to send.
  * @param dimensions Optional object contains dimension information.
  */
-async function sendEvent(
+function sendEvent(
     event: GaBaseEvent,
     dimensions: Map<GaMetricDimension, string> = new Map()) {
   if (event.eventValue !== undefined && !Number.isInteger(event.eventValue)) {
@@ -59,14 +59,18 @@ async function sendEvent(
     event.eventValue = Math.round(event.eventValue);
   }
 
-  await ready.wait();
+  // No caller use the returned promise since metrics sending should not block
+  // the code.
+  void (async () => {
+    await ready.wait();
 
-  if (await checkCanSendMetrics()) {
-    await Promise.all([
-      sendGaEvent(event, dimensions),
-      sendGa4Event(event, dimensions),
-    ]);
-  }
+    if (await checkCanSendMetrics()) {
+      await Promise.all([
+        sendGaEvent(event, dimensions),
+        sendGa4Event(event, dimensions),
+      ]);
+    }
+  })();
 }
 
 async function sendGaEvent(
