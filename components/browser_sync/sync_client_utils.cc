@@ -81,6 +81,14 @@ std::vector<GURL> GetAllUserBookmarksExcludingFolders(
   return bookmarked_urls;
 }
 
+// Returns the latest of a password form's last used time, last update time and
+// creation time.
+base::Time GetLatestOfTimeLastUsedOrModifiedOrCreated(
+    const password_manager::PasswordForm& form) {
+  return std::max(
+      {form.date_last_used, form.date_password_modified, form.date_created});
+}
+
 }  // namespace
 
 // A class to represent individual local data query requests.
@@ -322,8 +330,16 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
         // the account store.
         helper_->account_password_store_->AddLogin(*profile_password);
       } else if ((*it)->password_value != profile_password->password_value &&
-                 // Check if `profile_password` was more recently used.
-                 (*it)->date_last_used < profile_password->date_last_used) {
+                 // Check if `profile_password` was more recently used or
+                 // updated.
+                 // In some cases, last used time and last update time can be
+                 // null (see crbug.com/1483452). Thus, the max of {last used
+                 // time, last updated time, creation time} is used to decide
+                 // which password wins.
+
+                 GetLatestOfTimeLastUsedOrModifiedOrCreated(**it) <
+                     GetLatestOfTimeLastUsedOrModifiedOrCreated(
+                         *profile_password)) {
         // `profile_password` is newer. Add it to the account store.
         helper_->account_password_store_->UpdateLogin(*profile_password);
       }
