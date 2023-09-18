@@ -25,9 +25,7 @@ class CvcStorageStrikeDatabase
       CvcStorageStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
   absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
-      const override {
-    return base::Days(7);
-  }
+      const override;
 };
 
 }  // namespace autofill
