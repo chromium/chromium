@@ -333,7 +333,7 @@ public class AutofillTestHelper {
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ cardNameForAutofillDisplay,
-                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits, /* cvc= */ "");
     }
 
     public static CreditCard createCreditCard(String name, String number, String month, String year,
@@ -352,7 +352,7 @@ public class AutofillTestHelper {
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
-                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits, /* cvc= */ "");
     }
 
     private void registerDataObserver() {

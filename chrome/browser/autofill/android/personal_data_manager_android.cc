@@ -108,7 +108,8 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF16ToJavaString(env, card.product_description()),
       ConvertUTF16ToJavaString(env, card.CardNameForAutofillDisplay()),
       ConvertUTF16ToJavaString(
-          env, card.ObfuscatedNumberWithVisibleLastFourDigits()));
+          env, card.ObfuscatedNumberWithVisibleLastFourDigits()),
+      ConvertUTF16ToJavaString(env, card.cvc()));
 }
 
 // static
@@ -170,6 +171,8 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
           Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
   card->set_product_description(ConvertJavaStringToUTF16(
       Java_CreditCard_getProductDescription(env, jcard)));
+  card->set_cvc(ConvertJavaStringToUTF16(
+        Java_CreditCard_getCvc(env, jcard)));
 }
 
 jboolean PersonalDataManagerAndroid::IsDataLoaded(

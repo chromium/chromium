@@ -107,7 +107,7 @@ public class AutofillServerCardEditorTest {
             /* cardArtUrl= */ null,
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
             /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
-            /* obfuscatedLastFourDigits= */ "");
+            /* obfuscatedLastFourDigits= */ "", /* cvc= */ "");
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "2", /* origin= */ "", /* isLocal= */ false,
@@ -120,7 +120,7 @@ public class AutofillServerCardEditorTest {
                     /* virtualCardEnrollmentState= */
                     VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE,
                     /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
-                    /* obfuscatedLastFourDigits= */ "");
+                    /* obfuscatedLastFourDigits= */ "", /* cvc= */ "");
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "3", /* origin= */ "", /* isLocal= */ false,
@@ -133,7 +133,7 @@ public class AutofillServerCardEditorTest {
                     /* virtualCardEnrollmentState= */
                     VirtualCardEnrollmentState.UNENROLLED_AND_NOT_ELIGIBLE,
                     /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
-                    /* obfuscatedLastFourDigits= */ "");
+                    /* obfuscatedLastFourDigits= */ "", /* cvc= */ "");
 
     @Mock
     private AutofillPaymentMethodsDelegate.Natives mNativeMock;
