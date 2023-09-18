@@ -553,9 +553,6 @@ constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
 const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
     "privacy_sandbox.first_party_sets_data_access_allowed";
 
-// Deprecated 09/2022.
-const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
-
 #if BUILDFLAG(IS_ANDROID)
 // Deprecated 09/2022.
 const char kDeprecatedAutofillAssistantConsent[] = "autofill_assistant_switch";
@@ -1077,9 +1074,6 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kClipboardHistoryNewFeatureBadgeCount, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 09/2022.
-  registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Deprecated 10/2022.
@@ -2208,9 +2202,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   migrate_shared_pref(kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser,
                       kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 #endif
-
-  // Added 09/2022.
-  profile_prefs->ClearPref(kFirstPartySetsEnabled);
 
   // Added 10/2022
 #if BUILDFLAG(IS_ANDROID)
