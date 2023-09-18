@@ -432,6 +432,9 @@ extern const char kServiceWorkerStaticRouterName[];
 extern const char kServiceWorkerStaticRouterDescription[];
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+extern const char kCameraMicEffectsName[];
+extern const char kCameraMicEffectsDescription[];
+
 extern const char kCameraMicPreviewName[];
 extern const char kCameraMicPreviewDescription[];
 #endif

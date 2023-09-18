@@ -790,6 +790,9 @@ const char kServiceWorkerStaticRouterDescription[] =
     "https://chromestatus.com/feature/5185352976826368";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const char kCameraMicEffectsName[] = "Camera and Mic Effects";
+const char kCameraMicEffectsDescription[] =
+    "Enables effects for camera and mic streams.";
 const char kCameraMicPreviewName[] = "Camera and Mic Preview";
 const char kCameraMicPreviewDescription[] =
     "Enables camera and mic preview in permission bubble and site settings.";
