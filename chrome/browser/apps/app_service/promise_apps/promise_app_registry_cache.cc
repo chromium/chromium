@@ -40,6 +40,11 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   // Retrieve the current promise app state.
   apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
+  // Hide any promise apps marked for deletion.
+  if (delta->status == PromiseStatus::kRemove) {
+    delta->should_show = false;
+  }
+
   for (auto& observer : observers_) {
     observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
   }

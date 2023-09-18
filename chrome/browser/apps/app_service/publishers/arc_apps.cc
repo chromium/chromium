@@ -1506,8 +1506,7 @@ void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
                                           bool active) {
   if (ash::features::ArePromiseIconsEnabled()) {
     PackageId package_id(AppType::kArc, package_name);
-    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(
-            PackageId(AppType::kArc, package_name))) {
+    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
       LOG(ERROR) << "Cannot update installation active status for "
                  << package_name
                  << ", as there is no promise app registered for this package.";
@@ -1516,6 +1515,23 @@ void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
     // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
     // no longer active, i.e. if active=false after there has been at least one
     // progress change.
+  }
+}
+
+void ArcApps::OnInstallationFinished(const std::string& package_name,
+                                     bool success) {
+  if (ash::features::ArePromiseIconsEnabled()) {
+    // Remove the promise app of any failed installation.
+    if (success) {
+      return;
+    }
+    PackageId package_id(AppType::kArc, package_name);
+    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
+      return;
+    }
+    PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
+    promise_app->status = PromiseStatus::kRemove;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }
 

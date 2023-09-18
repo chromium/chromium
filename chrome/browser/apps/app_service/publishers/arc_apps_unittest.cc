@@ -632,7 +632,7 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
             kTestIntentTitle);
 }
 
-TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
+TEST_F(ArcAppsPublisherTest, StartingInstallationRegistersPromiseApp) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
   app_service_proxy()->ReinitializeForTesting(profile());
@@ -657,7 +657,7 @@ TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
   EXPECT_TRUE(promise_app_after);
 }
 
-TEST_F(ArcAppsPublisherTest, OnInstallationProgressChanged_UpdatesPromiseApp) {
+TEST_F(ArcAppsPublisherTest, InstallationProgressChangeUpdatesPromiseApp) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
   app_service_proxy()->ReinitializeForTesting(profile());
@@ -719,6 +719,34 @@ TEST_F(ArcAppsPublisherTest, ProgressUpdateChangesPromiseStatus) {
   promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
+}
+
+TEST_F(ArcAppsPublisherTest, FailedInstallationRemovesPromiseApp) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Add a promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->status = apps::PromiseStatus::kPending;
+  cache->OnPromiseApp(std::move(promise_app));
+
+  // Check that the promise app exists.
+  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
+  EXPECT_TRUE(promise_app_result);
+
+  // Confirm that the promise app gets removed after a failed installation
+  // update.
+  arc_test()->app_instance()->SendInstallationFinished(package_name, false);
+  promise_app_result = cache->GetPromiseApp(package_id);
+  EXPECT_FALSE(promise_app_result);
 }
 
 // Verifies that only valid intent filters will be published from ARC.

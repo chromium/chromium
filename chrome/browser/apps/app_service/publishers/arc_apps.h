@@ -157,6 +157,8 @@ class ArcApps : public KeyedService,
                                      float progress) override;
   void OnInstallationActiveChanged(const std::string& package_name,
                                    bool active) override;
+  void OnInstallationFinished(const std::string& package_name,
+                              bool success) override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(

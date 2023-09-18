@@ -117,6 +117,11 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
     return;
   }
 
+  // Clear out the icons of any promise app marked for deletion.
+  if (delta->status == PromiseStatus::kRemove) {
+    promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
+  }
+
   promise_app_registry_cache_->OnPromiseApp(std::move(delta));
 
   if (is_existing_registration) {
@@ -191,9 +196,7 @@ void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
 void PromiseAppService::RemovePromiseApp(const PackageId& package_id) {
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
   promise_app->status = PromiseStatus::kRemove;
-  promise_app->should_show = false;
   OnPromiseApp(std::move(promise_app));
-  promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
 }
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(
