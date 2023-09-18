@@ -64,7 +64,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
   int int_fields[7];
   gfx::Vector2dF offset;
   unsigned bitfields;
-  raw_ptr<void> debug_info;
+  std::unique_ptr<int> debug_info;
 };
 
 static_assert(sizeof(Layer) == sizeof(SameSizeAsLayer),
