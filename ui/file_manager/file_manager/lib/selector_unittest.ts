@@ -231,3 +231,35 @@ export function testDeletingSelector() {
   selectorEmitter.processChange();
   assertEquals(count, 1);  // Count should still be 1, not 2.
 }
+
+// Test that Selector Emitter nodes are explored in the ascending order of
+// depth.
+export function testSelectorEmitterTraversal() {
+  let state = 0;
+
+  const selectorEmitter = new SelectorEmitter();
+
+  const rootNode = SelectorNode.createSourceNode(() => state);
+  selectorEmitter.addSource(rootNode);
+
+  const child1 = new SelectorNode([rootNode], (r) => r + 1);
+  const child2 = new SelectorNode([rootNode, child1], (r, c1) => r + c1 + 1);
+  const child3 = new SelectorNode([rootNode, child2], (r, c2) => r + c2 + 1);
+
+  let order = '';
+  rootNode.subscribe(() => order += 0);
+  child1.subscribe(() => order += 1);
+  child2.subscribe(() => order += 2);
+  child3.subscribe(() => order += 3);
+
+  state = 1;
+  selectorEmitter.processChange();
+
+  // Verify nodes emit in the expected order (lowest depth first).
+  // Explanation: after the root is explored, all 3 children should be queued
+  // for later exploration. If they are explored in the wrong order, we'd get
+  // '0321', instead of '0123'. Note: Although all child nodes are children of
+  // root, child1 has a depth of 1, child2 of 2, and child3 of 3 - because the
+  // root node isn't their only parent.
+  assertEquals(order, '0123');
+}

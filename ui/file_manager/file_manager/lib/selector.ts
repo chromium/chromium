@@ -328,7 +328,7 @@ export class SelectorEmitter {
         toExplore.push(...node.children);
         // TODO(300209290): use heap instead.
         // Ensure nodes are explored in ascending order of depth.
-        toExplore.sort((a, b) => a.depth - b.depth);
+        toExplore.sort((a, b) => b.depth - a.depth);
       }
     }
   }
