@@ -444,11 +444,22 @@ double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
     return rule->weight();
   }
 
+  // If the feature vector exists but there are no hashes, the weight will be 0
+  // ultimately, so we return here.
+  if (!flatbuffer_model_->hashes()) {
+    return 0.0;
+  }
+
   const std::unordered_map<std::string, double>& feature_map =
       features.features();
   double rule_score = 1.0;
   for (int32_t feature : *rule->feature()) {
     const flat::Hash* hash = flatbuffer_model_->hashes()->Get(feature);
+
+    if (!hash->data()) {
+      return 0.0;
+    }
+
     std::string hash_str(reinterpret_cast<const char*>(hash->data()->Data()),
                          hash->data()->size());
     const auto it = feature_map.find(hash_str);
