@@ -337,8 +337,7 @@ TEST_P(PingManagerTest, SendPing) {
     Component component(*update_context, "abc");
     CrxComponent crx_component;
     crx_component.version = base::Version("1.2.3.4");
-    component.Uninstall(crx_component, 0);
-    component.AppendEvent(component.MakeEventUninstalled());
+    component.PingOnly(crx_component, 4, 1, 0, 0);
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
     ping_manager_->SendPing(component, *metadata_, MakePingCallback());
@@ -358,38 +357,8 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(1, event.FindInt("eventresult"));
       EXPECT_EQ(4, event.FindInt("eventtype"));
       EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("previousversion")));
-      EXPECT_EQ("0", CHECK_DEREF(event.FindString("nextversion")));
+      EXPECT_EQ(event.FindString("nextversion"), nullptr);
       interceptor->Reset();
-  }
-
-  {
-    // Test registrationEvent.
-    Component component(*update_context, "abc");
-    CrxComponent crx_component;
-    crx_component.version = base::Version("1.2.3.4");
-    component.Registration(crx_component);
-    component.AppendEvent(component.MakeEventRegistration());
-
-    EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
-    RunThreads();
-
-    EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
-    const auto msg = interceptor->GetRequestBody(0);
-
-    const auto root = base::JSONReader::Read(msg);
-    ASSERT_TRUE(root);
-    const base::Value::Dict* request = root->GetDict().FindDict("request");
-    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
-    const base::Value::Dict& app = app_val.GetDict();
-    EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
-    EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
-    const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
-    EXPECT_EQ(1, event.FindInt("eventresult"));
-    EXPECT_EQ(2, event.FindInt("eventtype"));
-    EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("nextversion")));
-    interceptor->Reset();
   }
 
   {

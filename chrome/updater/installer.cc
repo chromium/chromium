@@ -48,9 +48,15 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
 AppInfo::AppInfo(const UpdaterScope scope,
                  const std::string& app_id,
                  const std::string& ap,
+                 const std::string& brand,
                  const base::Version& app_version,
                  const base::FilePath& ecp)
-    : scope(scope), app_id(app_id), ap(ap), version(app_version), ecp(ecp) {}
+    : scope(scope),
+      app_id(app_id),
+      ap(ap),
+      brand(brand),
+      version(app_version),
+      ecp(ecp) {}
 AppInfo::AppInfo(const AppInfo&) = default;
 AppInfo& AppInfo::operator=(const AppInfo&) = default;
 AppInfo::~AppInfo() = default;
@@ -94,6 +100,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
     checker_path_ = persisted_data_->GetExistenceCheckerPath(app_id_);
     fingerprint_ = persisted_data_->GetFingerprint(app_id_);
     ap_ = persisted_data_->GetAP(app_id_);
+    brand_ = persisted_data_->GetBrandCode(app_id_);
   } else {
     pv_ = base::Version(kNullVersion);
   }
@@ -176,7 +183,7 @@ Installer::Result Installer::InstallHelper(
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
-      AppInfo(updater_scope_, app_id_, ap_, pv_, checker_path_),
+      AppInfo(updater_scope_, app_id_, ap_, brand_, pv_, checker_path_),
       application_installer, install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    client_install_data_.empty()

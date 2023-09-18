@@ -94,6 +94,12 @@ class MockUpdateClient : public UpdateClient {
     std::move(callback).Run(update_client::Error::NONE);
   }
 
+  MOCK_METHOD5(SendInstallPing,
+               void(const CrxComponent& crx_component,
+                    bool success,
+                    int error_code,
+                    int extra_code1,
+                    Callback callback));
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
   MOCK_METHOD2(DoInstall,

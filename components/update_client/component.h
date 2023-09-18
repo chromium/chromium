@@ -52,11 +52,12 @@ class Component {
 
   CrxUpdateItem GetCrxUpdateItem() const;
 
-  // Sets the uninstall state for this component.
-  void Uninstall(const CrxComponent& crx_component, int reason);
-
-  // Set the registration state for this component.
-  void Registration(const CrxComponent& crx_component);
+  // Sets the ping-only state for this component.
+  void PingOnly(const CrxComponent& crx_component,
+                int event_type,
+                int result,
+                int error_code,
+                int extra_code1);
 
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(
@@ -333,26 +334,12 @@ class Component {
     void DoHandle() override;
   };
 
-  class StateUninstalled : public State {
+  class StatePingOnly : public State {
    public:
-    explicit StateUninstalled(Component* component);
-    StateUninstalled(const StateUninstalled&) = delete;
-    StateUninstalled& operator=(const StateUninstalled&) = delete;
-    ~StateUninstalled() override;
-
-   private:
-    // State overrides.
-    void DoHandle() override;
-  };
-
-  class StateRegistration : public State {
-   public:
-    explicit StateRegistration(Component* component);
-
-    StateRegistration(const StateRegistration&) = delete;
-    StateRegistration& operator=(const StateRegistration&) = delete;
-
-    ~StateRegistration() override;
+    explicit StatePingOnly(Component* component);
+    StatePingOnly(const StatePingOnly&) = delete;
+    StatePingOnly& operator=(const StatePingOnly&) = delete;
+    ~StatePingOnly() override;
 
    private:
     // State overrides.
@@ -400,8 +387,6 @@ class Component {
   base::Value::Dict MakeEventUpdateComplete() const;
   base::Value::Dict MakeEventDownloadMetrics(
       const CrxDownloader::DownloadMetrics& download_metrics) const;
-  base::Value::Dict MakeEventUninstalled() const;
-  base::Value::Dict MakeEventRegistration() const;
   base::Value::Dict MakeEventActionRun(bool succeeded,
                                        int error_code,
                                        int extra_code1) const;

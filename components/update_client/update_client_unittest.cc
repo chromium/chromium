@@ -3989,6 +3989,79 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
   RunThreads();
 }
 
+TEST_F(UpdateClientTest, SendInstallPing) {
+  class CompletionCallbackMock {
+   public:
+    static void Callback(base::OnceClosure quit_closure, Error error) {
+      std::move(quit_closure).Run();
+    }
+  };
+
+  class MockUpdateChecker : public UpdateChecker {
+   public:
+    static std::unique_ptr<UpdateChecker> Create(
+        scoped_refptr<Configurator> config,
+        PersistedData* metadata) {
+      return nullptr;
+    }
+
+    void CheckForUpdates(
+        scoped_refptr<UpdateContext> context,
+        const base::flat_map<std::string, std::string>& additional_attributes,
+        UpdateCheckCallback update_check_callback) override {
+      NOTREACHED();
+    }
+  };
+
+  class MockCrxDownloader : public CrxDownloader {
+   public:
+    static scoped_refptr<CrxDownloader> Create(
+        bool is_background_download,
+        scoped_refptr<NetworkFetcherFactory> network_fetcher_factory) {
+      return nullptr;
+    }
+
+    MockCrxDownloader() : CrxDownloader(nullptr) {}
+
+   private:
+    ~MockCrxDownloader() override = default;
+
+    void DoStartDownload(const GURL& url) override {}
+  };
+
+  class MockPingManager : public MockPingManagerImpl {
+   public:
+    explicit MockPingManager(scoped_refptr<Configurator> config)
+        : MockPingManagerImpl(config) {}
+
+   protected:
+    ~MockPingManager() override {
+      EXPECT_EQ(ping_data().size(), 1u);
+      EXPECT_EQ(ping_data()[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
+      EXPECT_EQ(events().size(), 1u);
+      EXPECT_EQ(events()[0].FindInt("eventresult"), 1);
+      EXPECT_EQ(events()[0].FindInt("errorcode"), 2);
+      EXPECT_EQ(events()[0].FindInt("extracode1"), 3);
+    }
+  };
+
+  SetMockCrxDownloader<MockCrxDownloader>();
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManager>(config()),
+          base::BindRepeating(&MockUpdateChecker::Create));
+
+  CrxComponent crx;
+  crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  crx.name = "test_jebg";
+  crx.version = base::Version("1.2.3.4");
+  update_client->SendInstallPing(
+      crx, true, 2, 3,
+      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
+
+  RunThreads();
+}
+
 TEST_F(UpdateClientTest, RetryAfter) {
   class DataCallbackMock {
    public:

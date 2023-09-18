@@ -420,6 +420,31 @@ const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
   }
 }
 
+base::Value::Dict MakeEvent(
+    int event_type,
+    int result,
+    int error_code,
+    int extra_code1,
+    const absl::optional<base::Version>& previous_version,
+    const absl::optional<base::Version>& next_version) {
+  base::Value::Dict event;
+  event.Set("eventtype", event_type);
+  event.Set("eventresult", result);
+  if (error_code) {
+    event.Set("errorcode", error_code);
+  }
+  if (extra_code1) {
+    event.Set("extracode1", extra_code1);
+  }
+  if (previous_version) {
+    event.Set("previousversion", previous_version->GetString());
+  }
+  if (next_version) {
+    event.Set("nextversion", next_version->GetString());
+  }
+  return event;
+}
+
 }  // namespace
 
 Component::Component(const UpdateContext& update_context, const std::string& id)
@@ -543,22 +568,21 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   }
 }
 
-void Component::Uninstall(const CrxComponent& crx_component, int reason) {
+void Component::PingOnly(const CrxComponent& crx_component,
+                         int event_type,
+                         int result,
+                         int error_code,
+                         int extra_code1) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(ComponentState::kNew, state());
   crx_component_ = crx_component;
   previous_version_ = crx_component_->version;
   next_version_ = base::Version("0");
-  extra_code1_ = reason;
-  state_ = std::make_unique<StateUninstalled>(this);
-}
-
-void Component::Registration(const CrxComponent& crx_component) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(ComponentState::kNew, state());
-  crx_component_ = crx_component;
-  next_version_ = crx_component_->version;
-  state_ = std::make_unique<StateRegistration>(this);
+  error_code_ = error_code;
+  extra_code1_ = extra_code1;
+  state_ = std::make_unique<StatePingOnly>(this);
+  AppendEvent(MakeEvent(event_type, result, error_code, extra_code1,
+                        previous_version_, absl::nullopt));
 }
 
 void Component::SetUpdateCheckResult(
@@ -691,37 +715,6 @@ base::Value::Dict Component::MakeEventDownloadMetrics(
   if (next_version().IsValid()) {
     event.Set("nextversion", next_version().GetString());
   }
-  return event;
-}
-
-base::Value::Dict Component::MakeEventUninstalled() const {
-  CHECK_EQ(state(), ComponentState::kUninstalled);
-  base::Value::Dict event;
-  event.Set("eventtype", protocol_request::kEventUninstall);
-  event.Set("eventresult", 1);
-  if (extra_code1()) {
-    event.Set("extracode1", extra_code1());
-  }
-  CHECK(previous_version().IsValid());
-  event.Set("previousversion", previous_version().GetString());
-  CHECK(next_version().IsValid());
-  event.Set("nextversion", next_version().GetString());
-  return event;
-}
-
-base::Value::Dict Component::MakeEventRegistration() const {
-  CHECK_EQ(state(), ComponentState::kRegistration);
-  base::Value::Dict event;
-  event.Set("eventtype", protocol_request::kEventInstall);
-  event.Set("eventresult", 1);
-  if (error_code()) {
-    event.Set("errorcode", error_code());
-  }
-  if (extra_code1()) {
-    event.Set("extracode1", extra_code1());
-  }
-  CHECK(next_version().IsValid());
-  event.Set("nextversion", next_version().GetString());
   return event;
 }
 
@@ -1319,42 +1312,18 @@ void Component::StateUpdated::DoHandle() {
   EndState();
 }
 
-Component::StateUninstalled::StateUninstalled(Component* component)
-    : State(component, ComponentState::kUninstalled) {
+Component::StatePingOnly::StatePingOnly(Component* component)
+    : State(component, ComponentState::kPingOnly) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-Component::StateUninstalled::~StateUninstalled() {
+Component::StatePingOnly::~StatePingOnly() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void Component::StateUninstalled::DoHandle() {
+void Component::StatePingOnly::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& component = State::component();
-  CHECK(component.crx_component());
-
-  component.AppendEvent(component.MakeEventUninstalled());
-
-  EndState();
-}
-
-Component::StateRegistration::StateRegistration(Component* component)
-    : State(component, ComponentState::kRegistration) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-Component::StateRegistration::~StateRegistration() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-void Component::StateRegistration::DoHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& component = State::component();
-  CHECK(component.crx_component());
-
-  component.AppendEvent(component.MakeEventRegistration());
-
+  CHECK(State::component().crx_component());
   EndState();
 }
 

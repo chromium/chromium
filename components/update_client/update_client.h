@@ -159,8 +159,7 @@ enum class ComponentState {
   kUpdated,
   kUpToDate,
   kUpdateError,
-  kUninstalled,
-  kRegistration,
+  kPingOnly,
   kRun,
   kLastStatus
 };
@@ -493,6 +492,15 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   virtual void SendUninstallPing(const CrxComponent& crx_component,
                                  int reason,
                                  Callback callback) = 0;
+
+  // Sends an install ping for `crx_component`. The current implementation of
+  // this function only sends a best-effort ping. It has no other side effects
+  // regarding installs or updates done through an instance of this class.
+  virtual void SendInstallPing(const CrxComponent& crx_component,
+                               bool success,
+                               int error_code,
+                               int extra_code1,
+                               Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in
   // case of success and false in case of errors, such as |id| was

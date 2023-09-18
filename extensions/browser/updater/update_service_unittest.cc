@@ -139,6 +139,12 @@ class FakeUpdateClient : public update_client::UpdateClient {
                                   reason);
   }
 
+  void SendInstallPing(const update_client::CrxComponent& crx_component,
+                       bool success,
+                       int error_code,
+                       int extra_code1,
+                       update_client::Callback callback) override {}
+
   void set_delay_update() { delay_update_ = true; }
 
   void set_is_malware_update_item() { is_malware_update_item_ = true; }

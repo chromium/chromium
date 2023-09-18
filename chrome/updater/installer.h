@@ -31,6 +31,7 @@ struct AppInfo {
   AppInfo(const UpdaterScope scope,
           const std::string& app_id,
           const std::string& ap,
+          const std::string& brand,
           const base::Version& app_version,
           const base::FilePath& ecp);
   AppInfo(const AppInfo&);
@@ -40,6 +41,7 @@ struct AppInfo {
   UpdaterScope scope;
   std::string app_id;
   std::string ap;
+  std::string brand;
   base::Version version;
   base::FilePath ecp;
 };
@@ -151,6 +153,7 @@ class Installer final : public update_client::CrxInstaller {
   // These members are not updated when the installer succeeds.
   base::Version pv_;
   std::string ap_;
+  std::string brand_;
   base::FilePath checker_path_;
   std::string fingerprint_;
 };

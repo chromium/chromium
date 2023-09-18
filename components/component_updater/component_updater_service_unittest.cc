@@ -95,6 +95,12 @@ class MockUpdateClient : public UpdateClient {
                void(const CrxComponent& crx_component,
                     int reason,
                     Callback callback));
+  MOCK_METHOD5(SendInstallPing,
+               void(const CrxComponent& crx_component,
+                    bool success,
+                    int error_code,
+                    int extra_code1,
+                    Callback callback));
   MOCK_METHOD2(SendRegistrationPing,
                void(const CrxComponent& crx_component, Callback callback));
 

@@ -121,8 +121,7 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
-    case update_client::ComponentState::kUninstalled:
-    case update_client::ComponentState::kRegistration:
+    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
       break;

@@ -132,8 +132,7 @@ UpdateService::UpdateState::State ToUpdateState(
     case update_client::ComponentState::kUpdateError:
       return UpdateService::UpdateState::State::kUpdateError;
 
-    case update_client::ComponentState::kUninstalled:
-    case update_client::ComponentState::kRegistration:
+    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
       NOTREACHED();
@@ -635,11 +634,12 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
   }
 
   const base::Version pv = persisted_data_->GetProductVersion(app_id);
-  AppInfo app_info(GetUpdaterScope(), app_id,
-                   pv.IsValid() ? persisted_data_->GetAP(app_id) : "", pv,
-                   pv.IsValid()
-                       ? persisted_data_->GetExistenceCheckerPath(app_id)
-                       : base::FilePath());
+  AppInfo app_info(
+      GetUpdaterScope(), app_id,
+      pv.IsValid() ? persisted_data_->GetAP(app_id) : "",
+      pv.IsValid() ? persisted_data_->GetBrandCode(app_id) : "", pv,
+      pv.IsValid() ? persisted_data_->GetExistenceCheckerPath(app_id)
+                   : base::FilePath());
 
   const base::Version installer_version([&install_settings]() -> std::string {
     std::unique_ptr<base::Value> install_settings_deserialized =
@@ -703,9 +703,11 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
       base::BindOnce(
           [](scoped_refptr<Configurator> config,
              scoped_refptr<PersistedData> persisted_data,
+             scoped_refptr<update_client::UpdateClient> update_client,
              const base::Version& installer_version,
              StateChangeCallback state_update, const std::string& app_id,
-             Callback callback, const InstallerResult& result) {
+             const std::string& ap, const std::string& brand, Callback callback,
+             const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
             state.app_id = app_id;
@@ -724,15 +726,25 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             state_update.Run(state);
             VLOG(1) << app_id << " installation completed: " << result.error;
 
-            // TODO(crbug.com/1286581): Perform post-install actions, such as
-            // send pings (if `enterprise` is not set in install_settings) with
-            // the given `sessionid`.
+            // Send an install ping. In some environments the ping cannot be
+            // sent, so do not wait for it to be sent before calling back the
+            // client.
+            update_client::CrxComponent install_data;
+            install_data.ap = ap;
+            install_data.app_id = app_id;
+            install_data.brand = brand;
+            install_data.requires_network_encryption = false;
+            install_data.version = installer_version;
+            update_client->SendInstallPing(install_data, result.error == 0,
+                                           result.error, result.extended_error,
+                                           base::DoNothing());
 
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);
           },
-          config_, persisted_data_, installer_version, state_update,
-          app_info.app_id, std::move(callback)));
+          config_, persisted_data_, update_client_, installer_version,
+          state_update, app_info.app_id, app_info.ap, app_info.brand,
+          std::move(callback)));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(const std::string& app_id,
