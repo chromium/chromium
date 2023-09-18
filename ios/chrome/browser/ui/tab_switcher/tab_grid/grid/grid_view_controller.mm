@@ -46,9 +46,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+#import "ios/web/public/web_state_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -154,20 +156,15 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 // Identifier of the selected item. This value is disregarded if `self.items` is
 // empty. This bookkeeping is done to set the correct selection on
 // `-viewWillAppear:`.
-@property(nonatomic, copy) NSString* selectedItemID;
+@property(nonatomic, assign) web::WebStateID selectedItemID;
 // Index of the selected item in `items`.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
-// Items selected for editing.
-@property(nonatomic, strong) NSMutableSet<NSString*>* selectedEditingItemIDs;
-// Items selected for editing which are shareable outside of the app.
-@property(nonatomic, strong)
-    NSMutableSet<NSString*>* selectedSharableEditingItemIDs;
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
-@property(nonatomic, copy) NSString* lastInsertedItemID;
+@property(nonatomic, assign) web::WebStateID lastInsertedItemID;
 // Identifier of the lastest dragged item. This property is set when the item is
 // long pressed which does not always result in a drag action.
-@property(nonatomic, copy) NSString* draggedItemID;
+@property(nonatomic, assign) web::WebStateID draggedItemID;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The current layout for the tab switcher.
@@ -211,13 +208,15 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   absl::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
+  // Items selected for editing.
+  std::set<web::WebStateID> _selectedEditingItemIDs;
+  // Items selected for editing which are shareable outside of the app.
+  std::set<web::WebStateID> _selectedSharableEditingItemIDs;
 }
 
 - (instancetype)init {
   if (self = [super init]) {
     _items = [[NSMutableArray<TabSwitcherItem*> alloc] init];
-    _selectedEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
-    _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
@@ -481,8 +480,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   if (mode == TabGridModeNormal) {
     // Clear items when exiting selection mode.
-    [self.selectedEditingItemIDs removeAllObjects];
-    [self.selectedSharableEditingItemIDs removeAllObjects];
+    _selectedEditingItemIDs.clear();
+    _selectedSharableEditingItemIDs.clear();
 
     // After transition from other modes to the normal mode, the selection
     // border doesn't show around the selected item, because reloading
@@ -537,7 +536,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     // change to the other properties such as center, bounds, etc.
     attributes.frame = [self.collectionView convertRect:attributes.frame
                                                  toView:nil];
-    if ([cell hasIdentifier:self.selectedItemID]) {
+    if (cell.itemIdentifier == self.selectedItemID) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
       activeItem =
@@ -546,8 +545,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
                                                   size:attributes.size];
       // If the active item is the last inserted item, it needs to be animated
       // differently.
-      if ([cell hasIdentifier:self.lastInsertedItemID])
+      if (cell.itemIdentifier == self.lastInsertedItemID) {
         activeItem.isAppearing = YES;
+      }
       selectionItem = [LegacyGridTransitionItem
           itemWithCell:[GridCell transitionSelectionCellFromCell:cell]
                 center:attributes.center];
@@ -588,7 +588,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   [self removeEmptyStateAnimated:NO];
-  self.lastInsertedItemID = nil;
+  self.lastInsertedItemID = web::WebStateID();
 }
 
 - (void)contentDidAppear {
@@ -632,35 +632,35 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self.collectionView reloadData];
 }
 
-- (NSArray<NSString*>*)selectedItemIDsForEditing {
-  return [self.selectedEditingItemIDs allObjects];
+- (std::set<web::WebStateID>)selectedItemIDsForEditing {
+  return _selectedEditingItemIDs;
 }
 
-- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
-  return [self.selectedSharableEditingItemIDs allObjects];
+- (std::set<web::WebStateID>)selectedShareableItemIDsForEditing {
+  return _selectedSharableEditingItemIDs;
 }
 
 - (BOOL)allItemsSelectedForEditing {
   return _mode == TabGridModeSelection &&
-         self.items.count == self.selectedEditingItemIDs.count;
+         self.items.count == _selectedEditingItemIDs.size();
 }
 
 #pragma mark - Private Editing Mode Selection
 
-- (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
-  return [self.selectedEditingItemIDs containsObject:identifier];
+- (BOOL)isItemWithIDSelectedForEditing:(web::WebStateID)identifier {
+  return _selectedEditingItemIDs.contains(identifier);
 }
 
-- (void)selectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs addObject:identifier];
-  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
-    [self.selectedSharableEditingItemIDs addObject:identifier];
+- (void)selectItemWithIDForEditing:(web::WebStateID)identifier {
+  _selectedEditingItemIDs.insert(identifier);
+  if ([self.shareableItemsProvider isItemWithIDShareable:identifier]) {
+    _selectedSharableEditingItemIDs.insert(identifier);
   }
 }
 
-- (void)deselectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs removeObject:identifier];
-  [self.selectedSharableEditingItemIDs removeObject:identifier];
+- (void)deselectItemWithIDForEditing:(web::WebStateID)identifier {
+  _selectedEditingItemIDs.erase(identifier);
+  _selectedSharableEditingItemIDs.erase(identifier);
 }
 
 // TODO(crbug.com/1462907): Remove the UICollectionViewDataSource methods once
@@ -1265,13 +1265,13 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
-  NSString* pressedItemID = self.items[index].identifier;
+  web::WebStateID pressedItemID = self.items[index].identifier;
   if (![self isItemWithIDSelectedForEditing:pressedItemID]) {
     [self tappedItemAtIndexPath:indexPath];
   }
 
   NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
-  for (NSString* itemID in self.selectedEditingItemIDs) {
+  for (web::WebStateID itemID : _selectedEditingItemIDs) {
     [dragItems addObject:[self.dragDropHandler dragItemForItemWithID:itemID]];
   }
   return dragItems;
@@ -1521,20 +1521,14 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 #pragma mark - TabCollectionConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
-#ifndef NDEBUG
-  // Consistency check: ensure no IDs are duplicated.
-  NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-  for (TabSwitcherItem* item in items) {
-    [identifiers addObject:item.identifier];
-  }
-  CHECK_EQ(identifiers.count, items.count);
-#endif
+       selectedItemID:(web::WebStateID)selectedItemID {
+  // Note: Keep as a DCHECK, as this can be costly.
+  DCHECK(!HasDuplicateIdentifiers(items));
 
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
-  [self.selectedEditingItemIDs removeAllObjects];
-  [self.selectedSharableEditingItemIDs removeAllObjects];
+  _selectedEditingItemIDs.clear();
+  _selectedSharableEditingItemIDs.clear();
 
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
     [self reloadCollectionViewData];
@@ -1564,7 +1558,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
-    selectedItemID:(NSString*)selectedItemID {
+    selectedItemID:(web::WebStateID)selectedItemID {
   if (_mode == TabGridModeSearch) {
     // Prevent inserting items while viewing search results.
     return;
@@ -1583,8 +1577,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
       }];
 }
 
-- (void)removeItemWithID:(NSString*)removedItemID
-          selectedItemID:(NSString*)selectedItemID {
+- (void)removeItemWithID:(web::WebStateID)removedItemID
+          selectedItemID:(web::WebStateID)selectedItemID {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
 
   // Do not remove if not showing the item (i.e. showing search results).
@@ -1610,15 +1604,16 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   }
 }
 
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  if ([self.selectedItemID isEqualToString:selectedItemID])
+- (void)selectItemWithID:(web::WebStateID)selectedItemID {
+  if (self.selectedItemID == selectedItemID) {
     return;
+  }
 
   self.selectedItemID = selectedItemID;
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
-- (void)replaceItemID:(NSString*)existingItemID
+- (void)replaceItemID:(web::WebStateID)existingItemID
              withItem:(TabSwitcherItem*)newItem {
   NSUInteger index = [self indexOfItemWithID:existingItemID];
   if (index == NSNotFound) {
@@ -1626,7 +1621,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   }
   // Consistency check: `newItem`'s ID is either `existingItemID` or not in
   // `self.items`.
-  DCHECK([newItem.identifier isEqualToString:existingItemID] ||
+  DCHECK(newItem.identifier == existingItemID ||
          [self indexOfItemWithID:newItem.identifier] == NSNotFound);
   TabSwitcherItem* existingItem = self.items[index];
   self.items[index] = newItem;
@@ -1635,7 +1630,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     Snapshot* snapshot = self.diffableDataSource.snapshot;
     GridItemIdentifier* existingItemIdentifier =
         [GridItemIdentifier tabIdentifier:existingItem];
-    if ([existingItemID isEqualToString:newItem.identifier]) {
+    if (existingItemID == newItem.identifier) {
       [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
     } else {
       // Add the new item before the existing item.
@@ -1656,7 +1651,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   }
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
+- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
   if (_mode == TabGridModeSearch) {
     // Prevent moving items while viewing search results.
     return;
@@ -1864,7 +1859,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 // inserted.
 - (void)applyModelAndViewUpdatesForInsertionOfItem:(TabSwitcherItem*)item
                                            atIndex:(NSUInteger)index
-                                    selectedItemID:(NSString*)selectedItemID
+                                    selectedItemID:
+                                        (web::WebStateID)selectedItemID
                                           snapshot:(Snapshot*)snapshot {
   // Consistency check: `item`'s ID is not in `items`.
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
@@ -1933,8 +1929,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Makes the required changes to `items` and `collectionView` when an existing
 // item is removed.
-- (void)applyModelAndViewUpdatesForRemovalOfItemWithID:(NSString*)removedItemID
-                                        selectedItemID:(NSString*)selectedItemID
+- (void)applyModelAndViewUpdatesForRemovalOfItemWithID:
+            (web::WebStateID)removedItemID
+                                        selectedItemID:
+                                            (web::WebStateID)selectedItemID
                                               snapshot:(Snapshot*)snapshot {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
   TabSwitcherItem* removedItem = self.items[index];
@@ -1960,7 +1958,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Makes the required changes when a new item has been removed.
 - (void)modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
-    (NSString*)removedItemID {
+    (web::WebStateID)removedItemID {
   if (self.items.count > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
@@ -1970,7 +1968,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Makes the required changes to `items` and `collectionView` when an existing
 // item is moved.
-- (void)applyModelAndViewUpdatesForMoveOfItemWithID:(NSString*)itemID
+- (void)applyModelAndViewUpdatesForMoveOfItemWithID:(web::WebStateID)itemID
                                           fromIndex:(NSUInteger)fromIndex
                                             toIndex:(NSUInteger)toIndex
                                            snapshot:(Snapshot*)snapshot {
@@ -1998,7 +1996,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 }
 
 // Makes the required changes when a new item has been moved.
-- (void)modelAndViewUpdatesForMoveDidCompleteForItemWithID:(NSString*)itemID
+- (void)modelAndViewUpdatesForMoveDidCompleteForItemWithID:
+            (web::WebStateID)itemID
                                                    toIndex:(NSUInteger)toIndex {
   [self.delegate gridViewController:self
                   didMoveItemWithID:itemID
@@ -2070,10 +2069,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 // Returns the index in `self.items` of the first item whose identifier is
 // `identifier`.
-- (NSUInteger)indexOfItemWithID:(NSString*)identifier {
+- (NSUInteger)indexOfItemWithID:(web::WebStateID)identifier {
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
-        return [item.identifier isEqualToString:identifier];
+        return item.identifier == identifier;
       };
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
@@ -2104,25 +2103,26 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   }
   [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
     // Only update the icon if the cell is not already reused for another item.
-    if ([cell hasIdentifier:innerItem.identifier]) {
+    if (cell.itemIdentifier == innerItem.identifier) {
       cell.icon = icon;
     }
   }];
 
   [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
     // Only update the icon if the cell is not already reused for another item.
-    if ([cell hasIdentifier:innerItem.identifier]) {
+    if (cell.itemIdentifier == innerItem.identifier) {
       cell.snapshot = snapshot;
     }
   }];
 
-  NSString* itemIdentifier = item.identifier;
+  web::WebStateID itemID = item.identifier;
   [self.priceCardDataSource
-      priceCardForIdentifier:itemIdentifier
+      priceCardForIdentifier:itemID
                   completion:^(PriceCardItem* priceCardItem) {
-                    if (priceCardItem && [cell hasIdentifier:itemIdentifier])
+                    if (priceCardItem && cell.itemIdentifier == itemID) {
                       [cell setPriceDrop:priceCardItem.price
                            previousPrice:priceCardItem.previousPrice];
+                    }
                   }];
   cell.opacity = 1.0f;
   if (item.showsActivity) {
@@ -2160,7 +2160,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   if (index >= self.items.count)
     return;
 
-  NSString* itemID = self.items[index].identifier;
+  web::WebStateID itemID = self.items[index].identifier;
   if (_mode == TabGridModeSelection) {
     if ([self isItemWithIDSelectedForEditing:itemID]) {
       [self deselectItemWithIDForEditing:itemID];
@@ -2170,7 +2170,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     // Dragging multiple tabs to reorder them is not supported. So there is no
     // need to enable dragging when multiple items are selected in devices that
     // don't support multiple windows.
-    if (self.selectedItemIDsForEditing.count > 1 &&
+    if (self.selectedItemIDsForEditing.size() > 1 &&
         !base::ios::IsMultipleScenesSupported()) {
       self.collectionView.dragInteractionEnabled = NO;
     } else {

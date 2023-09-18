@@ -8,6 +8,9 @@
 #import <UIKit/UIKit.h>
 
 @class TabStripCell;
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Informs the receiver of actions on the cell.
 @protocol TabStripCellDelegate
@@ -27,12 +30,9 @@
 @property(nonatomic, strong) UIImageView* faviconView;
 // Unique identifier for the cell's contents. This is used to ensure that
 // updates in an asynchronous callback are only made if the item is the same.
-@property(nonatomic, copy) NSString* itemIdentifier;
+@property(nonatomic, assign) web::WebStateID itemIdentifier;
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;
-
-// Checks if cell has a specific identifier.
-- (BOOL)hasIdentifier:(NSString*)identifier;
 
 @end
 

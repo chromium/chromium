@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -30,23 +31,23 @@
   self.itemCount = count;
 }
 - (void)gridViewController:(GridViewController*)gridViewController
-       didSelectItemWithID:(NSString*)itemID {
+       didSelectItemWithID:(web::WebStateID)itemID {
   // No-op for unittests. This is only called when a user taps on a cell, not
   // generically when selectedIndex is updated.
 }
 - (void)gridViewController:(GridViewController*)gridViewController
-         didMoveItemWithID:(NSString*)itemID
+         didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {
   // No-op for unittests. This is only called when a user interactively moves
   // an item, not generically when items are moved in the data source.
 }
 - (void)gridViewController:(GridViewController*)gridViewController
-        didCloseItemWithID:(NSString*)itemID {
+        didCloseItemWithID:(web::WebStateID)itemID {
   // No-op for unittests. This is only called when a user taps to close a cell,
   // not generically when items are removed from the data source.
 }
 - (void)gridViewController:(GridViewController*)gridViewController
-       didRemoveItemWIthID:(NSString*)itemID {
+       didRemoveItemWIthID:(web::WebStateID)itemID {
   // No-op for unittests. This is only called when an item has been removed.
 }
 - (void)didChangeLastItemVisibilityInGridViewController:
@@ -97,17 +98,19 @@
 
 class GridViewControllerTest : public RootViewControllerTest {
  public:
-  GridViewControllerTest() {
+  GridViewControllerTest()
+      : identifier_a_(web::WebStateID::NewUnique()),
+        identifier_b_(web::WebStateID::NewUnique()) {
     view_controller_ = [[GridViewController alloc] init];
     // Load the view and notify its content will appear. This sets the data
     // source and loads the initial snapshot.
     [view_controller_ loadView];
     [view_controller_ contentWillAppearAnimated:NO];
     NSArray* items = @[
-      [[TabSwitcherItem alloc] initWithIdentifier:@"A"],
-      [[TabSwitcherItem alloc] initWithIdentifier:@"B"]
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_],
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_],
     ];
-    [view_controller_ populateItems:items selectedItemID:@"A"];
+    [view_controller_ populateItems:items selectedItemID:identifier_a_];
     delegate_ = [[FakeGridViewControllerDelegate alloc] init];
     delegate_.itemCount = 2;
     view_controller_.delegate = delegate_;
@@ -117,6 +120,8 @@ class GridViewControllerTest : public RootViewControllerTest {
   IOSChromeScopedTestingLocalState local_state_;
   GridViewController* view_controller_;
   FakeGridViewControllerDelegate* delegate_;
+  const web::WebStateID identifier_a_;
+  const web::WebStateID identifier_b_;
 };
 
 // Tests that items are initialized and delegate is updated with a new
@@ -124,10 +129,11 @@ class GridViewControllerTest : public RootViewControllerTest {
 TEST_F(GridViewControllerTest, InitializeItems) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
+  web::WebStateID newItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:@"NEW-ITEM"];
-  [view_controller_ populateItems:@[ item ] selectedItemID:@"NEW-ITEM"];
-  EXPECT_NSEQ(@"NEW-ITEM", view_controller_.items[0].identifier);
+      [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
+  [view_controller_ populateItems:@[ item ] selectedItemID:newItemID];
+  EXPECT_EQ(newItemID, view_controller_.items[0].identifier);
   EXPECT_EQ(1U, view_controller_.items.count);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
@@ -137,10 +143,11 @@ TEST_F(GridViewControllerTest, InitializeItems) {
 TEST_F(GridViewControllerTest, InsertItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
+  web::WebStateID newItemID = web::WebStateID::NewUnique();
   [view_controller_
-          insertItem:[[TabSwitcherItem alloc] initWithIdentifier:@"NEW-ITEM"]
+          insertItem:[[TabSwitcherItem alloc] initWithIdentifier:newItemID]
              atIndex:2
-      selectedItemID:@"NEW-ITEM"];
+      selectedItemID:newItemID];
   EXPECT_EQ(3U, view_controller_.items.count);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
   EXPECT_EQ(3U, delegate_.itemCount);
@@ -150,7 +157,8 @@ TEST_F(GridViewControllerTest, InsertItem) {
 TEST_F(GridViewControllerTest, RemoveItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ removeItemWithID:@"A" selectedItemID:@"B"];
+  [view_controller_ removeItemWithID:identifier_a_
+                      selectedItemID:identifier_b_];
   EXPECT_EQ(1U, view_controller_.items.count);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
@@ -160,7 +168,7 @@ TEST_F(GridViewControllerTest, RemoveItem) {
 TEST_F(GridViewControllerTest, SelectItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ selectItemWithID:@"B"];
+  [view_controller_ selectItemWithID:identifier_b_];
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -170,7 +178,7 @@ TEST_F(GridViewControllerTest, SelectItem) {
 TEST_F(GridViewControllerTest, SelectNonexistentItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ selectItemWithID:@"NOT-A-KNOWN-ITEM"];
+  [view_controller_ selectItemWithID:web::WebStateID::NewUnique()];
   EXPECT_EQ(base::checked_cast<NSUInteger>(NSNotFound),
             view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -180,10 +188,11 @@ TEST_F(GridViewControllerTest, SelectNonexistentItem) {
 TEST_F(GridViewControllerTest, ReplaceItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
+  web::WebStateID newItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:@"NEW-ITEM"];
-  [view_controller_ replaceItemID:@"A" withItem:item];
-  EXPECT_NSEQ(@"NEW-ITEM", view_controller_.items[0].identifier);
+      [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
+  [view_controller_ replaceItemID:identifier_a_ withItem:item];
+  EXPECT_EQ(newItemID, view_controller_.items[0].identifier);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
@@ -191,10 +200,11 @@ TEST_F(GridViewControllerTest, ReplaceItem) {
 TEST_F(GridViewControllerTest, ReplaceItemSameIdentifier) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  TabSwitcherItem* item = [[TabSwitcherItem alloc] initWithIdentifier:@"A"];
+  TabSwitcherItem* item =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
   item.title = @"NEW-ITEM-TITLE";
-  [view_controller_ replaceItemID:@"A" withItem:item];
-  EXPECT_NSEQ(@"A", view_controller_.items[0].identifier);
+  [view_controller_ replaceItemID:identifier_a_ withItem:item];
+  EXPECT_EQ(identifier_a_, view_controller_.items[0].identifier);
   EXPECT_NSEQ(@"NEW-ITEM-TITLE", view_controller_.items[0].title);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -203,11 +213,12 @@ TEST_F(GridViewControllerTest, ReplaceItemSameIdentifier) {
 TEST_F(GridViewControllerTest, ReplaceItemNotFound) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
+  web::WebStateID notFoundItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:@"NOT-FOUND"];
-  [view_controller_ replaceItemID:@"NOT-FOUND" withItem:item];
-  EXPECT_NSNE(@"NOT-FOUND", view_controller_.items[0].identifier);
-  EXPECT_NSNE(@"NOT-FOUND", view_controller_.items[1].identifier);
+      [[TabSwitcherItem alloc] initWithIdentifier:notFoundItemID];
+  [view_controller_ replaceItemID:notFoundItemID withItem:item];
+  EXPECT_NE(notFoundItemID, view_controller_.items[0].identifier);
+  EXPECT_NE(notFoundItemID, view_controller_.items[1].identifier);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
@@ -215,8 +226,8 @@ TEST_F(GridViewControllerTest, ReplaceItemNotFound) {
 TEST_F(GridViewControllerTest, MoveSelectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:@"A" toIndex:1];
-  EXPECT_NSEQ(@"A", view_controller_.items[1].identifier);
+  [view_controller_ moveItemWithID:identifier_a_ toIndex:1];
+  EXPECT_EQ(identifier_a_, view_controller_.items[1].identifier);
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -225,8 +236,8 @@ TEST_F(GridViewControllerTest, MoveSelectedItem) {
 TEST_F(GridViewControllerTest, MoveUnselectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:@"B" toIndex:0];
-  EXPECT_NSEQ(@"A", view_controller_.items[1].identifier);
+  [view_controller_ moveItemWithID:identifier_b_ toIndex:0];
+  EXPECT_EQ(identifier_a_, view_controller_.items[1].identifier);
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -247,18 +258,17 @@ TEST_F(GridViewControllerTest, ReplaceScrolledOffScreenCell) {
   NSUInteger visibleCellsCount =
       view_controller_.collectionView.visibleCells.count;
   while (visibleCellsCount >= items.count) {
-    NSString* uniqueID =
-        [NSString stringWithFormat:@"%d", base::checked_cast<int>(items.count)];
+    web::WebStateID uniqueID = web::WebStateID::NewUnique();
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:uniqueID];
-    [view_controller_ insertItem:item atIndex:0 selectedItemID:@"A"];
+    [view_controller_ insertItem:item atIndex:0 selectedItemID:identifier_a_];
     // Spin the runloop to make sure that the visible cells are updated.
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;
   }
   // The last item ("B") is scrolled off screen.
   TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:@"NEW-ITEM"];
+      [[TabSwitcherItem alloc] initWithIdentifier:web::WebStateID::NewUnique()];
   // Do not crash due to cell being nil.
-  [view_controller_ replaceItemID:@"B" withItem:item];
+  [view_controller_ replaceItemID:identifier_b_ withItem:item];
 }

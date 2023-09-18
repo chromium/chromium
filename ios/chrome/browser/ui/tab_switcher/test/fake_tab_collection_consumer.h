@@ -5,15 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TEST_FAKE_TAB_COLLECTION_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TEST_FAKE_TAB_COLLECTION_CONSUMER_H_
 
+#import <vector>
+
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Test object that conforms to TabCollectionConsumer and exposes inner state
 // for test verification.
 @interface FakeTabCollectionConsumer : NSObject <TabCollectionConsumer>
 
-// The fake consumer only keeps the identifiers of items for simplicity
-@property(nonatomic, strong) NSMutableArray<NSString*>* items;
-@property(nonatomic, copy) NSString* selectedItemID;
+// The fake consumer only keeps the identifiers of items for simplicity.
+@property(nonatomic, readonly) const std::vector<web::WebStateID>& items;
+@property(nonatomic, assign) web::WebStateID selectedItemID;
 
 @end
 

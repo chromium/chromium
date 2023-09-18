@@ -15,6 +15,7 @@ source_set("model") {
     "//base",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
+    "//ios/web/public",
     "//ios/web/public/navigation",
     "//net",
     "//url",

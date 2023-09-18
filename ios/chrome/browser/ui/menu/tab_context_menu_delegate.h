@@ -15,6 +15,10 @@ namespace synced_sessions {
 struct DistantSession;
 }
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // Methods used to create context menu actions for tabs.
 @protocol TabContextMenuDelegate <NSObject>
 
@@ -49,15 +53,15 @@ struct DistantSession;
 - (void)selectTabs;
 
 // Tells the delegate to pin a tab with the item identifier `identifier`.
-- (void)pinTabWithIdentifier:(NSString*)identifier;
+- (void)pinTabWithIdentifier:(web::WebStateID)identifier;
 
 // Tells the delegate to unpin a tab with the item identifier `identifier`.
-- (void)unpinTabWithIdentifier:(NSString*)identifier;
+- (void)unpinTabWithIdentifier:(web::WebStateID)identifier;
 
 // Tells the delegate to close the tab with the item identifier `identifier`.
 // `incognito`tracks the incognito state of the tab.
 // `pinned` tracks the pinned state of the tab.
-- (void)closeTabWithIdentifier:(NSString*)identifier
+- (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito
                         pinned:(BOOL)pinned;
 

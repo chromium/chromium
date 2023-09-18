@@ -36,14 +36,14 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 }
 
 // Returns the ID of the active tab in `web_state_list`.
-NSString* GetActiveTabId(WebStateList* web_state_list) {
+web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
   if (!web_state_list)
-    return nil;
+    return web::WebStateID();
 
   web::WebState* web_state = web_state_list->GetActiveWebState();
   if (!web_state)
-    return nil;
-  return web_state->GetStableIdentifier();
+    return web::WebStateID();
+  return web_state->GetUniqueIdentifier();
 }
 
 }  // namespace
@@ -134,12 +134,12 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be -1.
     if (webStateList->active_index() == WebStateList::kInvalidIndex) {
-      [self.consumer selectItemWithID:nil];
+      [self.consumer selectItemWithID:web::WebStateID()];
       return;
     }
 
     [self.consumer
-        selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
+        selectItemWithID:status.new_active_web_state->GetUniqueIdentifier()];
   }
 }
 
@@ -202,7 +202,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   _webStateList->ActivateWebStateAt(index);
 }
 
-- (void)closeItemWithID:(NSString*)itemID {
+- (void)closeItemWithID:(web::WebStateID)itemID {
   int index = GetWebStateIndex(
       self.webStateList,
       WebStateSearchCriteria{
@@ -245,7 +245,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
+  [self.consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
 }
 
 @end

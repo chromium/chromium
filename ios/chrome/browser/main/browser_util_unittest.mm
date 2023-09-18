@@ -86,9 +86,9 @@ class BrowserUtilTest : public PlatformTest {
   }
 
   // Returns the tab ID for the web state at `index` in `browser`.
-  NSString* GetTabIDForWebStateAt(int index, Browser* browser) {
+  web::WebStateID GetTabIDForWebStateAt(int index, Browser* browser) {
     web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
-    return web_state->GetStableIdentifier();
+    return web_state->GetUniqueIdentifier();
   }
 
   // Returns the cached snapshot for the given snapshot ID in the given snapshot
@@ -123,7 +123,7 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossIncognitoBrowsers) {
   ASSERT_EQ(1, incognito_browser_->GetWebStateList()->count());
   ASSERT_TRUE(other_incognito_browser_->GetWebStateList()->empty());
   ASSERT_TRUE(tab_restore_service_->entries().empty());
-  NSString* tab_id = GetTabIDForWebStateAt(0, incognito_browser_.get());
+  web::WebStateID tab_id = GetTabIDForWebStateAt(0, incognito_browser_.get());
 
   BrowserAndIndex tab_info =
       FindBrowserAndIndex(tab_id, browser_list_->AllIncognitoBrowsers());
@@ -143,7 +143,7 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_TRUE(other_browser_->GetWebStateList()->empty());
   ASSERT_TRUE(tab_restore_service_->entries().empty());
-  NSString* tab_id = GetTabIDForWebStateAt(1, browser_.get());
+  web::WebStateID tab_id = GetTabIDForWebStateAt(1, browser_.get());
 
   BrowserAndIndex tab_info =
       FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());
@@ -158,9 +158,9 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
   EXPECT_EQ(tab_id, GetTabIDForWebStateAt(0, other_browser_.get()));
 }
 
-// Tests `FindBrowserAndIndex:` with an invalid tab_id.
-TEST_F(BrowserUtilTest, TestFindBrowserAndIndexWithInvalidId) {
-  NSString* tab_id = @"invalid_id";
+// Tests `FindBrowserAndIndex:` with an unknown tab_id.
+TEST_F(BrowserUtilTest, TestFindBrowserAndIndexWithUnknownId) {
+  web::WebStateID tab_id = web::WebStateID::NewUnique();
 
   BrowserAndIndex tab_info =
       FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());
@@ -176,7 +176,7 @@ TEST_F(BrowserUtilTest, TestFindBrowserAndIndexWithInvalidId) {
 TEST_F(BrowserUtilTest, TestReorderTabWithinSameBrowser) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_TRUE(tab_restore_service_->entries().empty());
-  NSString* tab_id = GetTabIDForWebStateAt(0, browser_.get());
+  web::WebStateID tab_id = GetTabIDForWebStateAt(0, browser_.get());
 
   BrowserAndIndex tab_info =
       FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());

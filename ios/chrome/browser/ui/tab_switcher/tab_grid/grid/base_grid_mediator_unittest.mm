@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
+#import "base/containers/contains.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -84,25 +85,25 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
 // Tests that the consumer is populated after the tab model is set on the
 // mediator.
 TEST_P(BaseGridMediatorTest, ConsumerPopulateItems) {
-  EXPECT_EQ(3UL, consumer_.items.count);
-  EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
 }
 
 // Tests that the consumer is notified when a web state is inserted.
 TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
-  ASSERT_EQ(3UL, consumer_.items.count);
+  ASSERT_EQ(3UL, consumer_.items.size());
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
-  NSString* item_identifier = web_state.get()->GetStableIdentifier();
+  web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
   browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
                                               WebStateList::INSERT_FORCE_INDEX,
                                               WebStateOpener());
-  EXPECT_EQ(4UL, consumer_.items.count);
+  EXPECT_EQ(4UL, consumer_.items.size());
   // The same ID should be selected after the insertion, since the new web state
   // wasn't selected.
-  EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
-  EXPECT_NSEQ(item_identifier, consumer_.items[1]);
-  EXPECT_FALSE([original_identifiers_ containsObject:item_identifier]);
+  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(item_identifier, consumer_.items[1]);
+  EXPECT_FALSE(base::Contains(original_identifiers_, item_identifier));
 }
 
 // Tests that the consumer is notified when a web state is removed.
@@ -110,17 +111,17 @@ TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
 // at index 2 should be the new selected item.
 TEST_P(BaseGridMediatorTest, ConsumerRemoveItem) {
   browser_->GetWebStateList()->CloseWebStateAt(1, WebStateList::CLOSE_NO_FLAGS);
-  EXPECT_EQ(2UL, consumer_.items.count);
+  EXPECT_EQ(2UL, consumer_.items.size());
   // Expect that a different web state is selected now.
-  EXPECT_NSNE(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_NE(original_selected_identifier_, consumer_.selectedItemID);
 }
 
 // Tests that the consumer is notified when the active web state is changed.
 TEST_P(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
-  EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
   browser_->GetWebStateList()->ActivateWebStateAt(2);
-  EXPECT_NSEQ(
-      browser_->GetWebStateList()->GetWebStateAt(2)->GetStableIdentifier(),
+  EXPECT_EQ(
+      browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier(),
       consumer_.selectedItemID);
 }
 
@@ -131,23 +132,23 @@ TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
   auto new_web_state = std::make_unique<web::FakeWebState>();
   new_web_state->SetWebFramesManager(
       std::make_unique<web::FakeWebFramesManager>());
-  NSString* new_item_identifier = new_web_state->GetStableIdentifier();
+  web::WebStateID new_item_identifier = new_web_state->GetUniqueIdentifier();
   @autoreleasepool {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));
   }
-  EXPECT_EQ(3UL, consumer_.items.count);
-  EXPECT_NSEQ(new_item_identifier, consumer_.selectedItemID);
-  EXPECT_NSEQ(new_item_identifier, consumer_.items[1]);
-  EXPECT_FALSE([original_identifiers_ containsObject:new_item_identifier]);
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(new_item_identifier, consumer_.selectedItemID);
+  EXPECT_EQ(new_item_identifier, consumer_.items[1]);
+  EXPECT_FALSE(base::Contains(original_identifiers_, new_item_identifier));
 }
 
 // Tests that the consumer is notified when a web state is moved.
 TEST_P(BaseGridMediatorTest, ConsumerMoveItem) {
-  NSString* item1 = consumer_.items[1];
-  NSString* item2 = consumer_.items[2];
+  web::WebStateID item1 = consumer_.items[1];
+  web::WebStateID item2 = consumer_.items[2];
   browser_->GetWebStateList()->MoveWebStateAt(1, 2);
-  EXPECT_NSEQ(item1, consumer_.items[2]);
-  EXPECT_NSEQ(item2, consumer_.items[1]);
+  EXPECT_EQ(item1, consumer_.items[2]);
+  EXPECT_EQ(item2, consumer_.items[1]);
 }
 
 #pragma mark - Command tests
@@ -156,11 +157,11 @@ TEST_P(BaseGridMediatorTest, ConsumerMoveItem) {
 // Tests that the consumer's selected index is updated.
 TEST_P(BaseGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
-  NSString* identifier =
-      browser_->GetWebStateList()->GetWebStateAt(2)->GetStableIdentifier();
+  web::WebStateID identifier =
+      browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
   [mediator_ selectItemWithID:identifier];
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
-  EXPECT_NSEQ(identifier, consumer_.selectedItemID);
+  EXPECT_EQ(identifier, consumer_.selectedItemID);
 }
 
 // Tests that the WebStateList count is decremented when
@@ -168,11 +169,11 @@ TEST_P(BaseGridMediatorTest, SelectItemCommand) {
 // Tests that the consumer's item count is also decremented.
 TEST_P(BaseGridMediatorTest, CloseItemCommand) {
   // Previously there were 3 items.
-  NSString* identifier =
-      browser_->GetWebStateList()->GetWebStateAt(0)->GetStableIdentifier();
+  web::WebStateID identifier =
+      browser_->GetWebStateList()->GetWebStateAt(0)->GetUniqueIdentifier();
   [mediator_ closeItemWithID:identifier];
   EXPECT_EQ(2, browser_->GetWebStateList()->count());
-  EXPECT_EQ(2UL, consumer_.items.count);
+  EXPECT_EQ(2UL, consumer_.items.size());
 }
 
 // Tests that when `-addNewItem` is called, the WebStateList count is
@@ -193,12 +194,12 @@ TEST_P(BaseGridMediatorTest, AddNewItemAtEndCommand) {
   // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
   // to return pending item's URL.
   EXPECT_EQ("", web_state->GetVisibleURL().spec());
-  NSString* identifier = web_state->GetStableIdentifier();
-  EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
+  web::WebStateID identifier = web_state->GetUniqueIdentifier();
+  EXPECT_FALSE(base::Contains(original_identifiers_, identifier));
   // Consumer checks.
-  EXPECT_EQ(4UL, consumer_.items.count);
-  EXPECT_NSEQ(identifier, consumer_.selectedItemID);
-  EXPECT_NSEQ(identifier, consumer_.items[3]);
+  EXPECT_EQ(4UL, consumer_.items.size());
+  EXPECT_EQ(identifier, consumer_.selectedItemID);
+  EXPECT_EQ(identifier, consumer_.items[3]);
 }
 
 // Tests that when `-insertNewItemAtIndex:` is called, the WebStateList
@@ -219,16 +220,16 @@ TEST_P(BaseGridMediatorTest, InsertNewItemCommand) {
   // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
   // to return pending item's URL.
   EXPECT_EQ("", web_state->GetVisibleURL().spec());
-  NSString* identifier = web_state->GetStableIdentifier();
-  EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
+  web::WebStateID identifier = web_state->GetUniqueIdentifier();
+  EXPECT_FALSE(base::Contains(original_identifiers_, identifier));
   // Consumer checks.
-  EXPECT_EQ(4UL, consumer_.items.count);
-  EXPECT_NSEQ(identifier, consumer_.selectedItemID);
-  EXPECT_NSEQ(identifier, consumer_.items[0]);
+  EXPECT_EQ(4UL, consumer_.items.size());
+  EXPECT_EQ(identifier, consumer_.selectedItemID);
+  EXPECT_EQ(identifier, consumer_.items[0]);
 }
 
 // Tests that `-insertNewItemAtIndex:` is a no-op if the mediator's browser
-// is bullptr.
+// is nullptr.
 TEST_P(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   mediator_.browser = nullptr;
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
@@ -243,12 +244,12 @@ TEST_P(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
 // have been reordered.
 TEST_P(BaseGridMediatorTest, MoveItemCommand) {
   // Capture ordered original IDs.
-  NSMutableArray<NSString*>* pre_move_ids = [[NSMutableArray alloc] init];
+  std::vector<web::WebStateID> pre_move_ids;
   for (int i = 0; i < 3; i++) {
     web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
-    [pre_move_ids addObject:web_state->GetStableIdentifier()];
+    pre_move_ids.push_back(web_state->GetUniqueIdentifier());
   }
-  NSString* pre_move_selected_id =
+  web::WebStateID pre_move_selected_id =
       pre_move_ids[browser_->GetWebStateList()->active_index()];
   // Items start ordered [A, B, C].
   [mediator_ moveItemWithID:consumer_.items[0] toIndex:2];
@@ -263,9 +264,9 @@ TEST_P(BaseGridMediatorTest, MoveItemCommand) {
     web::WebState* web_state =
         browser_->GetWebStateList()->GetWebStateAt(index);
     ASSERT_TRUE(web_state);
-    NSString* identifier = web_state->GetStableIdentifier();
-    EXPECT_NSEQ(identifier, pre_move_ids[(index + 1) % 3]);
-    EXPECT_NSEQ(identifier, consumer_.items[index]);
+    web::WebStateID identifier = web_state->GetUniqueIdentifier();
+    EXPECT_EQ(identifier, pre_move_ids[(index + 1) % 3]);
+    EXPECT_EQ(identifier, consumer_.items[index]);
   }
   EXPECT_EQ(pre_move_selected_id, consumer_.selectedItemID);
 }
@@ -274,19 +275,19 @@ TEST_P(BaseGridMediatorTest, MoveItemCommand) {
 // items in WebStateList and the correct items are populated by the consumer.
 TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {
   // Capture ordered original IDs.
-  NSMutableArray<NSString*>* pre_search_ids = [[NSMutableArray alloc] init];
+  std::vector<web::WebStateID> pre_search_ids;
   for (int i = 0; i < 3; i++) {
     web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
-    [pre_search_ids addObject:web_state->GetStableIdentifier()];
+    pre_search_ids.push_back(web_state->GetUniqueIdentifier());
   }
-  NSString* expected_result_identifier =
-      browser_->GetWebStateList()->GetWebStateAt(2)->GetStableIdentifier();
+  web::WebStateID expected_result_identifier =
+      browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
 
   [mediator_ searchItemsWithText:@"hello"];
 
   // Only one result should be found.
   EXPECT_TRUE(WaitForConsumerUpdates(1UL));
-  EXPECT_NSEQ(expected_result_identifier, consumer_.items[0]);
+  EXPECT_EQ(expected_result_identifier, consumer_.items[0]);
 
   // Web states count should not change.
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
@@ -296,8 +297,8 @@ TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {
   for (int i = 0; i < 3; i++) {
     web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
     ASSERT_TRUE(web_state);
-    NSString* identifier = web_state->GetStableIdentifier();
-    EXPECT_NSEQ(identifier, pre_search_ids[i]);
+    web::WebStateID identifier = web_state->GetUniqueIdentifier();
+    EXPECT_EQ(identifier, pre_search_ids[i]);
   }
 }
 
@@ -305,7 +306,7 @@ TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {
 // items from items in WebStateList and correct item selected.
 TEST_P(BaseGridMediatorTest, resetToAllItems) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
-  ASSERT_EQ(3UL, consumer_.items.count);
+  ASSERT_EQ(3UL, consumer_.items.size());
 
   [mediator_ searchItemsWithText:@"hello"];
   // Only 1 result is in the consumer after the search is done.
@@ -315,15 +316,15 @@ TEST_P(BaseGridMediatorTest, resetToAllItems) {
   // consumer should revert back to have the items from the webstate list.
   ASSERT_TRUE(WaitForConsumerUpdates(3UL));
   // Active index should not change.
-  EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
 
   // The order of the items on the consumer be the exact same order as the in
   // WebStateList.
   for (int i = 0; i < 3; i++) {
     web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
     ASSERT_TRUE(web_state);
-    NSString* identifier = web_state->GetStableIdentifier();
-    EXPECT_NSEQ(identifier, consumer_.items[i]);
+    web::WebStateID identifier = web_state->GetUniqueIdentifier();
+    EXPECT_EQ(identifier, consumer_.items[i]);
   }
 }
 
@@ -334,7 +335,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   // No need to set a null price drop - it will be null by default. Simply
   // need to create the helper.
   ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
-  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
+  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
@@ -345,7 +346,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
       browser_->GetWebStateList()->GetWebStateAt(2);
   ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
   SetFakePriceDrop(web_state_to_select);
-  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
+  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }
@@ -353,7 +354,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
 TEST_P(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
-  [mediator_ selectItemWithID:web_state_to_select->GetStableIdentifier()];
+  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }

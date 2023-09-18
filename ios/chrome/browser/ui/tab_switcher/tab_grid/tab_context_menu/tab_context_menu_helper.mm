@@ -201,7 +201,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 }
 
 // Returns `YES` if the tab for the given `identifier` is pinned.
-- (BOOL)isTabPinnedForIdentifier:(NSString*)identifier {
+- (BOOL)isTabPinnedForIdentifier:(web::WebStateID)identifier {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
 
@@ -220,7 +220,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 }
 
 // Returns the TabItem object representing the tab with `identifier.
-- (TabItem*)tabItemForIdentifier:(NSString*)identifier {
+- (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
   std::set<Browser*> browsers = _incognito ? browserList->AllIncognitoBrowsers()

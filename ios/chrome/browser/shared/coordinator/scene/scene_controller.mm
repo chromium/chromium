@@ -577,7 +577,7 @@ void InjectNTP(Browser* browser) {
 - (void)handleTabMoveActivity:(NSUserActivity*)activity {
   DCHECK(ActivityIsTabMove(activity));
   BOOL incognito = GetIncognitoFromTabMoveActivity(activity);
-  NSString* tabID = GetTabIDFromActivity(activity);
+  web::WebStateID tabID = GetTabIDFromActivity(activity);
 
   WrangledBrowser* interface = self.currentInterface;
 
@@ -1371,7 +1371,7 @@ void InjectNTP(Browser* browser) {
 
 // Returns 'YES' if the tabID from the given `activity` is valid.
 - (BOOL)isTabActivityValid:(NSUserActivity*)activity {
-  NSString* tabID = GetTabIDFromActivity(activity);
+  web::WebStateID tabID = GetTabIDFromActivity(activity);
 
   ChromeBrowserState* browserState = self.currentInterface.browserState;
   BrowserList* browserList =

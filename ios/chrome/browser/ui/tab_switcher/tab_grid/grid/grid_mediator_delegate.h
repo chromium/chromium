@@ -9,6 +9,9 @@
 
 @class BaseGridMediator;
 @class URLWithTitle;
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Delegate protocol for an object that can handle the action sheet that asks
 // for confirmation from the tab grid.
@@ -20,9 +23,10 @@
 - (void)
     showCloseItemsConfirmationActionSheetWithBaseGridMediator:
         (BaseGridMediator*)baseGridMediator
-                                                        items:(NSArray<
-                                                                  NSString*>*)
-                                                                  items
+                                                      itemIDs:
+                                                          (const std::set<
+                                                              web::WebStateID>&)
+                                                              itemIDs
                                                        anchor:(UIBarButtonItem*)
                                                                   buttonAnchor;
 

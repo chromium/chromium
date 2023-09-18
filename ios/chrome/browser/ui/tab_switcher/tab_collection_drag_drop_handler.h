@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // A protocol for objects that handle drag and drop interactions for a
 // collection view involving the model layer.
 @protocol TabCollectionDragDropHandler
@@ -16,11 +20,11 @@
 // including within the same collection, another view, or other apps. `itemID`
 // uniquely identifies a single item in the model layer known to the object
 // conforming to this protocol.
-- (UIDragItem*)dragItemForItemWithID:(NSString*)itemID;
+- (UIDragItem*)dragItemForItemWithID:(web::WebStateID)itemID;
 
 // Tells the receiver that the drag session will begin for the item with
 // `itemID`.
-- (void)dragWillBeginForItemWithID:(NSString*)itemID;
+- (void)dragWillBeginForItemWithID:(web::WebStateID)itemID;
 
 // Tells the receiver that the drag session did end.
 - (void)dragSessionDidEnd;

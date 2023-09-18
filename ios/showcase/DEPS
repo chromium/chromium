@@ -3,5 +3,6 @@ include_rules = [
   "+ios/chrome",
   "+ios/third_party/material_components_ios",
   "+ios/web/common/uikit_ui_util.h",
+  "+ios/web/public/web_state_id.h",
   "+ui/base",
 ]

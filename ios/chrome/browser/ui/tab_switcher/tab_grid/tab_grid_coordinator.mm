@@ -1002,9 +1002,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)
     showCloseItemsConfirmationActionSheetWithBaseGridMediator:
         (BaseGridMediator*)baseGridMediator
-                                                        items:(NSArray<
-                                                                  NSString*>*)
-                                                                  items
+                                                      itemIDs:
+                                                          (const std::set<
+                                                              web::WebStateID>&)
+                                                              itemIDs
                                                        anchor:(UIBarButtonItem*)
                                                                   buttonAnchor {
   if (baseGridMediator == self.regularTabsMediator) {
@@ -1033,15 +1034,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   __weak BaseGridMediator* weakBaseGridMediator = baseGridMediator;
   __weak TabGridCoordinator* weakSelf = self;
+  // Copy the set of items, so that the following block can use it.
+  std::set<web::WebStateID> itemIDsCopy = itemIDs;
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
                                IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-                               items.count))
+                               itemIDs.size()))
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsConfirmed"));
-                  [weakBaseGridMediator closeItemsWithIDs:items];
+                  [weakBaseGridMediator closeItemsWithIDs:itemIDsCopy];
                   [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
@@ -1162,7 +1165,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)inactiveTabsCoordinator:
             (InactiveTabsCoordinator*)inactiveTabsCoordinator
-            didSelectItemWithID:(NSString*)itemID {
+            didSelectItemWithID:(web::WebStateID)itemID {
   WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
   int toInsertIndex = regularWebStateList->count();
 
@@ -1312,15 +1315,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.bookmarksCoordinator presentBookmarkEditorForURL:URL];
 }
 
-- (void)pinTabWithIdentifier:(NSString*)identifier {
-  [self.regularTabsMediator setPinState:YES forItemWithIdentifier:identifier];
+- (void)pinTabWithIdentifier:(web::WebStateID)identifier {
+  [self.regularTabsMediator setPinState:YES forItemWithID:identifier];
 }
 
-- (void)unpinTabWithIdentifier:(NSString*)identifier {
-  [self.pinnedTabsMediator setPinState:NO forItemWithIdentifier:identifier];
+- (void)unpinTabWithIdentifier:(web::WebStateID)identifier {
+  [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
-- (void)closeTabWithIdentifier:(NSString*)identifier
+- (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito
                         pinned:(BOOL)pinned {
   if (incognito) {

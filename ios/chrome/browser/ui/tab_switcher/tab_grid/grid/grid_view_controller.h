@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <set>
+
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
@@ -22,6 +24,9 @@
 @protocol IncognitoReauthCommands;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
@@ -29,15 +34,15 @@
 // Tells the delegate that the item with `itemID` was selected in
 // `gridViewController`.
 - (void)gridViewController:(GridViewController*)gridViewController
-       didSelectItemWithID:(NSString*)itemID;
+       didSelectItemWithID:(web::WebStateID)itemID;
 // Tells the delegate that the item with `itemID` was closed in
 // `gridViewController`.
 - (void)gridViewController:(GridViewController*)gridViewController
-        didCloseItemWithID:(NSString*)itemID;
+        didCloseItemWithID:(web::WebStateID)itemID;
 // Tells the delegate that the item with `itemID` was moved to
 // `destinationIndex`.
 - (void)gridViewController:(GridViewController*)gridViewController
-         didMoveItemWithID:(NSString*)itemID
+         didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex;
 // Tells the delegate that the the number of items in `gridViewController`
 // changed to `count`.
@@ -45,7 +50,7 @@
         didChangeItemCount:(NSUInteger)count;
 // Tells the delegate that the item with `itemID` was removed.
 - (void)gridViewController:(GridViewController*)gridViewController
-       didRemoveItemWIthID:(NSString*)itemID;
+       didRemoveItemWIthID:(web::WebStateID)itemID;
 
 // Tells the delegate that the visibility of the last item of the grid changed.
 - (void)didChangeLastItemVisibilityInGridViewController:
@@ -137,11 +142,12 @@
     shareableItemsProvider;
 
 // The item IDs of selected items for editing.
-@property(nonatomic, readonly) NSArray<NSString*>* selectedItemIDsForEditing;
+@property(nonatomic, readonly) std::set<web::WebStateID>
+    selectedItemIDsForEditing;
 // The item IDs of selected items for editing which are shareable outside of the
 // application.
-@property(nonatomic, readonly)
-    NSArray<NSString*>* selectedShareableItemIDsForEditing;
+@property(nonatomic, readonly) std::set<web::WebStateID>
+    selectedShareableItemIDsForEditing;
 
 // Whether or not all items are selected. NO if `mode` is not
 // TabGridModeSelection.

@@ -143,8 +143,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-
-  self.itemIdentifier = nil;
   self.icon = nil;
   self.title = nil;
   self.snapshot = nil;

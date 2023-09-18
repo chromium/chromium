@@ -7,10 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/platform_test.h"
 
 class AuthenticationService;
@@ -55,8 +58,8 @@ class GridMediatorTestClass : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeTabCollectionConsumer* consumer_;
-  NSSet<NSString*>* original_identifiers_;
-  NSString* original_selected_identifier_;
+  std::vector<web::WebStateID> original_identifiers_;
+  web::WebStateID original_selected_identifier_;
   std::unique_ptr<Browser> browser_;
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;

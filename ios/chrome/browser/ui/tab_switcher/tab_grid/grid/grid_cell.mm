@@ -203,7 +203,6 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.itemIdentifier = nil;
   self.title = nil;
   self.titleHidden = NO;
   self.icon = nil;

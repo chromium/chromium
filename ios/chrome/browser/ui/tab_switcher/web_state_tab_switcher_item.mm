@@ -26,7 +26,7 @@ const CGFloat kSymbolSize = 16;
 
 - (instancetype)initWithWebState:(web::WebState*)webState {
   DCHECK(webState);
-  self = [super initWithIdentifier:webState->GetStableIdentifier()];
+  self = [super initWithIdentifier:webState->GetUniqueIdentifier()];
   if (self) {
     _webState = webState->GetWeakPtr();
 

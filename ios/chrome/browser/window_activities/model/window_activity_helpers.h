@@ -10,6 +10,9 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
 
+namespace web {
+class WebStateID;
+}  // namespace web
 struct UrlLoadParams;
 
 // Window activity origins.  Please add new origins at the end, to keep
@@ -62,7 +65,7 @@ NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin, const GURL& url);
 
 // Create a new activity that moves a tab either between browsers, or reorders
 // within a browser.
-NSUserActivity* ActivityToMoveTab(NSString* tab_id, BOOL incognito);
+NSUserActivity* ActivityToMoveTab(web::WebStateID tab_id, BOOL incognito);
 
 // Returns an activity based on `activity_to_adapt` info, changing its mode to
 // follow `incognito`.
@@ -85,7 +88,7 @@ UrlLoadParams LoadParamsFromActivity(NSUserActivity* activity);
 WindowActivityOrigin OriginOfActivity(NSUserActivity* activity);
 
 // Returns the tab identifier from the given activity.
-NSString* GetTabIDFromActivity(NSUserActivity* activity);
+web::WebStateID GetTabIDFromActivity(NSUserActivity* activity);
 
 // Returns `true` if the activity is a tab move activity and has the incognito
 // flag set.

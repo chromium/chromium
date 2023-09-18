@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 
+#import "base/containers/contains.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -68,7 +69,7 @@ TEST_F(RegularGridMediatorTest, SaveAndCloseAllItemsCommand) {
   // Previously there were 3 items.
   [mediator_ saveAndCloseAllItems];
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
+  EXPECT_EQ(0UL, consumer_.items.size());
 }
 
 // Tests that the WebStateList is not restored to 3 items when
@@ -80,7 +81,7 @@ TEST_F(RegularGridMediatorTest, DiscardSavedClosedItemsCommand) {
   [mediator_ discardSavedClosedItems];
   [mediator_ undoCloseAllItems];
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
+  EXPECT_EQ(0UL, consumer_.items.size());
 }
 
 // Tests that the WebStateList is restored to 3 items when
@@ -91,10 +92,10 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
   [mediator_ saveAndCloseAllItems];
   [mediator_ undoCloseAllItems];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
-  EXPECT_EQ(3UL, consumer_.items.count);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[0]]);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[1]]);
-  EXPECT_TRUE([original_identifiers_ containsObject:consumer_.items[2]]);
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[0]));
+  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[1]));
+  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[2]));
 }
 
 // Tests that the WebStateList is restored to 3 items when
@@ -113,7 +114,7 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
   EXPECT_EQ(3UL, ids.size());
   // There should be no tabs in the WebStateList.
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
+  EXPECT_EQ(0UL, consumer_.items.size());
 
   // Add three new tabs.
   auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
@@ -135,10 +136,10 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
   // The NTP should not be saved.
   EXPECT_EQ(5UL, tab_restore_service_->entries().size());
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
+  EXPECT_EQ(0UL, consumer_.items.size());
   [mediator_ undoCloseAllItems];
   EXPECT_EQ(3UL, tab_restore_service_->entries().size());
-  EXPECT_EQ(3UL, consumer_.items.count);
+  EXPECT_EQ(3UL, consumer_.items.size());
   // Check the session entries were not changed.
   for (auto& entry : tab_restore_service_->entries()) {
     EXPECT_EQ(1UL, ids.count(entry->id.id()));

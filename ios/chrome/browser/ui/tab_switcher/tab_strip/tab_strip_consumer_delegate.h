@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CONSUMER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CONSUMER_DELEGATE_H_
 
-#import <UIKit/UIKit.h>
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Protocol that the tabstrip UI uses to update the model.
 @protocol TabStripConsumerDelegate
@@ -18,7 +20,7 @@
 
 // Tells the receiver to close the item with identifier `itemID`. If there is
 // no item with that identifier, no item is closed.
-- (void)closeItemWithID:(NSString*)itemID;
+- (void)closeItemWithID:(web::WebStateID)itemID;
 
 @end
 

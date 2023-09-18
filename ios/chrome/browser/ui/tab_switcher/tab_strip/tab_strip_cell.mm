@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -78,7 +79,7 @@ const CGFloat kFontSize = 14.0;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.titleLabel.text = nil;
-  self.itemIdentifier = nil;
+  self.itemIdentifier = web::WebStateID();
   self.selected = NO;
   self.faviconView = nil;
 }
@@ -88,10 +89,6 @@ const CGFloat kFontSize = 14.0;
       initWithImage:[UIImage imageNamed:@"tabstrip_background_tab"]];
   self.selectedBackgroundView = [[UIImageView alloc]
       initWithImage:[UIImage imageNamed:@"tabstrip_foreground_tab"]];
-}
-
-- (BOOL)hasIdentifier:(NSString*)identifier {
-  return [self.itemIdentifier isEqualToString:identifier];
 }
 
 #pragma mark - UIView

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
 PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
@@ -19,15 +20,6 @@ PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
   return [[PriceCardItem alloc]
       initWithPrice:shoppingHelper->GetPriceDrop()->current_price
       previousPrice:shoppingHelper->GetPriceDrop()->previous_price];
-}
-
-web::WebState* GetWebState(WebStateList* web_state_list, NSString* tab_id) {
-  for (int i = 0; i < web_state_list->count(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([tab_id isEqualToString:web_state->GetStableIdentifier()])
-      return web_state;
-  }
-  return nullptr;
 }
 
 @interface PriceCardMediator ()
@@ -54,9 +46,11 @@ web::WebState* GetWebState(WebStateList* web_state_list, NSString* tab_id) {
 
 #pragma mark - PriceCardDataSource
 
-- (void)priceCardForIdentifier:(NSString*)identifier
+- (void)priceCardForIdentifier:(web::WebStateID)identifier
                     completion:(void (^)(PriceCardItem*))completion {
-  web::WebState* webState = GetWebState(self.webStateList, identifier);
+  web::WebState* webState = GetWebState(
+      self.webStateList, WebStateSearchCriteria{.identifier = identifier});
   completion(CreatePriceCardItem(webState));
 }
+
 @end

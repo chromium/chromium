@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 
+#import "ios/web/public/web_state_id.h"
+
 @implementation TabCell
 
-- (BOOL)hasIdentifier:(NSString*)identifier {
-  return [self.itemIdentifier isEqualToString:identifier];
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.itemIdentifier = web::WebStateID();
 }
 
 @end

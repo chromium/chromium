@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/model/move_tab_activity_type_buildflags.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state_id.h"
 #import "net/base/mac/url_conversions.h"
 
 // Activity types.
@@ -66,7 +67,7 @@ NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin,
   return activity;
 }
 
-NSUserActivity* ActivityToMoveTab(NSString* tab_id, BOOL incognito) {
+NSUserActivity* ActivityToMoveTab(web::WebStateID tab_id, BOOL incognito) {
   NSString* moveTabActivityType =
       base::SysUTF8ToNSString(BUILDFLAG(IOS_MOVE_TAB_ACTIVITY_TYPE));
   NSUserActivity* activity =
@@ -74,7 +75,7 @@ NSUserActivity* ActivityToMoveTab(NSString* tab_id, BOOL incognito) {
   NSNumber* origin = @(WindowActivityOrigin::WindowActivityTabDragOrigin);
   NSDictionary* params = @{
     kOriginKey : origin,
-    kTabIdentifierKey : tab_id,
+    kTabIdentifierKey : @(tab_id.identifier()),
     kTabIncognitoKey : @(incognito)
   };
   [activity addUserInfoEntriesFromDictionary:params];
@@ -139,11 +140,12 @@ WindowActivityOrigin OriginOfActivity(NSUserActivity* activity) {
                 : WindowActivityUnknownOrigin;
 }
 
-NSString* GetTabIDFromActivity(NSUserActivity* activity) {
+web::WebStateID GetTabIDFromActivity(NSUserActivity* activity) {
   if (!ActivityIsTabMove(activity)) {
-    return nil;
+    return web::WebStateID();
   }
-  return activity.userInfo[kTabIdentifierKey];
+  NSNumber* tabIDNumber = activity.userInfo[kTabIdentifierKey];
+  return web::WebStateID::FromSerializedValue(tabIDNumber.integerValue);
 }
 
 BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity) {

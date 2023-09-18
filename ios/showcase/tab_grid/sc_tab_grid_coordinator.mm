@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
+#import "ios/web/public/web_state_id.h"
 
 @interface SCTabGridCoordinator ()<UINavigationControllerDelegate>
 @property(nonatomic, strong) TabGridViewController* viewController;
@@ -43,7 +44,7 @@
   NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 10; i++) {
     TabSwitcherItem* item = [[TabSwitcherItem alloc]
-        initWithIdentifier:[NSString stringWithFormat:@"incogitem%d", i]];
+        initWithIdentifier:web::WebStateID::NewUnique()];
     item.title = @"YouTube - Cat Videos";
     [items addObject:item];
   }
@@ -52,7 +53,7 @@
   items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 10; i++) {
     TabSwitcherItem* item = [[TabSwitcherItem alloc]
-        initWithIdentifier:[NSString stringWithFormat:@"item%d", i]];
+        initWithIdentifier:web::WebStateID::NewUnique()];
     item.title = @"The New York Times - Breaking News";
     [items addObject:item];
   }

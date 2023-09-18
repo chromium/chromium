@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/web/public/web_state_id.h"
 
 @implementation GridItemIdentifier
 
@@ -36,7 +37,7 @@
 - (NSUInteger)hash {
   switch (_type) {
     case GridItemType::Tab:
-      return [self.tabSwitcherItem.identifier hash];
+      return self.tabSwitcherItem.identifier.identifier();
     case GridItemType::SuggestedActions:
       return static_cast<NSUInteger>(_type);
   }
@@ -53,10 +54,10 @@
   }
   switch (_type) {
     case GridItemType::Tab:
-      return [self.tabSwitcherItem.identifier
-          isEqualToString:itemIdentifier.tabSwitcherItem.identifier];
+      return self.tabSwitcherItem.identifier ==
+             itemIdentifier.tabSwitcherItem.identifier;
     case GridItemType::SuggestedActions:
-      return _type == itemIdentifier.type;
+      return YES;
   }
 }
 

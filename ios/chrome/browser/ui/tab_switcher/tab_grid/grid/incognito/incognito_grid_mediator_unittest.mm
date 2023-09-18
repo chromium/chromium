@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "ios/web/public/web_state_id.h"
 
 class IncognitoGridMediatorTest : public GridMediatorTestClass {
  public:
@@ -44,7 +45,7 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
   // Previously there were 3 items.
   [mediator_ closeAllItems];
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.count);
+  EXPECT_EQ(0UL, consumer_.items.size());
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.

@@ -107,7 +107,7 @@ TEST_F(PinnedTabsMediatorTest, ConsumerInsertItem) {
   auto web_state2 = CreateFakeWebStateWithURL(GURLWithIndex(2));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state2), WebStateList::INSERT_PINNED, WebStateOpener());
-  EXPECT_EQ(2UL, consumer_.items.count);
+  EXPECT_EQ(2UL, consumer_.items.size());
 
   // Inserts one regular and one incoginto tab.
   auto web_state3 = CreateFakeWebStateWithURL(GURLWithIndex(3));
@@ -118,13 +118,13 @@ TEST_F(PinnedTabsMediatorTest, ConsumerInsertItem) {
   incognito_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state4), WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener());
-  EXPECT_EQ(2UL, consumer_.items.count);
+  EXPECT_EQ(2UL, consumer_.items.size());
 
   // Inserts a third pinned tab.
   auto web_state5 = CreateFakeWebStateWithURL(GURLWithIndex(5));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state5), WebStateList::INSERT_PINNED, WebStateOpener());
-  EXPECT_EQ(3UL, consumer_.items.count);
+  EXPECT_EQ(3UL, consumer_.items.size());
 }
 
 // Tests that the correct UIDropOperation is returned when dropping tabs in the

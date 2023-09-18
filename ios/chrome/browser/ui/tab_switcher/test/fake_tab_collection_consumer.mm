@@ -5,50 +5,56 @@
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/web/public/web_state_id.h"
 
-@implementation FakeTabCollectionConsumer
+@implementation FakeTabCollectionConsumer {
+  std::vector<web::WebStateID> _items;
+}
 
-@synthesize items = _items;
-@synthesize selectedItemID = _selectedItemID;
+- (const std::vector<web::WebStateID>&)items {
+  return _items;
+}
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
   // No-op.
 }
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
+       selectedItemID:(web::WebStateID)selectedItemID {
   self.selectedItemID = selectedItemID;
-  self.items = [NSMutableArray array];
+  _items.clear();
   for (TabSwitcherItem* item in items) {
-    [self.items addObject:item.identifier];
+    _items.push_back(item.identifier);
   }
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
-    selectedItemID:(NSString*)selectedItemID {
-  [self.items insertObject:item.identifier atIndex:index];
-  self.selectedItemID = selectedItemID;
+    selectedItemID:(web::WebStateID)selectedItemID {
+  _items.insert(_items.begin() + index, item.identifier);
+  _selectedItemID = selectedItemID;
 }
 
-- (void)removeItemWithID:(NSString*)removedItemID
-          selectedItemID:(NSString*)selectedItemID {
-  [self.items removeObject:removedItemID];
-  self.selectedItemID = selectedItemID;
+- (void)removeItemWithID:(web::WebStateID)removedItemID
+          selectedItemID:(web::WebStateID)selectedItemID {
+  auto it = std::remove(_items.begin(), _items.end(), selectedItemID);
+  _items.erase(it, _items.end());
+  _selectedItemID = selectedItemID;
 }
 
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
+- (void)selectItemWithID:(web::WebStateID)selectedItemID {
+  _selectedItemID = selectedItemID;
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  NSUInteger index = [self.items indexOfObject:itemID];
-  self.items[index] = item.identifier;
+- (void)replaceItemID:(web::WebStateID)itemID withItem:(TabSwitcherItem*)item {
+  auto it = std::find(_items.begin(), _items.end(), itemID);
+  *it = item.identifier;
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
-  [self.items removeObject:itemID];
-  [self.items insertObject:itemID atIndex:toIndex];
+- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
+  auto it = std::remove(_items.begin(), _items.end(), itemID);
+  _items.erase(it, _items.end());
+  _items.insert(_items.begin() + toIndex, itemID);
 }
 
 - (void)dismissModals {

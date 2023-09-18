@@ -11,6 +11,9 @@
 @protocol GridCommands;
 @protocol GridToolbarsConfigurationProvider;
 @protocol TabContextMenuProvider;
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Delegate for the coordinator.
 @protocol InactiveTabsCoordinatorDelegate
@@ -18,7 +21,7 @@
 // Tells the delegate that the user selected an item.
 - (void)inactiveTabsCoordinator:
             (InactiveTabsCoordinator*)inactiveTabsCoordinator
-            didSelectItemWithID:(NSString*)itemID;
+            didSelectItemWithID:(web::WebStateID)itemID;
 
 // Tells the delegate that the coordinator should be dismissed.
 - (void)inactiveTabsCoordinatorDidFinish:

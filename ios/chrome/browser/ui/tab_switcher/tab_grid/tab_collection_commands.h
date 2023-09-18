@@ -7,19 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // Commands for updating tab collection views.
 @protocol TabCollectionCommands
 
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made.
-- (void)selectItemWithID:(NSString*)itemID;
+- (void)selectItemWithID:(web::WebStateID)itemID;
 
 // Tells the receiver to close the item with identifier `itemID`. If there is
 // no pinned item with that identifier, no item is closed.
-- (void)closeItemWithID:(NSString*)itemID;
+- (void)closeItemWithID:(web::WebStateID)itemID;
 
-// Tells the receiver to pin or unpin the tab with identifier `identifier`.
-- (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier;
+// Tells the receiver to pin or unpin the tab with identifier `itemID`.
+- (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID;
 
 @end
 

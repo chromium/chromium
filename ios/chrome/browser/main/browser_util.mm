@@ -78,11 +78,11 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
                               WebStateList::InsertionFlags::INSERT_NO_FLAGS);
 }
 
-void MoveTabToBrowser(NSString* tab_id,
+void MoveTabToBrowser(web::WebStateID tab_id,
                       Browser* destination_browser,
                       int destination_tab_index,
                       WebStateList::InsertionFlags flags) {
-  DCHECK(tab_id.length);
+  DCHECK(tab_id.valid());
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
@@ -102,21 +102,21 @@ void MoveTabToBrowser(NSString* tab_id,
                               flags);
 }
 
-void MoveTabToBrowser(NSString* tab_id,
+void MoveTabToBrowser(web::WebStateID tab_id,
                       Browser* destination_browser,
                       int destination_tab_index) {
   MoveTabToBrowser(tab_id, destination_browser, destination_tab_index,
                    WebStateList::InsertionFlags::INSERT_NO_FLAGS);
 }
 
-BrowserAndIndex FindBrowserAndIndex(NSString* tab_id,
+BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
                                     const std::set<Browser*>& browsers) {
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
     for (int i = 0; i < web_state_list->count(); ++i) {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      NSString* current_tab_id = web_state->GetStableIdentifier();
-      if ([current_tab_id isEqualToString:tab_id]) {
+      web::WebStateID current_tab_id = web_state->GetUniqueIdentifier();
+      if (current_tab_id == tab_id) {
         return BrowserAndIndex{
             .browser = browser,
             .tab_index = i,

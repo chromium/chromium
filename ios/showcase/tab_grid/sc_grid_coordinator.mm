@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
+#import "ios/web/public/web_state_id.h"
 
 // This Showcase-only item returns a sample image as snapshot.
 @interface SCTabSwitcherItem : TabSwitcherItem
@@ -46,7 +47,7 @@
   NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 20; i++) {
     TabSwitcherItem* item = [[SCTabSwitcherItem alloc]
-        initWithIdentifier:[NSString stringWithFormat:@"item%d", i]];
+        initWithIdentifier:web::WebStateID::NewUnique()];
     item.title = @"The New York Times - Breaking News";
     [items addObject:item];
   }

@@ -14,8 +14,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -41,7 +43,7 @@ const CGFloat kSymbolSize = 18;
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if `self.items` is
 // empty.
-@property(nonatomic, copy) NSString* selectedItemID;
+@property(nonatomic, assign) web::WebStateID selectedItemID;
 // Index of the selected item in `items`.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // Constraints that are used when the button needs to be kept next to the last
@@ -154,7 +156,7 @@ const CGFloat kSymbolSize = 18;
                                 forIndexPath:indexPath]);
 
   [self configureCell:cell withItem:item];
-  cell.selected = [cell hasIdentifier:self.selectedItemID];
+  cell.selected = cell.itemIdentifier == self.selectedItemID;
   return cell;
 }
 
@@ -184,15 +186,9 @@ const CGFloat kSymbolSize = 18;
 #pragma mark - TabStripConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
-#ifndef NDEBUG
-  // Consistency check: ensure no IDs are duplicated.
-  NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-  for (TabSwitcherItem* item in items) {
-    [identifiers addObject:item.identifier];
-  }
-  CHECK_EQ(identifiers.count, items.count);
-#endif
+       selectedItemID:(web::WebStateID)selectedItemID {
+  // Note: Keep as a DCHECK, as this can be costly.
+  DCHECK(!HasDuplicateIdentifiers(items));
 
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
@@ -203,11 +199,12 @@ const CGFloat kSymbolSize = 18;
              scrollPosition:UICollectionViewScrollPositionNone];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  if ([self indexOfItemWithID:itemID] == NSNotFound)
+- (void)replaceItemID:(web::WebStateID)itemID withItem:(TabSwitcherItem*)item {
+  if ([self indexOfItemWithID:itemID] == NSNotFound) {
     return;
+  }
   // Consistency check: `item`'s ID is either `itemID` or not in `items`.
-  DCHECK([item.identifier isEqualToString:itemID] ||
+  DCHECK(item.identifier == itemID ||
          [self indexOfItemWithID:item.identifier] == NSNotFound);
   NSUInteger index = [self indexOfItemWithID:itemID];
   self.items[index] = item;
@@ -218,9 +215,10 @@ const CGFloat kSymbolSize = 18;
     [self configureCell:cell withItem:item];
 }
 
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  if ([self.selectedItemID isEqualToString:selectedItemID])
+- (void)selectItemWithID:(web::WebStateID)selectedItemID {
+  if (self.selectedItemID == selectedItemID) {
     return;
+  }
 
   [self.collectionView
       deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
@@ -254,20 +252,20 @@ const CGFloat kSymbolSize = 18;
     [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
       // Only update the icon if the cell is not
       // already reused for another item.
-      if ([cell hasIdentifier:innerItem.identifier]) {
+      if (cell.itemIdentifier == innerItem.identifier) {
         cell.faviconView.image = icon;
       }
     }];
-    cell.selected = [cell hasIdentifier:self.selectedItemID];
+    cell.selected = cell.itemIdentifier == self.selectedItemID;
   }
 }
 
 // Returns the index in `self.items` of the first item whose identifier is
 // `identifier`.
-- (NSUInteger)indexOfItemWithID:(NSString*)identifier {
+- (NSUInteger)indexOfItemWithID:(web::WebStateID)identifier {
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
-        return [item.identifier isEqualToString:identifier];
+        return item.identifier == identifier;
       };
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
