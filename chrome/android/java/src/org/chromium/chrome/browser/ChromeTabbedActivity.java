@@ -1100,7 +1100,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * @return Whether the Intent was successfully handled.
      */
     private boolean maybeHandleUrlIntent(Intent intent) {
-        assert !IntentHandler.shouldIgnoreIntent(intent, /*isCustomTab=*/false);
         String url = IntentHandler.getUrlFromIntent(intent);
         @TabOpenType
         int tabOpenType = IntentHandler.getTabOpenType(intent);
@@ -1845,7 +1844,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private boolean shouldIgnoreIntent() {
         if (mShouldIgnoreIntent == null) {
-            // We call this only once because IntentHandler#shouldIgnoreIntent can be slow.
+            // We call this only once to give a consistent view of whether the intent should be
+            // ignored during startup as this function depends on transient state like whether the
+            // screen is on.
             mShouldIgnoreIntent = IntentHandler.shouldIgnoreIntent(getIntent());
         }
         return mShouldIgnoreIntent;
