@@ -214,4 +214,8 @@ void DataPipeProducer::OnWriteComplete(CompletionCallback callback,
   std::move(callback).Run(ready_result);
 }
 
+const DataPipeProducerHandle& DataPipeProducer::GetProducerHandle() const {
+  return producer_.get();
+}
+
 }  // namespace mojo

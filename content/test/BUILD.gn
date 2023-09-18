@@ -2508,6 +2508,7 @@ test("content_unittests") {
     "../browser/preloading/prefetch/prefetch_canary_checker_unittest.cc",
     "../browser/preloading/prefetch/prefetch_container_unittest.cc",
     "../browser/preloading/prefetch/prefetch_cookie_listener_unittest.cc",
+    "../browser/preloading/prefetch/prefetch_data_pipe_tee_unittest.cc",
     "../browser/preloading/prefetch/prefetch_document_manager_unittest.cc",
     "../browser/preloading/prefetch/prefetch_network_context_unittest.cc",
     "../browser/preloading/prefetch/prefetch_params_unittest.cc",

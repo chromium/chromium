@@ -89,6 +89,10 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeProducer {
   // previous call to Write() (if any) has returned.
   void Write(std::unique_ptr<DataSource> reader, CompletionCallback callback);
 
+  // Returns the underlying producer handle.
+  // Must be called only when writes are NOT ongoing.
+  const DataPipeProducerHandle& GetProducerHandle() const;
+
  private:
   class SequenceState;
 
