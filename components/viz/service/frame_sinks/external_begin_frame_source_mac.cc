@@ -391,7 +391,21 @@ void DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate(
     ui::VSyncParamsMac params) {
   time_source_next_update_time_ = base::TimeTicks::Now() + base::Seconds(10);
   time_source_updater_ = nullptr;
-  OnUpdateVSyncParameters(params.display_timebase, params.display_interval);
+
+  CHECK(update_vsync_params_callback_);
+  if (last_hw_interval_ == params.display_interval) {
+    // No hw display interval change. Keep the current preferred interval in
+    // DelayBasedTimeSource.
+    // (ex. HW interval is 60Hz but the preferred interval is 30Hz.)
+    OnUpdateVSyncParameters(params.display_timebase, time_source()->Interval());
+  } else {
+    // Notify Display FrameRateDecider of the new display interval.
+    // FrameRateDecider will set the preferred frame interval.
+    update_vsync_params_callback_.Run(params.display_timebase,
+                                      params.display_interval);
+  }
+
+  last_hw_interval_ = params.display_interval;
 }
 
 void DelayBasedBeginFrameSourceMac::AddObserver(BeginFrameObserver* obs) {
@@ -418,6 +432,11 @@ void DelayBasedBeginFrameSourceMac::OnTimerTick() {
     RequestTimeSourceParamsUpdate();
   }
   DelayBasedBeginFrameSource::OnTimerTick();
+}
+
+void DelayBasedBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
+    UpdateVSyncParametersCallback callback) {
+  update_vsync_params_callback_ = callback;
 }
 
 }  // namespace viz

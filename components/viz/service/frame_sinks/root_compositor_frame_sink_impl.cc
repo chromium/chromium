@@ -253,6 +253,11 @@ RootCompositorFrameSinkImpl::Create(
         base::BindRepeating(
             &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
             base::Unretained(impl.get())));
+  } else if (impl->synthetic_begin_frame_source_) {
+    impl->synthetic_begin_frame_source_->SetUpdateVSyncParametersCallback(
+        base::BindRepeating(
+            &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
+            base::Unretained(impl.get())));
   }
 #endif
 
