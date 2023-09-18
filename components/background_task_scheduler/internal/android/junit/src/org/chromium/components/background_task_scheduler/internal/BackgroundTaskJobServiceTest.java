@@ -5,11 +5,14 @@
 package org.chromium.components.background_task_scheduler.internal;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.job.JobParameters;
+import android.content.Context;
 import android.os.Build;
 import android.os.PersistableBundle;
 
@@ -23,7 +26,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.background_task_scheduler.BackgroundTask;
+import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.background_task_scheduler.TaskParameters;
 
 import java.util.concurrent.TimeUnit;
 
@@ -172,9 +178,11 @@ public class BackgroundTaskJobServiceTest {
     private static JobParameters buildOneOffJobParameters(
             int taskId, Long schedulingTimeMs, Long windowEndTimeForDeadlineMs) {
         PersistableBundle extras = new PersistableBundle();
-        if (windowEndTimeForDeadlineMs != null) {
+        if (schedulingTimeMs != null) {
             extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
                     schedulingTimeMs);
+        }
+        if (windowEndTimeForDeadlineMs != null) {
             extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY,
                     windowEndTimeForDeadlineMs);
         }
@@ -209,5 +217,62 @@ public class BackgroundTaskJobServiceTest {
                 null /* clipData */, 0 /* clipGrantFlags */, false /* overrideDeadlineExpired */,
                 false /* isExpedited */, null /* triggeredContentUris */,
                 null /* triggeredContentAuthorities */, null /* network */);
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    // @Config(sdk = 34)
+    // TODO(crbug/1483735): Turn this back on when API 34 is available.
+    public void testSetNotification() {
+        FakeBackgroundTask fakeBackgroundTask = new FakeBackgroundTask();
+        BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(
+                new FakeBackgroundTaskFactory(fakeBackgroundTask));
+        JobParameters jobParameters = buildOneOffJobParameters(
+                TaskIds.TEST, sClock.currentTimeMillis(), Long.valueOf(1000));
+
+        BackgroundTaskJobService jobService = new BackgroundTaskJobService();
+        jobService.setClockForTesting(sClock);
+        assertTrue("onStartJob() didn't return true", jobService.onStartJob(jobParameters));
+        fakeBackgroundTask.mTaskFinishedCallback.setNotification(22, null);
+        fakeBackgroundTask.mTaskFinishedCallback.taskFinished(true);
+
+        verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
+        // TODO(crbug/1483735): Turn this back on when API 34 is available.
+        // verify(mBackgroundTaskSchedulerUma, times(1))
+        //         .reportNotificationWasSet(eq(TaskIds.TEST), anyLong());
+        verify(mBackgroundTaskSchedulerUma, times(1))
+                .reportTaskFinished(eq(TaskIds.TEST), anyLong());
+    }
+
+    public static class FakeBackgroundTaskFactory implements BackgroundTaskFactory {
+        private BackgroundTask mFakeBackgroundTask;
+
+        FakeBackgroundTaskFactory(BackgroundTask fakeBackgroundTask) {
+            mFakeBackgroundTask = fakeBackgroundTask;
+        }
+
+        @Override
+        public BackgroundTask getBackgroundTaskFromTaskId(int taskId) {
+            if (taskId == TaskIds.TEST) {
+                return mFakeBackgroundTask;
+            }
+            return null;
+        }
+    }
+
+    private static class FakeBackgroundTask implements BackgroundTask {
+        private TaskFinishedCallback mTaskFinishedCallback;
+
+        @Override
+        public boolean onStartTask(
+                Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+            mTaskFinishedCallback = callback;
+            return true;
+        }
+
+        @Override
+        public boolean onStopTask(Context context, TaskParameters taskParameters) {
+            return false;
+        }
     }
 }

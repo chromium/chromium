@@ -14,8 +14,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.components.background_task_scheduler.TaskInfo.NetworkType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -102,6 +104,44 @@ public class BackgroundTaskSchedulerJobServiceTest {
         Assert.assertEquals(TIME_200_MIN_TO_MS,
                 jobInfo.getExtras().getLong(
                         BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testUserInitiatedTaskWithEndTimeThrowsAssertionError() {
+        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
+                                                 .setWindowStartTimeMs(TIME_100_MIN_TO_MS)
+                                                 .setWindowEndTimeMs(TIME_200_MIN_TO_MS)
+                                                 .build();
+        TaskInfo.Builder builder = TaskInfo.createTask(TaskIds.TEST, timingInfo);
+        builder.setUserInitiated(true);
+        builder.setRequiredNetworkType(NetworkType.ANY);
+        TaskInfo oneOffTask = builder.build();
+        JobInfo jobInfo = BackgroundTaskSchedulerJobService.createJobInfoFromTaskInfo(
+                RuntimeEnvironment.getApplication(), oneOffTask);
+        Assert.assertEquals(oneOffTask.getTaskId(), jobInfo.getId());
+        Assert.assertFalse(jobInfo.isPeriodic());
+        Assert.assertEquals(NetworkType.ANY, jobInfo.getNetworkType());
+        // TODO(crbug/1483735): Turn this back on when API 34 is available.
+        // Assert.assertTrue(jobInfo.isUserInitiated());
+        Assert.assertEquals(TIME_100_MIN_TO_MS, jobInfo.getMinLatencyMillis());
+    }
+
+    @Test
+    @MinAndroidSdkLevel(34)
+    public void testUserInitiatedTask() {
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create().setWindowStartTimeMs(TIME_100_MIN_TO_MS).build();
+        TaskInfo.Builder builder = TaskInfo.createTask(TaskIds.TEST, timingInfo);
+        builder.setUserInitiated(true);
+        builder.setRequiredNetworkType(NetworkType.ANY);
+        TaskInfo oneOffTask = builder.build();
+        JobInfo jobInfo = BackgroundTaskSchedulerJobService.createJobInfoFromTaskInfo(
+                RuntimeEnvironment.getApplication(), oneOffTask);
+        Assert.assertEquals(oneOffTask.getTaskId(), jobInfo.getId());
+        Assert.assertFalse(jobInfo.isPeriodic());
+        Assert.assertEquals(NetworkType.ANY, jobInfo.getNetworkType());
+        // Assert.assertTrue(jobInfo.isUserInitiated());
+        Assert.assertEquals(TIME_100_MIN_TO_MS, jobInfo.getMinLatencyMillis());
     }
 
     @Test

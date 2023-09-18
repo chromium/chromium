@@ -4,8 +4,10 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
+import android.app.Notification;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.Build;
 import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
@@ -69,6 +71,21 @@ public class BackgroundTaskJobService extends JobService {
                     BackgroundTaskSchedulerUma.getInstance().reportTaskFinished(
                             mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
                 }
+            });
+        }
+
+        @Override
+        public void setNotification(int notificationId, Notification notification) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+            ThreadUtils.runOnUiThreadBlocking(() -> {
+                if (!isCurrentBackgroundTaskForJobId()) {
+                    Log.e(TAG, "Tried attaching notification for non-current BackgroundTask.");
+                    return;
+                }
+                mJobService.setNotification(mParams, notificationId, notification,
+                        JobService.JOB_END_NOTIFICATION_POLICY_REMOVE);
+                BackgroundTaskSchedulerUma.getInstance().reportNotificationWasSet(
+                        mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
             });
         }
 

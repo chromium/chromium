@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.app.Notification;
 import android.content.Context;
 
 import org.junit.After;
@@ -149,6 +150,9 @@ public class NativeBackgroundTaskTest {
             mWasCalled = true;
             mCallbackLatch.countDown();
         }
+
+        @Override
+        public void setNotification(int notificationId, Notification notification) {}
 
         boolean wasCalled() {
             return mWasCalled;

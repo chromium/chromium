@@ -4,6 +4,7 @@
 
 package org.chromium.components.background_task_scheduler;
 
+import android.app.Notification;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -67,9 +68,17 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
 
         mTaskId = taskParameters.getTaskId();
 
-        TaskFinishedCallback wrappedCallback = needsReschedule -> {
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT, () -> { callback.taskFinished(needsReschedule); });
+        TaskFinishedCallback wrappedCallback = new TaskFinishedCallback() {
+            @Override
+            public void taskFinished(boolean needsReschedule) {
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_DEFAULT, () -> { callback.taskFinished(needsReschedule); });
+            }
+
+            @Override
+            public void setNotification(int notificationId, Notification notification) {
+                assert false : "setNotification() isn't supported for native background tasks yet";
+            }
         };
 
         // WrappedCallback will only be called when the work is done or in onStopTask. If the task

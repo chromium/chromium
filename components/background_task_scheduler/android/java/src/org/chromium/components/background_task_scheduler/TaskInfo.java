@@ -60,12 +60,14 @@ public class TaskInfo {
         private final long mWindowStartTimeMs;
         private final long mWindowEndTimeMs;
         private final boolean mHasWindowStartTimeConstraint;
+        private final boolean mHasWindowEndTimeConstraint;
         private final boolean mExpiresAfterWindowEndTime;
 
         private OneOffInfo(Builder builder) {
             mWindowStartTimeMs = builder.mWindowStartTimeMs;
             mWindowEndTimeMs = builder.mWindowEndTimeMs;
             mHasWindowStartTimeConstraint = builder.mHasWindowStartTimeConstraint;
+            mHasWindowEndTimeConstraint = builder.mHasWindowEndTimeConstraint;
             mExpiresAfterWindowEndTime = builder.mExpiresAfterWindowEndTime;
         }
 
@@ -90,6 +92,13 @@ public class TaskInfo {
          */
         public boolean hasWindowStartTimeConstraint() {
             return mHasWindowStartTimeConstraint;
+        }
+
+        /**
+         * @return whether this one-off task has a window end time constraint.
+         */
+        public boolean hasWindowEndTimeConstraint() {
+            return mHasWindowEndTimeConstraint;
         }
 
         /**
@@ -123,7 +132,9 @@ public class TaskInfo {
             if (hasWindowStartTimeConstraint()) {
                 sb.append("windowStartTimeMs: ").append(mWindowStartTimeMs).append(", ");
             }
-            sb.append("windowEndTimeMs: ").append(mWindowEndTimeMs).append(", ");
+            if (hasWindowEndTimeConstraint()) {
+                sb.append("windowEndTimeMs: ").append(mWindowEndTimeMs).append(", ");
+            }
             sb.append("expiresAfterWindowEndTime (+flex): ").append(mExpiresAfterWindowEndTime);
             sb.append("}");
             return sb.toString();
@@ -147,6 +158,8 @@ public class TaskInfo {
             // By default, a {@link OneOffInfo} doesn't have a set start time. The start time is
             // considered the time of scheduling the task.
             private boolean mHasWindowStartTimeConstraint;
+            // User initiated tasks aren't allowed to have a end time constraint.
+            private boolean mHasWindowEndTimeConstraint;
             // By default, a {@link OneOffInfo} doesn't have the expiration feature activated.
             private boolean mExpiresAfterWindowEndTime;
 
@@ -158,6 +171,7 @@ public class TaskInfo {
 
             public Builder setWindowEndTimeMs(long windowEndTimeMs) {
                 mWindowEndTimeMs = windowEndTimeMs;
+                mHasWindowEndTimeConstraint = true;
                 return this;
             }
 
@@ -362,6 +376,11 @@ public class TaskInfo {
     private final boolean mRequiresCharging;
 
     /**
+     * Whether the task is being scheduled to fulfill an explicit user request.
+     */
+    private final boolean mUserInitiated;
+
+    /**
      * Whether or not to persist this task across device reboots.
      */
     private final boolean mIsPersisted;
@@ -381,9 +400,16 @@ public class TaskInfo {
         mExtras = builder.mExtras == null ? new PersistableBundle() : builder.mExtras;
         mRequiredNetworkType = builder.mRequiredNetworkType;
         mRequiresCharging = builder.mRequiresCharging;
+        mUserInitiated = builder.mUserInitiated;
         mIsPersisted = builder.mIsPersisted;
         mUpdateCurrent = builder.mUpdateCurrent;
         mTimingInfo = builder.mTimingInfo;
+
+        // User-initiated tasks cannot have end time constraint.
+        if (mTimingInfo instanceof OneOffInfo) {
+            OneOffInfo oneOffInfo = (OneOffInfo) mTimingInfo;
+            assert !mUserInitiated || !oneOffInfo.hasWindowEndTimeConstraint();
+        }
     }
 
     /**
@@ -414,6 +440,13 @@ public class TaskInfo {
      */
     public boolean requiresCharging() {
         return mRequiresCharging;
+    }
+
+    /**
+     * @return Whether the task is being scheduled to fulfill an explicit user request.
+     */
+    public boolean isUserInitiated() {
+        return mUserInitiated;
     }
 
     /**
@@ -475,6 +508,7 @@ public class TaskInfo {
         sb.append(", extras: ").append(mExtras);
         sb.append(", requiredNetworkType: ").append(mRequiredNetworkType);
         sb.append(", requiresCharging: ").append(mRequiresCharging);
+        sb.append(", userInitiated: ").append(mUserInitiated);
         sb.append(", isPersisted: ").append(mIsPersisted);
         sb.append(", updateCurrent: ").append(mUpdateCurrent);
         sb.append(", timingInfo: ").append(mTimingInfo);
@@ -584,6 +618,7 @@ public class TaskInfo {
         @NetworkType
         private int mRequiredNetworkType;
         private boolean mRequiresCharging;
+        private boolean mUserInitiated;
         private boolean mIsPersisted;
         private boolean mUpdateCurrent;
         private TimingInfo mTimingInfo;
@@ -630,6 +665,16 @@ public class TaskInfo {
          */
         public Builder setRequiresCharging(boolean requiresCharging) {
             mRequiresCharging = requiresCharging;
+            return this;
+        }
+
+        /**
+         * Set whether the task is being scheduled to fulfill an explicit user request.
+         * @param userInitiated Whether the task is user initiated.
+         * @return this {@link Builder}.
+         */
+        public Builder setUserInitiated(boolean userInitiated) {
+            mUserInitiated = userInitiated;
             return this;
         }
 

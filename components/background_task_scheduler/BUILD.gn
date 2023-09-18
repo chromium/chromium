@@ -123,6 +123,7 @@ if (is_android) {
       "//components/background_task_scheduler:public_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:chromium_play_services_availability_shadows_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]
