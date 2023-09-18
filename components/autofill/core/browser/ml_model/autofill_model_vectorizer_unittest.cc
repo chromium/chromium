@@ -25,7 +25,7 @@ class AutofillModelVectorizerTest : public testing::Test {
                            .AppendASCII("data")
                            .AppendASCII("autofill")
                            .AppendASCII("ml_model")
-                           .AppendASCII("dictionary_test.txt");
+                           .AppendASCII("br_overfitted_dictionary_test.txt");
   }
 
  protected:
@@ -47,15 +47,15 @@ TEST_F(AutofillModelVectorizerTest, WrongDictionaryPath) {
 TEST_F(AutofillModelVectorizerTest, TokensMappedCorrectly) {
   auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_vectorizer->GetDictionarySize(), 12u);
-  EXPECT_EQ(model_vectorizer->TokenToId(u"first"), TokenId(8));
+  EXPECT_EQ(model_vectorizer->GetDictionarySize(), 787u);
+  EXPECT_EQ(model_vectorizer->TokenToId(u"first"), TokenId(53));
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(AutofillModelVectorizerTest, WordOutOfVocab) {
   auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_vectorizer->TokenToId(u"address"), TokenId(3));
+  EXPECT_EQ(model_vectorizer->TokenToId(u"OutOfVocab"), TokenId(1));
 }
 
 // Tests that empty strings return 0 for padding.
@@ -69,7 +69,7 @@ TEST_F(AutofillModelVectorizerTest, InputVectorizedCorrectly) {
   auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
   EXPECT_THAT(model_vectorizer->Vectorize(u"Phone 'number"),
-              testing::ElementsAre(TokenId(11), TokenId(5), TokenId(0),
+              testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
 
@@ -79,7 +79,7 @@ TEST_F(AutofillModelVectorizerTest, InputHasMoreThanOneWhitespace) {
   auto model_vectorizer =
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
   EXPECT_THAT(model_vectorizer->Vectorize(u"Phone   &number  "),
-              testing::ElementsAre(TokenId(11), TokenId(5), TokenId(0),
+              testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
 
@@ -91,8 +91,8 @@ TEST_F(AutofillModelVectorizerTest, InputHasMoreWordsThanOutputSequenceLength) {
       AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
   EXPECT_THAT(
       model_vectorizer->Vectorize(u"City Number Phone Address Card Last Zip "),
-      testing::ElementsAre(TokenId(6), TokenId(5), TokenId(11), TokenId(3),
-                           TokenId(10)));
+      testing::ElementsAre(TokenId(46), TokenId(40), TokenId(49), TokenId(36),
+                           TokenId(43)));
 }
 
 }  // namespace autofill
