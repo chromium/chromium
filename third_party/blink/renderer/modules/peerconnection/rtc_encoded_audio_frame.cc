@@ -139,16 +139,6 @@ String RTCEncodedAudioFrame::toString() const {
   return sb.ToString();
 }
 
-RTCEncodedAudioFrame* RTCEncodedAudioFrame::clone(
-    ExceptionState& exception_state) const {
-  std::unique_ptr<webrtc::TransformableAudioFrameInterface> new_webrtc_frame =
-      delegate_->CloneWebRtcFrame();
-  // Clone should never fail.
-  CHECK(new_webrtc_frame);
-  return MakeGarbageCollected<RTCEncodedAudioFrame>(
-      std::move(new_webrtc_frame));
-}
-
 void RTCEncodedAudioFrame::SyncDelegate() const {
   delegate_->SetData(frame_data_);
 }

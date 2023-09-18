@@ -259,20 +259,6 @@ String RTCEncodedVideoFrame::toString() const {
   return sb.ToString();
 }
 
-RTCEncodedVideoFrame* RTCEncodedVideoFrame::clone(
-    ExceptionState& exception_state) const {
-  std::unique_ptr<webrtc::TransformableVideoFrameInterface> new_webrtc_frame =
-      delegate_->CloneWebRtcFrame();
-  if (new_webrtc_frame == nullptr) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Frames neutered by sending cannot be cloned.");
-    return nullptr;
-  }
-  return MakeGarbageCollected<RTCEncodedVideoFrame>(
-      std::move(new_webrtc_frame));
-}
-
 void RTCEncodedVideoFrame::SyncDelegate() const {
   delegate_->SetData(frame_data_);
 }

@@ -3156,20 +3156,12 @@
       status: "experimental",
     },
     {
-      name: "RTCEncodedAudioFrameClone",
-      status: "experimental",
-    },
-    {
       name: "RTCEncodedFrameSetMetadata",
       status: "experimental",
       origin_trial_feature_name: "RTCEncodedFrameSetMetadata",
     },
     {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
-      status: "experimental",
-    },
-    {
-      name: "RTCEncodedVideoFrameClone",
       status: "experimental",
     },
     // Legacy callback-based getStats() has limited availability unless this

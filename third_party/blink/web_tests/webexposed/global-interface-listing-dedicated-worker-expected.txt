@@ -1662,7 +1662,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
 [Worker]     getter timestamp
-[Worker]     method clone
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata
@@ -1674,7 +1673,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter data
 [Worker]     getter timestamp
 [Worker]     getter type
-[Worker]     method clone
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata

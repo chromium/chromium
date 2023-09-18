@@ -48,7 +48,7 @@ promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
   const metadata = result.value.getMetadata();
-  const clone = result.value.clone();
+  const clone = structuredClone(result.value);
   metadata.frameId = 2;
   metadata.dependencies = [1];
   clone.setMetadata(metadata);
@@ -68,7 +68,7 @@ promise_test(async t => {
   }
   for (const field in field_values) {
     const metadata = result.value.getMetadata();
-    const clone = result.value.clone();
+    const clone = structuredClone(result.value);
     metadata[field] = field_values[field];
     assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"" + field + "\",");
   }
@@ -88,7 +88,7 @@ promise_test(async t => {
     'width':800
   }
   const metadata = result.value.getMetadata();
-  const clone = result.value.clone();
+  const clone = structuredClone(result.value);
   for (const field in field_values) {
     metadata[field] = field_values[field];
   }
@@ -109,7 +109,7 @@ promise_test(async t => {
   const originalFrame = result.value;
 
   const metadata = originalFrame.getMetadata();
-  const cloneFrame = originalFrame.clone();
+  const cloneFrame = structuredClone(originalFrame);
 
   metadata.frameId = undefined;
   metadata.dependencies = [1];
@@ -122,7 +122,7 @@ promise_test(async t => {
   const originalFrame = result.value;
 
   const metadata = originalFrame.getMetadata();
-  const cloneFrame = originalFrame.clone();
+  const cloneFrame = structuredClone(originalFrame);
 
   metadata.frameId = 2;
   metadata.dependencies = undefined;

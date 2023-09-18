@@ -113,24 +113,6 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   EXPECT_EQ(17u, retrieved_metadata->rtpTimestamp());
 }
 
-TEST_F(RTCEncodedVideoFrameTest, ClosedFramesFailToClone) {
-  V8TestingScope v8_scope;
-
-  std::unique_ptr<MockTransformableVideoFrame> frame =
-      std::make_unique<MockTransformableVideoFrame>();
-
-  RTCEncodedVideoFrame encoded_frame(std::move(frame));
-
-  // Move the WebRTC frame out, as if the frame had been written into
-  // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame.PassWebRtcFrame();
-
-  DummyExceptionStateForTesting exception_state;
-  encoded_frame.clone(exception_state);
-
-  EXPECT_TRUE(exception_state.HadException());
-}
-
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
   V8TestingScope v8_scope;
 

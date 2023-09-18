@@ -40,7 +40,7 @@ promise_test(async t => {
       assert_equals(originalAudioFrame.timestamp, clonedAudioFrame.timestamp);
       assert_array_equals(Array.from(originalAudioFrame.data), Array.from(clonedAudioFrame.data));
       await writer2.write(clonedAudioFrame);
-      await receiverWriter.write(originalAudioFrame.clone());
+      await receiverWriter.write(structuredClone(originalAudioFrame));
       resolve();
     }
   });
