@@ -45,8 +45,12 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateIcon();
 
   virtual int GetCornerRadius() const;
+  float GetScaledCornerRadius(float initial_radius, Edge edge) const;
 
   Edge flat_edge() { return flat_edge_; }
+  float flat_edge_factor_for_testing() { return flat_edge_factor_; }
+
+  void SetFlatEdgeFactor(float factor);
 
   // Helper function for changing the state for TabStripRegionView tests.
   void AnimateToStateForTesting(views::InkDropState state);
@@ -111,6 +115,11 @@ class TabStripControlButton : public views::LabelButton,
 
   // Button edge which should render without rounded corners.
   Edge flat_edge_;
+
+  // Corner radius multiplier on the corners adjacent to the flat edge, if any.
+  // Between 0-1, where corners will be flat at 0 and rounded at 1. Used for
+  // animating corner radius.
+  float flat_edge_factor_ = 1;
 
   // Tab strip that contains this button.
   raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_;

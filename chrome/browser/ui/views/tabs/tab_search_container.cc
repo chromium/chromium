@@ -23,7 +23,8 @@ Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
 }  // namespace
 
 TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
-                                       bool before_tab_strip) {
+                                       bool before_tab_strip)
+    : AnimationDelegateViews(this) {
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
           tab_strip, features::IsTabOrganization()
@@ -54,6 +55,32 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
 }
 
 TabSearchContainer::~TabSearchContainer() = default;
+
+void TabSearchContainer::ShowTabOrganization() {
+  expansion_animation_.Show();
+}
+
+void TabSearchContainer::HideTabOrganization() {
+  expansion_animation_.Hide();
+}
+
+void TabSearchContainer::AnimationCanceled(const gfx::Animation* animation) {
+  ApplyAnimationValue(animation->GetCurrentValue());
+}
+
+void TabSearchContainer::AnimationEnded(const gfx::Animation* animation) {
+  ApplyAnimationValue(animation->GetCurrentValue());
+}
+
+void TabSearchContainer::AnimationProgressed(const gfx::Animation* animation) {
+  ApplyAnimationValue(animation->GetCurrentValue());
+}
+
+void TabSearchContainer::ApplyAnimationValue(float value) {
+  tab_search_button_->SetFlatEdgeFactor(1 - value);
+  tab_organization_button_->SetFlatEdgeFactor(1 - value);
+  tab_organization_button_->SetWidthFactor(value);
+}
 
 BEGIN_METADATA(TabSearchContainer, views::View)
 END_METADATA

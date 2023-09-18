@@ -35,9 +35,10 @@ class ControlButtonHighlightPathGenerator
 
     SkPath path;
     const int corner_radius = control_button_->GetCornerRadius();
-    const Edge flat_edge = control_button_->flat_edge();
-    const SkScalar left_radius = flat_edge == Edge::kLeft ? 0 : corner_radius;
-    const SkScalar right_radius = flat_edge == Edge::kRight ? 0 : corner_radius;
+    const SkScalar left_radius =
+        control_button_->GetScaledCornerRadius(corner_radius, Edge::kLeft);
+    const SkScalar right_radius =
+        control_button_->GetScaledCornerRadius(corner_radius, Edge::kRight);
     const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
                                right_radius, right_radius, right_radius,
                                left_radius,  left_radius};
@@ -161,9 +162,9 @@ void TabStripControlButton::UpdateBackground() {
     SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   } else {
     const float right_corner_radius =
-        flat_edge_ == Edge::kRight ? 0 : GetCornerRadius();
+        GetScaledCornerRadius(GetCornerRadius(), Edge::kRight);
     const float left_corner_radius =
-        flat_edge_ == Edge::kLeft ? 0 : GetCornerRadius();
+        GetScaledCornerRadius(GetCornerRadius(), Edge::kLeft);
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
             color_provider->GetColor(GetBackgroundColor()),
@@ -175,6 +176,12 @@ void TabStripControlButton::UpdateBackground() {
 
 int TabStripControlButton::GetCornerRadius() const {
   return width() / 2;
+}
+
+float TabStripControlButton::GetScaledCornerRadius(float initial_radius,
+                                                   Edge edge) const {
+  return flat_edge_ == edge ? initial_radius * flat_edge_factor_
+                            : initial_radius;
 }
 
 void TabStripControlButton::AddedToWidget() {
@@ -199,11 +206,13 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
   const SkScalar bottom_radius = GetCornerRadius();
   const SkScalar top_radius = extend_to_top ? 0.0f : bottom_radius;
   const SkScalar bottom_left_radius =
-      flat_edge_ == Edge::kLeft ? 0 : bottom_radius;
+      GetScaledCornerRadius(bottom_radius, Edge::kLeft);
   const SkScalar bottom_right_radius =
-      flat_edge_ == Edge::kRight ? 0 : bottom_radius;
-  const SkScalar top_left_radius = flat_edge_ == Edge::kLeft ? 0 : top_radius;
-  const SkScalar top_right_radius = flat_edge_ == Edge::kRight ? 0 : top_radius;
+      GetScaledCornerRadius(bottom_radius, Edge::kRight);
+  const SkScalar top_left_radius =
+      GetScaledCornerRadius(top_radius, Edge::kLeft);
+  const SkScalar top_right_radius =
+      GetScaledCornerRadius(top_radius, Edge::kRight);
   const SkScalar radii[8] = {top_left_radius,     top_left_radius,
                              top_right_radius,    top_right_radius,
                              bottom_right_radius, bottom_right_radius,
@@ -230,6 +239,11 @@ void TabStripControlButton::NotifyClick(const ui::Event& event) {
   LabelButton::NotifyClick(event);
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::ACTION_TRIGGERED);
+}
+
+void TabStripControlButton::SetFlatEdgeFactor(float factor) {
+  flat_edge_factor_ = factor;
+  UpdateBackground();
 }
 
 void TabStripControlButton::AnimateToStateForTesting(

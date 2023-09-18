@@ -38,11 +38,6 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<TabSearchContainer> container_after_tab_strip_;
 };
 
-TEST_F(TabSearchContainerTest, ShowsOrganizationButton) {
-  ASSERT_TRUE(container_before_tab_strip_->tab_search_button());
-  ASSERT_TRUE(container_before_tab_strip_->tab_organization_button());
-}
-
 TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
   ASSERT_EQ(container_before_tab_strip_->tab_search_button(),
             container_before_tab_strip_->children()[0]);
@@ -66,4 +61,31 @@ TEST_F(TabSearchContainerTest, ButtonsHaveFlatEdges) {
             container_after_tab_strip_->tab_search_button()->flat_edge());
   ASSERT_EQ(Edge::kRight,
             container_after_tab_strip_->tab_organization_button()->flat_edge());
+}
+
+TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
+  // Should be collapsed by default
+  ASSERT_EQ(0, container_before_tab_strip_->expansion_animation_for_testing()
+                   ->GetCurrentValue());
+
+  ASSERT_EQ(0, container_before_tab_strip_->tab_organization_button()
+                   ->width_factor_for_testing());
+  ASSERT_EQ(1, container_before_tab_strip_->tab_organization_button()
+                   ->flat_edge_factor_for_testing());
+  ASSERT_EQ(1, container_before_tab_strip_->tab_search_button()
+                   ->flat_edge_factor_for_testing());
+
+  container_before_tab_strip_->ShowTabOrganization();
+
+  ASSERT_TRUE(container_before_tab_strip_->expansion_animation_for_testing()
+                  ->IsShowing());
+
+  container_before_tab_strip_->expansion_animation_for_testing()->Reset(1);
+
+  ASSERT_EQ(1, container_before_tab_strip_->tab_organization_button()
+                   ->width_factor_for_testing());
+  ASSERT_EQ(0, container_before_tab_strip_->tab_organization_button()
+                   ->flat_edge_factor_for_testing());
+  ASSERT_EQ(0, container_before_tab_strip_->tab_search_button()
+                   ->flat_edge_factor_for_testing());
 }

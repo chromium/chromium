@@ -7,6 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
 
 enum class Edge;
@@ -14,7 +17,8 @@ class TabOrganizationButton;
 class TabSearchButton;
 class TabStrip;
 
-class TabSearchContainer : public views::View {
+class TabSearchContainer : public views::View,
+                           public views::AnimationDelegateViews {
  public:
   METADATA_HEADER(TabSearchContainer);
   TabSearchContainer(TabStrip* tab_strip, bool before_tab_strip);
@@ -27,10 +31,26 @@ class TabSearchContainer : public views::View {
   }
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
+  gfx::SlideAnimation* expansion_animation_for_testing() {
+    return &expansion_animation_;
+  }
+
+  void ShowTabOrganization();
+  void HideTabOrganization();
+
+  // views::AnimationDelegateViews
+  void AnimationCanceled(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
  private:
+  void ApplyAnimationValue(float value);
+
   raw_ptr<TabOrganizationButton, DanglingUntriaged> tab_organization_button_ =
       nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+  // Animation controlling expansion and collapse of tab_organization_button_.
+  gfx::SlideAnimation expansion_animation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_

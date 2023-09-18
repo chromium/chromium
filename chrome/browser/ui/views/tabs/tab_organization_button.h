@@ -18,8 +18,18 @@ class TabOrganizationButton : public TabStripControlButton {
   TabOrganizationButton& operator=(const TabOrganizationButton&) = delete;
   ~TabOrganizationButton() override;
 
+  void SetWidthFactor(float factor);
+  float width_factor_for_testing() { return width_factor_; }
+
+  // views::View
+  gfx::Size CalculatePreferredSize() const override;
+
  protected:
   int GetCornerRadius() const override;
+
+ private:
+  // Preferred width multiplier, between 0-1. Used to animate button size.
+  float width_factor_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_

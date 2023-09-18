@@ -41,6 +41,20 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
 
 TabOrganizationButton::~TabOrganizationButton() = default;
 
+void TabOrganizationButton::SetWidthFactor(float factor) {
+  width_factor_ = factor;
+  PreferredSizeChanged();
+}
+
+gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
+  const int insets_width = 12;
+  const int full_width =
+      LabelButton::CalculatePreferredSize().width() + insets_width;
+  const int width = full_width * width_factor_;
+  const int height = TabStripControlButton::CalculatePreferredSize().height();
+  return gfx::Size(width, height);
+}
+
 int TabOrganizationButton::GetCornerRadius() const {
   return kTabOrganizeCornerRadius;
 }
