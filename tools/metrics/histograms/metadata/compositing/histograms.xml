@@ -1203,17 +1203,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Jank3.AllSequences" units="%"
+<histogram name="Graphics.Smoothness.Jank3.All{Type}" units="%"
     expires_after="2024-06-05">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks the percent of janks for a sequence by aggregating all its animations
-    and interactions, where a sequence is a series of frames produced which
-    contain at least one of the animations/interactions. Such animations and
-    interactions encompass: Compositor-thread animations; Main-thread
-    animations; JS animations; scrolling; and pinch-gestures.
+    Tracks the percent of janks for a sequence by aggregating all its {Type}
 
     Jank is measured by tracking the number of abrupt increases in frame
     presentation interval, divided by the total number of frames expected to be
@@ -1224,6 +1220,21 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until there are enough frames to produce the metric.
   </summary>
+  <token key="Type">
+    <variant name="Animations"
+        summary="animations, where a sequence is a series of frames produced
+                 which contain at least one of: Compositor-thread animations;
+                 Main-thread animations; and JS animations."/>
+    <variant name="Interactions"
+        summary="interactions, where a sequence is a series of frames
+                 produced which contain scrolling or pinch-gestures."/>
+    <variant name="Sequences"
+        summary="animations and interactions, where a sequence is a series of
+                 frames produced which contain at least one of the
+                 animations/interactions. Such animations and interactions
+                 encompass: Compositor-thread animations; Main-thread
+                 animations; JS animations; scrolling; and pinch-gestures."/>
+  </token>
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank3.{Thread}{Sequence}" units="%"
