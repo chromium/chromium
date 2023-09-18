@@ -4127,7 +4127,7 @@ deps = {
   # grepping.
   'src/chrome/installer/mac/internal': {
       'url': Var('chrome_git') + '/chrome/installer/mac/internal.git' + '@' +
-        'd7fb448e1fc84c05c40719d83d785fe2a131e616',
+        '3cb1c9bad99f5f5435add9e8d400b9f16c7c23cd',
       'condition': 'checkout_src_internal',
   },
 
