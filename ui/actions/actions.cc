@@ -415,9 +415,21 @@ void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
 }
 
 void ActionItem::InvokeAction() {
-  if (callback_ && enabled_) {
-    callback_.Run(this);
+  if (enabled_) {
+    invoke_count_++;
+    last_invoke_time_ = base::TimeTicks::Now();
+    if (callback_) {
+      callback_.Run(this);
+    }
   }
+}
+
+int ActionItem::GetInvokeCount() const {
+  return invoke_count_;
+}
+
+absl::optional<base::TimeTicks> ActionItem::GetLastInvokeTime() const {
+  return last_invoke_time_;
 }
 
 // static
@@ -468,6 +480,8 @@ ADD_PROPERTY_METADATA(absl::optional<int>, GroupId)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
+ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<base::TimeTicks>, LastInvokeTime)
 END_METADATA
 
 ActionManager::ActionManager() {

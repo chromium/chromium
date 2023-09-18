@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -169,6 +170,11 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   ActionItem& operator=(const ActionItem&) = delete;
   ~ActionItem() override;
 
+  // Build an action.
+  static ActionItemBuilder Builder(InvokeActionCallback callback);
+  static ActionItemBuilder Builder();
+
+  // Configure action states and attributes.
   absl::optional<ActionId> GetActionId() const;
   void SetActionId(absl::optional<ActionId> action_id);
   ui::Accelerator GetAccelerator() const;
@@ -192,15 +198,19 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   [[nodiscard]] base::CallbackListSubscription AddActionChangedCallback(
       ActionChangedCallback callback);
 
-  // Alternative terms used to identify this action. Used for search indexing
+  // Alternative terms used to identify this action. Used for search indexing.
   void AddSynonyms(std::initializer_list<std::u16string> synonyms);
 
+  // Do a "batch" update of the ActionItem state without triggering
+  // ActionChanged callbacks for each state change.
+  [[nodiscard]] ScopedActionUpdate BeginUpdate();
+
+  // Invoke an action.
   void InvokeAction();
 
-  static ActionItemBuilder Builder(InvokeActionCallback callback);
-  static ActionItemBuilder Builder();
-
-  [[nodiscard]] ScopedActionUpdate BeginUpdate();
+  // Get action metrics.
+  int GetInvokeCount() const;
+  absl::optional<base::TimeTicks> GetLastInvokeTime() const;
 
  protected:
   // ActionList::Delegate override.
@@ -228,6 +238,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   ui::ImageModel image_;
   Synonyms synonyms_;
   InvokeActionCallback callback_;
+  int invoke_count_ = 0;
+  absl::optional<base::TimeTicks> last_invoke_time_;
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionManager

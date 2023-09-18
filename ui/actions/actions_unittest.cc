@@ -91,6 +91,8 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(
             [](int* invoked_count, actions::ActionItem* action) {
               ++*invoked_count;
+              EXPECT_EQ(*invoked_count, action->GetInvokeCount());
+              EXPECT_GE(base::TimeTicks::Now(), *action->GetLastInvokeTime());
             },
             invoked_count));
         action->SetActionId(kActionCut);
@@ -106,6 +108,8 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
   EXPECT_EQ(action->GetText(), text);
   EXPECT_TRUE(action->GetEnabled());
   EXPECT_TRUE(action->GetVisible());
+  EXPECT_EQ(action->GetInvokeCount(), 0);
+  EXPECT_EQ(action->GetLastInvokeTime(), absl::nullopt);
   auto action_id = action->GetActionId();
   ASSERT_TRUE(action_id);
   EXPECT_EQ(*action_id, kActionCut);
@@ -147,7 +151,6 @@ TEST_F(ActionItemTest, ScopedFindActionTest) {
 
 TEST_F(ActionItemTest, ActionBuilderTest) {
   const std::u16string text = u"Test Action";
-  int action_invoked_count = 0;
   // clang-format off
   auto builder =
       ActionItem::Builder()
@@ -155,10 +158,7 @@ TEST_F(ActionItemTest, ActionBuilderTest) {
         .SetVisible(false)
         .SetActionId(actions::kActionCopy)
         .SetInvokeActionCallback(
-            base::BindRepeating(
-                [](int* invoked_count, actions::ActionItem* action) {
-                  ++*invoked_count;
-                }, &action_invoked_count));
+            base::DoNothing());
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
@@ -167,9 +167,9 @@ TEST_F(ActionItemTest, ActionBuilderTest) {
   ASSERT_TRUE(action);
   EXPECT_EQ(action->GetText(), text);
   EXPECT_FALSE(action->GetVisible());
-  EXPECT_EQ(action_invoked_count, 0);
+  EXPECT_EQ(action->GetInvokeCount(), 0);
   action->InvokeAction();
-  EXPECT_EQ(action_invoked_count, 1);
+  EXPECT_EQ(action->GetInvokeCount(), 1);
 }
 
 TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
@@ -178,8 +178,6 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   ActionItem* child_action1 = nullptr;
   ActionItem* child_action2 = nullptr;
   int action_invoked_count = 0;
-  int child1_action_invoked_count = 0;
-  int child2_action_invoked_count = 0;
   // clang-format off
   auto builder = ActionItem::Builder(
       base::BindRepeating([](int* invoked_count, actions::ActionItem* action){
@@ -191,19 +189,11 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
       .SetVisible(true)
       .SetEnabled(false)
       .AddChildren(
-          ActionItem::Builder(
-              base::BindRepeating([](int* invoked_count,
-                                    actions::ActionItem* action) {
-                ++*invoked_count;
-              }, &child1_action_invoked_count))
+          ActionItem::Builder(base::DoNothing())
               .CopyAddressTo(&child_action1)
               .SetActionId(kActionTest2)
               .SetText(kChild1Text),
-          ActionItem::Builder(
-              base::BindRepeating([](int* invoked_count,
-                                    actions::ActionItem* action) {
-                ++*invoked_count;
-              }, &child2_action_invoked_count))
+          ActionItem::Builder(base::DoNothing())
               .CopyAddressTo(&child_action2)
               .SetActionId(kActionTest3)
               .SetChecked(true)
@@ -237,9 +227,9 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
 
   // The child actions should trigger their callbacks since they're enabled.
   child_action1->InvokeAction();
-  EXPECT_EQ(child1_action_invoked_count, 1);
+  EXPECT_EQ(child_action1->GetInvokeCount(), 1);
   child_action2->InvokeAction();
-  EXPECT_EQ(child2_action_invoked_count, 1);
+  EXPECT_EQ(child_action2->GetInvokeCount(), 1);
 }
 
 TEST_F(ActionItemTest, TestGetChildren) {
