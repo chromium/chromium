@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"

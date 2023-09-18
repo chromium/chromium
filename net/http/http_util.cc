@@ -283,6 +283,21 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
   return true;
 }
 
+// static
+std::string HttpUtil::TimeFormatHTTP(base::Time time) {
+  static constexpr char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
+                                              "Thu", "Fri", "Sat"};
+  static constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr",
+                                             "May", "Jun", "Jul", "Aug",
+                                             "Sep", "Oct", "Nov", "Dec"};
+  base::Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  return base::StringPrintf(
+      "%s, %02d %s %04d %02d:%02d:%02d GMT", kWeekdayName[exploded.day_of_week],
+      exploded.day_of_month, kMonthName[exploded.month - 1], exploded.year,
+      exploded.hour, exploded.minute, exploded.second);
+}
+
 namespace {
 
 // A header string containing any of the following fields will cause

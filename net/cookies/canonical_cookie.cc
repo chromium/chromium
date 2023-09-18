@@ -66,6 +66,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -1521,7 +1522,7 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
   if (!cookie.Path().empty())
     cookie_line += "; path=" + cookie.Path();
   if (cookie.ExpiryDate() != base::Time())
-    cookie_line += "; expires=" + TimeFormatHTTP(cookie.ExpiryDate());
+    cookie_line += "; expires=" + HttpUtil::TimeFormatHTTP(cookie.ExpiryDate());
   if (cookie.IsSecure())
     cookie_line += "; secure";
   if (cookie.IsHttpOnly())

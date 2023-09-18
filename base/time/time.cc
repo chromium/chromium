@@ -22,12 +22,6 @@ namespace base {
 
 namespace {
 
-const char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
-                                 "Thu", "Fri", "Sat"};
-
-const char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
 TimeTicks g_shared_time_ticks_at_unix_epoch;
 
 }  // namespace
@@ -313,15 +307,6 @@ bool Time::Exploded::HasValidValues() const {
          (0 <= second) && (second <= 60) &&
          (0 <= millisecond) && (millisecond <= 999);
   // clang-format on
-}
-
-std::string TimeFormatHTTP(base::Time time) {
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  return base::StringPrintf(
-      "%s, %02d %s %04d %02d:%02d:%02d GMT", kWeekdayName[exploded.day_of_week],
-      exploded.day_of_month, kMonthName[exploded.month - 1], exploded.year,
-      exploded.hour, exploded.minute, exploded.second);
 }
 
 }  // namespace base

@@ -15,6 +15,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -272,7 +273,7 @@ CallbackCounter::~CallbackCounter() = default;
 
 std::string FutureCookieExpirationString() {
   return "; expires=" +
-         base::TimeFormatHTTP(base::Time::Now() + base::Days(365));
+         HttpUtil::TimeFormatHTTP(base::Time::Now() + base::Days(365));
 }
 
 }  // namespace net

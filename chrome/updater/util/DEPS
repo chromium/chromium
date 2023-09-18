@@ -1,0 +1,6 @@
+specific_include_rules = {
+  ".*test.*": [
+    # Unlike production code, test code may access ICU.
+    "+base/i18n",
+  ]
+}

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

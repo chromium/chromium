@@ -42,6 +42,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/keyed_service/core",
     "//url",
   ]

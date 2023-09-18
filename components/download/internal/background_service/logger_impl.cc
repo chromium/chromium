@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/download/internal/background_service/driver_entry.h"

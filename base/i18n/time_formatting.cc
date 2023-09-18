@@ -265,6 +265,10 @@ std::string TimeFormatAsIso8601(const Time& time) {
                                           icu::TimeZone::getGMT());
 }
 
+std::string TimeFormatHTTP(const Time& time) {
+  return UnlocalizedTimeFormatWithPattern(time, "E, dd MMM yyyy HH:mm:ss O",
+                                          icu::TimeZone::getGMT());
+}
 
 bool TimeDurationFormat(TimeDelta time,
                         DurationFormatWidth width,

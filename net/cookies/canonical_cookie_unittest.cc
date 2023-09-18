@@ -18,6 +18,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -920,7 +921,7 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   // Expires in the past
   base::Time past_date = base::Time::Now() - base::Days(10);
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      url, "A=1; expires=" + base::TimeFormatHTTP(past_date), creation_time,
+      url, "A=1; expires=" + HttpUtil::TimeFormatHTTP(past_date), creation_time,
       server_time, absl::nullopt /* cookie_partition_key */);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
@@ -932,8 +933,8 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   // Expires in the future
   base::Time future_date = base::Time::Now() + base::Days(10);
   cookie = CanonicalCookie::Create(
-      url, "A=1; expires=" + base::TimeFormatHTTP(future_date), creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */);
+      url, "A=1; expires=" + HttpUtil::TimeFormatHTTP(future_date),
+      creation_time, server_time, absl::nullopt /* cookie_partition_key */);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
@@ -944,8 +945,8 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   // Expires in the far future
   future_date = base::Time::Now() + base::Days(800);
   cookie = CanonicalCookie::Create(
-      url, "A=1; expires=" + base::TimeFormatHTTP(future_date), creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */);
+      url, "A=1; expires=" + HttpUtil::TimeFormatHTTP(future_date),
+      creation_time, server_time, absl::nullopt /* cookie_partition_key */);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));

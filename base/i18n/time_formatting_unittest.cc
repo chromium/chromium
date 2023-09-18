@@ -357,6 +357,12 @@ TEST(TimeFormattingTest, TimeFormatAsIso8601) {
   EXPECT_EQ("2011-04-30T22:42:07.000Z", TimeFormatAsIso8601(time));
 }
 
+TEST(TimeFormattingTest, TimeFormatHTTP) {
+  Time time;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+  EXPECT_EQ("Sat, 30 Apr 2011 22:42:07 GMT", TimeFormatHTTP(time));
+}
+
 TEST(TimeFormattingTest, TimeDurationFormat) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   TimeDelta delta = Minutes(15 * 60 + 42);

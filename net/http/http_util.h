@@ -87,6 +87,13 @@ class NET_EXPORT HttpUtil {
                                     base::Time now,
                                     base::TimeDelta* retry_after);
 
+  // Formats a time in the IMF-fixdate format defined by RFC 7231 (satisfying
+  // its HTTP-date format).
+  //
+  // This behaves identically to the function in base/i18n/time_formatting.h. It
+  // is reimplemented here since net/ cannot depend on base/i18n/.
+  static std::string TimeFormatHTTP(base::Time time);
+
   // Returns true if the request method is "safe" (per section 4.2.1 of
   // RFC 7231).
   static bool IsMethodSafe(base::StringPiece method);

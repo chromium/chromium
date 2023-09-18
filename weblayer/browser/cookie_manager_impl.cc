@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/cookie_manager_impl.h"
 
+#include "base/i18n/time_formatting.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

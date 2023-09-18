@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
