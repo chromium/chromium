@@ -178,6 +178,7 @@ class WPTAdapterTest(unittest.TestCase):
             '--num-retries=11',
             '--zero-tests-executed-ok',
             '--no-manifest-update',
+            '--wrapper=rr record --disable-avx-512',
             'external/wpt/dir/',
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
@@ -189,6 +190,8 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(options.retry_unexpected, 11)
             self.assertEqual(options.default_exclude, True)
             self.assertEqual(set(options.exclude), set())
+            self.assertEqual(options.debugger, 'rr')
+            self.assertEqual(options.debugger_args, 'record --disable-avx-512')
             # `*webdriver/` tests are implicitly excluded by default.
             self.assertNotIn('wdspec', options.test_types)
             self.assertEqual(options.include, ['dir/reftest.html'])

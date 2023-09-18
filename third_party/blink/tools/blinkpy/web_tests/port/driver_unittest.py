@@ -33,6 +33,7 @@ from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import Driver
 from blinkpy.web_tests.port.driver import coalesce_repeated_switches
+from blinkpy.web_tests.port.factory import command_wrapper
 from blinkpy.web_tests.port.server_process_mock import MockServerProcess
 
 
@@ -47,12 +48,10 @@ class DriverTest(unittest.TestCase):
                     }))
 
     def _assert_wrapper(self, wrapper_string, expected_wrapper):
-        wrapper = Driver(self.make_port(),
-                         None)._command_wrapper(wrapper_string)
+        wrapper = command_wrapper(wrapper_string)
         self.assertEqual(wrapper, expected_wrapper)
 
     def test_command_wrapper(self):
-        self._assert_wrapper(None, [])
         self._assert_wrapper('valgrind', ['valgrind'])
 
         # Validate that shlex works as expected.

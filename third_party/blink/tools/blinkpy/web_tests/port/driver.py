@@ -326,13 +326,6 @@ class Driver(object):
                                          self._crashed_pid, stdout, stderr,
                                          newer_than)
 
-    # FIXME: Seems this could just be inlined into callers.
-    @classmethod
-    def _command_wrapper(cls, wrapper_option):
-        # Hook for injecting valgrind or other runtime instrumentation,
-        # used by e.g. tools/valgrind/valgrind_tests.py.
-        return shlex.split(wrapper_option) if wrapper_option else []
-
     # The *_HOST_AND_PORTS tuples are (hostname, insecure_port, secure_port),
     # i.e. the information needed to create HTTP and HTTPS URLs.
     # TODO(burnik): Read from config or args.
@@ -572,7 +565,7 @@ class Driver(object):
         return [self._port.path_to_driver()]
 
     def cmd_line(self, per_test_args):
-        cmd = self._command_wrapper(self._port.get_option('wrapper'))
+        cmd = list(self._port.get_option('wrapper', []))
         cmd += self._base_cmd_line()
         if self._no_timeout:
             cmd.append('--no-timeout')

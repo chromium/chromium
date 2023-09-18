@@ -356,6 +356,11 @@ class WPTAdapter:
             # Force `--pause-after-test`, since it doesn't make sense to run
             # tests headfully without giving a chance for interaction.
             runner_options.pause_after_test = True
+        if self.options.wrapper:
+            runner_options.debugger = self.options.wrapper[0]
+            # `wpt run` expects a plain `str`, not a `List[str]`:
+            # https://github.com/web-platform-tests/wpt/blob/9593290a/tools/wptrunner/wptrunner/wptcommandline.py#L190
+            runner_options.debugger_args = ' '.join(self.options.wrapper[1:])
 
     def _prepare_lists(self, test_names):
         tests_to_skip = set()
