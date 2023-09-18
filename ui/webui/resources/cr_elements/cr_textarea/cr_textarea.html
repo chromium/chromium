@@ -87,6 +87,15 @@
     z-index: 1;
   }
 
+  :host-context([chrome-refresh-2023]):host([autogrow]) textarea {
+    position: absolute;
+  }
+
+  /* Must match textarea. */
+  :host-context([chrome-refresh-2023]) #mirror {
+    font-size: 12px;
+    line-height: 16px;
+  }
 </style>
 <div id="label" class="cr-form-field-label" hidden="[[!label]]"
     aria-hidden="true">
