@@ -93,9 +93,6 @@ BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the orca feature for dogfood population.
-BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -168,8 +165,7 @@ bool IsJellyrollEnabled() {
 }
 
 bool IsOrcaEnabled() {
-  return base::FeatureList::IsEnabled(kOrca) ||
-         base::FeatureList::IsEnabled(kOrcaDogfood);
+  return base::FeatureList::IsEnabled(kOrca);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

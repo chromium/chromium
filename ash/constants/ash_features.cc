@@ -190,6 +190,9 @@ BASE_FEATURE(kAssistMultiWordExpanded,
              "AssistMultiWordExpanded",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the orca feature for dogfood population.
+BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementOrca,

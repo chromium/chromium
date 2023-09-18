@@ -48,7 +48,6 @@ TEST_F(EditorSwitchTest,
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
-  EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
 
@@ -65,18 +64,6 @@ TEST_F(EditorSwitchTest,
                              /*country_code=*/kAllowedTestCountry);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
-}
-
-TEST_F(EditorSwitchTest,
-       FeatureWillBeAvailableForUseWhenReceivingOrcaDogfoodFlag) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kOrcaDogfood);
-  TestingProfile profile_;
-  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_,
-                             /*country_code=*/kAllowedTestCountry);
-
-  EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
 
 TEST_F(EditorSwitchTest, FeatureWillNotBeAvailableForACountryNotApprovedYet) {

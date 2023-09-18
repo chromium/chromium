@@ -74,10 +74,10 @@ bool EditorSwitch::IsAllowedForUse() {
   bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
 
   return  // Conditions required for dogfooding.
-      (base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood)) ||
+      (base::FeatureList::IsEnabled(features::kOrcaDogfood)) ||
       // Conditions required for the feature to be enabled for non-dogfood
       // population.
-      (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
+      (chromeos::features::IsOrcaEnabled() &&
        base::FeatureList::IsEnabled(features::kFeatureManagementOrca) &&
        !is_managed && IsCountryAllowed(country_code_));
 }
