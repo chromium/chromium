@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -19,14 +24,22 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
     private PropertyModel mDialogModel;
     private PlusAddressCreationDelegate mPlusAddressDelegate;
     private ModalDialogManager mModalDialogManager;
+    private final View mDialogView;
 
-    public PlusAddressCreationPrompt(PlusAddressCreationDelegate delegate) {
+    public PlusAddressCreationPrompt(
+            PlusAddressCreationDelegate delegate, Activity activity, String primaryEmailAddress) {
         mPlusAddressDelegate = delegate;
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        mDialogView = inflater.inflate(R.layout.plus_address_creation_prompt, null);
+        TextView primaryEmailView = mDialogView.findViewById(R.id.plus_address_modal_primary_email);
+        primaryEmailView.setText(primaryEmailAddress);
+
         // TODO(crbug.com/1467623): Set a custom view, drop hard-coded strings etc. Keeping the
         // modal as simple as possible for now.
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                         .with(ModalDialogProperties.TITLE, "Lorem Ipsum")
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "Yep")
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Dolor");
@@ -73,5 +86,9 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
         }
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    View getDialogViewForTesting() {
+        return mDialogView;
     }
 }

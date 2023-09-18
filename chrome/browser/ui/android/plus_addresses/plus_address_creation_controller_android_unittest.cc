@@ -16,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1467623): Consolidate this and the desktop version. Splitting
 // them was a mechanism to reduce dependencies during implementation, but isn't
@@ -33,6 +34,10 @@ class MockPlusAddressService : public PlusAddressService {
   void OfferPlusAddressCreation(const url::Origin& origin,
                                 PlusAddressCallback callback) override {
     std::move(callback).Run("plus+plus@plus.plus");
+  }
+
+  absl::optional<std::string> GetPrimaryEmail() override {
+    return "plus+plus@plus.plus";
   }
 };
 }  // namespace

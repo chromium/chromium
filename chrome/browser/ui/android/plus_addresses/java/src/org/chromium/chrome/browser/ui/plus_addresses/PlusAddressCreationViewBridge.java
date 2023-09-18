@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import android.app.Activity;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -31,8 +33,10 @@ public class PlusAddressCreationViewBridge implements PlusAddressCreationDelegat
     }
 
     @CalledByNative
-    private void show(WindowAndroid windowAndroid) {
-        mPlusAddressCreationPrompt = new PlusAddressCreationPrompt(this);
+    private void show(WindowAndroid windowAndroid, String primaryEmailAddress) {
+        Activity activity = windowAndroid.getActivity().get();
+        mPlusAddressCreationPrompt =
+                new PlusAddressCreationPrompt(this, activity, primaryEmailAddress);
         mPlusAddressCreationPrompt.show(windowAndroid.getModalDialogManager());
     }
 

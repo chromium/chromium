@@ -13,10 +13,20 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
   ]
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.plus_addresses"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/plus_address_creation_prompt.xml" ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
   ]
 }
 

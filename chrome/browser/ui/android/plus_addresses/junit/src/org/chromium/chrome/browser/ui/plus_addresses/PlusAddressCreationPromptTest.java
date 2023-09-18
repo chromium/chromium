@@ -9,6 +9,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.widget.TextView;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -18,10 +21,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -29,6 +34,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @Config(manifest = Config.NONE)
 public class PlusAddressCreationPromptTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
+    private static final String DUMMY_EMAIL = "plus+plus@plus.plus";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -36,6 +42,7 @@ public class PlusAddressCreationPromptTest {
     @Mock
     private PlusAddressCreationViewBridge.Natives mPromptDelegateJni;
 
+    private Activity mActivity;
     private FakeModalDialogManager mModalDialogManager;
     private PlusAddressCreationPrompt mPrompt;
     private PlusAddressCreationViewBridge mPromptDelegate;
@@ -44,13 +51,15 @@ public class PlusAddressCreationPromptTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mActivity = Robolectric.setupActivity(TestActivity.class);
+
         mPromptDelegate = PlusAddressCreationViewBridge.create(NATIVE_PLUS_ADDRESS_CREATION_VIEW);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mPromptDelegateJni);
     }
 
     private void createAndShowPrompt() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mPrompt = new PlusAddressCreationPrompt(mPromptDelegate);
+        mPrompt = new PlusAddressCreationPrompt(mPromptDelegate, mActivity, DUMMY_EMAIL);
         mPrompt.show(mModalDialogManager);
     }
 
@@ -58,6 +67,9 @@ public class PlusAddressCreationPromptTest {
     @SmallTest
     public void dialogShown() {
         createAndShowPrompt();
+        TextView descriptionView = mPrompt.getDialogViewForTesting().findViewById(
+                R.id.plus_address_modal_primary_email);
+        Assert.assertEquals(descriptionView.getText(), DUMMY_EMAIL);
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 

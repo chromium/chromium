@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 
+#include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
@@ -19,13 +20,17 @@ PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
 
 PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() = default;
 
-void PlusAddressCreationViewAndroid::Show() {
+void PlusAddressCreationViewAndroid::Show(
+    const std::string& primary_email_address) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
       env, reinterpret_cast<intptr_t>(this)));
+
+  base::android::ScopedJavaLocalRef<jstring> j_email =
+      base::android::ConvertUTF8ToJavaString(env, primary_email_address);
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_,
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(), j_email);
 }
 
 void PlusAddressCreationViewAndroid::OnConfirmed(

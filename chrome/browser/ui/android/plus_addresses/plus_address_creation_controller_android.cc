@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
 // static
@@ -26,12 +27,26 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
   if (!view_) {
+    PlusAddressService* plus_address_service =
+        PlusAddressServiceFactory::GetForBrowserContext(
+            GetWebContents().GetBrowserContext());
+    if (!plus_address_service) {
+      // TODO(crbug.com/1467623): Verify expected behavior in this case and the
+      // missing email case below.
+      return;
+    }
+    absl::optional<std::string> maybe_email =
+        plus_address_service->GetPrimaryEmail();
+    if (maybe_email == absl::nullopt) {
+      return;
+    }
+
     callback_ = std::move(callback);
     relevant_origin_ = main_frame_origin;
     if (!suppress_ui_for_testing_) {
       view_ = std::make_unique<PlusAddressCreationViewAndroid>(
           GetWeakPtr(), &GetWebContents());
-      view_->Show();
+      view_->Show(maybe_email.value());
     }
   }
 }
