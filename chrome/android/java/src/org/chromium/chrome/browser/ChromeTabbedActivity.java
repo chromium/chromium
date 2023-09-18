@@ -183,7 +183,6 @@ import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -1145,16 +1144,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public ChromeTabCreator getCurrentTabCreator() {
         return (ChromeTabCreator) super.getCurrentTabCreator();
-    }
-
-    /**
-     * @return The toolbar button in-product help controller for this activity.
-     * TODO(pnoland, https://crbug.com/865801): remove this in favor
-     *        of injecting the controller directly where it's needed.
-     */
-    public ToolbarButtonInProductHelpController getToolbarButtonInProductHelpController() {
-        return ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                .getToolbarButtonInProductHelpController();
     }
 
     private void handleDebugIntent(Intent intent) {

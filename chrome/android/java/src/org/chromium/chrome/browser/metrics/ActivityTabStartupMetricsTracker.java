@@ -57,6 +57,8 @@ public class ActivityTabStartupMetricsTracker {
         }
     };
 
+    // The time of the activity onCreate(). All metrics (such as time to first visible content) are
+    // reported in milliseconds relative to this value.
     private final long mActivityStartTimeMs;
 
     // Event duration recorded from the |mActivityStartTimeMs|.
@@ -103,18 +105,6 @@ public class ActivityTabStartupMetricsTracker {
     public void setHistogramSuffix(@ActivityType int activityType) {
         mHistogramSuffix = activityType;
         mShouldTrackStartupMetrics = true;
-    }
-
-    // Note: In addition to returning false when startup metrics are not being tracked at all, this
-    // method will also return false after first navigation commit has occurred.
-    public boolean isTrackingStartupMetrics() {
-        return mShouldTrackStartupMetrics;
-    }
-
-    // Returns the time since the activity was started (relative to which metrics such as time to
-    // first visible content are calculated).
-    public long getActivityStartTimeMs() {
-        return mActivityStartTimeMs;
     }
 
     private void registerObservers(TabModelSelector tabModelSelector) {

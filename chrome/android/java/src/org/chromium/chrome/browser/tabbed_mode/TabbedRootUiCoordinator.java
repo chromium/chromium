@@ -424,14 +424,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     /**
-     * @return The toolbar button IPH controller for the tabbed UI this coordinator controls.
-     * TODO(pnoland, https://crbug.com/865801): remove this in favor of wiring it directly.
-     */
-    public ToolbarButtonInProductHelpController getToolbarButtonInProductHelpController() {
-        return mToolbarButtonInProductHelpController;
-    }
-
-    /**
      * Show navigation history sheet.
      */
     public void showFullHistorySheet() {
