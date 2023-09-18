@@ -5818,11 +5818,27 @@
         {
             "platforms": [
                 "android",
-                "android_webview"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
+                    "enable_features": [
+                        "DrawImmediatelyWhenInteractive"
+                    ]
+                },
+                {
+                    "name": "EnabledV2",
+                    "enable_features": [
+                        "DrawImmediatelyWhenInteractive"
+                    ]
+                },
+                {
+                    "name": "EnabledV3",
                     "enable_features": [
                         "DrawImmediatelyWhenInteractive"
                     ]

@@ -956,10 +956,10 @@ extern const char kFileSystemObserverDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
+#endif
 
 extern const char kDrawImmediatelyWhenInteractiveName[];
 extern const char kDrawImmediatelyWhenInteractiveDescription[];
-#endif
 
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];

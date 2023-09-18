@@ -1701,12 +1701,13 @@ const char kFillingAcrossAffiliatedWebsitesName[] =
 const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
+#endif
+
 const char kDrawImmediatelyWhenInteractiveName[] =
     "Enable Immediate Draw When Interactive";
 const char kDrawImmediatelyWhenInteractiveDescription[] =
     "Causes viz to activate and draw frames immediately during a touch "
     "interaction or scroll.";
-#endif
 
 const char kFillingAcrossGroupedSitesName[] =
     "Password filling across grouped websites";
