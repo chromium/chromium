@@ -104,12 +104,10 @@ class UserScript {
       else
         return content_;
     }
-    void set_external_content(const base::StringPiece& content) {
+    void set_external_content(base::StringPiece content) {
       external_content_ = content;
     }
-    void set_content(const base::StringPiece& content) {
-      content_.assign(content.begin(), content.end());
-    }
+    void set_content(std::string content) { content_ = std::move(content); }
 
     // Serialization support. The content and FilePath members will not be
     // serialized!

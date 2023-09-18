@@ -141,12 +141,9 @@ void WebUIUserScriptLoader::OnSingleWebUIURLFetchComplete(
     // Remove BOM from |data|.
     if (base::StartsWith(*data, base::kUtf8ByteOrderMark,
                          base::CompareCase::SENSITIVE)) {
-      content->set_content(data->substr(strlen(base::kUtf8ByteOrderMark)));
-    } else {
-      // TODO(lazyboy): Script contents should take ownership of `data`, i.e.
-      // the content of the script.
-      content->set_content(*data);
+      data->erase(0, strlen(base::kUtf8ByteOrderMark));
     }
+    content->set_content(std::move(*data));
   }
 
   ++complete_fetchers_;

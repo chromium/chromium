@@ -250,14 +250,10 @@ void LoadScriptContent(const mojom::HostID& host_id,
   // Remove BOM from the content.
   if (base::StartsWith(*content, base::kUtf8ByteOrderMark,
                        base::CompareCase::SENSITIVE)) {
-    std::string trimmed_content =
-        content->substr(strlen(base::kUtf8ByteOrderMark));
-    RecordContentScriptLength(trimmed_content);
-    script_file->set_content(trimmed_content);
-  } else {
-    RecordContentScriptLength(*content);
-    script_file->set_content(*content);
+    content->erase(0, strlen(base::kUtf8ByteOrderMark));
   }
+  RecordContentScriptLength(*content);
+  script_file->set_content(std::move(*content));
 }
 
 void FillScriptFileResourceIds(const UserScript::ContentList& script_files,
