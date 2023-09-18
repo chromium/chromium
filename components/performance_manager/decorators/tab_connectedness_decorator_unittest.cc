@@ -214,4 +214,33 @@ TEST_F(TabConnectednessDecoratorTest, TestSwitchToDiscardedTab) {
   CheckConnectedness(mock_graph.page.get(), new_page_node.get(), 1.0f);
 }
 
+// This test sets up an extreme scenario where tab A is equally connected to
+// 2000 other tabs, which are in turn fully (1.0) connected to tab B. In this
+// case, Connectedness(A, B) is equal to 1.0, but floating point error
+// accumulation makes it so the computation produces roughly 1.00002. Because
+// connectedness represents a probability, it must be in the interval [0, 1], so
+// this test exercises the code that ensures this property remains true.
+TEST_F(TabConnectednessDecoratorTest, TestDoesntReturnGreaterThanOne) {
+  MockManyPagesInSingleProcessGraph mock_graph(graph(), 2001);
+
+  mock_graph.page->SetType(PageType::kTab);
+  mock_graph.other_pages[0]->SetType(PageType::kTab);
+  for (int i = 1; i < 2001; ++i) {
+    mock_graph.other_pages[i]->SetType(PageType::kTab);
+    SwitchTab(mock_graph.page.get(), mock_graph.other_pages[i].get());
+    SwitchTab(mock_graph.other_pages[i].get(), mock_graph.other_pages[0].get());
+  }
+
+  TabPageDecorator::TabHandle* first_handle =
+      TabPageDecorator::FromPageNode(mock_graph.page.get());
+  CHECK(first_handle);
+  TabPageDecorator::TabHandle* second_handle =
+      TabPageDecorator::FromPageNode(mock_graph.other_pages[0].get());
+  CHECK(second_handle);
+
+  EXPECT_EQ(
+      decorator()->ComputeConnectednessBetween(first_handle, second_handle),
+      1.0f);
+}
+
 }  // namespace performance_manager

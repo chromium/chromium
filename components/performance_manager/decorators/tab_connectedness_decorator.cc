@@ -65,7 +65,10 @@ class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
                         data->ComputeConnectednessTo(destination, depth + 1));
     }
 
-    return connectedness;
+    // It's possible to get here with a connectedness score greater than 1 due
+    // to floating point error accumulation. If that's the case, the true value
+    // is close enough to 1 that we can return 1 directly.
+    return std::min(connectedness, 1.0f);
   }
 
   void OnSwitchTo(const TabPageDecorator::TabHandle* other) {
