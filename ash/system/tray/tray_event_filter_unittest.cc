@@ -9,6 +9,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
@@ -22,11 +23,13 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/message_center.h"
+#include "ui/wm/core/window_util.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -395,6 +398,35 @@ TEST_P(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
   GetEventGenerator()->GestureScrollSequence(start, end_inside,
                                              base::Milliseconds(100), 4);
 
+  EXPECT_TRUE(test_tray_background_view()->clicked_outside_bubble_called());
+  EXPECT_FALSE(test_tray_background_view()->bubble());
+}
+
+// Tests that when we drag up to show the hotseat, the open bubble will be close
+// to make sure it does not overlap with the hotseat (crbug/1329327).
+TEST_P(TrayEventFilterTest, ShowHotseatClosesBubble) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+  ASSERT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+
+  ShowTestBubble();
+  EXPECT_TRUE(GetTestBubbleWidget());
+
+  // Dragging up to show the hotseat.
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start = display_bounds.bottom_center();
+  const gfx::Point end = start + gfx::Vector2d(0, -80);
+  GetEventGenerator()->GestureScrollSequence(
+      start, end, /*duration=*/base::Milliseconds(100),
+      /*steps=*/4);
+  ASSERT_EQ(HotseatState::kExtended,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+
+  // `ClickedOutsideBubble()` should be triggered to close the bubble.
   EXPECT_TRUE(test_tray_background_view()->clicked_outside_bubble_called());
   EXPECT_FALSE(test_tray_background_view()->bubble());
 }

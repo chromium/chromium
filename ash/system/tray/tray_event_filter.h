@@ -41,6 +41,10 @@ class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
+  // Evaluates whether the given `event` should cause the tray button to trigger
+  // `ClickedOutsideBubble()`.
+  bool ShouldTriggerClickedOutsideBubble(const ui::LocatedEvent& event);
+
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   const raw_ptr<views::Widget> bubble_widget_;

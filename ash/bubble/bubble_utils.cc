@@ -22,12 +22,13 @@
 namespace ash::bubble_utils {
 
 bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
-  // Should only be called for "press" type events.
+  // Should only be called for "press" or scroll begin type events.
   DCHECK(event.type() == ui::ET_MOUSE_PRESSED ||
          event.type() == ui::ET_TOUCH_PRESSED ||
          event.type() == ui::ET_GESTURE_LONG_PRESS ||
          event.type() == ui::ET_GESTURE_TAP ||
-         event.type() == ui::ET_GESTURE_TWO_FINGER_TAP)
+         event.type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
+         event.type() == ui::ET_GESTURE_SCROLL_BEGIN)
       << event.type();
 
   // Users in a capture session may be trying to capture the bubble.

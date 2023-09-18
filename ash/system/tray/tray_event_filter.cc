@@ -51,19 +51,31 @@ void TrayEventFilter::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
-    ProcessPressedEvent(*event);
+  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+    return;
+  }
+
+  const gfx::Point event_location =
+      event->target() ? event->target()->GetScreenLocation(*event)
+                      : event->root_location();
+  // If user is dragging on the tray button or
+  // `ShouldTriggerClickedOutsideBubble()` is satisfied, we should close the
+  // bubble.
+  if ((tray_button_->GetVisible() &&
+       tray_button_->GetBoundsInScreen().Contains(event_location)) ||
+      ShouldTriggerClickedOutsideBubble(*event)) {
+    tray_button_->ClickedOutsideBubble();
   }
 }
 
-void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+bool TrayEventFilter::ShouldTriggerClickedOutsideBubble(
+    const ui::LocatedEvent& event) {
   if (!bubble_widget_ || !bubble_view_ || !tray_button_) {
-    return;
+    return false;
   }
 
-  if (event.type() != ui::ET_GESTURE_SCROLL_BEGIN &&
-      !bubble_utils::ShouldCloseBubbleForEvent(event)) {
-    return;
+  if (!bubble_utils::ShouldCloseBubbleForEvent(event)) {
+    return false;
   }
 
   // Check the boundary for all bubbles, and do not handle the event if it
@@ -89,7 +101,7 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   if (tray_button_->catalog_name() ==
           TrayBackgroundViewCatalogName::kUnifiedSystem &&
       status_area->date_tray()->GetBoundsInScreen().Contains(screen_location)) {
-    return;
+    return false;
   }
 
   UnifiedSystemTray* unified_system_tray = status_area->unified_system_tray();
@@ -122,23 +134,28 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       unified_system_tray->GetMessagePopupCollection()
           ->popup_collection_bounds()
           .Contains(screen_location)) {
-    return;
+    return false;
   }
 
   if (bounds.Contains(screen_location)) {
-    return;
+    return false;
   }
 
   // Maybe close the parent tray if the user drags on it. Otherwise, let the
   // tray logic handle the event and determine show/hide behavior if the
   // user clicks on the parent tray.
   bounds = tray_button_->GetBoundsInScreen();
-  if (tray_button_->GetVisible() && bounds.Contains(screen_location) &&
-      event.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
-    return;
+  if (tray_button_->GetVisible() && bounds.Contains(screen_location)) {
+    return false;
   }
 
-  tray_button_->ClickedOutsideBubble();
+  return true;
+}
+
+void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  if (ShouldTriggerClickedOutsideBubble(event)) {
+    tray_button_->ClickedOutsideBubble();
+  }
 }
 
 }  // namespace ash
