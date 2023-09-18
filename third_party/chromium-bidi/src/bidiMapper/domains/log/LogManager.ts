@@ -136,24 +136,13 @@ export class LogManager {
       (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
-        const realm: Realm | undefined = this.#realmStorage.findRealm({
+        const realm = this.#realmStorage.findRealm({
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.exceptionDetails.executionContextId,
         });
 
-        // Try the best to get the exception text.
-        const textPromise = (async () => {
-          if (!params.exceptionDetails.exception) {
-            return params.exceptionDetails.text;
-          }
-          if (realm === undefined) {
-            return JSON.stringify(params.exceptionDetails.exception);
-          }
-          return realm.stringifyObject(params.exceptionDetails.exception);
-        })();
-
         this.#eventManager.registerPromiseEvent(
-          textPromise.then((text) => ({
+          LogManager.#getExceptionText(params, realm).then((text) => ({
             kind: 'success',
             value: {
               type: 'event',
@@ -178,5 +167,21 @@ export class LogManager {
         );
       }
     );
+  }
+
+  /**
+   * Try the best to get the exception text.
+   */
+  static async #getExceptionText(
+    params: Protocol.Runtime.ExceptionThrownEvent,
+    realm?: Realm
+  ): Promise<string> {
+    if (!params.exceptionDetails.exception) {
+      return params.exceptionDetails.text;
+    }
+    if (realm === undefined) {
+      return JSON.stringify(params.exceptionDetails.exception);
+    }
+    return realm.stringifyObject(params.exceptionDetails.exception);
   }
 }
