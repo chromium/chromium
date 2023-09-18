@@ -21,25 +21,11 @@ namespace {
 
 const char kNullTimeString[] = "null";
 
-bool ParseTimezone(base::StringPiece timezone,
-                   bool ahead,
-                   base::TimeDelta* out_offset_to_utc) {
-  DCHECK(out_offset_to_utc);
-
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      timezone, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  int hour = 0;
-  if (parts.empty() || !base::StringToInt(parts[0], &hour))
-    return false;
-
-  int minute = 0;
-  if (parts.size() > 1 && !base::StringToInt(parts[1], &minute))
-    return false;
-
-  *out_offset_to_utc =
-      (base::Hours(hour) + base::Minutes(minute)) * (ahead ? +1 : -1);
-  return true;
+// Sugar for calling the base:: method with the handling we always desire.
+std::vector<base::StringPiece> SplitStringPiece(base::StringPiece input,
+                                                base::StringPiece separators) {
+  return base::SplitStringPiece(input, separators, base::KEEP_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace
@@ -54,8 +40,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
 
   // Splits the string into "date" part and "time" part.
   {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
-        raw_value, "T", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "T");
     if (parts.size() != 2)
       return false;
     date = parts[0];
@@ -72,20 +57,30 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       time.remove_suffix(1);
     } else {
       bool ahead = true;
-      parts = base::SplitStringPiece(time_and_tz, "+", base::KEEP_WHITESPACE,
-                                     base::SPLIT_WANT_NONEMPTY);
+      parts = SplitStringPiece(time_and_tz, "+");
       if (parts.size() != 2) {
         ahead = false;
-        parts = base::SplitStringPiece(time_and_tz, "-", base::KEEP_WHITESPACE,
-                                       base::SPLIT_WANT_NONEMPTY);
+        parts = SplitStringPiece(time_and_tz, "-");
       }
       if (parts.size() == 2) {
         // Timezone is "+/-hh:mm"
-        if (!ParseTimezone(parts[1], ahead, &offset_to_utc)) {
+        std::vector<base::StringPiece> tz_parts =
+            SplitStringPiece(parts[1], ":");
+
+        int hour = 0;
+        if (tz_parts.empty() || !base::StringToInt(tz_parts[0], &hour)) {
           return false;
         }
+
+        int minute = 0;
+        if (tz_parts.size() > 1 && !base::StringToInt(tz_parts[1], &minute)) {
+          return false;
+        }
+
         has_timezone = true;
         time = parts[0];
+        offset_to_utc =
+            (base::Hours(hour) + base::Minutes(minute)) * (ahead ? +1 : -1);
       } else {
         // No timezone (uses local timezone)
         time = time_and_tz;
@@ -95,8 +90,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
 
   // Parses the date part.
   {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
-        date, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> parts = SplitStringPiece(date, "-");
     if (parts.size() != 3)
       return false;
 
@@ -109,8 +103,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
 
   // Parses the time part.
   {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
-        time, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> parts = SplitStringPiece(time, ":");
     if (parts.size() != 3)
       return false;
 
@@ -119,8 +112,8 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       return false;
     }
 
-    std::vector<base::StringPiece> seconds_parts = base::SplitStringPiece(
-        parts[2], ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> seconds_parts =
+        SplitStringPiece(parts[2], ".");
     if (seconds_parts.size() >= 3)
       return false;
 
@@ -157,8 +150,7 @@ bool GetDateOnlyFromString(base::StringPiece raw_value,
 
   // Parses the date part only.
   {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
-        raw_value, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "-");
     if (parts.size() != 3)
       return false;
 
