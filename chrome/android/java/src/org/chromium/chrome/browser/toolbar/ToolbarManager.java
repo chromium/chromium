@@ -1150,7 +1150,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (layoutType == LayoutType.TAB_SWITCHER || layoutType == LayoutType.START_SURFACE) {
             mLocationBarModel.updateForNonStaticLayout(
                     layoutType == LayoutType.TAB_SWITCHER, layoutType == LayoutType.START_SURFACE);
-            mToolbar.setTabSwitcherMode(true);
+            mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
             if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
                 assert mLocationBar instanceof LocationBarCoordinator;
