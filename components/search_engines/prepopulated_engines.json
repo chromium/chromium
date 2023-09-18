@@ -28,7 +28,7 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 139
+    "kCurrentDataVersion": 140
   },
 
   // The following engines are included in country lists and are added to the
@@ -37,7 +37,7 @@
     "ask": {
       "name": "Ask",
       "keyword": "ask.com",
-      "favicon_url": "https://sp.ask.com/sh/i/a16/favicon/favicon.ico",
+      "favicon_url": "https://www.ask.com/wp-content/uploads/sites/3/2021/10/ask-favicon.png",
       "search_url": "https://www.ask.com/web?q={searchTerms}",
       "suggest_url": "https://lss.sse-iacapps.com/query?q={searchTerms}&li=ff",
       "type": "SEARCH_ENGINE_ASK",
