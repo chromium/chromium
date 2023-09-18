@@ -31,7 +31,6 @@ const char* GetServerConnectionCodeString(
   switch (code) {
     ENUM_CASE(NONE);
     ENUM_CASE(CONNECTION_UNAVAILABLE);
-    ENUM_CASE(IO_ERROR);
     ENUM_CASE(SYNC_SERVER_ERROR);
     ENUM_CASE(SYNC_AUTH_ERROR);
     ENUM_CASE(SERVER_CONNECTION_OK);
@@ -48,8 +47,7 @@ HttpResponse::HttpResponse()
     : server_status(NONE),
       net_error_code(-1),
       http_status_code(-1),
-      content_length(-1),
-      payload_length(-1) {}
+      content_length(-1) {}
 
 // static
 HttpResponse HttpResponse::Uninitialized() {
@@ -91,14 +89,6 @@ HttpResponse HttpResponse::ForSuccessForTest() {
   HttpResponse response;
   response.server_status = SERVER_CONNECTION_OK;
   response.http_status_code = net::HTTP_OK;
-  return response;
-}
-
-// static
-HttpResponse HttpResponse::ForIoErrorForTest() {
-  CHECK_IS_TEST();
-  HttpResponse response;
-  response.server_status = IO_ERROR;
   return response;
 }
 

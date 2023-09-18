@@ -28,9 +28,6 @@ struct HttpResponse {
     // encountered a network error.
     CONNECTION_UNAVAILABLE,
 
-    // IO_ERROR is returned when reading/writing to a buffer has failed.
-    IO_ERROR,
-
     // SYNC_SERVER_ERROR is returned when the HTTP status code indicates that
     // a non-auth error has occurred.
     SYNC_SERVER_ERROR,
@@ -55,9 +52,6 @@ struct HttpResponse {
   // The value of the Content-length header.
   int64_t content_length;
 
-  // The size of a download request's payload.
-  int64_t payload_length;
-
   static HttpResponse Uninitialized();
   static HttpResponse ForNetError(int net_error_code);
   static HttpResponse ForUnspecifiedError();
@@ -65,7 +59,6 @@ struct HttpResponse {
 
   // For testing only.
   static HttpResponse ForSuccessForTest();
-  static HttpResponse ForIoErrorForTest();
 
  private:
   // Private to prevent accidental usage. Use Uninitialized() if you really need

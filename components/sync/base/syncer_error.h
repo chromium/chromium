@@ -21,9 +21,9 @@ class SyncerError {
     // Deprecated: CANNOT_DO_WORK = 1,
 
     NETWORK_CONNECTION_UNAVAILABLE = 2,  // Connectivity failure.
-    NETWORK_IO_ERROR = 3,                // Response buffer read error.
-    SYNC_SERVER_ERROR = 4,               // Non auth HTTP error.
-    SYNC_AUTH_ERROR = 5,                 // HTTP auth error.
+    // Deprecated: NETWORK_IO_ERROR = 3,
+    SYNC_SERVER_ERROR = 4,  // Non auth HTTP error.
+    SYNC_AUTH_ERROR = 5,    // HTTP auth error.
 
     // Based on values returned by server.  Most are defined in sync.proto.
     // Deprecated: SERVER_RETURN_INVALID_CREDENTIAL = 6,

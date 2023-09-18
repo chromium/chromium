@@ -47,7 +47,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
       NOTREACHED();
       break;
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
-    case SyncerError::NETWORK_IO_ERROR:
       return SyncCommitError::kNetworkError;
     case SyncerError::SYNC_AUTH_ERROR:
       return SyncCommitError::kAuthError;

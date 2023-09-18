@@ -43,8 +43,6 @@ SyncerError ServerConnectionErrorAsSyncerError(
   switch (server_status) {
     case HttpResponse::CONNECTION_UNAVAILABLE:
       return SyncerError::NetworkConnectionUnavailable(net_error_code);
-    case HttpResponse::IO_ERROR:
-      return SyncerError(SyncerError::NETWORK_IO_ERROR);
     case HttpResponse::SYNC_SERVER_ERROR:
       // This means the server returned a non-401 HTTP error.
       return SyncerError::HttpError(http_status_code);

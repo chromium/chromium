@@ -43,7 +43,6 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
     }
     case SyncerError::UNSET:
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
-    case SyncerError::NETWORK_IO_ERROR:
     case SyncerError::SYNC_SERVER_ERROR:
     case SyncerError::SYNC_AUTH_ERROR:
     case SyncerError::SERVER_RETURN_UNKNOWN_ERROR:
