@@ -227,8 +227,8 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                    [&, target]() {
                      auto index =
                          target % browser()->tab_strip_model()->count();
-                     return Steps(ClickTab(target, right_click),
-                                  Log("[KOMB] Added ClickTab", index,
+                     return Steps(ClickTab(index, right_click),
+                                  Log("[KOMB] Added ClickTab index:", index,
                                       " target: ", target, " tab_count: ",
                                       browser()->tab_strip_model()->count()));
                    }()));
