@@ -13,12 +13,14 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "components/url_formatter/elide_url.h"
@@ -255,6 +257,11 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
 
   // This runs the query for the requested data types.
   void Run() {
+    for (syncer::ModelType type : types_) {
+      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests",
+                                    syncer::ModelTypeForHistograms(type));
+    }
+
     if (types_.Has(syncer::PASSWORDS)) {
       CHECK(helper_->profile_password_store_);
       CHECK(helper_->account_password_store_);
@@ -314,6 +321,8 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
         };
     base::ranges::sort(*account_passwords_, comparator);
 
+    int moved_passwords_counter = 0;
+
     // Iterate over all local passwords and add to account store if required.
     for (std::unique_ptr<password_manager::PasswordForm>& profile_password :
          *profile_passwords_) {
@@ -329,6 +338,7 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
         // No conflicting password exists in the account store. Add the same to
         // the account store.
         helper_->account_password_store_->AddLogin(*profile_password);
+        ++moved_passwords_counter;
       } else if ((*it)->password_value != profile_password->password_value &&
                  // Check if `profile_password` was more recently used or
                  // updated.
@@ -342,10 +352,15 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
                          *profile_password)) {
         // `profile_password` is newer. Add it to the account store.
         helper_->account_password_store_->UpdateLogin(*profile_password);
+        ++moved_passwords_counter;
       }
       // Remove `profile_password` from the local store.
       helper_->profile_password_store_->RemoveLogin(*profile_password);
     }
+
+    // Log number of passwords moved to account.
+    base::UmaHistogramCounts1M("Sync.PasswordsBatchUpload.Count",
+                               moved_passwords_counter);
   }
 
  private:

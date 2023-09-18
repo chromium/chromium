@@ -114,6 +114,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BatchUpload.Requests" enum="SyncModelTypes"
+    expires_after="2024-09-14">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logged when batch upload of local data for a data type is requested.
+
+    Note that at the time of writing, this metric only supports PASSWORDS,
+    BOOKMARKS and READING_LIST.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarkEntityReuploadNeeded.On{UpdateType}"
     enum="Boolean" expires_after="2024-02-20">
   <owner>rushans@google.com</owner>
@@ -1164,6 +1177,20 @@ chromium-metrics-reviews@google.com.
     Records whether password notes are set in password specifics proto or the
     backup field. Recorded when decrypting password entity update upon download
     from the sync server.
+  </summary>
+</histogram>
+
+<histogram name="Sync.PasswordsBatchUpload.Count" units="passwords"
+    expires_after="2024-09-14">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logs the count of local passwords moved to the account store.
+
+    This is logged when, upon a batch upload request, passwords have been moved
+    to the account store. Note that passwords may not have been uploaded to the
+    server yet. Upload happens as part of the regular commit process.
   </summary>
 </histogram>
 

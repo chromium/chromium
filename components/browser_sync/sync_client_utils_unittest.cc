@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -466,6 +467,53 @@ class LocalDataMigrationHelperTest : public testing::Test {
       local_data_migration_helper_;
 };
 
+TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
+  {
+    base::HistogramTester histogram_tester;
+    local_data_migration_helper_->Run(syncer::ModelTypeSet());
+
+    // Nothing logged to histogram.
+    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    local_data_migration_helper_->Run(
+        syncer::ModelTypeSet({syncer::PASSWORDS}));
+
+    histogram_tester.ExpectUniqueSample(
+        "Sync.BatchUpload.Requests",
+        syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    local_data_migration_helper_->Run(syncer::ModelTypeSet(
+        {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
+
+    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests", 3);
+    histogram_tester.ExpectBucketCount(
+        "Sync.BatchUpload.Requests",
+        syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+    histogram_tester.ExpectBucketCount(
+        "Sync.BatchUpload.Requests",
+        syncer::ModelTypeForHistograms(syncer::BOOKMARKS), 1);
+    histogram_tester.ExpectBucketCount(
+        "Sync.BatchUpload.Requests",
+        syncer::ModelTypeForHistograms(syncer::READING_LIST), 1);
+  }
+}
+
+TEST_F(LocalDataMigrationHelperTest,
+       ShouldNotLogUnsupportedDataTypesRequestToHistogram) {
+  base::HistogramTester histogram_tester;
+  local_data_migration_helper_->Run(
+      syncer::ModelTypeSet({syncer::PASSWORDS, syncer::DEVICE_INFO}));
+
+  // Only the request for PASSWORDS is logged.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BatchUpload.Requests",
+      syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+}
+
 TEST_F(LocalDataMigrationHelperTest, ShouldHandleZeroTypes) {
   // Just checks that there's no crash.
   local_data_migration_helper_->Run(syncer::ModelTypeSet());
@@ -485,9 +533,13 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
       password_manager::TestPasswordStore::PasswordMap(
           {{form1.signon_realm, {form1}}, {form2.signon_realm, {form2}}}));
 
+  base::HistogramTester histogram_tester;
+
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(2, histogram_tester.GetTotalSum("Sync.PasswordsBatchUpload.Count"));
 
   // Passwords have been moved to the account store.
   form1.in_store = password_manager::PasswordForm::Store::kAccountStore;
@@ -522,9 +574,13 @@ TEST_F(LocalDataMigrationHelperTest, ShouldNotUploadSamePassword) {
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
+  base::HistogramTester histogram_tester;
+
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(0, histogram_tester.GetTotalSum("Sync.PasswordsBatchUpload.Count"));
 
   // No new password is added to the account store.
   EXPECT_EQ(account_password_store_->stored_passwords(),
@@ -563,9 +619,13 @@ TEST_F(LocalDataMigrationHelperTest,
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
+  base::HistogramTester histogram_tester;
+
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(1, histogram_tester.GetTotalSum("Sync.PasswordsBatchUpload.Count"));
 
   // Since local password has a more recent last used date, it is moved to the
   // account store.
@@ -606,9 +666,13 @@ TEST_F(LocalDataMigrationHelperTest,
             password_manager::TestPasswordStore::PasswordMap(
                 {{account_form.signon_realm, {account_form}}}));
 
+  base::HistogramTester histogram_tester;
+
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(0, histogram_tester.GetTotalSum("Sync.PasswordsBatchUpload.Count"));
 
   // Since account password has a more recent last used date, it wins over the
   // local password.
