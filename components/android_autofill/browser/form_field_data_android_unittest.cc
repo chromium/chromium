@@ -79,6 +79,35 @@ TEST(FormFieldDataAndroidTest, OnFormFieldDidChange) {
   EXPECT_EQ(field.value, kSampleValue);
 }
 
+// Tests that updating the field visibility calls the Java bridge and also
+// updates the underlying `FormFieldData` object.
+TEST(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
+  MockFormFieldDataAndroidBridge* bridge = nullptr;
+  EnableTestingFactoryAndSaveLastBridge(&bridge);
+
+  FormFieldData field;
+  field.is_focusable = false;
+  field.role = FormFieldData::RoleAttribute::kOther;
+  EXPECT_FALSE(field.IsFocusable());
+
+  FormFieldDataAndroid field_android(&field);
+  FormFieldData field_copy = field;
+  ASSERT_TRUE(bridge);
+
+  // A field with `is_focusable=true` and a non-presentation role is focusable
+  // in Autofill terms and therefore visible in Android Autofill terms.
+  EXPECT_CALL(*bridge, UpdateVisible(true));
+  field_copy.is_focusable = true;
+  field_android.OnFormFieldVisibilityDidChange(field_copy);
+  EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
+
+  // A field with a presentation role is not focusable in Autofill terms.
+  EXPECT_CALL(*bridge, UpdateVisible(false));
+  field_copy.role = FormFieldData::RoleAttribute::kPresentation;
+  field_android.OnFormFieldVisibilityDidChange(field_copy);
+  EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
+}
+
 // Tests that field similarity checks include name, name_attribute, id_attribute
 // and form control type.
 TEST(FormFieldDataAndroidTest, SimilarFieldsAs) {

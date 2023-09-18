@@ -48,6 +48,8 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.id_attribute = u"some_id";
   f.form_control_type = "text";
   f.check_status = FormFieldData::CheckStatus::kChecked;
+  f.role = FormFieldData::RoleAttribute::kOther;
+  f.is_focusable = true;
   return f;
 }
 
@@ -220,6 +222,42 @@ TEST(FormDataAndroidTest, UpdateFieldTypes) {
   EXPECT_CALL(*bridges[0], UpdateFieldTypes);
   EXPECT_CALL(*bridges[1], UpdateFieldTypes);
   form_android.UpdateFieldTypes(FormStructure(form));
+}
+
+// Tests that calling `UpdateFieldVisibilities` propagates the visibility to the
+// affected fields and returns their indices.
+TEST(FormDataAndroidTest, UpdateFieldVisibilities) {
+  std::vector<MockFormFieldDataAndroidBridge*> bridges;
+  EnableFieldTestingFactoryAndSaveBridges(&bridges);
+
+  FormData form = CreateTestForm();
+  form.fields = {CreateTestField(), CreateTestField(), CreateTestField()};
+  form.fields[0].role = FormFieldData::RoleAttribute::kPresentation;
+  form.fields[1].is_focusable = false;
+  EXPECT_FALSE(form.fields[0].IsFocusable());
+  EXPECT_FALSE(form.fields[1].IsFocusable());
+  EXPECT_TRUE(form.fields[2].IsFocusable());
+  FormDataAndroid form_android(form);
+
+  ASSERT_THAT(bridges, SizeIs(3));
+  ASSERT_TRUE(bridges[0]);
+  ASSERT_TRUE(bridges[1]);
+  ASSERT_TRUE(bridges[2]);
+
+  // `form_android` created a copy of `form` - therefore modifying the fields
+  // here does not change the values inside `form_android`.
+  form.fields[0].role = FormFieldData::RoleAttribute::kOther;
+  form.fields[1].is_focusable = true;
+  EXPECT_TRUE(form.fields[0].IsFocusable());
+  EXPECT_TRUE(form.fields[1].IsFocusable());
+  EXPECT_TRUE(form.fields[2].IsFocusable());
+
+  EXPECT_CALL(*bridges[0], UpdateVisible(true));
+  EXPECT_CALL(*bridges[1], UpdateVisible(true));
+  EXPECT_CALL(*bridges[2], UpdateVisible).Times(0);
+  form_android.UpdateFieldVisibilities(form);
+
+  EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
 }
 
 }  // namespace autofill

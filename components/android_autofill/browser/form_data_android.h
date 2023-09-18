@@ -55,6 +55,11 @@ class FormDataAndroid {
   // Updates the field types from the `form`.
   void UpdateFieldTypes(const FormStructure& form);
 
+  // Updates the visibility (focusability in Autofill terms) of the fields and
+  // returns the indices of the fields that were changed. Assumes that the forms
+  // are similar.
+  std::vector<int> UpdateFieldVisibilities(const FormData& form);
+
   const FormData& form() const { return form_; }
 
  private:

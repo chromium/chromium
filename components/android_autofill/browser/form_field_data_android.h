@@ -50,6 +50,14 @@ class FormFieldDataAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
   void UpdateFromJava();
   void OnFormFieldDidChange(std::u16string_view value);
+
+  // Updates the visibility and propagates the changes to Java. Note that
+  // inside the `android_autofill` component visibility means focusability of
+  // an `autofill::FormFieldData`. On the native side, this method therefore
+  // updates the two fields that determine focusability, namely `role` and
+  // `is_focusable`.
+  void OnFormFieldVisibilityDidChange(const FormFieldData& field);
+
   bool SimilarFieldAs(const FormFieldData& field) const;
   void UpdateAutofillTypes(FieldTypes field_types);
 

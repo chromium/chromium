@@ -61,6 +61,14 @@ void FormFieldDataAndroid::OnFormFieldDidChange(std::u16string_view value) {
   bridge_->UpdateValue(value);
 }
 
+void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
+    const FormFieldData& field) {
+  field_->is_focusable = field.is_focusable;
+  field_->role = field.role;
+  CHECK_EQ(field_->IsFocusable(), field.IsFocusable());
+  bridge_->UpdateVisible(field_->IsFocusable());
+}
+
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   auto SimilarityTuple = [](const FormFieldData& f) {
     return std::tuple_cat(

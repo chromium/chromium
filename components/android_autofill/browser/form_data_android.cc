@@ -112,4 +112,21 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
   }
 }
 
+std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
+    const FormData& form) {
+  CHECK_EQ(form_.fields.size(), form.fields.size());
+  CHECK_EQ(form_.fields.size(), fields_.size());
+
+  // We rarely expect to find any difference in visibility - therefore do not
+  // reserve space in the vector.
+  std::vector<int> indices;
+  for (size_t i = 0; i < form_.fields.size(); ++i) {
+    if (form_.fields[i].IsFocusable() != form.fields[i].IsFocusable()) {
+      fields_[i]->OnFormFieldVisibilityDidChange(form.fields[i]);
+      indices.push_back(i);
+    }
+  }
+  return indices;
+}
+
 }  // namespace autofill

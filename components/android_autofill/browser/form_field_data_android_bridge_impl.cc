@@ -143,4 +143,14 @@ void FormFieldDataAndroidBridgeImpl::UpdateValue(std::u16string_view value) {
                                  ConvertUTF16ToJavaString(env, value));
 }
 
+void FormFieldDataAndroidBridgeImpl::UpdateVisible(bool visible) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_FormFieldData_updateVisible(env, obj, visible);
+}
+
 }  // namespace autofill

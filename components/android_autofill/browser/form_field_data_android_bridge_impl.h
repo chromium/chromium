@@ -31,6 +31,7 @@ class FormFieldDataAndroidBridgeImpl : public FormFieldDataAndroidBridge {
   void UpdateFieldTypes(
       const FormFieldDataAndroid::FieldTypes& field_types) override;
   void UpdateValue(std::u16string_view value) override;
+  void UpdateVisible(bool visible) override;
 
  private:
   // A weak reference to the java object.
