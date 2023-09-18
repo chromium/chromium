@@ -18,7 +18,6 @@
 import {
   ChromiumBidi,
   type BrowsingContext,
-  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Buffer} from '../../../utils/Buffer.js';
@@ -27,17 +26,8 @@ import type {Result} from '../../../utils/result.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingMessage} from '../../OutgoingMessage.js';
 
+import {assertSupportedEvent} from './events.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
-
-const EVENT_NAMES = new Set([
-  // keep-sorted start
-  ...Object.values(ChromiumBidi.BiDiModule),
-  ...Object.values(ChromiumBidi.BrowsingContext.EventNames),
-  ...Object.values(ChromiumBidi.Log.EventNames),
-  ...Object.values(ChromiumBidi.Network.EventNames),
-  ...Object.values(ChromiumBidi.Script.EventNames),
-  // keep-sorted end
-]);
 
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
@@ -157,7 +147,7 @@ export class EventManager {
     channel: string | null
   ): void {
     for (const name of eventNames) {
-      EventManager.assertSupportedEvent(name);
+      assertSupportedEvent(name);
     }
 
     // First check if all the contexts are known.
@@ -193,7 +183,7 @@ export class EventManager {
     channel: string | null
   ) {
     for (const name of eventNames) {
-      EventManager.assertSupportedEvent(name);
+      assertSupportedEvent(name);
     }
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
@@ -284,16 +274,5 @@ export class EventManager {
         .forEach((events) => result.push(...events));
     }
     return result.sort((e1, e2) => e1.id - e2.id);
-  }
-
-  static assertSupportedEvent(
-    name: string
-  ): asserts name is ChromiumBidi.EventNames {
-    if (
-      !EVENT_NAMES.has(name as never) &&
-      !SubscriptionManager.isCdpEvent(name)
-    ) {
-      throw new InvalidArgumentException(`Unknown event: ${name}`);
-    }
   }
 }

@@ -97,6 +97,16 @@ export type CommandResponse =
 
 export type Event = WebDriverBidi.Event | Cdp.Event;
 
+export const EVENT_NAMES = new Set([
+  // keep-sorted start
+  ...Object.values(BiDiModule),
+  ...Object.values(BrowsingContext.EventNames),
+  ...Object.values(Log.EventNames),
+  ...Object.values(Network.EventNames),
+  ...Object.values(Script.EventNames),
+  // keep-sorted end
+]);
+
 export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 export type Message = (
