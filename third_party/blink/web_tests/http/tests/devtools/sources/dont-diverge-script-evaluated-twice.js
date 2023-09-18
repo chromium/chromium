@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Checks that script evaluated twice with different source and the same sourceURL won't be diverged from VM.\n`);
@@ -43,7 +45,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
     TestRunner
         .addSnifferPromise(
-            Sources.DebuggerPlugin.prototype, 'didDivergeFromVM')
+            SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, 'didDivergeFromVM')
         .then(dumpDivergeFromVM);
     TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => SourcesTestRunner.completeDebuggerTest());

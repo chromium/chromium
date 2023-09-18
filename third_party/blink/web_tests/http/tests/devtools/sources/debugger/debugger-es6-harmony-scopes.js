@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests ES6 harmony scope sections.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -64,7 +66,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function onTestStarted() {
     TestRunner.addSniffer(
-        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest', onSidebarRendered, true);
+        SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest', onSidebarRendered, true);
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(() => {});
   }
 

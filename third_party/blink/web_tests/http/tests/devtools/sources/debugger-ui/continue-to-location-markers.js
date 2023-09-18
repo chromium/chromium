@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests that continue to location markers are computed correctly.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -96,11 +98,11 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step1() {
     TestRunner
         .addSnifferPromise(
-            Sources.DebuggerPlugin.prototype,
+            SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype,
             '_continueToLocationRenderedForTest')
         .then(step2);
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged', function() {
+        SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, '_executionLineChanged', function() {
           SourcesTestRunner.showUISourceCodePromise(this._uiSourceCode)
               .then(() => {
                 this._showContinueToLocations();

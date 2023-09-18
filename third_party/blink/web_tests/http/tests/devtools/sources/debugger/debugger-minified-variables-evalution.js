@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests evaluation in minified scripts.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -16,7 +18,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2)
+              SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest', step2)
   }
 
   function step2() {

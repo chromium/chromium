@@ -5,12 +5,14 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Verify navigator rendering with OOPIFs`);
   await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
-  var sourcesNavigatorView = new Sources.NetworkNavigatorView();
+  var sourcesNavigatorView = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigatorView.show(UI.inspectorView.element);
 
   await TestRunner.navigatePromise('resources/page.html');

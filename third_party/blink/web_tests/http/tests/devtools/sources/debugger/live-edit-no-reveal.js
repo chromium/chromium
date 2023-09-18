@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests live edit feature.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -77,7 +79,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
     function didEditScriptSource() {
       TestRunner.addResult('Stepping into...');
-      TestRunner.addSniffer(Sources.SourcesView.prototype, 'showSourceLocation', didRevealAfterStepInto);
+      TestRunner.addSniffer(SourcesModule.SourcesView.SourcesView.prototype, 'showSourceLocation', didRevealAfterStepInto);
       panel._lastModificationTimeoutPassedForTest();
       SourcesTestRunner.stepInto();
     }

@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Verify that navigator shows proper UISourceCodes as shadow dom styles and scripts are added and removed.\n`);
@@ -26,7 +28,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
     </template>
   `);
 
-  var sourcesNavigator = new Sources.NetworkNavigatorView();
+  var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);
 
   TestRunner.markStep('dumpInitialNavigator');

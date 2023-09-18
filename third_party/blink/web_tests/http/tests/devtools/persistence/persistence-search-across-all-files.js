@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify that search across all files omits filesystem uiSourceCodes with binding to network.\n`);
@@ -17,7 +18,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   var testMapping = BindingsTestRunner.initializeTestMapping();
   var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var fsEntry = BindingsTestRunner.addFooJSFile(fs);
-  var scope = new Sources.SourcesSearchScope();
+  var scope = new SourcesModule.SourcesSearchScope.SourcesSearchScope();
   fs.reportCreated(function() {});
 
   TestRunner.runTestSuite([

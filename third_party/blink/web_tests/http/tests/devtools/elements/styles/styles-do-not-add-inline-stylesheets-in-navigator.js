@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Verify that inline stylesheets do not appear in navigator.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -28,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       .then(onInjected);
 
   function onInjected() {
-    var sourcesNavigator = new Sources.NetworkNavigatorView();
+    var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
     SourcesTestRunner.dumpNavigatorView(sourcesNavigator);
     TestRunner.completeTest();
   }

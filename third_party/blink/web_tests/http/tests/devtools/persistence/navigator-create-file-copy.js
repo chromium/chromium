@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Verify that navigator's 'Make a copy' works as expected.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -17,7 +19,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   fs.reportCreated(function() {});
   var uiSourceCode = await TestRunner.waitForUISourceCode('script.js');
 
-  var sourcesNavigator = new Sources.NetworkNavigatorView();
+  var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);
   TestRunner.addResult('BEFORE:\n' + 'file://' + fs.dumpAsText());
   sourcesNavigator.handleContextMenuCreate(uiSourceCode.project(), '', uiSourceCode);

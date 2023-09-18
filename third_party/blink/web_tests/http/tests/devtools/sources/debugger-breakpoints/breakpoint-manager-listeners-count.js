@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that scripts panel does not create too many source frames.\n`);
@@ -35,7 +37,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
           'Number of breakpoint-added event listeners is ' + listeners.size);
 
       function dumpListener(listener) {
-        if (!(listener.thisObject instanceof Sources.DebuggerPlugin))
+        if (!(listener.thisObject instanceof SourcesModule.DebuggerPlugin.DebuggerPlugin))
           return;
         var sourceFrame = listener.thisObject;
         TestRunner.addResult('    ' + sourceFrame.uiSourceCode.name());

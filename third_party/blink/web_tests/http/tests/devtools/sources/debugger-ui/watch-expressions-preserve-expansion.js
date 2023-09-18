@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that watch expressions expansion state is restored after update.\n`);
@@ -33,7 +35,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       }());
   `);
 
-  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
+  var watchExpressionsPane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
   UI.panels.sources.sidebarPaneStack
       .showView(UI.panels.sources.watchSidebarPane)
       .then(() => {
@@ -68,7 +70,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   function dumpWatchExpressions() {
-    var pane = Sources.WatchExpressionsSidebarPane.instance();
+    var pane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
 
     for (var i = 0; i < pane.watchExpressions.length; i++) {
       var watch = pane.watchExpressions[i];
@@ -123,7 +125,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   function expandWatchExpression(path, callback) {
-    var pane = Sources.WatchExpressionsSidebarPane.instance();
+    var pane = SourcesModule.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
     var expression = path.shift();
     for (var i = 0; i < pane.watchExpressions.length; i++) {
       var watch = pane.watchExpressions[i];

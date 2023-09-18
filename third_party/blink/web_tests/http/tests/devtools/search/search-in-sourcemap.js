@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
@@ -21,7 +22,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     TestRunner.waitForUISourceCode('sourcemap-style.css'),
     TestRunner.waitForUISourceCode('sourcemap-sass.scss'),
   ]);
-  var scope = new Sources.SourcesSearchScope();
+  var scope = new SourcesModule.SourcesSearchScope.SourcesSearchScope();
 
   var query = 'color: blue';
   TestRunner.addResult('\nSearching for: "' + query + '"');

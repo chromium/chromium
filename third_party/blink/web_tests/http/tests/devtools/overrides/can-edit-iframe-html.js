@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Ensures iframes are overridable if overrides are setup.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -19,7 +21,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   var uiSourceCode = Workspace.workspace.uiSourceCodes().find(uiSourceCode => uiSourceCode.url().endsWith('cross-origin-iframe.html'));
   if (!uiSourceCode)
     throw "No uiSourceCode.";
-  var uiSourceCodeFrame = new Sources.UISourceCodeFrame(uiSourceCode);
+  var uiSourceCodeFrame = new SourcesModule.UISourceCodeFrame.UISourceCodeFrame(uiSourceCode);
   TestRunner.addResult('URL: ' + uiSourceCode.url().substr(uiSourceCode.url().lastIndexOf('/') + 1));
   TestRunner.addResult('Can Edit Source: ' + uiSourceCodeFrame.canEditSource());
   TestRunner.completeTest();

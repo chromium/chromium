@@ -5,12 +5,14 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`The test verifies that extension names are resolved properly in navigator view.\n`);
   await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
-  var contentScriptsNavigatorView = new Sources.ContentScriptsNavigatorView();
+  var contentScriptsNavigatorView = new SourcesModule.SourcesNavigator.ContentScriptsNavigatorView();
   contentScriptsNavigatorView.show(UI.inspectorView.element);
 
   var mockExecutionContext =

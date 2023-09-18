@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests inline values rendering in the sources panel.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -30,7 +32,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function runTestFunction() {
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
+        SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     TestRunner.evaluateInPage('setTimeout(testFunction, 0)');
   }
@@ -52,7 +54,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
     }
 
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
+        SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     if (++stepCount < 10)
       SourcesTestRunner.stepOver();

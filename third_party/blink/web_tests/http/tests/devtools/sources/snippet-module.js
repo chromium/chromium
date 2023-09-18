@@ -7,6 +7,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(
@@ -32,7 +33,7 @@ import * as Common from 'devtools/core/common/common.js';
   uiSourceCode.setContent(sourceCode);
   await Common.Revealer.reveal(uiSourceCode);
   await uiSourceCode.rename('my_snippet_name');
-  Sources.SourcesPanel.instance().runSnippet();
+  SourcesModule.SourcesPanel.SourcesPanel.instance().runSnippet();
 
   await ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
   await ConsoleTestRunner.dumpConsoleMessages();

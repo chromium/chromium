@@ -9,6 +9,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as Network from 'devtools/panels/network/network.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
@@ -130,7 +131,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
   function installHooks() {
     TestRunner.addSniffer(ElementsModule.ElementsPanel.ElementsPanel.prototype, 'revealAndSelectNode', nodeRevealed, true);
-    TestRunner.addSniffer(Sources.SourcesPanel.prototype, 'showUILocation', uiLocationRevealed, true);
+    TestRunner.addSniffer(SourcesModule.SourcesPanel.SourcesPanel.prototype, 'showUILocation', uiLocationRevealed, true);
     TestRunner.addSniffer(Resources.ApplicationPanelSidebar.prototype, 'showResource', resourceRevealed, true);
     TestRunner.addSniffer(Network.NetworkPanel.NetworkPanel.prototype, 'revealAndHighlightRequest', revealed, true);
   }

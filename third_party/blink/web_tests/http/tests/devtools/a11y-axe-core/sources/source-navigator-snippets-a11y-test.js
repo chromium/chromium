@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult('Tests accessibility in the Sources panel Navigator pane Snippets tab using axe-core.');
 
@@ -34,7 +36,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   async function testA11yForView(ruleSet) {
     await UI.viewManager.showView('navigator-snippets');
-    const sourcesNavigatorView = new Sources.SnippetsNavigatorView();
+    const sourcesNavigatorView = new SourcesModule.SourcesNavigator.SnippetsNavigatorView();
 
     sourcesNavigatorView.show(UI.inspectorView.element);
     SourcesTestRunner.dumpNavigatorView(sourcesNavigatorView);

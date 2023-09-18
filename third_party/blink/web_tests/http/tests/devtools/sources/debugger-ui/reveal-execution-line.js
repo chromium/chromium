@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests that execution line is revealed and highlighted when debugger is paused.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -23,7 +25,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
     var executionLineRevealed = false;
     TestRunner.addSniffer(SourceFrame.SourceFrame.prototype, 'revealPosition', didRevealLine);
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged',
+        SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, '_executionLineChanged',
         didSetExecutionLocation);
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
 
