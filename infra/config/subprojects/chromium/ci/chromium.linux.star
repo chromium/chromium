@@ -160,9 +160,6 @@ ci.builder(
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -176,9 +173,6 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 7 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -232,9 +226,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-browser-infra-team@google.com",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
 )
 
 ci.builder(
@@ -258,9 +249,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-browser-infra-team@google.com",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -289,9 +277,6 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 

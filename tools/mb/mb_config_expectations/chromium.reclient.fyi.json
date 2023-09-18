@@ -35,14 +35,12 @@
   },
   "Linux Builder reclient staging": {
     "gn_args": {
-      "concurrent_links": 50,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_remoteexec": true,
-      "use_remoteexec_links": true
+      "use_remoteexec": true
     }
   },
   "Linux Builder reclient staging untrusted": {
@@ -57,14 +55,12 @@
   },
   "Linux Builder reclient test": {
     "gn_args": {
-      "concurrent_links": 50,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_remoteexec": true,
-      "use_remoteexec_links": true
+      "use_remoteexec": true
     }
   },
   "Linux Builder reclient test (casng)": {

@@ -149,9 +149,6 @@ fyi_reclient_staging_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
 )
 
 fyi_reclient_test_builder(
@@ -171,9 +168,6 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
 )
 
 fyi_reclient_test_builder(

@@ -440,9 +440,6 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
-    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -482,9 +479,6 @@ ci.builder(
                 "linux-archive-rel.json",
             ],
         },
-    },
-    reclient_bootstrap_env = {
-        "RBE_clang_depscan_archive": "true",
     },
 )
 
