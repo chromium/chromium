@@ -293,6 +293,9 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
   }
 }
 
+// TODO(b/300609399): extend AddConnectorsBlockedFiles to include the reason
+// for which files are blocked, so that it can be used to display custom
+// errors in the error dialog.
 void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
     file_manager::io_task::IOTaskId task_id,
     std::vector<base::FilePath> blocked_files,

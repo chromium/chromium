@@ -67,6 +67,10 @@ constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
 constexpr char kKeyOptInEventName[] = "name";
 constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 
+// Available tags.
+constexpr char kDlpTag[] = "dlp";
+constexpr char kMalwareTag[] = "malware";
+
 // A MIME type string that matches all MIME types.
 constexpr char kWildcardMimeType[] = "*";
 

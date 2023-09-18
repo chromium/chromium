@@ -158,6 +158,58 @@ bool IsInSameFileSystem(Profile* profile,
 namespace enterprise_connectors {
 
 // static
+FileTransferAnalysisDelegate::FileTransferAnalysisResult
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::Allowed() {
+  return FileTransferAnalysisResult(Verdict::ALLOWED, /*tag=*/std::string());
+}
+
+// static
+FileTransferAnalysisDelegate::FileTransferAnalysisResult
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::Blocked(
+    const std::string& tag) {
+  return FileTransferAnalysisResult(Verdict::BLOCKED, tag);
+}
+
+// static
+FileTransferAnalysisDelegate::FileTransferAnalysisResult
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::Unknown() {
+  return FileTransferAnalysisResult(Verdict::UNKNOWN, /*tag=*/std::string());
+}
+
+const std::string&
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::tag() const {
+  return tag_;
+}
+
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::
+    FileTransferAnalysisResult(Verdict verdict, const std::string& tag)
+    : verdict_(verdict), tag_(tag) {}
+
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::
+    ~FileTransferAnalysisResult() = default;
+
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::
+    FileTransferAnalysisResult(const FileTransferAnalysisResult& other) =
+        default;
+
+FileTransferAnalysisDelegate::FileTransferAnalysisResult&
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::operator=(
+    FileTransferAnalysisResult&& other) = default;
+
+bool FileTransferAnalysisDelegate::FileTransferAnalysisResult::IsAllowed()
+    const {
+  return verdict_ == Verdict::ALLOWED;
+}
+bool FileTransferAnalysisDelegate::FileTransferAnalysisResult::IsBlocked()
+    const {
+  return verdict_ == Verdict::BLOCKED;
+}
+bool FileTransferAnalysisDelegate::FileTransferAnalysisResult::IsUnknown()
+    const {
+  return verdict_ == Verdict::UNKNOWN;
+}
+
+// static
 std::unique_ptr<FileTransferAnalysisDelegate>
 FileTransferAnalysisDelegate::Create(
     safe_browsing::DeepScanAccessPoint access_point,
@@ -239,12 +291,12 @@ FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
       if (results_[i].complies ||
           (warning_is_bypassed_ &&
            results_[i].final_result == FinalContentAnalysisResult::WARNING)) {
-        return FileTransferAnalysisResult::RESULT_ALLOWED;
+        return FileTransferAnalysisResult::Allowed();
       }
-      return FileTransferAnalysisResult::RESULT_BLOCKED;
+      return FileTransferAnalysisResult::Blocked(results_[i].tag);
     }
   }
-  return FileTransferAnalysisResult::RESULT_UNKNOWN;
+  return FileTransferAnalysisResult::Unknown();
 }
 
 std::vector<storage::FileSystemURL>

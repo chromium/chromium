@@ -55,7 +55,6 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 
 constexpr char kCustomMessage[] = "Custom Admin Message";
 constexpr char kCustomUrl[] = "https://learn.more.com";
-constexpr char kDlpTag[] = "dlp";
 
 std::string CreateCustomUIPref(const char* custom_message,
                                const char* custom_url,

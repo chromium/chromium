@@ -55,10 +55,42 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
           storage::FileSystemContext* file_system_context,
           enterprise_connectors::AnalysisSettings settings)>;
 
-  enum FileTransferAnalysisResult {
-    RESULT_ALLOWED,
-    RESULT_BLOCKED,
-    RESULT_UNKNOWN,
+  // The verdict of an analysis.
+  enum Verdict {
+    ALLOWED,
+    BLOCKED,
+    UNKNOWN,
+  };
+
+  // The result of an analysis.
+  class FileTransferAnalysisResult {
+   public:
+    // Creates a result representing an allowed file transfer.
+    static FileTransferAnalysisResult Allowed();
+    // Creates a result for a file transfer blocked because of `tag`.
+    static FileTransferAnalysisResult Blocked(const std::string& tag);
+    // Represents a file transfer for which there is no known result.
+    static FileTransferAnalysisResult Unknown();
+
+    ~FileTransferAnalysisResult();
+    FileTransferAnalysisResult(const FileTransferAnalysisResult& other);
+    FileTransferAnalysisResult& operator=(FileTransferAnalysisResult&& other);
+
+    bool IsAllowed() const;
+    bool IsBlocked() const;
+    bool IsUnknown() const;
+
+    const std::string& tag() const;
+
+   private:
+    FileTransferAnalysisResult(Verdict verdict, const std::string& tag);
+
+    Verdict verdict_ = Verdict::UNKNOWN;
+    // The tag ("dlp" or "malware") is only valid when verdict is BLOCKED. Note
+    // that it can be empty in case the file is blocked because it's encrypted,
+    // it's too large or was copied/moved to a scanned directory after the scan
+    // was started.
+    std::string tag_;
   };
 
   ~FileTransferAnalysisDelegate() override;

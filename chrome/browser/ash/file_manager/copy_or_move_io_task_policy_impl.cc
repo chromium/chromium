@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/data_controls/component.h"
 #include "content/public/browser/browser_thread.h"
@@ -204,11 +205,36 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
     LOG(ERROR) << "Couldn't find FilesPolicyNotificationManager";
     return;
   }
-  files_policy_manager->AddConnectorsBlockedFiles(
-      progress_->task_id, std::move(connectors_blocked_files_),
-      progress_->type == file_manager::io_task::OperationType::kMove
-          ? policy::dlp::FileAction::kMove
-          : policy::dlp::FileAction::kCopy);
+
+  // Stores file paths according to their tag. An empty string is used to
+  // identify files blocked without a tag. Blocked files without a tag may
+  // happen for several reasons including files too large to be scanned,
+  // encrypted files, files added to the source directory after the scan but
+  // before the move/copy started.
+  //
+  // TODO(b/300611084): distinguish between files without tag reasons.
+  std::map<std::string, std::vector<base::FilePath>> files;
+  for (const auto& [path, tag] : connectors_blocked_files_) {
+    const std::string& tag_value =
+        tag.has_value() ? tag.value() : std::string();
+    auto it = files.find(tag_value);
+    if (it == files.end()) {
+      files.insert({tag_value, {path}});
+    } else {
+      it->second.push_back(path);
+    }
+  }
+
+  // TODO(b/300609399): extend AddConnectorsBlockedFiles to include the reason
+  // (tag) for which files are blocked, so that it can be used to display custom
+  // errors in the error dialog.
+  for (const auto& [tag, paths] : files) {
+    files_policy_manager->AddConnectorsBlockedFiles(
+        progress_->task_id, std::move(paths),
+        progress_->type == file_manager::io_task::OperationType::kMove
+            ? policy::dlp::FileAction::kMove
+            : policy::dlp::FileAction::kCopy);
+  }
 }
 
 void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
@@ -443,21 +469,16 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
   auto result =
       file_transfer_analysis_delegates_[idx]->GetAnalysisResultAfterScan(
           source_url);
-  if (result ==
-      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_ALLOWED) {
+  if (result.IsAllowed()) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
-  DCHECK(
-      result ==
-          enterprise_connectors::FileTransferAnalysisDelegate::RESULT_UNKNOWN ||
-      result ==
-          enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+  DCHECK(result.IsUnknown() || result.IsBlocked());
 
   if (base::FeatureList::IsEnabled(
           features::kFileTransferEnterpriseConnectorUI)) {
     blocked_files_++;
-    connectors_blocked_files_.push_back(source_url.path());
+    connectors_blocked_files_.emplace_back(source_url.path(), result.tag());
     if (blocked_file_name_.empty()) {
       blocked_file_name_ = util::GetDisplayablePath(profile_, source_url.path())
                                .value_or(base::FilePath())

@@ -32,9 +32,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kDlpTag[] = "dlp";
-constexpr char kMalwareTag[] = "malware";
-
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
     case TriggeredRule::ACTION_UNSPECIFIED:

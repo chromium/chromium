@@ -144,7 +144,10 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // The number of files blocked by policies.
   size_t blocked_files_ = 0;
 
-  std::vector<base::FilePath> connectors_blocked_files_;
+  // List of pairs (file paths, tag) for blocked files. The tag could be nullopt
+  // in case the file was blocked for an unknown reason.
+  std::vector<std::pair<base::FilePath, absl::optional<std::string>>>
+      connectors_blocked_files_;
   // The name of the first blocked file, if any. Used for notifications.
   std::string blocked_file_name_;
 
