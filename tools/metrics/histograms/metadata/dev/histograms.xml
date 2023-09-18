@@ -344,6 +344,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.LighthouseCategoryUsed"
+    enum="DevToolsLighthouseCategoryUsed" expires_after="2024-09-14">
+  <owner>asraine@chromium.org</owner>
+  <owner>paulirish@chromium.org</owner>
+  <owner>cjamcl@chromium.org</owner>
+  <summary>
+    Records when a Lighthouse category was used to audit the page.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.LighthouseModeRun" enum="DevToolsLighthouseModeRun"
     expires_after="2024-02-04">
   <owner>asraine@chromium.org</owner>
