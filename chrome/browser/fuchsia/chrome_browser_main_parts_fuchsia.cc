@@ -71,8 +71,6 @@ class ChromeBrowserMainPartsFuchsia::ViewPresenter final {
  public:
   explicit ViewPresenter(ElementManagerImpl* element_manager)
       : element_manager_(element_manager) {
-    ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
-        &ViewPresenter::PresentScenicView, base::Unretained(this)));
     ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
         &ViewPresenter::PresentFlatlandView, base::Unretained(this)));
 
@@ -87,21 +85,6 @@ class ChromeBrowserMainPartsFuchsia::ViewPresenter final {
   ViewPresenter& operator=(const ViewPresenter&) = delete;
 
  private:
-  fuchsia::element::ViewControllerPtr PresentScenicView(
-      fuchsia::ui::views::ViewHolderToken view_holder_token,
-      fuchsia::ui::views::ViewRef view_ref) {
-    fuchsia::element::ViewControllerPtr view_controller;
-    fuchsia::element::ViewSpec view_spec;
-    view_spec.set_view_holder_token(std::move(view_holder_token));
-    view_spec.set_view_ref(std::move(view_ref));
-    view_spec.set_annotations(
-        element_manager_->annotations_manager().GetAnnotations());
-    graphical_presenter_->PresentView(std::move(view_spec), nullptr,
-                                      view_controller.NewRequest(),
-                                      [](auto result) {});
-    return view_controller;
-  }
-
   fuchsia::element::ViewControllerPtr PresentFlatlandView(
       fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
     fuchsia::element::ViewControllerPtr view_controller;

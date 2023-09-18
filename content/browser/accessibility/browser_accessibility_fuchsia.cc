@@ -4,8 +4,6 @@
 
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 
-#include <lib/ui/scenic/cpp/commands.h>
-
 #include "base/fuchsia/fuchsia_logging.h"
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "ui/accessibility/ax_enums.mojom.h"

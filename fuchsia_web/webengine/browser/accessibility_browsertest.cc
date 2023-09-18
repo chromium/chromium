@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <zircon/types.h>
 
 #include "base/command_line.h"

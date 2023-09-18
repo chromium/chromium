@@ -23,7 +23,6 @@ source_set("common") {
   ]
   deps = [
     "//base",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -74,7 +73,6 @@ source_set("cast_runner_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app:fuchsia.ui.app_cpp_wire",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/trace",
     "//url",
@@ -195,7 +193,6 @@ test("cast_runner_integration_tests") {
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics:fuchsia.legacymetrics_hlcpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
 

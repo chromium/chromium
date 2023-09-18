@@ -4,10 +4,10 @@
 
 #include "fuchsia_web/runners/cast/cast_component.h"
 
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/trace/event.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <algorithm>
 #include <string>

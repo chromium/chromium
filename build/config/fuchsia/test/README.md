@@ -85,10 +85,6 @@ API set.  This allows tests to e.g. run with view-focus unaffected by any
 other tests running concurrently on the device, as well as providing test-only
 functionality such as input-injection support.
 
-#### gfx_test_ui_stack.shard.test-cml
-For tests that need an isolated display subsystem supporting the legacy
-Scenic/GFX APIs.
-
 ### WebEngine Fragments
 The following fragments are specific to WebEngine functionality as documented
 documentation at

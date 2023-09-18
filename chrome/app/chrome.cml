@@ -72,7 +72,6 @@
                 "fuchsia.ui.composition.Flatland",
                 "fuchsia.ui.composition.ScreenCapture",
                 "fuchsia.ui.input3.Keyboard",
-                "fuchsia.ui.scenic.Scenic",
             ],
         },
         {

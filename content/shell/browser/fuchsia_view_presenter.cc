@@ -28,8 +28,6 @@ FuchsiaViewPresenter::FuchsiaViewPresenter() {
   graphical_presenter_.set_error_handler(base::LogFidlErrorAndExitProcess(
       FROM_HERE, "fuchsia.element.GraphicalPresenter"));
 
-  ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
-      &FuchsiaViewPresenter::PresentScenicView, base::Unretained(this)));
   ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
       &FuchsiaViewPresenter::PresentFlatlandView, base::Unretained(this)));
   callbacks_were_set_ = true;
@@ -37,22 +35,8 @@ FuchsiaViewPresenter::FuchsiaViewPresenter() {
 
 FuchsiaViewPresenter::~FuchsiaViewPresenter() {
   if (callbacks_were_set_) {
-    ui::fuchsia::SetScenicViewPresenter(base::NullCallback());
     ui::fuchsia::SetFlatlandViewPresenter(base::NullCallback());
   }
-}
-
-fuchsia::element::ViewControllerPtr FuchsiaViewPresenter::PresentScenicView(
-    fuchsia::ui::views::ViewHolderToken view_holder_token,
-    fuchsia::ui::views::ViewRef view_ref) {
-  fuchsia::element::ViewControllerPtr view_controller;
-  fuchsia::element::ViewSpec view_spec;
-  view_spec.set_view_holder_token(std::move(view_holder_token));
-  view_spec.set_view_ref(std::move(view_ref));
-  graphical_presenter_->PresentView(std::move(view_spec), nullptr,
-                                    view_controller.NewRequest(),
-                                    [](auto result) {});
-  return view_controller;
 }
 
 fuchsia::element::ViewControllerPtr FuchsiaViewPresenter::PresentFlatlandView(

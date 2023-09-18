@@ -6,12 +6,12 @@
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
+#include <lib/zx/eventpair.h>
 
 #include <utility>
 #include <vector>
@@ -96,8 +96,9 @@ class FakeUrlRequestRewriteRulesProvider final
   void GetUrlRequestRewriteRules(
       GetUrlRequestRewriteRulesCallback callback) override {
     // Only send the rules once. They do not expire
-    if (rules_sent_)
+    if (rules_sent_) {
       return;
+    }
     rules_sent_ = true;
 
     std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
@@ -787,20 +788,34 @@ TEST_F(HeadlessCastRunnerIntegrationTest, Headless) {
   app_config_manager().AddApp(kTestAppId, animation_url);
 
   component.StartCastComponentWithQueryApi();
-  auto tokens = scenic::ViewTokenPair::New();
-  auto view_ref_pair = scenic::ViewRefPair::New();
+
+  fuchsia::ui::views::ViewToken view_token;
+  fuchsia::ui::views::ViewHolderToken view_holder_token;
+  auto status =
+      zx::eventpair::create(0u, &view_token.value, &view_holder_token.value);
+  CHECK_EQ(ZX_OK, status);
+
+  fuchsia::ui::views::ViewRefControl view_ref_control;
+  fuchsia::ui::views::ViewRef view_ref;
+  status = zx::eventpair::create(
+      /*options*/ 0u, &view_ref_control.reference, &view_ref.reference);
+  CHECK_EQ(ZX_OK, status);
+  view_ref_control.reference.replace(
+      ZX_DEFAULT_EVENTPAIR_RIGHTS & (~ZX_RIGHT_DUPLICATE),
+      &view_ref_control.reference);
+  view_ref.reference.replace(ZX_RIGHTS_BASIC, &view_ref.reference);
 
   // Create a view.
   auto view_provider = component.exposed_by_component()
                            .Connect<fuchsia::ui::app::ViewProvider>();
-  view_provider->CreateViewWithViewRef(
-      std::move(tokens.view_holder_token.value),
-      std::move(view_ref_pair.control_ref), std::move(view_ref_pair.view_ref));
+  view_provider->CreateViewWithViewRef(std::move(view_holder_token.value),
+                                       std::move(view_ref_control),
+                                       std::move(view_ref));
 
   component.api_bindings().RunAndReturnConnectedPort("animation_finished");
 
   // Verify that dropped "view" EventPair is handled properly.
-  tokens.view_token.value.reset();
+  view_token.value.reset();
   component.api_bindings().RunAndReturnConnectedPort("view_hidden");
 }
 

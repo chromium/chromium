@@ -138,7 +138,6 @@ void AddTestUiStack(RealmBuilder& realm_builder, base::StringPiece child_name) {
                           {
                               Protocol{"fuchsia.ui.composition.Allocator"},
                               Protocol{"fuchsia.ui.composition.Flatland"},
-                              Protocol{"fuchsia.ui.scenic.Scenic"},
                           },
                       .source = ChildRef{kTestUiStackService},
                       .targets = {std::move(child_ref)}});

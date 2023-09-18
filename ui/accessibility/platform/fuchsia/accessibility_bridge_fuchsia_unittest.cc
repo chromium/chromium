@@ -4,7 +4,7 @@
 
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 #include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <lib/zx/eventpair.h>
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -98,10 +98,16 @@ class AccessibilityBridgeFuchsiaTest : public ::testing::Test {
         std::make_unique<FakeAXPlatformNodeDelegate>();
     auto mock_semantic_provider = std::make_unique<FakeSemanticProvider>();
     mock_semantic_provider_ = mock_semantic_provider.get();
-    auto view_ref_pair = scenic::ViewRefPair::New();
+
+    fuchsia::ui::views::ViewRefControl view_ref_control;
+    fuchsia::ui::views::ViewRef view_ref;
+    auto status = zx::eventpair::create(
+        /*options*/ 0u, &view_ref_control.reference, &view_ref.reference);
+    CHECK_EQ(ZX_OK, status);
+    view_ref.reference.replace(ZX_RIGHTS_BASIC, &view_ref.reference);
+
     accessibility_bridge_ = std::make_unique<AccessibilityBridgeFuchsiaImpl>(
-        /*root_window=*/nullptr,
-        fidl::HLCPPToNatural(std::move(view_ref_pair.view_ref)),
+        /*root_window=*/nullptr, fidl::HLCPPToNatural(std::move(view_ref)),
         base::RepeatingCallback<void(bool)>(),
         base::RepeatingCallback<bool(zx_status_t)>(), inspect::Node());
     accessibility_bridge_->set_semantic_provider_for_test(
@@ -109,7 +115,7 @@ class AccessibilityBridgeFuchsiaTest : public ::testing::Test {
   }
 
  protected:
-  // Required for scenic::ViewRefPair::New().
+  // Required for zx::eventpair::create.
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 

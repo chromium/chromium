@@ -8,7 +8,6 @@
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"

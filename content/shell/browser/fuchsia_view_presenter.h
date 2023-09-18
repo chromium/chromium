@@ -18,10 +18,6 @@ class FuchsiaViewPresenter final {
   FuchsiaViewPresenter& operator=(const FuchsiaViewPresenter&) = delete;
 
  private:
-  fuchsia::element::ViewControllerPtr PresentScenicView(
-      fuchsia::ui::views::ViewHolderToken view_holder_token,
-      fuchsia::ui::views::ViewRef view_ref);
-
   fuchsia::element::ViewControllerPtr PresentFlatlandView(
       fuchsia::ui::views::ViewportCreationToken viewport_creation_token);
 

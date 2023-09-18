@@ -7,7 +7,6 @@
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 #include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
 #include <lib/async/default.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <algorithm>
 #include <memory>
@@ -114,12 +113,17 @@ class AXFuchsiaSemanticProviderTest
   AXFuchsiaSemanticProviderTest& operator=(
       const AXFuchsiaSemanticProviderTest&) = delete;
   void SetUp() override {
-    auto view_ref_pair = scenic::ViewRefPair::New();
+    fuchsia::ui::views::ViewRefControl view_ref_control;
+    fuchsia::ui::views::ViewRef view_ref;
+    auto status = zx::eventpair::create(
+        /*options*/ 0u, &view_ref_control.reference, &view_ref.reference);
+    CHECK_EQ(ZX_OK, status);
+    view_ref.reference.replace(ZX_RIGHTS_BASIC, &view_ref.reference);
+
     delegate_ = std::make_unique<AXFuchsiaSemanticProviderDelegate>();
 
     semantic_provider_ = std::make_unique<ui::AXFuchsiaSemanticProviderImpl>(
-        fidl::HLCPPToNatural(std::move(view_ref_pair.view_ref)),
-        delegate_.get());
+        fidl::HLCPPToNatural(std::move(view_ref)), delegate_.get());
 
     // Spin the loop to allow registration with the SemanticsManager to be
     // processed.

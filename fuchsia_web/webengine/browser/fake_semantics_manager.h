@@ -7,7 +7,6 @@
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <fuchsia/accessibility/semantics/cpp/fidl_test_base.h>
-#include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/functional/callback.h"
