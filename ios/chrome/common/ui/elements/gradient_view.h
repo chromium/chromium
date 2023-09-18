@@ -26,6 +26,9 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Updates the colors used in the gradient.
+- (void)setStartColor:(UIColor*)startColor endColor:(UIColor*)endColor;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_ELEMENTS_GRADIENT_VIEW_H_

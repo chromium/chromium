@@ -61,6 +61,12 @@
   }
 }
 
+- (void)setStartColor:(UIColor*)startColor endColor:(UIColor*)endColor {
+  self.startColor = startColor;
+  self.endColor = endColor;
+  [self updateColors];
+}
+
 #pragma mark - Private
 
 - (void)updateColors {
