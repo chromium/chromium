@@ -41,6 +41,12 @@
           "builder": "Android ASAN (dbg)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-asan-compile-dbg",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },

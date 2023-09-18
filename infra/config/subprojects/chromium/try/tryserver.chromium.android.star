@@ -145,6 +145,11 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
+try_.builder(
+    name = "android-arm-compile-dbg",
+    mirrors = ["ci/Android arm Builder (dbg)"],
+)
+
 try_.orchestrator_builder(
     name = "android-arm64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -202,6 +207,11 @@ try_.compilator_builder(
 #     mirrors = ["ci/android-asan"],
 #     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 # )
+
+try_.builder(
+    name = "android-asan-compile-dbg",
+    mirrors = ["ci/Android ASAN (dbg)"],
+)
 
 try_.builder(
     name = "android-bfcache-rel",
