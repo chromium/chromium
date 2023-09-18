@@ -489,8 +489,9 @@ class MetricsServiceBrowserSampledOutTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1380375): Flaky on Mac, fix flakiness and re-enable the test.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1380375): Flaky on Mac and ChromeOS, fix flakiness and
+// re-enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FilesRemoved DISABLED_FilesRemoved
 #else
 #define MAYBE_FilesRemoved FilesRemoved
