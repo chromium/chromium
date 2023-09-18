@@ -12,26 +12,13 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
-const link_container_test = {
-  suiteName: 'LinkContainerTest',
-  TestNames: {
-    HideInAppKioskMode: 'hide in app kiosk mode',
-    SystemDialogLinkClick: 'system dialog link click',
-    SystemDialogLinkProperties: 'system dialog link properties',
-    InvalidState: 'invalid state',
-    OpenInPreviewLinkClick: 'open in preview link click',
-  },
-};
-
-Object.assign(window, {link_container_test: link_container_test});
-
 function assertLinkState(link: HTMLElement, disabled: boolean) {
   assertFalse(link.hidden);
   assertEquals(!disabled, link.hasAttribute('actionable'));
   assertEquals(disabled, link.querySelector('cr-icon-button')!.disabled);
 }
 
-suite(link_container_test.suiteName, function() {
+suite('LinkContainerTest', function() {
   let linkContainer: PrintPreviewLinkContainerElement;
 
   setup(function() {
@@ -50,7 +37,7 @@ suite(link_container_test.suiteName, function() {
   });
 
   /** Tests that the system dialog link is hidden in App Kiosk mode. */
-  test(link_container_test.TestNames.HideInAppKioskMode, function() {
+  test('HideInAppKioskMode', function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
     assertFalse(systemDialogLink.hidden);
     linkContainer.set('appKioskMode', true);
@@ -61,7 +48,7 @@ suite(link_container_test.suiteName, function() {
    * Test that clicking the system dialog link click results in an event
    * firing, and the throbber appears on non-Windows.
    */
-  test(link_container_test.TestNames.SystemDialogLinkClick, function() {
+  test('SystemDialogLinkClick', function() {
     const promise = eventToPromise('print-with-system-dialog', linkContainer);
     const throbber = linkContainer.$.systemDialogThrobber;
     assertTrue(throbber.hidden);
@@ -76,7 +63,7 @@ suite(link_container_test.suiteName, function() {
   /**
    * Test that the system dialog link properties are as expected.
    */
-  test(link_container_test.TestNames.SystemDialogLinkProperties, function() {
+  test('SystemDialogLinkProperties', function() {
     const link = linkContainer.$.systemDialogLink;
     assertLinkState(link, false);
 
@@ -93,7 +80,7 @@ suite(link_container_test.suiteName, function() {
    * (if it exists), and that the system dialog link is disabled on Windows
    * and enabled on other platforms.
    */
-  test(link_container_test.TestNames.InvalidState, function() {
+  test('InvalidState', function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
 
     assertLinkState(systemDialogLink, false);
@@ -118,7 +105,7 @@ suite(link_container_test.suiteName, function() {
    * property change and that the throbber appears. Mac only.
    */
   test(
-      link_container_test.TestNames.OpenInPreviewLinkClick, function() {
+      'OpenInPreviewLinkClick', function() {
         const throbber = linkContainer.$.openPdfInPreviewThrobber;
         assertTrue(throbber.hidden);
         const promise = eventToPromise('open-pdf-in-preview', linkContainer);

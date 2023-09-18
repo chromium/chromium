@@ -23,7 +23,7 @@ build_webui_tests("build") {
     "dpi_settings_test.ts",
     "duplex_settings_test.ts",
     "header_test.ts",
-    "invalid_settings_browsertest.ts",
+    "invalid_settings_test.ts",
     "key_event_test.ts",
     "layout_settings_test.ts",
     "margins_settings_test.ts",
@@ -57,7 +57,7 @@ build_webui_tests("build") {
   ]
 
   if (is_mac || is_win) {
-    files += [ "system_dialog_browsertest.ts" ]
+    files += [ "system_dialog_test.ts" ]
   }
 
   if (is_chromeos) {

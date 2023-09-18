@@ -19,33 +19,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_store_test = {
-  suiteName: 'DestinationStoreTest',
-  TestNames: {
-    SingleRecentDestination: 'single recent destination',
-    MultipleRecentDestinations: 'multiple recent destinations',
-    RecentDestinationsFallback:
-        'no local or other destinations results in save as pdf',
-    MultipleRecentDestinationsOneRequest:
-        'multiple recent destinations one request',
-    DefaultDestinationSelectionRules: 'default destination selection rules',
-    // <if expr="not is_chromeos">
-    SystemDefaultPrinterPolicy: 'system default printer policy',
-    // </if>
-    KioskModeSelectsFirstPrinter: 'kiosk mode selects first printer',
-    NoPrintersShowsError: 'no printers shows error',
-    RecentSaveAsPdf: 'recent save as pdf',
-    LoadAndSelectDestination: 'select loaded destination',
-    // <if expr="is_chromeos">
-    LoadSaveToDriveCros: 'load Save to Drive Cros',
-    SaveToDriveDisabled: 'Save to Drive disabled',
-    // </if>
-  },
-};
-
-Object.assign(window, {destination_store_test: destination_store_test});
-
-suite(destination_store_test.suiteName, function() {
+suite('DestinationStoreTest', function() {
   let destinationStore: DestinationStore;
 
   let nativeLayer: NativeLayerStub;
@@ -121,7 +95,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      destination_store_test.TestNames.SingleRecentDestination, function() {
+      'SingleRecentDestination', function() {
         const recentDestination = makeRecentDestination(destinations[0]!);
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
@@ -141,7 +115,7 @@ suite(destination_store_test.suiteName, function() {
    * fetched.
    */
   test(
-      destination_store_test.TestNames.MultipleRecentDestinations, function() {
+      'MultipleRecentDestinations', function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
 
@@ -172,7 +146,7 @@ suite(destination_store_test.suiteName, function() {
    * PDF.
    */
   test(
-      destination_store_test.TestNames.RecentDestinationsFallback, function() {
+      'RecentDestinationsFallback', function() {
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
           recentDestinations: [],
@@ -192,8 +166,7 @@ suite(destination_store_test.suiteName, function() {
    * For crbug.com/666595.
    */
   test(
-      destination_store_test.TestNames.MultipleRecentDestinationsOneRequest,
-      function() {
+      'MultipleRecentDestinationsOneRequest', function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
 
@@ -232,8 +205,7 @@ suite(destination_store_test.suiteName, function() {
    * respected and a matching destination is automatically selected.
    */
   test(
-      destination_store_test.TestNames.DefaultDestinationSelectionRules,
-      function() {
+      'DefaultDestinationSelectionRules', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr =
             JSON.stringify({namePattern: '.*Four.*'});
         initialSettings.serializedAppStateStr = '';
@@ -253,7 +225,7 @@ suite(destination_store_test.suiteName, function() {
    * destinations.
    */
   test(
-      destination_store_test.TestNames.SystemDefaultPrinterPolicy, function() {
+      'SystemDefaultPrinterPolicy', function() {
         // Set the policy in loadTimeData.
         loadTimeData.overrideValues({useSystemDefaultPrinter: true});
 
@@ -292,8 +264,7 @@ suite(destination_store_test.suiteName, function() {
    * from printer fetch is selected.
    */
   test(
-      destination_store_test.TestNames.KioskModeSelectsFirstPrinter,
-      function() {
+      'KioskModeSelectsFirstPrinter', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
@@ -317,7 +288,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is null.
    */
   test(
-      destination_store_test.TestNames.NoPrintersShowsError, function() {
+      'NoPrintersShowsError', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
@@ -343,7 +314,7 @@ suite(destination_store_test.suiteName, function() {
    * store (PDF printer), the DestinationStore does not try to select a
    * printer again later. Regression test for https://crbug.com/927162.
    */
-  test(destination_store_test.TestNames.RecentSaveAsPdf, function() {
+  test('RecentSaveAsPdf', function() {
     const pdfPrinter = getSaveAsPdfDestination();
     const recentDestination = makeRecentDestination(pdfPrinter);
     initialSettings.serializedAppStateStr = JSON.stringify({
@@ -371,7 +342,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      destination_store_test.TestNames.LoadAndSelectDestination, function() {
+      'LoadAndSelectDestination', function() {
         destinations = getDestinations(localDestinations);
         initialSettings.printerName = '';
         const id1 = 'ID1';
@@ -417,7 +388,7 @@ suite(destination_store_test.suiteName, function() {
   // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
-      destination_store_test.TestNames.LoadSaveToDriveCros, function() {
+      'LoadSaveToDriveCros', function() {
         return setInitialSettings(false).then(() => {
           assertTrue(!!destinationStore.destinations().find(
               destination => destination.id ===
@@ -427,7 +398,7 @@ suite(destination_store_test.suiteName, function() {
 
   // Tests that the SAVE_TO_DRIVE_CROS destination is not loaded on Chrome OS
   // when saving to Google Drive is disabled.
-  test(destination_store_test.TestNames.SaveToDriveDisabled, function() {
+  test('SaveToDriveDisabled', function() {
     initialSettings.isDriveMounted =
         false;  // This setting disables saving to Google Drive.
     return setInitialSettings(false).then(() => {

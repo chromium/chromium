@@ -34,6 +34,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DuplexSettingsTest) {
   RunTest("print_preview/duplex_settings_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, InvalidSettingsTest) {
+  RunTest("print_preview/invalid_settings_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, LayoutSettingsTest) {
   RunTest("print_preview/layout_settings_test.js", "mocha.run()");
 }
@@ -364,5 +368,213 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CddResetToDefault) {
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
   RunTestCase("PrintToGoogleDriveCros");
+}
+#endif
+
+class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/preview_generation_test.js",
+        base::StringPrintf("runMochaTest('PreviewGenerationTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Color) {
+  RunTestCase("Color");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, CssBackground) {
+  RunTestCase("CssBackground");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, HeaderFooter) {
+  RunTestCase("HeaderFooter");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Layout) {
+  RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Margins) {
+  RunTestCase("Margins");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, CustomMargins) {
+  RunTestCase("CustomMargins");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, MediaSize) {
+  RunTestCase("MediaSize");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, PageRange) {
+  RunTestCase("PageRange");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, SelectionOnly) {
+  RunTestCase("SelectionOnly");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, PagesPerSheet) {
+  RunTestCase("PagesPerSheet");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Scaling) {
+  RunTestCase("Scaling");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, ScalingPdf) {
+  RunTestCase("ScalingPdf");
+}
+
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Rasterize) {
+  RunTestCase("Rasterize");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Destination) {
+  RunTestCase("Destination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest,
+                       ChangeMarginsByPagesPerSheet) {
+  RunTestCase("ChangeMarginsByPagesPerSheet");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest,
+                       ZeroDefaultMarginsClearsHeaderFooter) {
+  RunTestCase("ZeroDefaultMarginsClearsHeaderFooter");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, PageSizeCalculation) {
+  RunTestCase("PageSizeCalculation");
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewLinkContainerTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/link_container_test.js",
+        base::StringPrintf("runMochaTest('LinkContainerTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, HideInAppKioskMode) {
+  RunTestCase("HideInAppKioskMode");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, SystemDialogLinkClick) {
+  RunTestCase("SystemDialogLinkClick");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest,
+                       SystemDialogLinkProperties) {
+  RunTestCase("SystemDialogLinkProperties");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, InvalidState) {
+  RunTestCase("InvalidState");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, OpenInPreviewLinkClick) {
+  RunTestCase("OpenInPreviewLinkClick");
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class PrintPreviewSystemDialogTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/system_dialog_test.js",
+        base::StringPrintf("runMochaTest('SystemDialogTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSystemDialogTest, LinkTriggersLocalPrint) {
+  RunTestCase("LinkTriggersLocalPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSystemDialogTest,
+                       InvalidSettingsDisableLink) {
+  RunTestCase("InvalidSettingsDisableLink");
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+class PrintPreviewDestinationStoreTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_store_test.js",
+        base::StringPrintf("runMochaTest('DestinationStoreTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       SingleRecentDestination) {
+  RunTestCase("SingleRecentDestination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       RecentDestinationsFallback) {
+  RunTestCase("RecentDestinationsFallback");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       MultipleRecentDestinations) {
+  RunTestCase("MultipleRecentDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       MultipleRecentDestinationsOneRequest) {
+  RunTestCase("MultipleRecentDestinationsOneRequest");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       DefaultDestinationSelectionRules) {
+  RunTestCase("DefaultDestinationSelectionRules");
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       SystemDefaultPrinterPolicy) {
+  RunTestCase("SystemDefaultPrinterPolicy");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       KioskModeSelectsFirstPrinter) {
+  RunTestCase("KioskModeSelectsFirstPrinter");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       LoadAndSelectDestination) {
+  RunTestCase("LoadAndSelectDestination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, NoPrintersShowsError) {
+  RunTestCase("NoPrintersShowsError");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, RecentSaveAsPdf) {
+  RunTestCase("RecentSaveAsPdf");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, LoadSaveToDriveCros) {
+  RunTestCase("LoadSaveToDriveCros");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, SaveToDriveDisabled) {
+  RunTestCase("SaveToDriveDisabled");
 }
 #endif
