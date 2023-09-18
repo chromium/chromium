@@ -1,11 +1,12 @@
 caption: Auto update P2P enabled
+default: true
 default_for_managed_devices_doc_only: true
 desc: |-
   Specifies whether P2P is to be used for OS update payloads.
-        If set to True, devices will share and attempt to consume update payloads on the LAN, potentially reducing Internet bandwidth usage and congestion. If the update payload is not available on the LAN, the device will fall back to downloading from an update server.
-        If set to False, P2P will not be used.
+  If set to True, devices will share and attempt to consume update payloads on the LAN, potentially reducing Internet bandwidth usage and congestion. If the update payload is not available on the LAN, the device will fall back to downloading from an update server.
+  If set to False, P2P will not be used.
 
-        NOTE: The default behavior for consumer and enterprise devices differs: on managed devices P2P will be enabled, while on non-managed devices it will not be enabled.
+  NOTE: The default behavior for consumer and enterprise devices differs: on managed devices P2P will be enabled, while on non-managed devices it will not be enabled.
 device_only: true
 example_value: false
 features:

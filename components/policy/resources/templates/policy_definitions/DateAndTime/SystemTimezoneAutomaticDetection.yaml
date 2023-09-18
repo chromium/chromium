@@ -1,14 +1,15 @@
 caption: Configure the automatic timezone detection method
+default: 0
 desc: |-
   Unless the <ph name="SYSTEM_TIMEZONE_POLICY_NAME">SystemTimezone</ph> policy turns off automatic time zone detection, then setting the policy outlines the automatic time zone detection method, which users can't change.
 
-        Setting the policy to:
-         * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED">TimezoneAutomaticDetectionDisabled</ph> keeps automatic time zone detection off.
-         * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY">TimezoneAutomaticDetectionIPOnly</ph> keeps automatic time zone detection on, using the IP-only method.
-         * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS">TimezoneAutomaticDetectionSendWiFiAccessPoints</ph> keeps automatic time zone detection on, continually sending the list of visible Wi-Fi access-points to the Geolocation API server for finer-grained time zone detection.
-         * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO">TimezoneAutomaticDetectionSendAllLocationInfo</ph> keeps automatic time zone detection on, continually sending location information (such as Wi-Fi access points, reachable cell towers, GPS) to a server for the most fine-grained time zone detection.
+  Setting the policy to:
+   * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED">TimezoneAutomaticDetectionDisabled</ph> keeps automatic time zone detection off.
+   * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY">TimezoneAutomaticDetectionIPOnly</ph> keeps automatic time zone detection on, using the IP-only method.
+   * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS">TimezoneAutomaticDetectionSendWiFiAccessPoints</ph> keeps automatic time zone detection on, continually sending the list of visible Wi-Fi access-points to the Geolocation API server for finer-grained time zone detection.
+   * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO">TimezoneAutomaticDetectionSendAllLocationInfo</ph> keeps automatic time zone detection on, continually sending location information (such as Wi-Fi access points, reachable cell towers, GPS) to a server for the most fine-grained time zone detection.
 
-        If not set, set to Let users decide, or set to None, then users control automatic time zone detection using normal controls in chrome://settings.
+  If not set, set to Let users decide, or set to None, then users control automatic time zone detection using normal controls in chrome://settings.
 device_only: true
 example_value: 0
 features:

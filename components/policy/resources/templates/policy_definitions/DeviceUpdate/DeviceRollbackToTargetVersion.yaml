@@ -1,8 +1,9 @@
 caption: Roll back OS to target version
+default: 1
 desc: |-
   Specifies whether the device should roll back to the version set by <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME">DeviceTargetVersionPrefix</ph> if it's already running a later version.
 
-        Default is RollbackDisabled.
+  Default is RollbackDisabled.
 device_only: true
 example_value: 1
 features:

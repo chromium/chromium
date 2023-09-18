@@ -3,10 +3,11 @@ arc_support: This policy does not prevent the user from using the Android Google
   of the Android Google Drive app as well.
 caption: Disable Drive in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
   Files app
+default: false
 desc: |-
   Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app. No data is uploaded to Drive.
 
-        Setting the policy to Disabled or leaving it unset lets users transfer files to Drive.
+  Setting the policy to Disabled or leaving it unset lets users transfer files to Drive.
 example_value: true
 features:
   dynamic_refresh: true
