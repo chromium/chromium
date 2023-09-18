@@ -20,10 +20,15 @@ std::string FormatTime(const base::Time& time) {
 }  // namespace
 
 TEST(TimeUtilTest, GetTimeFromStringLocalTimezone) {
-  // Creates local time objects from exploded structure.
-  base::Time::Exploded exploded = {2013, 1, 0, 15, 17, 11, 35, 374};
+  static constexpr base::Time::Exploded kExploded = {.year = 2013,
+                                                     .month = 1,
+                                                     .day_of_month = 15,
+                                                     .hour = 17,
+                                                     .minute = 11,
+                                                     .second = 35,
+                                                     .millisecond = 374};
   base::Time local_time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(exploded, &local_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kExploded, &local_time));
 
   // Creates local time object, parsing time string. Note that if there is
   // not timezone suffix, GetTimeFromString() will handle this as local time
@@ -59,22 +64,29 @@ TEST(TimeUtilTest, GetTimeFromStringBasic) {
   base::Time out_time;
 
   // Test that the special timezone "Z" (UTC) is handled.
-  base::Time::Exploded target_time1 = {2005, 1, 0, 7, 8, 2, 0, 0};
+  static constexpr base::Time::Exploded kExploded1 = {
+      .year = 2005, .month = 1, .day_of_month = 7, .hour = 8, .minute = 2};
   EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00Z", &test_time));
-  EXPECT_TRUE(base::Time::FromUTCExploded(target_time1, &out_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExploded1, &out_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 
   // Test that a simple timezone "-08:00" is handled
   // 17:57 - 8 hours = 09:57
-  base::Time::Exploded target_time2 = {2005, 8, 0, 9, 17, 57, 0, 0};
+  static constexpr base::Time::Exploded kExploded2 = {
+      .year = 2005, .month = 8, .day_of_month = 9, .hour = 17, .minute = 57};
   EXPECT_TRUE(GetTimeFromString("2005-08-09T09:57:00-08:00", &test_time));
-  EXPECT_TRUE(base::Time::FromUTCExploded(target_time2, &out_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExploded2, &out_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 
   // Test that milliseconds (.123) are handled.
-  base::Time::Exploded target_time3 = {2005, 1, 0, 7, 8, 2, 0, 123};
+  static constexpr base::Time::Exploded kExploded3 = {.year = 2005,
+                                                      .month = 1,
+                                                      .day_of_month = 7,
+                                                      .hour = 8,
+                                                      .minute = 2,
+                                                      .millisecond = 123};
   EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00.123Z", &test_time));
-  EXPECT_TRUE(base::Time::FromUTCExploded(target_time3, &out_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExploded3, &out_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 
@@ -82,9 +94,10 @@ TEST(TimeUtilTest, GetDateOnlyFromStringBasic) {
   base::Time test_time;
   base::Time out_time;
 
-  base::Time::Exploded target_time1 = {2009, 10, 0, 23};
+  static constexpr base::Time::Exploded kExploded = {
+      .year = 2009, .month = 10, .day_of_month = 23};
   EXPECT_TRUE(GetDateOnlyFromString("2009-10-23", &test_time));
-  EXPECT_TRUE(base::Time::FromUTCExploded(target_time1, &out_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExploded, &out_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 
