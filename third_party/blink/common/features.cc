@@ -1418,6 +1418,13 @@ constexpr base::FeatureParam<bool>
         &kPrivateAggregationApi, "debug_mode_settings_check_enabled",
         /*default_value=*/false};
 
+// Whether to send a null report if a context ID is specified. Temporary feature
+// until change is approved.
+// TODO(alexmt): Remove once approved.
+constexpr base::FeatureParam<bool> kPrivateAggregationApiSendNullReports{
+    &kPrivateAggregationApi, "send_null_reports",
+    /*default_value=*/false};
+
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);

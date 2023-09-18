@@ -55,9 +55,8 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kInsufficientLargerScopeBudget = 2,
     kRequestedMoreThanTotalBudget = 3,
     kTooManyPendingCalls = 4,
-    kInvalidRequest = 5,
-    kStorageInitializationFailed = 6,
-    kBadValuesOnDisk = 7,
+    kStorageInitializationFailed = 5,
+    kBadValuesOnDisk = 6,
     kMaxValue = kBadValuesOnDisk,
   };
 
@@ -77,6 +76,15 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kSpansMoreThanADay = 6,
     kContainsNonPositiveValue = 7,
     kMaxValue = kContainsNonPositiveValue,
+  };
+
+  // Indicates the desired behavior when budget is denied for a report request.
+  enum class BudgetDeniedBehavior {
+    // Still send a report, but remove all requested contributions.
+    kSendNullReport,
+
+    // Drop the report.
+    kDontSendReport,
   };
 
   // Represents the two different types of budgets, which differ on the duration

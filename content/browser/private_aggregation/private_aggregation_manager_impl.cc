@@ -35,6 +35,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -46,7 +47,14 @@ namespace {
 void RecordBudgeterResultHistogram(
     PrivateAggregationBudgeter::RequestResult request_result) {
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult3",
+      request_result);
+}
+
+void RecordManagerResultHistogram(
+    PrivateAggregationManagerImpl::RequestResult request_result) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Manager.RequestResult",
       request_result);
 }
 
@@ -71,9 +79,9 @@ PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
               exclusively_run_in_memory,
               /*path_to_db_dir=*/user_data_directory),
           std::make_unique<PrivateAggregationHost>(
-              /*on_report_request_received=*/base::BindRepeating(
+              /*on_report_request_details_received=*/base::BindRepeating(
                   &PrivateAggregationManagerImpl::
-                      OnReportRequestReceivedFromHost,
+                      OnReportRequestDetailsReceivedFromHost,
                   base::Unretained(this)),
               storage_partition ? storage_partition->browser_context()
                                 : nullptr),
@@ -120,12 +128,12 @@ bool PrivateAggregationManagerImpl::IsDebugModeAllowed(
   return host_->IsDebugModeAllowed(top_frame_origin, reporting_origin);
 }
 
-void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
-    AggregatableReportRequest report_request,
-    PrivateAggregationBudgetKey budget_key) {
-  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
-      contributions = report_request.payload_contents().contributions;
-
+void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
+    PrivateAggregationHost::ReportRequestGenerator report_request_generator,
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions,
+    PrivateAggregationBudgetKey budget_key,
+    PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior) {
   base::CheckedNumeric<int> budget_needed = std::accumulate(
       contributions.begin(), contributions.end(),
       /*init=*/base::CheckedNumeric<int>(0), /*op=*/
@@ -133,20 +141,32 @@ void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
          const blink::mojom::AggregatableReportHistogramContribution&
              contribution) { return running_sum + contribution.value; });
 
+  PrivateAggregationBudgetKey::Api api_for_budgeting = budget_key.api();
+
   if (!budget_needed.IsValid()) {
-    RecordBudgeterResultHistogram(PrivateAggregationBudgeter::RequestResult::
-                                      kRequestedMoreThanTotalBudget);
+    OnConsumeBudgetReturned(std::move(report_request_generator),
+                            std::move(contributions), api_for_budgeting,
+                            budget_denied_behavior,
+                            PrivateAggregationBudgeter::RequestResult::
+                                kRequestedMoreThanTotalBudget);
     return;
   }
 
-  PrivateAggregationBudgetKey::Api api_for_budgeting = budget_key.api();
+  // No need to request budget if none is needed.
+  if (budget_needed.ValueOrDie() == 0) {
+    RecordManagerResultHistogram(RequestResult::kSentWithoutContributions);
+    OnContributionsFinalized(std::move(report_request_generator),
+                             std::move(contributions), api_for_budgeting);
+    return;
+  }
 
   budgeter_->ConsumeBudget(
       budget_needed.ValueOrDie(), std::move(budget_key), /*on_done=*/
       // Unretained is safe as the `budgeter_` is owned by `this`.
-      base::BindOnce(&PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
-                     base::Unretained(this), std::move(report_request),
-                     api_for_budgeting));
+      base::BindOnce(
+          &PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
+          base::Unretained(this), std::move(report_request_generator),
+          std::move(contributions), api_for_budgeting, budget_denied_behavior));
 }
 
 AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
@@ -155,14 +175,45 @@ AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
 }
 
 void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
-    AggregatableReportRequest report_request,
+    PrivateAggregationHost::ReportRequestGenerator report_request_generator,
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
 
   // TODO(alexmt): Consider allowing a subset of contributions to be sent if
   // there's insufficient budget for them all.
-  if (request_result != PrivateAggregationBudgeter::RequestResult::kApproved) {
+  if (request_result == PrivateAggregationBudgeter::RequestResult::kApproved) {
+    CHECK(!contributions.empty());
+    RecordManagerResultHistogram(RequestResult::kSentWithContributions);
+  } else {
+    switch (budget_denied_behavior) {
+      case PrivateAggregationBudgeter::BudgetDeniedBehavior::kDontSendReport:
+        RecordManagerResultHistogram(RequestResult::kNotSent);
+        return;
+      case PrivateAggregationBudgeter::BudgetDeniedBehavior::kSendNullReport:
+        RecordManagerResultHistogram(
+            RequestResult::kSentButContributionsClearedDueToBudgetDenial);
+        contributions.clear();
+        break;
+    }
+  }
+
+  OnContributionsFinalized(std::move(report_request_generator),
+                           std::move(contributions), api_for_budgeting);
+}
+
+void PrivateAggregationManagerImpl::OnContributionsFinalized(
+    PrivateAggregationHost::ReportRequestGenerator report_request_generator,
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions,
+    PrivateAggregationBudgetKey::Api api_for_budgeting) {
+  // Temporary feature until change is approved.
+  // TODO(alexmt): Remove once approved.
+  if (contributions.empty() &&
+      !blink::features::kPrivateAggregationApiSendNullReports.Get()) {
     return;
   }
 
@@ -170,6 +221,9 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
   if (!aggregation_service) {
     return;
   }
+
+  AggregatableReportRequest report_request =
+      std::move(report_request_generator).Run(std::move(contributions));
 
   // If the request has debug mode enabled, immediately send a duplicate of the
   // requested report to a special debug reporting endpoint.

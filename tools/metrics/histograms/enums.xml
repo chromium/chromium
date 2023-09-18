@@ -89508,15 +89508,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="7" label="Contains an entry with a nonpositive budget value"/>
 </enum>
 
-<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult2">
+<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult3">
   <int value="0" label="Approved"/>
   <int value="1" label="Insufficient budget left in 10-min scope"/>
   <int value="2" label="Insufficient budget left in daily scope"/>
   <int value="3" label="Requested more than total budget"/>
   <int value="4" label="Too many pending calls"/>
-  <int value="5" label="Invalid request"/>
-  <int value="6" label="Storage initialization failed"/>
-  <int value="7" label="Bad values on disk"/>
+  <int value="5" label="Storage initialization failed"/>
+  <int value="6" label="Bad values on disk"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationBudgetStorageInitStatus">
@@ -89541,6 +89540,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Occurred after remote disconnection"/>
   <int value="2" label="Canceled due to error"/>
   <int value="3" label="Still scheduled on shutdown"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationManagerRequestResult">
+  <int value="0" label="Sent with contributions"/>
+  <int value="1" label="Sent without contributions"/>
+  <int value="2" label="Sent but contributions cleared due to budget denial"/>
+  <int value="3" label="Not sent"/>
 </enum>
 
 <enum name="PrivacySandboxReferrer">

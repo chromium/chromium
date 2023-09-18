@@ -639,9 +639,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
-  int num_queries_processed = 0;
-
+TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
   CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
@@ -649,22 +647,6 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
           url::Origin::Create(GURL("https://a.example/")),
           base::Time::FromJavaTime(1652984901234),
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
-
-  // Request will be rejected if budget non-positive
-  budgeter()->ConsumeBudget(
-      /*budget=*/-1, example_key,
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInvalidRequest);
-            ++num_queries_processed;
-          }));
-  budgeter()->ConsumeBudget(
-      /*budget=*/0, example_key,
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInvalidRequest);
-            ++num_queries_processed;
-          }));
 
   base::RunLoop run_loop;
 
@@ -675,12 +657,10 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
           1),
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kRequestedMoreThanTotalBudget);
-        ++num_queries_processed;
         run_loop.Quit();
       }));
 
   run_loop.Run();
-  EXPECT_EQ(num_queries_processed, 3);
 }
 
 TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {

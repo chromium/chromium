@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -92,16 +93,20 @@ struct PrivateAggregationHost::ReceiverContext {
 };
 
 PrivateAggregationHost::PrivateAggregationHost(
-    base::RepeatingCallback<void(AggregatableReportRequest,
-                                 PrivateAggregationBudgetKey)>
-        on_report_request_received,
+    base::RepeatingCallback<
+        void(ReportRequestGenerator,
+             std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+             PrivateAggregationBudgetKey,
+             PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+        on_report_request_details_received,
     BrowserContext* browser_context)
     : should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kPrivateAggregationDeveloperMode)),
-      on_report_request_received_(std::move(on_report_request_received)),
+      on_report_request_details_received_(
+          std::move(on_report_request_details_received)),
       browser_context_(*browser_context) {
-  DCHECK(!on_report_request_received_.is_null());
+  DCHECK(!on_report_request_details_received_.is_null());
 
   // `base::Unretained()` is safe as `receiver_set_` is owned by `this`.
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -246,18 +251,25 @@ void PrivateAggregationHost::ContributeToHistogram(
 }
 
 AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
-    std::vector<blink::mojom::AggregatableReportHistogramContribution>
-        contributions,
-    blink::mojom::AggregationServiceMode aggregation_mode,
     blink::mojom::DebugModeDetailsPtr debug_mode_details,
     base::Time scheduled_report_time,
     base::Uuid report_id,
     const url::Origin& reporting_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    absl::optional<std::string> context_id) {
+    absl::optional<std::string> context_id,
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions) {
+  // TODO(crbug.com/1478353): Move this to the aggregation service layer.
+  if (contributions.empty()) {
+    CHECK(context_id.has_value());
+    contributions.emplace_back(/*bucket=*/0, /*value=*/0);
+  }
+
   AggregationServicePayloadContents payload_contents(
       AggregationServicePayloadContents::Operation::kHistogram,
-      std::move(contributions), aggregation_mode,
+      std::move(contributions),
+      // TODO(alexmt): Consider allowing this to be set.
+      blink::mojom::AggregationServiceMode::kDefault,
       /*aggregation_coordinator_origin=*/absl::nullopt);
 
   CHECK(debug_mode_details);
@@ -389,19 +401,21 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
         blink::mojom::DebugModeDetails::New();
   }
 
+  PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior =
+      receiver_context.context_id.has_value()
+          ? PrivateAggregationBudgeter::BudgetDeniedBehavior::kSendNullReport
+          : PrivateAggregationBudgeter::BudgetDeniedBehavior::kDontSendReport;
+
   if (receiver_context.contributions.empty()) {
     if (!receiver_context.context_id.has_value()) {
       RecordPipeResultHistogram(PipeResult::kNoReportButNoError);
       return;
     }
 
-    // Null reports never have debug mode enabled.
+    // Null reports caused by no contributions never have debug mode enabled.
     // TODO(crbug.com/1466668): Consider permitting this.
     receiver_context.report_debug_details =
         blink::mojom::DebugModeDetails::New();
-
-    receiver_context.contributions.emplace_back(
-        /*bucket=*/0, /*value=*/0);
   }
 
   base::Time now = base::Time::Now();
@@ -409,17 +423,14 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   // If the timeout hasn't been reached, use a modified report issued time.
   base::Time report_issued_time = now + remaining_timeout;
 
-  // TODO(alexmt): Move report generation to the manager.
-  AggregatableReportRequest report_request = GenerateReportRequest(
-      std::move(receiver_context.contributions),
-      // TODO(alexmt): Consider allowing this to be set.
-      blink::mojom::AggregationServiceMode::kDefault,
-      std::move(receiver_context.report_debug_details),
+  ReportRequestGenerator report_request_generator = base::BindOnce(
+      GenerateReportRequest, std::move(receiver_context.report_debug_details),
       /*scheduled_report_time=*/
       should_not_delay_reports_ ? report_issued_time
                                 : GetScheduledReportTime(report_issued_time),
       /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
-      receiver_context.api_for_budgeting, receiver_context.context_id);
+      receiver_context.api_for_budgeting,
+      std::move(receiver_context.context_id));
 
   RecordPipeResultHistogram(
       receiver_context.too_many_contributions
@@ -434,8 +445,10 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   // The origin should be potentially trustworthy.
   DCHECK(budget_key.has_value());
 
-  on_report_request_received_.Run(std::move(report_request),
-                                  std::move(budget_key.value()));
+  on_report_request_details_received_.Run(
+      std::move(report_request_generator),
+      std::move(receiver_context.contributions), std::move(budget_key.value()),
+      budget_denied_behavior);
 }
 
 }  // namespace content

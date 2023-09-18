@@ -744,9 +744,9 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2"
-    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult2"
-    expires_after="2024-02-20">
+<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult3"
+    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult3"
+    expires_after="2024-03-13">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -839,6 +839,21 @@ reviewer.
     pipe which specifies a timeout, the outcome of the timeout. Recorded at the
     timeout or disconnection time whichever occurs first, or when it's canceled
     due to error, or on browser shutdown if it's still scheduled with pipe open.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.Manager.RequestResult"
+    enum="PrivacySandboxPrivateAggregationManagerRequestResult"
+    expires_after="2024-03-13">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the outcome of a report request sent through the Private Aggregation
+    manager, i.e. whether the report was sent and whether its contributions were
+    cleared due to budget denial. Also breaks out the case of a report that
+    started with no contributions. Recorded for each individual report request
+    (but not each individual histogram contribution).
   </summary>
 </histogram>
 
