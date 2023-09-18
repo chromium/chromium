@@ -31,8 +31,10 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -102,6 +104,110 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 #endif
 }
 
+// Returns for each profile in `profiles` one label string to be used as a
+// secondary text in the corresponding suggestion bubble. `field_types` the
+// types of the fields that will be filled by the suggestion
+std::vector<std::u16string> GetProfileSuggestionLabels(
+    const std::vector<AutofillProfile*>& profiles,
+    const ServerFieldTypeSet& field_types,
+    ServerFieldType trigger_field_type,
+    const std::string& app_locale) {
+  std::unique_ptr<LabelFormatter> formatter;
+  bool use_formatter;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  use_formatter = base::FeatureList::IsEnabled(
+      features::kAutofillUseImprovedLabelDisambiguation);
+#else
+  use_formatter = base::FeatureList::IsEnabled(
+      features::kAutofillUseMobileLabelDisambiguation);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // The formatter stores a constant reference to |profiles|.
+  // This is safe since the formatter is destroyed when this function returns.
+  formatter = use_formatter
+                  ? LabelFormatter::Create(profiles, app_locale,
+                                           trigger_field_type, field_types)
+                  : nullptr;
+
+  // Generate disambiguating labels based on the list of matches.
+  std::vector<std::u16string> labels;
+  if (formatter) {
+    labels = formatter->GetLabels();
+  } else {
+    AutofillProfile::CreateInferredLabels(
+        profiles, field_types, trigger_field_type, 1, app_locale, &labels);
+  }
+
+  if (use_formatter && !profiles.empty()) {
+    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
+                                                            nullptr);
+  }
+  return labels;
+}
+
+// Assigns for each suggestion one label to be used as secondary text in the
+// suggestion bubble, and deduplicates suggestions having the same main text
+// and label.
+// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
+// it if it is not needed, since `GetProfilesForSuggestions()` should already
+// filter out duplicates.
+void AssignLabelsAndDeduplicate(std::vector<Suggestion>& suggestions,
+                                const std::vector<std::u16string>& labels,
+                                const std::string& app_locale) {
+  DCHECK_EQ(suggestions.size(), labels.size());
+  std::set<std::u16string> suggestion_text;
+  size_t index_to_add_suggestion = 0;
+  const AutofillProfileComparator comparator(app_locale);
+
+  // Dedupes Suggestions to show in the dropdown once values and labels have
+  // been created. This is useful when LabelFormatters make Suggestions' labels.
+  //
+  // Suppose profile A has the data John, 400 Oak Rd, and (617) 544-7411 and
+  // profile B has the data John, 400 Oak Rd, (508) 957-5009. If a formatter
+  // puts only 400 Oak Rd in the label, then there will be two Suggestions with
+  // the normalized text "john400oakrd", and the Suggestion with the lower
+  // ranking should be discarded.
+  for (size_t i = 0; i < labels.size(); ++i) {
+    std::u16string label = labels[i];
+
+    // For example, a Suggestion with the value "John" and the label "400 Oak
+    // Rd" has the normalized text "john400oakrd".
+    bool text_inserted =
+        suggestion_text
+            .insert(AutofillProfileComparator::NormalizeForComparison(
+                suggestions[i].main_text.value + label,
+                AutofillProfileComparator::DISCARD_WHITESPACE))
+            .second;
+
+    if (text_inserted) {
+      if (index_to_add_suggestion != i) {
+        suggestions[index_to_add_suggestion] = suggestions[i];
+      }
+      // The given |suggestions| are already sorted from highest to lowest
+      // ranking. Suggestions with lower indices have a higher ranking and
+      // should be kept.
+      //
+      // We check whether the value and label are the same because in certain
+      // cases, e.g. when a credit card form contains a zip code field and the
+      // user clicks on the zip code, a suggestion's value and the label
+      // produced for it may both be a zip code.
+      if (!comparator.Compare(
+              suggestions[index_to_add_suggestion].main_text.value,
+              labels[i]) &&
+          !labels[i].empty()) {
+        suggestions[index_to_add_suggestion].labels = {
+            {Suggestion::Text(labels[i])}};
+      }
+      ++index_to_add_suggestion;
+    }
+  }
+
+  if (index_to_add_suggestion < suggestions.size()) {
+    suggestions.resize(index_to_add_suggestion);
+  }
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -144,170 +250,74 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     uint64_t trigger_field_max_length) {
   std::vector<Suggestion> suggestions;
   std::string app_locale = personal_data_->app_locale();
+
+  // This will be used to check if suggestions should be supported with icons.
+  const bool contains_profile_related_fields =
+      base::ranges::count_if(field_types, [](ServerFieldType type) {
+        FieldTypeGroup group = AutofillType(type).group();
+        return group == FieldTypeGroup::kName ||
+               group == FieldTypeGroup::kAddress ||
+               group == FieldTypeGroup::kPhone ||
+               group == FieldTypeGroup::kEmail;
+      }) > 1;
+
   for (const AutofillProfile* profile : profiles) {
-    std::u16string value = suggestion_selection::GetSuggestionMainText(
+    // Compute the main text to be displayed in the suggestion bubble.
+    std::u16string main_text = suggestion_selection::GetSuggestionMainText(
         profile, trigger_field_type, app_locale);
-    suggestions.emplace_back(value);
+    if (trigger_field_type.group() == FieldTypeGroup::kPhone) {
+      main_text = FieldFiller::GetPhoneNumberValueForInput(
+          trigger_field_max_length, main_text,
+          profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
+    }
+
+    suggestions.emplace_back(main_text);
     suggestions.back().payload = Suggestion::BackendId(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable)) {
-      suggestion_selection::AddGranularFillingChildSuggestions(
-          trigger_field_type, *profile, app_locale, suggestions.back());
-      suggestion_selection::AddSuggestionDetailsForCurrentFillingGranularity(
-          last_targeted_fields, trigger_field_type, suggestions.back());
-    }
-  }
-  std::unique_ptr<LabelFormatter> formatter;
-  bool use_formatter;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseImprovedLabelDisambiguation);
-#else
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseMobileLabelDisambiguation);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  // The formatter stores a constant reference to |profiles|.
-  // This is safe since the formatter is destroyed when this function returns.
-  formatter = use_formatter
-                  ? LabelFormatter::Create(profiles, app_locale,
-                                           trigger_field_type.GetStorableType(),
-                                           field_types)
-                  : nullptr;
-
-  // Generate disambiguating labels based on the list of matches.
-  std::vector<std::u16string> labels;
-  if (formatter) {
-    labels = formatter->GetLabels();
-  } else {
-    AutofillProfile::CreateInferredLabels(profiles, field_types,
-                                          trigger_field_type.GetStorableType(),
-                                          1, app_locale, &labels);
-  }
-
-  if (use_formatter && !suggestions.empty()) {
-    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
-                                                            nullptr);
-  }
-
-  const AutofillProfileComparator comparator(app_locale);
-  DCHECK_EQ(suggestions.size(), labels.size());
-
-  // This set is used to determine whether duplicate Suggestions exist. For
-  // example, a Suggestion with the value "John" and the label "400 Oak Rd" has
-  // the normalized text "john400oakrd". This text can only be added to the set
-  // once.
-  std::unordered_set<std::u16string> suggestion_text;
-  size_t index_to_add_suggestion = 0;
-
-  // Dedupes Suggestions to show in the dropdown once values and labels have
-  // been created. This is useful when LabelFormatters make Suggestions' labels.
-  //
-  // Suppose profile A has the data John, 400 Oak Rd, and (617) 544-7411 and
-  // profile B has the data John, 400 Oak Rd, (508) 957-5009. If a formatter
-  // puts only 400 Oak Rd in the label, then there will be two Suggestions with
-  // the normalized text "john400oakrd", and the Suggestion with the lower
-  // ranking should be discarded.
-  for (size_t i = 0; i < labels.size(); ++i) {
-    std::u16string label = labels[i];
-
-    bool text_inserted =
-        suggestion_text
-            .insert(AutofillProfileComparator::NormalizeForComparison(
-                suggestions[i].main_text.value + label,
-                AutofillProfileComparator::DISCARD_WHITESPACE))
-            .second;
-
-    if (text_inserted) {
-      if (index_to_add_suggestion != i) {
-        suggestions[index_to_add_suggestion] = suggestions[i];
-      }
-      // The given |suggestions| are already sorted from highest to lowest
-      // ranking. Suggestions with lower indices have a higher ranking and
-      // should be kept.
-      //
-      // We check whether the value and label are the same because in certain
-      // cases, e.g. when a credit card form contains a zip code field and the
-      // user clicks on the zip code, a suggestion's value and the label
-      // produced for it may both be a zip code.
-      if (!comparator.Compare(
-              suggestions[index_to_add_suggestion].main_text.value,
-              labels[i]) &&
-          !labels[i].empty()) {
-        suggestions[index_to_add_suggestion].labels = {
-            {Suggestion::Text(labels[i])}};
-      }
-      ++index_to_add_suggestion;
-    }
-  }
-
-  if (index_to_add_suggestion < suggestions.size()) {
-    suggestions.resize(index_to_add_suggestion);
-  }
-
-  // We add an icon to the address (profile) suggestion if there is more than
-  // one profile related field in the form. Returns true if |type| is related to
-  // address profiles.
-  auto is_field_type_profile_related = [](ServerFieldType type) {
-    FieldTypeGroup group = AutofillType(type).group();
-    return group == FieldTypeGroup::kName ||
-           group == FieldTypeGroup::kAddress ||
-           group == FieldTypeGroup::kPhone || group == FieldTypeGroup::kEmail;
-  };
-  if (base::ranges::count_if(field_types, is_field_type_profile_related) > 1) {
-    for (auto& suggestion : suggestions) {
+    // We add an icon to the address (profile) suggestion if there is more than
+    // one profile related field in the form.
+    if (contains_profile_related_fields) {
       // TODO(crbug.com/1459990): Remove this hardcoding once the last filling
       // granularity is available to this method. Filling granularies different
       // than full form will not have an icon.
       const bool fill_full_form = true;
       if (base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
-        suggestion.icon = fill_full_form ? "locationIcon" : "";
+        suggestions.back().icon = fill_full_form ? "locationIcon" : "";
       } else {
-        suggestion.icon = "accountIcon";
+        suggestions.back().icon = "accountIcon";
       }
     }
-  }
 
-  // Adjust phone number to display in prefix/suffix case.
-  if (trigger_field_type.group() == FieldTypeGroup::kPhone) {
-    for (auto& suggestion : suggestions) {
-      const AutofillProfile* profile = personal_data_->GetProfileByGUID(
-          suggestion.GetPayload<Suggestion::BackendId>().value());
-      if (profile) {
-        suggestion.main_text = Suggestion::Text(
-            FieldFiller::GetPhoneNumberValueForInput(
-                trigger_field_max_length, suggestion.main_text.value,
-                profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale)),
-            Suggestion::Text::IsPrimary(true));
-      }
-    }
-  }
-
-  for (auto& suggestion : suggestions) {
-    // Granular filling handles assigning the popup type where the suggestion is
-    // created.
-    // TODO(crbug.com/1459990) Remove setting the popup type from here when
-    // granular filling clean up starts.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable)) {
-      suggestion.popup_item_id = PopupItemId::kAddressEntry;
-    }
-
-    // Populate feature IPH for externally created account profiles.
-    const AutofillProfile* profile = personal_data_->GetProfileByGUID(
-        suggestion.GetPayload<Suggestion::BackendId>().value());
     if (profile && profile->source() == AutofillProfile::Source::kAccount &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
-      suggestion.feature_for_iph =
+      suggestions.back().feature_for_iph =
           feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature.name;
     }
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)) {
+      suggestion_selection::AddGranularFillingChildSuggestions(
+          trigger_field_type, *profile, app_locale, suggestions.back());
+      suggestion_selection::AddSuggestionDetailsForCurrentFillingGranularity(
+          last_targeted_fields, trigger_field_type, suggestions.back());
+    } else {
+      // Granular filling handles assigning the popup type where the suggestion
+      // is created.
+      suggestions.back().popup_item_id = PopupItemId::kAddressEntry;
+    }
   }
+
+  AssignLabelsAndDeduplicate(
+      suggestions,
+      GetProfileSuggestionLabels(profiles, field_types,
+                                 trigger_field_type.GetStorableType(),
+                                 app_locale),
+      app_locale);
 
   return suggestions;
 }

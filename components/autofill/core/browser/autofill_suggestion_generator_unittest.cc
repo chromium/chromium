@@ -825,6 +825,8 @@ TEST_F(
                   profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale))));
 }
 
+// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
+// the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_DiscardDuplicateSuggestions) {
   std::vector<AutofillProfile> profiles(3);
@@ -859,6 +861,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
                           {Suggestion::Text(u"1 Winterfell Ln")}}))));
 }
 
+// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
+// the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_KeepNonDuplicateSuggestions) {
   AutofillProfile profile_1;
@@ -901,6 +905,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
                           {Suggestion::Text(u"1 Winterfell Ln")}}))));
 }
 
+// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
+// the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_SameStringInValueAndLabel) {
   AutofillProfile profile;
