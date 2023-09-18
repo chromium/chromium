@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {type ActionsProducerGen, ConcurrentActionInvalidatedError, isActionsProducer} from './actions_producer.js';
+import {Selector, SelectorEmitter, SelectorNode} from './selector.js';
 
 /**
  * Actions are handled by the store according to their name and payload,
@@ -39,15 +40,21 @@ type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
  * Slices represent a part of the state that is nested directly under the root
  * state, aggregating its reducers and selectors.
  * @template State The shape of the store's root state.
- * @template _LocalState The shape of this slice.
+ * @template LocalState The shape of this slice.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export class Slice<State, _LocalState> {
+export class Slice<State, LocalState> {
   /**
    * Reducers registered with this slice.
    * Only one reducer per slice can be associated with a given action type.
    */
   reducers: ReducerMap<State> = new Map();
+
+  /**
+   * The slice's default selector - a selector that is created automatically
+   * when the slice is constructed. It selects the slice's part of the state.
+   */
+  selector: SelectorNode<LocalState> = SelectorNode.createDisconnectedNode();
 
   /**
    * @param name The prefix to be used when registering action types with
@@ -102,12 +109,6 @@ export class Slice<State, _LocalState> {
 
     return actionFactory;
   }
-
-  /** Creates a selector. */
-  addSelector(_selector: (state: State) => any) {
-    // TODO(b:297808212) Implement this method.
-    return;
-  }
 }
 
 /**
@@ -128,7 +129,7 @@ export class BaseStore<State> {
   /**
    * A map of action names to reducers handled by the store.
    */
-  private reducers_: ReducersMap<State>;
+  private reducers_: ReducersMap<State> = new Map();
 
   /**
    * The current state stored in the Store.
@@ -155,6 +156,19 @@ export class BaseStore<State> {
    */
   private batchMode_: boolean = false;
 
+  /**
+   * The store's default selector - a selector that is created automatically
+   * when the store is constructed. It selects the root state.
+   */
+  selector: Selector<State>;
+
+  /**
+   * The DAG representation of selectors held by the store. It ensures
+   * selectors are updated in an efficient manner. For more information,
+   * please see the `SelectorEmitter` class documentation.
+   */
+  private selectorEmitter_ = new SelectorEmitter();
+
   constructor(state: State, slices: Array<Slice<State, any>>) {
     this.state_ = state;
     this.queuedActions_ = [];
@@ -170,9 +184,17 @@ export class BaseStore<State> {
           [...sliceNames].join(', '));
     }
 
-    // Populate reducers with given slices.
-    this.reducers_ = new Map();
+    // Connect the default root selector to the Selector Emitter.
+    const rootSelector = SelectorNode.createSourceNode(() => this.state_);
+    this.selectorEmitter_.addSource(rootSelector);
+    this.selector = rootSelector;
+
     for (const slice of slices) {
+      // Connect the slice's default selector to the store's.
+      slice.selector.select = (state) => state[slice.name];
+      slice.selector.parents = [rootSelector];
+
+      // Populate reducers with slice.
       for (const [type, reducer] of slice.reducers.entries()) {
         const reducerList = this.reducers_.get(type);
         if (!reducerList) {
@@ -199,6 +221,7 @@ export class BaseStore<State> {
     });
 
     this.initialized_ = true;
+    this.selectorEmitter_.processChange();
     this.notifyObservers_(this.state_);
   }
 
@@ -324,6 +347,9 @@ export class BaseStore<State> {
     // resolved.
     if (this.initialized_ && !this.batchMode_) {
       this.notifyObservers_(this.state_);
+    }
+    if (this.selector.get() !== this.state_) {
+      this.selectorEmitter_.processChange();
     }
   }
 

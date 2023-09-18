@@ -323,6 +323,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BaseStore) {
   RunTestURL("lib/base_store_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Selector) {
+  RunTestURL("lib/selector_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksAllEntries) {
   RunTestURL("state/ducks/all_entries_unittest.js");
 }

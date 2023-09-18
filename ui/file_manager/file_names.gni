@@ -244,6 +244,7 @@ ts_files = [
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
   "file_manager/lib/concurrency_models.ts",
+  "file_manager/lib/selector.ts",
 
   # State.
   "file_manager/state/file_key.ts",
@@ -375,9 +376,10 @@ ts_test_files = [
   "file_manager/containers/search_container_unittest.ts",
 
   # Lib:
-  "file_manager/lib/base_store_unittest.ts",
   "file_manager/lib/actions_producer_unittest.ts",
+  "file_manager/lib/base_store_unittest.ts",
   "file_manager/lib/for_tests.ts",
+  "file_manager/lib/selector_unittest.ts",
 
   # Reducers:
   "file_manager/state/for_tests.ts",
