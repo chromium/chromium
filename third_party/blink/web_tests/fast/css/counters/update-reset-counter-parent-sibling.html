@@ -20,9 +20,9 @@ p:before { content: counter(c) }
 'use strict';
 
 test(() => {
-  assert_equals(internals.counterValue(p1), '2');
-  assert_equals(internals.counterValue(p2), '3');
-  assert_equals(internals.counterValue(p3), '4');
+  assert_equals(internals.counterValue(p1), '1');
+  assert_equals(internals.counterValue(p2), '2');
+  assert_equals(internals.counterValue(p3), '3');
   assert_equals(internals.counterValue(p4), '1');
 
   p1.className = 'reset';
@@ -38,7 +38,7 @@ test(() => {
 
   assert_equals(internals.counterValue(p1), '0');
   assert_equals(internals.counterValue(p2), '1');
-  assert_equals(internals.counterValue(p3), '1');
+  assert_equals(internals.counterValue(p3), '2');
   assert_equals(internals.counterValue(p4), '1');
 }, 'Dynamically changing counter-reset with counter-resets in parent and sibling updates counters accordingly');
 
