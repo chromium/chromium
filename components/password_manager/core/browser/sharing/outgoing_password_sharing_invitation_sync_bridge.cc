@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -205,8 +206,16 @@ void OutgoingPasswordSharingInvitationSyncBridge::OnCommitAttemptErrors(
        error_response_list) {
     if (error_response.response_type ==
         sync_pb::CommitResponse::INVALID_MESSAGE) {
-      // TODO(crbug.com/1468524): record UMA metric for datatype-siecific
-      // errors.
+      if (error_response.datatype_specific_error
+              .has_outgoing_password_sharing_invitation_error()) {
+        base::UmaHistogramExactLinear(
+            "Sync.OutgoingPassordSharingInvitation.CommitError",
+            error_response.datatype_specific_error
+                .outgoing_password_sharing_invitation_error()
+                .error_code(),
+            sync_pb::OutgoingPasswordSharingInvitationCommitError::
+                ErrorCode_ARRAYSIZE);
+      }
       change_processor()->UntrackEntityForClientTagHash(
           error_response.client_tag_hash);
       outgoing_invitations_in_flight_.erase(error_response.client_tag_hash);
