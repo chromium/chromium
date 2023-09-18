@@ -762,7 +762,7 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
   auto* controller = StartImageRegionCapture();
 
   // Select a region such that the capture mode bar is covered.
-  SelectRegion(gfx::Rect(5, 5, 795, 795));
+  SelectRegion(gfx::Rect(5, 5, 795, 695));
   EXPECT_TRUE(controller->user_capture_region().Contains(
       GetCaptureModeBarView()->GetBoundsInScreen()));
 
@@ -914,7 +914,7 @@ TEST_F(CaptureModeTest, CaptureRegionDimensionsLabelLocation) {
   // Create a new capture region close to the bottom side of the screen.
   // The label should now appear inside the capture region, just above the
   // bottom edge. It should be above the bottom of the screen as well.
-  capture_region.SetRect(100, 700, 600, 790);
+  capture_region.SetRect(100, 700, 600, 100);
   SelectRegion(capture_region, /*release_mouse=*/false);
   EXPECT_EQ(800 - CaptureModeSession::kSizeLabelYDistanceFromRegionDp,
             GetDimensionsLabelWindow()->bounds().bottom());
@@ -996,7 +996,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
   event_generator->set_current_screen_location(gfx::Point());
   event_generator->ClickLeftButton();
   SelectRegion(gfx::Rect(capture_bar_midpoint_x, capture_bar_bounds.bottom(),
-                         20, 800 - capture_bar_bounds.bottom()));
+                         20, 700 - capture_bar_bounds.bottom()));
   EXPECT_FALSE(capture_bar_bounds.Intersects(
       GetCaptureModeLabelWidget()->GetWindowBoundsInScreen()));
 
@@ -1005,7 +1005,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
   // region.
   event_generator->set_current_screen_location(gfx::Point());
   event_generator->ClickLeftButton();
-  SelectRegion(gfx::Rect(20, 800));
+  SelectRegion(gfx::Rect(20, 700));
   EXPECT_GT(GetCaptureModeLabelWidget()->GetWindowBoundsInScreen().x(), 20);
 }
 
@@ -3568,6 +3568,40 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   SelectRegion(gfx::Rect(0, 0, 100, 100));
   controller->PerformCapture();
   histogram_tester.ExpectBucketCount(kTabletHistogram, 0, 1);
+}
+
+TEST_F(CaptureModeTest, ResizeRegionBoundedByDisplay) {
+  UpdateDisplay("800x700");
+
+  auto* controller = StartImageRegionCapture();
+  ASSERT_TRUE(controller->IsActive());
+  ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
+
+  // Attempt to create a new region that goes outside of the display bounds.
+  gfx::Rect target_region(gfx::Rect(200, 200, 800, 800));
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(target_region.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(target_region.bottom_right());
+  event_generator->ReleaseLeftButton();
+
+  // The region should stay within the display bounds.
+  ASSERT_TRUE(
+      controller->capture_mode_session()->current_root()->bounds().Contains(
+          controller->user_capture_region()));
+  EXPECT_EQ(gfx::Rect(200, 200, 600, 500), controller->user_capture_region());
+
+  // Attempt to adjust the existing region outside of the display bounds.
+  event_generator->set_current_screen_location(target_region.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(-100, -100));
+  event_generator->ReleaseLeftButton();
+
+  // The region should stay within the display bounds.
+  ASSERT_TRUE(
+      controller->capture_mode_session()->current_root()->bounds().Contains(
+          controller->user_capture_region()));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 700), controller->user_capture_region());
 }
 
 TEST_F(CaptureModeTest, FullscreenCapture) {

@@ -189,9 +189,12 @@ bool SetMouseWarpEnabled(bool enable) {
   return old_value;
 }
 
-// Returns the smallest rect that contains all of |points|.
-gfx::Rect GetRectEnclosingPoints(const std::vector<gfx::Point>& points) {
+// Returns the smallest rect that contains all of `points` if they are all
+// within `root`'s bounds, otherwise constrains the rect to fit.
+gfx::Rect GetRectEnclosingPoints(const std::vector<gfx::Point>& points,
+                                 aura::Window* root) {
   DCHECK_GE(points.size(), 2u);
+  CHECK(root);
 
   int x = INT_MAX;
   int y = INT_MAX;
@@ -203,7 +206,10 @@ gfx::Rect GetRectEnclosingPoints(const std::vector<gfx::Point>& points) {
     right = std::max(point.x(), right);
     bottom = std::max(point.y(), bottom);
   }
-  return gfx::Rect(x, y, right - x, bottom - y);
+
+  gfx::Rect new_rect(x, y, right - x, bottom - y);
+  new_rect.Intersect(root->bounds());
+  return new_rect;
 }
 
 // Returns the widget init params needed to create a widget associated with a
@@ -277,16 +283,6 @@ int GetArrowKeyPressChange(int event_flags) {
   if ((event_flags & ui::EF_CONTROL_DOWN) != 0)
     return capture_mode::kCtrlArrowKeyboardRegionChangeDp;
   return capture_mode::kArrowKeyboardRegionChangeDp;
-}
-
-// Clips |out_bounds| to fit |rect|. Similar to
-// gfx::Rect::AdjustToFit() but does not shift the output rect to maintain the
-// rect size.
-void ClipRectToFit(gfx::Rect* out_bounds, const gfx::Rect& rect) {
-  out_bounds->SetByBounds(std::max(rect.x(), out_bounds->x()),
-                          std::max(rect.y(), out_bounds->y()),
-                          std::min(rect.right(), out_bounds->right()),
-                          std::min(rect.bottom(), out_bounds->bottom()));
 }
 
 // Returns the `message_id` for the chromevox alert when capture session starts.
@@ -2092,7 +2088,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   // press location and the current location.
   if (is_selecting_region_) {
     UpdateCaptureRegion(
-        GetRectEnclosingPoints({initial_location_in_root_, location_in_root}),
+        GetRectEnclosingPoints({initial_location_in_root_, location_in_root},
+                               current_root_),
         /*is_resizing=*/true, /*by_user=*/true);
     return;
   }
@@ -2132,8 +2129,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     resizing_point.set_x(points.front().x());
   }
   points.push_back(resizing_point);
-  UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true,
-                      /*by_user=*/true);
+  UpdateCaptureRegion(GetRectEnclosingPoints(points, current_root_),
+                      /*is_resizing=*/true, /*by_user=*/true);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
@@ -2694,7 +2691,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
     }
 
     new_capture_region.Inset(insets);
-    ClipRectToFit(&new_capture_region, current_root_->bounds());
+    new_capture_region.Intersect(current_root_->bounds());
   }
 
   UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,

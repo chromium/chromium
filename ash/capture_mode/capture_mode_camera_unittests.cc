@@ -1375,6 +1375,7 @@ TEST_F(CaptureModeCameraTest,
 // events is or is not on capture label, its opacity is updated accordingly.
 TEST_F(CaptureModeCameraTest,
        CaptureLabelOpacityChangeWhenOverlappingWithCameraPreview) {
+  UpdateDisplay("900x800");
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   auto* capture_session =
