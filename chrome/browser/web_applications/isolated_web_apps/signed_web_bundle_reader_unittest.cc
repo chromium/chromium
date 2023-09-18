@@ -268,6 +268,25 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadIntegrityBlockAndAbort) {
           Property(&UnusableSwbnFileError::message, "test error"))));
 }
 
+TEST_F(SignedWebBundleReaderWithRealBundlesTest, Close) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+
+  auto reader =
+      CreateReaderAndInitialize(TestSignedWebBundleBuilder::BuildOptions()
+                                    .SetBaseUrl(kUrl)
+                                    .SetIndexHTMLContent(kHtmlString),
+                                parse_status_future.GetCallback());
+
+  auto parse_status = parse_status_future.Take();
+  EXPECT_THAT(parse_status, HasValue());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+
+  base::test::TestFuture<void> close_future;
+  reader->Close(close_future.GetCallback());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kClosed);
+}
+
 class SignedWebBundleReaderTest : public testing::Test {
  protected:
   void SetUp() override {

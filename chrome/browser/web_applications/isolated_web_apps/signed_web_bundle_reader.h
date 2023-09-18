@@ -180,9 +180,12 @@ class SignedWebBundleReader {
       IntegrityBlockReadResultCallback integrity_block_result_callback,
       ReadErrorCallback read_error_callback);
 
+  // Closes all the closable resources that the reader is using.
+  void Close(base::OnceClosure callback);
+
   // This class internally transitions through the following states:
   //
-  // kUninitialized -> kInitializing -> kInitialized
+  // kUninitialized -> kInitializing -> kInitialized -> kClosed
   //                         |
   //                         `--------> kError
   //
@@ -194,6 +197,7 @@ class SignedWebBundleReader {
     kInitializing,
     kInitialized,
     kError,
+    kClosed,
   };
 
   // This class is ready to read responses from the Signed Web Bundle iff its
@@ -319,6 +323,8 @@ class SignedWebBundleReader {
   // metadata have been read. Reconnecting to a new parser will be attempted on
   // the next call to `ReadResponse`.
   void OnReconnect(base::expected<void, std::string> status);
+
+  void OnParserClosed(base::OnceClosure callback) const;
 
   State state_ = State::kUninitialized;
 

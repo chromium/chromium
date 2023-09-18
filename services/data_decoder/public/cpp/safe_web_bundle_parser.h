@@ -70,6 +70,13 @@ class SafeWebBundleParser {
   // terminated.
   void SetDisconnectCallback(base::OnceClosure callback);
 
+  // Closes the data source that this class is using to read the data from.
+  // One can use this function to know the point after which the source file
+  // is closed and can be removed.
+  // If the caller doesn't care when the file is closed, then it is fine
+  // to destroy the instance of this class without calling this function.
+  void Close(base::OnceClosure callback);
+
  private:
   web_package::mojom::WebBundleParserFactory* GetFactory();
   void OnDisconnect();
@@ -81,6 +88,7 @@ class SafeWebBundleParser {
   void OnResponseParsed(size_t callback_id,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
+  void OnParserClosed(base::OnceClosure callback) const;
 
   absl::optional<GURL> base_url_;
   DataDecoder data_decoder_;

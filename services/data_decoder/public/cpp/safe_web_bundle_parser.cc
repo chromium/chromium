@@ -117,6 +117,11 @@ void SafeWebBundleParser::SetDisconnectCallback(base::OnceClosure callback) {
   disconnect_callback_ = std::move(callback);
 }
 
+void SafeWebBundleParser::Close(base::OnceClosure callback) {
+  parser_->Close(base::BindOnce(&SafeWebBundleParser::OnParserClosed,
+                                base::Unretained(this), std::move(callback)));
+}
+
 void SafeWebBundleParser::OnDisconnect() {
   disconnected_ = true;
   // Any of these callbacks could delete `this`, hence we need to make sure to
@@ -175,6 +180,10 @@ void SafeWebBundleParser::OnResponseParsed(
   auto callback = std::move(it->second);
   response_callbacks_.erase(it);
   std::move(callback).Run(std::move(response), std::move(error));
+}
+
+void SafeWebBundleParser::OnParserClosed(base::OnceClosure callback) const {
+  std::move(callback).Run();
 }
 
 }  // namespace data_decoder

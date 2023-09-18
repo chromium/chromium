@@ -192,6 +192,17 @@ std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
       web_bundle_path, base_url, std::move(signature_verifier)));
 }
 
+void SignedWebBundleReader::Close(base::OnceClosure callback) {
+  state_ = State::kClosed;
+  connection_->parser_->Close(
+      base::BindOnce(&SignedWebBundleReader::OnParserClosed,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) const {
+  std::move(callback).Run();
+}
+
 void SignedWebBundleReader::StartReading(
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback) {
