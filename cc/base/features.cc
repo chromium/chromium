@@ -154,4 +154,8 @@ BASE_FEATURE(kReclaimOldPrepaintTiles,
 const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
                                                      "reclaim_delay_s", 30};
 
+BASE_FEATURE(kUseMapRectForPixelMovement,
+             "UseMapRectForPixelMovement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
