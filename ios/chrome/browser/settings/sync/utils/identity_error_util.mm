@@ -124,7 +124,9 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   return nil;
 }
 
-SyncState GetSyncState(syncer::SyncService* sync_service) {
+// TODO(crbug.com/1462552): Remove this function after kSync users are migrated
+// to kSignin in phase 3. See ConsentLevel::kSync documentation for details.
+SyncState GetSyncFeatureState(syncer::SyncService* sync_service) {
   syncer::SyncService::UserActionableError error_state =
       sync_service->GetUserActionableError();
   if (sync_service->HasDisableReason(
@@ -155,5 +157,5 @@ bool ShouldIndicateIdentityErrorInOverflowMenu(
   DCHECK(sync_service);
 
   return GetAccountErrorUIInfo(sync_service) != nil ||
-         GetSyncState(sync_service) == SyncState::kSyncEnabledWithError;
+         GetSyncFeatureState(sync_service) == SyncState::kSyncEnabledWithError;
 }

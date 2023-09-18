@@ -24,7 +24,7 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service);
 bool ShouldIndicateIdentityErrorInOverflowMenu(
     syncer::SyncService* sync_service);
 
-// Returns the state of sync.
-SyncState GetSyncState(syncer::SyncService* sync_service);
+// Returns the state of sync-the-feature.
+SyncState GetSyncFeatureState(syncer::SyncService* sync_service);
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_IDENTITY_ERROR_UTIL_H_

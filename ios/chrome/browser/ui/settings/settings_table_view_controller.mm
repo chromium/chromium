@@ -1282,8 +1282,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       break;
     case SettingsItemTypeGoogleSync: {
       base::RecordAction(base::UserMetricsAction("Settings.Sync"));
-      switch (
-          GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+      switch (GetSyncFeatureState(
+          SyncServiceFactory::GetForBrowserState(_browserState))) {
         case SyncState::kSyncConsentOff: {
           [self showSignIn];
           break;
@@ -1535,8 +1535,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Returns true if sync is disabled by policy.
 - (bool)isSyncDisabledByPolicy {
-  return GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState)) ==
-         SyncState::kSyncDisabledByAdministrator;
+  return SyncServiceFactory::GetForBrowserState(_browserState)
+      ->HasDisableReason(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 - (void)showGoogleServices {
@@ -1747,7 +1747,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
-  switch (GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+  switch (GetSyncFeatureState(
+      SyncServiceFactory::GetForBrowserState(_browserState))) {
     case SyncState::kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       googleSyncItem.iconImage = CustomSettingsRootSymbol(kSyncDisabledSymbol);

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_STATE_H_
 #define IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_STATE_H_
 
-// State of the Sync Service.
+// State of Sync-the-feature.
 enum class SyncState {
   kSyncDisabledByAdministrator,
   kSyncConsentOff,
