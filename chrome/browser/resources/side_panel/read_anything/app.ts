@@ -394,6 +394,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return this.utterancesToSpeak_;
   }
 
+  getCurrentUtterance() {
+    return this.utterancesToSpeak_[this.currentUtteranceIndex_];
+  }
+
   onSpeechRateChange(rate: number) {
     this.rate = rate;
   }
@@ -403,6 +407,46 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // word so that speech doesn't resume in the middle of the word?
     this.synth.pause();
     this.paused = true;
+  }
+
+  playNextGranularity() {
+    if (this.utterancesToSpeak_.length === 0) {
+      // In reality this should never happen because the granularity buttons
+      // should be hidden when there is nothing to speak, but returning early
+      // helps prevent crashes.
+      return;
+    }
+
+    this.synth.cancel();
+    // TODO(crbug.com/1474951): Handle cases where something can be "skipped"
+    // when navigating quickly between sentences. This should be less of an
+    // issue once we fix the choppiness issue with links.
+    if (this.currentUtteranceIndex_ >= this.utterancesToSpeak_.length - 1) {
+      // TODO(crbug.com/1474951): Ensure highlight goes back to original
+      // formatting, even if the last sentence is skipped.
+      this.onSpeechStopped();
+      return;
+    }
+    this.currentUtteranceIndex_ = this.currentUtteranceIndex_ + 1;
+    this.playCurrentMessage();
+  }
+
+  // TODO(crbug.com/1474951): Ensure the highlight is shown after playing the
+  //  previous granularity.
+  playPreviousGranularity() {
+    if (this.utterancesToSpeak_.length === 0) {
+      // In reality this should never happen because the granularity buttons
+      // should be hidden when there is nothing to speak, but returning early
+      // helps prevent crashes.
+      return;
+    }
+
+    this.synth.cancel();
+    this.currentUtteranceIndex_ = Math.max(this.currentUtteranceIndex_ - 1, 0);
+    if (this.previousHighlight_) {
+      this.previousHighlight_.className = '';
+    }
+    this.playCurrentMessage();
   }
 
   playSpeech() {
@@ -435,7 +479,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
 
       // Start by playing the first message.
-      this.playNextMessage();
+      this.playCurrentMessage();
     }
   }
 
@@ -472,15 +516,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       const message = new SpeechSynthesisUtterance(sentence);
 
-      // TODO(crbug.com/1474951): Add callbacks for onboundary and onpause.
-      message.onerror = () => {
+      message.onerror = (error) => {
         // TODO(crbug.com/1474951): Add more sophisticated error handling.
+        if (error.error === 'interrupted') {
+          // SpeechSynthesis.cancel() was called, therefore, do nothing.
+          return;
+        }
         this.synth.cancel();
       };
 
       message.onstart = () => {
         // TODO(crbug.com/1474951): Add toggle to turn off highlight.
         // TODO(crbug.com/1474951): Handle already selected text.
+        if (this.previousHighlight_) {
+          this.previousHighlight_.className = previousReadHighlightClass;
+        }
         nodeToHighlight = this.highlightCurrentText_(
             sentenceStart, sentenceStart + nextSentenceEndIndex,
             nodeToHighlight);
@@ -490,15 +540,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       message.onend = () => {
         // TODO(crbug.com/1474951): Return text to its original style once
         // the document has finished.
-        if (this.previousHighlight_) {
-          this.previousHighlight_.className = previousReadHighlightClass;
-        }
         this.currentUtteranceIndex_++;
         if (this.currentUtteranceIndex_ >= this.utterancesToSpeak_.length) {
+          if (this.previousHighlight_) {
+            this.previousHighlight_.className = previousReadHighlightClass;
+          }
           this.onSpeechStopped();
         } else {
           // Continue speaking with the next block of text.
-          this.playNextMessage();
+          this.playCurrentMessage();
         }
       };
 
@@ -506,7 +556,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  playNextMessage() {
+  playCurrentMessage() {
     const message = this.utterancesToSpeak_[this.currentUtteranceIndex_];
 
     // TODO(crbug.com/1474951): Use correct locale when speaking.

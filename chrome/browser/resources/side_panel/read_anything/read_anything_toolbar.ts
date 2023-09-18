@@ -258,6 +258,18 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.$.fontMenu.close();
   }
 
+  private onNextGranularityClick_() {
+    if (this.contentPage) {
+      this.contentPage.playNextGranularity();
+    }
+  }
+
+  private onPreviousGranularityClick_() {
+    if (this.contentPage) {
+      this.contentPage.playPreviousGranularity();
+    }
+  }
+
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
   }

@@ -97,3 +97,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        RateCallback_ChangesSpeechRate) {
   ASSERT_TRUE(RunTest("rate_callback_changes_speech_rate.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_GranularityChangesUpdatesHighlight) {
+  ASSERT_TRUE(RunTest("read_aloud_highlight_with_granularity_changes.js"));
+}

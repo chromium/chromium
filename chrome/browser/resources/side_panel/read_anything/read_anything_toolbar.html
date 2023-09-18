@@ -56,10 +56,12 @@
      matches the mocks. -->
     <span id="granularity-container" hidden="[[isPaused_]]">
       <cr-icon-button id="previousGranularity"
-        iron-icon="read-anything:previous">
+        iron-icon="read-anything:previous"
+        on-click="onPreviousGranularityClick_">
       </cr-icon-button>
       <cr-icon-button id="nextGranularity"
-        iron-icon="read-anything:next">
+        iron-icon="read-anything:next"
+        on-click="onNextGranularityClick_">
       </cr-icon-button>
     </span>
     <cr-icon-button
