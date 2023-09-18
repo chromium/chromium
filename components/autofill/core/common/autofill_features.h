@@ -198,8 +198,6 @@ BASE_DECLARE_FEATURE(kAutofillStructuredFieldsDisableAddressLines);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillShowAutocompleteDeleteButton);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillShowManualFallbackInContextMenu);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillGranularFillingAvailable);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTestFormWithDevtools);

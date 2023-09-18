@@ -592,13 +592,6 @@ BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,
              "AutofillShowAutocompleteDeleteButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether Manual fallbacks would be shown in the context menu for
-// filling. Used only in Desktop.
-// TODO(crbug.com/1326895): Clean up when launched.
-BASE_FEATURE(kAutofillShowManualFallbackInContextMenu,
-             "AutofillShowManualFallbackInContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether granular filling will be available in the autofill popup.
 // TODO(crbug.com/1459990): Clean up when launched.
 BASE_FEATURE(kAutofillGranularFillingAvailable,
