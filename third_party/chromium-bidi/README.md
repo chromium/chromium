@@ -402,17 +402,28 @@ We use [release-please](https://github.com/googleapis/release-please) to automat
 
 #### Roll into Chromium
 
-> Assuming that you already have a Chromium set-up locally, and knowledge on how to submit changes to the repo.
-> Else submit an issue for a project maintainer to do.
+This section assumes you already have a Chromium set-up locally,
+and knowledge on [how to submit changes to the repo](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/contributing.md).
+Otherwise submit an issue for a project maintainer.
 
-1. Create a new branch.
-2. Navigate to `third_party/bidimapper/`.
-3. Then run the following commands:
+1. Create a new branch in chromium `src/`.
+2. Update the mapper version:
 
-```bash
-./pull.sh
-./build.sh
+```shell
+third_party/bidimapper/pull.sh
+third_party/bidimapper/build.sh
 ```
 
-4. Submit a CL with bug `chromedriver:4226`
-5. Add appropriate reviewers or comment the CL link on the PR
+3. Submit a CL with bug `chromedriver:4226`.
+4. [Regenerate WPT expectations metadata](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests_wptrunner.md#updating-expectations):
+
+4.1. Trigger a build and test run:
+
+```shell
+third_party/blink/tools/blink_tool.py update-metadata --build="linux-blink-rel"
+```
+
+4.2. Once the test completes on the builder, rerun that command to update the metadata.
+Commit the changes (if any), and upload the new patch to the CL.
+
+5. Add appropriate reviewers or comment the CL link on the PR.
