@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
-#define IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
+#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
+#define IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
 
 #import "base/no_destructor.h"
 #import "base/observer_list.h"
@@ -51,4 +51,4 @@ class WebSelectionJavaScriptFeature : public web::JavaScriptFeature {
   base::ObserverList<WebSelectionJavaScriptFeatureObserver, true> observers_;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
+#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_

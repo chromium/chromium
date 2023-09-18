@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_selection/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"

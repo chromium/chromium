@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_TAB_HELPER_H_
 
 #import "base/timer/timer.h"
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature_observer.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature_observer.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -67,4 +67,4 @@ class WebSelectionTabHelper
   base::WeakPtrFactory<WebSelectionTabHelper> weak_ptr_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_TAB_HELPER_H_

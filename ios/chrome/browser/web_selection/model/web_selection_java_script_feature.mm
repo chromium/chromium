@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 
 #import "base/no_destructor.h"
 #import "base/values.h"
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature_observer.h"
-#import "ios/chrome/browser/web_selection/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature_observer.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"

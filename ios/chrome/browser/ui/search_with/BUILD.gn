@@ -17,7 +17,7 @@ source_set("search_with") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/browser_container:edit_menu_utils",
-    "//ios/chrome/browser/web_selection",
+    "//ios/chrome/browser/web_selection/model",
     "//ios/web/public",
   ]
 }

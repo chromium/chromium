@@ -4,7 +4,7 @@
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
-source_set("web_selection") {
+source_set("model") {
   sources = [
     "web_selection_java_script_feature.h",
     "web_selection_java_script_feature.mm",
@@ -30,7 +30,7 @@ source_set("unit_tests") {
     "web_selection_tab_helper_unittest.mm",
   ]
   deps = [
-    ":web_selection",
+    ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/features",
@@ -41,7 +41,7 @@ source_set("unit_tests") {
 }
 
 optimize_ts("web_selection_js") {
-  visibility = [ ":web_selection" ]
+  visibility = [ ":model" ]
 
   sources = [ "resources/web_selection.ts" ]
   deps = [

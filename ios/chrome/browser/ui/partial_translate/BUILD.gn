@@ -20,7 +20,7 @@ source_set("partial_translate") {
     "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
     "//ios/chrome/browser/ui/browser_container:edit_menu_utils",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/web_selection",
+    "//ios/chrome/browser/web_selection/model",
     "//ios/public/provider/chrome/browser/partial_translate:partial_translate_api",
     "//ios/web/public",
   ]
@@ -42,7 +42,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
     "//ios/chrome/browser/web:web_internal",
-    "//ios/chrome/browser/web_selection",
+    "//ios/chrome/browser/web_selection/model",
     "//ios/chrome/test/providers/partial_translate",
     "//ios/web/public/test",
     "//testing/gtest",

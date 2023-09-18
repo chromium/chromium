@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature_observer.h"
-#import "ios/chrome/browser/web_selection/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature_observer.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"

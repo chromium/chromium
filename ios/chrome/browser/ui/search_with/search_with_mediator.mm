@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_utils.h"
-#import "ios/chrome/browser/web_selection/web_selection_response.h"
-#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

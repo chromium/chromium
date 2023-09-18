@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_
-#define IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_
+#define IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_
 
 #include "base/observer_list.h"
 
@@ -20,4 +20,4 @@ class WebSelectionJavaScriptFeatureObserver : public base::CheckedObserver {
                                     WebSelectionResponse* response) {}
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_OBSERVER_H_

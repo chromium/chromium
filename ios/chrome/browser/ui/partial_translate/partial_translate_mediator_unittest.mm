@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"

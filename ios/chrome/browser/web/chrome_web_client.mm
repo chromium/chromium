@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
-#import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
