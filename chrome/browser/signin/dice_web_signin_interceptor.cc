@@ -62,6 +62,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -282,17 +283,16 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     return;
   }
 
-  if (account_info.IsValid()) {
-    OnExtendedAccountInfoUpdated(account_info);
-  } else {
-    on_account_info_update_timeout_.Reset(base::BindOnce(
-        &DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout,
-        base::Unretained(this)));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, on_account_info_update_timeout_.callback(),
-        base::Seconds(5));
-    account_info_update_observation_.Observe(identity_manager_.get());
-  }
+  // Start a timeout for the async operations we're kicking off.
+  interception_info_available_timeout_.Reset(
+      base::BindOnce(&DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout,
+                     base::Unretained(this)));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, interception_info_available_timeout_.callback(),
+      base::Seconds(5));
+
+  // Process the interception (maybe kicking off async fetches).
+  ProcessInterceptionOrWait(account_info, /*timed_out=*/false);
 }
 
 void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
@@ -324,8 +324,8 @@ void DiceWebSigninInterceptor::Shutdown() {
 
 void DiceWebSigninInterceptor::Reset() {
   web_contents_ = nullptr;
+  interception_info_available_timeout_.Cancel();
   account_info_update_observation_.Reset();
-  on_account_info_update_timeout_.Cancel();
   is_interception_in_progress_ = false;
   account_id_ = CoreAccountId();
   new_account_interception_ = false;
@@ -335,7 +335,6 @@ void DiceWebSigninInterceptor::Reset() {
   interception_start_time_ = base::TimeTicks();
   was_interception_ui_displayed_ = false;
   interception_bubble_handle_.reset();
-  on_intercepted_account_level_policy_value_timeout_.Cancel();
   account_level_signin_restriction_policy_fetcher_.reset();
   intercepted_account_profile_separation_policies_.reset();
 }
@@ -360,7 +359,7 @@ DiceWebSigninInterceptor::ShouldShowProfileSwitchBubble(
 
 bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(intercepted_account_info.IsValid());
+  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
   CoreAccountInfo primary_core_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   // In case of re-auth, do not show the enterprise separation dialog if the
@@ -387,7 +386,7 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(intercepted_account_info.IsValid());
+  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
 
   if (!base::FeatureList::IsEnabled(
           kShowEnterpriseDialogForAllManagedAccountsSignin)) {
@@ -412,7 +411,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(intercepted_account_info.IsValid());
+  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
   // Check if the intercepted account or the primary account is managed.
   CoreAccountInfo primary_core_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -432,7 +431,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
 
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(intercepted_account_info.IsValid());
+  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
   if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u)
     return false;
   // Check if the account has the same name as another account in the profile.
@@ -459,10 +458,78 @@ void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
   interception_type_ = bubble_parameters.interception_type;
 }
 
+void DiceWebSigninInterceptor::EnsureObservingExtendedAccountInfo() {
+  // Start an observation if one isn't already in progress.
+  if (!account_info_update_observation_.IsObserving()) {
+    account_info_update_observation_.Observe(identity_manager_.get());
+  }
+}
+
+void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
+    const AccountInfo& info,
+    bool timed_out) {
+  DCHECK_EQ(info.account_id, account_id_);
+
+  if (!IsRequiredExtendedAccountInfoAvailable(info)) {
+    // We can't process the interception with the information currently
+    // available.
+    //
+    // If this is a timeout we abort the interception, otherwise we wait for
+    // the remaining information to be fetched asynchronously.
+    if (timed_out) {
+      RecordSigninInterceptionHeuristicOutcome(
+          SigninInterceptionHeuristicOutcome::kAbortAccountInfoTimeout);
+      Reset();
+      return;
+    }
+    EnsureObservingExtendedAccountInfo();
+    return;
+  }
+
+  if (timed_out) {
+    // We've timed out waiting for some optional information - process the
+    // interception with what we have.
+    OnInterceptionReadyToBeProcessed(info);
+    return;
+  }
+
+  bool have_all_extended_account_info =
+      IsFullExtendedAccountInfoAvailable(info);
+  bool have_all_enterprise_info =
+      EnterpriseSeparationMaybeRequired(
+          info.email, new_account_interception_,
+          intercepted_account_profile_separation_policies_)
+          .has_value();
+
+  if (!have_all_extended_account_info) {
+    // We're need more extended account info - ensure we're waiting on that.
+    EnsureObservingExtendedAccountInfo();
+  } else {
+    account_info_update_observation_.Reset();
+  }
+
+  if (!have_all_enterprise_info) {
+    // Fetch the ManagedAccountsSigninRestriction policy value for the
+    // intercepted account with a timeout.
+    EnsureAccountLevelSigninRestrictionFetchInProgress(
+        info, base::BindOnce(
+                  &DiceWebSigninInterceptor::
+                      OnAccountLevelManagedAccountsSigninRestrictionReceived,
+                  base::Unretained(this), info));
+  }
+
+  if (have_all_extended_account_info && have_all_enterprise_info) {
+    // We have all the information we need - process the interception.
+    interception_info_available_timeout_.Cancel();
+    OnInterceptionReadyToBeProcessed(info);
+    return;
+  }
+}
+
 void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     const AccountInfo& info) {
   DCHECK_EQ(info.account_id, account_id_);
-  DCHECK(info.IsValid());
+  DCHECK(IsRequiredExtendedAccountInfoAvailable(info));
 
   absl::optional<WebSigninInterceptor::SigninInterceptionType>
       interception_type;
@@ -606,35 +673,22 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
 void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id != account_id_)
-    return;
-  if (!info.IsValid())
-    return;
-
-  account_info_update_observation_.Reset();
-  on_account_info_update_timeout_.Cancel();
-
-  // Fetch the ManagedAccountsSigninRestriction policy value for the intercepted
-  // account with a timeout.
-  if (!EnterpriseSeparationMaybeRequired(
-           info.email, new_account_interception_,
-           intercepted_account_profile_separation_policies_)
-           .has_value()) {
-    FetchAccountLevelSigninRestrictionForInterceptedAccount(
-        info, base::BindOnce(
-                  &DiceWebSigninInterceptor::
-                      OnAccountLevelManagedAccountsSigninRestrictionReceived,
-                  base::Unretained(this), /*timed_out=*/false, info));
+  if (info.account_id != account_id_) {
     return;
   }
-
-  OnInterceptionReadyToBeProcessed(info);
+  ProcessInterceptionOrWait(info, false);
 }
 
-void DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout() {
-  RecordSigninInterceptionHeuristicOutcome(
-      SigninInterceptionHeuristicOutcome::kAbortAccountInfoTimeout);
-  Reset();
+void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
+  account_info_update_observation_.Reset();
+  if (!intercepted_account_profile_separation_policies_.has_value()) {
+    intercepted_account_profile_separation_policies_ =
+        policy::ProfileSeparationPolicies();
+  }
+
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id_);
+  ProcessInterceptionOrWait(account_info, /*timed_out=*/true);
 }
 
 void DiceWebSigninInterceptor::OnProfileCreationChoice(
@@ -837,16 +891,24 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
 }
 
 void DiceWebSigninInterceptor::
-    FetchAccountLevelSigninRestrictionForInterceptedAccount(
+    EnsureAccountLevelSigninRestrictionFetchInProgress(
         const AccountInfo& account_info,
         base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
             callback) {
+  if (account_level_signin_restriction_policy_fetcher_ != nullptr) {
+    // A fetch is already in progress, don't start a new one.
+    DCHECK_EQ(account_info.account_id, account_id_);
+    return;
+  }
+
   if (intercepted_account_profile_separation_policies_for_testing_
           .has_value()) {
     std::move(callback).Run(
         intercepted_account_profile_separation_policies_for_testing_.value());
     return;
   }
+
+  DCHECK(!interception_info_available_timeout_.IsCancelled());
 
   account_level_signin_restriction_policy_fetcher_ =
       std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
@@ -856,34 +918,15 @@ void DiceWebSigninInterceptor::
   account_level_signin_restriction_policy_fetcher_
       ->GetManagedAccountsSigninRestriction(
           identity_manager_, account_info.account_id, std::move(callback));
-
-  on_intercepted_account_level_policy_value_timeout_.Reset(
-      base::BindOnce(&DiceWebSigninInterceptor::
-                         OnAccountLevelManagedAccountsSigninRestrictionReceived,
-                     base::Unretained(this), /*timed_out=*/true, account_info,
-                     policy::ProfileSeparationPolicies()));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, on_intercepted_account_level_policy_value_timeout_.callback(),
-      base::Seconds(5));
 }
 
 void DiceWebSigninInterceptor::
     OnAccountLevelManagedAccountsSigninRestrictionReceived(
-        bool timed_out,
         const AccountInfo& account_info,
         const policy::ProfileSeparationPolicies& profile_separation_policies) {
-  if (timed_out) {
-    DCHECK(profile_separation_policies.Empty())
-        << "There should be no signin restriction at the account level in case "
-           "of a timeout";
-    intercepted_account_profile_separation_policies_ =
-        policy::ProfileSeparationPolicies();
-  } else {
-    on_intercepted_account_level_policy_value_timeout_.Cancel();
-    intercepted_account_profile_separation_policies_ =
-        profile_separation_policies;
-  }
-  OnInterceptionReadyToBeProcessed(account_info);
+  intercepted_account_profile_separation_policies_ =
+      profile_separation_policies;
+  ProcessInterceptionOrWait(account_info, /*timed_out=*/false);
 }
 
 absl::optional<bool>
@@ -914,8 +957,9 @@ DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
       identity_manager_->FindExtendedAccountInfoByEmailAddress(email);
   // If the account info is not found, we need to wait for the info to be
   // available.
-  if (!intercepted_account_info.IsValid())
+  if (!IsRequiredExtendedAccountInfoAvailable(intercepted_account_info)) {
     return absl::nullopt;
+  }
   // If the intercepted account is not managed, no interception required.
   if (!intercepted_account_info.IsManaged())
     return false;
@@ -966,4 +1010,22 @@ void DiceWebSigninInterceptor::RecordSigninInterceptionHeuristicOutcome(
     base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
                             base::TimeTicks::Now() - interception_start_time_);
   }
+}
+
+bool DiceWebSigninInterceptor::IsRequiredExtendedAccountInfoAvailable(
+    const AccountInfo& account_info) const {
+  return account_info.IsValid();
+}
+
+bool DiceWebSigninInterceptor::IsFullExtendedAccountInfoAvailable(
+    const AccountInfo& account_info) const {
+  if (!IsRequiredExtendedAccountInfoAvailable(account_info)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomWebSignInInterceptForSupervisedUsers)) {
+    return account_info.capabilities.is_subject_to_parental_controls() !=
+           signin::Tribool::kUnknown;
+  }
+  return true;
 }

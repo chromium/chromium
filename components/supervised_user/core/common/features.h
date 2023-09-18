@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace supervised_user {
 
@@ -37,6 +38,16 @@ BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);
 
 // Instead of manually implementing the process, use the proto_fetcher.cc's one.
 BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);
+
+// Enable different web sign in interception behaviour for supervised users:
+//
+// 1. Supervised user signs in to existing signed out Profile: show modal
+//    explaining that supervision features will apply.
+// 2. Supervised user signs in as secondary account in existing signed in
+//    Profile
+//
+// Only affects Desktop platforms.
+BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.

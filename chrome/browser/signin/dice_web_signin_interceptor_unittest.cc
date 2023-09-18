@@ -33,8 +33,10 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,6 +113,11 @@ void MakeValidAccountInfo(
   info->locale = "en";
   info->picture_url = "https://example.com";
   DCHECK(info->IsValid());
+}
+
+void MakeValidAccountCapabilities(AccountInfo* info) {
+  AccountCapabilitiesTestMutator mutator(&info->capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
 }
 
 std::string ParamToTestSuffixForInterceptionAndSyncPromo(
@@ -1410,4 +1417,169 @@ TEST_F(DiceWebSigninInterceptorTest, MultiUserInterception) {
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kInterceptMultiUser, 1);
+}
+
+TEST_F(
+    DiceWebSigninInterceptorTest,
+    AccountInfoAndCapabilitiesAlreadyAvailable_CustomInterceptForSupervisedUser) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  MakeValidAccountCapabilities(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Account info is already available, interception happens immediately.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
+      primary_account_info, SkColor(),
+      /*show_guest_option=*/false, /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  MaybeIntercept(account_info.account_id);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptEnterprise, 1);
+}
+
+TEST_F(
+    DiceWebSigninInterceptorTest,
+    AccountInfoAlreadyAvailableWaitForCapabilities_CustomInterceptForSupervisedUser) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email,
+                                         /*entry=*/nullptr)
+                   .has_value());
+  MaybeIntercept(account_info.account_id);
+  // Delegate was not called yet.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  // Account capabilities become available, interception happens.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
+      primary_account_info, SkColor(),
+      /*show_guest_option=*/false, /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  MakeValidAccountCapabilities(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+}
+
+TEST_F(
+    DiceWebSigninInterceptorTest,
+    AccountCapabilitiesAlreadyAvailableWaitForInfo_CustomInterceptForSupervisedUser) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountCapabilities(&account_info);
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email,
+                                         /*entry=*/nullptr)
+                   .has_value());
+  MaybeIntercept(account_info.account_id);
+  // Delegate was not called yet.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  // Account info becomes available, interception happens.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
+      primary_account_info, SkColor(),
+      /*show_guest_option=*/false, /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+}
+
+TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoTimeout) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email,
+                                         /*entry=*/nullptr)
+                   .has_value());
+  MaybeIntercept(account_info.account_id);
+  // Delegate was not called yet.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  // No interception happens, as we time out without the required info.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  task_environment()->FastForwardBy(base::Seconds(5));
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       WaitForAccountCapabilitiesTimeout_CustomInterceptForSupervisedUser) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email,
+                                         /*entry=*/nullptr)
+                   .has_value());
+  MaybeIntercept(account_info.account_id);
+
+  // Delegate was not called yet.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  // Interception happens, as capabilities are not required.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
+      primary_account_info, SkColor(),
+      /*show_guest_option=*/false, /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  task_environment()->FastForwardBy(base::Seconds(5));
 }

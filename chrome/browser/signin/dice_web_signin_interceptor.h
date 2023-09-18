@@ -181,13 +181,20 @@ class DiceWebSigninInterceptor : public KeyedService,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
+  // Ensure that we are observing changes in extended account info. Idempotent.
+  void EnsureObservingExtendedAccountInfo();
+
+  // Can be called at any time, and will either process the interception or
+  // register the required observers and wait for async operations to complete.
+  void ProcessInterceptionOrWait(const AccountInfo& info, bool timed_out);
+
   void OnInterceptionReadyToBeProcessed(const AccountInfo& info);
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
-  // Called when the extended account info was not updated after a timeout.
-  void OnExtendedAccountInfoFetchTimeout();
+  // Called when one or more of the async info fetches times out.
+  void OnInterceptionInfoFetchTimeout();
 
   // Called after the user chose whether a new profile would be created.
   void OnProfileCreationChoice(const AccountInfo& account_info,
@@ -234,7 +241,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // ManagedAccountsSigninRestriction policy for 'account_info' and runs
   // `callback` with the result. This is a network call that has a 5 seconds
   // timeout.
-  void FetchAccountLevelSigninRestrictionForInterceptedAccount(
+  void EnsureAccountLevelSigninRestrictionFetchInProgress(
       const AccountInfo& account_info,
       base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
           callback);
@@ -242,7 +249,6 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Called when the the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction is received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
-      bool timed_out,
       const AccountInfo& account_info,
       const policy::ProfileSeparationPolicies& profile_separation_policies);
 
@@ -260,6 +266,21 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Records the heuristic outcome and latency metrics.
   void RecordSigninInterceptionHeuristicOutcome(
       SigninInterceptionHeuristicOutcome outcome) const;
+
+  // Returns true if we have the minimum extended account information needed to
+  // make a best-effort intercept heuristic decision. If we fail to retrieve
+  // this information we will cancel the interception completely.
+  // Returns false otherwise.
+  bool IsRequiredExtendedAccountInfoAvailable(
+      const AccountInfo& account_info) const;
+
+  // Returns true if we have all the extended account information which might
+  // factor in to the intercept heuristic. If we don't have 'Full' information,
+  // but do have the 'Required' information above, we will make a best-effort
+  // decision based on sensible defaults.
+  // Returns false otherwise.
+  bool IsFullExtendedAccountInfoAvailable(
+      const AccountInfo& account_info) const;
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
@@ -279,9 +300,11 @@ class DiceWebSigninInterceptor : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};
-  // Timeout for the fetch of the extended account info. The signin interception
-  // is cancelled if the account info cannot be fetched quickly.
-  base::CancelableOnceCallback<void()> on_account_info_update_timeout_;
+
+  // Timeout for waiting for full information to be available (see
+  // `ProcessInterceptionOrWait()`).
+  base::CancelableOnceCallback<void()> interception_info_available_timeout_;
+
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
   // Used to retain the interception UI bubble until profile creation completes.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -290,12 +313,6 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Used for metrics.
   base::TimeTicks interception_start_time_;
   bool was_interception_ui_displayed_ = false;
-
-  // Timeout for the fetch of cloud user level policy value of
-  // ManagedAccountsSigninRestriction. The signin interception continue with an
-  // empty value for the policy if we cannot get the value.
-  base::CancelableOnceCallback<void()>
-      on_intercepted_account_level_policy_value_timeout_;
 
   // Used to fetch the cloud user level policy value of
   // ManagedAccountsSigninRestriction. This can only fetch one policy value for
