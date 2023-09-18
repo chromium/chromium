@@ -5829,7 +5829,8 @@ class EventRewriterSixPackKeysTest : public EventRewriterTest {
     EventRewriterTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
-         features::kAltClickAndSixPackCustomization},
+         features::kAltClickAndSixPackCustomization,
+         ::features::kDeprecateAltBasedSixPack},
         /*disabled_features=*/{});
   }
 };
@@ -5874,6 +5875,23 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysSearchVariants) {
        {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_COMMAND_DOWN,
         ui::DomKey::ARROW_RIGHT},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+      // Search+Shift+Down -> Shift+Next (aka PageDown)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_SHIFT_DOWN,
+        ui::DomKey::PAGE_DOWN}},
+      // Search+Ctrl+Up -> Ctrl+Prior (aka PageUp)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN, ui::DomKey::ARROW_UP},
+       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_CONTROL_DOWN,
+        ui::DomKey::PAGE_UP}},
+      // Search+Alt+Left -> Alt+Home
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_LEFT},
+       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_ALT_DOWN, ui::DomKey::HOME}},
   });
 }
 
@@ -5923,6 +5941,18 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysAltVariants) {
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+      // Ctrl+Alt+Shift+Up -> Shift+Home
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_SHIFT_DOWN, ui::DomKey::HOME}},
+      // Ctrl+Alt+Search+Down -> Search+End
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_END, ui::DomCode::END, ui::EF_COMMAND_DOWN, ui::DomKey::END}},
   });
 }
 

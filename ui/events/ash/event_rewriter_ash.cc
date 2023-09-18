@@ -840,7 +840,7 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
        {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
 
   for (const auto& map : kMergedSixPackRemappings) {
-    if (!MatchKeyboardRemapping(incoming, map.condition, state)) {
+    if (!MatchKeyboardRemapping(incoming, map.condition)) {
       continue;
     }
 
@@ -849,7 +849,7 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
     if (ShouldBlockSixPackEventRewrite(delegate, modifier_flag,
                                        map.condition.flags, map.result.key_code,
                                        device_id)) {
-      break;
+      continue;
     }
 
     state->flags = (incoming.flags & ~map.condition.flags);
