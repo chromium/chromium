@@ -22,7 +22,7 @@ BASE_FEATURE(kWebViewAppsPackageNamesServerSideAllowlist,
 // Enable brotli compression support in WebView.
 BASE_FEATURE(kWebViewBrotliSupport,
              "WebViewBrotliSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Check layer_tree_frame_sink_id when return resources to compositor.
 BASE_FEATURE(kWebViewCheckReturnResources,
