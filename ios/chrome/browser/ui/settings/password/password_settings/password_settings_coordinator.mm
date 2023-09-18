@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/i18n/message_formatter.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -20,6 +23,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -41,6 +46,20 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// The user action for when the bulk move passwords to account confirmation
+// dialog's cancel button is clicked.
+constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogCancelled =
+    "Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Cancelled";
+
+// The user action for when the bulk move passwords to account confirmation
+// dialog's accept button is clicked.
+constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
+    "Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Accepted";
+
+}  // namespace
 
 // Methods to update state in response to actions taken in the Export
 // ActivityViewController.
@@ -177,7 +196,7 @@
 
 - (void)stop {
   // If the parent coordinator is stopping `self` while the UI is still being
-  // presented, dismiss without animation. Dismissals due to user actions(e.g,
+  // presented, dismiss without animation. Dismissals due to user actions (e.g,
   // swipe or tap on Done) are animated.
   if (self.baseViewController.presentedViewController ==
       self.settingsNavigationController) {
@@ -351,7 +370,9 @@
           l10n_util::GetNSString(
               IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_CANCEL)
                 style:UIAlertActionStyleCancel
-              handler:^(UIAlertAction* action){
+              handler:^(UIAlertAction* action) {
+                base::RecordAction(base::UserMetricsAction(
+                    kBulkMovePasswordsToAccountConfirmationDialogCancelled));
               }];
   [movePasswordsConfirmation addAction:cancelAction];
 
@@ -363,6 +384,8 @@
               IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_BUTTON)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
+                base::RecordAction(base::UserMetricsAction(
+                    kBulkMovePasswordsToAccountConfirmationDialogAccepted));
                 PasswordSettingsCoordinator* strongSelf = weakSelf;
                 if (!strongSelf) {
                   return;
@@ -392,6 +415,21 @@
       showSetPasscodeDialogWithContent:
           l10n_util::GetNSString(
               IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)];
+}
+
+- (void)showMovedToAccountSnackbarWithPasswordCount:(int)count
+                                          userEmail:(std::string)email {
+  std::u16string pattern = l10n_util::GetStringUTF16(
+      IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SNACKBAR_MESSAGE);
+  std::u16string result = base::i18n::MessageFormatter::FormatWithNamedArgs(
+      pattern, "COUNT", count, "EMAIL", base::UTF8ToUTF16(email));
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  [self.handlerForSnackbarCommands
+      showSnackbarWithMessage:base::SysUTF16ToNSString(result)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:nil];
 }
 
 #pragma mark - PasswordExportHandler
@@ -515,8 +553,8 @@
 }
 
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED();
-  return nil;
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            SnackbarCommands);
 }
 
 #pragma mark - Private

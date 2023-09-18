@@ -18723,6 +18723,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.PasswordsSettings.BulkSavePasswordsToAccountButtonClicked">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    Reported when the user clicks on the entrypoint button of the &quot;save
+    passwords in account&quot; section. iOS only.
+  </description>
+</action>
+
+<action
+    name="Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Accepted">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    Reported when the user accepts the confirmation dialog to move their local
+    passwords to their account. iOS only.
+  </description>
+</action>
+
+<action
+    name="Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Cancelled">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    Reported when the user denies the confirmation dialog to move their local
+    passwords to their account. iOS only.
+  </description>
+</action>
+
 <action name="Mobile.Signin.SnackbarUndoTapped">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.org</owner>

@@ -25,6 +25,11 @@
 // device.
 - (void)showSetPasscodeForMovePasswordsToAccountDialog;
 
+// Shows the snackbar confirming to the user that their local passwords have
+// been saved to their account.
+- (void)showMovedToAccountSnackbarWithPasswordCount:(int)count
+                                          userEmail:(std::string)email;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_BULK_MOVE_HANDLER_H_

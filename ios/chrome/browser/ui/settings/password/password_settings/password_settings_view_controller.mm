@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -856,6 +857,13 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     [self.tableViewModel
         insertSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount
                             atIndex:bulkMovePasswordsToAccountSectionIndex];
+
+    // Record histogram only if the section doesn't already exist but is about
+    // to be shown.
+    base::UmaHistogramEnumeration(
+        "PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered",
+        password_manager::metrics_util::MoveToAccountStoreTrigger::
+            kExplicitlyTriggeredForMultiplePasswordsInSettings);
   }
 
   // Add the description and button items to the bulk move passwords to account
