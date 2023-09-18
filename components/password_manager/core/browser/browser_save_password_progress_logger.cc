@@ -202,6 +202,10 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
   message +=
       GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
       FormSignatureToDebugString(autofill::CalculateFormSignature(form)) + "\n";
+  message += GetStringFromID(STRING_ALTERNATIVE_FORM_SIGNATURE) + ": " +
+             FormSignatureToDebugString(
+                 autofill::CalculateAlternativeFormSignature(form)) +
+             "\n";
   message += GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form.url) + "\n";
   message +=
       GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form.action) + "\n";
@@ -216,6 +220,10 @@ void BrowserSavePasswordProgressLogger::LogFormStructure(
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(form_structure.form_signature()) + "\n";
+  message +=
+      GetStringFromID(STRING_ALTERNATIVE_FORM_SIGNATURE) + ": " +
+      FormSignatureToDebugString(form_structure.alternative_form_signature()) +
+      "\n";
   message += GetStringFromID(STRING_ORIGIN) + ": " +
              ScrubURL(form_structure.source_url()) + "\n";
   message += GetStringFromID(STRING_ACTION) + ": " +

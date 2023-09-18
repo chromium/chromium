@@ -101,6 +101,8 @@ const size_t kMaximumTextSizeForAutocomplete = 1000;
 
 // Names of HTML attributes to show form and field signatures for debugging.
 const char kDebugAttributeForFormSignature[] = "form_signature";
+const char kDebugAttributeForAlternativeFormSignature[] =
+    "alternative_form_signature";
 const char kDebugAttributeForFieldSignature[] = "field_signature";
 const char kDebugAttributeForParserAnnotations[] = "pm_parser_annotation";
 const char kDebugAttributeForVisibility[] = "visibility_annotation";
@@ -266,6 +268,12 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
 std::string GetFormSignatureAsString(const FormData& form_data) {
   return base::NumberToString(CalculateFormSignature(form_data).value());
 }
+// Similar to `GetFormSignatureAsString` but returns alternative form signature
+// as a string.
+std::string GetAlternativeFormSignatureAsString(const FormData& form_data) {
+  return base::NumberToString(
+      CalculateAlternativeFormSignature(form_data).value());
+}
 
 // Sets the specified attribute of |target| to the given value. This must not
 // happen while ScriptForbiddenScope is active (e.g. during
@@ -295,7 +303,8 @@ void SetAttributeAsync(blink::WebElement target,
 // as HTML attributes.
 void AnnotateFieldsWithSignatures(
     std::vector<blink::WebFormControlElement>& fields,
-    const std::string& form_signature) {
+    const std::string& form_signature,
+    const std::string& alternative_form_signature) {
   for (blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
@@ -304,6 +313,9 @@ void AnnotateFieldsWithSignatures(
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
                       form_signature);
+    SetAttributeAsync(control_element,
+                      kDebugAttributeForAlternativeFormSignature,
+                      alternative_form_signature);
     SetAttributeAsync(
         control_element, kDebugAttributeForVisibility,
         IsWebElementFocusableForAutofill(control_element) ? "true" : "false");
@@ -1245,15 +1257,21 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
   for (WebFormElement& form : forms) {
     std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
     std::string form_signature;
+    std::string alternative_form_signature;
     if (form_data) {
       // GetFormSignatureAsString() may require the FormData::url.
       form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
       form_signature = GetFormSignatureAsString(*form_data);
+      alternative_form_signature =
+          GetAlternativeFormSignatureAsString(*form_data);
       SetAttributeAsync(form, kDebugAttributeForFormSignature, form_signature);
+      SetAttributeAsync(form, kDebugAttributeForAlternativeFormSignature,
+                        alternative_form_signature);
     }
     std::vector<WebFormControlElement> form_fields =
         form_util::ExtractAutofillableElementsInForm(form);
-    AnnotateFieldsWithSignatures(form_fields, form_signature);
+    AnnotateFieldsWithSignatures(form_fields, form_signature,
+                                 alternative_form_signature);
   }
 
   std::vector<WebFormControlElement> unowned_elements =
@@ -1261,12 +1279,16 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
           render_frame()->GetWebFrame()->GetDocument());
   std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
   std::string form_signature;
+  std::string alternative_form_signature;
   if (form_data) {
     // GetFormSignatureAsString() may require the FormData::url.
     form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
     form_signature = GetFormSignatureAsString(*form_data);
+    alternative_form_signature =
+        GetAlternativeFormSignatureAsString(*form_data);
   }
-  AnnotateFieldsWithSignatures(unowned_elements, form_signature);
+  AnnotateFieldsWithSignatures(unowned_elements, form_signature,
+                               alternative_form_signature);
 }
 
 void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {

@@ -51,6 +51,10 @@ void SavePasswordProgressLogger::LogFormData(
              FormSignatureToDebugString(CalculateFormSignature(form_data)) +
              "\n";
   message +=
+      GetStringFromID(STRING_ALTERNATIVE_FORM_SIGNATURE) + ": " +
+      FormSignatureToDebugString(CalculateAlternativeFormSignature(form_data)) +
+      "\n";
+  message +=
       GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
   message +=
       GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form_data.action) + "\n";
@@ -326,6 +330,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "The new state of the UI";
     case SavePasswordProgressLogger::STRING_FORM_SIGNATURE:
       return "Signature of form";
+    case SavePasswordProgressLogger::STRING_ALTERNATIVE_FORM_SIGNATURE:
+      return "Alternative signature of form";
     case SavePasswordProgressLogger::STRING_FORM_FETCHER_STATE:
       return "FormFetcherImpl::state_";
     case SavePasswordProgressLogger::STRING_UNOWNED_INPUTS_VISIBLE:
