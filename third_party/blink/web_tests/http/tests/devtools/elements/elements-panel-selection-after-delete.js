@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that elements panel correctly updates selection on node removal.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -73,13 +75,13 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   function removeElementAsUser(element, callback) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
+    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
     element.remove();
   }
 
   function removeElementExternally(element, callback) {
     var node = element.node();
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', callback);
+    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateChildren', callback);
     node.removeNode();
   }
 

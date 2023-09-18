@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule works properly with user input.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -16,9 +18,9 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
 
   async function next() {
-    await Elements.StylesSidebarPane.instance().createNewRuleInViaInspectorStyleSheet();
+    await ElementsModule.StylesSidebarPane.StylesSidebarPane.instance().createNewRuleInViaInspectorStyleSheet();
     eventSender.keyDown('Tab');
-    await TestRunner.addSnifferPromise(Elements.StylePropertiesSection.prototype, 'editingSelectorCommittedForTest');
+    await TestRunner.addSnifferPromise(ElementsModule.StylePropertiesSection.StylePropertiesSection.prototype, 'editingSelectorCommittedForTest');
 
     TestRunner.addResult('Is editing? ' + UI.isEditing());
     await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);

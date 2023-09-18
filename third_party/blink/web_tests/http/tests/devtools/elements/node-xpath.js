@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests node xPath construction\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -29,8 +31,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function dumpNodeData(node, prefix) {
     var result = prefix + '\'' + node.nodeName() + '\':\'' + node.nodeValue() + '\' - \'' +
-        Elements.DOMPath.xPath(node, true) + '\' - \'' +
-        Elements.DOMPath.xPath(node, false) + '\'';
+        ElementsModule.DOMPath.xPath(node, true) + '\' - \'' +
+        ElementsModule.DOMPath.xPath(node, false) + '\'';
     TestRunner.addResult(result.replace(/\r?\n/g, '\\n'));
   }
 })();

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult('Tests that styles sidebar can be navigated with arrow keys.\n');
 
@@ -29,7 +31,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   await waitForStylesRebuild();
 
-  let ssp = Elements.ElementsPanel.instance().stylesWidget;
+  let ssp = ElementsModule.ElementsPanel.ElementsPanel.instance().stylesWidget;
 
   // start editing
   ssp.sectionBlocks[0].sections[0].element.focus();
@@ -81,7 +83,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function waitForStylesRebuild(node) {
     if (node && node.getAttribute("id") === 'foo')
       return;
-    return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, "nodeStylesUpdatedForTest").then(waitForStylesRebuild);
+    return TestRunner.addSnifferPromise(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, "nodeStylesUpdatedForTest").then(waitForStylesRebuild);
   }
 
 

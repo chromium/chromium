@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Test that devtools can inspect text element under shadow root.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -35,13 +37,13 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function step2() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
     TestRunner.evaluateInPage('click()');
   }
 
   function step3() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
     var selectedElement = ElementsTestRunner.firstElementsTreeOutline().selectedTreeElement;
     TestRunner.addResult('Node selected: ' + selectedElement.node().getAttribute('id'));
     TestRunner.completeTest();

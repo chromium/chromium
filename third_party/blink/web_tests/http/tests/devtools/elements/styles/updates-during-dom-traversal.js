@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that style updates are throttled during DOM traversal. Bug 77643.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -22,7 +24,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
   function selectCallback() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffUpdate, true);
+    TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffUpdate, true);
     var element = ElementsTestRunner.firstElementsTreeOutline().element;
     for (var i = 0; i < keydownCount; ++i)
       element.dispatchEvent(TestRunner.createKeyEvent('ArrowUp'));

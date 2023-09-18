@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests show that ssp isn't rebuild on every dom mutation\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -28,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
       function didSelectElement() {
         TestRunner.addSniffer(
-            Elements.StylesSidebarPane.prototype, 'update',
+            ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'update',
             TestRunner.addResult.bind(TestRunner, 'Requested StyleSidebarPane update'), true);
         next();
       }

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that classes pane widget shows correct suggestions.\n`);
 
@@ -21,7 +23,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     <div id="myDiv"></div>
   `);
 
-  var classesPane = new Elements.ClassesPaneWidget();
+  var classesPane = new ElementsModule.ClassesPaneWidget.ClassesPaneWidget();
   ElementsTestRunner.selectNodeWithId('myDiv', onNodeSelected);
 
   async function onNodeSelected() {

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`Tests that Styles sidebar DOM rebuilds are throttled during consecutive updates. Bug 78086.\n`);
@@ -20,7 +21,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
   function selectCallback() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffRebuild, true);
+    TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffRebuild, true);
     var stylesPane = UI.panels.elements.stylesWidget;
     for (var i = 0; i < UPDATE_COUNT; ++i)
       UI.context.setFlavor(SDK.DOMModel.DOMNode, stylesPane.node());

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
@@ -32,7 +33,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     },
 
     function firstReloadWithoutNodeInDOM(next) {
-      TestRunner.addSniffer(Elements.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
+      TestRunner.addSniffer(ElementsModule.ElementsPanel.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
       // Do a reload and pretend page's DOM doesn't have a node to restore.
       overridePushNodeForPath(node.path());
       TestRunner.reloadPage(function() {});
@@ -46,7 +47,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     function secondReloadWithNodeInDOM(next) {
       var pageReloaded = false;
       var nodeRestored = false;
-      TestRunner.addSniffer(Elements.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
+      TestRunner.addSniffer(ElementsModule.ElementsPanel.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
       TestRunner.reloadPage(onPageReloaded);
 
       function onPageReloaded() {

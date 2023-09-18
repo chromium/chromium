@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that distributed nodes and their updates are correctly shown in different shadow host display modes.\n`);
@@ -127,7 +129,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   function waitForModifiedNodesUpdate(title, next) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
+    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
 
     function callback() {
       expandAndDumpShadowHostNode('========= ' + title + ' ========', next);

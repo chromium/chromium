@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
@@ -25,7 +26,7 @@ import * as Common from 'devtools/core/common/common.js';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      Elements.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
 
   var nodeChangesRemaining = 2;
   function selectedNodeChanged(event) {

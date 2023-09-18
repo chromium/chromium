@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that src and href element targets are rewritten properly.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -50,7 +52,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step2() {
     TestRunner.addResult('=========== Loaded 5 children ===========');
     dumpElementsTree();
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', step3);
+    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', step3);
     TestRunner.evaluateInPage('insertNode()');
   }
 
