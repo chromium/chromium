@@ -8,8 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
@@ -134,9 +136,17 @@ class FakePpdProvider : public chromeos::PpdProvider {
   base::flat_map<std::string, std::string> ppds_;
 };
 
-class AutomaticUsbPrinterConfigurerTest : public testing::Test {
+class AutomaticUsbPrinterConfigurerTest : public testing::TestWithParam<bool> {
  public:
-  AutomaticUsbPrinterConfigurerTest() = default;
+  AutomaticUsbPrinterConfigurerTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kIppFirstSetupForUsbPrinters}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kIppFirstSetupForUsbPrinters});
+    }
+  }
 
   AutomaticUsbPrinterConfigurerTest(const AutomaticUsbPrinterConfigurerTest&) =
       delete;
@@ -146,6 +156,7 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
   ~AutomaticUsbPrinterConfigurerTest() override = default;
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeCupsPrintersManager> fake_installation_manager_ =
       std::make_unique<FakeCupsPrintersManager>();
@@ -162,7 +173,7 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
           base::DoNothing());
 };
 
-TEST_F(AutomaticUsbPrinterConfigurerTest,
+TEST_P(AutomaticUsbPrinterConfigurerTest,
        AutoUsbPrinterInstalledAutomatically) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
@@ -184,7 +195,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest,
   EXPECT_FALSE(ppd_ref.autoconf);
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest,
+TEST_P(AutomaticUsbPrinterConfigurerTest,
        AutoIppUsbPrinterInstalledAutomatically) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
@@ -205,7 +216,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest,
   EXPECT_TRUE(ppd_ref.autoconf);
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
+TEST_P(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
       CreateUsbPrinter(printer_id, "make-and-model");
@@ -218,7 +229,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
   EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer.printer));
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest, UsbPrinterAddedToSet) {
+TEST_P(AutomaticUsbPrinterConfigurerTest, UsbPrinterAddedToSet) {
   const std::string automatic_printer_id = "auto_id";
   const PrinterDetector::DetectedPrinter automatic_printer =
       CreateIppUsbPrinter(automatic_printer_id, "");
@@ -267,7 +278,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, UsbPrinterAddedToSet) {
   EXPECT_EQ(0u, auto_usb_printer_configurer_->ConfiguredPrintersIds().size());
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewAutomatic) {
+TEST_P(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewAutomatic) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
       CreateIppUsbPrinter(printer_id, "");
@@ -279,7 +290,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewAutomatic) {
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationClosed) {
+TEST_P(AutomaticUsbPrinterConfigurerTest, NotificationClosed) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
       CreateIppUsbPrinter(printer_id, "");
@@ -297,7 +308,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationClosed) {
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
 }
 
-TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewDiscovered) {
+TEST_P(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewDiscovered) {
   const std::string printer_id = "id";
   const PrinterDetector::DetectedPrinter printer =
       CreateUsbPrinter(printer_id, "");
@@ -308,5 +319,36 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, NotificationOpenedForNewDiscovered) {
   EXPECT_TRUE(
       fake_notification_controller_->IsNotificationDisplayed(printer_id));
 }
+
+TEST_P(AutomaticUsbPrinterConfigurerTest, IppUsbPrinterWithPpdDependsOnFlag) {
+  const std::string printer_id = "id";
+  const PrinterDetector::DetectedPrinter printer =
+      CreateIppUsbPrinter(printer_id, "Make & Model");
+  fake_ppd_provider_->SetPpd("Make & Model", "make-and-model");
+
+  auto_usb_printer_configurer_->UpdateListOfConnectedPrinters({printer});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer.printer));
+  ASSERT_TRUE(auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
+      printer_id));
+
+  const chromeos::Printer::PpdReference& ppd_ref =
+      auto_usb_printer_configurer_->Printer(printer_id).ppd_reference();
+  EXPECT_TRUE(ppd_ref.user_supplied_ppd_url.empty());
+  if (GetParam()) {
+    // The printer should be set up as IPP Everywhere printer.
+    EXPECT_TRUE(ppd_ref.effective_make_and_model.empty());
+    EXPECT_TRUE(ppd_ref.autoconf);
+  } else {
+    // The printer should be set up via PPD file.
+    EXPECT_EQ(ppd_ref.effective_make_and_model, "make-and-model");
+    EXPECT_FALSE(ppd_ref.autoconf);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(IppFirstSetupForUsbPrinters,
+                         AutomaticUsbPrinterConfigurerTest,
+                         testing::Values(false, true));
 
 }  // namespace ash

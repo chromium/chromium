@@ -112,6 +112,7 @@ class AutomaticUsbPrinterConfigurer {
   base::flat_map<std::string, PrinterDetector::DetectedPrinter>
       connected_printers_;
   base::flat_set<std::string> pending_ppd_resolutions_;
+  base::flat_map<std::string, chromeos::Printer::PpdReference> ppd_references_;
   base::flat_set<std::string> configured_printers_;
   base::flat_set<std::string> unconfigured_printers_;
 
