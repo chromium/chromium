@@ -18,8 +18,12 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/user_info.h"
 #include "components/update_client/network.h"
@@ -184,7 +188,9 @@ class NetworkFetcherFactory::Impl {
       : proxy_configuration_(
             GetProxyConfiguration(policy_service_proxy_configuration)),
         session_handle_(winhttp::CreateSessionHandle(
-            L"Chrome Updater",
+            base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
+                          kUpdaterVersionUtf16})
+                .c_str(),
             proxy_configuration_->access_type())) {}
 
   std::unique_ptr<update_client::NetworkFetcher> Create() {

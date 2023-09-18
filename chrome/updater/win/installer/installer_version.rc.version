@@ -27,7 +27,7 @@ BEGIN
             VALUE "CompanyName", "@COMPANY_FULLNAME@"
             VALUE "FileDescription", "@PRODUCT_INSTALLER_FULLNAME@"
             VALUE "FileVersion", "@MAJOR@.@MINOR@.@BUILD@.@PATCH@"
-            VALUE "InternalName", "Chrome Updater"
+            VALUE "InternalName", "@PRODUCT_FULLNAME@"
             VALUE "LegalCopyright", "@COPYRIGHT@"
             VALUE "ProductName", "@PRODUCT_INSTALLER_FULLNAME@"
             VALUE "ProductVersion", "@MAJOR@.@MINOR@.@BUILD@.@PATCH@"
