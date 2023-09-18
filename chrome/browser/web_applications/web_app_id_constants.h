@@ -36,6 +36,10 @@ inline constexpr char kCroshAppId[] = "cgfnfgkafmcdkdgilmojlnaadileaach";
 //     "https://cursive.apps.chrome/"))
 inline constexpr char kCursiveAppId[] = "apignacaigpffemhdbhmnajajaccbckh";
 
+// TODO(b/300855385): Rename and document partner app.
+inline constexpr char kDefaultInstalledPartnerAppId[] =
+    "jbgdhngddinepfilfcmbcioimbgcolma";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 // GURL("chrome://diagnostics/"))
 inline constexpr char kDiagnosticsAppId[] = "keejpcfcpecjhmepmpcfgjemkmlicpam";
