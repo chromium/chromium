@@ -1001,7 +1001,8 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // instantiate the ThreadIsolatedAllocator before we spawn threads
-  if (process_type == switches::kRendererProcess) {
+  if (process_type == switches::kRendererProcess ||
+      process_type == switches::kZygoteProcess) {
     gin::GetThreadIsolationData().InitializeBeforeThreadCreation();
   }
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
