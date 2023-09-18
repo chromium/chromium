@@ -277,7 +277,7 @@ additional information beyond the value. This information includes:
   will be forced to have this value.
 
 While the `ManagedNetworkConfigurationHandler` class does provide an API to set
-the active policy this API should not be called outside of tests. The [`NetworkConfigurationUpdated`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/policy/networking/network_configuration_updater.h;drc=148f8a073813914fe0de89b7785d5750b3bb5520) class
+the active policy this API should not be called outside of tests. The [`NetworkConfigurationUpdater`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/policy/networking/network_configuration_updater.h;drc=148f8a073813914fe0de89b7785d5750b3bb5520) class
 is the class responsible for tracking device and user policies and applying them
 to the device. When there are policy changes this class will use
 [`ManagedNetworkConfigurationHandler::SetPolicy()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/managed_network_configuration_handler.h;l=145-154;drc=5e476d249f1b36460280115db38fdc37b1c37128)
