@@ -9,9 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -54,6 +52,9 @@ class SignalDatabaseImpl : public SignalDatabase {
                   base::Time start_time,
                   base::Time end_time,
                   SamplesCallback callback) override;
+  void GetAllSamples(base::Time start_time,
+                     base::Time end_time,
+                     EntriesCallback callback) override;
   void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
                      base::Time end_time,
@@ -69,6 +70,13 @@ class SignalDatabaseImpl : public SignalDatabase {
 
   void OnGetSamples(
       SamplesCallback callback,
+      base::Time start_time,
+      base::Time end_time,
+      bool success,
+      std::unique_ptr<std::map<std::string, proto::SignalData>> entries);
+
+  void OnGetAllSamples(
+      EntriesCallback callback,
       base::Time start_time,
       base::Time end_time,
       bool success,

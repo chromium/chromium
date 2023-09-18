@@ -37,6 +37,10 @@ class MockSignalDatabase : public SignalDatabase {
                SignalDatabase::SamplesCallback),
               (override));
   MOCK_METHOD(void,
+              GetAllSamples,
+              (base::Time, base::Time, SignalDatabase::EntriesCallback),
+              (override));
+  MOCK_METHOD(void,
               DeleteSamples,
               (proto::SignalType,
                uint64_t,

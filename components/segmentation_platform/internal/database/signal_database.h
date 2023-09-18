@@ -11,7 +11,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,6 +46,24 @@ class SignalDatabase {
                           base::Time start_time,
                           base::Time end_time,
                           SamplesCallback callback) = 0;
+
+  // Represents an entry in the signal database.
+  struct DbEntry {
+    proto::SignalType type;
+    // Hash of the histogram or user action.
+    uint64_t name_hash;
+    // Sample recorded time.
+    base::Time time;
+    // Sample value, always 0 for user actions.
+    int32_t value;
+  };
+  using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
+
+  // Called to fetch all entries from the signal database in the given time
+  // range.
+  virtual void GetAllSamples(base::Time start_time,
+                             base::Time end_time,
+                             EntriesCallback callback) = 0;
 
   // Called to delete database entries having end time earlier than |end_time|.
   virtual void DeleteSamples(proto::SignalType signal_type,

@@ -8,7 +8,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -33,13 +35,38 @@ void CheckVectorsEqual(const std::vector<SignalDatabase::Sample>& expected_list,
   EXPECT_EQ(equal_count, actual_list.size());
 }
 
+void CheckVectorsEqual(
+    const std::vector<SignalDatabase::DbEntry>& expected_list,
+    const std::vector<SignalDatabase::DbEntry>& actual_list) {
+  EXPECT_EQ(expected_list.size(), actual_list.size());
+  unsigned int equal_count = 0;
+  for (const auto& expected : expected_list) {
+    for (const auto& actual : actual_list) {
+      if (expected.name_hash == actual.name_hash &&
+          expected.type == actual.type && expected.value == actual.value &&
+          IsWithinOneSecond(expected.time, actual.time)) {
+        equal_count++;
+      }
+    }
+  }
+
+  EXPECT_EQ(equal_count, actual_list.size());
+}
+
 class SignalDatabaseImplTest : public testing::Test {
  public:
-  SignalDatabaseImplTest() = default;
+  SignalDatabaseImplTest() {
+    // To avoid going before epoc in processing.
+    test_clock_.Advance(base::Days(100));
+  }
   ~SignalDatabaseImplTest() override = default;
 
   void OnGetSamples(std::vector<SignalDatabase::Sample> samples) {
-    get_samples_result_ = samples;
+    get_samples_result_.swap(samples);
+  }
+
+  void OnAllGetSamples(std::vector<SignalDatabase::DbEntry> samples) {
+    get_all_samples_result_.swap(samples);
   }
 
  protected:
@@ -65,9 +92,49 @@ class SignalDatabaseImplTest : public testing::Test {
     signal_db_.reset();
   }
 
+  void ExpectGetSamples(
+      proto::SignalType type,
+      uint64_t name_hash,
+      base::Time start_time,
+      const std::vector<SignalDatabase::Sample>& expected_list) {
+    ExpectGetSamples(type, name_hash, start_time, test_clock_.Now(),
+                     expected_list);
+  }
+
+  void ExpectGetSamples(
+      proto::SignalType type,
+      uint64_t name_hash,
+      base::Time start_time,
+      base::Time end_time,
+      const std::vector<SignalDatabase::Sample>& expected_list) {
+    signal_db_->GetSamples(type, name_hash, start_time, end_time,
+                           base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                          base::Unretained(this)));
+    db_->LoadCallback(true);
+    CheckVectorsEqual(expected_list, get_samples_result_);
+  }
+
+  void ExpectGetAllSamples(
+      base::Time start_time,
+      const std::vector<SignalDatabase::DbEntry>& expected_list) {
+    ExpectGetAllSamples(start_time, test_clock_.Now(), expected_list);
+  }
+  void ExpectGetAllSamples(
+      base::Time start_time,
+      base::Time end_time,
+      const std::vector<SignalDatabase::DbEntry>& expected_list) {
+    signal_db_->GetAllSamples(
+        start_time, end_time,
+        base::BindOnce(&SignalDatabaseImplTest::OnAllGetSamples,
+                       base::Unretained(this)));
+    db_->LoadCallback(true);
+    CheckVectorsEqual(expected_list, get_all_samples_result_);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock test_clock_;
   std::vector<SignalDatabase::Sample> get_samples_result_;
+  std::vector<SignalDatabase::DbEntry> get_all_samples_result_;
   std::map<std::string, proto::SignalData> db_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> db_{nullptr};
   std::unique_ptr<SignalDatabaseImpl> signal_db_;
@@ -81,11 +148,8 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   proto::SignalType signal_type = proto::SignalType::HISTOGRAM_VALUE;
 
   // No entries to begin with.
-  signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({}, get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(), {});
+  ExpectGetAllSamples(now.UTCMidnight(), {});
 
   // Write a sample.
   int32_t value = 10;
@@ -95,11 +159,13 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   db_->UpdateCallback(true);
 
   // Read back the sample and verify.
-  signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp, value}}, get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(),
+                   {{timestamp, value}});
+  ExpectGetAllSamples(now.UTCMidnight(),
+                      {SignalDatabase::DbEntry{.type = signal_type,
+                                               .name_hash = name_hash,
+                                               .time = timestamp,
+                                               .value = value}});
   EXPECT_EQ(1u, db_entries_.size());
 
   // Write another sample right away. Both the values should be persisted
@@ -108,12 +174,17 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   signal_db_->WriteSample(signal_type, name_hash, value2, base::DoNothing());
   db_->UpdateCallback(true);
 
-  signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp, value}, {timestamp, value2}},
-                    get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(),
+                   {{timestamp, value}, {timestamp, value2}});
+  ExpectGetAllSamples(now.UTCMidnight(),
+                      {SignalDatabase::DbEntry{.type = signal_type,
+                                               .name_hash = name_hash,
+                                               .time = timestamp,
+                                               .value = value},
+                       SignalDatabase::DbEntry{.type = signal_type,
+                                               .name_hash = name_hash,
+                                               .time = timestamp,
+                                               .value = value2}});
   EXPECT_EQ(1u, db_entries_.size());
 }
 
@@ -138,25 +209,18 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndReadWithPrefixMismatch) {
   db_->UpdateCallback(true);
 
   // Read samples for signal 2 and verify.
-  signal_db_->GetSamples(signal_type_2, name_hash_2, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({}, get_samples_result_);
-
+  ExpectGetSamples(signal_type_2, name_hash_2, now.UTCMidnight(), {});
   // Read samples for signal 3 and verify.
-  signal_db_->GetSamples(signal_type_3, name_hash_3, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({}, get_samples_result_);
-
+  ExpectGetSamples(signal_type_3, name_hash_3, now.UTCMidnight(), {});
   // Read samples for signal 4 and verify.
-  signal_db_->GetSamples(signal_type_4, name_hash_4, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({}, get_samples_result_);
+  ExpectGetSamples(signal_type_4, name_hash_4, now.UTCMidnight(), {});
+  ExpectGetAllSamples(now.UTCMidnight(),
+                      {
+                          SignalDatabase::DbEntry{.type = signal_type_1,
+                                                  .name_hash = name_hash_1,
+                                                  .time = timestamp,
+                                                  .value = value},
+                      });
 }
 
 TEST_F(SignalDatabaseImplTest, DeleteSamples) {
@@ -243,13 +307,20 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   EXPECT_EQ(3u, db_entries_.size());
 
   // Verify samples for the day1. There should be two of them.
-  signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
-                         day2.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp_day1_1, 0}, {timestamp_day1_2, 0}},
-                    get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, day1.UTCMidnight(),
+                   day2.UTCMidnight(),
+                   {{timestamp_day1_1, 0}, {timestamp_day1_2, 0}});
+  ExpectGetAllSamples(day1.UTCMidnight(), day2.UTCMidnight(),
+                      {
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day1_1,
+                                                  .value = 0},
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day1_2,
+                                                  .value = 0},
+                      });
 
   // Compact samples for the day1 and verify. We will have two samples, but one
   // less entry.
@@ -264,13 +335,20 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                                    base::DoNothing());
   db_->LoadCallback(true);
 
-  signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
-                         day2.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp_day1_1, 0}, {timestamp_day1_2, 0}},
-                    get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, day1.UTCMidnight(),
+                   day2.UTCMidnight(),
+                   {{timestamp_day1_1, 0}, {timestamp_day1_2, 0}});
+  ExpectGetAllSamples(day1.UTCMidnight(), day2.UTCMidnight(),
+                      {
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day1_1,
+                                                  .value = 0},
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day1_2,
+                                                  .value = 0},
+                      });
 
   EXPECT_EQ(2u, db_entries_.size());
 
@@ -279,12 +357,15 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                                    base::DoNothing());
   db_->LoadCallback(true);
 
-  signal_db_->GetSamples(signal_type, name_hash, day2.UTCMidnight(),
-                         day3.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp_day2_1, 0}}, get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, day2.UTCMidnight(),
+                   day3.UTCMidnight(), {{timestamp_day2_1, 0}});
+  ExpectGetAllSamples(day2.UTCMidnight(), day3.UTCMidnight(),
+                      {
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day2_1,
+                                                  .value = 0},
+                      });
 
   EXPECT_EQ(2u, db_entries_.size());
 
@@ -297,23 +378,24 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                                    base::DoNothing());
   db_->LoadCallback(true);
 
-  signal_db_->GetSamples(signal_type, name_hash, day3.UTCMidnight(),
-                         day3.UTCMidnight() + base::Days(1),
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({}, get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, day3.UTCMidnight(),
+                   day3.UTCMidnight() + base::Days(1), {});
+  ExpectGetAllSamples(day3.UTCMidnight(), day3.UTCMidnight() + base::Days(1),
+                      {});
 
   EXPECT_EQ(2u, db_entries_.size());
 
   // Read a range of samples not aligned to midnight.
-  signal_db_->GetSamples(signal_type, name_hash,
-                         timestamp_day1_1 + base::Hours(1),
-                         timestamp_day2_1 - base::Hours(1),
-                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
-                                        base::Unretained(this)));
-  db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp_day1_2, 0}}, get_samples_result_);
+  ExpectGetSamples(signal_type, name_hash, timestamp_day1_1 + base::Hours(1),
+                   timestamp_day2_1 - base::Hours(1), {{timestamp_day1_2, 0}});
+  ExpectGetAllSamples(timestamp_day1_1 + base::Hours(1),
+                      timestamp_day2_1 - base::Hours(1),
+                      {
+                          SignalDatabase::DbEntry{.type = signal_type,
+                                                  .name_hash = name_hash,
+                                                  .time = timestamp_day1_2,
+                                                  .value = 0},
+                      });
 }
 
 }  // namespace segmentation_platform

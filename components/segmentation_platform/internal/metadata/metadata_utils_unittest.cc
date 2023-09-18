@@ -723,6 +723,20 @@ TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {
                 proto::SignalType::UNKNOWN_SIGNAL_TYPE));
 }
 
+TEST_F(MetadataUtilsTest, SignalKindToSignalType) {
+  EXPECT_EQ(
+      proto::SignalType::USER_ACTION,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::USER_ACTION));
+  EXPECT_EQ(
+      proto::SignalType::HISTOGRAM_ENUM,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::HISTOGRAM_ENUM));
+  EXPECT_EQ(
+      proto::SignalType::HISTOGRAM_VALUE,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::HISTOGRAM_VALUE));
+  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
+            metadata_utils::SignalKindToSignalType(SignalKey::Kind::UNKNOWN));
+}
+
 TEST_F(MetadataUtilsTest, CheckDiscreteMapping) {
   proto::SegmentationModelMetadata metadata;
   std::string segmentation_key = "some_key";

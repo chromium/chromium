@@ -364,6 +364,19 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
   }
 }
 
+proto::SignalType SignalKindToSignalType(SignalKey::Kind kind) {
+  switch (kind) {
+    case SignalKey::Kind::USER_ACTION:
+      return proto::SignalType::USER_ACTION;
+    case SignalKey::Kind::HISTOGRAM_ENUM:
+      return proto::SignalType::HISTOGRAM_ENUM;
+    case SignalKey::Kind::HISTOGRAM_VALUE:
+      return proto::SignalType::HISTOGRAM_VALUE;
+    case SignalKey::Kind::UNKNOWN:
+      return proto::SignalType::UNKNOWN_SIGNAL_TYPE;
+  }
+}
+
 float ConvertToDiscreteScore(const std::string& mapping_key,
                              float input_score,
                              const proto::SegmentationModelMetadata& metadata) {

@@ -116,6 +116,7 @@ base::TimeDelta ConvertToTimeDelta(proto::TimeUnit time_unit);
 
 // Conversion methods between SignalKey::Kind and proto::SignalType.
 SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);
+proto::SignalType SignalKindToSignalType(SignalKey::Kind kind);
 
 // Helper method to convert continuous to discrete score.
 float ConvertToDiscreteScore(const std::string& mapping_key,
