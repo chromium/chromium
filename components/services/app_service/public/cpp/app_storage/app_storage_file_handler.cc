@@ -34,9 +34,13 @@ AppStorageFileHandler::AppStorageFileHandler(const base::FilePath& base_path)
     : RefCountedDeleteOnSequence(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       file_path_(base_path.AppendASCII(kAppServiceDirName)
-                     .AppendASCII(kAppStorageFileName)) {}
+                     .AppendASCII(kAppStorageFileName)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 void AppStorageFileHandler::WriteToFile(std::vector<AppPtr> apps) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -60,6 +64,8 @@ void AppStorageFileHandler::WriteToFile(std::vector<AppPtr> apps) {
 }
 
 std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -87,7 +93,9 @@ std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
   return ConvertValueToApps(std::move(*app_info_value));
 }
 
-AppStorageFileHandler::~AppStorageFileHandler() = default;
+AppStorageFileHandler::~AppStorageFileHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 base::Value AppStorageFileHandler::ConvertAppsToValue(
     std::vector<AppPtr> apps) {

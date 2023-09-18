@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -77,6 +78,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
   std::vector<AppPtr> ConvertValueToApps(base::Value app_info_value);
 
   base::FilePath file_path_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace apps
