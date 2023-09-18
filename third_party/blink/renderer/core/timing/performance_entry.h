@@ -127,12 +127,11 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     if (entry_type == kInvalid) {
       return true;
     }
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        HashSet<PerformanceEntryType>, valid_timeline_entry_types,
-        ({kNavigation, kMark, kMeasure, kResource, kTaskAttribution, kPaint,
-          kFirstInput, kBackForwardCacheRestoration, kSoftNavigation,
-          kLongAnimationFrame, kVisibilityState}));
-    return valid_timeline_entry_types.Contains(entry_type);
+    constexpr PerformanceEntryTypeMask kTimelineEntryMask =
+        kNavigation | kMark | kMeasure | kResource | kTaskAttribution | kPaint |
+        kFirstInput | kBackForwardCacheRestoration | kSoftNavigation |
+        kLongAnimationFrame | kVisibilityState;
+    return (entry_type & kTimelineEntryMask) != 0;
   }
 
   static String GetNavigationId(ScriptState* script_state);
