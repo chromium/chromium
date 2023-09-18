@@ -32,6 +32,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   enum RegisterEventResult {
     kSuccess,
     kAppUiClosed,
+    kAppUiNotFocused,
   };
 
   // extensions::BrowserContextKeyedAPI:
@@ -84,9 +85,12 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService();
 
   void OnAppUiClosed(extensions::ExtensionId extension_id);
+  void OnAppUiFocusChanged(extensions::ExtensionId extension_id,
+                           bool is_focused);
 
   std::unique_ptr<AppUiObserver> CreateAppUiObserver(
-      extensions::ExtensionId extension_id);
+      extensions::ExtensionId extension_id,
+      bool focused_ui_required);
 
   base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
       app_ui_observers_;

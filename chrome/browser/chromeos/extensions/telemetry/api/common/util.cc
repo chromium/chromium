@@ -55,7 +55,8 @@ bool IsWebContentsSecureAppUi(const extensions::URLPatternSet& pattern_set,
 
 content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
     content::BrowserContext* context,
-    const extensions::Extension* extension) {
+    const extensions::Extension* extension,
+    bool focused_ui_required) {
   Profile* profile = Profile::FromBrowserContext(context);
   const auto& pattern_set =
       extensions::ExternallyConnectableInfo::Get(extension)->matches;
@@ -66,10 +67,27 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
         ash::shimless_rma::ExternalAppDialog::GetWebContents();
     if (contents && contents->GetBrowserContext() == context &&
         IsWebContentsSecureAppUi(pattern_set, contents)) {
+      // In shimless, ExternalAppDialog is always on the top so we can assume it
+      // is always focused.
       return contents;
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // A focused UI must be:
+  // 1. In a browser that is front-most;
+  // 2. In a tab that is active.
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (last_active_browser->profile() == profile) {
+    content::WebContents* contents =
+        last_active_browser->tab_strip_model()->GetActiveWebContents();
+    if (contents && IsWebContentsSecureAppUi(pattern_set, contents)) {
+      return contents;
+    }
+  }
+  if (focused_ui_required) {
+    return nullptr;
+  }
 
   for (auto* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() != profile) {

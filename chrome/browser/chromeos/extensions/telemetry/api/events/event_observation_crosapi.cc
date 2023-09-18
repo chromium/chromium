@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -32,8 +31,10 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
   ~DefaultEventDelegate() override = default;
 
   void OnEvent(const extensions::ExtensionId& extension_id,
+               EventRouter* event_router,
                crosapi::TelemetryEventInfoPtr info) override {
     std::unique_ptr<extensions::Event> event;
+    crosapi::TelemetryEventCategoryEnum category;
     switch (info->which()) {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kDefaultType: {
@@ -42,6 +43,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kAudioJackEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kAudioJack;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_AUDIO_JACK_EVENT,
             api::os_events::OnAudioJackEvent::kEventName,
@@ -54,6 +56,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kLidEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kLid;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_LID_EVENT,
             api::os_events::OnLidEvent::kEventName,
@@ -66,6 +69,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kUsbEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kUsb;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_USB_EVENT,
             api::os_events::OnUsbEvent::kEventName,
@@ -78,6 +82,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kExternalDisplayEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kExternalDisplay;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_EXTERNAL_DISPLAY_EVENT,
             api::os_events::OnExternalDisplayEvent::kEventName,
@@ -90,6 +95,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kSdCardEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kSdCard;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_SD_CARD_EVENT,
             api::os_events::OnSdCardEvent::kEventName,
@@ -102,6 +108,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kPowerEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kPower;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_POWER_EVENT,
             api::os_events::OnPowerEvent::kEventName,
@@ -114,6 +121,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kKeyboardDiagnosticEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT,
             api::os_events::OnKeyboardDiagnosticEvent::kEventName,
@@ -126,6 +134,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusGarageEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kStylusGarage;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_GARAGE_EVENT,
             api::os_events::OnStylusGarageEvent::kEventName,
@@ -138,6 +147,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadButtonEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kTouchpadButton;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_BUTTON_EVENT,
             api::os_events::OnTouchpadButtonEvent::kEventName,
@@ -150,6 +160,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadTouchEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kTouchpadTouch;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_TOUCH_EVENT,
             api::os_events::OnTouchpadTouchEvent::kEventName,
@@ -162,6 +173,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadConnectedEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_CONNECTED_EVENT,
             api::os_events::OnTouchpadConnectedEvent::kEventName,
@@ -174,6 +186,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchscreenTouchEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT,
             api::os_events::OnTouchscreenTouchEvent::kEventName,
@@ -186,6 +199,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchscreenConnectedEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT,
             api::os_events::OnTouchscreenConnectedEvent::kEventName,
@@ -198,6 +212,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusTouchEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kStylusTouch;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,
             api::os_events::OnStylusTouchEvent::kEventName,
@@ -210,6 +225,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusConnectedEventInfo: {
+        category = crosapi::TelemetryEventCategoryEnum::kStylusConnected;
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_CONNECTED_EVENT,
             api::os_events::OnStylusConnectedEvent::kEventName,
@@ -222,8 +238,10 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
     }
 
-    extensions::EventRouter::Get(browser_context_)
-        ->DispatchEventToExtension(extension_id, std::move(event));
+    if (event_router->IsExtensionAllowedForCategory(extension_id, category)) {
+      extensions::EventRouter::Get(browser_context_)
+          ->DispatchEventToExtension(extension_id, std::move(event));
+    }
   }
 
  private:
@@ -234,10 +252,12 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
 
 EventObservationCrosapi::EventObservationCrosapi(
     const extensions::ExtensionId& extension_id,
+    EventRouter* event_router,
     content::BrowserContext* context)
     : extension_id_(extension_id),
       receiver_(this),
       delegate_(std::make_unique<DefaultEventDelegate>(context)),
+      event_router_(event_router),
       browser_context_(context) {}
 
 EventObservationCrosapi::~EventObservationCrosapi() = default;
@@ -248,7 +268,7 @@ void EventObservationCrosapi::OnEvent(crosapi::TelemetryEventInfoPtr info) {
     return;
   }
 
-  delegate_->OnEvent(extension_id_, std::move(info));
+  delegate_->OnEvent(extension_id_, event_router_, std::move(info));
 }
 
 mojo::PendingRemote<crosapi::TelemetryEventObserver>

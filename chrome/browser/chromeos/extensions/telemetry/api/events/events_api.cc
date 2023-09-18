@@ -162,6 +162,9 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
     case EventManager::kAppUiClosed:
       Respond(Error("Companion app UI is not open."));
       break;
+    case EventManager::kAppUiNotFocused:
+      Respond(Error("Companion app UI is not focused."));
+      break;
   }
 }
 
