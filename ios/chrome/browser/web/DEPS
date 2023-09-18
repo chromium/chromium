@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/public",
   "+ios/chrome/browser/permissions/permissions_tab_helper.h",
   "+ios/chrome/browser/snapshots/snapshot_tab_helper.h",
-  "+ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h",
+  "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/feature_engagement/tracker_factory.h",
   "+ios/chrome/browser/lens/lens_browser_agent.h",
   "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SSL_CAPTIVE_PORTAL_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SSL_CAPTIVE_PORTAL_TAB_HELPER_H_
 
-#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {

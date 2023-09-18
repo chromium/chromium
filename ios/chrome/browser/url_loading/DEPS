@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/new_tab_page_util.h",
   "+ios/chrome/browser/prerender",
   "+ios/chrome/browser/web",
-  "+ios/chrome/browser/web_state_list",
+  "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/sessions",
 ]
 

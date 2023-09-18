@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "view_source_browser_agent.h",
+    "view_source_browser_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tab_insertion/model",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/navigation",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
+#import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"

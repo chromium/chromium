@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "web_state_list_metrics_browser_agent.h",
+    "web_state_list_metrics_browser_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/navigation_metrics",
+    "//components/profile_metrics",
+    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/sessions:restoration_agent",
+    "//ios/chrome/browser/sessions:restoration_observer",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/web_state_list:session_metrics",
+    "//ios/web/common:features",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

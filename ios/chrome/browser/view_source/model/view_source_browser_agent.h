@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_VIEW_SOURCE_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_VIEW_SOURCE_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_VIEW_SOURCE_MODEL_VIEW_SOURCE_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_VIEW_SOURCE_MODEL_VIEW_SOURCE_BROWSER_AGENT_H_
 
 #import <Foundation/Foundation.h>
 
@@ -53,4 +53,4 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
   base::WeakPtrFactory<ViewSourceBrowserAgent> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_VIEW_SOURCE_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_VIEW_SOURCE_MODEL_VIEW_SOURCE_BROWSER_AGENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"

@@ -1,0 +1,42 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "tab_insertion_browser_agent.h",
+    "tab_insertion_browser_agent.mm",
+  ]
+  deps = [
+    "//build:blink_buildflags",
+    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
+    "//ios/web/common:features",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ios/web/public/session",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_insertion_browser_agent_unittest.mm" ]
+  deps = [
+    ":model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
+    "//ios/web",
+    "//ios/web/public/navigation",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

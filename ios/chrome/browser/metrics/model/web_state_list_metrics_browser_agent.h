@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
 
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -70,4 +70,4 @@ class WebStateListMetricsBrowserAgent
   std::unique_ptr<AllWebStateObservationForwarder> web_state_forwarder_;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
