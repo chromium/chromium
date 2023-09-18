@@ -154,11 +154,12 @@ can_build_rust_unit_tests = toolchain_has_rust && !is_android
 #
 # One important consideration is whether the linker uses the same LLVM
 # version as `rustc` (i.e. if it can understand the LLVM-IR from the
-# compilation artifacts produced by `rustc`).  In LaCrOS builds this may not
-# be true - see b/299483903.
+# compilation artifacts produced by `rustc`).  In LaCrOS and ash builds this may
+# not be true - see b/299483903.
 #
 # TODO(https://crbug.com/1482525): Re-enable ThinLTO for Rust on LaCrOS
-toolchain_supports_rust_thin_lto = !is_chromeos_lacros
+# TODO(b/300937673): Re-enable ThinLTO for Rust on ash-chrome
+toolchain_supports_rust_thin_lto = !is_chromeos
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might
