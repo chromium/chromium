@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
@@ -90,6 +92,7 @@ class CardUnmaskPromptViewControllerTest
 
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
+    root_view_controller_ = [[UIViewController alloc] init];
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
@@ -102,6 +105,15 @@ class CardUnmaskPromptViewControllerTest
             card_unmask_prompt_controller_.get());
 
     CreateController();
+  }
+
+  void TearDown() override {
+    CardUnmaskPromptViewController* prompt_controller =
+        static_cast<CardUnmaskPromptViewController*>(controller());
+    // Delete C++ reference in view controller to prevent UAF error.
+    [prompt_controller disconnectFromBridge];
+
+    ChromeTableViewControllerTest::TearDown();
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -197,9 +209,6 @@ class CardUnmaskPromptViewControllerTest
   // Presents the controller in a ScopedKeyWindow.
   // Used for tests that require running animations.
   void PresentController() {
-    ScopedKeyWindow scoped_window_;
-    UIViewController* root_view_controller_ = [[UIViewController alloc] init];
-
     scoped_window_.Get().rootViewController = root_view_controller_;
 
     // Present the view controller.
@@ -281,18 +290,29 @@ class CardUnmaskPromptViewControllerTest
     // Footer shouldn't be in model.
     EXPECT_FALSE(FooterItem());
   }
+  // Validates that the first responder has the given accessibility identifier.
+  void CheckFirstResponderHasAccessibilityIdentifier(
+      NSString* accessibility_identifier) {
+    UIView* first_responder =
+        base::apple::ObjCCastStrict<UIView>(GetFirstResponder());
+
+    EXPECT_NSEQ(first_responder.accessibilityIdentifier,
+                accessibility_identifier);
+  }
 
   std::unique_ptr<NiceMock<MockCardUnmaskPromptViewBridge>>
       card_unmask_prompt_bridge_;
   std::unique_ptr<NiceMock<MockCardUnmaskPromptController>>
       card_unmask_prompt_controller_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  ScopedKeyWindow scoped_window_;
+  UIViewController* root_view_controller_;
 };
 
 }  // namespace
 
 // Validates that the CVC form is displayed as the initial state of the
-// controller.
+// controller when the card is not expired.
 TEST_F(CardUnmaskPromptViewControllerTest, CVCFormDisplayedAsInitialState) {
   CheckController();
   // Check expected number of sections and items.
@@ -312,6 +332,29 @@ TEST_F(CardUnmaskPromptViewControllerTest, CVCFormDisplayedAsInitialState) {
 
   // Confirm button should be disabled until valid input is entered.
   EXPECT_FALSE(ConfirmButton().enabled);
+
+  // Add controller to view hierarchy to verify CVC field is focused.
+  PresentController();
+  CheckFirstResponderHasAccessibilityIdentifier(@"CVC_textField");
+}
+
+// Validates that the Expiration Date form is displayed as the initial state of
+// the controller when the card is expired.
+TEST_F(CardUnmaskPromptViewControllerTest,
+       ExpirationDateFormDisplayedAsInitialState) {
+  // Recreate controller for the expiration date form state.
+  ResetController();
+
+  ON_CALL(*card_unmask_prompt_controller_, ShouldRequestExpirationDate)
+      .WillByDefault(Return(true));
+
+  CreateController();
+
+  CheckUpdateExpirationDateForm();
+
+  // Add controller to view hierarchy to verify CVC field is focused.
+  PresentController();
+  CheckFirstResponderHasAccessibilityIdentifier(@"CVC_textField");
 }
 
 // Validates that the tableViewModel is properly setup for displaying update
@@ -328,6 +371,11 @@ TEST_F(CardUnmaskPromptViewControllerTest,
   [prompt_controller showUpdateExpirationDateForm];
 
   CheckUpdateExpirationDateForm();
+
+  // Add controller to view hierarchy to verify Expiration Date field is
+  // focused.
+  PresentController();
+  CheckFirstResponderHasAccessibilityIdentifier(@"Expiration Date_textField");
 }
 
 // Validates the model is properly setup for displaying the expiration card link
