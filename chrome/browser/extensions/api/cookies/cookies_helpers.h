@@ -55,10 +55,11 @@ api::cookies::CookieStore CreateCookieStore(Profile* profile,
                                             base::Value::List tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
-// |url|.
+// |url| and |partition_key_collection|.
 void GetCookieListFromManager(
     network::mojom::CookieManager* manager,
     const GURL& url,
+    const net::CookiePartitionKeyCollection& partition_key_collection,
     network::mojom::CookieManager::GetCookieListCallback callback);
 
 // Dispatch a request to the CookieManager for all cookies.
@@ -80,7 +81,8 @@ void AppendMatchingCookiesFromCookieListToVector(
     const net::CookieList& all_cookies,
     api::cookies::GetAll::Params::Details* details,
     const Extension* extension,
-    std::vector<api::cookies::Cookie>* match_vector);
+    std::vector<api::cookies::Cookie>* match_vector,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection);
 
 // Same as above except takes a CookieAccessResultList (and ignores the access
 // results).
@@ -93,6 +95,38 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
 // Appends the IDs of all tabs belonging to the given browser to the
 // given list.
 void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids);
+
+// Checks if the partition_key provided, which may unknown user input,
+// can be used to deserialize into the net_partition_key.
+// Returns false and populates error_message string if deserialization
+// fails.
+bool ValidateCookieApiPartitionKey(
+    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key,
+    absl::optional<net::CookiePartitionKey>& net_partition_key,
+    std::string& error_message);
+
+// Returns empty collection if no partition_key.
+// Returns CookiePartitionKeyCollection::ContainsAll() if top_level_site has no
+// value. Returns CookiePartitionKeyCollection::FromOptional() if partition_key
+// and top_level_site are both present.
+net::CookiePartitionKeyCollection
+CookiePartitionKeyCollectionFromApiPartitionKey(
+    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key);
+
+// returns true if cookie_partition_key_collection::ContainsAll
+// calls CookieMatchesPartitionKeyInDetails if the collection is not empty
+bool CookieMatchesPartitionKeyCollection(
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
+    const net::CanonicalCookie& cookie);
+
+// Returns true if the top_level_site values match or the optional does not
+// contain a value.
+bool CookieMatchesPartitionKeyInDetails(
+    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key,
+    const net::CanonicalCookie& cookie);
 
 // A class representing the cookie filter parameters passed into
 // cookies.getAll().
@@ -111,6 +145,10 @@ class MatchFilter {
   // filter.
   bool MatchesCookie(const net::CanonicalCookie& cookie);
 
+  // Sets the value for cookie_partition_key_collection_
+  void SetCookiePartitionKeyCollection(
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection);
+
  private:
   // Returns true if the given cookie domain string matches the filter's
   // domain. Any cookie domain which is equal to or is a subdomain of the
@@ -122,6 +160,7 @@ class MatchFilter {
   bool MatchesDomain(const std::string& domain);
 
   raw_ptr<api::cookies::GetAll::Params::Details> details_;
+  net::CookiePartitionKeyCollection cookie_partition_key_collection_;
 };
 
 }  // namespace cookies_helpers

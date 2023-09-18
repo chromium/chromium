@@ -17,10 +17,11 @@ var TEST_ODD_DOMAIN = '.' + TEST_ODD_DOMAIN_HOST_ONLY;
 var TEST_ODD_PATH = '/hello = world';
 var TEST_ODD_URL = 'http://' + TEST_ODD_DOMAIN_HOST_ONLY + TEST_ODD_PATH + '/index.html';
 var TEST_UNPERMITTED_URL = 'http://illegal.' + TEST_DOMAIN + '/';
+var TEST_PARTITION_KEY = 'https://' + TEST_DOMAIN;
 
 var TEST_BASIC_COOKIE = {
   url: TEST_URL,
-  name: 'api_test_cookie',
+  name: 'api_test_basic_cookie',
   value: 'helloworld'
 };
 var TEST_DOMAIN_COOKIE = {
@@ -42,6 +43,62 @@ var TEST_BASIC_EXPIRED_COOKIE = {
   name: TEST_BASIC_COOKIE.name,
   value: TEST_BASIC_COOKIE.value,
   expirationDate: 0
+};
+
+var TEST_PARTITIONED_COOKIE = {
+  url: TEST_PARTITION_KEY,
+  name: 'PARTITIONEDCOOKIE',
+  value: 'partitioned_cookie_val',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: true,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+};
+var TEST_PARTITIONED_COOKIE_SAME_KEY = {
+  url: TEST_PARTITION_KEY,
+  name: 'PARTITIONEDCOOKIE_SAME_KEY',
+  value: 'partitioned_cookie_same_key',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: true,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+};
+var TEST_PARTITIONED_COOKIE_DIFFERENT_KEY = {
+  url: TEST_PARTITION_KEY,
+  name: 'PARTITIONED_COOKIE_DIFFERENT_KEY',
+  value: 'partitioned_cookie_different_key',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: true,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_URL5}
+};
+var TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME = {
+  url: TEST_PARTITION_KEY,
+  name: TEST_BASIC_COOKIE.name,
+  value: 'TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: true,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+};
+var TEST_PARTITIONED_INVALID_PARTITION_KEY = {
+  url: TEST_PARTITION_KEY,
+  name: 'TEST_PARTITIONED_INVALID_PARTITION_KEY',
+  value: 'TEST_PARTITIONED_INVALID_PARTITION_KEY',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: true,
+  httpOnly: true,
+  partitionKey: {topLevelSite: 'TEST_PARTITIONED_INVALID_PARTITION_KEY'}
+};
+
+var TEST_PARTITIONED_COOKIE_SECURE_FALSE = {
+  url: TEST_PARTITION_KEY,
+  name: 'SECURE_FALSE',
+  value: 'partitioned_cookie_val',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: false,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_PARTITION_KEY}
 };
 
 function expectValidCookie(cookie) {
@@ -71,8 +128,38 @@ function removeTestCookies() {
   chrome.cookies.remove({url: TEST_URL, name: 'C'});
   chrome.cookies.remove({url: TEST_URL, name: 'D'});
   chrome.cookies.remove({url: TEST_ODD_URL, name: 'abcd'});
+  chrome.cookies.remove({
+    url: TEST_PARTITIONED_COOKIE.url,
+    name: TEST_PARTITIONED_COOKIE.name,
+    partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+  });
+  chrome.cookies.remove({
+    url: TEST_PARTITIONED_COOKIE_SAME_KEY.url,
+    name: TEST_PARTITIONED_COOKIE_SAME_KEY.name,
+    partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+  });
+  chrome.cookies.remove({
+    url: TEST_PARTITIONED_COOKIE_DIFFERENT_KEY.url,
+    name: TEST_PARTITIONED_COOKIE_DIFFERENT_KEY.name,
+    partitionKey: {
+      topLevelSite:
+          TEST_PARTITIONED_COOKIE_DIFFERENT_KEY.partitionKey.topLevelSite
+    }
+  });
+  chrome.cookies.remove({
+    url: TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME.url,
+    name: TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME.name,
+    partitionKey: {
+      topLevelSite:
+          TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME.partitionKey.topLevelSite
+    }
+  });
+  chrome.cookies.remove({
+    url: TEST_PARTITIONED_COOKIE_DIFFERENT_KEY.url,
+    name: TEST_PARTITIONED_COOKIE_DIFFERENT_KEY.name,
+    partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
+  });
 }
-
 var pass = chrome.test.callbackPass;
 var fail = chrome.test.callbackFail;
 
@@ -180,6 +267,278 @@ chrome.test.runTests([
             chrome.test.assertEq(true, cookie.session);
           }));
     }));
+  },
+  function getPartitionedCookie() {
+    removeTestCookies();
+    chrome.cookies.set(
+        TEST_PARTITIONED_COOKIE, pass(function() {
+          // No partitionKey doesn't work because there is a partitionKey
+          // present for the cookie.
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+              },
+              pass(expectNullCookie));
+          // Empty topLevelSite doesn't work because it's different than
+          // the partitionKey used for the cookie.
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+                partitionKey: {topLevelSite: ''}
+              },
+              pass(expectNullCookie));
+          // Partition key doesn't work because it's different than the
+          // partition key used for the cookie.
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+                partitionKey: {topLevelSite: TEST_URL4}
+              },
+              pass(expectNullCookie));
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookie) {
+                expectValidCookie(cookie);
+                chrome.test.assertEq(TEST_PARTITIONED_COOKIE.name, cookie.name);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.value, cookie.value);
+                chrome.test.assertEq(TEST_DOMAIN, cookie.domain);
+                chrome.test.assertEq(true, cookie.hostOnly);
+                chrome.test.assertEq('/', cookie.path);
+                chrome.test.assertEq(true, cookie.secure);
+                chrome.test.assertEq(true, cookie.httpOnly);
+                chrome.test.assertEq('unspecified', cookie.sameSite);
+                chrome.test.assertEq(false, cookie.session);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite,
+                    cookie.partitionKey.topLevelSite);
+              }));
+        }));
+    // confirm that a partition key object can be passed to get
+    chrome.cookies.get(
+        {
+          url: TEST_PARTITIONED_COOKIE.url,
+          name: TEST_PARTITIONED_COOKIE.name,
+          partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
+        },
+        pass(function(cookie) {
+          expectValidCookie(cookie);
+        }));
+    // confirm that the callback fails when an invalid partition key is passed
+    chrome.cookies.get(
+        {
+          url: TEST_PARTITIONED_COOKIE.url,
+          name: TEST_PARTITIONED_COOKIE.name,
+          partitionKey: TEST_PARTITIONED_INVALID_PARTITION_KEY.partitionKey
+        },
+        chrome.test.callbackFail(
+            'Invalid format for partitionKey.topLevelSite.'));
+  },
+  function setPartitionedCookie() {
+    removeTestCookies();
+    chrome.cookies.set(
+        TEST_PARTITIONED_COOKIE, pass(function() {
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookie) {
+                expectValidCookie(cookie);
+                // Confirm that the name and the top-level site that are set get
+                // returned.
+                chrome.test.assertEq(TEST_PARTITIONED_COOKIE.name, cookie.name);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite,
+                    cookie.partitionKey.topLevelSite);
+              }));
+        }));
+    // Confirm that trying to set a partitioned cookie that does not have
+    // secure property equal true will result in a fail.
+    chrome.cookies.set(
+        TEST_PARTITIONED_COOKIE_SECURE_FALSE,
+        chrome.test.callbackFail(
+            'Failed to parse or set cookie named "SECURE_FALSE".'));
+
+    // Confirm that a invalid partition key will result in a throw.
+    try {
+      chrome.cookies.set(TEST_PARTITIONED_INVALID_PARTITION_KEY);
+    } catch (e) {
+      chrome.test.fail(e.message);
+      chrome.assertEq(
+          e.message, 'Invalid format for partitionKey.topLevelSite.');
+    }
+  },
+  function getAllPartitionedCookies() {
+    removeTestCookies();
+    // Confirm that no cookies are present.
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(0, cookies.length);
+                          }));
+    // Set a partitioned cookie and retrieve it.
+    chrome.cookies.set(
+        TEST_PARTITIONED_COOKIE, pass(function() {
+          chrome.cookies.getAll(
+              {
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookies) {
+                chrome.test.assertEq(1, cookies.length);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.name, cookies[0].name);
+              }));
+          // Set another cookie with the same partition key as previous cookie
+          // return both cookies by passing the common partition key.
+          chrome.cookies.set(TEST_PARTITIONED_COOKIE_SAME_KEY);
+          chrome.cookies.getAll(
+              {
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookies) {
+                chrome.test.assertEq(2, cookies.length);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE_SAME_KEY.name, cookies[1].name);
+              }));
+          // Set cookie with a different partition key than the previous
+          // cookies. Ensure that only cookies with the original partition key
+          // are returned.
+          chrome.cookies.set(TEST_PARTITIONED_COOKIE_DIFFERENT_KEY);
+          chrome.cookies.getAll(
+              {
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookies) {
+                chrome.test.assertEq(2, cookies.length);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE_SAME_KEY.name, cookies[1].name);
+              }));
+          // Set another unpartitioned cookie and check that only the previous
+          // cookies with the common partition key are returned.
+          chrome.cookies.set(TEST_BASIC_COOKIE);
+          chrome.cookies.getAll(
+              {
+                partitionKey: {
+                  topLevelSite:
+                      TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+                }
+              },
+              pass(function(cookies) {
+                chrome.test.assertEq(2, cookies.length);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(
+                    TEST_PARTITIONED_COOKIE_SAME_KEY.name, cookies[1].name);
+              }));
+          // Set another cookie with a name common to the previous cookie but
+          // with a partition key. Confirm that the getAll call only returns
+          // the cookie with no partition key
+          chrome.cookies.set(TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME);
+          chrome.cookies.getAll(
+              {name: TEST_BASIC_COOKIE.name}, pass(function(cookies) {
+                chrome.test.assertEq(1, cookies.length);
+                chrome.test.assertEq(TEST_BASIC_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(null, cookies[0].partitionKey);
+              }));
+
+          // Confirm that passing an empty top level site, returns
+          // cookies with and without partition keys.
+          chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                                  chrome.test.assertEq(5, cookies.length);
+                                }));
+
+          // Confirm that passing an empty object will only get
+          // cookies with no partition key.
+          chrome.cookies.getAll(
+              {}, pass(function(cookies) {
+                chrome.test.assertEq(1, cookies.length);
+                chrome.test.assertEq(TEST_BASIC_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(null, cookies[0].partitionKey);
+              }));
+          // Confirm callback fails when an invalid partition key is passed
+          chrome.cookies.getAll(
+              {
+                partitionKey:
+                    TEST_PARTITIONED_INVALID_PARTITION_KEY.partitionKey
+              },
+              chrome.test.callbackFail(
+                  'Invalid format for partitionKey.topLevelSite.'));
+        }));
+  },
+  function removePartitionedCookie() {
+    removeTestCookies();
+    // Confirm that no cookies are present.
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(0, cookies.length);
+                          }));
+    // Set partitioned cookie and confirm that it's present.
+    chrome.cookies.set(TEST_PARTITIONED_COOKIE);
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(1, cookies.length);
+                          }));
+    // Remove partitioned cookie by populating the partition key object manually
+    // and confirm that it's gone.
+    chrome.cookies.remove({
+      url: TEST_PARTITIONED_COOKIE.url,
+      name: TEST_PARTITIONED_COOKIE.name,
+      partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+    })
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(0, cookies.length);
+                          }));
+    // Set partitioned cookie and confirm that it's present.
+    chrome.cookies.set(TEST_PARTITIONED_COOKIE);
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(1, cookies.length);
+                          }));
+    // Remove partitioned cookie by passing an existing partition key object and
+    // confirm that it's gone.
+    chrome.cookies.remove({
+      url: TEST_PARTITIONED_COOKIE.url,
+      name: TEST_PARTITIONED_COOKIE.name,
+      partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
+    })
+    chrome.cookies.getAll({partitionKey: {}}, pass(function(cookies) {
+                            chrome.test.assertEq(0, cookies.length);
+                          }));
+    // Confirm that a invalid partition key will result in a throw
+    try {
+      chrome.cookies.remove({
+        url: TEST_PARTITIONED_COOKIE.url,
+        name: TEST_PARTITIONED_COOKIE.name,
+        partitionKey: TEST_PARTITIONED_INVALID_PARTITION_KEY.partitionKey
+      });
+    } catch (e) {
+      chrome.test.fail(e.message);
+      chrome.assertEq(
+          e.message, 'Cannot deserialize opaque origin to CookiePartitionKey');
+    }
   },
   function setOddCookies() {
     removeTestCookies();

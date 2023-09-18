@@ -17,6 +17,14 @@
         "description": "A cookie's 'SameSite' state (https://tools.ietf.org/html/draft-west-first-party-cookies). 'no_restriction' corresponds to a cookie set with 'SameSite=None', 'lax' to 'SameSite=Lax', and 'strict' to 'SameSite=Strict'. 'unspecified' corresponds to a cookie set without the SameSite attribute."
       },
       {
+        "id": "CookiePartitionKey",
+        "type": "object",
+        "description": "Represents a partitioned cookie's partition key.",
+        "properties": {
+          "topLevelSite": {"type": "string", "optional": true, "description": "The top-level site the partitioned cookie is available in."}
+        }
+      },
+      {
         "id": "Cookie",
         "type": "object",
         "description": "Represents information about an HTTP cookie.",
@@ -31,7 +39,8 @@
           "sameSite": {"$ref": "SameSiteStatus", "description": "The cookie's same-site status (i.e. whether the cookie is sent with cross-site requests)."},
           "session": {"type": "boolean", "description": "True if the cookie is a session cookie, as opposed to a persistent cookie with an expiration date."},
           "expirationDate": {"type": "number", "optional": true, "description": "The expiration date of the cookie as the number of seconds since the UNIX epoch. Not provided for session cookies."},
-          "storeId": {"type": "string", "description": "The ID of the cookie store containing this cookie, as provided in getAllCookieStores()."}
+          "storeId": {"type": "string", "description": "The ID of the cookie store containing this cookie, as provided in getAllCookieStores()."},
+          "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
         }
       },
       {
@@ -56,7 +65,8 @@
         "properties": {
           "url": {"type": "string", "description": "The URL with which the cookie to access is associated. This argument may be a full URL, in which case any data following the URL path (e.g. the query string) is simply ignored. If host permissions for this URL are not specified in the manifest file, the API call will fail."},
           "name": {"type": "string", "description": "The name of the cookie to access."},
-          "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to look for the cookie. By default, the current execution context's cookie store will be used."}
+          "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to look for the cookie. By default, the current execution context's cookie store will be used."},
+          "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
         }
       }
     ],
@@ -96,7 +106,8 @@
               "path": {"type": "string", "optional": true, "description": "Restricts the retrieved cookies to those whose path exactly matches this string."},
               "secure": {"type": "boolean", "optional": true, "description": "Filters the cookies by their Secure property."},
               "session": {"type": "boolean", "optional": true, "description": "Filters out session vs. persistent cookies."},
-              "storeId": {"type": "string", "optional": true, "description": "The cookie store to retrieve cookies from. If omitted, the current execution context's cookie store will be used."}
+              "storeId": {"type": "string", "optional": true, "description": "The cookie store to retrieve cookies from. If omitted, the current execution context's cookie store will be used."},
+              "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
             }
           }
         ],
@@ -128,7 +139,8 @@
               "httpOnly": {"type": "boolean", "optional": true, "description": "Whether the cookie should be marked as HttpOnly. Defaults to false."},
               "sameSite": {"$ref": "SameSiteStatus", "optional": true, "description": "The cookie's same-site status. Defaults to \"unspecified\", i.e., if omitted, the cookie is set without specifying a SameSite attribute."},
               "expirationDate": {"type": "number", "optional": true, "description": "The expiration date of the cookie as the number of seconds since the UNIX epoch. If omitted, the cookie becomes a session cookie."},
-              "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to set the cookie. By default, the cookie is set in the current execution context's cookie store."}
+              "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to set the cookie. By default, the cookie is set in the current execution context's cookie store."},
+              "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
             }
           }
         ],
@@ -166,7 +178,8 @@
               "properties": {
                 "url": {"type": "string", "description": "The URL associated with the cookie that's been removed."},
                 "name": {"type": "string", "description": "The name of the cookie that's been removed."},
-                "storeId": {"type": "string", "description": "The ID of the cookie store from which the cookie was removed."}
+                "storeId": {"type": "string", "description": "The ID of the cookie store from which the cookie was removed."},
+                "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
               }
             }
           ]

@@ -248,12 +248,19 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
+  absl::optional<net::CookiePartitionKey> partition_key;
+  if (!cookies_helpers::ValidateCookieApiPartitionKey(
+          parsed_args_->details.partition_key, partition_key, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
   if (!parsed_args_->details.store_id)
     parsed_args_->details.store_id = store_id;
 
   DCHECK(!url_.is_empty() && url_.is_valid());
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
+      net::CookiePartitionKeyCollection::FromOptional(partition_key),
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
   // Extension telemetry signal intercept
@@ -269,6 +276,12 @@ void CookiesGetFunction::GetCookieListCallback(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const net::CookieWithAccessResult& cookie_with_access_result :
        cookie_list) {
+    if (!cookies_helpers::CookieMatchesPartitionKeyInDetails(
+            parsed_args_->details.partition_key,
+            cookie_with_access_result.cookie)) {
+      continue;
+    }
+
     // Return the first matching cookie. Relies on the fact that the
     // CookieManager interface returns them in canonical order (longest path,
     // then earliest creation time).
@@ -323,8 +336,19 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
+  // make sure user input is valid
+  absl::optional<net::CookiePartitionKey> partition_key;
+  if (!cookies_helpers::ValidateCookieApiPartitionKey(
+          parsed_args_->details.partition_key, partition_key, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
   if (!parsed_args_->details.store_id)
     parsed_args_->details.store_id = store_id;
+
+  net::CookiePartitionKeyCollection cookie_partition_key_collection =
+      cookies_helpers::CookiePartitionKeyCollectionFromApiPartitionKey(
+          parsed_args_->details.partition_key);
 
   DCHECK(url_.is_empty() || url_.is_valid());
   if (url_.is_empty()) {
@@ -333,7 +357,7 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
         base::BindOnce(&CookiesGetAllFunction::GetAllCookiesCallback, this));
   } else {
     cookies_helpers::GetCookieListFromManager(
-        cookie_manager, url_,
+        cookie_manager, url_, cookie_partition_key_collection,
         base::BindOnce(&CookiesGetAllFunction::GetCookieListCallback, this));
   }
 
@@ -347,9 +371,13 @@ void CookiesGetAllFunction::GetAllCookiesCallback(
     const net::CookieList& cookie_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (extension()) {
+    net::CookiePartitionKeyCollection cookie_partition_key_collection =
+        cookies_helpers::CookiePartitionKeyCollectionFromApiPartitionKey(
+            parsed_args_->details.partition_key);
     std::vector<api::cookies::Cookie> match_vector;
     cookies_helpers::AppendMatchingCookiesFromCookieListToVector(
-        cookie_list, &parsed_args_->details, extension(), &match_vector);
+        cookie_list, &parsed_args_->details, extension(), &match_vector,
+        cookie_partition_key_collection);
 
     Respond(ArgumentList(api::cookies::GetAll::Results::Create(match_vector)));
   } else {
@@ -416,6 +444,12 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
+  absl::optional<net::CookiePartitionKey> partition_key;
+  if (!cookies_helpers::ValidateCookieApiPartitionKey(
+          parsed_args_->details.partition_key, partition_key, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
   if (!parsed_args_->details.store_id)
     parsed_args_->details.store_id = store_id;
 
@@ -464,7 +498,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
           /*same_party=*/false,                                  //
-          /*partition_key=*/absl::nullopt));
+          partition_key));
   if (!cc) {
     // Return error through callbacks so that the proper error message
     // is generated.
@@ -488,6 +522,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
+      net::CookiePartitionKeyCollection::FromOptional(partition_key),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
@@ -522,7 +557,15 @@ void CookiesSetFunction::GetCookieListCallback(
     // Return the first matching cookie. Relies on the fact that the
     // CookieMonster returns them in canonical order (longest path, then
     // earliest creation time).
+
+    if (!extensions::cookies_helpers::CookieMatchesPartitionKeyInDetails(
+            parsed_args_->details.partition_key,
+            cookie_with_access_result.cookie)) {
+      continue;
+    }
+
     std::string name = parsed_args_->details.name.value_or(std::string());
+
     if (cookie_with_access_result.cookie.Name() == name) {
       api::cookies::Cookie api_cookie = cookies_helpers::CreateCookie(
           cookie_with_access_result.cookie, *parsed_args_->details.store_id);
@@ -556,11 +599,21 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
+  absl::optional<net::CookiePartitionKey> partition_key;
+  if (!cookies_helpers::ValidateCookieApiPartitionKey(
+          parsed_args_->details.partition_key, partition_key, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
   if (!parsed_args_->details.store_id)
     parsed_args_->details.store_id = store_id;
 
   network::mojom::CookieDeletionFilterPtr filter(
       network::mojom::CookieDeletionFilter::New());
+
+  filter->cookie_partition_key_collection =
+      cookies_helpers::CookiePartitionKeyCollectionFromApiPartitionKey(
+          parsed_args_->details.partition_key);
   filter->url = url_;
   filter->cookie_name = parsed_args_->details.name;
   cookie_manager->DeleteCookies(
@@ -579,6 +632,9 @@ void CookiesRemoveFunction::RemoveCookieCallback(uint32_t /* num_deleted */) {
   details.name = parsed_args_->details.name;
   details.url = url_.spec();
   details.store_id = *parsed_args_->details.store_id;
+  if (parsed_args_->details.partition_key) {
+    details.partition_key = parsed_args_->details.partition_key->Clone();
+  }
 
   Respond(ArgumentList(api::cookies::Remove::Results::Create(details)));
 }
