@@ -150,6 +150,7 @@ class Field(object):
         self.type_name = type_name
         self.wrapper_pointer_name = wrapper_pointer_name
         self.alignment_type = self.wrapper_pointer_name or self.type_name
+        self.requires_tracing = wrapper_pointer_name == 'Member'
         self.field_template = field_template
         self.size = size
         self.default_value = default_value

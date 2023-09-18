@@ -219,10 +219,8 @@ ALWAYS_INLINE ComputedStyle::ComputedStyle() = default;
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& initial_style)
     : ComputedStyleBase(initial_style) {}
 
-ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& initial_style,
-                                           const ComputedStyle& parent_style,
-                                           ComputedStyleAccessFlags& access)
-    : ComputedStyleBase(initial_style, parent_style, access) {}
+ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyleBuilder& builder)
+    : ComputedStyleBase(builder) {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key) : ComputedStyle() {}
 
@@ -231,10 +229,8 @@ ALWAYS_INLINE ComputedStyle::ComputedStyle(BuilderPassKey key,
     : ComputedStyle(initial_style) {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(BuilderPassKey key,
-                                           const ComputedStyle& initial_style,
-                                           const ComputedStyle& parent_style,
-                                           ComputedStyleAccessFlags& access)
-    : ComputedStyle(initial_style, parent_style, access) {}
+                                           const ComputedStyleBuilder& builder)
+    : ComputedStyle(builder) {}
 
 static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
                                      const ComputedStyle& new_style) {
@@ -2606,21 +2602,14 @@ bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
          StyleType() == kPseudoIdBackdrop;
 }
 
-ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {
-  style_ = MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
-                                               style);
-  SetStyleBase(*style_);
-}
+ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)
+    : ComputedStyleBuilderBase(style) {}
 
 ComputedStyleBuilder::ComputedStyleBuilder(
     const ComputedStyle& initial_style,
     const ComputedStyle& parent_style,
-    IsAtShadowBoundary is_at_shadow_boundary) {
-  style_ = MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
-                                               initial_style, parent_style,
-                                               GetAccessFlagsForConstructor());
-  SetStyleBase(*style_);
-
+    IsAtShadowBoundary is_at_shadow_boundary)
+    : ComputedStyleBuilderBase(initial_style, parent_style) {
   // Even if surrounding content is user-editable, shadow DOM should act as a
   // single unit, and not necessarily be editable
   if (is_at_shadow_boundary == kAtShadowBoundary) {
@@ -2637,11 +2626,15 @@ ComputedStyleBuilder::ComputedStyleBuilder(
   SetBaseTextDecorationData(parent_style.AppliedTextDecorationData());
 }
 
+const ComputedStyle* ComputedStyleBuilder::TakeStyle() {
+  return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
+                                             *this);
+}
+
 const ComputedStyle* ComputedStyleBuilder::CloneStyle() const {
-  DCHECK(style_);
   ResetAccess();
   return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
-                                             *style_);
+                                             *this);
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(

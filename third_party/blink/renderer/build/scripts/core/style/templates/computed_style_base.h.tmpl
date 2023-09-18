@@ -46,6 +46,9 @@ namespace blink {
 // Forward declaration for diff functions.
 class ComputedStyle;
 
+// Forward declaration for constructor.
+class ComputedStyleBuilderBase;
+
 struct ComputedStyleAccessFlags;
 
 // Forward declaration of friends:
@@ -216,9 +219,7 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   // can instantiate this class.
   ComputedStyleBase();
   ComputedStyleBase(const ComputedStyleBase &initial_style) = default;
-  ComputedStyleBase(const ComputedStyleBase &source_for_noninherited,
-                    const ComputedStyleBase &parent_style,
-                    ComputedStyleAccessFlags &access_);
+  explicit ComputedStyleBase(const ComputedStyleBuilderBase&);
 
   {% for field in computed_style.all_fields|sort(attribute='name') %}
   {% if field.field_template not in ('pointer',) %}
@@ -227,6 +228,12 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
   {% endif %}
   {% endfor %}
+
+  struct Data {
+    {% for field in computed_style.fields|rejectattr('requires_tracing') %}
+    {{declare_storage(field)}}
+    {% endfor %}
+  };
 
  private:
   friend class ComputedStyleBuilder;
@@ -237,9 +244,12 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   DataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
   {% endfor %}
 
-  {% for field in computed_style.fields %}
+  {# Members #}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
   {{declare_storage(field)}}
   {% endfor %}
+
+  Data data_;
 };
 
 // Access flags. These are passed to DataRef::Access to ensure that we have
@@ -259,30 +269,23 @@ class ComputedStyleBuilderBase {
     kNotAtShadowBoundary,
   };
 
-  {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
+  {% for field in computed_style_builder.all_fields|rejectattr('mutable')|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_public_methods(field)|indent(2)}}
 
   {% endfor %}
 
  protected:
-  ComputedStyleBuilderBase() = default;
-  explicit ComputedStyleBuilderBase(ComputedStyleBase& style) {
-    SetStyleBase(style);
-  }
+  ComputedStyleBuilderBase() = delete;
 
-  void SetStyleBase(ComputedStyleBase& style) {
-    style_ = &style;
+  explicit ComputedStyleBuilderBase(const ComputedStyleBase&);
 
-    // Reset derived flags:
-    {% for field in computed_style_builder.all_fields|selectattr('derived_from')|sort(attribute='name') %}
-    {{derived_flag.reset_expression(field)|indent(2)}}
-    {% endfor %}
-  }
+  ComputedStyleBuilderBase(const ComputedStyleBase &source_for_noninherited,
+                           const ComputedStyleBase &parent_style);
 
   void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);
 
-  {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
+  {% for field in computed_style_builder.all_fields|rejectattr('mutable')|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_protected_methods(field)|indent(2)}}
 
@@ -300,9 +303,25 @@ class ComputedStyleBuilderBase {
   }
 
  private:
+  friend class ComputedStyleBase;
+
   mutable ComputedStyleAccessFlags access_;
 
-  ComputedStyleBase* style_ = nullptr;
+  {% for subgroup in computed_style.subgroups %}
+  using {{subgroup.type_name}} = ComputedStyleBase::{{subgroup.type_name}};
+  {% endfor %}
+
+  // Storage.
+  {% for subgroup in computed_style.subgroups %}
+  RawDataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
+  {% endfor %}
+
+  {# Members #}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
+  {{field.type_name}}* {{field.name}};
+  {% endfor %}
+
+  ComputedStyleBase::Data data_;
 };
 
 }  // namespace blink

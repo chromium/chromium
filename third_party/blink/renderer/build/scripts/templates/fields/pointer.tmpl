@@ -2,13 +2,25 @@
 {% from 'templates/fields/field.tmpl' import getter_expression, setter_expression, encode, decode, getter_method_name, setter_method_name, move_if_changed %}
 
 {% macro wrapped_type(field) -%}
-  {{field.wrapper_pointer_name}}<{{field.type_name}}>
-  {#- TODO: Use raw pointer in the builder. -#}
+  {% if field.builder and not field.group.parent and field.wrapper_pointer_name == 'Member' -%}
+      {#- Since the builder is STACK_ALLOCATED, we can (and must) store
+          top-level pointers that are normally wrapped with Member
+          as raw pointers. -#}
+      {{field.type_name}}*
+  {%- else -%}
+    {{field.wrapper_pointer_name}}<{{field.type_name}}>
+  {%- endif %}
 {%- endmacro %}
 
 {% macro unwrap_pointer(field) -%}
   {% if field.wrapper_pointer_name == 'Member' -%}
+    {%- if field.builder and not field.group.parent -%}
+      {#- Intentionally empty. In the builder, we avoid top-level Members
+          and instead just store raw pointers. Nothing to unwrap. -#}
+    {%- else -%}
+      {#- Member -#}
       .Get()
+    {%- endif -%}
   {%- else -%}
     {#- Assumed scoped_refptr, unique_ptr, etc -#}
     .get()

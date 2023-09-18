@@ -44,10 +44,17 @@ static_cast<{{field.type_name}}>({{value}})
 {{field.internal_mutable_method_name}}
 {%- endmacro %}
 
-{% macro accessor_expression_prefix(field) %}
-{% if field.builder -%}
-style_->
-{%- endif %}
+{% macro bitfield_prefix() -%}
+  data_.
+{%- endmacro %}
+
+{% macro accessor_expression_prefix(field) -%}
+{#- Top-level non-tracable fields reside in the `data_` struct. -#}
+{#- Derived flags should not be prefixed here, because they must always be read
+    via a function. -#}
+{%- if not field.group.parent and not field.requires_tracing and not field.derived_from -%}
+  {{bitfield_prefix()}}
+{%- endif -%}
 {%- endmacro %}
 
 {% macro getter_expression_without_prefix(field) %}
@@ -197,31 +204,43 @@ const {{field.type_name}}&
   {%- endfor %}
 {%- endmacro %}
 
-{% macro fieldwise_initialize(group) -%}
-{% set comma = joiner(", ") %}
-{% for subgroup in group.subgroups %}
-  {% set member = subgroup.member_name %}
-  {% set noninherited = "source_for_noninherited." + subgroup.member_name %}
-  {% set parent = "parent_style." + subgroup.member_name %}
-  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
-    {{comma()}}{{member}}({{parent}})
-  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length == 0 -%}
-    {{comma()}}{{member}}({{noninherited}})
-  {% else -%}
-    {{comma()}}{{member}}({{parent}} == {{noninherited}}
-        ? {{parent}}
-        : DataRef(MakeGarbageCollected<{{subgroup.type_name}}>(*{{noninherited}}, *{{parent}})))
-  {% endif %}
-{% endfor %}
-{% for field in group.fields %}
-  {% if field.reset_on_new_style -%}
-    {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
-  {% elif field.is_inherited -%}
-    {{comma()}}{{field.name}}(parent_style.{{field.name}})
-  {% else -%}
-    {{comma()}}{{field.name}}(source_for_noninherited.{{field.name}})
-  {% endif %}
-{% endfor %}
+{#
+  The `field_source_expression` and `group_source_expression` are used
+  for the special two-argument constructor of ComputedStyleBuilderBase,
+  and provide expressions suited to initialize the given field/group from
+  one of two sources:
+
+   - Non-inherited fields/groups are copied from `non_inherited_source`.
+   - Inherited fields/groups are copied from `inherited_source`.
+   - Fields with reset_on_new_style are instead set to their initial values.
+
+  Subgroups with a mix of non-inherited and inherited fields are also
+  initialized in the two-source fashion described above.
+#}
+
+{% macro field_source_expression(field, non_inherited_source, inherited_source) -%}
+  {%- if field.reset_on_new_style -%}
+    {{encode(field, field.default_value)}} /* {{field.name}}{{print_if(field.mutable, " (mutable)")}} */
+  {%- elif field.is_inherited -%}
+    {{inherited_source}}.{{accessor_expression_prefix(field)}}{{field.name}}
+  {%- else -%}
+    {{non_inherited_source}}.{{accessor_expression_prefix(field)}}{{field.name}}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro group_source_expression(group, non_inherited_source, inherited_source) -%}
+  {% set non_inherited = non_inherited_source + "." + group.member_name %}
+  {% set inherited = inherited_source + "." + group.member_name %}
+  {%- if group.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
+    {{inherited}}
+  {%- elif group.all_fields|selectattr("is_inherited")|list|length == 0 -%}
+    {{non_inherited}}
+  {%- else -%}
+    {#- Mix of non-inherited and inherited fields. -#}
+    {{inherited}} == {{non_inherited}}
+        ? {{inherited}}
+        : DataRef(MakeGarbageCollected<{{group.type_name}}>(*{{non_inherited}}, *{{inherited}}))
+  {%- endif -%}
 {%- endmacro %}
 
 {% macro fieldwise_pointer_compare_inherited(group, boolean_and=None) %}

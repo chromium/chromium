@@ -70,6 +70,52 @@ class DataRef {
   subtle::UncompressedMember<T> data_;
 };
 
+// The same as DataRef, except that it's STACK_ALLOCATED, and therefore
+// can hold the data as a raw pointer instead. This is useful for avoiding
+// Oilpain barriers.
+template <typename T>
+class RawDataRef {
+  STACK_ALLOCATED();
+
+ public:
+  RawDataRef() = delete;
+  explicit RawDataRef(T* data) : data_(data) {}
+  // We do not actually violate const here, because `data_` won't ever be
+  // modified before being copied first.
+  explicit RawDataRef(const DataRef<T>& ref)
+      : data_(const_cast<T*>(ref.Get())) {}
+
+  const T* Get() const { return data_; }
+
+  const T& operator*() const { return *Get(); }
+  const T* operator->() const { return Get(); }
+
+  T* Access(bool& access_flag) {
+    if (!access_flag) {
+      access_flag = true;
+      data_ = data_->Copy();
+    }
+    return data_;
+  }
+
+  bool operator==(const RawDataRef<T>& o) const {
+    DCHECK(data_);
+    DCHECK(o.data_);
+    return data_ == o.data_ || *data_ == *o.data_;
+  }
+
+  bool operator!=(const RawDataRef<T>& o) const {
+    DCHECK(data_);
+    DCHECK(o.data_);
+    return data_ != o.data_ && *data_ != *o.data_;
+  }
+
+  void operator=(std::nullptr_t) { data_ = nullptr; }
+
+ private:
+  T* data_ = nullptr;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_DATA_REF_H_

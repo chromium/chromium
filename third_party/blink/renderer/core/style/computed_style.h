@@ -320,9 +320,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
   ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style);
-  ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style,
-                              const ComputedStyle& parent_style,
-                              ComputedStyleAccessFlags& access);
+  ALWAYS_INLINE explicit ComputedStyle(const ComputedStyleBuilder&);
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
@@ -330,10 +328,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   ALWAYS_INLINE ComputedStyle(BuilderPassKey,
                               const ComputedStyle& initial_style);
-  ALWAYS_INLINE ComputedStyle(BuilderPassKey,
-                              const ComputedStyle& initial_style,
-                              const ComputedStyle& parent_style,
-                              ComputedStyleAccessFlags& access);
+  ALWAYS_INLINE ComputedStyle(BuilderPassKey, const ComputedStyleBuilder&);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
 
   void TraceAfterDispatch(Visitor* visitor) const {
@@ -2851,7 +2846,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
   ComputedStyleBuilder& operator=(ComputedStyleBuilder&&) = default;
 
-  const ComputedStyle* TakeStyle() { return std::move(style_); }
+  CORE_EXPORT const ComputedStyle* TakeStyle();
 
   // NOTE: Prefer `TakeStyle()` if possible.
   CORE_EXPORT const ComputedStyle* CloneStyle() const;
@@ -3474,7 +3469,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     MutableInitialDataInternal() = std::move(data);
   }
 
-  EWhiteSpace WhiteSpace() const { return style_->WhiteSpace(); }
+  EWhiteSpace WhiteSpace() const {
+    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrap());
+  }
   void SetWhiteSpace(EWhiteSpace whitespace) {
     SetWhiteSpaceCollapse(ToWhiteSpaceCollapse(whitespace));
     SetTextWrap(ToTextWrap(whitespace));
@@ -3505,8 +3502,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetContainIntrinsicHeight(height);
   }
 
- private:
-  ComputedStyle* style_;
 };
 
 }  // namespace blink
