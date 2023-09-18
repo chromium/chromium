@@ -224,6 +224,8 @@ Depending on the scope, the updater is installed at:
 * (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
 * (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
 * (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+* (Linux, User): `~/.local/{COMPANY}/{UPDATERNAME}/{VERSION}/updater`
+* (Linux, System): `/opt/{COMPANY}/{UPDATERNAME}/{VERSION}/updater`
 
 ### Command Line
 
@@ -814,6 +816,13 @@ The enrollment token is searched in the order:
 CBCM enterprise enrollment and policy fetches are done every time an install or
 or update happens, as well as when the updater periodic background task
 `--wake` runs.
+
+#### Linux
+The enrollment token is stored in:
+`/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagementEnrollmentToken`
+
+The device management token is stored in:
+`/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
