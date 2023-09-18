@@ -326,23 +326,6 @@ void GetPageSizeAndContentAreaFromPageLayout(
       params.display_header_footer ? gfx::Rect(*page_size) : *content_area;
 }
 
-void EnsureOrientationMatches(const mojom::PrintParams& css_params,
-                              mojom::PrintParams* page_params) {
-  if ((page_params->page_size.width() > page_params->page_size.height()) ==
-      (css_params.page_size.width() > css_params.page_size.height())) {
-    return;
-  }
-
-  // Swap the |width| and |height| values.
-  page_params->page_size.SetSize(page_params->page_size.height(),
-                                 page_params->page_size.width());
-  page_params->content_size.SetSize(page_params->content_size.height(),
-                                    page_params->content_size.width());
-  page_params->printable_area.set_size(
-      gfx::SizeF(page_params->printable_area.height(),
-                 page_params->printable_area.width()));
-}
-
 blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
     const mojom::PrintParams& print_params,
     bool source_is_pdf,
@@ -555,43 +538,13 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> CalculatePrintParamsForCss(
     const mojom::PrintParams& page_params,
     bool ignore_css_margins,
     bool fit_to_page) {
-  mojom::PrintParamsPtr css_params = GetCssPrintParams(
+  mojom::PrintParamsPtr result_params = GetCssPrintParams(
       frame, page_index, page_params, ignore_css_margins, fit_to_page);
 
-  mojom::PrintParamsPtr params = page_params.Clone();
-  EnsureOrientationMatches(*css_params, params.get());
-  if (ignore_css_margins && fit_to_page) {
-    return {std::move(params)};
-  }
-
-  mojom::PrintParamsPtr result_params = std::move(css_params);
   double fit_to_page_scale_factor = 1.0f;
-
-  if (ignore_css_margins) {
-    // TODO(crbug.com/1477190): Copying from `params` shouldn't be necessary
-    // anymore, since Blink no longer modifies the input margins / size if told
-    // to leave them alone. There are some further complication here, due to
-    // EnsureOrientationMatches(), though...
-    result_params->margin_top = params->margin_top;
-    result_params->margin_left = params->margin_left;
-
-    DCHECK(!fit_to_page);
-    // Since we are ignoring the margins, the css page size is no longer
-    // valid for content.
-    float default_margin_right = params->page_size.width() -
-                                 params->content_size.width() -
-                                 params->margin_left;
-    float default_margin_bottom = params->page_size.height() -
-                                  params->content_size.height() -
-                                  params->margin_top;
-    result_params->content_size =
-        gfx::SizeF(result_params->page_size.width() -
-                       result_params->margin_left - default_margin_right,
-                   result_params->page_size.height() -
-                       result_params->margin_top - default_margin_bottom);
-  } else if (fit_to_page) {
+  if (fit_to_page && !ignore_css_margins) {
     fit_to_page_scale_factor =
-        FitPrintParamsToPage(*params, result_params.get());
+        FitPrintParamsToPage(page_params, result_params.get());
   }
 
   return {std::move(result_params), fit_to_page_scale_factor};

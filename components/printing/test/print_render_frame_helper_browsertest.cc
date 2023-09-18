@@ -1716,6 +1716,34 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnClosePrintPreviewDialog();
 }
 
+// Test to verify that print preview workflow scale the html page contents to
+// fit the page size, and that orientation implied by specified CSS page size is
+// honored, even though the size itself is to be ignored.
+TEST_F(PrintRenderFrameHelperPreviewTest, ShrinkToFitPageMatchOrientation) {
+  LoadHTML(R"HTML(
+      <style>
+        @page { size: 17in 15in; }
+      </style>
+      :-D
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  base::Value::Dict custom_margins;
+  custom_margins.Set(kSettingMarginTop, 10);
+  custom_margins.Set(kSettingMarginRight, 20);
+  custom_margins.Set(kSettingMarginBottom, 30);
+  custom_margins.Set(kSettingMarginLeft, 40);
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kCustomMargins));
+  print_settings().Set(kSettingMarginsCustom, std::move(custom_margins));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(732, 572, 10, 30, 40, 20, true, true);
+  OnClosePrintPreviewDialog();
+}
+
 TEST_F(PrintRenderFrameHelperPreviewTest, MarginsAndInputScaleToPdf1) {
   // The default page size in these tests is US Letter - 8.5 by 11 inches.
   // Setting vertical margins to 0.5in results in a page area of 10 inches.

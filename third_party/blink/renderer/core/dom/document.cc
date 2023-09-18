@@ -2776,11 +2776,19 @@ void Document::GetPageDescription(const ComputedStyle& style,
       if (description->size.width() > description->size.height())
         description->size.Transpose();
       break;
-    case PageSizeType::kFixed:
+    case PageSizeType::kFixed: {
+      gfx::SizeF css_size = style.PageSize();
       if (!description->ignore_page_size) {
-        description->size = style.PageSize();
+        description->size = css_size;
+        break;
+      }
+      if ((css_size.width() > css_size.height()) !=
+          (description->size.width() > description->size.height())) {
+        // Keep the page size, but match orientation.
+        description->size.Transpose();
       }
       break;
+    }
     default:
       NOTREACHED();
   }
