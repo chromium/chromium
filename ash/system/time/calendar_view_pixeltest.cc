@@ -62,10 +62,10 @@ class CalendarViewPixelTest : public AshTestBase {
     GetPrimaryShelf()->GetStatusAreaWidget()->date_tray()->OnButtonPressed(
         ui::KeyEvent(ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN,
                      ui::EF_NONE));
-    calendar_view_ = static_cast<CalendarView*>(GetPrimaryUnifiedSystemTray()
-                                                    ->bubble()
-                                                    ->quick_settings_view()
-                                                    ->GetDetailedViewForTest());
+    calendar_view_ = GetPrimaryUnifiedSystemTray()
+                         ->bubble()
+                         ->quick_settings_view()
+                         ->GetDetailedViewForTest<CalendarView>();
   }
 
   CalendarView* GetCalendarView() { return calendar_view_; }

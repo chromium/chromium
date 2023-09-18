@@ -126,7 +126,7 @@ void DisplayDetailedView::OnSettingsClicked() {
   }
 }
 
-BEGIN_METADATA(DisplayDetailedView, views::View)
+BEGIN_METADATA(DisplayDetailedView, TrayDetailedView)
 END_METADATA
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/system/unified/power_button.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class PrefRegistrySimple;
@@ -25,8 +26,10 @@ class UnifiedSystemTrayController;
 // is a Jellyroll `PillButton` component that has a different icon label spacing
 // and right padding than `BatteryInfoViewBase`. It updates by observing
 // `PowerStatus`.
-class QsBatteryInfoViewBase : public PillButton, public PowerStatus::Observer {
+class ASH_EXPORT QsBatteryInfoViewBase : public PillButton,
+                                         public PowerStatus::Observer {
  public:
+  METADATA_HEADER(QsBatteryInfoViewBase);
   explicit QsBatteryInfoViewBase(UnifiedSystemTrayController* controller,
                                  const Type type = Type::kFloatingWithoutIcon,
                                  gfx::VectorIcon* icon = nullptr);
@@ -57,8 +60,9 @@ class QsBatteryInfoViewBase : public PillButton, public PowerStatus::Observer {
 };
 
 // A view that shows battery status.
-class QsBatteryLabelView : public QsBatteryInfoViewBase {
+class ASH_EXPORT QsBatteryLabelView : public QsBatteryInfoViewBase {
  public:
+  METADATA_HEADER(QsBatteryLabelView);
   explicit QsBatteryLabelView(UnifiedSystemTrayController* controller);
   QsBatteryLabelView(const QsBatteryLabelView&) = delete;
   QsBatteryLabelView& operator=(const QsBatteryLabelView&) = delete;
@@ -71,8 +75,9 @@ class QsBatteryLabelView : public QsBatteryInfoViewBase {
 
 // A view that shows battery icon and charging state when smart charging is
 // enabled.
-class QsBatteryIconView : public QsBatteryInfoViewBase {
+class ASH_EXPORT QsBatteryIconView : public QsBatteryInfoViewBase {
  public:
+  METADATA_HEADER(QsBatteryIconView);
   explicit QsBatteryIconView(UnifiedSystemTrayController* controller);
   QsBatteryIconView(const QsBatteryIconView&) = delete;
   QsBatteryIconView& operator=(const QsBatteryIconView&) = delete;

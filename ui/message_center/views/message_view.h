@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -53,8 +54,7 @@ class MESSAGE_CENTER_EXPORT MessageView
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
-  static const char kViewClassName[];
-
+  METADATA_HEADER(MessageView);
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}
@@ -165,7 +165,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnGestureEvent(ui::GestureEvent* event) override;
   void RemovedFromWidget() override;
   void AddedToWidget() override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // views::SlideOutControllerDelegate:

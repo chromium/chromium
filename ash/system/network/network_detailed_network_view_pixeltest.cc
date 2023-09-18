@@ -116,7 +116,9 @@ TEST_F(NetworkDetailedNetworkViewPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowNetworkDetailedView(/*force=*/true);
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
   ASSERT_TRUE(
       views::IsViewClass<NetworkDetailedNetworkViewImpl>(detailed_view));

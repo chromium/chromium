@@ -87,7 +87,9 @@ TEST_F(BluetoothDetailedViewImplPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowBluetoothDetailedView();
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
 
   // Compare pixels.

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -21,6 +22,7 @@ class SearchResultActionsView;
 class ASH_EXPORT SearchResultBaseView : public views::Button,
                                         public SearchResultObserver {
  public:
+  METADATA_HEADER(SearchResultBaseView);
   SearchResultBaseView();
 
   SearchResultBaseView(const SearchResultBaseView&) = delete;
@@ -94,7 +96,6 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
 
   // views::View:
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   SearchResultActionsView* actions_view() { return actions_view_; }

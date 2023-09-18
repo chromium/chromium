@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 class FlexLayoutView;
@@ -26,7 +27,6 @@ class PageIndicatorView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
 class QuickSettingsMediaViewContainer;
-class TrayDetailedView;
 class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
@@ -109,7 +109,13 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   views::View* detailed_view_container() { return detailed_view_container_; }
 
   // Returns the current tray detailed view.
-  TrayDetailedView* GetDetailedViewForTest();
+  template <typename T>
+  T* GetDetailedViewForTest() {
+    CHECK(!detailed_view_container_->children().empty());
+    views::View* view = detailed_view_container_->children()[0];
+    CHECK(views::IsViewClass<T>(view));
+    return static_cast<T*>(view);
+  }
 
   PageIndicatorView* page_indicator_view_for_test() {
     return page_indicator_view_;

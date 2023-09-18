@@ -52,10 +52,11 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
   }
 
   void ExpectFocusModeDetailedViewShown() {
-    TrayDetailedView* detailed_view = GetPrimaryUnifiedSystemTray()
-                                          ->bubble()
-                                          ->quick_settings_view()
-                                          ->GetDetailedViewForTest();
+    TrayDetailedView* detailed_view =
+        GetPrimaryUnifiedSystemTray()
+            ->bubble()
+            ->quick_settings_view()
+            ->GetDetailedViewForTest<TrayDetailedView>();
     ASSERT_TRUE(detailed_view);
     EXPECT_TRUE(views::IsViewClass<FocusModeDetailedView>(detailed_view));
   }

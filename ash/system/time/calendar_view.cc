@@ -2260,7 +2260,7 @@ int CalendarView::GetSingleVisibleRowHeight() {
              : calendar_view_controller_->row_height();
 }
 
-BEGIN_METADATA(CalendarView, views::View)
+BEGIN_METADATA(CalendarView, GlanceableTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

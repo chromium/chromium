@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -707,8 +708,7 @@ int TrayDetailedView::GetHeightForWidth(int width) const {
   return height();
 }
 
-const char* TrayDetailedView::GetClassName() const {
-  return "TrayDetailedView";
-}
+BEGIN_METADATA(TrayDetailedView, views::View)
+END_METADATA
 
 }  // namespace ash

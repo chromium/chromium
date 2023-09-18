@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -28,8 +29,9 @@ SearchResultBaseView::SearchResultBaseView() {
 }
 
 SearchResultBaseView::~SearchResultBaseView() {
-  if (result_)
+  if (result_) {
     result_->RemoveObserver(this);
+  }
   result_ = nullptr;
 }
 
@@ -40,14 +42,11 @@ bool SearchResultBaseView::SkipDefaultKeyEventProcessing(
   return false;
 }
 
-const char* SearchResultBaseView::GetClassName() const {
-  return "SearchResultBaseView";
-}
-
 void SearchResultBaseView::SetSelected(bool selected,
                                        absl::optional<bool> reverse_tab_order) {
-  if (selected_ == selected)
+  if (selected_ == selected) {
     return;
+  }
 
   selected_ = selected;
 
@@ -61,11 +60,13 @@ void SearchResultBaseView::SetSelected(bool selected,
 }
 
 bool SearchResultBaseView::SelectNextResultAction(bool reverse_tab_order) {
-  if (!selected() || !actions_view_)
+  if (!selected() || !actions_view_) {
     return false;
+  }
 
-  if (!actions_view_->SelectNextAction(reverse_tab_order))
+  if (!actions_view_->SelectNextAction(reverse_tab_order)) {
     return false;
+  }
 
   SchedulePaint();
   return true;
@@ -80,8 +81,9 @@ views::View* SearchResultBaseView::GetSelectedView() {
 void SearchResultBaseView::SetResult(SearchResult* result) {
   ClearResult();
   result_ = result;
-  if (result_)
+  if (result_) {
     result_->AddObserver(this);
+  }
   OnResultChanged();
 }
 
@@ -90,12 +92,14 @@ void SearchResultBaseView::OnResultDestroying() {
 }
 
 std::u16string SearchResultBaseView::ComputeAccessibleName() const {
-  if (!result())
+  if (!result()) {
     return u"";
+  }
 
   std::u16string accessible_name;
-  if (!result()->accessible_name().empty())
+  if (!result()->accessible_name().empty()) {
     return result()->accessible_name();
+  }
 
   std::u16string title = result()->title();
   if (result()->result_type() == AppListSearchResultType::kPlayStoreApp ||
@@ -156,20 +160,26 @@ void SearchResultBaseView::UpdateAccessibleName() {
 }
 
 void SearchResultBaseView::ClearResult() {
-  if (result_)
+  if (result_) {
     result_->RemoveObserver(this);
+  }
   SetSelected(false, absl::nullopt);
   result_ = nullptr;
 }
 
 void SearchResultBaseView::SelectInitialResultAction(bool reverse_tab_order) {
-  if (actions_view_)
+  if (actions_view_) {
     actions_view_->SelectInitialAction(reverse_tab_order);
+  }
 }
 
 void SearchResultBaseView::ClearSelectedResultAction() {
-  if (actions_view_)
+  if (actions_view_) {
     actions_view_->ClearSelectedAction();
+  }
 }
+
+BEGIN_METADATA(SearchResultBaseView, views::Button)
+END_METADATA
 
 }  // namespace ash

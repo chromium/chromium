@@ -50,6 +50,7 @@ int GetTileWeight(FeatureTile::TileType type) {
 // primary tile, two primary tiles, or a primary and two compact tiles.
 class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(RowContainer);
   explicit RowContainer(FeatureTilesContainerView* container)
       : container_(container) {
     DCHECK(container_);
@@ -72,11 +73,15 @@ class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
   const raw_ptr<FeatureTilesContainerView, ExperimentalAsh> container_;
 };
 
+BEGIN_METADATA(FeatureTilesContainerView, RowContainer, views::FlexLayoutView)
+END_METADATA
+
 // The page container that holds `RowContainer` elements. Can hold from one up
 // to four rows depending on the available space. More pages will be created if
 // the available tiles do not fit a single page.
 class FeatureTilesContainerView::PageContainer : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(PageContainer);
   PageContainer() {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -88,6 +93,9 @@ class FeatureTilesContainerView::PageContainer : public views::FlexLayoutView {
   PageContainer& operator=(const PageContainer&) = delete;
   ~PageContainer() override = default;
 };
+
+BEGIN_METADATA(FeatureTilesContainerView, PageContainer, views::FlexLayoutView)
+END_METADATA
 
 FeatureTilesContainerView::FeatureTilesContainerView(
     UnifiedSystemTrayController* controller)

@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/progress_bar.h"
 
 namespace views {
@@ -151,9 +152,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     kKeyboardShortcut,
   };
 
-  // Internal class name.
-  static const char kViewClassName[];
-
+  METADATA_HEADER(SearchResultView);
   SearchResultView(SearchResultListView* list_view,
                    AppListViewDelegate* view_delegate,
                    SearchResultPageDialogController* dialog_controller,
@@ -259,7 +258,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void OnSelectedResultChanged();
 
   // views::View overrides:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -320,7 +318,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> keyboard_shortcut_container_ =
       nullptr;  // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> progress_bar_container_ =
-      nullptr;                                     // Owned by views hierarchy.
+      nullptr;  // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> system_details_container_ =
       nullptr;  // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> left_details_container_ =

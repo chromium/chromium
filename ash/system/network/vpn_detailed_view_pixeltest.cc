@@ -63,7 +63,9 @@ class VpnDetailedViewPixelTest : public AshTestBase {
         ->ShowVPNDetailedView();
 
     TrayDetailedView* detailed_view =
-        system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+        system_tray->bubble()
+            ->quick_settings_view()
+            ->GetDetailedViewForTest<TrayDetailedView>();
     ASSERT_TRUE(detailed_view);
     ASSERT_TRUE(views::IsViewClass<VpnDetailedView>(detailed_view));
     vpn_detailed_view_ = static_cast<VpnDetailedView*>(detailed_view);

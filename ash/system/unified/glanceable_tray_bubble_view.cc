@@ -25,6 +25,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -346,5 +347,8 @@ void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
     focused_view->ScrollViewToVisible();
   }
 }
+
+BEGIN_METADATA(GlanceableTrayBubbleView, TrayBubbleView)
+END_METADATA
 
 }  // namespace ash

@@ -1199,12 +1199,6 @@ TEST_F(AccessibilityDetailedViewTest, ClickDetailMenu) {
   EXPECT_FALSE(accessibility_controller->color_correction().enabled());
 }
 
-// Trivial test to increase code coverage.
-TEST_F(AccessibilityDetailedViewTest, GetClassName) {
-  CreateDetailedMenu();
-  EXPECT_EQ(AccessibilityDetailedView::kClassName, GetDetailedViewClassName());
-}
-
 class AccessibilityDetailedViewSodaTest
     : public AccessibilityDetailedViewTest,
       public testing::WithParamInterface<SodaFeature> {

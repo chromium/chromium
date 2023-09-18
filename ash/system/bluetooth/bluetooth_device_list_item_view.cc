@@ -23,6 +23,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
@@ -95,8 +96,9 @@ int GetDeviceTypeA11yTextId(const DeviceType device_type) {
 // provided |battery_info|.
 const std::u16string GetDeviceBatteryA11yText(
     const DeviceBatteryInfoPtr& battery_info) {
-  if (!battery_info)
+  if (!battery_info) {
     return std::u16string();
+  }
 
   if (HasMultipleBatteryInfos(battery_info)) {
     std::u16string battery_text;
@@ -104,8 +106,9 @@ const std::u16string GetDeviceBatteryA11yText(
     auto add_battery_text_if_exists =
         [&battery_text](const BatteryPropertiesPtr& battery_properties,
                         int text_id) {
-          if (!battery_properties)
+          if (!battery_properties) {
             return;
+          }
           if (!battery_text.empty())
             battery_text = base::StrCat({battery_text, u" "});
           battery_text = base::StrCat(
@@ -183,8 +186,9 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   // populated with one or both of these views. For simplicity, instead of
   // trying to determine which views exist and modifying them, and creating the
   // missing views, we instead clear all of the views and recreate them.
-  if (is_populated())
+  if (is_populated()) {
     Reset();
+  }
 
   const DeviceType& device_type =
       device_properties_->device_properties->device_type;
@@ -337,8 +341,7 @@ void BluetoothDeviceListItemView::UpdateSingleBatteryView(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL);
 }
 
-const char* BluetoothDeviceListItemView::GetClassName() const {
-  return "BluetoothDeviceListItemView";
-}
+BEGIN_METADATA(BluetoothDeviceListItemView, HoverHighlightView)
+END_METADATA
 
 }  // namespace ash

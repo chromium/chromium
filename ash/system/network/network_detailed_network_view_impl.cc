@@ -337,7 +337,7 @@ void NetworkDetailedNetworkViewImpl::UpdateScanningBarVisibility(bool visible) {
   ShowProgress(-1, visible);
 }
 
-BEGIN_METADATA(NetworkDetailedNetworkViewImpl, views::View)
+BEGIN_METADATA(NetworkDetailedNetworkViewImpl, NetworkDetailedView)
 END_METADATA
 
 }  // namespace ash

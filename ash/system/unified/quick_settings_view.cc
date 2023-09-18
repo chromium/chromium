@@ -297,13 +297,6 @@ void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-TrayDetailedView* QuickSettingsView::GetDetailedViewForTest() {
-  CHECK(!detailed_view_container_->children().empty());
-  views::View* view = detailed_view_container_->children()[0];
-  CHECK(views::IsViewClass<TrayDetailedView>(view));
-  return static_cast<TrayDetailedView*>(view);
-}
-
 BEGIN_METADATA(QuickSettingsView, views::View)
 END_METADATA
 

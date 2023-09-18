@@ -8,6 +8,7 @@
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 template <class ItemType>
@@ -28,6 +29,7 @@ class Shelf;
 class GlanceableTrayBubbleView : public TrayBubbleView,
                                  public ScreenLayoutObserver {
  public:
+  METADATA_HEADER(GlanceableTrayBubbleView);
   GlanceableTrayBubbleView(const InitParams& init_params, Shelf* shelf);
   GlanceableTrayBubbleView(const GlanceableTrayBubbleView&) = delete;
   GlanceableTrayBubbleView& operator=(const GlanceableTrayBubbleView&) = delete;

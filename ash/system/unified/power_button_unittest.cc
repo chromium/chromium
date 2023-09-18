@@ -408,8 +408,7 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
   QuickSettingsView* quick_settings_view =
       GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
   EXPECT_TRUE(quick_settings_view->IsDetailedViewShown());
-  EXPECT_TRUE(views::IsViewClass<UserChooserView>(
-      quick_settings_view->GetDetailedViewForTest()));
+  EXPECT_TRUE(quick_settings_view->GetDetailedViewForTest<UserChooserView>());
 }
 
 // Power button's rounded radii should change correctly when switching between

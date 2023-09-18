@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "components/version_info/channel.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -16,6 +17,7 @@ namespace ash {
 // channel indicator UI that resides in UnifiedSystemInfoView.
 class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
  public:
+  METADATA_HEADER(ChannelIndicatorQuickSettingsView);
   ChannelIndicatorQuickSettingsView(version_info::Channel channel,
                                     bool allow_user_feedback);
   ChannelIndicatorQuickSettingsView(const ChannelIndicatorQuickSettingsView&) =

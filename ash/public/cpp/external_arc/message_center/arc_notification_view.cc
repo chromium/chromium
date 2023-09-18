@@ -19,6 +19,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -60,7 +61,7 @@ ArcNotificationView::ArcNotificationView(
       item_(item),
       content_view_(new ArcNotificationContentView(item_, notification, this)),
       shown_in_popup_(shown_in_popup),
-      is_group_child_(notification.group_child()){
+      is_group_child_(notification.group_child()) {
   DCHECK_EQ(message_center::NOTIFICATION_TYPE_CUSTOM, notification.type());
   DCHECK_EQ(kArcNotificationCustomViewType, notification.custom_view_type());
 
@@ -103,8 +104,9 @@ ArcNotificationView::ArcNotificationView(
 }
 
 ArcNotificationView::~ArcNotificationView() {
-  if (item_)
+  if (item_) {
     item_->RemoveObserver(this);
+  }
 }
 
 void ArcNotificationView::OnContentFocused() {
@@ -125,8 +127,9 @@ void ArcNotificationView::UpdateWithNotification(
 
 void ArcNotificationView::SetDrawBackgroundAsActive(bool active) {
   // Do nothing if |content_view_| has a background.
-  if (content_view_->background())
+  if (content_view_->background()) {
     return;
+  }
 
   message_center::MessageView::SetDrawBackgroundAsActive(active);
 }
@@ -140,8 +143,8 @@ void ArcNotificationView::UpdateCornerRadius(int top_radius,
 
 void ArcNotificationView::UpdateBackgroundPainter() {
   if (is_group_child_) {
-      SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-      return;
+    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    return;
   }
 
   const auto* ash_color_provider = AshColorProvider::Get();
@@ -184,8 +187,9 @@ bool ArcNotificationView::IsExpanded() const {
 }
 
 bool ArcNotificationView::IsAutoExpandingAllowed() const {
-  if (!item_)
+  if (!item_) {
     return false;
+  }
 
   // Disallow auto-expanding if the notification is bundled. This is consistent
   // behavior with Android since expanded height of bundle notification might be
@@ -195,8 +199,9 @@ bool ArcNotificationView::IsAutoExpandingAllowed() const {
 }
 
 void ArcNotificationView::SetExpanded(bool expanded) {
-  if (!item_)
+  if (!item_) {
     return;
+  }
 
   auto expand_state = item_->GetExpandState();
   if (expanded) {
@@ -209,8 +214,9 @@ void ArcNotificationView::SetExpanded(bool expanded) {
 }
 
 bool ArcNotificationView::IsManuallyExpandedOrCollapsed() const {
-  if (item_)
+  if (item_) {
     return item_->IsManuallyExpandedOrCollapsed();
+  }
   return false;
 }
 
@@ -225,8 +231,9 @@ void ArcNotificationView::OnSettingsButtonPressed(const ui::Event& event) {
 void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
   MessageView::OnSnoozeButtonPressed(event);
 
-  if (item_)
+  if (item_) {
     return item_->OpenSnooze();
+  }
 }
 
 void ArcNotificationView::OnContainerAnimationEnded() {
@@ -258,8 +265,9 @@ void ArcNotificationView::Layout() {
   message_center::MessageView::Layout();
 
   // If the content view claims focus, defer focus handling to the content view.
-  if (content_view_->IsFocusable())
+  if (content_view_->IsFocusable()) {
     SetFocusBehavior(FocusBehavior::NEVER);
+  }
 }
 
 bool ArcNotificationView::HasFocus() const {
@@ -314,5 +322,8 @@ void ArcNotificationView::OnItemDestroying() {
 aura::Window* ArcNotificationView::GetNativeContainerWindowForTest() const {
   return content_view_->GetNativeViewContainer();
 }
+
+BEGIN_METADATA(ArcNotificationView, message_center::MessageView)
+END_METADATA
 
 }  // namespace ash

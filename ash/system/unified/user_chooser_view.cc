@@ -30,6 +30,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,6 +51,7 @@ namespace {
 // A button that will transition to multi profile login UI.
 class AddUserButton : public views::Button {
  public:
+  METADATA_HEADER(AddUserButton);
   explicit AddUserButton(UserChooserDetailedViewController* controller);
 
   AddUserButton(const AddUserButton&) = delete;
@@ -91,29 +94,38 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   label->SetSubpixelRenderingEnabled(false);
 }
 
+BEGIN_METADATA(AddUserButton, views::Button)
+END_METADATA
+
 class Separator : public views::View {
  public:
+  METADATA_HEADER(Separator);
   explicit Separator(bool between_user) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetUseDefaultFillLayout(true);
     SetBorder(views::CreateEmptyBorder(
         between_user
             ? gfx::Insets::VH(0, kUnifiedUserChooserSeparatorSideMargin)
             : gfx::Insets::VH(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
                               0)));
-    views::View* child = new views::View();
-    // make sure that the view is displayed by setting non-zero size
-    child->SetPreferredSize(gfx::Size(1, 1));
-    AddChildView(child);
-    child->SetBorder(views::CreateThemedSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness, 0),
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
-            : kColorAshSeparatorColor));
+    AddChildView(
+        views::Builder<views::View>()
+            // make sure that the view is displayed by setting non-zero size
+            .SetPreferredSize(gfx::Size(1, 1))
+            .SetBorder(views::CreateThemedSolidSidedBorder(
+                gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness,
+                                  0),
+                chromeos::features::IsJellyEnabled()
+                    ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
+                    : kColorAshSeparatorColor))
+            .Build());
   }
 
   Separator(const Separator&) = delete;
   Separator& operator=(const Separator&) = delete;
 };
+
+BEGIN_METADATA(Separator, views::View)
+END_METADATA
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
   auto* label = new views::Label(message);
@@ -291,8 +303,9 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
     case MediaCaptureState::kNone:
       break;
   }
-  if (res_id)
+  if (res_id) {
     capture_icon_->SetTooltipText(l10n_util::GetStringUTF16(res_id));
+  }
 }
 
 std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
@@ -310,6 +323,9 @@ void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       user_index_ == 0 ? ax::mojom::Role::kLabelText : ax::mojom::Role::kButton;
   node_data->SetName(GetUserItemAccessibleString(user_index_));
 }
+
+BEGIN_METADATA(UserItemButton, views::Button)
+END_METADATA
 
 UserChooserView::UserChooserView(
     UserChooserDetailedViewController* controller) {
@@ -372,8 +388,9 @@ UserChooserView::~UserChooserView() {
 
 void UserChooserView::OnMediaCaptureChanged(
     const base::flat_map<AccountId, MediaCaptureState>& capture_states) {
-  if (user_item_buttons_.size() != capture_states.size())
+  if (user_item_buttons_.size() != capture_states.size()) {
     return;
+  }
 
   for (size_t i = 0; i < user_item_buttons_.size(); ++i) {
     const UserSession* const user_session =
@@ -385,8 +402,7 @@ void UserChooserView::OnMediaCaptureChanged(
   }
 }
 
-const char* UserChooserView::GetClassName() const {
-  return "UserChooserView";
-}
+BEGIN_METADATA(UserChooserView, views::View)
+END_METADATA
 
 }  // namespace ash

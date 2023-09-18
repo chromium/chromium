@@ -38,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -132,9 +133,6 @@ void UpdateFeatureState(bool enabled,
 
 ////////////////////////////////////////////////////////////////////////////////
 // AccessibilityDetailedView
-
-constexpr char AccessibilityDetailedView::kClassName[] =
-    "AccessibilityDetailedView";
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)
@@ -271,10 +269,6 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
     bool checked = controller->sticky_keys().enabled();
     UpdateFeatureState(checked, sticky_keys_view_, sticky_keys_top_view_);
   }
-}
-
-const char* AccessibilityDetailedView::GetClassName() const {
-  return kClassName;
 }
 
 void AccessibilityDetailedView::AppendAccessibilityList() {
@@ -960,5 +954,8 @@ void AccessibilityDetailedView::SetSodaFeatureSubtext(SodaFeature feature,
       break;
   }
 }
+
+BEGIN_METADATA(AccessibilityDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace ash

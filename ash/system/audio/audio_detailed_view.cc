@@ -1178,7 +1178,7 @@ void AudioDetailedView::OnNumStreamIgnoreUiGainsChanged(int32_t num) {
   }
 }
 
-BEGIN_METADATA(AudioDetailedView, views::View)
+BEGIN_METADATA(AudioDetailedView, TrayDetailedView)
 END_METADATA
 
 }  // namespace ash

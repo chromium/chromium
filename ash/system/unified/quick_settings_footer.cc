@@ -76,8 +76,8 @@ bool ShouldShowSignOutButton() {
       number_of_users_that_could_be_logged_in.has_value() &&
       number_of_users_that_could_be_logged_in.value() > 1;
 
-  // Show the sign out button if only one account is logged in, but multiple are
-  // on the device.
+  // Show the sign out button if only one account is logged in, but multiple
+  // are on the device.
   return multiple_past_accounts;
 }
 
@@ -188,6 +188,9 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
                     info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
 }
 
+BEGIN_METADATA(QsBatteryInfoViewBase, PillButton)
+END_METADATA
+
 QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
     : QsBatteryInfoViewBase(controller) {
   SetID(VIEW_ID_QS_BATTERY_BUTTON);
@@ -211,6 +214,9 @@ void QsBatteryLabelView::Update() {
   }
 }
 
+BEGIN_METADATA(QsBatteryLabelView, QsBatteryInfoViewBase)
+END_METADATA
+
 QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
     : QsBatteryInfoViewBase(controller, Type::kPrimaryWithIconLeading) {
   SetID(VIEW_ID_QS_BATTERY_BUTTON);
@@ -223,6 +229,9 @@ QsBatteryIconView::~QsBatteryIconView() = default;
 void QsBatteryIconView::Update() {
   UpdateIconAndText(PowerStatus::Get()->IsBatterySaverActive());
 }
+
+BEGIN_METADATA(QsBatteryIconView, QsBatteryIconView)
+END_METADATA
 
 QuickSettingsFooter::QuickSettingsFooter(
     UnifiedSystemTrayController* controller) {

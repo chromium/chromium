@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -35,6 +36,7 @@ class TriView;
 class ASH_EXPORT TrayDetailedView : public views::View,
                                     public ViewClickListener {
  public:
+  METADATA_HEADER(TrayDetailedView);
   explicit TrayDetailedView(DetailedViewDelegate* delegate);
 
   TrayDetailedView(const TrayDetailedView&) = delete;
@@ -55,7 +57,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // views::View:
   void Layout() override;
   int GetHeightForWidth(int width) const override;
-  const char* GetClassName() const override;
 
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }

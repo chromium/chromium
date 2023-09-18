@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace aura {
@@ -28,6 +29,7 @@ class ArcNotificationView : public message_center::MessageView,
  public:
   static ArcNotificationView* FromView(views::View* message_view);
 
+  METADATA_HEADER(ArcNotificationView);
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification,

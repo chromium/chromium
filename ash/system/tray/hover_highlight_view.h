@@ -10,6 +10,7 @@
 #include "ash/system/tray/actionable_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
@@ -38,6 +39,7 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
     UNCHECKED_CHECKBOX
   };
 
+  METADATA_HEADER(HoverHighlightView);
   // If |listener| is null then no action is taken on click.
   explicit HoverHighlightView(ViewClickListener* listener);
 
@@ -115,7 +117,6 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
  private:
   friend class TrayAccessibilityTest;

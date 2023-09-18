@@ -120,10 +120,11 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
   }
 
   void ExpectHotspotDetailedViewShown() {
-    TrayDetailedView* detailed_view = GetPrimaryUnifiedSystemTray()
-                                          ->bubble()
-                                          ->quick_settings_view()
-                                          ->GetDetailedViewForTest();
+    TrayDetailedView* detailed_view =
+        GetPrimaryUnifiedSystemTray()
+            ->bubble()
+            ->quick_settings_view()
+            ->GetDetailedViewForTest<TrayDetailedView>();
     ASSERT_TRUE(detailed_view);
     EXPECT_TRUE(views::IsViewClass<HotspotDetailedView>(detailed_view));
   }

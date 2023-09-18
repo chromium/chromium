@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,6 +18,7 @@ class ViewClickListener;
 // device in the detailed Bluetooth page within the quick settings.
 class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
  public:
+  METADATA_HEADER(BluetoothDeviceListItemView);
   explicit BluetoothDeviceListItemView(ViewClickListener* listener);
   BluetoothDeviceListItemView(const BluetoothDeviceListItemView&) = delete;
   BluetoothDeviceListItemView& operator=(const BluetoothDeviceListItemView&) =
@@ -38,9 +40,6 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override;
-
   // Updates the a11y name used for this view. This name should include the name
   // of the device, the type of the device, the connected state of the device,
   // any battery information available, and the index of the device within the

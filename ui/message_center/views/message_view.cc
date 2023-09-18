@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -55,7 +56,6 @@ bool ShouldShowAeroShadowBorder() {
 }  // namespace
 
 // static
-const char MessageView::kViewClassName[] = "MessageView";
 
 MessageView::HighlightPathGenerator::HighlightPathGenerator() = default;
 
@@ -186,8 +186,9 @@ void MessageView::SetManuallyExpandedOrCollapsed(ExpandState state) {
 
 void MessageView::UpdateCornerRadius(int top_radius, int bottom_radius) {
   SetCornerRadius(top_radius, bottom_radius);
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
   UpdateBackgroundPainter();
   SchedulePaint();
 }
@@ -241,8 +242,9 @@ bool MessageView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void MessageView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!event.IsOnlyLeftMouseButton())
+  if (!event.IsOnlyLeftMouseButton()) {
     return;
+  }
 
   MessageCenter::Get()->ClickOnNotification(notification_id_);
 }
@@ -252,8 +254,9 @@ void MessageView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (event.flags() != ui::EF_NONE)
+  if (event.flags() != ui::EF_NONE) {
     return false;
+  }
 
   if (event.key_code() == ui::VKEY_RETURN) {
     MessageCenter::Get()->ClickOnNotification(notification_id_);
@@ -296,10 +299,6 @@ void MessageView::OnBlur() {
   SchedulePaint();
 }
 
-const char* MessageView::GetClassName() const {
-  return kViewClassName;
-}
-
 void MessageView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN: {
@@ -322,25 +321,29 @@ void MessageView::OnGestureEvent(ui::GestureEvent* event) {
     }
   }
 
-  if (!event->IsScrollGestureEvent() && !event->IsFlingScrollEvent())
+  if (!event->IsScrollGestureEvent() && !event->IsFlingScrollEvent()) {
     return;
+  }
 
-  if (scroller_)
+  if (scroller_) {
     scroller_->OnGestureEvent(event);
+  }
   event->SetHandled();
 }
 
 void MessageView::RemovedFromWidget() {
-  if (!focus_manager_)
+  if (!focus_manager_) {
     return;
+  }
   focus_manager_->RemoveFocusChangeListener(this);
   focus_manager_ = nullptr;
 }
 
 void MessageView::AddedToWidget() {
   focus_manager_ = GetFocusManager();
-  if (focus_manager_)
+  if (focus_manager_) {
     focus_manager_->AddFocusChangeListener(this);
+  }
 }
 
 void MessageView::OnThemeChanged() {
@@ -406,16 +409,18 @@ void MessageView::OnSlideOut() {
 
   // The notification may be deleted after slide out, so give observers a
   // chance to handle the notification before fulling sliding out.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPreSlideOut(notification_id_);
+  }
 
   // Copy the |notification_id| here as calling OnSlideOut() might destroy
   // |this| but we still want to call RemoveNotification(). Note that the
   // iteration over |observers_| is still safe and will simply stop.
   std::string notification_id_copy = notification_id_;
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSlideOut(notification_id_);
+  }
 
   auto* message_center = MessageCenter::Get();
   if (features::IsNotificationGesturesUpdateEnabled() &&
@@ -438,8 +443,9 @@ void MessageView::OnDidChangeFocus(views::View* before, views::View* now) {
 }
 
 views::SlideOutController::SlideMode MessageView::CalculateSlideMode() const {
-  if (disable_slide_)
+  if (disable_slide_) {
     return views::SlideOutController::SlideMode::kNone;
+  }
 
   switch (GetMode()) {
     case Mode::SETTING:
@@ -455,13 +461,15 @@ views::SlideOutController::SlideMode MessageView::CalculateSlideMode() const {
 }
 
 MessageView::Mode MessageView::GetMode() const {
-  if (setting_mode_)
+  if (setting_mode_) {
     return Mode::SETTING;
+  }
 
   // Only nested notifications can be pinned. Standalones (i.e. popups) can't
   // be.
-  if (pinned_ && is_nested_)
+  if (pinned_ && is_nested_) {
     return Mode::PINNED;
+  }
 
   return Mode::NORMAL;
 }
@@ -541,8 +549,9 @@ bool MessageView::ShouldShowControlButtons() const {
 }
 
 bool MessageView::ShouldParentHandleSlide() const {
-  if (!parent_message_view_)
+  if (!parent_message_view_) {
     return false;
+  }
 
   return !parent_message_view_->IsExpanded();
 }
@@ -559,8 +568,9 @@ void MessageView::UpdateBackgroundPainter() {
 }
 
 void MessageView::UpdateNestedBorder() {
-  if (!is_nested_ || !GetWidget())
+  if (!is_nested_ || !GetWidget()) {
     return;
+  }
 
   SkColor border_color;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -598,5 +608,8 @@ void MessageView::UpdateControlButtonsVisibilityWithNotification(
   }
   UpdateControlButtonsVisibility();
 }
+
+BEGIN_METADATA(MessageView, views::View)
+END_METADATA
 
 }  // namespace message_center

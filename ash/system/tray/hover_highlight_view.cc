@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -283,10 +284,6 @@ void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetCheckedState(checked_state);
 }
 
-const char* HoverHighlightView::GetClassName() const {
-  return "HoverHighlightView";
-}
-
 gfx::Size HoverHighlightView::CalculatePreferredSize() const {
   gfx::Size size = ActionableView::CalculatePreferredSize();
 
@@ -328,5 +325,8 @@ void HoverHighlightView::OnEnabledChanged() {
     right_view_->SetEnabled(GetEnabled());
   }
 }
+
+BEGIN_METADATA(HoverHighlightView, ActionableView)
+END_METADATA
 
 }  // namespace ash
