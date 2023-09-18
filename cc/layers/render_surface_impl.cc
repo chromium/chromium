@@ -235,8 +235,9 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
 }
 
 gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
-  if (CopyOfOutputRequired() || !is_clipped())
+  if (!ShouldClip() || !is_clipped()) {
     return accumulated_content_rect();
+  }
 
   if (accumulated_content_rect().IsEmpty())
     return gfx::Rect();
@@ -517,6 +518,11 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
       mask_texture_size, surface_contents_scale, gfx::PointF(), tex_coord_rect,
       !layer_tree_impl_->settings().enable_edge_anti_aliasing,
       OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
+}
+
+bool RenderSurfaceImpl::ShouldClip() const {
+  return !HasCopyRequest() && !ShouldCacheRenderSurface() &&
+         !OwningEffectNode()->view_transition_element_resource_id.IsValid();
 }
 
 }  // namespace cc

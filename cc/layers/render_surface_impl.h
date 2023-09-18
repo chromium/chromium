@@ -211,7 +211,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   // Returns true if it's required to copy the output of this surface (i.e. when
   // it has copy requests, should be cached, or has a valid subtree capture ID),
-  // and should be e.g. immune from occlusion, etc. Returns false otherise.
+  // and should be e.g. immune from occlusion, etc. Returns false otherwise.
   bool CopyOfOutputRequired() const;
 
   // These are to enable commit, where we need to snapshot these flags from the
@@ -255,6 +255,10 @@ class CC_EXPORT RenderSurfaceImpl {
   void TileMaskLayer(viz::CompositorRenderPass* render_pass,
                      viz::SharedQuadState* shared_quad_state,
                      const gfx::Rect& unoccluded_content_rect);
+
+  // Returns true if this surface should be clipped. This is false if there
+  // are copy requests, it should be cached, or is part of a view transition.
+  bool ShouldClip() const;
 
   raw_ptr<LayerTreeImpl> layer_tree_impl_;
   ElementId id_;
