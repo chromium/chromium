@@ -7,6 +7,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../../assert.js';
+import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import * as expert from '../../expert.js';
@@ -252,9 +253,9 @@ export class Video extends ModeBase {
   private recordingType: RecordType = RecordType.NORMAL;
 
   /**
-   * The ongoing video snapshot.
+   * Ongoing video snapshot queue.
    */
-  private snapshotting: Promise<void>|null = null;
+  private readonly snapshottingQueue = new AsyncJobQueue('drop');
 
   /**
    * Whether current recording ever paused/resumed before it ended.
@@ -334,15 +335,13 @@ export class Video extends ModeBase {
 
   /**
    * Takes a video snapshot during recording.
-   *
-   * @return Promise resolved when video snapshot is finished.
    */
-  async takeSnapshot(): Promise<void> {
-    if (this.snapshotting !== null) {
-      return;
-    }
-    state.set(state.State.SNAPSHOTTING, true);
-    this.snapshotting = (async () => {
+  takeSnapshot(): void {
+    this.snapshottingQueue.push(async () => {
+      if (!state.get(state.State.RECORDING)) {
+        return;
+      }
+      state.set(state.State.SNAPSHOTTING, true);
       try {
         const timestamp = Date.now();
         let blob: Blob;
@@ -371,10 +370,8 @@ export class Video extends ModeBase {
         });
       } finally {
         state.set(state.State.SNAPSHOTTING, false);
-        this.snapshotting = null;
       }
-    })();
-    return this.snapshotting;
+    });
   }
 
   private toggleLowStorageWarning(show: boolean): void {
@@ -543,7 +540,6 @@ export class Video extends ModeBase {
   }
 
   async start(): Promise<[Promise<void>]> {
-    assert(this.snapshotting === null);
     this.everPaused = false;
     this.autoStopped = false;
     this.stopped = false;
@@ -682,7 +678,7 @@ export class Video extends ModeBase {
           // and TypeScript doesn't consider other methods will change the type
           // of properties.
           // eslint-disable-next-line @typescript-eslint/await-thenable
-          await this.snapshotting;
+          await this.snapshottingQueue.flush();
         }
       } catch (e) {
         // Tolerates the error if it is due to the very short duration. Reports
@@ -697,7 +693,7 @@ export class Video extends ModeBase {
         assert(videoSaver !== null);
         toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
         await videoSaver.cancel();
-        return [this.snapshotting ?? Promise.resolve()];
+        return [Promise.resolve()];
       }
 
       return [(async () => {
@@ -709,7 +705,6 @@ export class Video extends ModeBase {
           videoSaver,
           everPaused: this.everPaused,
         });
-        await this.snapshotting;
       })()];
     }
   }

@@ -372,9 +372,9 @@ class Capturer {
     await this.modes.current.stopCapture();
   }
 
-  async takeVideoSnapshot() {
+  takeVideoSnapshot() {
     if (this.modes.current instanceof Video) {
-      await this.modes.current.takeSnapshot();
+      this.modes.current.takeSnapshot();
     }
   }
 
@@ -462,9 +462,9 @@ export class OperationScheduler {
     return this.startReconfigure();
   }
 
-  async takeVideoSnapshot(): Promise<void> {
+  takeVideoSnapshot(): void {
     if (this.ongoingOperationType === OperationType.CAPTURE) {
-      await this.capturer.takeVideoSnapshot();
+      this.capturer.takeVideoSnapshot();
     }
   }
 
