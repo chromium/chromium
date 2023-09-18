@@ -125,6 +125,10 @@ void PrefetchResponseReader::BindAndStart(
 
   forward_body_ = std::move(body);
 
+  // TODO(crbug.com/1483599): Remove this alias.
+  auto load_state = load_state_;
+  base::debug::Alias(&load_state);
+
   switch (load_state_) {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
@@ -143,7 +147,8 @@ void PrefetchResponseReader::BindAndStart(
       //
       // TODO(crbug.com/1449360): we might want to revisit this behavior.
       CHECK(GetHead());
-      CHECK(forward_body_);
+      CHECK(forward_body_) << "Body is null for load state: "
+                           << static_cast<int>(load_state_);
       break;
 
     case LoadState::kRedirectHandled:
@@ -227,6 +232,10 @@ void PrefetchResponseReader::RunEventQueue(ServingUrlLoaderClientId client_id) {
 
 void PrefetchResponseReader::OnComplete(
     network::URLLoaderCompletionStatus completion_status) {
+  // TODO(crbug.com/1484028): Remove this alias.
+  auto load_state = load_state_;
+  base::debug::Alias(&load_state);
+
   switch (load_state_) {
     case LoadState::kStarted:
       CHECK_NE(completion_status.error_code, net::OK);
@@ -243,7 +252,11 @@ void PrefetchResponseReader::OnComplete(
       load_state_ = LoadState::kFailed;
       break;
     case LoadState::kRedirectHandled:
+      CHECK(false);
+      break;
     case LoadState::kCompleted:
+      CHECK(false);
+      break;
     case LoadState::kFailed:
       CHECK(false);
       break;
@@ -326,6 +339,7 @@ void PrefetchResponseReader::OnReceiveResponse(
       load_state_ = LoadState::kResponseReceived;
       head->navigation_delivery_type =
           network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
+      CHECK(body);
       break;
 
     case PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy:
