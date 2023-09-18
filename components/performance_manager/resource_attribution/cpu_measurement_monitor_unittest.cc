@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
 
 #include <map>
 #include <memory>
@@ -32,6 +32,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -51,8 +52,7 @@ namespace performance_manager::resource_attribution {
 // Test result printers. These need to go in the same namespace as the type
 // being printed.
 
-std::ostream& operator<<(std::ostream& os,
-                         const ResourceUsageResultMetadata& metadata) {
+std::ostream& operator<<(std::ostream& os, const ResultMetadata& metadata) {
   return os << "measurement_time:" << metadata.measurement_time;
 }
 
@@ -304,8 +304,7 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
     }
     return AllOf(
         Field("metadata", &CPUTimeResult::metadata,
-              Field("measurement_time",
-                    &ResourceUsageResultMetadata::measurement_time,
+              Field("measurement_time", &ResultMetadata::measurement_time,
                     expected_measurement_time)),
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
         // `start_time` should not change. If this was the first measurement,

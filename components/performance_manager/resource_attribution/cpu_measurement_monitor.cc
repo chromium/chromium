@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
 
 #include <algorithm>
 #include <map>
@@ -29,8 +29,8 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
+#include "components/performance_manager/public/resource_attribution/graph_change.h"
 #include "components/performance_manager/public/resource_attribution/worker_context_registry.h"
-#include "components/performance_manager/resource_attribution/graph_change.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

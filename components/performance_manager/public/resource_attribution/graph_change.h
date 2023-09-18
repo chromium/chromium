@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -17,7 +17,9 @@ namespace performance_manager::resource_attribution {
 
 // Graph changes that can affect resource measurement distribution.
 // These are all passed on the stack so don't need to use raw_ptr.
-
+//
+// TODO(crbug.com/1471683): This should be private, but it's referenced from the
+// public cpu_measurement_monitor.h
 struct NoGraphChange {};
 
 struct GraphChangeAddFrame {
@@ -93,4 +95,4 @@ using GraphChange = absl::variant<NoGraphChange,
 
 }  // namespace performance_manager::resource_attribution
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_

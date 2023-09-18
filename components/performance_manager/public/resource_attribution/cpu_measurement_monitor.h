@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -16,8 +16,9 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/public/resource_attribution/graph_change.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/performance_manager/resource_attribution/graph_change.h"
 
 namespace performance_manager {
 class Graph;
@@ -25,39 +26,15 @@ class Graph;
 
 namespace performance_manager::resource_attribution {
 
-// The Resource Attribution result and metadata structs described in
-// https://bit.ly/resource-attribution-api#heading=h.k8fjwkwxxdj6.
-// TODO(crbug.com/1471683): Implement the rest of the ResourceAttribution query
-// API, make it the interface to CPUMeasurementMonitor.
-
-struct ResourceUsageResultMetadata {
-  // The time this measurement was taken.
-  base::TimeTicks measurement_time;
-};
-
-struct CPUTimeResult {
-  ResourceUsageResultMetadata metadata;
-
-  // The time that Resource Attribution started monitoring the CPU usage of this
-  // context.
-  base::TimeTicks start_time;
-
-  // Total time the context spent on CPU between `start_time` and
-  // `metadata.measurement_time`.
-  //
-  // `cumulative_cpu` / (`metadata.measurement_time` - `start_time`)
-  // gives percentage of CPU used as a fraction in the range 0% to 100% *
-  // SysInfo::NumberOfProcessors(), the same as
-  // ProcessMetrics::GetPlatformIndependentCPUUsage().
-  base::TimeDelta cumulative_cpu;
-};
-
 // Periodically collect CPU usage from process nodes.
 //
 // Note: this can't store measurements in NodeAttachedData because the final CPU
 // measurement for a node may not arrive until after it's removed from the
 // graph. So this is not a decorator as defined in
-// components/performance_manager/README.md.
+// components/performance_manager/README.md
+//
+// TODO(crbug.com/1471683): This should be private and accessed the the
+// Resource Attribution query API.
 class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
                               public ProcessNode::ObserverDefaultImpl,
                               public WorkerNode::ObserverDefaultImpl {
@@ -215,4 +192,4 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
 }  // namespace performance_manager::resource_attribution
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
