@@ -415,6 +415,10 @@ class SessionRestoreImpl : public BrowserListObserver {
       browser->window()->Show();
     }
 
+    for (auto& restored_tab : *contents_created) {
+      restored_tab.StopTrackingWebContentsLifetime();
+    }
+
     if (succeeded) {
       // Sort the tabs in the order they should be restored, and start loading
       // them.
@@ -867,6 +871,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                              tab.extension_app_id.empty(), tab.pinned,
                              new_group);
     created_contents->push_back(restored_tab);
+    created_contents->back().StartTrackingWebContentsLifetime();
 
     // If this isn't the selected tab, there's nothing else to do.
     if (!is_selected_tab)

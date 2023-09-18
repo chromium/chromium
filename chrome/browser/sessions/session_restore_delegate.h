@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -21,6 +23,20 @@ class WebContents;
 // SessionRestoreDelegate is responsible for creating the tab loader and the
 // stats collector.
 class SessionRestoreDelegate {
+ private:
+  class WebContentsTracker : public content::WebContentsObserver,
+                             public base::RefCounted<WebContentsTracker> {
+   public:
+    explicit WebContentsTracker(content::WebContents* web_contents);
+
+   private:
+    friend class base::RefCounted<WebContentsTracker>;
+    ~WebContentsTracker() override = default;
+
+    // WebContentsObserver:
+    void WebContentsDestroyed() override;
+  };
+
  public:
   class RestoredTab {
    public:
@@ -45,6 +61,12 @@ class SessionRestoreDelegate {
       return group_;
     }
 
+    // Starts or stops tracking the lifetime of the WebContents. Starting
+    // results in CHECKing if the WebContents is destroyed. Used for
+    // https://crbug.com/1482502 .
+    void StartTrackingWebContentsLifetime();
+    void StopTrackingWebContentsLifetime();
+
    private:
     raw_ptr<content::WebContents, DanglingUntriaged> contents_;
     bool is_active_;
@@ -54,6 +76,7 @@ class SessionRestoreDelegate {
     // The ID for the tab group that this tab belonged to, if any. See
     // |TabStripModel::AddToNewGroup()| for more documentation.
     absl::optional<tab_groups::TabGroupId> group_;
+    scoped_refptr<WebContentsTracker> tracker_;
   };
 
   SessionRestoreDelegate() = delete;

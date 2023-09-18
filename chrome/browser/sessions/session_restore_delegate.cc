@@ -78,6 +78,17 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
   return contents_->GetLastActiveTime() > right.contents_->GetLastActiveTime();
 }
 
+void SessionRestoreDelegate::RestoredTab::StartTrackingWebContentsLifetime() {
+  if (tracker_) {
+    return;
+  }
+  tracker_ = base::MakeRefCounted<WebContentsTracker>(contents_);
+}
+
+void SessionRestoreDelegate::RestoredTab::StopTrackingWebContentsLifetime() {
+  tracker_ = nullptr;
+}
+
 // static
 void SessionRestoreDelegate::RestoreTabs(
     const std::vector<RestoredTab>& tabs,
@@ -118,4 +129,13 @@ void SessionRestoreDelegate::RestoreTabs(
     performance_manager::policies::ScheduleLoadForRestoredTabs(
         std::move(web_contents_vector));
   }
+}
+
+SessionRestoreDelegate::WebContentsTracker::WebContentsTracker(
+    content::WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
+void SessionRestoreDelegate::WebContentsTracker::WebContentsDestroyed() {
+  // TODO(https://crbug.com/1482502): remove once crash understood.
+  DUMP_WILL_BE_CHECK(false);
 }
