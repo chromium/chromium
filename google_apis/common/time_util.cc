@@ -32,7 +32,6 @@ std::vector<base::StringPiece> SplitStringPiece(base::StringPiece input,
 
 bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   base::StringPiece date;
-  base::StringPiece time_and_tz;
   base::StringPiece time;
   base::Time::Exploded exploded = {0};
   bool has_timezone = false;
@@ -44,46 +43,36 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
     if (parts.size() != 2)
       return false;
     date = parts[0];
-    time_and_tz = parts[1];
+    time = parts[1];
   }
 
   // Parses timezone suffix on the time part if available.
   {
     std::vector<base::StringPiece> parts;
-    if (time_and_tz.back() == 'Z') {
+    if (time.back() == 'Z') {
       // Timezone is 'Z' (UTC)
       has_timezone = true;
-      time = time_and_tz;
       time.remove_suffix(1);
     } else {
       bool ahead = true;
-      parts = SplitStringPiece(time_and_tz, "+");
+      parts = SplitStringPiece(time, "+");
       if (parts.size() != 2) {
         ahead = false;
-        parts = SplitStringPiece(time_and_tz, "-");
+        parts = SplitStringPiece(time, "-");
       }
       if (parts.size() == 2) {
         // Timezone is "+/-hh:mm"
         std::vector<base::StringPiece> tz_parts =
             SplitStringPiece(parts[1], ":");
-
-        int hour = 0;
-        if (tz_parts.empty() || !base::StringToInt(tz_parts[0], &hour)) {
+        int hour = 0, minute = 0;
+        if (tz_parts.empty() || !base::StringToInt(tz_parts[0], &hour) ||
+            (tz_parts.size() > 1 && !base::StringToInt(tz_parts[1], &minute))) {
           return false;
         }
-
-        int minute = 0;
-        if (tz_parts.size() > 1 && !base::StringToInt(tz_parts[1], &minute)) {
-          return false;
-        }
-
         has_timezone = true;
         time = parts[0];
         offset_to_utc =
             (base::Hours(hour) + base::Minutes(minute)) * (ahead ? +1 : -1);
-      } else {
-        // No timezone (uses local timezone)
-        time = time_and_tz;
       }
     }
   }
@@ -91,10 +80,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   // Parses the date part.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(date, "-");
-    if (parts.size() != 3)
-      return false;
-
-    if (!base::StringToInt(parts[0], &exploded.year) ||
+    if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
         !base::StringToInt(parts[1], &exploded.month) ||
         !base::StringToInt(parts[2], &exploded.day_of_month)) {
       return false;
@@ -104,42 +90,29 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   // Parses the time part.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(time, ":");
-    if (parts.size() != 3)
-      return false;
-
-    if (!base::StringToInt(parts[0], &exploded.hour) ||
+    if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.hour) ||
         !base::StringToInt(parts[1], &exploded.minute)) {
       return false;
     }
 
     std::vector<base::StringPiece> seconds_parts =
         SplitStringPiece(parts[2], ".");
-    if (seconds_parts.size() >= 3)
-      return false;
-
-    if (!base::StringToInt(seconds_parts[0], &exploded.second))
-      return false;
-
-    // Only accept milli-seconds (3-digits).
-    if (seconds_parts.size() > 1 && seconds_parts[1].length() == 3 &&
-        !base::StringToInt(seconds_parts[1], &exploded.millisecond)) {
+    if (seconds_parts.size() >= 3 ||
+        !base::StringToInt(seconds_parts[0], &exploded.second) ||
+        // Only accept milliseconds (3 digits).
+        (seconds_parts.size() > 1 && seconds_parts[1].length() == 3 &&
+         !base::StringToInt(seconds_parts[1], &exploded.millisecond))) {
       return false;
     }
   }
 
-  exploded.day_of_week = 0;
-  if (!exploded.HasValidValues())
+  // Convert back to a `base::Time`.
+  if (!exploded.HasValidValues() ||
+      !(has_timezone ? base::Time::FromUTCExploded(exploded, parsed_time)
+                     : base::Time::FromLocalExploded(exploded, parsed_time))) {
     return false;
-
-  if (has_timezone) {
-    if (!base::Time::FromUTCExploded(exploded, parsed_time))
-      return false;
-    *parsed_time -= offset_to_utc;
-  } else {
-    if (!base::Time::FromLocalExploded(exploded, parsed_time))
-      return false;
   }
-
+  *parsed_time -= offset_to_utc;
   return true;
 }
 
@@ -151,10 +124,7 @@ bool GetDateOnlyFromString(base::StringPiece raw_value,
   // Parses the date part only.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "-");
-    if (parts.size() != 3)
-      return false;
-
-    if (!base::StringToInt(parts[0], &exploded.year) ||
+    if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
         !base::StringToInt(parts[1], &exploded.month) ||
         !base::StringToInt(parts[2], &exploded.day_of_month)) {
       return false;
