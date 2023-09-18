@@ -12,9 +12,12 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 
 namespace blink {
 
+using mojom::blink::EmbeddedPermissionControlResult;
+using mojom::blink::EmbeddedPermissionRequestDescriptor;
 using mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
@@ -109,12 +112,17 @@ void HTMLPermissionElement::OnPermissionServiceConnectionFailed() {
 
 void HTMLPermissionElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kTypeAttr && type_.IsNull()) {
+  if (params.name == html_names::kTypeAttr) {
     // `type` should only take effect once, when is added to the permission
     // element. Removing, or modifying the attribute has no effect.
+    if (!type_.IsNull()) {
+      return;
+    }
+
     type_ = params.new_value;
-    HTMLElement::AttributeChanged(params);
   }
+
+  HTMLElement::AttributeChanged(params);
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
@@ -135,15 +143,52 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
 void HTMLPermissionElement::RequestPageEmbededPermissions() {
   auto permission_descriptors = ParsePermissionDescriptorsFromString(GetType());
   if (permission_descriptors.empty()) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kError,
+        String::Format("The permission type '%s' is not supported by the "
+                       "permission element.",
+                       GetType().Utf8().c_str())));
     return;
   }
 
-  // TODO(crbug.com/1462930): Handle requesting permission in browser side.
-  // We will propose a new mojo API in PermissionService to support requesting
-  // permission from <permission> element.
-  GetPermissionService()->RequestPermissions(std::move(permission_descriptors),
-                                             /*user_gesture=*/true,
-                                             base::NullCallback());
+  auto descriptor = EmbeddedPermissionRequestDescriptor::New();
+  // TODO(crbug.com/1462930): Send element position to browser and use the
+  // rect to calculate expected prompt position in screen coordinates.
+  descriptor->element_position = gfx::Rect(0, 0, 0, 0);
+  descriptor->permissions = std::move(permission_descriptors);
+  GetPermissionService()->RequestPageEmbeddedPermission(
+      std::move(descriptor),
+      WTF::BindOnce(&HTMLPermissionElement::OnEmbededPermissionsDecided,
+                    WrapWeakPersistent(this)));
+}
+
+void HTMLPermissionElement::OnEmbededPermissionsDecided(
+    EmbeddedPermissionControlResult result) {
+  switch (result) {
+    case EmbeddedPermissionControlResult::kDismissed:
+      DispatchEvent(*Event::Create(event_type_names::kDismissed));
+      return;
+    case EmbeddedPermissionControlResult::kGranted:
+      // TODO(crbug.com/1462930): update granted style and layout
+      DispatchEvent(*Event::Create(event_type_names::kResolved));
+      return;
+    case EmbeddedPermissionControlResult::kDenied:
+      DispatchEvent(*Event::Create(event_type_names::kResolved));
+      return;
+    case EmbeddedPermissionControlResult::kNotSupported:
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kError,
+          String::Format(
+              "The permission request type '%s' is not supported and "
+              "this <permission> element will not be functional.",
+              GetType().Utf8().c_str())));
+      return;
+    case EmbeddedPermissionControlResult::kResolvedNoUserGesture:
+      return;
+  }
+  NOTREACHED();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

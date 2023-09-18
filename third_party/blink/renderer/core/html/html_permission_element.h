@@ -83,6 +83,10 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // Removes any existing (temporary or indefinite) disable reasons.
   void EnableClicking(DisableReason reason);
 
+  // Callback triggered when permission is decided from browser side
+  void OnEmbededPermissionsDecided(
+      mojom::blink::EmbeddedPermissionControlResult result);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
