@@ -511,7 +511,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DoNotifyFrameDropped(
   // is reported as dropped multiple times (at most once per adapter).
   PostCrossThreadTask(
       *renderer_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDropped,
+      CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDroppedInRenderer,
                           media_stream_video_source_, reason));
   // Notify callbacks, such as
   // MediaStreamVideoTrack::FrameDeliverer::NotifyFrameDroppedOnVideoTaskRunner.
@@ -892,7 +892,7 @@ void VideoTrackAdapter::DeliverFrameOnVideoTaskRunner(
   if (adapters_.empty()) {
     PostCrossThreadTask(
         *renderer_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDropped,
+        CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDroppedInRenderer,
                             media_stream_video_source_,
                             media::VideoCaptureFrameDropReason::
                                 kVideoTrackAdapterHasNoResolutionAdapters));

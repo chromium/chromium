@@ -551,7 +551,7 @@ TEST_F(MediaStreamVideoSourceTest, ForwardsAtMaxFrameRateAndDropsWhenTooClose) {
 
   EXPECT_CALL(sink, OnVideoFrame).Times(3).WillRepeatedly(Return());
   EXPECT_CALL(*mock_source(),
-              OnFrameDroppedInternal(
+              OnFrameDroppedInRenderer(
                   media::VideoCaptureFrameDropReason::
                       kResolutionAdapterFrameRateIsHigherThanRequested))
       .Times(1)

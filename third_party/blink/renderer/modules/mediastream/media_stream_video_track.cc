@@ -1101,7 +1101,7 @@ void MediaStreamVideoTrack::NotifySourceFrameDropped(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (!source_)
     return;
-  source_->OnFrameDropped(reason);
+  source_->OnFrameDroppedInRenderer(reason);
 }
 
 void MediaStreamVideoTrack::StartTimerForRequestingFrames() {

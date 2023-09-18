@@ -79,9 +79,18 @@ void MediaStreamVideoCapturerSource::RequestRefreshFrame() {
   source_->RequestRefreshFrame();
 }
 
-void MediaStreamVideoCapturerSource::OnFrameDroppedInternal(
+void MediaStreamVideoCapturerSource::OnFrameDroppedInRenderer(
     media::VideoCaptureFrameDropReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // This callback from the renderer process ultimatley results in UMA counters
+  // in the browser process (LocalVideoCapturerSource::OnFrameDropped).
+  // TODO(https://crbug.com/1472978): When forwarding frame drops from browser
+  // to renderer (as opposed to the other way around), rename this method to
+  // avoid confusion about which process is reporting the frame drop.
+  // TODO(https://crbug.com/1481448): When the track stats API covers all types
+  // of frame drops, including out-of-process, consider deleting this in favor
+  // of moving the UMAs to the MediaStreamTrackImpl. The only difference is that
+  // the track stats API does not count <video> tag drops as frame drops.
   source_->OnFrameDropped(reason);
 }
 
