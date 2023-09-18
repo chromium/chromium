@@ -108,16 +108,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetOffsetToTransformParent(layer_offset);
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    auto hit_test_opaqueness = pending_layer.GetHitTestOpaqueness();
-    if (hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent &&
-        !RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
-      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
-    }
-    cc_picture_layer_->SetHitTestOpaqueness(hit_test_opaqueness);
-  } else {
-    cc_picture_layer_->SetHitTestable(true);
-  }
+  pending_layer.UpdateCcLayerHitTestOpaqueness();
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
