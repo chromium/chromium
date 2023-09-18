@@ -767,6 +767,7 @@
 <translation id="1604432177629086300">ბეჭდვა ვერ მოხერხდა. შეამოწმეთ პრინტერი და ცადეთ ხელახლა.</translation>
 <translation id="1604567162047669454">ვიზუალური განლაგების სემანტიკის ამოცნობა</translation>
 <translation id="1604774728851271529">Linux-ის ვერსიის გასაახლებლად საჭიროა ქსელთან კავშირი. დაუკავშირდით ინტერნეტს და ცადეთ ხელახლა.</translation>
+<translation id="1605148987885002237">კლავიატურა და შეყვანა</translation>
 <translation id="1605744057217831567">ყველა საიტის მონაცემებისა და ნებართვების ნახვა</translation>
 <translation id="1606077700029460857">მაუსის პარამეტრების შეცვლა</translation>
 <translation id="1606307079840340755">თქვენი Passpoint პროვაიდერი ამოიშლება მხოლოდ ამ მოწყობილობიდან. გამოწერაში ცვლილებების შესატანად დაუკავშირდით მის მომწოდებელს.</translation>
@@ -1225,6 +1226,7 @@
 <translation id="1956050014111002555">ფაილი შეიცავდა რამდენიმე სერტიფიკატს. არცერთი სერტიფიკატი არ იქნა დაიმპორტირებული:</translation>
 <translation id="1956167375087861299">ეკრძალება, გამოიყენოს იდენტიფიკატორები დაცული კონტენტის დასაკრავად</translation>
 <translation id="1956390763342388273">ეს ქმედება ატვირთავს ყველა ფაილს „<ph name="FOLDER_PATH" />“-დან. ამის გაკეთება რეკომენდებულია მხოლოდ იმ შემთხვევაში, თუ საიტს ენდობით.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 გაფართოება შემოწმდა}other{{NUM_EXTENSIONS} გაფართოება შემოწმდა}}</translation>
 <translation id="1959421829481337178">შეიყვანეთ თქვენი ოპერატორის მიერ მოწოდებული აქტივაციის კოდი.</translation>
 <translation id="1962233722219655970">ეს გვერდი იყენებს ორიგინალური კლიენტის პროგრამას, რომელიც არ მუშაობს თქვენს კომპიუტერში.</translation>
 <translation id="1963976881984600709">სტანდარტული დაცვა</translation>
@@ -1934,6 +1936,7 @@
 <translation id="2492461744635776704">მზადდება სერტიფიკატის ხელმოწერის მოთხოვნა</translation>
 <translation id="249330843868392562">ტექსტის გახმოვანების პარამეტრების გახსნა</translation>
 <translation id="2494555621641843783">Steam-ის ინსტალაცია ვერ მოხერხდა</translation>
+<translation id="2495141202137516054">თქვენი Drive-იდან</translation>
 <translation id="2495524171012645395">ბოლო დროს ნანახი რეცეპტები</translation>
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2497229222757901769">მაუსის სიჩქარე</translation>
@@ -2237,6 +2240,7 @@
 <translation id="2738771556149464852">არა შემდეგ</translation>
 <translation id="2739191690716947896">გამართვა</translation>
 <translation id="2739240477418971307">სპეციალური შესაძლებლობების პარამეტრების შეცვლა</translation>
+<translation id="2739331588276254426">დამყარდა კავშირი ინტერნეტთან <ph name="HOST_DEVICE_NAME" />-ის მეშვეობით</translation>
 <translation id="274029851662193272">ჩაწეული</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2740876196999178364">წვდომის ეს გასაღებები მხოლოდ ამ მოწყობილობაზე ინახება. ისინი არ ინახება თქვენს Google ანგარიშში.</translation>
@@ -3194,6 +3198,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> — აუდიო დადუმებულია</translation>
 <translation id="3537881477201137177">აღნიშნულის მოგვიანებით შეცვლა შესაძლებელია პარამეტრებიდან</translation>
 <translation id="3538066758857505094">Linux-ის დეინსტალაცია ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />-ის მეშვეობით ქსელი უზრუნველყოფილი არ არის</translation>
 <translation id="354060433403403521">ცვლადი დენის ადაპტერი</translation>
 <translation id="354068948465830244">საიტების მონაცემების წაკითხვისა და შეცვლის შესაძლებლობა</translation>
 <translation id="3541823293333232175">მიმაგრებულია</translation>
@@ -6399,6 +6404,7 @@
 <translation id="6169967265765719844">Steam-ის მეშვეობით დაინტალირებული თამაშებისა და აპების ნებართვების მართვა შესაძლებელია <ph name="LINK_BEGIN" />Steam აპის პარამეტრებიდან<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">სენდვიჩი</translation>
 <translation id="6170498031581934115">ADB გამართვის ჩართვა ვერ მოხერხდა. გადადით პარამეტრებზე და ცადეთ ხელახლა.</translation>
+<translation id="6170675927290506430">შეტყობინების პარამეტრებზე გადასვლა</translation>
 <translation id="6171779718418683144">შეკითხვა ყოველი ვიზიტისას</translation>
 <translation id="617213288191670920">ენები დამატებული არ არის</translation>
 <translation id="6173623053897475761">ხელახლა აკრიფეთ PIN-კოდი</translation>
@@ -6408,6 +6414,7 @@
 <translation id="6177412385419165772">მიმდინარეობს ამოშლა…</translation>
 <translation id="6178664161104547336">აირჩიეთ სერტიფიკატი</translation>
 <translation id="6178682841350631965">თქვენი სისტემაში შესვლის მონაცემები განახლდა</translation>
+<translation id="6179830757749383456">ბრაუზერს მართავს <ph name="BROWSER_DOMAIN" />, პროფილს მართავს <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{გსურთ გაფართოების წაშლა?}other{გსურთ # გაფართოების წაშლა?}}</translation>
 <translation id="6180510783007738939">ხაზის ხელსაწყო</translation>
 <translation id="6180550893222597997">წვდომის რომელი გასაღების გამოყენება გსურთ <ph name="APP_NAME" />-ისთვის?</translation>
@@ -6526,6 +6533,7 @@
 <translation id="6271348838875430303">შესწორება გაუქმდა</translation>
 <translation id="6271824294945464304">თქვენ აპირებთ, გააზიაროთ პაროლი</translation>
 <translation id="6273677812470008672">ხარისხი</translation>
+<translation id="6274089201566806618">მიმდინარეობს <ph name="HOST_DEVICE_NAME" />-თან დაკავშირება</translation>
 <translation id="6274202259872570803">სკრინკასტი</translation>
 <translation id="6276210637549544171">პროქსი-სერვერი <ph name="PROXY_SERVER" /> საჭიროებს მომხმარებლის სახელისა და პაროლის მითითებას.</translation>
 <translation id="6277105963844135994">ქსელის დრო ამოიწურა</translation>
@@ -6543,6 +6551,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს, რადგან მისი ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე.</translation>
 <translation id="6285770818046456882">მონაცემთა გადაცემა გაუქმდა მოწყობილობიდან, რომლიდანაც კონტენტი ზიარდებოდა</translation>
 <translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
+<translation id="6287828400772161253">Android ტელეფონი (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ახლომახლო არ არის მოწყობილობები, რომლებიდანაც რაიმე ზიარდება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">მიმდინარეობს გააქტიურების კოდის დადასტურება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="6291741848715722067">დადასტურების კოდი</translation>
@@ -8546,6 +8555,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ის მოლოდინში…</translation>
 <translation id="7926423016278357561">ეს მე არ ვყოფილვარ.</translation>
 <translation id="7926975587469166629">ბარათის მეტსახელი</translation>
+<translation id="7927610604078150317">ზომა: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ეს პაროლი უკვე შეცვალეთ?</translation>
 <translation id="7929962904089429003">მენიუს გახსნა</translation>
 <translation id="7930294771522048157">აქ გამოჩნდება გადახდის შენახული მეთოდები</translation>
@@ -9860,6 +9870,7 @@
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8986494364107987395">გამოყენების სტატისტიკისა და შეცდომების შესახებ მოხსენებების ავტომატური გაგზავნა Google-ში</translation>
 <translation id="8987305927843254629">თითოეულ ადამიანს შეეძლება ფუნქციების პერსონალიზება და მონაცემების განცალკევებით შენახვა.</translation>
+<translation id="8987321822984361516">ბრაუზერს მართავს ორგანიზაცია, პროფილს მართავს <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">თვე</translation>
 <translation id="8988539543012086784">ეს გვერდი შენახულია აქ: <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">ტეტერინგის სტატუსის განახლება</translation>
@@ -9878,6 +9889,7 @@
 <translation id="8999027165951679951">უმოქმედო ჩანართი: გათავისუფლებულია <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">სექციის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">შეეხეთ თითის ანაბეჭდის სენსორს, რომელიც მდებარეობს თქვენი <ph name="DEVICE_TYPE" />-ის მარჯვენა მხარეს. თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
+<translation id="9000532564152265066">ყველა ჩანართი</translation>
 <translation id="9003185744423389627">მოწყობილობათა მართვის სერვერთან კავშირი ვერ შედგა სტატუსით „<ph name="STATUS_TEXT" />“, <ph name="FAILURE_TIME" />-ზე</translation>
 <translation id="90033698482696970">გსურთ, ხელმისაწვდომი eSIM პროფილები ავტომატურად დასკანირდეს?</translation>
 <translation id="9003647077635673607">ყველა ვებსაიტზე დაშვება</translation>

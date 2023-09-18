@@ -740,6 +740,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4028481283645788203">Este necesară parola pentru mai multă siguranță</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + săgeată spre stânga</translation>
+<translation id="4039699481424758547">Apasă pe Enter pentru a realiza o captură de ecran a ferestrei: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Permiți accesul la ecran</translation>
 <translation id="404437169852192935">Actualizările s-au încheiat</translation>
 <translation id="4049230407053723315">Setări rapide</translation>
@@ -1964,6 +1965,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="9211681782751733685">Timp rămas până la încărcarea completă a bateriei: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Setează o imagine de fundal</translation>
+<translation id="9216699844945104164">Apasă pe Enter pentru a înregistra fereastra: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="921989828232331238">Părintele tău ți-a blocat dispozitivul pentru întreaga zi</translation>
 <translation id="9220525904950070496">Eliminați contul</translation>

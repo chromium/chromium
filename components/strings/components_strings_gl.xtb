@@ -685,6 +685,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2366689192918515749">Carne e marisco</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="23703388716193220">Equipamento de Golf</translation>
+<translation id="2374629208601905275">De acordo cunha lei da túa rexión, Chrome pídeche que escollas un buscador predeterminado. Estes buscadores son populares na túa zona e móstranse en orde aleatoria.</translation>
 <translation id="2378084239755710604">Tarxeta de gardado pechada.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome</translation>
@@ -900,6 +901,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2879694782644540289">usar o bloqueo de pantalla para completar contrasinais</translation>
 <translation id="2881276955470682203">Queres gardar a tarxeta?</translation>
 <translation id="2882949212241984732">Dobrez en ventá dobre</translation>
+<translation id="2891963978019740012">O teu buscador en Chrome</translation>
 <translation id="2893773853358652045">Cuarto rolo</translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2902312830803030883">Máis accións</translation>
@@ -1163,6 +1165,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3427342743765426898">&amp;Refacer modificación</translation>
 <translation id="342781501876943858">Chromium recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="3428151540071562330">Un ou varios URI do modelo do servidor DnsOverHttpsTemplates non son válidos e non se utilizarán.</translation>
+<translation id="3429817405364886479">Confirma que buscador queres usar</translation>
 <translation id="3431216045099978607">Preme |<ph name="ACCELERATOR" />| para saír de pantalla completa e ver a descarga.</translation>
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3433111389595862568">Software de colaboración e conferencia</translation>
@@ -1915,6 +1918,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4957080528849277028">Botón para ver o historial de Chrome. Actívao para consultar e xestionar o historial de navegación na configuración de Chrome</translation>
 <translation id="4958444002117714549">Ampliar lista</translation>
 <translation id="4960068118612257147">Podes facer cambios na configuración de privacidade nos anuncios de Chrome</translation>
+<translation id="4960203958361543136">Selecciona un buscador</translation>
 <translation id="4964505745997821360">Seguro médico</translation>
 <translation id="4968522289500246572">Esta aplicación está deseñada para dispositivos móbiles e pode que non cambie ben de tamaño. É posible que se reinicie ou que se produza algún problema co seu funcionamento.</translation>
 <translation id="4968665849807487749">Pode pedir permiso para xestionar as ventás en todas as pantallas</translation>
@@ -2097,6 +2101,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5323043727018853753">O contido inserido está permitido</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>
+<translation id="5331585574693522196">Establecer como predeterminado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5332769172018416402">Preguntar cunha mensaxe</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
@@ -2537,6 +2542,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6287197303017372967">Obter indicacións paso a paso ata o teu destino mediante a función de navegación.</translation>
 <translation id="628877850550444614">Desconto atopado</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
+<translation id="6292819926564202163">O teu buscador en Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Gardando...</translation>
@@ -2772,6 +2778,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6770747695101757579">Papel (algodón)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Préstamos comerciais</translation>
+<translation id="6785990323398321538">Podes cambiar o buscador en calquera momento na configuración de Chrome.</translation>
 <translation id="6786145470008421571">Sobre 6 x 9 polgadas</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensións</translation>
@@ -2843,6 +2850,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6917795328362592458">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais recomenda que comprobes os contrasinais gardados.</translation>
 <translation id="6925267999184670015">Norteamericano B+</translation>
 <translation id="692638818576287323">Vehículos comerciais</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O teu buscador predeterminado permíteche procurar información na Web e potencia as funcións de Chrome<ph name="END_BOLD" />, como a busca desde a barra de enderezos e desde imaxes de páxinas web. Pode que algunha función non estea dispoñible se o buscador non a admite.</translation>
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>
 <translation id="6935082727755903526">Postos de contabilidade e finanzas</translation>
 <translation id="6936976777388162184">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
@@ -3230,6 +3238,7 @@ Detalles adicionais:
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku-8</translation>
+<translation id="7659880963341457291">Confirma que buscador queres usar</translation>
 <translation id="766014026101194726">{0,plural, =1{A política do administrador bloqueou a carga deste ficheiro}other{A política do administrador bloqueou a carga de # ficheiros}}</translation>
 <translation id="7662298039739062396">Opción de configuración controlada por unha extensión</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3301,6 +3310,7 @@ Detalles adicionais:
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7785790577395078482">esta tableta</translation>
 <translation id="7786368602962652765">Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.</translation>
+<translation id="7786432318297177736">Estes buscadores móstranse en orde aleatoria. Podes cambiar o buscador predeterminado en calquera momento na configuración.</translation>
 <translation id="7786912885126430740">Poderás tramitar as compras máis rápido se tes os CVC gardados</translation>
 <translation id="7790488044432570133">Os sitios que visitas poden solicitarlle información a Google para axudarlles a medir o rendemento dos seus anuncios. Chrome permite que os sitios recompilen tipos limitados de datos (por exemplo, a hora do día na que se che mostrou un anuncio).</translation>
 <translation id="7791011319128895129">Sen publicar</translation>

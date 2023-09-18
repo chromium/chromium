@@ -767,6 +767,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1604432177629086300">Kan niet afdrukken. Controleer de printer en probeer het opnieuw.</translation>
 <translation id="1604567162047669454">Semantiek voor visuele indeling herkennen</translation>
 <translation id="1604774728851271529">Je hebt een netwerkverbinding nodig om Linux te upgraden. Maak verbinding met internet en probeer het opnieuw.</translation>
+<translation id="1605148987885002237">Toetsenbord en invoer</translation>
 <translation id="1605744057217831567">Alle sitegegevens en -rechten bekijken</translation>
 <translation id="1606077700029460857">Muisinstellingen wijzigen</translation>
 <translation id="1606307079840340755">Je Passpoint-provider wordt alleen van dit apparaat verwijderd. Neem contact op met de abonnementsprovider om wijzigingen in het abonnement aan te brengen.</translation>
@@ -1225,6 +1226,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1956050014111002555">Het bestand bevatte meerdere certificaten. Geen van deze certificaten is geïmporteerd:</translation>
 <translation id="1956167375087861299">Geen toestemming om ID's te gebruiken om beveiligde content af te spelen</translation>
 <translation id="1956390763342388273">Hiermee worden alle bestanden in <ph name="FOLDER_PATH" /> geüpload. Doe dit alleen als je de site vertrouwt.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensie beoordeeld}other{{NUM_EXTENSIONS} extensies beoordeeld}}</translation>
 <translation id="1959421829481337178">Voer de activatiecode in die je van je provider hebt gekregen.</translation>
 <translation id="1962233722219655970">Deze pagina gebruikt een Native Client-app die niet werkt op je computer.</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
@@ -1752,7 +1754,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2353910600995338714">Exporteren afgerond</translation>
 <translation id="2355314311311231464">Het instelproces is mislukt omdat je accountgegevens niet kunnen worden opgehaald. Probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Opties voor energiebesparing</translation>
-<translation id="2355604387869345912">Instant-tethering aanzetten</translation>
+<translation id="2355604387869345912">Instant tethering aanzetten</translation>
 <translation id="2356070529366658676">Vragen</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> verwijderen</translation>
 <translation id="2358777858338503863">Klik om toe te staan op <ph name="ORIGIN" />:</translation>
@@ -1934,6 +1936,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2492461744635776704">Verzoek voor certificaatondertekening voorbereiden</translation>
 <translation id="249330843868392562">Tekst-naar-­spraak-instellingen openen</translation>
 <translation id="2494555621641843783">Kan Steam niet installeren</translation>
+<translation id="2495141202137516054">Vanuit je Drive</translation>
 <translation id="2495524171012645395">Recent bekeken recepten</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2497229222757901769">Snelheid muis</translation>
@@ -2181,7 +2184,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2704184184447774363">Microsoft-documentondertekening</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="270516211545221798">Snelheid touchpad</translation>
-<translation id="2705736684557713153">Scroll naar de onderkant van het scherm en zet instant-tethering aan als deze optie wordt weergegeven. Als de optie niet wordt weergegeven, ben je helemaal klaar.</translation>
+<translation id="2705736684557713153">Scroll naar de onderkant van het scherm en zet instant tethering aan als deze optie wordt weergegeven. Als de optie niet wordt weergegeven, ben je helemaal klaar.</translation>
 <translation id="2707024448553392710">Component downloaden</translation>
 <translation id="270921614578699633">Gemiddelde van</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
@@ -2237,6 +2240,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2738771556149464852">Niet na</translation>
 <translation id="2739191690716947896">Foutopsporing</translation>
 <translation id="2739240477418971307">Je toegankelijkheidsinstellingen wijzigen</translation>
+<translation id="2739331588276254426">Verbonden met internet via <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">Verlaagd</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Deze toegangssleutels worden alleen opgeslagen op dit apparaat. Ze worden niet opgeslagen in je Google-account.</translation>
@@ -3194,6 +3198,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio uitgezet</translation>
 <translation id="3537881477201137177">Dit kan later in Instellingen worden aangepast</translation>
 <translation id="3538066758857505094">Fout bij verwijderen van Linux. Probeer het opnieuw.</translation>
+<translation id="3540173484406326944">Geen netwerk via <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">Netspanningsadapter</translation>
 <translation id="354068948465830244">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="3541823293333232175">Toegewezen</translation>
@@ -5489,7 +5494,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is beschikbaar)</translation>
 <translation id="542948651837270806">Er moet een update voor de Trusted Platform Module-firmware worden geïnstalleerd. Zie <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Volledige breedte</translation>
-<translation id="5430931332414098647">Instant-tethering</translation>
+<translation id="5430931332414098647">Instant tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> in map tonen</translation>
 <translation id="5432223177001837288">Als je audio wilt delen, moet je in plaats daarvan een tabblad delen</translation>
@@ -6393,6 +6398,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6169967265765719844">Je kunt de rechten voor via Steam geïnstalleerde games en apps beheren in de <ph name="LINK_BEGIN" />instellingen van de Steam-app<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">ADB-foutopsporing kan niet worden aangezet. Ga naar Instellingen en probeer het opnieuw.</translation>
+<translation id="6170675927290506430">Naar instellingen voor meldingen</translation>
 <translation id="6171779718418683144">Vragen bij elk bezoek</translation>
 <translation id="617213288191670920">Geen talen toegevoegd</translation>
 <translation id="6173623053897475761">Typ je pincode nog een keer</translation>
@@ -6402,6 +6408,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6177412385419165772">Verwijderen...</translation>
 <translation id="6178664161104547336">Een certificaat selecteren</translation>
 <translation id="6178682841350631965">Je inloggegevens zijn geüpdatet</translation>
+<translation id="6179830757749383456">Browser beheerd door <ph name="BROWSER_DOMAIN" />, profiel beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Extensie verwijderen?}other{# extensies verwijderen?}}</translation>
 <translation id="6180510783007738939">Tool Lijn</translation>
 <translation id="6180550893222597997">Welke toegangssleutel wil je gebruiken voor <ph name="APP_NAME" />?</translation>
@@ -6520,6 +6527,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6271348838875430303">correctie ongedaan gemaakt</translation>
 <translation id="6271824294945464304">Wachtwoord delen</translation>
 <translation id="6273677812470008672">Kwaliteit</translation>
+<translation id="6274089201566806618">Verbinding maken met <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Voor de proxy <ph name="PROXY_SERVER" /> zijn een gebruikersnaam en wachtwoord vereist.</translation>
 <translation id="6277105963844135994">Time-out van netwerk</translation>
@@ -6537,6 +6545,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
 <translation id="6285770818046456882">Het apparaat dat met je deelt, heeft de overdracht geannuleerd</translation>
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
+<translation id="6287828400772161253">Android-telefoon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Activeringscode verifiëren. Dit kan een paar minuten duren.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
@@ -6567,7 +6576,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Veiligheidscheck is 1 dag geleden uitgevoerd}other{Veiligheidscheck is {NUM_DAYS} dagen geleden uitgevoerd}}</translation>
 <translation id="6312638141433622592">Aanbieden om artikelen te bekijken in de lezermodus (als die wordt ondersteund)</translation>
 <translation id="6313641880021325787">VR AFSLUITEN</translation>
-<translation id="6313950457058510656">Instant-tethering uitzetten</translation>
+<translation id="6313950457058510656">Instant tethering uitzetten</translation>
 <translation id="6314819609899340042">Je hebt foutopsporingsfuncties aangezet voor dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat.</translation>
 <translation id="6315170314923504164">Spraak</translation>
 <translation id="6315493146179903667">Alles op voorgrond</translation>
@@ -7314,7 +7323,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6938606182859551396">Als je meldingen van je telefoon op je <ph name="DEVICE_TYPE" /> wilt krijgen, volg je de instructies op je telefoon om Google Play-services toegang te geven tot meldingen.</translation>
 <translation id="694168622559714949">Je beheerder heeft een standaardtaal ingesteld die je niet kunt aanpassen.</translation>
 <translation id="6941937518557314510">Log in bij <ph name="TOKEN_NAME" /> om uzelf bij <ph name="HOST_NAME" /> te verifiëren met je certificaat.</translation>
-<translation id="6943060957016121200">Instant-tethering aanzetten</translation>
+<translation id="6943060957016121200">Instant tethering aanzetten</translation>
 <translation id="6943176775188458830">Afdrukken annuleren</translation>
 <translation id="6943939122536910181">Verbinding met <ph name="DEVICE" /> verbroken</translation>
 <translation id="6944708469742828051">Deze toegangssleutel wordt alleen opgeslagen in Windows Hello</translation>
@@ -7375,7 +7384,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6981553172137913845">Als je privé wilt browsen, klik je op het menu-icoon met de stippen om een incognitovenster te openen</translation>
 <translation id="6981761993313539853">Zorg dat je bluetooth-apparaat in de koppelingsstand staat en in de buurt is. Koppel alleen met apparaten die je vertrouwt. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
-<translation id="6983507711977005608">Verbinding verbreken met netwerk voor instant-tethering</translation>
+<translation id="6983507711977005608">Verbinding verbreken met netwerk voor instant tethering</translation>
 <translation id="6983783921975806247">Geregistreerde OID</translation>
 <translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsoft-sleutelherstelagent</translation>
@@ -8357,7 +8366,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="778330624322499012">Kan <ph name="PLUGIN_NAME" /> niet laden</translation>
 <translation id="7784067724422331729">Beveiligingsinstellingen op je computer hebben dit bestand geblokkeerd.</translation>
 <translation id="7784796923038949829">Kan sitegegevens niet lezen of wijzigen</translation>
-<translation id="778480864305029524">Zet meldingen voor Google Play-services aan om instant-tethering te gebruiken.</translation>
+<translation id="778480864305029524">Zet meldingen voor Google Play-services aan om instant tethering te gebruiken.</translation>
 <translation id="7785471469930192436">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing)</translation>
 <translation id="77855763949601045">&amp;Gastprofiel openen</translation>
 <translation id="7786663536153819505">Volg de instructies op je telefoon om de QR-code te scannen. Zorg dat bluetooth aanstaat op je telefoon.
@@ -8538,6 +8547,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7925285046818567682">Wachten op <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Dit was ik niet.</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>
+<translation id="7927610604078150317">Grootte: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Heb je dit wachtwoord al gewijzigd?</translation>
 <translation id="7929962904089429003">Het menu openen</translation>
 <translation id="7930294771522048157">Opgeslagen betaalmethoden zie je hier</translation>
@@ -9286,7 +9296,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8528074251912154910">Talen toevoegen</translation>
 <translation id="8528479410903501741">IBAN opslaan</translation>
 <translation id="8528962588711550376">Inloggen.</translation>
-<translation id="8529925957403338845">Verbinding via instant-tethering mislukt</translation>
+<translation id="8529925957403338845">Verbinding via instant tethering mislukt</translation>
 <translation id="8531701051932785007">Uitgebreide versie van Safe Browsing staat uit</translation>
 <translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="8534656636775144800">Er is een fout opgetreden bij het verbinden met het domein. Probeer het opnieuw.</translation>
@@ -9779,7 +9789,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8931076093143205651">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="8931475688782629595">Beheren wat je synchroniseert</translation>
 <translation id="8931713990831679796">Deze printers zijn verbonden en klaar voor gebruik. Sla ze op in je profiel voor makkelijkere toegang.</translation>
-<translation id="8932654652795262306">Gegevens van instant-tethering</translation>
+<translation id="8932654652795262306">Gegevens van instant tethering</translation>
 <translation id="893298445929867520">Winkelwagens zijn verborgen. Ze worden opnieuw getoond als je wijzigingen aanbrengt.</translation>
 <translation id="8933960630081805351">&amp;Toon in Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> heeft toegang tot USB-apparaten}=2{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + nog {3}}}</translation>
@@ -9854,6 +9864,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8986362086234534611">Vergeten</translation>
 <translation id="8986494364107987395">Automatisch gebruiksstatistieken en crashrapporten naar Google verzenden</translation>
 <translation id="8987305927843254629">Ze kunnen ieder hun functionaliteit personaliseren en gegevens privé houden.</translation>
+<translation id="8987321822984361516">Browser beheerd door een organisatie, profiel beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8988539543012086784">Deze pagina is opgeslagen in <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Tethering-status vernieuwen</translation>
@@ -9872,6 +9883,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8999027165951679951">Inactief tabblad: <ph name="MEMORY_SAVINGS" /> vrijgemaakt</translation>
 <translation id="8999560016882908256">Syntaxisfout in sectie: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Raak de vingerafdruksensor aan de rechterkant van je <ph name="DEVICE_TYPE" /> aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="9000532564152265066">Alle tabbladen</translation>
 <translation id="9003185744423389627">Verbinding met server voor apparaatbeheer is mislukt met de status <ph name="STATUS_TEXT" /> op <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automatisch scannen naar beschikbare e-simkaartprofielen?</translation>
 <translation id="9003647077635673607">Toestaan op alle websites</translation>
@@ -9979,7 +9991,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9076977315710973122">SMB-share</translation>
 <translation id="907779190626433918">Gebruik voor elke site of app een uniek wachtwoord. Als iemand een hergebruikt wachtwoord vindt, kan diegene daarmee ook inloggen op je andere accounts.</translation>
 <translation id="9078193189520575214">Wijzigingen toepassen...</translation>
-<translation id="9078316009970372699">Instant-tethering uitzetten</translation>
+<translation id="9078316009970372699">Instant tethering uitzetten</translation>
 <translation id="9078546160009814724">Gebruikersnaam: <ph name="USERNAME" /></translation>
 <translation id="9079267182985899251">Deze optie wordt binnenkort niet meer ondersteund. Als je een tabblad wilt presenteren, gebruik je <ph name="GOOGLE_MEET" />.</translation>
 <translation id="9080175821499742274">Met Geheugenbesparing wordt geheugen van inactieve tabbladen vrijgemaakt zodat het kan worden gebruikt door actieve tabbladen en andere apps.</translation>

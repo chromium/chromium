@@ -91,6 +91,7 @@
 <translation id="4736424910885271643">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ስለሆነም የእርስዎ የChromium ውሂብ ከዚህ መሣሪያ ይጸዳል</translation>
 <translation id="4790638144988730920">በGoogle መለያዎ ውስጥ የChromium ውሂብን መጠቀምዎን ይቀጥሉ።</translation>
 <translation id="4828317641996116749">Chromium ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="4935539884203837577">Chromium ያስገቧቸውን የመከታተያ ቁጥሮች ማወቅ እና ከChromium ሌሎች የሸመታ ተሞክሮዎችን በማገዝ ወቅት ጥቅሎችዎን በአዲስ የትር ገጽ ላይ መከታተል ይችላል።</translation>
 <translation id="4985291216379576555">ከመስመር ውጭ፣ Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም</translation>
 <translation id="4996471330284142407">ከመቼውም ጊዜ በበለጠ ቀላል፣ ደህንነቱ በተጠበቀ እና ፈጣን በሆነ Chromium አማካኝነት ተጨማሪ ነገሮችን ያከናውኑ።</translation>
 <translation id="4999538639245140991">በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የእርስዎ Chromium ውሂብ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በGoogle መለያዎ ውስጥ ይቆያል።</translation>
@@ -114,6 +115,7 @@
 <translation id="5688047395118852662">ይህ ካርድ እንዴት ከChromium ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
 <translation id="5700709190537129682">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="5777187867430702742">የChromium ገፅ</translation>
+<translation id="584303319228224680">የእርስዎን ጥቅሎች Chromium ላይ በራስ ሰር ይከታተሏቸው</translation>
 <translation id="5889847953983052353">ሲበራ፦
 <ph name="BEGIN_INDENT" />  • እርስዎ Chromium በሚጠቀሙት መንገድ ለሚጠቀሙ ሰዎች የተሻለ እንዲሆን ያግዙ።<ph name="END_INDENT" />
 

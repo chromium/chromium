@@ -8,6 +8,7 @@
 <translation id="1056898198331236512">اخطار</translation>
 <translation id="1060368002126861100">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را به پوشه فایل‌های Windows منتقل کنید.</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1119383441774809183">نمایش پیامک‌ها</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1120073797882051782">هانگول روماجا</translation>
 <translation id="112387589102719461">‏انگلیسی (امریکایی) با صفحه‌کلید «برنامه‌نویس Dvorak»</translation>
@@ -556,7 +557,6 @@
 <translation id="5283101102242354279">افزونه‌ای را در «حالت ناشناس» روشن کنید:</translation>
 <translation id="5286194356314741248">اسکن کردن</translation>
 <translation id="5288441970121584418">همبرگر</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">خط‌مشی سرپرست انتقال این فایل را مسدود کرده است</translation>
 <translation id="5305688511332277257">چیزی نصب نشده است</translation>
 <translation id="5317780077021120954">ذخیره</translation>

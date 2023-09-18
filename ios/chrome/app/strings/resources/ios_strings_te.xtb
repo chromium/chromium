@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> ఖాతాలు ఒకే పాస్‌వర్డ్‌ను ఉపయోగిస్తున్నాయి</translation>
 <translation id="2050196510205866090">{count,plural, =1{సేవ్ చేసిన {count} పేమెంట్ ఆప్షన్ మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{సేవ్ చేసిన {count} పేమెంట్ ఆప్షన్‌లు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="2055515971416882518">"సెట్టింగ్‌ల"ను తెరవండి.</translation>
+<translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">మీ Google ఖాతాలో మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
 <translation id="3588820906588687999">చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="3595252146048399851">ఏది సింక్ చేయాలనే దాన్ని, మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌లలో<ph name="END_LINK" /> ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా Search, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
+<translation id="3599500618468205645"><ph name="DOMAIN_NAME" />ను ఫాలో చేయండి‌ని చూపవద్దు</translation>
 <translation id="3603009562372709545">లింక్ URLను కాపీ చేయి</translation>
 <translation id="3607167657931203000">స్వీయపూర్తి డేటా</translation>
 <translation id="3609785682760573515">సింక్ చేస్తోంది...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">ప్రస్తుతం మీ ఫ్యామిలీ మెంబర్ పాస్‌వర్డ్‌లను అందుకోలేరు. Chromeను అప్‌డేట్ చేసుకొని, వారి పాస్‌వర్డ్‌లను సింక్ చేసుకోవాల్సిందిగా వారిని అడగండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">కాన్ఫిగరేషన్ ప్రొఫైల్ అందుబాటులో ఉంది</translation>
 <translation id="3670030362669914947">నంబర్</translation>
+<translation id="3680970647557344817">'బుక్‌మార్క్‌ను ఎడిట్ చేయండి'ని చూపవద్దు</translation>
 <translation id="368329460027487650">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేయడానికి ఆప్షన్‌లను తెరుస్తుంది.</translation>
 <translation id="3688815115226493214">ట్యాబ్ సూచనలు</translation>
 <translation id="3700134753671613714">మీ బుక్‌మార్క్‌లను మీ అన్ని పరికరాల్లో పొందడానికి సైన్ ఇన్ చేయండి.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">కీబోర్డ్</translation>
 <translation id="4601095002996233687">అనుమానాస్పద డౌన్‌లోడ్‌ల కోసం లోతైన స్కాన్‌లు చేయండి.</translation>
 <translation id="4606247758155004938">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది.</translation>
+<translation id="4611811151908969241">'<ph name="DOMAIN_NAME" />ను అన్-ఫాలో చేయండి'ని చూపవద్దు</translation>
 <translation id="461440297010471931">Googleతో శోధిస్తోంది</translation>
 <translation id="4616391354457235490">చర్య రద్దు చేయి</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">లాక్‌డౌన్ మోడ్</translation>
 <translation id="6760509555861141183">ఇటీవలి ట్యాబ్‌కు తిరిగి వెళ్ళండి</translation>
 <translation id="6762812039470893796">అన్ని ట్యాబ్‌ల ఎంపికలను తొలగించండి</translation>
+<translation id="6771287014037609247">కనుగొనబడిన ప్యాకేజీలను ఎల్లప్పుడూ ట్రాక్ చేయండి</translation>
 <translation id="6780034285637185932">జిప్ కోడ్</translation>
 <translation id="6781260999953472352">సింక్‌ను ఆన్ చేయాలా?</translation>
 <translation id="6781405765516175232">మార్గం ఆప్షన్‌ల కోసం, "దిశలను పొందండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{ట్యాబ్‌ను రివ్యూ చేయండి...}other{అన్ని ట్యాబ్‌లను రివ్యూ చేయండి...}}</translation>
 <translation id="8787968206789828143">వెబ్‌లో సెర్చ్ చేయండి</translation>
 <translation id="8792626944327216835">మైక్రోఫోన్</translation>
+<translation id="8793366654064127924">నన్ను ప్రతిసారి అడగాలి</translation>
 <translation id="8803639129939845298">సురక్షితం</translation>
 <translation id="8806823403540278281">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది. ట్యాబ్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">దాచబడింది</translation>
 <translation id="8855242995793521265">మీ బ్రౌజర్ లేదా పరికర వేగాన్ని అంతగా తగ్గించదు.</translation>
 <translation id="8855781063981781621">Chromeలో లాక్‌డౌన్ మోడ్‌ను డిజేబుల్ చేయడానికి మీ iPadలో దాన్ని ఆఫ్ చేయాలి.</translation>
+<translation id="886335568110896118">'మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయండి'ని చూపవద్దు</translation>
 <translation id="8863431381414769983">Google Maps నుండి దిశలు, లోకల్ సమాచారాన్ని పొందండి</translation>
 <translation id="8865415417596392024">మీ ఖాతాలోని Chrome డేటా</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ట్యాబ్}other{{count} ట్యాబ్‌లు}}</translation>

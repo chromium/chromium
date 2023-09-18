@@ -737,6 +737,7 @@
 <translation id="4028481283645788203">基於安全考量，請輸入密碼</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + 向左鍵</translation>
+<translation id="4039699481424758547">按下 Enter 鍵即可擷取「<ph name="WINDOW_TITLE" />」的視窗螢幕截圖</translation>
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="404437169852192935">更新服務已終止</translation>
 <translation id="4049230407053723315">快速設定</translation>
@@ -1959,6 +1960,7 @@
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">電池剩餘充電時間：<ph name="TIME_REMAINING" />。</translation>
 <translation id="9215934040295798075">設定桌布</translation>
+<translation id="9216699844945104164">按下 Enter 鍵即可錄製「<ph name="WINDOW_TITLE" />」的視窗畫面</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="921989828232331238">你的家長今天已鎖定這部裝置</translation>
 <translation id="9220525904950070496">移除帳戶</translation>

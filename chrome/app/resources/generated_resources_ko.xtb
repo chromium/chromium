@@ -770,6 +770,7 @@
 <translation id="1604432177629086300">인쇄할 수 없음: 프린터를 확인하고 다시 시도해 보세요</translation>
 <translation id="1604567162047669454">시각적 레이아웃 시맨틱 인식</translation>
 <translation id="1604774728851271529">Linux를 업그레이드하려면 네트워크에 연결해야 합니다. 인터넷에 연결한 다음 다시 시도해 보세요.</translation>
+<translation id="1605148987885002237">키보드 및 입력</translation>
 <translation id="1605744057217831567">모든 사이트 데이터 및 권한 보기</translation>
 <translation id="1606077700029460857">마우스 설정 변경</translation>
 <translation id="1606307079840340755">이 기기에서만 Passpoint 제공업체가 삭제됩니다. 구독을 변경하려면 구독 제공업체에 문의하세요.</translation>
@@ -1237,6 +1238,7 @@
 <translation id="1956050014111002555">파일에 여러 인증서가 있지만 가져올 수 있는 인증서가 없습니다.</translation>
 <translation id="1956167375087861299">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용하지 않음</translation>
 <translation id="1956390763342388273">'<ph name="FOLDER_PATH" />'의 모든 파일이 업로드됩니다. 사이트를 신뢰할 수 있을 때만 실행하세요.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 검토됨}other{확장 프로그램 {NUM_EXTENSIONS}개 검토됨}}</translation>
 <translation id="1959421829481337178">이동통신사에서 제공한 활성화 코드를 입력하세요</translation>
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
@@ -1951,6 +1953,7 @@
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2494555621641843783">Steam을 설치할 수 없음</translation>
+<translation id="2495141202137516054">Drive에서</translation>
 <translation id="2495524171012645395">최근에 본 레시피</translation>
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2497229222757901769">마우스 속도</translation>
@@ -2254,6 +2257,7 @@
 <translation id="2738771556149464852">만료:</translation>
 <translation id="2739191690716947896">디버그</translation>
 <translation id="2739240477418971307">접근성 설정 변경</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />을 통해 인터넷에 연결됨</translation>
 <translation id="274029851662193272">음각</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2740876196999178364">이 패스키는 이 기기에만 저장됩니다. Google 계정에는 저장되지 않습니다.</translation>
@@ -3211,6 +3215,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 오디오 음소거</translation>
 <translation id="3537881477201137177">나중에 설정에서 수정할 수 있습니다.</translation>
 <translation id="3538066758857505094">Linux를 제거하는 동안 문제가 발생했습니다. 다시 시도해 주세요.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />을 사용하는 네트워크 없음</translation>
 <translation id="354060433403403521">AC 어댑터</translation>
 <translation id="354068948465830244">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="3541823293333232175">할당됨</translation>
@@ -6415,6 +6420,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6169967265765719844">Steam을 통해 설치된 게임 및 앱에 대한 권한은 <ph name="LINK_BEGIN" />Steam 앱 설정<ph name="LINK_END" />에서 관리할 수 있습니다.</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6170498031581934115">ADB 디버깅을 사용 설정할 수 없습니다. 설정으로 이동하여 다시 시도해 보세요.</translation>
+<translation id="6170675927290506430">알림 설정으로 이동</translation>
 <translation id="6171779718418683144">방문할 때마다 확인</translation>
 <translation id="617213288191670920">추가된 언어 없음</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
@@ -6424,6 +6430,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6177412385419165772">삭제 중…</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
 <translation id="6178682841350631965">로그인 데이터가 업데이트되었습니다.</translation>
+<translation id="6179830757749383456"><ph name="BROWSER_DOMAIN" />에서 관리하는 브라우저, <ph name="PROFILE_DOMAIN" />에서 관리하는 프로필</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 삭제하시겠습니까?}other{#개의 확장 프로그램을 삭제하시겠습니까?}}</translation>
 <translation id="6180510783007738939">선 도구</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" />에 어떤 패스키를 사용하시겠습니까?</translation>
@@ -6542,6 +6549,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6271348838875430303">수정 취소됨</translation>
 <translation id="6271824294945464304">비밀번호 공유</translation>
 <translation id="6273677812470008672">품질</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />에 연결 중</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
 <translation id="6276210637549544171">프록시 <ph name="PROXY_SERVER" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="6277105963844135994">네트워크 시간 초과</translation>
@@ -6559,6 +6567,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 다운로드하지 않습니다.</translation>
 <translation id="6285770818046456882">나와 공유 중인 기기에서 전송을 취소했습니다.</translation>
 <translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
+<translation id="6287828400772161253">Android 휴대전화(<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">근처에 공유 가능한 기기가 없습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">활성화 코드를 확인하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="6291741848715722067">확인 코드</translation>
@@ -8564,6 +8573,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />의 응답을 기다리는 중...</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>
 <translation id="7926975587469166629">카드 닉네임</translation>
+<translation id="7927610604078150317">크기: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930294771522048157">저장한 결제 수단이 여기에 표시됩니다.</translation>
@@ -9879,6 +9889,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8986494364107987395">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="8987305927843254629">모든 사용자는 자신의 환경을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
+<translation id="8987321822984361516">조직에서 관리하는 브라우저, <ph name="PROFILE_DOMAIN" />에서 관리하는 프로필</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8988539543012086784">페이지가 <ph name="BOOKMARK_FOLDER" />에 저장되었습니다.</translation>
 <translation id="8989359959810288806">테더링 상태 새로고침</translation>
@@ -9897,6 +9908,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8999027165951679951">비활성 탭: <ph name="MEMORY_SAVINGS" /> 확보됨</translation>
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
+<translation id="9000532564152265066">모든 탭</translation>
 <translation id="9003185744423389627">기기 관리 서버 연결 실패. 상태: '<ph name="STATUS_TEXT" />' 시간: <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">사용 가능한 eSIM 프로필을 자동으로 스캔하시겠습니까?</translation>
 <translation id="9003647077635673607">모든 웹사이트에서 허용</translation>

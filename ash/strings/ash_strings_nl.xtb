@@ -740,6 +740,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4028481283645788203">Wachtwoord vereist voor extra beveiliging</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + pijl-links</translation>
+<translation id="4039699481424758547">Druk op Enter om een screenshot van het venster <ph name="WINDOW_TITLE" /> te maken</translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
 <translation id="404437169852192935">Updates beëindigd</translation>
 <translation id="4049230407053723315">Snelle instellingen</translation>
@@ -1083,7 +1084,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5426063383988017631">Menu Instellingen gesloten</translation>
 <translation id="5428899915242071344">Selecteren starten</translation>
 <translation id="5429993543155113935">Incognitovensters worden momenteel niet ondersteund</translation>
-<translation id="5430931332414098647">Instant-tethering</translation>
+<translation id="5430931332414098647">Instant tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433020815079095860">Audio-invoer</translation>
 <translation id="544691375626129091">Alle beschikbare gebruikers zijn al aan deze sessie toegevoegd.</translation>
@@ -1961,6 +1962,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="9211681782751733685">Nog <ph name="TIME_REMAINING" /> totdat de batterij volledig is opgeladen.</translation>
 <translation id="9215934040295798075">Achtergrond instellen</translation>
+<translation id="9216699844945104164">Druk op Enter om het venster <ph name="WINDOW_TITLE" /> op te nemen</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="921989828232331238">Je ouder heeft je apparaat de hele dag vergrendeld</translation>
 <translation id="9220525904950070496">Account verwijderen</translation>

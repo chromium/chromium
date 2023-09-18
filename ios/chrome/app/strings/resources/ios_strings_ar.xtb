@@ -199,6 +199,7 @@
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب تستخدم كلمة المرور نفسها</translation>
 <translation id="2050196510205866090">{count,plural, =1{تتوفّر طريقة دفع واحدة ({count}) محفوظة أعلى لوحة المفاتيح.}zero{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}two{تتوفّر طريقتا دفع ({count}) محفوظتَان أعلى لوحة المفاتيح.}few{تتوفّر {count} طرق دفع محفوظة أعلى لوحة المفاتيح.}many{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}other{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}}</translation>
 <translation id="2055515971416882518">‏افتح "الإعدادات" (Settings).</translation>
+<translation id="2059166748188874810">بلدية</translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> يوم</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
@@ -480,6 +481,7 @@
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
+<translation id="3599500618468205645">إخفاء ميزة "المتابعة <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">‏نسخ عنوان URL للرابط</translation>
 <translation id="3607167657931203000">ملء البيانات تلقائيًا</translation>
 <translation id="3609785682760573515">جارٍ المزامنة...</translation>
@@ -490,6 +492,7 @@
 <translation id="3646736009628185125">‏لا يمكن لأفراد عائلتك تلقّي كلمات المرور الآن. اطلب منهم تحديث تطبيق Chrome ومزامنة كلمات المرور لديهم. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">يتوفّر ملف شخصي يتضمّن إعدادات</translation>
 <translation id="3670030362669914947">رقم</translation>
+<translation id="3680970647557344817">إخفاء ميزة "تعديل الإشارة المرجعية"</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
 <translation id="3688815115226493214">اقتراحات علامات التبويب</translation>
 <translation id="3700134753671613714">سجّل الدخول للحصول على الإشارات المرجعية في جميع أجهزتك.</translation>
@@ -639,6 +642,7 @@
 <translation id="4592368184551360546">لوحة المفاتيح</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
+<translation id="4611811151908969241">إخفاء ميزة "إلغاء المتابعة <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">‏البحث من خلال Google</translation>
 <translation id="4616391354457235490">تراجُع</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
@@ -1060,6 +1064,7 @@
 <translation id="6753469262000681876">‏وضع التأمين (Lockdown Mode)</translation>
 <translation id="6760509555861141183">العودة إلى أحدث علامة تبويب</translation>
 <translation id="6762812039470893796">إلغاء اختيار الكل</translation>
+<translation id="6771287014037609247">تتبع الحِزم التي يتم رصدها دائمًا</translation>
 <translation id="6780034285637185932">الرمز البريدي</translation>
 <translation id="6781260999953472352">هل تريد تفعيل المزامنة؟</translation>
 <translation id="6781405765516175232">للاطّلاع على خيارات المسارات، انقر على "الحصول على الاتجاهات".</translation>
@@ -1411,6 +1416,7 @@
 <translation id="8780076847684176174">{count,plural, =1{مراجعة علامة التبويب…}zero{مراجعة جميع علامات التبويب…}two{مراجعة جميع علامات التبويب…}few{مراجعة جميع علامات التبويب…}many{مراجعة جميع علامات التبويب…}other{مراجعة جميع علامات التبويب…}}</translation>
 <translation id="8787968206789828143">البحث على الويب</translation>
 <translation id="8792626944327216835">الميكروفون</translation>
+<translation id="8793366654064127924">طرح السؤال في كلّ مرة</translation>
 <translation id="8803639129939845298">آمن</translation>
 <translation id="8806823403540278281">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة. ولن يتم حفظ علامات التبويب في "وضع التصفُّح المتخفي".
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1424,6 +1430,7 @@
 <translation id="8849001918648564819">مخفي</translation>
 <translation id="8855242995793521265">لا يؤدي إلى إبطاء المتصفِّح أو الجهاز بشكل ملحوظ.</translation>
 <translation id="8855781063981781621">‏لإيقاف "وضع التأمين" (Lockdown Mode) في Chrome، عليك إيقافه على جهاز iPad.</translation>
+<translation id="886335568110896118">إخفاء ميزة " طلب عرض الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة"</translation>
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8868471676553493380">{count,plural, =1{علامة تبويب واحدة ({count})}zero{{count} علامة تبويب}two{علامتا تبويب ({count})}few{{count} علامات تبويب}many{{count} علامة تبويب}other{{count} علامة تبويب}}</translation>

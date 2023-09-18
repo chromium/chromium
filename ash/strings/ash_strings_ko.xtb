@@ -740,6 +740,7 @@
 <translation id="4028481283645788203">보안 강화를 위해 비밀번호가 필요합니다.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + 왼쪽 화살표</translation>
+<translation id="4039699481424758547"><ph name="WINDOW_TITLE" /> 창의 스크린샷을 캡처하려면 Enter 키를 누르세요.</translation>
 <translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="404437169852192935">업데이트 종료됨</translation>
 <translation id="4049230407053723315">빠른 설정</translation>
@@ -1964,6 +1965,7 @@
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="9211681782751733685">배터리 충전이 완료될 때까지 남은 시간은 <ph name="TIME_REMAINING" />입니다.</translation>
 <translation id="9215934040295798075">배경화면 설정</translation>
+<translation id="9216699844945104164"><ph name="WINDOW_TITLE" /> 창을 녹화하려면 Enter를 누르세요</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="921989828232331238">부모님이 오늘 하루 동안 기기를 잠갔습니다.</translation>
 <translation id="9220525904950070496">계정 삭제</translation>

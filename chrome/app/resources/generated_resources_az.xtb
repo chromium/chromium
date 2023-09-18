@@ -763,6 +763,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1604432177629086300">Çap edilmədi. Printeri yoxlayıb yenidən sınayın.</translation>
 <translation id="1604567162047669454">Vizual tərtibat semantikasının tanınması</translation>
 <translation id="1604774728851271529">Linux'u təkmilləşdirmək üçün şəbəkə bağlantısı lazımdır. İnternetə qoşulun və yenidən cəhd edin.</translation>
+<translation id="1605148987885002237">Klaviatura və daxiletmələr</translation>
 <translation id="1605744057217831567">Bütün sayt məlumatlarına və icazələrə baxın</translation>
 <translation id="1606077700029460857">Maus ayarlarını dəyişin</translation>
 <translation id="1606307079840340755">Keçid nöqtəsi provayderi yalnız bu cihazdan silinəcək. Abunəyə dəyişiklik etmək üçün abunə provayderi ilə əlaqə saxlayın.</translation>
@@ -1221,6 +1222,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1956050014111002555">Fayl heç biri import olunmayan çoxsaylı sertifikatlardan ibarətdir:</translation>
 <translation id="1956167375087861299">Qorunan məzmunu oxutmaq üçün identifikatorlardan istifadə etməyə icazə verilməyib</translation>
 <translation id="1956390763342388273">Bu "<ph name="FOLDER_PATH" />" ünvanındakı bütün faylları yükləyəcək. Bunu yalnız sayta inandığınız təqdirdə edin.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 artırma nəzərdən keçirildi}other{{NUM_EXTENSIONS} artırma nəzərdən keçirildi}}</translation>
 <translation id="1959421829481337178">Operatorun təqdim etdiyi aktivasiya kodunu daxil edin.</translation>
 <translation id="1962233722219655970">Bu səhifə Native Client istifadə edir ki, kompüterinizdə işləmir.</translation>
 <translation id="1963976881984600709">Standart qoruma</translation>
@@ -1933,6 +1935,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2492461744635776704">Sertifikat giriş sorğusu hazırlanır</translation>
 <translation id="249330843868392562">Mətndən-nitqə ayarlarını açın</translation>
 <translation id="2494555621641843783">Steam quraşdırılmır</translation>
+<translation id="2495141202137516054">Diskdən</translation>
 <translation id="2495524171012645395">Bu yaxınlarda baxılan reseptlər</translation>
 <translation id="2496180316473517155">Brauzer tarixçəsi</translation>
 <translation id="2497229222757901769">Maus sürəti</translation>
@@ -2236,6 +2239,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2738771556149464852">Sonra yox</translation>
 <translation id="2739191690716947896">Debaq</translation>
 <translation id="2739240477418971307">Əlçatımlıq ayarlarını dəyişin</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> vasitəsilə internetə qoşulub</translation>
 <translation id="274029851662193272">Kədərli</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Bu giriş açarları yalnız bu cihazda yadda saxlanılır. Onlar Google Hesabınızda saxlanmır.</translation>
@@ -3193,6 +3197,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio səssiz edildi</translation>
 <translation id="3537881477201137177">Bunu daha sonra Ayarlarda dəyişmək olar</translation>
 <translation id="3538066758857505094">Linux sistemdən silinərkən xəta baş verdi. Yenidən cəhd edin.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> vasitəsilə şəbəkə yoxdur</translation>
 <translation id="354060433403403521">AC adapteri</translation>
 <translation id="354068948465830244">Bu sayt datasını oxuya və dəyişə bilər</translation>
 <translation id="3541823293333232175">Təyin edildi</translation>
@@ -6394,6 +6399,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6169967265765719844">Steam vasitəsilə quraşdırılmış oyunlar və tətbiqlər üçün icazələr <ph name="LINK_BEGIN" />Steam tətbiqi ayarlarında<ph name="LINK_END" /> idarə oluna bilər.</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6170498031581934115">ADB sazlamasını aktivləşdirmək mümkün olmadı. Ayarlara keçin və yenidən cəhd edin.</translation>
+<translation id="6170675927290506430">Bildiriş ayarlarına keçin</translation>
 <translation id="6171779718418683144">Hər dəfə girişdə soruşulsun</translation>
 <translation id="617213288191670920">Dil əlavə edilməyib</translation>
 <translation id="6173623053897475761">PIN kodu yenidən yazın</translation>
@@ -6403,6 +6409,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6177412385419165772">Silinir...</translation>
 <translation id="6178664161104547336">Sertifikat seçin</translation>
 <translation id="6178682841350631965">Giriş datanız güncəllənib</translation>
+<translation id="6179830757749383456">Brauzeri <ph name="BROWSER_DOMAIN" />, profili <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Artırma silinsin?}other{# artırma silinsin?}}</translation>
 <translation id="6180510783007738939">Sətir Aləti</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> üçün hansı giriş açarından istifadə etmək istəyirsiniz?</translation>
@@ -6521,6 +6528,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6271348838875430303">düzəliş geri qaytarıldı</translation>
 <translation id="6271824294945464304">Parol paylaşılır</translation>
 <translation id="6273677812470008672">Keyfiyyət</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> cihazına qoşulur</translation>
 <translation id="6274202259872570803">Ekran yayımı</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proksisi istifadəçi adı və parol tələb edir.</translation>
 <translation id="6277105963844135994">Şəbəkə fasiləsi</translation>
@@ -6538,6 +6546,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285770818046456882">Sizinlə paylaşım edən cihaz köçürməni ləğv etdi</translation>
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
+<translation id="6287828400772161253">Android telefonu (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivləşdirmə kodu doğrulanır. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>
@@ -8542,6 +8551,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> gözlənilir...</translation>
 <translation id="7926423016278357561">Mən deyildim.</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>
+<translation id="7927610604078150317">Ölçü: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Artıq bu parolu dəyişmisiniz?</translation>
 <translation id="7929962904089429003">Menyunu açın</translation>
 <translation id="7930294771522048157">Yadda saxlanmış ödəniş üsulları burada görünəcək</translation>
@@ -9854,6 +9864,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8986494364107987395">Google'a istifadəçi statistikalarını və qəza raportlarını avtomatik göndərin</translation>
 <translation id="8987305927843254629">Hamı öz təcrübəsini fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
+<translation id="8987321822984361516">Brauzeri təşkilat, profili <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
 <translation id="8987927404178983737">Ay</translation>
 <translation id="8988539543012086784">Bu səhifə <ph name="BOOKMARK_FOLDER" /> qovluğunda yadda saxlandı</translation>
 <translation id="8989359959810288806">Modem Rejimi Statusunu yeniləyin</translation>
@@ -9872,6 +9883,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="8999027165951679951">Deaktiv tab: <ph name="MEMORY_SAVINGS" /> boşaldılıb</translation>
 <translation id="8999560016882908256">Bölmə sintaksisi xətası: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> cihazınızın sağ tərəfində olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
+<translation id="9000532564152265066">Bütün tablar</translation>
 <translation id="9003185744423389627">Cihaz Meneceri Serverinə <ph name="FAILURE_TIME" /> radələrində bağlanma '<ph name="STATUS_TEXT" />' statusu ilə alınmadı</translation>
 <translation id="90033698482696970">Əlçatan eSIM profilləri avtomatik skanlansın?</translation>
 <translation id="9003647077635673607">Bütün saytlarda icazə verin</translation>

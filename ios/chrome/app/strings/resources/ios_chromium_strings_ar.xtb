@@ -92,6 +92,7 @@
 <translation id="4736424910885271643">‏سيتم محو بيانات Chromium المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>
 <translation id="4790638144988730920">‏مواصلة استخدام بيانات Chromium في حسابك على Google</translation>
 <translation id="4828317641996116749">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="4935539884203837577">‏يمكن لمتصفِّح Chromium اكتشاف أرقام التتبُّع التي تُدخلها وتتبُّع الحِزم في صفحة "علامة تبويب جديدة" والمساعدة في تجارب التسوّق الأخرى من Chromium.</translation>
 <translation id="4985291216379576555">‏بلا اتصال بالإنترنت، يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="4996471330284142407">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="4999538639245140991">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chromium من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
@@ -115,6 +116,7 @@
 <translation id="5688047395118852662">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chromium.</translation>
 <translation id="5700709190537129682">‏يتعذّر على متصفِّح Chromium التحقُّق من كلمات المرور.</translation>
 <translation id="5777187867430702742">‏صفحة متصفِّح Chromium</translation>
+<translation id="584303319228224680">‏التتبّع التلقائي لحِزمك على Chromium</translation>
 <translation id="5889847953983052353">‏عند تفعيل هذا الخيار:
 <ph name="BEGIN_INDENT" />  • ستساعد في تحسين متصفِّح Chromium لتلبية احتياجاتك أنت وغيرك من المستخدمين.<ph name="END_INDENT" />
 

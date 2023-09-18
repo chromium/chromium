@@ -740,6 +740,7 @@
 <translation id="4028481283645788203">დამატებითი უსაფრთხოებისთვის საჭიროა პაროლის შეყვანა</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + მარცხნივ მიმართული ისარი</translation>
+<translation id="4039699481424758547">ფანჯრის <ph name="WINDOW_TITLE" /> ანაბეჭდის შესაქმნელად დააჭირეთ Enter-ს</translation>
 <translation id="4042660782729322247">თქვენ აზიარებთ ეკრანს</translation>
 <translation id="404437169852192935">განახლებები დასრულდა</translation>
 <translation id="4049230407053723315">სწრაფი პარამეტრები</translation>
@@ -1964,6 +1965,7 @@
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="9211681782751733685">ბატარეის სრულ დატენამდე დარჩენილია <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">ფონის დაყენება</translation>
+<translation id="9216699844945104164">ფანჯრის <ph name="WINDOW_TITLE" /> ჩასაწერად დააჭირეთ Enter-ს</translation>
 <translation id="9219103736887031265">გამოსახულებები</translation>
 <translation id="921989828232331238">თქვენმა მშობელმა ჩაკეტა მოწყობილობა ერთი დღით</translation>
 <translation id="9220525904950070496">ანგარიშის წაშლა</translation>

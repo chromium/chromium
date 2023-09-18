@@ -860,6 +860,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 Als je het beleid uitzet, scant Chrome Cleanup niet periodiek en wordt handmatige activering uitgezet.
 
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1736990730683753958">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is niet zichtbaar op chrome://history/grouped.</translation>
 <translation id="1744340218280697033">Niet toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
 <translation id="1751429117283165017">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
@@ -918,7 +919,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 (Voor <ph name="PRODUCT_OS_NAME" /> raadpleeg je DeviceMetricsReportingEnabled.)</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
-<translation id="1810261428246410396">Het gebruik van instant-tethering toestaan</translation>
+<translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
 <translation id="1813638828646876133">Automatisch versturen van pincode op het vergrendel- en inlogscherm aanzetten</translation>
 <translation id="1813672770917912317">Hiermee kun je instellen of <ph name="PRODUCT_NAME" /> de v8 JavaScript-engine uitvoert met de JIT-compiler (Just In Time) aangezet of niet.
 
@@ -1266,6 +1267,7 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
+<translation id="2090712407517297305">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is zichtbaar op chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
@@ -1416,6 +1418,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="2204379573346866896">Verstreken minuten in het huidige uur.</translation>
 <translation id="2204753382813641270">Automatisch verbergen van archief beheren</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
+<translation id="2212011154693551439">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is standaard zichtbaar op chrome://history/grouped.</translation>
 <translation id="2213059592185933570">Maken van roamingprofielen aanzetten</translation>
 <translation id="2213342458177721585">De Hindi Inscript-indeling aanzetten voor het hele apparaat.</translation>
 <translation id="2215238871726750562">Als je het beleid instelt op 'True', wordt het browservenster niet geopend nadat de sessie is gestart.
@@ -1903,6 +1906,10 @@ Als je dit beleid niet instelt, is de standaard afhankelijk van factoren zoals o
 <translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
 <translation id="2665129863304939984">Gebruikers zelf laten kiezen of ze bestaande browsegegevens naar hun beheerde profiel willen overzetten</translation>
 <translation id="2665422249821137126">Grote cursor op het inlogscherm gebruiken</translation>
+<translation id="2666177084759967497">
+      Bepaalt of <ph name="PRODUCT_OS_NAME" /> lokale accountgegevens bewaart na uitloggen. Als je dit beleid instelt op True, bewaart <ph name="PRODUCT_OS_NAME" /> geen bestaande accountgegevens en worden alle gegevens uit de gebruikerssessie na het uitloggen verwijderd. Als je dit beleid instelt op False of niet instelt, bewaart het apparaat (versleutelde) lokale gebruikersgegevens.
+
+      Opmerking: Sinds M114 mogen specifieke kiosk-apps het gedrag van dit beleid voor hun app overschrijven voor speciale toepassingen, zoals proefwerken en toetsen.</translation>
 <translation id="2667894101494585925">Ophalen van optimalisatiegids aanzetten</translation>
 <translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
@@ -2082,7 +2089,7 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2866387633548787857">Fast Transition uitzetten</translation>
 <translation id="2866619962692161453">Type beleid over ander beleid</translation>
 <translation id="2866726566162790531">Lijst met herkomsten waarvoor alle HTTP-verificatie is toegestaan</translation>
-<translation id="2868756546751652023">Toestaan dat gebruikers instant-tethering gebruiken</translation>
+<translation id="2868756546751652023">Toestaan dat gebruikers instant tethering gebruiken</translation>
 <translation id="286898786908566256">Toestaan dat gebruikers telefoonnummers van Chrome naar hun Android-apparaat sturen</translation>
 <translation id="2872098849906555324">Google Drive-synchronisatie uitzetten</translation>
 <translation id="2872189563975139803">Instellingen voor scheiding van bedrijfsprofielen</translation>
@@ -2832,6 +2839,16 @@ Dit beleid is beschikbaar voor beheerders om een voorbeeld van het gedrag van ee
 Verbindingen die niet door deze controle komen, krijgen de fout ERR_SSL_KEY_USAGE_INCOMPATIBLE. Sites met deze fout hebben waarschijnlijk een verkeerd ingesteld certificaat. Moderne ECDHE_RSA cipher suites gebruiken de sleutelgebruiksoptie 'digitalSignature', terwijl verouderde cipher suites voor RSA-ontsleuteling de sleutelgebruiksoptie 'keyEncipherment' gebruiken. Als beheerders niet zeker weten welke wordt gebruikt, moeten ze beide opnemen in RSA-certificaten die zijn bedoeld voor HTTPS.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3461279434465463233">Voedingsstatus rapporteren</translation>
+<translation id="3468115890799739909">Met dit beleid bepaal je de zichtbaarheid van Chrome-geschiedenispagina's die zijn ingedeeld in groepen pagina's.
+
+      Als je het beleid toepast, is een Chrome-geschiedenispagina die is ingedeeld in groepen zichtbaar op chrome://history/grouped.
+
+      Als je het beleid niet toepast, is een Chrome-geschiedenispagina die is ingedeeld in groepen niet zichtbaar op chrome://history/grouped.
+
+      Als je het beleid niet instelt, is een Chrome-geschiedenispagina die is ingedeeld in groepen standaard zichtbaar op chrome://history/grouped.
+
+      Als het beleid <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> niet wordt toegepast, maar <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> wel wordt toegepast of niet is ingesteld, is een Chrome-geschiedenispagina die is ingedeeld in groepen nog steeds beschikbaar op chrome://history/grouped, maar is die misschien minder relevant voor de gebruiker.
+</translation>
 <translation id="3478024346823118645">Gebruikersgegevens wissen bij uitloggen</translation>
 <translation id="3480961938508521469">De batterij volledig opladen met een normale snelheid.</translation>
 <translation id="348110646151632565">Zet de toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aan.
@@ -5129,9 +5146,9 @@ Als je het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> inste
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant-tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
+<translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
 
-      Als deze instelling uitstaat, kunnen gebruikers instant-tethering niet gebruiken.
+      Als deze instelling uitstaat, kunnen gebruikers instant tethering niet gebruiken.
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="5584132346604748282">Beheer van Google-locatieservices op Android</translation>
@@ -5182,7 +5199,7 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
 <translation id="5634032995857968056">De sandbox voor de app-container van het weergaveprogramma aanzetten</translation>
-<translation id="5638334542697444045">Niet toestaan dat gebruikers instant-tethering gebruiken</translation>
+<translation id="5638334542697444045">Niet toestaan dat gebruikers instant tethering gebruiken</translation>
 <translation id="5639454129004500060">Als dit beleid wordt ingesteld, bevat het informatie om een bureautemplate-bestand te downloaden.  Het bestand bevat een bureautemplate dat aan de huidige gebruiker kan worden geleverd.
       Als het niet wordt ingesteld, bevat de lijst met bureautemplates geen vooraf ingestelde bureautemplate.  Als het beleid <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> niet op True wordt ingesteld, heeft dit beleid geen effect.</translation>
 <translation id="5644038505105689131">Afbeeldingsbron van de screensaver voor het inlogscherm.</translation>

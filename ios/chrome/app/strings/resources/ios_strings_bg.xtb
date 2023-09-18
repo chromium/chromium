@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> профила използват същата парола</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} запазен начин на плащане е налице над клавиатурата ви.}other{{count} запазени начина на плащане са налице над клавиатурата ви.}}</translation>
 <translation id="2055515971416882518">Отворете настройките.</translation>
+<translation id="2059166748188874810">Община</translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">Организацията ви ограничава това, което можете да запазвате в профила си в Google.</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
 <translation id="3595252146048399851">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
+<translation id="3599500618468205645">Скриване на „Следване на <ph name="DOMAIN_NAME" />“</translation>
 <translation id="3603009562372709545">Копиране на URL адреса на връзката</translation>
 <translation id="3607167657931203000">Автоматично попълване на данни</translation>
 <translation id="3609785682760573515">Синхронизира се...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">Понастоящем членът на семейството ви не може да получава пароли. Помолете го да актуализира Chrome и да синхронизира паролите си. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Налице е конфигурационен профил</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3680970647557344817">Скриване на „Редактиране на отметката“</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
 <translation id="3688815115226493214">Предложения за раздели</translation>
 <translation id="3700134753671613714">Влезте в профила си, за да получите отметките си на всичките си устройства.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">Клавиатура</translation>
 <translation id="4601095002996233687">Задълбочено сканиране за подозрителни изтегляния.</translation>
 <translation id="4606247758155004938">Браузърът се управлява от организацията ви.</translation>
+<translation id="4611811151908969241">Скриване на „Прекратяване на следенето на <ph name="DOMAIN_NAME" />“</translation>
 <translation id="461440297010471931">Търсене с Google</translation>
 <translation id="4616391354457235490">Отмяна</translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">Режим на заключване</translation>
 <translation id="6760509555861141183">Назад към най-скорошния раздел</translation>
 <translation id="6762812039470893796">Премахване на избора от всички</translation>
+<translation id="6771287014037609247">Винаги да се проследяват откритите пратки</translation>
 <translation id="6780034285637185932">Пощенски код</translation>
 <translation id="6781260999953472352">Да се включи ли синхронизирането?</translation>
 <translation id="6781405765516175232">За опции за маршрута докоснете „Получаване на упътвания“.</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{Преглед на раздела...}other{Преглед на всички раздели...}}</translation>
 <translation id="8787968206789828143">Търсене в мрежата</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8793366654064127924">Извеждане на запитване всеки път</translation>
 <translation id="8803639129939845298">Сигурно</translation>
 <translation id="8806823403540278281">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8855242995793521265">Не забавя осезаемо браузъра или устройството ви.</translation>
 <translation id="8855781063981781621">За да деактивирате режима на заключване в Chrome, изключете го на своя iPad.</translation>
+<translation id="886335568110896118">Скриване на „Заявка за мобилния сайт“</translation>
 <translation id="8863431381414769983">Получавайте упътвания и местна информация от Google Карти</translation>
 <translation id="8865415417596392024">Данни в Chrome в профила ви</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>

@@ -739,6 +739,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4028481283645788203">Veuillez saisir le mot de passe pour renforcer la sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche</translation>
+<translation id="4039699481424758547">Appuyez sur Entrée pour faire une capture d'écran de la fenêtre : <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="404437169852192935">Arrêt des mises à jour</translation>
 <translation id="4049230407053723315">Réglages rapides</translation>
@@ -1962,6 +1963,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Temps restant avant que la batterie soit entièrement rechargée : <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Définir le fond d'écran</translation>
+<translation id="9216699844945104164">Appuyez sur Entrée pour enregistrer la fenêtre : <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>
 <translation id="9220525904950070496">Supprimer le compte</translation>

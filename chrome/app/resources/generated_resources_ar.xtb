@@ -769,6 +769,7 @@
 <translation id="1604432177629086300">تعذّرت الطباعة. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="1604567162047669454">التعرُّف على دلالات التصميم المرئي</translation>
 <translation id="1604774728851271529">‏يجب الاتصال بالشبكة لترقية نظام التشغيل Linux. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
+<translation id="1605148987885002237">لوحة المفاتيح ومصادر الإدخال</translation>
 <translation id="1605744057217831567">الاطّلاع على جميع بيانات المواقع الإلكترونية وأذوناتها</translation>
 <translation id="1606077700029460857">تغيير إعدادات الماوس</translation>
 <translation id="1606307079840340755">ستتم إزالة مزوِّد خدمة "نقطة مرور" من هذا الجهاز فقط. لإجراء تغييرات على اشتراكك، يُرجى التواصل مع مزوِّد خدمة الاشتراك.</translation>
@@ -1227,6 +1228,7 @@
 <translation id="1956050014111002555">احتوى الملف على شهادات متعددة، لم يتم استيراد أي منها:</translation>
 <translation id="1956167375087861299">المواقع الإلكترونية التي لا يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
 <translation id="1956390763342388273">سيؤدي ذلك إلى تحميل جميع الملفات من "<ph name="FOLDER_PATH" />"، يُرجى تجنُّب ذلك إذا لم تكن واثقًا من الموقع.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{تمت مراجعة إضافة واحدة}zero{تمت مراجعة {NUM_EXTENSIONS} إضافة}two{تمت مراجعة إضافتَين ({NUM_EXTENSIONS})}few{تمت مراجعة {NUM_EXTENSIONS} إضافات}many{تمت مراجعة {NUM_EXTENSIONS} إضافة}other{تمت مراجعة {NUM_EXTENSIONS} إضافة}}</translation>
 <translation id="1959421829481337178">يُرجى إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="1962233722219655970">‏هذه الصفحة تستخدم تطبيق Native Client وهو لا يعمل على جهاز الكمبيوتر التابع لك.</translation>
 <translation id="1963976881984600709">الحماية العادية</translation>
@@ -1937,6 +1939,7 @@
 <translation id="2492461744635776704">جارٍ تحضير طلب توقيع الشهادة</translation>
 <translation id="249330843868392562">فتح إعدادات تحويل النص إلى كلام</translation>
 <translation id="2494555621641843783">‏يتعذّر تثبيت تطبيق Steam</translation>
+<translation id="2495141202137516054">‏من Drive</translation>
 <translation id="2495524171012645395">وصفات الطعام التي تم الاطّلاع عليها مؤخرًا</translation>
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497229222757901769">سرعة الماوس</translation>
@@ -2241,6 +2244,7 @@
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
 <translation id="2739240477418971307">تغيير إعدادات إمكانية الوصول</translation>
+<translation id="2739331588276254426">متصل بالإنترنت من خلال "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="274029851662193272">منخفضة</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2740876196999178364">‏يتم حفظ مفاتيح المرور هذه على هذا الجهاز فقط. ولا يتم حفظها في حسابك على Google.</translation>
@@ -3198,6 +3202,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - تم كتم الصوت</translation>
 <translation id="3537881477201137177">يمكنك تعديل حجم القرص لاحقًا من خلال "الإعدادات".</translation>
 <translation id="3538066758857505094">‏حدث خطأ أثناء إلغاء تثبيت نظام التشغيل Linux. يُرجى إعادة المحاولة.</translation>
+<translation id="3540173484406326944">لا تتوفّر أيّ شبكة عبر <ph name="HOST_DEVICE_NAME" />.</translation>
 <translation id="354060433403403521">‏محول AC</translation>
 <translation id="354068948465830244">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="3541823293333232175">تم تخصيص المفتاح.</translation>
@@ -6401,6 +6406,7 @@
 <translation id="6169967265765719844">‏يمكن إدارة الأذونات للألعاب والتطبيقات المثبَّتة عبر Steam في <ph name="LINK_BEGIN" />إعدادات تطبيق Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
 <translation id="6170498031581934115">‏يتعذّر تفعيل خيار "تصحيح الأخطاء عبر ADB". انتقِل إلى "الإعدادات" وأعِد المحاولة.</translation>
+<translation id="6170675927290506430">الانتقال إلى إعدادات الإشعارات</translation>
 <translation id="6171779718418683144">السؤال عند كل زيارة للموقع الإلكتروني</translation>
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
 <translation id="6173623053897475761">كتابة رقم التعريف الشخصي مرة أخرى</translation>
@@ -6410,6 +6416,7 @@
 <translation id="6177412385419165772">جارٍ الإزالة…</translation>
 <translation id="6178664161104547336">تحديد شهادة</translation>
 <translation id="6178682841350631965">تم تعديل بيانات تسجيل الدخول.</translation>
+<translation id="6179830757749383456">تتم إدارة المتصفِّح من خلال <ph name="BROWSER_DOMAIN" />، والملف الشخصي من خلال <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{هل تريد إزالة الإضافة؟}zero{هل تريد إزالة # إضافة؟}two{هل تريد إزالة إضافتَين؟}few{هل تريد إزالة # إضافات؟}many{هل تريد إزالة # إضافة؟}other{هل تريد إزالة # إضافة؟}}</translation>
 <translation id="6180510783007738939">أداة رسم الخطوط</translation>
 <translation id="6180550893222597997">ما هو مفتاح المرور الذي تريد استخدامه لتسجيل الدخول إلى "<ph name="APP_NAME" />"؟</translation>
@@ -6528,6 +6535,7 @@
 <translation id="6271348838875430303">تم التراجع عن التصحيح</translation>
 <translation id="6271824294945464304">مشاركة كلمة المرور</translation>
 <translation id="6273677812470008672">الجودة</translation>
+<translation id="6274089201566806618">جارٍ الاتصال بجهاز "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">يتطلّب الخادم الوكيل <ph name="PROXY_SERVER" /> اسم مستخدم وكلمة مرور.</translation>
 <translation id="6277105963844135994">انتهاء مهلة الشبكة</translation>
@@ -6545,6 +6553,7 @@
 <translation id="6285120108426285413">لا يتم تنزيل <ph name="FILE_NAME" /> بشكل شائع وربما يكون ضارًا.</translation>
 <translation id="6285770818046456882">ألغى الجهاز الذي يشارك معك الملف عملية النقل.</translation>
 <translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
+<translation id="6287828400772161253">‏هاتف Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ما مِن أجهزة متوفِّرة بالقرب منك للمشاركة معها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">جارٍ التحقّق من رمز التفعيل. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="6291741848715722067">رمز تأكيد البيانات</translation>
@@ -8558,6 +8567,7 @@
 <translation id="7925285046818567682">في انتظار <ph name="HOST_NAME" />‏ ...</translation>
 <translation id="7926423016278357561">لم يكن هذا أنا.</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
+<translation id="7927610604078150317">الحجم: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">هل سبق وغيرت كلمة المرور هذه؟</translation>
 <translation id="7929962904089429003">فتح القائمة</translation>
 <translation id="7930294771522048157">ستظهر هنا طرق الدفع المحفوظة</translation>
@@ -9878,6 +9888,7 @@
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8986494364107987395">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="8987305927843254629">يمكن لكل مستخدم تخصيص تجربته والحفاظ على خصوصية بياناته.</translation>
+<translation id="8987321822984361516">تتم إدارة المتصفِّح من خلال مؤسسة، والملف الشخصي من خلال <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="8987927404178983737">شهر</translation>
 <translation id="8988539543012086784">تم حفظ هذه الصفحة في "<ph name="BOOKMARK_FOLDER" />".</translation>
 <translation id="8989359959810288806">إعادة تحميل حالة التوصيل</translation>
@@ -9896,6 +9907,7 @@
 <translation id="8999027165951679951">علامة التبويب غير النشطة: تم إخلاء <ph name="MEMORY_SAVINGS" /> من مساحة التخزين</translation>
 <translation id="8999560016882908256">خطأ في بنية القسم: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">المِس أداة استشعار بصمة الإصبع في الجانب الأيمن من جهاز <ph name="DEVICE_TYPE" />. يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط.</translation>
+<translation id="9000532564152265066">جميع علامات التبويب</translation>
 <translation id="9003185744423389627">تعذّر الاتصال بخادم إدارة الأجهزة - حالة العملية "<ph name="STATUS_TEXT" />" الوقت <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">‏هل تريد إجراء بحث تلقائي عن الملفات الشخصية المتوفّرة لشريحة eSIM؟</translation>
 <translation id="9003647077635673607">السماح على جميع المواقع الإلكترونية</translation>

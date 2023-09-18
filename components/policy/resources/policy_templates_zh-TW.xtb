@@ -853,6 +853,7 @@
 如果將這項政策設為停用，Chrome 清理功能將不會定期執行掃描，並且無法手動啟動。
 
 在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。</translation>
+<translation id="1736990730683753958">chrome://history/grouped 的 Chrome 歷史記錄頁面不會依群組顯示內容。</translation>
 <translation id="1744340218280697033">不允許家長新增受監督的帳戶</translation>
 <translation id="1751429117283165017">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
 
@@ -1252,6 +1253,7 @@
 <translation id="208566302163036794">封鎖已停用的功能</translation>
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>
 <translation id="2089541797660774692">啟用受管理瀏覽器的雲端報告功能</translation>
+<translation id="2090712407517297305">chrome://history/grouped 的 Chrome 歷史記錄頁面會依群組顯示內容。</translation>
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
@@ -1401,6 +1403,7 @@
 <translation id="2204379573346866896">在這個小時內經過的分鐘數。</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
 <translation id="2208976000652006649">使用 POST 的搜尋網址參數</translation>
+<translation id="2212011154693551439">chrome://history/grouped 的 Chrome 歷史記錄頁面預設會依群組顯示內容。</translation>
 <translation id="2213059592185933570">啟用漫遊設定檔建立功能</translation>
 <translation id="2213342458177721585">啟用裝置通用的 Hindi Inscript 鍵盤配置。</translation>
 <translation id="2215238871726750562">如果將這項政策設為 True，系統不會在工作階段開始時啟動瀏覽器視窗。
@@ -1889,6 +1892,9 @@
 <translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665129863304939984">允許使用者決定是否將現有瀏覽資料移到受管理的設定檔</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
+<translation id="2666177084759967497">
+      決定 <ph name="PRODUCT_OS_NAME" /> 是否要在使用者登出後保留本機的帳戶資料。如果將這項政策設為 True，<ph name="PRODUCT_OS_NAME" /> 就不會持續保留帳戶資料，而且會在使用者登出後刪除該工作階段的所有資料。如果將這項政策設為 False 或未設定，裝置會保留 (加密) 本機使用者資料。
+注意：自 M114 起，特定資訊站應用程式可在特殊用途 (例如學生評量) 情況下覆寫這項政策的行為。</translation>
 <translation id="2667894101494585925">啟用最佳化指南擷取功能</translation>
 <translation id="2669157090883237118">不要變更 <ph name="PRODUCT_OS_NAME" /> 建議設定。</translation>
 <translation id="2672012807430078509">控管是否要為 SMB 掛接功能啟用 NTLM 驗證通訊協定</translation>
@@ -2801,6 +2807,16 @@
 未通過這項檢查的連線會失敗，並發生 ERR_SSL_KEY_USAGE_INCOMPATIBLE 錯誤。如果網站發生這項錯誤，可能是因為憑證設定有誤。新版 ECDHE_RSA 加密套件使用「digitalSignature」金鑰用途選項，舊版 RSA 解密加密套件則使用「keyEncipherment」金鑰用途選項。如果無法確定，管理員應同時將這兩個選項加入 HTTPS 專用的 RSA 憑證中。</translation>
 <translation id="3459509316159669723">列印</translation>
 <translation id="3461279434465463233">回報電源狀態</translation>
+<translation id="3468115890799739909">這項政策可控管 Chrome 歷史記錄頁面是否依頁面群組顯示內容。
+
+      如果將這項政策設為啟用，chrome://history/grouped 的 Chrome 歷史記錄頁面就會依頁面群組顯示內容。
+
+      如果將這項政策設為停用，chrome://history/grouped 的 Chrome 歷史記錄頁面就不會依頁面群組顯示內容。
+
+      如果不設定這項政策，chrome://history/grouped 的 Chrome 歷史記錄頁面預設會依頁面群組顯示內容。
+
+      請注意，如果將 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策設為停用，但將 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 政策設為啟用或不設定，chrome://history/grouped 的 Chrome 歷史記錄頁面仍會依頁面群組顯示內容，但這些內容與使用者的關聯性會降低。
+</translation>
 <translation id="3478024346823118645">登出後清除使用者資料</translation>
 <translation id="3480961938508521469">以標準充電速度將電池完全充飽。</translation>
 <translation id="348110646151632565">在登入畫面上啟用隨選朗讀無障礙功能。

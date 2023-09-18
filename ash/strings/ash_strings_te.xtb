@@ -741,6 +741,7 @@
 <translation id="4028481283645788203">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్‌ కావాలి</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + ఎడమ వైపు బాణం గుర్తు</translation>
+<translation id="4039699481424758547">విండో స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
 <translation id="404437169852192935">అప్‌డేట్‌లు ముగిశాయి</translation>
 <translation id="4049230407053723315">క్విక్ సెట్టింగ్‌లు</translation>
@@ -1965,6 +1966,7 @@
 <translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
 <translation id="9211681782751733685">బ్యాటరీ పూర్తిగా ఛార్జ్ కావడానికి పట్టే సమయం, <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">వాల్‌పేపర్‌ను సెట్ చేయండి</translation>
+<translation id="9216699844945104164">విండోను రికార్డ్ చేయడానికి enterను నొక్కండి: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="921989828232331238">మీ తల్లి/తండ్రి ఈ రోజుకి మీ పరికరాన్ని లాక్ చేసి ఉంచారు</translation>
 <translation id="9220525904950070496">ఖాతాను తీసివేయండి</translation>

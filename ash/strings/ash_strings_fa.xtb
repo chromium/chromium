@@ -739,6 +739,7 @@
 <translation id="4028481283645788203">برای ایمنی بیشتر به گذرواژه نیاز است</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + چپ‌بَر</translation>
+<translation id="4039699481424758547">‏برای ضبط نماگرفت از پنجره، کلید Enter را فشار دهید: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">درحال اشتراک‌گذاری صفحه‌تان هستید</translation>
 <translation id="404437169852192935">به‌روزرسانی‌ها به‌پایان رسید</translation>
 <translation id="4049230407053723315">تنظیمات فوری</translation>
@@ -1962,6 +1963,7 @@
 <translation id="9211490828691860325">همه میزکارها</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> زمان تا شارژ کامل باتری باقی‌مانده است.</translation>
 <translation id="9215934040295798075">تنظیم کاغذدیواری</translation>
+<translation id="9216699844945104164">‏برای ضبط پنجره، کلید Enter را فشار دهید: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="921989828232331238">پدر یا مادرتان دستگاهتان را برای تمام روز قفل کرده‌ است</translation>
 <translation id="9220525904950070496">حذف حساب</translation>
