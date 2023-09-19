@@ -51,7 +51,7 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
-    "mojo_interface_provider.js",
+    "mojo_interface_provider.ts",
     "scanning_app_types.js",
     "scanning_app_util.js",
     "scanning_browser_proxy.js",

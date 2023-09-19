@@ -5,19 +5,16 @@
 import {AccessibilityFeatures, AccessibilityFeaturesInterface} from './accessibility_features.mojom-webui.js';
 import {ScanService, ScanServiceInterface} from './scanning.mojom-webui.js';
 
-/** @type {?ScanServiceInterface} */
-let scanService = null;
+let scanService: ScanServiceInterface|null = null;
 
-/** @type {?AccessibilityFeaturesInterface} */
-let accessibilityFeatures = null;
+let accessibilityFeatures: AccessibilityFeaturesInterface|null = null;
 
-/** @param {!ScanServiceInterface} testScanService */
-export function setScanServiceForTesting(testScanService) {
+export function setScanServiceForTesting(
+    testScanService: ScanServiceInterface) {
   scanService = testScanService;
 }
 
-/** @return {!ScanServiceInterface} */
-export function getScanService() {
+export function getScanService(): ScanServiceInterface {
   if (scanService) {
     return scanService;
   }
@@ -26,16 +23,13 @@ export function getScanService() {
   return scanService;
 }
 
-/**
- * @param {!AccessibilityFeaturesInterface}
- *     testAccessibilityInterface
- */
-export function setAccessibilityFeaturesForTesting(testAccessibilityInterface) {
+export function setAccessibilityFeaturesForTesting(
+    testAccessibilityInterface: AccessibilityFeaturesInterface) {
   accessibilityFeatures = testAccessibilityInterface;
 }
 
-/** @return {!AccessibilityFeaturesInterface} */
-export function getAccessibilityFeaturesInterface() {
+export function getAccessibilityFeaturesInterface():
+    AccessibilityFeaturesInterface {
   if (accessibilityFeatures) {
     return accessibilityFeatures;
   }
