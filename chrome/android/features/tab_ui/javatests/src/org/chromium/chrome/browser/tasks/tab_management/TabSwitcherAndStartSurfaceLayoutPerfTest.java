@@ -335,6 +335,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
+    @DisabledTest(message = "crbug.com/1484339")
     public void testTabToGridFromNtp_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, NTP_URL);
