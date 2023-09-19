@@ -45,6 +45,8 @@ class CORE_EXPORT StyleHighlightData final {
   void SetGrammarError(const ComputedStyle*);
   void SetCustomHighlight(const AtomicString&, const ComputedStyle*);
 
+  bool DependsOnSizeContainerQueries() const;
+
   void Trace(Visitor*) const;
 
  private:

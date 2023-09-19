@@ -108,6 +108,21 @@ void StyleHighlightData::SetCustomHighlight(const AtomicString& highlight_name,
   custom_highlights_.Set(highlight_name, style);
 }
 
+bool StyleHighlightData::DependsOnSizeContainerQueries() const {
+  if ((selection_ && selection_->DependsOnSizeContainerQueries()) ||
+      (target_text_ && target_text_->DependsOnSizeContainerQueries()) ||
+      (spelling_error_ && spelling_error_->DependsOnSizeContainerQueries()) ||
+      (grammar_error_ && grammar_error_->DependsOnSizeContainerQueries())) {
+    return true;
+  }
+  for (auto style : custom_highlights_) {
+    if (style.value->DependsOnSizeContainerQueries()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void StyleHighlightData::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
   visitor->Trace(target_text_);

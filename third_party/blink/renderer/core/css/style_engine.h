@@ -816,6 +816,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
+  void RecalcHighlightStylesForContainer(Element& container);
 
   void RecalcTransitionPseudoStyle();
 

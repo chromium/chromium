@@ -608,6 +608,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void RecalcStyle(const StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForTraversalRootAncestor();
+
+  // RecalcHighlightStyles for the originating element's new_style and return
+  // a new new_style if highlight styles were added. Otherwise return a pointer
+  // to the passed in new_style.
+  const ComputedStyle* RecalcHighlightStyles(
+      const StyleRecalcContext& style_recalc_context,
+      const ComputedStyle* old_style,
+      const ComputedStyle& new_style,
+      const ComputedStyle* parent_style);
+
   void RebuildLayoutTreeForTraversalRootAncestor() {
     RebuildFirstLetterLayoutTree();
     WhitespaceAttacher whitespace_attacher;
@@ -1587,7 +1597,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // like *::selection. To improve runtime and keep copy-on-write inheritance,
   // avoid recalc if neither parent nor child matched any non-universal rules.
   HighlightRecalc CalculateHighlightRecalc(const ComputedStyle* old_style,
-                                           const ComputedStyle* new_style);
+                                           const ComputedStyle& new_style,
+                                           const ComputedStyle* parent_style);
 
   Member<ElementData> element_data_;
 };

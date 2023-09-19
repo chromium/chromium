@@ -3069,10 +3069,87 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
+void StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
+  const ComputedStyle& style = container.ComputedStyleRef();
+  if (!style.HasAnyHighlightPseudoElementStyles() ||
+      !style.HasNonUaHighlightPseudoStyles() ||
+      !style.HighlightData().DependsOnSizeContainerQueries()) {
+    return;
+  }
+
+  // We are recalculating styles for a size container whose highlight pseudo
+  // styles depend on size container queries. Make sure we update those styles
+  // based on the changed container size.
+  StyleRecalcContext recalc_context;
+  recalc_context.container = &container;
+  if (const ComputedStyle* new_style = container.RecalcHighlightStyles(
+          recalc_context, nullptr /* old_style */, style,
+          container.ParentComputedStyle());
+      new_style != &style) {
+    container.SetComputedStyle(new_style);
+    container.GetLayoutObject()->SetStyle(new_style,
+                                          LayoutObject::ApplyStyleChanges::kNo);
+  }
+}
+
+#if DCHECK_IS_ON()
+namespace {
+bool ContainerStyleChangesAllowed(Element& container,
+                                  const ComputedStyle* old_element_style,
+                                  const ComputedStyle* old_layout_style) {
+  // Generally, the size container element style is not allowed to change during
+  // layout, but for highlight pseudo elements depending on queries against
+  // their originating element, we need to update the style during layout since
+  // the highlight styles hangs off the originating element's ComputedStyle.
+  const ComputedStyle* new_element_style = container.GetComputedStyle();
+  const ComputedStyle* new_layout_style =
+      container.GetLayoutObject() ? container.GetLayoutObject()->Style()
+                                  : nullptr;
+
+  if (!new_element_style || !old_element_style) {
+    // The container should always have a ComputedStyle.
+    return false;
+  }
+  if (new_element_style != old_element_style) {
+    Vector<ComputedStyleBase::DebugDiff> diff =
+        old_element_style->DebugDiffFields(*new_element_style);
+    // Allow highlight styles to change, but only highlight styles.
+    if (diff.size() > 1 ||
+        (diff.size() == 1 &&
+         diff[0].field != ComputedStyleBase::DebugField::highlight_data_)) {
+      return false;
+    }
+  }
+  if (new_layout_style == old_layout_style) {
+    return true;
+  }
+  if (!new_layout_style || !old_element_style) {
+    // Container may not have a LayoutObject when called from
+    // UpdateStyleForNonEligibleContainer(), but then make sure the style is
+    // null for both cases.
+    return new_layout_style == old_element_style;
+  }
+  Vector<ComputedStyleBase::DebugDiff> diff =
+      old_layout_style->DebugDiffFields(*new_layout_style);
+  // Allow highlight styles to change, but only highlight styles.
+  return diff.size() == 0 ||
+         (diff.size() == 1 &&
+          diff[0].field == ComputedStyleBase::DebugField::highlight_data_);
+}
+}  // namespace
+#endif  // DCHECK_IS_ON()
+
 void StyleEngine::RecalcStyleForContainer(Element& container,
                                           StyleRecalcChange change) {
   // The container node must not need recalc at this point.
   DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
+
+#if DCHECK_IS_ON()
+  const ComputedStyle* old_element_style = container.GetComputedStyle();
+  const ComputedStyle* old_layout_style =
+      container.GetLayoutObject() ? container.GetLayoutObject()->Style()
+                                  : nullptr;
+#endif  // DCHECK_IS_ON()
 
   // If the container itself depends on an outer container, then its
   // DependsOnSizeContainerQueries flag will be set, and we would recalc its
@@ -3084,10 +3161,17 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   container.SetChildNeedsStyleRecalc();
   style_recalc_root_.Update(nullptr, &container);
 
+  RecalcHighlightStylesForContainer(container);
+
   // TODO(crbug.com/1145970): Consider use a caching mechanism for FromAncestors
   // as we typically will call it for all containers on the first style/layout
   // pass.
   RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
+
+#if DCHECK_IS_ON()
+  DCHECK(ContainerStyleChangesAllowed(container, old_element_style,
+                                      old_layout_style));
+#endif  // DCHECK_IS_ON()
 }
 
 void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
