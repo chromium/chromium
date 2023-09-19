@@ -72,8 +72,6 @@ class EditorMediator
   void OnSurroundingTextChanged(const std::u16string& text,
                                 gfx::Range selection_range) override;
 
-  void OnConsentActionReceived(ConsentAction consent_action) override;
-
   // EditorPanelManager::Delegate
   void OnPromoCardDeclined() override;
   void HandleTrigger() override;
@@ -85,6 +83,7 @@ class EditorMediator
 
   // EditorTextActuator::Delegate overrides
   void OnTextInserted() override;
+  void ProcessConsentAction(ConsentAction consent_action) override;
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();

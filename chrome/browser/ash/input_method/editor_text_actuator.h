@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_text_inserter.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -20,6 +21,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
    public:
     virtual ~Delegate() = default;
     virtual void OnTextInserted() = 0;
+    virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
   };
 
   EditorTextActuator(
@@ -29,6 +31,8 @@ class EditorTextActuator : public orca::mojom::TextActuator {
 
   // orca::mojom::TextActuator overrides
   void InsertText(const std::string& text) override;
+  void ApproveConsent() override;
+  void DeclineConsent() override;
 
   void OnFocus(int context_id);
   void OnBlur();

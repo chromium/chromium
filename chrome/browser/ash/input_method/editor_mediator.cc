@@ -139,7 +139,7 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
   }
 }
 
-void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
+void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
 }
 

@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module ash.orca.mojom;
 
@@ -120,8 +120,17 @@ interface EditorClient {
   // Requests the service to perform a freeform rewrite.
   RequestFreeformWrite@3(string input) => (TextQueryResponse response);
 
-  // Insert the given text into the current text input target.
+  // Inserts the given text into the current text input target.
   InsertText@4(string text);
+
+  // Sends a consent approval to the service.
+  [MinVersion=2] ApproveConsent@5();
+
+  // Sends a consent declinal to the service.
+  [MinVersion=2] DeclineConsent@6();
+
+  // Sends a consent dismissal to the service.
+  [MinVersion=2] DismissConsent@7();
 };
 
 // Used by the UI to bootstrap the connection with the service.
@@ -144,6 +153,12 @@ interface EditorEventSink {
 interface TextActuator {
   // Close the UI and insert `text` into the focused input field.
   InsertText@0(string text);
+
+  // Processes the consent approval.
+  [MinVersion=2] ApproveConsent@1();
+
+  // Processes the consent declinal.
+  [MinVersion=2] DeclineConsent@2();
 };
 
 // An interface that can respond to text query requests with responses.

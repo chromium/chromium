@@ -20,6 +20,14 @@ void EditorTextActuator::InsertText(const std::string& text) {
   delegate_->OnTextInserted();
 }
 
+void EditorTextActuator::ApproveConsent() {
+  delegate_->ProcessConsentAction(ConsentAction::kApproved);
+}
+
+void EditorTextActuator::DeclineConsent() {
+  delegate_->ProcessConsentAction(ConsentAction::kDeclined);
+}
+
 void EditorTextActuator::OnFocus(int context_id) {
   inserter_.OnFocus(context_id);
 }
