@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +40,7 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
     std::unique_ptr<HeaderDirectFromSellerSignals> result;
     base::RunLoop run_loop;
     HeaderDirectFromSellerSignals::ParseAndFind(
-        responses, std::move(ad_slot),
+        GetDataDecoderCallback(), responses, std::move(ad_slot),
         base::BindLambdaForTesting(
             [this, &result, &run_loop](
                 std::unique_ptr<HeaderDirectFromSellerSignals> parsed,
@@ -52,8 +53,29 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
     return result;
   }
 
+  data_decoder::DataDecoder* GetDataDecoder() {
+    if (fail_get_data_decoder_on_0_.has_value()) {
+      if (*fail_get_data_decoder_on_0_ == 0) {
+        return nullptr;
+      }
+      --*fail_get_data_decoder_on_0_;
+    }
+    return &data_decoder_;
+  }
+
+  HeaderDirectFromSellerSignals::GetDecoderCallback GetDataDecoderCallback() {
+    return base::BindRepeating(
+        &HeaderDirectFromSellerSignalsTest::GetDataDecoder,
+        base::Unretained(this));
+  }
+
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder data_decoder_;
+  data_decoder::test::InProcessDataDecoder data_decoder_provider_;
+  data_decoder::DataDecoder data_decoder_;
+
+  // If set, it wll count down to 0 at which point the next call to
+  // GetDataDecoder() will return nullptr.
+  absl::optional<int> fail_get_data_decoder_on_0_;
 
   std::vector<std::string> errors_;
 };
@@ -111,6 +133,31 @@ TEST_F(HeaderDirectFromSellerSignalsTest, Valid) {
   EXPECT_EQ(parsed3->auction_signals(), "null");
   EXPECT_THAT(parsed3->per_buyer_signals(), IsEmpty());
   EXPECT_THAT(errors_, IsEmpty());
+}
+
+TEST_F(HeaderDirectFromSellerSignalsTest, GetDataDecoderFailure) {
+  for (int inject_failure_on_call : {0, 1}) {
+    fail_get_data_decoder_on_0_ = inject_failure_on_call;
+    const std::set<std::string> kResponses = {R"([{
+          "adSlot": "slot1",
+          "auctionSignals": 42
+        }, {
+          "adSlot": "slot2",
+          "sellerSignals": ["signals2", "for", "seller"]
+        }])",
+                                              R"([{
+          "adSlot": "slot3",
+          "auctionSignals": null
+        }])"};
+
+    HeaderDirectFromSellerSignals::ParseAndFind(
+        GetDataDecoderCallback(), kResponses, "slot3",
+        base::BindOnce([](std::unique_ptr<HeaderDirectFromSellerSignals> parsed,
+                          std::vector<std::string> errors) {
+          ADD_FAILURE() << "Should not be called";
+        }));
+    task_environment_.RunUntilIdle();
+  }
 }
 
 TEST_F(HeaderDirectFromSellerSignalsTest, Invalid) {

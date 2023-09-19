@@ -2575,6 +2575,8 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
   }
   direct_from_seller_signals_header_ad_slot_pending_ = true;
   HeaderDirectFromSellerSignals::ParseAndFind(
+      base::BindRepeating(&InterestGroupAuction::GetDataDecoder,
+                          weak_ptr_factory_.GetWeakPtr()),
       auction_page_data->GetAuctionSignalsForOrigin(config_->seller),
       *direct_from_seller_signals_header_ad_slot,
       base::BindOnce(
@@ -3561,7 +3563,7 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
       continue;
     }
     ++num_scoring_dependencies_;
-    data_decoder::DataDecoder::ParseJsonIsolated(
+    data_decoder_.ParseJson(
         signed_additional_bid_data,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -3589,7 +3591,7 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
 
   auto valid_signatures = maybe_signed_additional_bid->VerifySignatures();
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
+  data_decoder_.ParseJson(
       maybe_signed_additional_bid->additional_bid_json,
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -4406,6 +4408,15 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     OnScoringDependencyDone();
     ScoreQueuedBidsIfReady();
   }
+}
+
+// static
+data_decoder::DataDecoder* InterestGroupAuction::GetDataDecoder(
+    base::WeakPtr<InterestGroupAuction> instance) {
+  if (!instance) {
+    return nullptr;
+  }
+  return &instance->data_decoder_;
 }
 
 }  // namespace content

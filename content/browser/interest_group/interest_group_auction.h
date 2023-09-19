@@ -1098,6 +1098,9 @@ class CONTENT_EXPORT InterestGroupAuction
       std::unique_ptr<HeaderDirectFromSellerSignals> signals,
       std::vector<std::string> errors);
 
+  static data_decoder::DataDecoder* GetDataDecoder(
+      base::WeakPtr<InterestGroupAuction> instance);
+
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace event lasts for the combined lifetime of `this`
   // and a possible InterestGroupAuctionReporter. Sequential events that
@@ -1317,6 +1320,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // dangling pointers.
   mojo::ReceiverSet<auction_worklet::mojom::ScoreAdClient, std::unique_ptr<Bid>>
       score_ad_receivers_;
+
+  data_decoder::DataDecoder data_decoder_;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };

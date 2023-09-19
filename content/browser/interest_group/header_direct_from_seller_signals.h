@@ -16,6 +16,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
+
 namespace content {
 
 // Parses the results of Ad-Auction-Signals header values, as returned by
@@ -37,6 +41,10 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   using CompletionCallback =
       base::OnceCallback<void(std::unique_ptr<HeaderDirectFromSellerSignals>,
                               std::vector<std::string>)>;
+
+  // This may return null.
+  using GetDecoderCallback =
+      base::RepeatingCallback<data_decoder::DataDecoder*()>;
 
   // The default constructor provides null / empty signals when no ad slot was
   // specified on the page.
@@ -66,7 +74,10 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   //      const url::Origin& origin) const;
   //
   // That is, they are the signals returned only from a single (seller) origin.
-  static void ParseAndFind(const std::set<std::string>& responses,
+  //
+  // If `get_decoder` ever returns null, `callback` will not be invoked.
+  static void ParseAndFind(GetDecoderCallback get_decoder,
+                           const std::set<std::string>& responses,
                            std::string ad_slot,
                            CompletionCallback callback);
 

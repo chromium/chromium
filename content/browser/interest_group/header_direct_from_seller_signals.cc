@@ -156,12 +156,14 @@ std::string NoMatchError(std::string ad_slot) {
 
 // Searches for a signals dict whose adSlot value matches `ad_slot`, continuing
 // to the next response if no match is found.
-void OnJsonDecoded(std::unique_ptr<const std::set<std::string>> responses,
-                   std::set<std::string>::iterator it,
-                   std::string ad_slot,
-                   std::vector<std::string> errors,
-                   HeaderDirectFromSellerSignals::CompletionCallback callback,
-                   data_decoder::DataDecoder::ValueOrError result) {
+void OnJsonDecoded(
+    HeaderDirectFromSellerSignals::GetDecoderCallback get_decoder,
+    std::unique_ptr<const std::set<std::string>> responses,
+    std::set<std::string>::iterator it,
+    std::string ad_slot,
+    std::vector<std::string> errors,
+    HeaderDirectFromSellerSignals::CompletionCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
   std::unique_ptr<HeaderDirectFromSellerSignals> maybe_parsed =
       MaybeFindAdSlotSignalsInResponse(result, ad_slot, *it, errors);
   if (maybe_parsed) {
@@ -178,11 +180,17 @@ void OnJsonDecoded(std::unique_ptr<const std::set<std::string>> responses,
                             std::move(errors));
     return;
   }
+
   // Decode the next response.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *it, base::BindOnce(&OnJsonDecoded, std::move(responses), it,
-                          std::move(ad_slot), std::move(errors),
-                          std::move(callback)));
+  data_decoder::DataDecoder* maybe_decoder = get_decoder.Run();
+  if (!maybe_decoder) {
+    return;
+  }
+
+  maybe_decoder->ParseJson(
+      *it, base::BindOnce(&OnJsonDecoded, std::move(get_decoder),
+                          std::move(responses), it, std::move(ad_slot),
+                          std::move(errors), std::move(callback)));
 }
 
 }  // namespace
@@ -194,6 +202,7 @@ HeaderDirectFromSellerSignals::~HeaderDirectFromSellerSignals() = default;
 // TODO(crbug.com/1462720): Add UMA for response size and parsing time.
 /* static */
 void HeaderDirectFromSellerSignals::ParseAndFind(
+    GetDecoderCallback get_decoder,
     const std::set<std::string>& responses,
     std::string ad_slot,
     CompletionCallback callback) {
@@ -210,9 +219,13 @@ void HeaderDirectFromSellerSignals::ParseAndFind(
   // copy is required.
   auto my_responses = std::make_unique<const std::set<std::string>>(responses);
   auto it = my_responses->begin();
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *it, base::BindOnce(&OnJsonDecoded, std::move(my_responses), it,
-                          std::move(ad_slot), std::move(errors),
+  data_decoder::DataDecoder* maybe_decoder = get_decoder.Run();
+  if (!maybe_decoder) {
+    return;
+  }
+  maybe_decoder->ParseJson(
+      *it, base::BindOnce(&OnJsonDecoded, get_decoder, std::move(my_responses),
+                          it, std::move(ad_slot), std::move(errors),
                           std::move(callback)));
 }
 
