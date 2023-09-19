@@ -20,10 +20,12 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -37,6 +39,10 @@ constexpr int kMainContainerWidth = 296;
 
 // Default offset when the attached widget inside of the game window.
 constexpr int kWidgetOffsetInside = 24;
+constexpr int kInsideBorderInsets = 16;
+constexpr int kHeaderBottomMargin = 16;
+// This is associated to the size of `ash::IconButton::Type::kMedium`.
+constexpr int kIconButtonSize = 32;
 
 }  // namespace
 
@@ -54,6 +60,10 @@ void EditingList::UpdateWidget() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
+  scroll_view_->ClipHeightTo(
+      /*min_height=*/0,
+      /*max_height=*/controller_->touch_injector()->content_bounds().height() -
+          2 * kInsideBorderInsets - kHeaderBottomMargin - kIconButtonSize);
   controller_->UpdateWidgetBoundsInRootWindow(
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
 }
@@ -108,7 +118,8 @@ void EditingList::Init() {
       AddChildView(std::make_unique<ash::RoundedContainer>());
   main_container->SetBackground(views::CreateThemedSolidBackground(
       cros_tokens::kCrosSysSystemBaseElevated));
-  main_container->SetBorderInsets(gfx::Insets::VH(16, 16));
+  main_container->SetBorderInsets(
+      gfx::Insets::VH(kInsideBorderInsets, kInsideBorderInsets));
   main_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
@@ -116,8 +127,13 @@ void EditingList::Init() {
 
   AddHeader(main_container);
 
-  scroll_content_ =
-      main_container->AddChildView(std::make_unique<views::View>());
+  scroll_view_ =
+      main_container->AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->ClipHeightTo(
+      0, controller_->touch_injector()->content_bounds().height() -
+             2 * kInsideBorderInsets - kHeaderBottomMargin - kIconButtonSize);
+  scroll_content_ = scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_content_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
@@ -160,8 +176,8 @@ void EditingList::AddHeader(views::View* container) {
                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize);
-  header_container->SetProperty(views::kMarginsKey,
-                                gfx::Insets::TLBR(0, 0, 16, 0));
+  header_container->SetProperty(
+      views::kMarginsKey, gfx::Insets::TLBR(0, 0, kHeaderBottomMargin, 0));
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnDoneButtonPressed,
                           base::Unretained(this)),
@@ -339,6 +355,10 @@ void EditingList::OnActionAdded(Action& action) {
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
+  scroll_view_->InvalidateLayout();
+  // Scroll the list to bottom when a new action is added.
+  scroll_view_->ScrollByOffset(
+      gfx::PointF(0, scroll_content_->GetPreferredSize().height()));
 
   UpdateWidget();
 }
@@ -358,6 +378,8 @@ void EditingList::OnActionRemoved(const Action& action) {
     AddZeroStateContent();
     // TODO(b/274690042): Replace it with localized strings.
     controller_->AddNudgeWidget(add_button_, u"Add your first button here");
+  } else {
+    scroll_view_->InvalidateLayout();
   }
 
   UpdateWidget();

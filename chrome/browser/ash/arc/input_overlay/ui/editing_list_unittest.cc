@@ -17,6 +17,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -91,6 +92,21 @@ class EditingListTest : public OverlayViewTestBase {
     event_generator->ReleaseTouch();
   }
 
+  void ScrollTo(bool top) {
+    if (!editing_list_) {
+      return;
+    }
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    int scroll_height = scroll_content->GetPreferredSize().height();
+    editing_list_->scroll_view_->ScrollByOffset(
+        gfx::PointF(0, top ? -scroll_height : scroll_height));
+  }
+
+  bool GetScrollBarVisible() {
+    return editing_list_->scroll_view_->vertical_scroll_bar()->GetVisible();
+  }
+
   views::Widget* GetEditingListWidget() {
     return controller_->editing_list_widget_.get();
   }
@@ -125,10 +141,6 @@ class EditingListTest : public OverlayViewTestBase {
     return widgets_map.contains(widget) ? widgets_map.find(widget)->second.get()
                                         : nullptr;
   }
-
-  void CloseButtonOptionsMenu() {
-    controller_->RemoveButtonOptionsMenuWidget();
-  }
 };
 
 TEST_F(EditingListTest, TestAddNewAction) {
@@ -159,9 +171,8 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   PressAddButton();
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_1 = GetButtonOptionsAction();
-  // The button options menu must be closed before proceeding, as it can block
-  // the editing list while open.
-  CloseButtonOptionsMenu();
+  // Scroll back to top to click the first list item.
+  ScrollTo(/*top=*/true);
   LeftClickAtActionViewListItem(/*index=*/0);
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_2 = GetButtonOptionsAction();
@@ -291,6 +302,35 @@ TEST_F(EditingListTest, TestEducationNudge) {
   PressDoneButtonOnButtonOptionsMenu();
   EXPECT_FALSE(GetEducationNudge(editing_list));
   EXPECT_FALSE(GetEducationNudge(input_mapping));
+}
+
+TEST_F(EditingListTest, TestScrollView) {
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 10, 300, 500));
+
+  auto* list_window = GetEditingListWidget()->GetNativeWindow();
+  int original_height = list_window->bounds().height();
+  int window_content_height = touch_injector_->content_bounds().height();
+  EXPECT_LE(list_window->bounds().height(), window_content_height);
+  EXPECT_FALSE(GetScrollBarVisible());
+  // Add new actions until it shows scroll bar.
+  PressAddButton();
+  EXPECT_GT(list_window->bounds().height(), original_height);
+  PressAddButton();
+  PressAddButton();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+  PressAddButton();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+  PressAddButton();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+
+  // Add the game window height by 50, EditingList height is also added by 50.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 20, 300, 550));
+  EXPECT_EQ(window_content_height + 50,
+            touch_injector_->content_bounds().height());
+  EXPECT_EQ(window_content_height + 50, list_window->bounds().height());
 }
 
 }  // namespace arc::input_overlay

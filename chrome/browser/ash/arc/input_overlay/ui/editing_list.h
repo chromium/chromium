@@ -12,6 +12,7 @@
 
 namespace views {
 class Label;
+class ScrollView;
 }  // namespace views
 
 namespace ash {
@@ -94,6 +95,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // It wraps ActionViewListItem.
   raw_ptr<views::View> scroll_content_;
+  // It wraps `scroll_content_` and adds scrolling feature.
+  raw_ptr<views::ScrollView> scroll_view_;
   // Label for list header.
   raw_ptr<views::Label> editing_header_label_;
   raw_ptr<ash::IconButton> add_button_;
