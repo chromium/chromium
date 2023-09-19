@@ -94,9 +94,6 @@ public class DownloadNotificationService {
 
     private static DownloadNotificationService sInstanceForTesting;
 
-    @VisibleForTesting
-    final List<ContentId> mDownloadsInProgress = new ArrayList<ContentId>();
-
     private NotificationManagerProxy mNotificationManager;
     private Bitmap mDownloadSuccessLargeIcon;
     private DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
@@ -131,36 +128,6 @@ public class DownloadNotificationService {
     void setDownloadForegroundServiceManager(
             DownloadForegroundServiceManager downloadForegroundServiceManager) {
         mDownloadForegroundServiceManager = downloadForegroundServiceManager;
-    }
-
-    /**
-     * @return Whether or not there are any current resumable downloads being tracked.  These
-     *         tracked downloads may not currently be showing notifications.
-     */
-    static boolean isTrackingResumableDownloads(Context context) {
-        List<DownloadSharedPreferenceEntry> entries =
-                DownloadSharedPreferenceHelper.getInstance().getEntries();
-        for (DownloadSharedPreferenceEntry entry : entries) {
-            if (canResumeDownload(context, entry)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Track in-progress downloads here.
-     * @param id The {@link ContentId} of the download that has been started and should be tracked.
-     */
-    private void startTrackingInProgressDownload(ContentId id) {
-        if (!mDownloadsInProgress.contains(id)) mDownloadsInProgress.add(id);
-    }
-
-    /**
-     * Stop tracking the download represented by {@code id}.
-     * @param id                  The {@link ContentId} of the download that has been paused or
-     *                            canceled and shouldn't be tracked.
-     */
-    private void stopTrackingInProgressDownload(ContentId id) {
-        mDownloadsInProgress.remove(id);
     }
 
     /**
@@ -259,8 +226,6 @@ public class DownloadNotificationService {
                         canDownloadWhileMetered, fileName, true, isTransient));
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.IN_PROGRESS, notificationId, notification);
-
-        startTrackingInProgressDownload(id);
     }
 
     private void cancelNotification(int notificationId) {
@@ -279,8 +244,6 @@ public class DownloadNotificationService {
     public void cancelNotification(int notificationId, ContentId id) {
         cancelNotification(notificationId);
         mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(id);
-
-        stopTrackingInProgressDownload(id);
     }
 
     /**
@@ -346,7 +309,6 @@ public class DownloadNotificationService {
         if (isAutoResumable || pendingState != PendingState.NOT_PENDING) {
             notifyDownloadPending(id, fileName, otrProfileID, canDownloadWhileMetered, isTransient,
                     icon, originalUrl, shouldPromoteOrigin, hasUserGesture, pendingState);
-            stopTrackingInProgressDownload(id);
             return;
         }
         int notificationId = entry == null ? getNotificationId(id) : entry.notificationId;
@@ -371,8 +333,6 @@ public class DownloadNotificationService {
 
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.PAUSED, notificationId, notification);
-
-        stopTrackingInProgressDownload(id);
     }
 
     /**
@@ -427,7 +387,6 @@ public class DownloadNotificationService {
         updateNotification(notificationId, notification, id, null);
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.COMPLETED, notificationId, notification);
-        stopTrackingInProgressDownload(id);
         return notificationId;
     }
 
@@ -471,8 +430,6 @@ public class DownloadNotificationService {
         updateNotification(notificationId, notification, id, null);
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.FAILED, notificationId, notification);
-
-        stopTrackingInProgressDownload(id);
     }
 
     private Bitmap getLargeNotificationIcon(Bitmap bitmap) {
@@ -591,30 +548,6 @@ public class DownloadNotificationService {
             }
         }
         return newNotificationId;
-    }
-
-    /**
-     * Helper method to update the remaining number of background resumption attempts left.
-     *
-     * @param numAutoResumptionAttemptLeft the number of auto resumption attempts left.
-     */
-    private static void updateResumptionAttemptLeft(int numAutoResumptionAttemptLeft) {
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT,
-                numAutoResumptionAttemptLeft);
-    }
-
-    /** Helper method to get the remaining number of background resumption attempts left. */
-    private static int getResumptionAttemptLeft() {
-        return SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT,
-                MAX_RESUMPTION_ATTEMPT_LEFT);
-    }
-
-    /** Helper method to clear the remaining number of background resumption attempts left. */
-    static void clearResumptionAttemptLeft() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT);
     }
 
     void onForegroundServiceTaskRemoved() {

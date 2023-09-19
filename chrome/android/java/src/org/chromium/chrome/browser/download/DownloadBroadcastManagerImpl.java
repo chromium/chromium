@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.E
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
-import static org.chromium.chrome.browser.download.DownloadNotificationService.clearResumptionAttemptLeft;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
 import android.app.DownloadManager;
@@ -101,22 +100,11 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         // Remove delayed stop of service until after native library is loaded.
         mHandler.removeCallbacks(mStopSelfRunnable);
 
-        // Since there is a user interaction, resumption is not needed, so clear any queued.
-        cancelQueuedResumptions();
-
         // Update notification appearance immediately in case it takes a while for native to load.
         updateNotification(intent);
 
         // Handle the intent and propagate it through the native library.
         loadNativeAndPropagateInteraction(intent);
-    }
-
-    /**
-     * Cancel any download resumption tasks and reset the number of resumption attempts available.
-     */
-    void cancelQueuedResumptions() {
-        // Reset number of attempts left if the action is triggered by user.
-        clearResumptionAttemptLeft();
     }
 
     /**
@@ -188,8 +176,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      */
     @VisibleForTesting
     void loadNativeAndPropagateInteraction(final Intent intent) {
-        final boolean browserStarted =
-                BrowserStartupController.getInstance().isFullBrowserStarted();
         final ContentId id = getContentIdFromIntent(intent);
         final BrowserParts parts = new EmptyBrowserParts() {
             @Override

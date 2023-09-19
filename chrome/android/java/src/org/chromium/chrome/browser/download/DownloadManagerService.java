@@ -341,8 +341,6 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (!mActivityLaunched) {
             mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
 
-            DownloadNotificationService.clearResumptionAttemptLeft();
-
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                     ProfileKey.getLastUsedRegularProfileKey());
 
@@ -592,7 +590,6 @@ public class DownloadManagerService implements DownloadController.Observer,
                 && isSupportedMimeType(downloadItem.getDownloadInfo().getMimeType());
         String id = downloadItem.getId();
         DownloadProgress progress = mDownloadProgressMap.get(id);
-        long bytesReceived = downloadItem.getDownloadInfo().getBytesReceived();
         if (progress == null) {
             if (!downloadItem.getDownloadInfo().isPaused()) {
                 long startTime = System.currentTimeMillis();
