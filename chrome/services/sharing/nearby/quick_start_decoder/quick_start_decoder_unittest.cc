@@ -112,22 +112,21 @@ class QuickStartDecoderTest : public testing::Test {
   }
 
   void DoDecodeGetAssertionResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       QuickStartDecoder::DecodeGetAssertionResponseCallback callback) {
     decoder_->DecodeGetAssertionResponse(data, std::move(callback));
   }
 
   void DoDecodeBootstrapConfigurations(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       QuickStartDecoder::DecodeBootstrapConfigurationsCallback callback) {
     decoder_->DecodeBootstrapConfigurations(data, std::move(callback));
   }
 
   void DoDecodeWifiCredentialsResponse(
-      QuickStartMessage* message,
+      const absl::optional<std::vector<uint8_t>>& data,
       QuickStartDecoder::DecodeWifiCredentialsResponseCallback callback) {
-    decoder_->DecodeWifiCredentialsResponse(ConvertMessageToBytes(message),
-                                            std::move(callback));
+    decoder_->DecodeWifiCredentialsResponse(data, std::move(callback));
   }
 
   void DoDecodeNotifySourceOfUpdateResponse(
@@ -237,6 +236,34 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ResponseIsNotJson) {
             mojom::QuickStartDecoderError::kUnableToReadAsJSON);
 }
 
+TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_NullData) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(absl::nullopt, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeGetAssertionResponse_UnexpectedMessageType) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kAwaitingUserVerificationKey, true);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(ConvertMessageToBytes(&message),
+                               future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnexpectedMessageType);
+}
+
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_EmptyResponse) {
   std::vector<uint8_t> data{};
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
@@ -310,6 +337,18 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
+TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_NullPayload) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(absl::nullopt, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyMessagePayload) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
@@ -325,6 +364,30 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_UnexpectedMessageType) {
+  // Build a valid SecondDeviceAuthPayload
+  std::string expected_credential_id(kValidCredentialId.begin(),
+                                     kValidCredentialId.end());
+  std::string email = "testcase@google.com";
+  std::vector<uint8_t> user_id(email.begin(), email.end());
+  std::vector<uint8_t> data = BuildEncodedResponseData(
+      kValidCredentialId, kValidAuthData, kValidSignature, user_id, kSuccess);
+
+  std::vector<uint8_t> payload = BuildSecondDeviceAuthPayload(data);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  // Try to parse the SecondDeviceAuthPayload as a BootstrapConfigurations.
+  DoDecodeBootstrapConfigurations(std::move(payload), future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnexpectedMessageType);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -499,6 +562,52 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<1>().has_value());
 }
 
+TEST_F(QuickStartDecoderTest, DecodeWifiCredentialsResponse_NullData) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(absl::nullopt, future.GetCallback());
+
+  ASSERT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            ash::quick_start::mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeWifiCredentialsResponse_BadJson) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(std::vector<uint8_t>{0x01, 0x02, 0x03},
+                                  future.GetCallback());
+
+  ASSERT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(
+      future.Get<1>(),
+      ash::quick_start::mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeWifiCredentialsResponse_UnexpectedMessageType) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kAwaitingUserVerificationKey, true);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+
+  ASSERT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnexpectedMessageType);
+}
+
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
   base::Value::Dict wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
@@ -515,7 +624,8 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   ASSERT_FALSE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<0>()->ssid, "ssid");
@@ -541,7 +651,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   ASSERT_FALSE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<0>()->password, absl::nullopt);
@@ -564,7 +675,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -594,7 +706,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -624,7 +737,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -654,7 +768,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -684,7 +799,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -714,7 +830,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -744,7 +861,8 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -771,7 +889,8 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -799,7 +918,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -830,7 +950,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -860,7 +981,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
@@ -883,7 +1005,8 @@ TEST_F(QuickStartDecoderTest,
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
       future;
 
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+  DoDecodeWifiCredentialsResponse(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
@@ -948,12 +1071,41 @@ TEST_F(QuickStartDecoderTest, DecodeUserVerificationResultSucceeds) {
   decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
                                           future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   ASSERT_FALSE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<0>().get()->result,
             mojom::UserVerificationResult::kUserVerified);
   EXPECT_TRUE(future.Get<0>().get()->is_first_user_verification);
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationResult_NullData) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationResult(absl::nullopt, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeUserVerificationResult_UnexpectedMessageType) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, true);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
+                                          future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnexpectedMessageType);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -966,7 +1118,6 @@ TEST_F(QuickStartDecoderTest,
 
   decoder()->DecodeUserVerificationResult(message, future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kUnableToReadAsJSON);
@@ -985,7 +1136,6 @@ TEST_F(QuickStartDecoderTest,
   decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
                                           future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
 }
@@ -1004,7 +1154,6 @@ TEST_F(QuickStartDecoderTest,
   decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
                                           future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -1023,7 +1172,6 @@ TEST_F(QuickStartDecoderTest,
   decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
                                           future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -1041,10 +1189,40 @@ TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestSucceeds) {
   decoder()->DecodeUserVerificationRequested(ConvertMessageToBytes(&message),
                                              future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   ASSERT_FALSE(future.Get<0>().is_null());
   EXPECT_TRUE(future.Get<0>().get()->is_awaiting_user_verification);
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequested_NullData) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationRequestedPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationRequested(absl::nullopt,
+                                             future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeUserVerificationRequested_UnexpectedMessageType) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, true);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationRequestedPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationRequested(ConvertMessageToBytes(&message),
+                                             future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnexpectedMessageType);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestFailsIfKeyMissing) {
@@ -1058,7 +1236,6 @@ TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestFailsIfKeyMissing) {
   decoder()->DecodeUserVerificationRequested(ConvertMessageToBytes(&message),
                                              future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
 }
