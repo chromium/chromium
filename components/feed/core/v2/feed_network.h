@@ -18,6 +18,7 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/types.h"
+#include "net/http/http_request_headers.h"
 
 namespace feedwire {
 class Request;
@@ -224,6 +225,14 @@ class FeedNetwork {
         std::move(optional_request_metadata),
         base::BindOnce(&ParseAndForwardApiResponse<API>, std::move(callback)));
   }
+
+  virtual void SendAsyncDataRequest(
+      const GURL& url,
+      base::StringPiece request_method,
+      net::HttpRequestHeaders request_headers,
+      std::string request_body,
+      const AccountInfo& account_info,
+      base::OnceCallback<void(RawResponse)> callback) = 0;
 
   // Cancels all pending requests immediately. This could be used, for example,
   // if there are pending requests for a user who just signed out.

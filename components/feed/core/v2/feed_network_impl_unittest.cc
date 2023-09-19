@@ -921,5 +921,25 @@ TEST_F(FeedNetworkTest, AppCloseRefreshRequestReasonHasUrl) {
       result.response_info.base_request_url);
 }
 
+TEST_F(FeedNetworkTest, SendAsynccDataRequest) {
+  CallbackReceiver<FeedNetwork::RawResponse> receiver;
+  feed_network()->SendAsyncDataRequest(GURL("https://example.com"), "POST",
+                                       net::HttpRequestHeaders(), "post data",
+                                       account_info(), receiver.Bind());
+  response_headers_ = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\nname1: value1\nname2: value2\n\n"));
+  RespondToDiscoverRequest("dummy response", net::HTTP_OK);
+
+  ASSERT_TRUE(receiver.GetResult());
+  const FeedNetwork::RawResponse& result = *receiver.GetResult();
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+  std::vector<std::string> expected_response_headers = {"name1", "value1",
+                                                        "name2", "value2"};
+  EXPECT_EQ(expected_response_headers,
+            result.response_info.response_header_names_and_values);
+  EXPECT_EQ("dummy response", result.response_bytes);
+}
+
 }  // namespace
 }  // namespace feed

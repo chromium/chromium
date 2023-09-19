@@ -314,6 +314,23 @@ TEST_F(FeedApiTest, FetchImage) {
   EXPECT_EQ("dummyresponse", receiver.GetResult()->response_bytes);
 }
 
+TEST_F(FeedApiTest, FetchAsyncData) {
+  FeedNetwork::RawResponse raw_response;
+  raw_response.response_info.status_code = 200;
+  raw_response.response_info.response_header_names_and_values = {
+      "name1", "value1", "name2", "value2"};
+  raw_response.response_bytes = "dummyresponse";
+  network_.InjectRawResponse(raw_response);
+
+  CallbackReceiver<NetworkResponse> receiver;
+  stream_->FetchResource(GURL("https://example.com"), "POST", {}, "post data",
+                         receiver.Bind());
+  EXPECT_EQ(200, receiver.RunAndGetResult().status_code);
+  EXPECT_EQ(raw_response.response_info.response_header_names_and_values,
+            receiver.GetResult()->response_header_names_and_values);
+  EXPECT_EQ("dummyresponse", receiver.GetResult()->response_bytes);
+}
+
 TEST_F(FeedStreamTestForAllStreamTypes,
        ReportContentLifetimeMetricsViaOnLoadStream) {
   base::HistogramTester histograms;

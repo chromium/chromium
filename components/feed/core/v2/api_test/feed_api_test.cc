@@ -689,6 +689,21 @@ void TestFeedNetwork::SendDiscoverApiRequest(
                      << api_path;
 }
 
+void TestFeedNetwork::SendAsyncDataRequest(
+    const GURL& url,
+    base::StringPiece request_method,
+    net::HttpRequestHeaders request_headers,
+    std::string request_body,
+    const AccountInfo& account_info,
+    base::OnceCallback<void(RawResponse)> callback) {
+  if (injected_raw_response_) {
+    Reply(base::BindOnce(std::move(callback),
+                         std::move(injected_raw_response_.value())));
+    return;
+  }
+  ASSERT_TRUE(false) << "No raw response injected";
+}
+
 void TestFeedNetwork::CancelRequests() {
   NOTIMPLEMENTED();
 }
@@ -744,6 +759,7 @@ void TestFeedNetwork::ClearTestData() {
   api_requests_sent_.clear();
   api_request_count_.clear();
   injected_response_.reset();
+  injected_raw_response_.reset();
 }
 
 void TestFeedNetwork::SendResponse() {

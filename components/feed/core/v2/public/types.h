@@ -93,6 +93,8 @@ struct NetworkResponseInfo {
       AccountTokenFetchStatus::kUnspecified;
   base::TimeTicks fetch_time_ticks;
   base::TimeTicks loader_start_time_ticks;
+  // List of HTTP response header names and values.
+  std::vector<std::string> response_header_names_and_values;
 };
 
 std::ostream& operator<<(std::ostream& os, const NetworkResponseInfo& o);

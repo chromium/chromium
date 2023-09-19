@@ -436,21 +436,28 @@ class FeedNetworkImpl::NetworkFetch {
     response_info.encoded_size_bytes =
         completion_status ? completion_status->encoded_data_length : 0;
 
-    // If overriding the feed host, try to grab the Bless nonce. This is
-    // strictly informational, and only displayed in snippets-internals.
-    if (allow_bless_auth_ && loader_response_info) {
+    if (loader_response_info) {
       size_t iter = 0;
+      std::string name;
       std::string value;
-      while (loader_response_info->headers->EnumerateHeader(
-          &iter, "www-authenticate", &value)) {
-        size_t pos = value.find("nonce=\"");
-        if (pos != std::string::npos) {
-          std::string nonce = value.substr(pos + 7, 16);
-          if (nonce.size() == 16) {
-            response_info.bless_nonce = nonce;
-            break;
+      while (loader_response_info->headers->EnumerateHeaderLines(&iter, &name,
+                                                                 &value)) {
+        // If overriding the feed host, try to grab the Bless nonce. This is
+        // strictly informational, and only displayed in snippets-internals.
+        if (allow_bless_auth_ && name == "www-authenticate" &&
+            response_info.bless_nonce.empty()) {
+          size_t pos = value.find("nonce=\"");
+          if (pos != std::string::npos) {
+            std::string nonce = value.substr(pos + 7, 16);
+            if (nonce.size() == 16) {
+              response_info.bless_nonce = nonce;
+            }
           }
         }
+        response_info.response_header_names_and_values.push_back(
+            std::move(name));
+        response_info.response_header_names_and_values.push_back(
+            std::move(value));
       }
     }
 
@@ -629,21 +636,8 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     const AccountInfo& account_info,
     absl::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
-  GURL url(base::StrCat({kDiscoverHost, request_path}));
-  // Override url if requested.
-  std::string host_override =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "feedv2-discover-host-override");
-  if (host_override.empty()) {
-    host_override =
-        pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
-  }
-  if (!host_override.empty()) {
-    GURL override_url(host_override);
-    if (override_url.is_valid()) {
-      url = OverrideUrlSchemeHostPort(url, override_url);
-    }
-  }
+  GURL url =
+      GetOverriddenUrl(GURL(base::StrCat({kDiscoverHost, request_path})));
 
   net::HttpRequestHeaders headers =
       request_metadata ? CreateApiRequestHeaders(*request_metadata)
@@ -657,6 +651,19 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
        /*is_feed_query=*/false, std::move(callback));
 }
 
+void FeedNetworkImpl::SendAsyncDataRequest(
+    const GURL& url,
+    base::StringPiece request_method,
+    net::HttpRequestHeaders request_headers,
+    std::string request_body,
+    const AccountInfo& account_info,
+    base::OnceCallback<void(RawResponse)> callback) {
+  GURL request_url = GetOverriddenUrl(url);
+  Send(request_url, request_method, std::move(request_body),
+       /*allow_bless_auth=*/false, account_info, request_headers,
+       /*is_feed_query=*/false, std::move(callback));
+}
+
 void FeedNetworkImpl::SendComplete(
     NetworkFetch* fetch,
     base::OnceCallback<void(RawResponse)> callback,
@@ -665,6 +672,24 @@ void FeedNetworkImpl::SendComplete(
   pending_requests_.erase(fetch);
 
   std::move(callback).Run(std::move(raw_response));
+}
+
+GURL FeedNetworkImpl::GetOverriddenUrl(const GURL& url) const {
+  // Override url if requested.
+  std::string host_override =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "feedv2-discover-host-override");
+  if (host_override.empty()) {
+    host_override =
+        pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+  }
+  if (!host_override.empty()) {
+    GURL override_url(host_override);
+    if (override_url.is_valid()) {
+      return OverrideUrlSchemeHostPort(url, override_url);
+    }
+  }
+  return url;
 }
 
 }  // namespace feed
