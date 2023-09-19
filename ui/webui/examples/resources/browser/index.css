@@ -4,6 +4,8 @@
 
 html, body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -21,5 +23,8 @@ body {
 }
 
 webview {
+  display: flex;
+  flex-direction: column;
+
   flex: 1;
 }

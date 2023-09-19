@@ -52,11 +52,10 @@ class WebviewElement extends HTMLElement {
   constructor() {
     super();
     this.iframeElement = document.createElement('iframe');
-    this.iframeElement.style.width = '100%';
-    this.iframeElement.style.height = '100%';
     this.iframeElement.style.border = '0px';
     this.iframeElement.style.margin = "0";
     this.iframeElement.style.padding = "0";
+    this.iframeElement.style.flex = '1';
     this.appendChild(this.iframeElement);
     this.viewInstanceId = webshell.getNextId();
     this.containerId = webshell.getNextId();
