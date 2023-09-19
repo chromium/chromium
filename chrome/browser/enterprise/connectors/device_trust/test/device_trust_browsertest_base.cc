@@ -153,6 +153,9 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
   // Response header should always be set, even in error cases (i.e.
   // when using v1 header).
   EXPECT_TRUE(challenge_response_request_.has_value());
+  if (!challenge_response_request_.has_value()) {
+    return std::string();
+  }
 
   ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
