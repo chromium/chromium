@@ -24,10 +24,16 @@ class ToolbarController {
   ToolbarController& operator=(const ToolbarController&) = delete;
   ~ToolbarController();
 
-  void UpdateOverflowButtonVisibility();
+  // Returns true if layout manager of `toolbar_container_view_` hides any
+  // toolbar elements.
+  bool ShouldShowOverflowButton();
+
+  void SetOverflowButtonVisible(bool should_show) {
+    overflow_button_->SetVisible(should_show);
+  }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ToolbarControllerTest, FlexOrderCorrect);
+  friend class ToolbarControllerTest;
 
   // Searches for a toolbar element from `toolbar_container_view_` with `id`.
   views::View* FindToolbarElementWithId(ui::ElementIdentifier id) {

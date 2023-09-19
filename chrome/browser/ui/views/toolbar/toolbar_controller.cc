@@ -36,11 +36,9 @@ ToolbarController::ToolbarController(
                     ->WithOrder(element_flex_order_start++);
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
   }
-
-  UpdateOverflowButtonVisibility();
 }
 
-void ToolbarController::UpdateOverflowButtonVisibility() {
+bool ToolbarController::ShouldShowOverflowButton() {
   // Once at least one button has been dropped by layout manager show overflow
   // button.
   const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
@@ -54,7 +52,7 @@ void ToolbarController::UpdateOverflowButtonVisibility() {
       break;
     }
   }
-  overflow_button_->SetVisible(show_button);
+  return show_button;
 }
 
 const views::View* ToolbarController::FindToolbarElementWithId(

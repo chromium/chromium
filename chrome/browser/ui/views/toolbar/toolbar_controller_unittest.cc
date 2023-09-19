@@ -63,7 +63,7 @@ TEST(ToolbarControllerUnitTest, OverflowButtonVisibility) {
   EXPECT_TRUE(button1.GetVisible());
   EXPECT_TRUE(button2.GetVisible());
   EXPECT_TRUE(button3.GetVisible());
-  controller.UpdateOverflowButtonVisibility();
+  controller.SetOverflowButtonVisible(controller.ShouldShowOverflowButton());
   EXPECT_FALSE(overflow_button.GetVisible());
 
   // One button overflows.
@@ -73,6 +73,6 @@ TEST(ToolbarControllerUnitTest, OverflowButtonVisibility) {
   EXPECT_FALSE(button3.GetVisible());
 
   // Overflow button appears.
-  controller.UpdateOverflowButtonVisibility();
+  controller.SetOverflowButtonVisible(controller.ShouldShowOverflowButton());
   EXPECT_TRUE(overflow_button.GetVisible());
 }

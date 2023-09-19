@@ -785,13 +785,25 @@ void ToolbarView::Layout() {
     }
   }
 
+  // Use two-pass layout solution to avoid overflow button being interfere with
+  // toolbar elements space allocation. The button itself should just be an
+  // indicator of overflow not the cause. (See crbug.com/1484294)
+  // In the first pass turn off overflow button right before each layout.
+  // TODO(pengchaocai): Explore possible optimizations.
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    toolbar_controller_->UpdateOverflowButtonVisibility();
+    toolbar_controller_->SetOverflowButtonVisible(false);
   }
 
   // Call super implementation to ensure layout manager and child layouts
   // happen.
   AccessiblePaneView::Layout();
+
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar) &&
+      toolbar_controller_->ShouldShowOverflowButton()) {
+    // This is the second pass layout that shows overflow button if necessary.
+    toolbar_controller_->SetOverflowButtonVisible(true);
+    AccessiblePaneView::Layout();
+  }
 }
 
 void ToolbarView::OnThemeChanged() {
@@ -858,12 +870,18 @@ void ToolbarView::InitLayout() {
   // TODO(dfried): rename this constant.
   const int location_bar_margin = GetLayoutConstant(TOOLBAR_STANDARD_SPACING);
 
+  // Shift previously flex-able elements' order by `kOrderOffset`.
+  // This will cause them to be the first ones to drop out or shrink to minimum.
+  // Order 1 - kOrderOffset will be assigned to new flex-able elements.
+  constexpr int kOrderOffset = 1000;
+  constexpr int kLocationBarFlexOrder = kOrderOffset + 1;
+  constexpr int kSidePanelFlexOrder = kOrderOffset + 2;
+  constexpr int kExtensionsFlexOrder = kOrderOffset + 3;
+
   const views::FlexSpecification location_bar_flex_rule =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded)
-          .WithOrder(1);
-  constexpr int kSidePanelFlexOrder = 2;
-  constexpr int kExtensionsFlexOrder = 3;
+          .WithOrder(kLocationBarFlexOrder);
 
   layout_manager_ =
       container_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -905,15 +923,14 @@ void ToolbarView::InitLayout() {
   }
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    // Order 1 is reserved for omnibox and transient buttons.
+    // Order 1 is reserved for transient buttons.
     constexpr int kToolbarFlexOrderStart = 2;
 
+    // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         std::vector<ui::ElementIdentifier>{
             kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
-            kToolbarExtensionsContainerElementId,
-            kToolbarSidePanelContainerElementId, kToolbarHomeButtonElementId,
-            kToolbarChromeLabsButtonElementId},
+            kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
         kToolbarFlexOrderStart, container_view_, overflow_button_);
   }
 
