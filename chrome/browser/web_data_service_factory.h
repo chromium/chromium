@@ -73,7 +73,7 @@ class WebDataServiceFactory
   // |BrowserContextKeyedServiceFactory| methods:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
