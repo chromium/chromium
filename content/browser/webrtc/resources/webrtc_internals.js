@@ -14,7 +14,7 @@ import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
 import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
-import {UserMediaTable} from './user_media.js';
+import {UserMediaTable} from './user_media_table.js';
 
 const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
 const OPTION_GETSTATS_LEGACY =

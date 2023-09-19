@@ -25,7 +25,7 @@ generate_grd("build_grd") {
     "stats_table.js",
     "tab_view.js",
     "timeline_graph_view.js",
-    "user_media.js",
+    "user_media_table.js",
     "webrtc_internals.html",
     "webrtc_internals.css",
     "webrtc_internals.js",

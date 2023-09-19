@@ -78,7 +78,9 @@ export class UserMediaTable {
     requestDiv.id = ['gum', data.rid, data.pid, data.request_id].join('-');
     requestDiv['data-rid'] = data.rid;
     requestDiv['data-origin'] = data.origin;
-    $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
+    // Insert new getUserMedia calls at the top.
+    $(USER_MEDIA_TAB_ID).insertBefore(requestDiv,
+      $(USER_MEDIA_TAB_ID).firstChild);
 
     appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
     appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
