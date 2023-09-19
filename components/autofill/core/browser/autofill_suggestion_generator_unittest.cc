@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
@@ -200,6 +201,310 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
+
+// Tests that special characters will be used while prefix matching the user's
+// field input with the available emails to suggest.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_UseSpecialCharactersInEmail) {
+  AutofillProfile profile_1, profile_2;
+  profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
+  profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
+  personal_data()->AddProfile(profile_1);
+  personal_data()->AddProfile(profile_2);
+  ASSERT_EQ(personal_data()->GetProfilesToSuggest().size(), 2u);
+
+  std::vector<AutofillProfile*> profiles =
+      suggestion_generator()->GetProfilesToSuggest(AutofillType(EMAIL_ADDRESS),
+                                                   u"Test@", false, {});
+
+  ASSERT_EQ(profiles.size(), 1u);
+  EXPECT_EQ(*profiles[0], profile_1);
+}
+
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_HideSubsets) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+
+  // Dupe profile, except different in email address (irrelevant for this form).
+  AutofillProfile profile1 = profile;
+  profile1.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"spam_me@example.com");
+
+  // Dupe profile, except different in address state.
+  AutofillProfile profile2 = profile;
+  profile2.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  profile2.SetRawInfo(ADDRESS_HOME_STATE, u"TX");
+
+  // Subset profile.
+  AutofillProfile profile3 = profile;
+  profile3.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  profile3.SetRawInfo(ADDRESS_HOME_STATE, std::u16string());
+
+  // For easier results verification, make sure |profile| is suggested first.
+  profile.set_use_count(5);
+  personal_data()->AddProfile(profile);
+  personal_data()->AddProfile(profile1);
+  personal_data()->AddProfile(profile2);
+  personal_data()->AddProfile(profile3);
+
+  // Simulate a form with street address, city and state.
+  ServerFieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
+  std::vector<AutofillProfile*> profiles =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, types);
+  ASSERT_EQ(2U, profiles.size());
+  EXPECT_EQ(profiles[0]->GetRawInfo(ADDRESS_HOME_STATE), u"CA");
+  EXPECT_EQ(profiles[1]->GetRawInfo(ADDRESS_HOME_STATE), u"TX");
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_SuggestionsLimit) {
+  // Drawing takes noticeable time when there are more than 10 profiles.
+  // Therefore, we keep only the 10 first suggested profiles.
+  std::vector<AutofillProfile> profiles;
+  for (size_t i = 0;
+       i < 2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount; i++) {
+    AutofillProfile profile;
+    test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
+                         "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
+                         "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                         "Hollywood", "CA", "91601", "US", "12345678910");
+    personal_data()->AddProfile(profile);
+    profiles.push_back(profile);
+  }
+
+  std::vector<AutofillProfile*> suggested_profiles =
+      suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
+                                                   u"Ma", false, {});
+
+  ASSERT_EQ(2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount,
+            personal_data()->GetProfiles().size());
+  ASSERT_EQ(suggestion_selection::kMaxUniqueSuggestedProfilesCount,
+            suggested_profiles.size());
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_ProfilesLimit) {
+  // Deduping takes noticeable time when there are more than 50 profiles.
+  // Therefore, keep only the 50 first pre-dedupe matching profiles.
+  std::vector<AutofillProfile> profiles;
+  for (size_t i = 0; i < suggestion_selection::kMaxSuggestedProfilesCount;
+       i++) {
+    AutofillProfile profile;
+
+    test::SetProfileInfo(
+        &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
+        base::StringPrintf("%zu123 Zoo St.\nSecond Line\nThird line", i)
+            .c_str(),
+        "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
+
+    // Set ranking score such that they appear before the "last" profile (added
+    // next).
+    profile.set_use_count(12);
+    profile.set_use_date(AutofillClock::Now() - base::Days(1));
+
+    personal_data()->AddProfile(profile);
+    profiles.push_back(profile);
+  }
+
+  // Add another profile that matches, but that will get stripped out.
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Marie", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "000 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile.set_use_count(1);
+  profile.set_use_date(AutofillClock::Now() - base::Days(7));
+  personal_data()->AddProfile(profile);
+
+  std::vector<AutofillProfile*> suggested_profiles =
+      suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
+                                                   u"Ma", false, {});
+
+  ASSERT_EQ(suggestion_selection::kMaxSuggestedProfilesCount + 1,
+            personal_data()->GetProfiles().size());
+  ASSERT_EQ(1U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
+            profiles.front().GetRawInfo(NAME_FIRST));
+}
+
+// Tests that GetProfilesForSuggestions orders its suggestions based on the
+// ranking formula.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_Ranking) {
+  // Set up the profiles. They are named with number suffixes X so the X is the
+  // order in which they should be ordered by the ranking formula.
+  AutofillProfile profile3;
+  test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile3.set_use_date(AutofillClock::Now() - base::Days(1));
+  profile3.set_use_count(5);
+  personal_data()->AddProfile(profile3);
+
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
+  profile1.set_use_count(10);
+  personal_data()->AddProfile(profile1);
+
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile2.set_use_date(AutofillClock::Now() - base::Days(15));
+  profile2.set_use_count(300);
+  personal_data()->AddProfile(profile2);
+
+  std::vector<AutofillProfile*> suggested_profiles =
+      suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
+                                                   u"Ma", false, {});
+  ASSERT_EQ(3U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles[0]->GetRawInfo(NAME_FIRST), u"Marion1");
+  EXPECT_EQ(suggested_profiles[1]->GetRawInfo(NAME_FIRST), u"Marion2");
+  EXPECT_EQ(suggested_profiles[2]->GetRawInfo(NAME_FIRST), u"Marion3");
+}
+
+// Tests that GetProfilesForSuggestions returns all profiles suggestions.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_NumberOfSuggestions) {
+  // Set up 3 different profiles.
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  personal_data()->AddProfile(profile1);
+
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  personal_data()->AddProfile(profile2);
+
+  AutofillProfile profile3;
+  test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  personal_data()->AddProfile(profile3);
+
+  // Verify that all the profiles are suggested.
+  std::vector<AutofillProfile*> suggested_profiles =
+      suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
+                                                   std::u16string(), false, {});
+  EXPECT_EQ(3U, suggested_profiles.size());
+}
+
+// Tests that phone number types are correctly deduplicated for suggestions.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_PhoneNumberDeduplication) {
+  // Set up 2 different profiles.
+  AutofillProfile profile1;
+  profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
+  profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491601234567");
+  personal_data()->AddProfile(profile1);
+
+  AutofillProfile profile2;
+  profile2.SetRawInfo(NAME_FULL, u"First Middle Last");
+  profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491607654321");
+  personal_data()->AddProfile(profile2);
+
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_WHOLE_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
+  }
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
+  }
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE,
+             PHONE_HOME_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
+  }
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE});
+    EXPECT_EQ(1U, suggested_profiles.size());
+  }
+}
+
+// Tests that disused profiles are suppressed when suppression is enabled and
+// the input field is empty.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesForSuggestions_SuppressDisusedProfilesOnEmptyField) {
+  // Set up 2 different profiles.
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
+  personal_data()->AddProfile(profile1);
+
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "456 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  profile2.set_use_date(AutofillClock::Now() - base::Days(20));
+  personal_data()->AddProfile(profile2);
+
+  // Query with empty string only returns profile2.
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false,
+            {});
+    EXPECT_EQ(1U, suggested_profiles.size());
+  }
+
+  // Query with non-alpha-numeric string only returns profile2.
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"--", false, {});
+    EXPECT_EQ(1U, suggested_profiles.size());
+  }
+
+  // Query with prefix for profile1 returns profile1.
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
+    ASSERT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(u"Marion1", suggested_profiles[0]->GetRawInfo(NAME_FIRST));
+  }
+
+  // Query with prefix for profile2 returns profile2.
+  {
+    std::vector<AutofillProfile*> suggested_profiles =
+        suggestion_generator()->GetProfilesToSuggest(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"456", false, {});
+    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(u"Marion2", suggested_profiles[0]->GetRawInfo(NAME_FIRST));
+  }
+}
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
   AutofillProfile profile;

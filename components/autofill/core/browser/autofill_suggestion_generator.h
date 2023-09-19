@@ -68,6 +68,16 @@ class AutofillSuggestionGenerator {
       base::span<SkipStatus> skip_statuses,
       const std::string& app_locale);
 
+  // Returns a list of profiles that will be displayed as suggestions to the
+  // user. This involved many steps from fetching the profiles to matching with
+  // `field_contents`, and deduplicating based on `field_types`, which are the
+  // relevant types for the current suggestion.
+  std::vector<AutofillProfile*> GetProfilesToSuggest(
+      const AutofillType& type,
+      const std::u16string& field_contents,
+      bool field_is_autofilled,
+      const ServerFieldTypeSet& field_types);
+
   // Returns a list of Suggestion objects, each representing an element in
   // `profiles`.
   // `field_types` holds the type of fields relevant for the current suggestion.

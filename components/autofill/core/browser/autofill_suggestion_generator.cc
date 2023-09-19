@@ -232,13 +232,21 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     }
   }
 
-  std::vector<AutofillProfile*> profiles =
-      personal_data_->GetProfilesForSuggestions(
-          field_type, field.value, field.is_autofilled, field_types);
+  std::vector<AutofillProfile*> profiles_to_suggest = GetProfilesToSuggest(
+      field_type, field.value, field.is_autofilled, field_types);
 
-  return CreateSuggestionsFromProfiles(profiles, field_types,
+  return CreateSuggestionsFromProfiles(profiles_to_suggest, field_types,
                                        last_targeted_fields, field_type,
                                        field.max_length);
+}
+
+std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
+    const AutofillType& type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const ServerFieldTypeSet& field_types) {
+  return personal_data_->GetProfilesForSuggestions(
+      type, field_contents, field_is_autofilled, field_types);
 }
 
 std::vector<Suggestion>
