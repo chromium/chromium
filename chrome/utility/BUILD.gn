@@ -192,8 +192,11 @@ static_library("utility") {
       "//chromeos/ash/services/ime:lib",
       "//chromeos/ash/services/ime/public/mojom",
       "//chromeos/ash/services/nearby/public/mojom:mojom",
+      "//chromeos/ash/services/orca",
+      "//chromeos/ash/services/orca/public/mojom",
       "//chromeos/ash/services/quick_pair",
       "//chromeos/ash/services/recording",
+      "//chromeos/constants:constants",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

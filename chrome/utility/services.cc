@@ -125,8 +125,10 @@
 #include "chromeos/ash/services/ime/ime_service.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
+#include "chromeos/ash/services/orca/orca_library.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 #include "chromeos/ash/services/recording/recording_service.h"
+#include "chromeos/constants/chromeos_features.h"  // nogncheck
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
@@ -354,6 +356,18 @@ auto RunImeService(
       std::make_unique<ash::ime::FieldTrialParamsRetrieverImpl>());
 }
 
+auto RunOrcaService(
+    mojo::PendingReceiver<ash::orca::mojom::OrcaService> receiver) {
+  CHECK(chromeos::features::IsOrcaEnabled());
+  auto orca_library = std::make_unique<ash::orca::OrcaLibrary>();
+  base::expected<void, ash::orca::OrcaLibrary::BindError> error =
+      orca_library->BindReceiver(std::move(receiver));
+  if (!error.has_value()) {
+    LOG(ERROR) << error.error().message;
+  }
+  return orca_library;
+}
+
 auto RunRecordingService(
     mojo::PendingReceiver<recording::mojom::RecordingService> receiver) {
   return std::make_unique<recording::RecordingService>(std::move(receiver));
@@ -501,6 +515,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunImeService);
+  if (chromeos::features::IsOrcaEnabled()) {
+    services.Add(RunOrcaService);
+  }
   services.Add(RunRecordingService);
   services.Add(RunSharing);
   services.Add(RunTrashService);
