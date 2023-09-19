@@ -595,6 +595,12 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   available_container_ids_.pop();
   Desk* new_desk = desks_.back().get();
 
+  // We should notify observers that the desk is added before possibly
+  // notifying observers that the name is set.
+  for (auto& observer : observers_) {
+    observer.OnDeskAdded(new_desk, /*from_undo=*/false);
+  }
+
   // The new desk should have an empty name when the user creates a desk with
   // a button. This is done to encourage them to rename their desks.
   const bool empty_name =
@@ -619,9 +625,6 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
         l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
                                   base::NumberToString16(desks_.size())));
   }
-
-  for (auto& observer : observers_)
-    observer.OnDeskAdded(new_desk, /*from_undo=*/false);
 
   if (!is_first_ever_desk) {
     if (features::IsDeskButtonEnabled()) {

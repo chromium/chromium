@@ -219,11 +219,7 @@ void WmModeController::OnDeskActivationChanged(const Desk* activated,
 void WmModeController::OnDeskNameChanged(const Desk* desk,
                                          const std::u16string& new_name) {
   auto* desks_controller = DesksController::Get();
-  if (!pie_menu_view_ ||
-      pie_menu_view_->GetOrAddSubMenuForButton(kMoveToDeskButtonId)
-              ->button_count() != desks_controller->desks().size()) {
-    // Sometimes we received the desk-name change notification before the desk-
-    // addition notification. This has been reported in b/298726506.
+  if (!pie_menu_view_) {
     return;
   }
   const int index = desks_controller->GetDeskIndex(desk);
