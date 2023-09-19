@@ -491,9 +491,18 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       tab_strip_model->group_model()->GetTabGroup(tab_group_id);
   ASSERT_TRUE(tab_group);
 
-  // Verify the tabs of the groups are the same and have the same order.
+  // Verify the number of tabs in the TabGroup and SavedTabGroup are the same.
   const gfx::Range& tab_range = tab_group->ListTabs();
   ASSERT_EQ(tab_range.length(), retrieved_saved_group->saved_tabs().size());
+
+  // Remove the first tab from the saved group.
+  service()->model()->RemoveTabFromGroupFromSync(
+      guid, retrieved_saved_group->saved_tabs().at(0).saved_tab_guid());
+
+  // Verify the number of tabs in the TabGroup and SavedTabGroup are the same.
+  const gfx::Range& modified_tab_range = tab_group->ListTabs();
+  ASSERT_EQ(modified_tab_range.length(),
+            retrieved_saved_group->saved_tabs().size());
 
   // TODO(crbug/1450319): Compare tabs and ensure they are in the same order and
   // contain the same data.
@@ -522,6 +531,12 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       SavedTabGroupTab(GURL("https://www.google.com"), u"Google", guid,
                        /*position=*/0)};
 
+  // Populate the savedTabGroupModel with some test data, To test the added
+  // savedTabGroupModel.
+  auto added_group_tab =
+      SavedTabGroupTab(GURL("https://www.youtube.com"), u"Youtube", guid,
+                       /*position=*/0);
+
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
                             std::move(group_tabs), absl::nullopt, guid);
   service()->model()->Add(saved_group);
@@ -542,9 +557,17 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       tab_strip_model->group_model()->GetTabGroup(tab_group_id);
   ASSERT_TRUE(tab_group);
 
-  // Verify the tabs of the groups are the same and have the same order.
+  // Verify the number of tabs in the TabGroup and SavedTabGroup are the same.
   const gfx::Range& tab_range = tab_group->ListTabs();
   ASSERT_EQ(tab_range.length(), retrieved_saved_group->saved_tabs().size());
+
+  // Add the group tab in the saved group.
+  service()->model()->AddTabToGroupFromSync(guid, added_group_tab);
+
+  // Verify the number of tabs in the TabGroup and SavedTabGroup are the same.
+  const gfx::Range& modified_tab_range = tab_group->ListTabs();
+  ASSERT_EQ(modified_tab_range.length(),
+            retrieved_saved_group->saved_tabs().size());
 
   // TODO(crbug/1450319): Compare tabs and ensure they are in the same order and
   // contain the same data.
