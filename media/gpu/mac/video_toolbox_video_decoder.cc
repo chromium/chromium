@@ -20,6 +20,7 @@
 #include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h264_decoder.h"
@@ -144,7 +145,10 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
       break;
     }
   }
-  if (!profile_supported) {
+
+  // If we don't have support support for a given codec, try to initialize
+  // anyways -- otherwise we're certain to fail playback.
+  if (!profile_supported && IsBuiltInVideoCodec(config.codec())) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(init_cb),
                                   DecoderStatus::Codes::kUnsupportedProfile));

@@ -27,6 +27,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/scoped_async_trace.h"
 #include "media/base/status.h"
+#include "media/base/supported_types.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
@@ -358,11 +359,16 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // which is statically cached for faster Initialize().
   //
   // The tests also require the presence of software codecs.
-  const auto configs = device_info_ == DeviceInfo::GetInstance()
-                           ? GetSupportedConfigs()
-                           : GetSupportedConfigsInternal(
-                                 device_info_, /*allow_software_codecs=*/true);
-  if (!IsVideoDecoderConfigSupported(configs, config)) {
+  const auto configs =
+      device_info_ == DeviceInfo::GetInstance()
+          ? GetSupportedConfigs()
+          : GetSupportedConfigsInternal(
+                device_info_, /*allow_media_codec_software_decoder=*/true);
+
+  // If we don't have support support for a given codec, try to initialize
+  // anyways -- otherwise we're certain to fail playback.
+  if (!IsVideoDecoderConfigSupported(configs, config) &&
+      IsBuiltInVideoCodec(config.codec())) {
     DVLOG(1) << "Unsupported configuration.";
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
