@@ -592,24 +592,13 @@ def _get_builder_mirror_description(bucket_name, builder, bc_state):
         # longer holds true.
         fail("A builder can't both mirror and be mirrored:", builder.name)
 
-    # TODO(crbug.com/1227778): Remove this allowlist if/when the
-    # descriptions look OK. For now we only change descriptions for
-    # builders related to "GPU FYI Mac Builder".
-    should_skip = builder.name != "GPU FYI Mac Builder"
-    for m in mirrored_builders + mirroring_builders:
-        if _builder_id(m)["builder"] == "GPU FYI Mac Builder":
-            should_skip = False
-            break
-    if should_skip:
-        return builder.description_html
-
     description = builder.description_html
     if description:
         description += "<br/>"
     if mirrored_builders:
         description += "This builder mirrors the following CI builders:<br/>"
     else:
-        description += "This builder is (partially) mirrored by any of the following try builders:<br/>"
+        description += "This builder is mirrored by any of the following try builders:<br/>"
 
     description += "<ul>"
     for m in mirrored_builders or mirroring_builders:
