@@ -1598,6 +1598,13 @@
          null,
          {}
         ]
+       ],
+       "grid-dynamic.html": [
+        "efc65859611fb04d2c4002fbe688291a221898f7",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "detach-locked-slot-children-crash.html": [
@@ -191061,6 +191068,32 @@
         ],
         {}
        ]
+      ],
+      "text-autospace-vertical-combine-001.html": [
+       "bed306e159774446ac23ae5238fa654511a27067",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-autospace/text-autospace-vertical-combine-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-autospace-vertical-upright-001.html": [
+       "21d454e7133c1d979e7a666249533629562d9662",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-autospace/text-autospace-vertical-upright-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "text-encoding": {
@@ -281240,16 +281273,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "95a0637bd1d208acedb8e436063da06bdfe4e137",
-     []
-    ],
-    "mtime.json": [
-     "ec8760fc2a126464bbb0ba32f9aa7b291e9f437a",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -332675,6 +332698,14 @@
       ],
       "text-autospace-no-001.html.ini": [
        "b2bc530c26109459e7fad707e8ffe890919aad93",
+       []
+      ],
+      "text-autospace-vertical-combine-001-ref.html": [
+       "36c1cb45a1e808a8fbea68061de40b87eaa9ff08",
+       []
+      ],
+      "text-autospace-vertical-upright-001-ref.html": [
+       "1c9caec112a3f9e132a8b612f748a23556a56de2",
        []
       ]
      },
@@ -691906,7 +691937,7 @@
      ]
     ],
     "send-redirect.htm": [
-     "16b3231e25b4d78712f2f29df6ca5221c1964356",
+     "7d73f0f64cc4d7506e607f75d3bba37b9d3d74a9",
      [
       null,
       {}
