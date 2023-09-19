@@ -6773,4 +6773,5 @@ crbug.com/1481209 [ Mac ] http/tests/inspector-protocol/target/browser-auto-atta
 # Gardener 2023-09-18
 crbug.com/1482345 [ Mac11-arm64 Release ] fast/events/touch/touch-handler-count.html [ Failure Pass ]
 crbug.com/1482345 [ Mac12-arm64 Release ] fast/events/touch/touch-handler-count.html [ Failure Pass ]
+crbug.com/1482345 [ Mac13-arm64 Release ] fast/events/touch/touch-handler-count.html [ Failure Pass ]
 
