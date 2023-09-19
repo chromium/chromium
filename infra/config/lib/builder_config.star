@@ -7,6 +7,7 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
 load("./args.star", "args")
+load("./builder_url.star", "linkify_builder")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
 load("//project.star", "settings")
@@ -578,6 +579,49 @@ def _check_specs_for_consistency(bucket_name, builder_name, entries):
                 ),
             ))
 
+def _get_builder_mirror_description(bucket_name, builder, bc_state):
+    node = _BUILDER_CONFIG.get(bucket_name, builder.name)
+    if not node:
+        return builder.description_html
+    mirrored_builders = bc_state.mirrors(node)
+    mirroring_builders = _get_mirroring_builders(bc_state, node)
+    if not mirrored_builders and not mirroring_builders:
+        return builder.description_html
+    elif mirrored_builders and mirroring_builders:
+        # Need to change the descriptions below if this assertion no
+        # longer holds true.
+        fail("A builder can't both mirror and be mirrored:", builder.name)
+
+    # TODO(crbug.com/1227778): Remove this allowlist if/when the
+    # descriptions look OK. For now we only change descriptions for
+    # builders related to "GPU FYI Mac Builder".
+    should_skip = builder.name != "GPU FYI Mac Builder"
+    for m in mirrored_builders + mirroring_builders:
+        if _builder_id(m)["builder"] == "GPU FYI Mac Builder":
+            should_skip = False
+            break
+    if should_skip:
+        return builder.description_html
+
+    description = builder.description_html
+    if description:
+        description += "<br/>"
+    if mirrored_builders:
+        description += "This builder mirrors the following CI builders:<br/>"
+    else:
+        description += "This builder is (partially) mirrored by any of the following try builders:<br/>"
+
+    description += "<ul>"
+    for m in mirrored_builders or mirroring_builders:
+        m_id = _builder_id(m)
+        if (bucket_name, m_id["bucket"]) not in [("try", "ci"), ("ci", "try")]:
+            # Change the descriptions above if this assertion no
+            # longer holds true.
+            fail("{} to {} mirroring is not allowed. Only 'try' can mirror 'ci'.".format(bucket_name, m_id["bucket"]))
+        link = linkify_builder(m_id["bucket"], m_id["builder"])
+        description += "<li>%s</li>" % link
+    return description + "</ul>"
+
 def _set_builder_config_property(ctx):
     cfg = None
     for f in ctx.output:
@@ -680,6 +724,8 @@ def _set_builder_config_property(ctx):
                 builder_config = builder_config,
             )
             builder.properties = json.encode(builder_properties)
+
+            builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
 lucicfg.generator(_set_builder_config_property)
 
