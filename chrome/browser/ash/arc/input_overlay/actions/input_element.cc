@@ -122,7 +122,7 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
   }
   if (input_sources_ == InputSource::IS_KEYBOARD) {
     for (auto key : input_element.keys()) {
-      if (base::Contains(keys_, key)) {
+      if (key != ui::DomCode::NONE && base::Contains(keys_, key)) {
         return true;
       }
     }
