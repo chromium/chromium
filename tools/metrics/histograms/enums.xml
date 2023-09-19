@@ -44082,6 +44082,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4659" label="PercentOrCalcStickyUsedOffset"/>
   <int value="4660" label="PercentOrCalcRelativeUsedOffset"/>
   <int value="4661" label="AutoRelativeUsedOffset"/>
+  <int value="4662" label="ViewportFitContain"/>
+  <int value="4663" label="ViewportFitCover"/>
+  <int value="4664" label="ViewportFitCoverOrSafeAreaInsetBottom"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

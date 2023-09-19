@@ -3999,6 +3999,9 @@ enum WebFeature {
   kPercentOrCalcStickyUsedOffset = 4659,
   kPercentOrCalcRelativeUsedOffset = 4660,
   kAutoRelativeUsedOffset = 4661,
+  kViewportFitContain = 4662,
+  kViewportFitCover = 4663,
+  kViewportFitCoverOrSafeAreaInsetBottom = 4664,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

@@ -422,6 +422,18 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetBottom) {
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom));
 }
 
+// TODO(https://crbug.com/1430288) remove after data collected (end of '23)
+TEST_F(StyleEnvironmentVariablesTest,
+       RecordUseCounter_ViewportFitCoverOrSafeAreaInsetBottom) {
+  InitializeWithHTML(GetFrame(), "");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+  InitializeTestPageWithVariableNamed(GetFrame(),
+                                      UADefinedVariable::kSafeAreaInsetBottom);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+}
+
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetLeft) {
   InitializeTestPageWithVariableNamed(GetFrame(),
                                       UADefinedVariable::kSafeAreaInsetLeft);

@@ -97,6 +97,38 @@ TEST_F(HTMLMetaElementTest, ViewportFit_Invalid) {
             LoadTestPageAndReturnViewportFit("invalid"));
 }
 
+// TODO(https://crbug.com/1430288) remove after data collected (end of '23)
+TEST_F(HTMLMetaElementTest, ViewportFit_Auto_NotUseCounted) {
+  EXPECT_EQ(mojom::ViewportFit::kAuto,
+            LoadTestPageAndReturnViewportFit("auto"));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kViewportFitContain));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kViewportFitCover));
+  // TODO(https://crbug.com/1430288) remove tracking this union of features
+  // after data collected (end of '23)
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+}
+
+TEST_F(HTMLMetaElementTest, ViewportFit_Contain_IsUseCounted) {
+  EXPECT_EQ(mojom::ViewportFit::kContain,
+            LoadTestPageAndReturnViewportFit("contain"));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kViewportFitCover));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kViewportFitContain));
+}
+
+// TODO(https://crbug.com/1430288) remove after data collected (end of '23)
+TEST_F(HTMLMetaElementTest, ViewportFit_Cover_IsUseCounted) {
+  EXPECT_EQ(mojom::ViewportFit::kCover,
+            LoadTestPageAndReturnViewportFit("cover"));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kViewportFitCover));
+  // TODO(https://crbug.com/1430288) remove tracking this union of features
+  // after data collected (end of '23)
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+}
+
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
   GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="color-scheme" content="dark">
