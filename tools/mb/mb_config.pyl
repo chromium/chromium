@@ -104,7 +104,7 @@
     },
 
     'chromium.accessibility': {
-      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient',
+      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient_with_blink_symbol',
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
@@ -1048,7 +1048,7 @@
     },
 
     'tryserver.chromium.accessibility': {
-      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient',
+      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient_with_blink_symbol',
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
@@ -3621,6 +3621,10 @@
       'release_bot_reclient', 'fuchsia',
     ],
 
+    'release_bot_fuchsia_reclient_with_blink_symbol': [
+      'release_bot_reclient', 'fuchsia', 'blink_symbol', 'minimal_symbols',
+    ],
+
     'release_bot_mac_strip_minimal_symbols': [
       'release_bot', 'mac_strip', 'minimal_symbols',
     ],
@@ -3976,6 +3980,10 @@
 
     'blink_enable_generated_code_formatting': {
       'gn_args': 'blink_enable_generated_code_formatting=true'
+    },
+
+    'blink_symbol': {
+      'gn_args': 'blink_symbol_level=1'
     },
 
     'brya': {

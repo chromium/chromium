@@ -1,9 +1,11 @@
 {
   "fuchsia-x64-accessibility-rel": {
     "gn_args": {
+      "blink_symbol_level": 1,
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
+      "symbol_level": 1,
       "target_os": "fuchsia",
       "use_remoteexec": true
     }
