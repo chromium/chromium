@@ -88,9 +88,9 @@ class DeviceSection : public OsSettingsSection,
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;
-  PowerSection power_subsection_;
+  absl::optional<PowerSection> power_subsection_;
   absl::optional<PrintingSection> printing_subsection_;
-  StorageSection storage_subsection_;
+  absl::optional<StorageSection> storage_subsection_;
   mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
 };

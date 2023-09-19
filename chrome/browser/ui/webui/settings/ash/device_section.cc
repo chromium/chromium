@@ -968,17 +968,32 @@ DeviceSection::DeviceSection(Profile* profile,
                              CupsPrintersManager* printers_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      power_subsection_(profile, search_tag_registry, pref_service),
+      power_subsection_(
+          !ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<PowerSection>(profile,
+                                                  search_tag_registry,
+                                                  pref_service)
+              : absl::nullopt),
       printing_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
               ? absl::make_optional<PrintingSection>(profile,
                                                      search_tag_registry,
                                                      printers_manager)
               : absl::nullopt),
-      storage_subsection_(profile, search_tag_registry) {
+      storage_subsection_(
+          !ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<StorageSection>(profile,
+                                                    search_tag_registry)
+              : absl::nullopt) {
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(printing_subsection_);
+  } else {
+    CHECK(power_subsection_);
+    CHECK(storage_subsection_);
+  }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDeviceSearchConcepts());
@@ -1074,11 +1089,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceAudioStrings(html_source);
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(printing_subsection_);
     printing_subsection_->AddLoadTimeData(html_source);
   } else {
-    power_subsection_.AddLoadTimeData(html_source);
-    storage_subsection_.AddLoadTimeData(html_source);
+    power_subsection_->AddLoadTimeData(html_source);
+    storage_subsection_->AddLoadTimeData(html_source);
   }
 }
 
@@ -1089,11 +1103,10 @@ void DeviceSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<StylusHandler>());
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(printing_subsection_);
     printing_subsection_->AddHandlers(web_ui);
   } else {
-    power_subsection_.AddHandlers(web_ui);
-    storage_subsection_.AddHandlers(web_ui);
+    power_subsection_->AddHandlers(web_ui);
+    storage_subsection_->AddHandlers(web_ui);
   }
 }
 
@@ -1306,14 +1319,13 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
     // Printing.
-    CHECK(printing_subsection_);
     printing_subsection_->RegisterHierarchy(generator);
   } else {
     // Power.
-    power_subsection_.RegisterHierarchy(generator);
+    power_subsection_->RegisterHierarchy(generator);
 
     // Storage.
-    storage_subsection_.RegisterHierarchy(generator);
+    storage_subsection_->RegisterHierarchy(generator);
   }
 
   // Audio.
