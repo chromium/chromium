@@ -111,7 +111,7 @@ TEST_F(CampaignsManagerTest, LoadCampiagns) {
 
   EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
-          campaigns_file));
+          temp_dir_.GetPath()));
 
   campaigns_manager_->LoadCampaigns();
   observer.Wait();

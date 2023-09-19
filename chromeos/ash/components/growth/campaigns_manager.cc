@@ -18,10 +18,14 @@ namespace {
 
 CampaignsManager* g_instance = nullptr;
 
+inline constexpr char kCampaignFileName[] = "campaigns.json";
+
 absl::optional<base::Value::Dict> ReadCampaignsFile(
-    const base::FilePath& campaigns_file_path) {
+    const base::FilePath& campaigns_component_path) {
   std::string campaigns_data;
-  if (!base::ReadFileToString(campaigns_file_path, &campaigns_data)) {
+  if (!base::ReadFileToString(
+          campaigns_component_path.Append(kCampaignFileName),
+          &campaigns_data)) {
     LOG(ERROR) << "Failed to read campaigns file from disk.";
     return absl::nullopt;
   }
