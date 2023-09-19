@@ -5777,7 +5777,6 @@ crbug.com/1472813 [ Mac10.15 ] virtual/close-watcher/external/wpt/close-watcher/
 crbug.com/1479108 [ Mac11-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
 crbug.com/1479108 [ Mac12-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
 crbug.com/1479108 [ Mac13-arm64 ] virtual/threaded-no-composited-antialiasing/animations/composited-animations-rotate-zero-degrees.html [ Failure ]
-crbug.com/1479003 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?mouse [ Timeout ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
@@ -6745,10 +6744,6 @@ crbug.com/1477701 [ Mac13-arm64 Release ] http/tests/devtools/tracing/frame-mode
 
 # Gardener 2023-09-01
 crbug.com/1477586 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/anonymous-image-object.js [ Failure Pass ]
-
-# Gardener 2023-09-04
-crbug.com/1478028 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
-crbug.com/1478028 [ Linux ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
 
 # Gardener 2023-09-05
 # Flaky on Webkit Linux Leak
