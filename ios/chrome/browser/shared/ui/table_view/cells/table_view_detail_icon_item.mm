@@ -472,9 +472,21 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     return self.customAccessibilityLabel;
   }
   if (_badgeView) {
-    return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
-                                      l10n_util::GetNSString(
-                                          IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
+    switch (_badgeType) {
+      case BadgeType::kNotificationDot:
+        return [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
+      case BadgeType::kNew:
+        return [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
+      case BadgeType::kNone:
+        NOTREACHED();
+        break;
+    }
   }
   return self.textLabel.text;
 }
@@ -491,10 +503,21 @@ NewFeatureBadgeView* NewIPHBadgeView() {
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   if (_badgeView) {
-    return @[ [NSString
-        stringWithFormat:@"%@, %@", self.textLabel.text,
-                         l10n_util::GetNSString(
-                             IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)] ];
+    switch (_badgeType) {
+      case BadgeType::kNotificationDot:
+        return @[ [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)] ];
+      case BadgeType::kNew:
+        return @[ [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)] ];
+      case BadgeType::kNone:
+        NOTREACHED();
+        break;
+    }
   }
   return @[ self.textLabel.text ];
 }
