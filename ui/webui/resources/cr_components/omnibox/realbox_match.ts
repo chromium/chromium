@@ -244,14 +244,12 @@ export class RealboxMatchElement extends PolymerElement {
       // Only handle main (generally left) button presses.
       return;
     }
-    this.dispatchEvent(new CustomEvent('match-remove', {
-      bubbles: true,
-      composed: true,
-      detail: this.matchIndex,
-    }));
 
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+
+    this.pageHandler_.deleteAutocompleteMatch(
+        this.matchIndex, this.match.destinationUrl);
   }
 
   private onRemoveButtonMouseDown_(e: Event) {

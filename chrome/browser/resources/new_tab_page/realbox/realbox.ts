@@ -635,16 +635,6 @@ export class RealboxElement extends PolymerElement {
     });
   }
 
-  /**
-   * @param e Event containing index of the match that was removed.
-   */
-  private onMatchRemove_(e: CustomEvent<number>) {
-    const index = e.detail;
-    const match = this.result_!.matches[index];
-    assert(match);
-    this.pageHandler_.deleteAutocompleteMatch(index, match.destinationUrl);
-  }
-
   private onVoiceSearchClick_() {
     this.dispatchEvent(new Event('open-voice-search'));
   }

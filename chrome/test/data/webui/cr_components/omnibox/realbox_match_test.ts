@@ -93,4 +93,38 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertDeepEquals(destinationUrl, middleClickArgs[1]);
     assertEquals(1, middleClickArgs[3]);
   });
+
+  test('RemovesMatch', async () => {
+    const matchIndex = 1;
+    const destinationUrl = {url: 'http://google.com'};
+    matchEl.matchIndex = matchIndex;
+    matchEl.match.destinationUrl = destinationUrl;
+
+    // By pressing 'Enter' on the button.
+    const keydownEvent = (new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'Enter',
+    }));
+    matchEl.$.remove.dispatchEvent(keydownEvent);
+    assertTrue(keydownEvent.defaultPrevented);
+    const keydownArgs =
+        await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(matchIndex, keydownArgs[0]);
+    assertEquals(destinationUrl, keydownArgs[1]);
+    assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
+    // Pressing 'Enter' the button doesn't accidentally trigger navigation.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+    testProxy.handler.reset();
+
+    matchEl.$.remove.click();
+    const clickArgs =
+        await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(matchIndex, clickArgs[0]);
+    assertEquals(destinationUrl, clickArgs[1]);
+    assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
+    // Clicking the button doesn't accidentally trigger navigation.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
 });
