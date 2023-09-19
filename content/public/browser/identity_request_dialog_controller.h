@@ -82,8 +82,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kCloseButton = 1,
     kSwipe = 2,
     kVirtualKeyboardShown = 3,
+    kGotItButton = 4,
 
-    kMaxValue = kVirtualKeyboardShown,
+    kMaxValue = kGotItButton,
   };
 
   using AccountSelectionCallback =

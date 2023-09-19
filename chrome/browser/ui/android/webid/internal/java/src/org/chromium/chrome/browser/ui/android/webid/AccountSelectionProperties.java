@@ -124,6 +124,21 @@ class AccountSelectionProperties {
     }
 
     /**
+     * Properties defined here reflect the state of the got it button in the AccountSelection
+     * sheet.
+     */
+    static class GotItButtonProperties {
+        static final ReadableObjectPropertyKey<IdentityProviderMetadata> IDP_METADATA =
+                new ReadableObjectPropertyKey<>("idp_metadata");
+        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
+
+        static final PropertyKey[] ALL_KEYS = {IDP_METADATA, ON_CLICK_LISTENER};
+
+        private GotItButtonProperties() {}
+    }
+
+    /**
      * Properties defined here reflect the state of the IDP sign in text in the AccountSelection
      * sheet.
      */
@@ -165,9 +180,11 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("error_summary");
         static final WritableObjectPropertyKey<PropertyModel> ERROR_DESCRIPTION =
                 new WritableObjectPropertyKey<>("error_description");
+        static final WritableObjectPropertyKey<PropertyModel> GOT_IT_BUTTON =
+                new WritableObjectPropertyKey<>("got_it_btn");
 
         static final PropertyKey[] ALL_KEYS = {CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER,
-                IDP_SIGNIN, ERROR_SUMMARY, ERROR_DESCRIPTION};
+                IDP_SIGNIN, ERROR_SUMMARY, ERROR_DESCRIPTION, GOT_IT_BUTTON};
 
         private ItemProperties() {}
     }

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.GotItButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -319,6 +320,37 @@ class AccountSelectionViewBinder {
     }
 
     /**
+     * Called whenever a got it button for the error dialog is bound to this view.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
+    static void bindGotItButtonView(PropertyModel model, View view, PropertyKey key) {
+        Context context = view.getContext();
+        ButtonCompat button = view.findViewById(R.id.got_it_btn);
+        button.setText(
+                String.format(context.getString(R.string.signin_error_dialog_got_it_button)));
+        if (key == GotItButtonProperties.IDP_METADATA) {
+            if (!ColorUtils.inNightMode(context)) {
+                IdentityProviderMetadata idpMetadata =
+                        model.get(GotItButtonProperties.IDP_METADATA);
+
+                // TODO(crbug.com/1484245): Decide on how to set colours for error buttons.
+                Integer textColor = idpMetadata.getBrandBackgroundColor();
+                button.setTextColor(textColor != null
+                                ? textColor
+                                : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
+            }
+        } else if (key == GotItButtonProperties.ON_CLICK_LISTENER) {
+            button.setOnClickListener(
+                    clickedView -> { model.get(GotItButtonProperties.ON_CLICK_LISTENER).run(); });
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
+    }
+
+    /**
      * Called whenever non-account views are bound to the bottom sheet.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
@@ -346,6 +378,9 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.ERROR_DESCRIPTION) {
             itemView = view.findViewById(R.id.error_description);
             itemBinder = AccountSelectionViewBinder::bindErrorDescriptionView;
+        } else if (key == ItemProperties.GOT_IT_BUTTON) {
+            itemView = view.findViewById(R.id.got_it_btn);
+            itemBinder = AccountSelectionViewBinder::bindGotItButtonView;
         } else {
             assert false : "Unhandled update to property:" + key;
             return;

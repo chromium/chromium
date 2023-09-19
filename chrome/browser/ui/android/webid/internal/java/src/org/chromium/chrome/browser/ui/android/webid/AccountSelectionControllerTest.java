@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.GotItButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -539,6 +540,7 @@ public class AccountSelectionControllerTest {
 
     @Test
     public void testShowErrorDialog() {
+        int count = 0;
         for (String rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
@@ -547,8 +549,9 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog, we expect header + error summary + error description
-            assertEquals(3, countAllItems());
+            // For error dialog, we expect header + error summary + error description + got it
+            // button
+            assertEquals(4, countAllItems());
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
 
@@ -560,6 +563,17 @@ public class AccountSelectionControllerTest {
                                                             .get(ErrorProperties.IDP_FOR_DISPLAY);
             assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,
                     errorDescriptionIdpEtldPlusOne);
+
+            assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
+                                  .get(GotItButtonProperties.ON_CLICK_LISTENER));
+
+            // Do not let test inputs be ignored.
+            mMediator.setComponentShowTime(-1000);
+            mModel.get(ItemProperties.GOT_IT_BUTTON)
+                    .get(GotItButtonProperties.ON_CLICK_LISTENER)
+                    .run();
+            verify(mMockDelegate, times(++count))
+                    .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
         }
     }
 

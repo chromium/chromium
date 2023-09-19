@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.GotItButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
@@ -439,6 +440,7 @@ class AccountSelectionMediator {
         updateHeader();
 
         boolean isContinueButtonVisible = false;
+        boolean isGotItButtonVisible = false;
         boolean isDataSharingConsentVisible = false;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
             isContinueButtonVisible = true;
@@ -462,11 +464,14 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN_ERROR) {
             assert !isDataSharingConsentVisible;
             isContinueButtonVisible = false;
+            isGotItButtonVisible = true;
         }
 
         mModel.set(ItemProperties.CONTINUE_BUTTON,
                 isContinueButtonVisible ? createContinueBtnItem(mSelectedAccount, mIdpMetadata)
                                         : null);
+        mModel.set(ItemProperties.GOT_IT_BUTTON,
+                isGotItButtonVisible ? createGotItBtnItem(mIdpMetadata) : null);
         mModel.set(ItemProperties.DATA_SHARING_CONSENT,
                 isDataSharingConsentVisible
                         ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
@@ -572,6 +577,14 @@ class AccountSelectionMediator {
         onAccountSelected(selectedAccount);
     }
 
+    /**
+     * Event listener for when the user taps on the got it button of the bottomsheet.
+     */
+    void onClickGotItButton() {
+        if (!shouldInputBeProcessed()) return;
+        onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
+    }
+
     void onAccountSelected(Account selectedAccount) {
         if (mWasDismissed) return;
 
@@ -609,6 +622,14 @@ class AccountSelectionMediator {
                 .with(ContinueButtonProperties.ACCOUNT, account)
                 .with(ContinueButtonProperties.ON_CLICK_LISTENER,
                         account != null ? this::onClickAccountSelected : this::onSignInToIdp)
+                .build();
+    }
+
+    private PropertyModel createGotItBtnItem(IdentityProviderMetadata idpMetadata) {
+        assert mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR;
+        return new PropertyModel.Builder(GotItButtonProperties.ALL_KEYS)
+                .with(GotItButtonProperties.IDP_METADATA, idpMetadata)
+                .with(GotItButtonProperties.ON_CLICK_LISTENER, this::onClickGotItButton)
                 .build();
     }
 
