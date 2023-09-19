@@ -9,9 +9,9 @@
 
 namespace content {
 
-#if defined(NCTEST_BROWSER_TASK_TRAITS_MULTIPLE_TASK_TYPES)  // [r"The traits bag contains multiple traits of the same type."]
+// expected-error@*:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@*:* {{static assertion failed due to requirement 'value != __ambiguous'}}
+// expected-error@*:* {{constexpr variable 'traits' must be initialized by a constant expression}}
 constexpr BrowserTaskTraits traits = {BrowserTaskType::kNavigationNetworkResponse, BrowserTaskType::kUserInput};
-#endif
-
 
 }  // namespace content

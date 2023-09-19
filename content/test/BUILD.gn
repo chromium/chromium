@@ -3032,6 +3032,10 @@ test("content_unittests") {
     "//ui/webui:test_support",
   ]
 
+  if (enable_nocompile_tests_new) {
+    deps += [ ":content_nocompile_tests" ]
+  }
+
   data_deps = [
     "//testing/buildbot/filters:content_unittests_filters",
     "//third_party/mesa_headers",
@@ -3360,20 +3364,11 @@ if (is_apple) {
   }
 }
 
-if (enable_nocompile_tests) {
-  nocompile_test("content_nocompile_tests") {
-    sources = [ "../browser/browser_task_traits_unittest.nc" ]
+if (enable_nocompile_tests_new) {
+  nocompile_source_set("content_nocompile_tests") {
+    sources = [ "../browser/browser_task_traits_nocompile.nc" ]
 
-    deps = [
-      ":run_all_unittests",
-      "//base",
-      "//content/public/browser",
-      "//testing/gtest",
-    ]
-
-    if (is_ios) {
-      bundle_deps = [ ":content_shell_pak_bundle_data" ]
-    }
+    deps = [ "//content/public/browser" ]
   }
 }
 
