@@ -837,12 +837,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithGuestReclaim_20230831",
+                    "name": "EnabledWithGuestReclaim_20230915",
                     "params": {
                         "guest_reclaim_enabled": "true",
                         "guest_reclaim_only_anonymous": "false",
                         "percentage_size": "100",
-                        "shift_mib": "-1536"
+                        "shift_mib": "-1900"
                     },
                     "enable_features": [
                         "ArcGuestZram",
