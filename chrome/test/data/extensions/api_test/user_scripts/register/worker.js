@@ -185,9 +185,8 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.register(scripts),
-        `Error: Invalid value for 'content_scripts[0].matches[0]': Missing ` +
-            `scheme separator.`);
-
+        `Error: Script with ID 'invalidMatchPattern' has invalid value for ` +
+            `matches[0]: Missing scheme separator.`);
     chrome.test.succeed();
   },
 

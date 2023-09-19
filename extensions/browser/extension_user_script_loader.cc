@@ -438,10 +438,10 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     if (!script_parsing::ParseMatchPatterns(
             content_script->matches,
             base::OptionalToPtr(content_script->exclude_matches),
-            /*definition_index=*/0, extension.creation_flags(),
-            scripting::kScriptsCanExecuteEverywhere, valid_schemes,
-            scripting::kAllUrlsIncludesChromeUrls, script.get(), &error,
-            /*wants_file_access=*/nullptr)) {
+            extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
+            valid_schemes, scripting::kAllUrlsIncludesChromeUrls, script.get(),
+            &error, /*wants_file_access=*/nullptr,
+            /*definition_index=*/absl::nullopt)) {
       continue;
     }
 

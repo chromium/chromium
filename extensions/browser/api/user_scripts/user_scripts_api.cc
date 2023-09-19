@@ -33,7 +33,6 @@ constexpr char kMatchesMissingError[] =
 std::unique_ptr<UserScript> ParseUserScript(
     const Extension& extension,
     const api::user_scripts::RegisteredUserScript& user_script,
-    int definition_index,
     std::u16string* error) {
   auto result = std::make_unique<UserScript>();
   result->set_id(user_script.id);
@@ -55,18 +54,15 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
-  // TODO(crbug.com/1385165): Update error messages to not be specific to
-  // scripting API. Eg: kInvalidMatch should not be specific to
-  // 'content_scripts[*].matches'.
   const int valid_schemes = UserScript::ValidUserScriptSchemes(
       scripting::kScriptsCanExecuteEverywhere);
   if (!script_parsing::ParseMatchPatterns(
           *user_script.matches,
-          base::OptionalToPtr(user_script.exclude_matches), definition_index,
+          base::OptionalToPtr(user_script.exclude_matches),
           extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
           valid_schemes, scripting::kAllUrlsIncludesChromeUrls, result.get(),
-          error,
-          /*wants_file_access=*/nullptr)) {
+          error, /*wants_file_access=*/nullptr,
+          /*definition_index=*/absl::nullopt)) {
     return nullptr;
   }
 
@@ -170,9 +166,9 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
   parsed_scripts->reserve(scripts.size());
   std::u16string parse_error;
 
-  for (size_t i = 0; i < scripts.size(); ++i) {
+  for (const auto& script : scripts) {
     std::unique_ptr<UserScript> user_script =
-        ParseUserScript(*extension(), scripts[i], i, &parse_error);
+        ParseUserScript(*extension(), script, &parse_error);
     if (!user_script) {
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
     }

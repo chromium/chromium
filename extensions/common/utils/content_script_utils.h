@@ -50,17 +50,18 @@ api::content_scripts::RunAt ConvertRunLocationToManifestType(
 // Parses and validates `matches` and `exclude_matches`, and updates these
 // fields for `result`. If `wants_file_access` is not null, then it will be set
 // to signal to the caller that the extension is requesting file access based
-// the match patterns specified.
+// the match patterns specified. `definition_index` must be only provided for
+// static scripts.
 bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         const std::vector<std::string>* exclude_matches,
-                        int definition_index,
                         int creation_flags,
                         bool can_execute_script_everywhere,
                         int valid_schemes,
                         bool all_urls_includes_chrome_urls,
                         UserScript* result,
                         std::u16string* error,
-                        bool* wants_file_access);
+                        bool* wants_file_access,
+                        absl::optional<int> definition_index);
 
 // Parses the `js` and `css` fields, and updates `result` with the specified
 // file paths. Returns false and populates `error` if both `js` and `css` are
