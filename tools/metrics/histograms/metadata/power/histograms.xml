@@ -1118,6 +1118,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryLife.Detail.RollingAverage.{BatteryCapacityType}"
+    units="minute" expires_after="2024-05-12">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    ChromeOS rolling average of the battery life while in active state, measured
+    in minutes using the {BatteryCapacityType}.
+
+    This is calculated by taking the average of the last 10 samples of the
+    Power.BatteryLife.{BatteryCapacityType} metrics.
+
+    The detail version put the data outside of 5-13 hours in to the underflow
+    and overflow bucket to have more data resolution at the median range.
+  </summary>
+  <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
+</histogram>
+
+<histogram name="Power.BatteryLife.Detail.{BatteryCapacityType}" units="minute"
+    expires_after="2024-05-12">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS battery life while in active state, measured in minutes using the
+    {BatteryCapacityType}.
+
+    This is calculated using size of the battery divided by the battery
+    discharge rate sampling, i.e., Power.BatteryDischargeRate. Note that the
+    size of the battery is derated by the low battery shutdown percent.
+
+    The detail version put the data outside of 5-13 hours in to the underflow
+    and overflow bucket to have more data resolution at the median range.
+  </summary>
+  <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
+</histogram>
+
 <histogram name="Power.BatteryLife.RollingAverage.{BatteryCapacityType}"
     units="minute" expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
