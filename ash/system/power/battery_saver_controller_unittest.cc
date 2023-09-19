@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/power_status.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
@@ -98,7 +99,7 @@ class BatterySaverControllerTest : public AshTestBase {
   }
 
   void DismissToast() {
-    Shell::Get()->toast_manager()->CloseAllToastsWithoutAnimation();
+    Shell::Get()->toast_manager()->CloseAllToastsWithAnimation();
   }
 
   bool IsBatterySaverActive() {
@@ -348,6 +349,7 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   ToastOverlay* current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
 
+  // Test Disabled Toast via Button.
   // Enable battery saver mode.
   battery_saver_controller()->SetState(
       true, BatterySaverController::UpdateReason::kThreshold);
@@ -356,7 +358,7 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
 
-  // Disable battery saver mode.
+  // Disable battery saver mode via button.
   battery_saver_controller()->SetState(
       false, BatterySaverController::UpdateReason::kThreshold);
 
@@ -368,6 +370,28 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
       l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
   DismissToast();
 
+  // Test Disabled Toast via Charging.
+  // Enable battery saver mode.
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kThreshold);
+
+  // There should be no `ToastOverlay` displayed when battery saver is enabled.
+  current_toast = GetCurrentToast();
+  EXPECT_EQ(current_toast, nullptr);
+
+  // Disable battery saver mode via Charging.
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kCharging);
+
+  // Check to see if a `ToastOverlay` was displayed, and that it's accurate.
+  current_toast = GetCurrentToast();
+  EXPECT_NE(current_toast, nullptr);
+  EXPECT_EQ(
+      current_toast->GetText(),
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
+  DismissToast();
+
+  // Test Disabled Toast via Settings.
   // Reenable to test that toast doesn't appear when toggled via Settings.
   battery_saver_controller()->SetState(
       true, BatterySaverController::UpdateReason::kSettings);
@@ -379,6 +403,41 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   // Check there is still no toast since we disabled via Settings.
   current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
+}
+
+TEST_F(BatterySaverControllerNotificationTest,
+       ShowEnableToastAtCriticalPercentageForAutoEnable) {
+  SetExperimentArm(features::kBSMAutoEnable);
+  const int critical_percentage = Shell::Get()
+                                      ->system_notification_controller()
+                                      ->power_notification_controller()
+                                      ->GetCriticalPowerPercentage();
+
+  // Ensure there is no `ToastOverlay` being displayed at the start of the test.
+  ToastOverlay* current_toast = GetCurrentToast();
+  EXPECT_EQ(current_toast, nullptr);
+
+  // Set the battery to a critical percentage.
+  UpdatePowerStatus(critical_percentage, eight_hours_, /*charging=*/false);
+
+  // The enabled toast should be displayed.
+  current_toast = GetCurrentToast();
+  EXPECT_NE(current_toast, nullptr);
+  EXPECT_EQ(
+      current_toast->GetText(),
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT));
+  DismissToast();
+
+  // Plug In AC Charger.
+  UpdatePowerStatus(critical_percentage, eight_hours_, /*charging=*/true);
+
+  // Toast should be 'Disabled' text.
+  current_toast = GetCurrentToast();
+  EXPECT_NE(current_toast, nullptr);
+  EXPECT_EQ(
+      current_toast->GetText(),
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
+  DismissToast();
 }
 
 TEST_P(BatterySaverControllerNotificationTest, NotificationStateUpdatesOnUSB) {

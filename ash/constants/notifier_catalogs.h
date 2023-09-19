@@ -274,7 +274,8 @@ enum class ToastCatalogName {
   // [Deprecated] kVideoConferenceTrayUseWhileDisabled = 43,
   kBatterySaverDisabled = 44,
   kDictationNoFocusedTextField = 45,
-  kMaxValue = kDictationNoFocusedTextField
+  kBatterySaverEnabled = 46,
+  kMaxValue = kBatterySaverEnabled
 };
 
 }  // namespace ash

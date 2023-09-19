@@ -13,6 +13,8 @@
 #include "ash/system/power/power_notification_controller.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/system_notification_controller.h"
+#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -86,6 +88,10 @@ class BatteryNotificationTest : public AshTestBase {
         BatteryNotification::kNotificationId);
   }
 
+  ToastOverlay* GetCurrentToast() {
+    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  }
+
   void TestBatterySaverNotification(
       const PowerStatus& status,
       const ExpectedNotificationValues& expected_values,
@@ -115,6 +121,15 @@ class BatteryNotificationTest : public AshTestBase {
     // Click the button to turn off/on battery saver mode depending on
     // NotificationState.
     notification->delegate()->Click(0, absl::nullopt);
+
+    // Test Enable Toast on Button Click in Opt-In Branch.
+    if (notification_state ==
+        PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN) {
+      EXPECT_NE(GetCurrentToast(), nullptr);
+      EXPECT_EQ(
+          GetCurrentToast()->GetText(),
+          l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT));
+    }
 
     // Verify battery saver mode state changed respective to the
     // NotificationState.

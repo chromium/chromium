@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_POWER_BATTERY_SAVER_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/system/power/power_status.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +33,9 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
     kAlwaysOn,
   };
 
+  static constexpr char kBatterySaverToastId[] =
+      "battery_saver_mode_state_changed";
+
   explicit BatterySaverController(PrefService* local_state);
   BatterySaverController(const BatterySaverController&) = delete;
   BatterySaverController& operator=(const BatterySaverController&) = delete;
@@ -48,6 +52,12 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   bool IsBatterySaverSupported() const;
 
+  void ShowBatterySaverModeDisabledToast();
+
+  void ShowBatterySaverModeEnabledToast();
+
+  void ClearBatterySaverModeToast();
+
  private:
   // Types used for metrics tracking.
   struct EnableRecord {
@@ -60,7 +70,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   void OnSettingsPrefChanged();
 
-  void DisplayBatterySaverModeDisabledToast();
+  void ShowBatterySaverModeToastHelper(const ToastCatalogName catalog_name,
+                                       const std::u16string& toast_text);
 
   absl::optional<int> GetRemainingMinutes(const PowerStatus* status);
 

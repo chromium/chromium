@@ -124,7 +124,7 @@ void BatterySaverController::OnSettingsPrefChanged() {
            UpdateReason::kSettings);
 }
 
-void BatterySaverController::DisplayBatterySaverModeDisabledToast() {
+void BatterySaverController::ClearBatterySaverModeToast() {
   ToastManager* toast_manager = ToastManager::Get();
   // `toast_manager` can be null when this function is called in the unit tests
   // due to initialization priority.
@@ -132,11 +132,34 @@ void BatterySaverController::DisplayBatterySaverModeDisabledToast() {
     return;
   }
 
-  toast_manager->Show(ToastData(
-      "battery_saver_mode_state_changed",
+  toast_manager->Cancel(kBatterySaverToastId);
+}
+
+void BatterySaverController::ShowBatterySaverModeToastHelper(
+    const ToastCatalogName catalog_name,
+    const std::u16string& toast_text) {
+  ToastManager* toast_manager = ToastManager::Get();
+  // `toast_manager` can be null when this function is called in the unit tests
+  // due to initialization priority.
+  if (toast_manager == nullptr) {
+    return;
+  }
+
+  toast_manager->Cancel(kBatterySaverToastId);
+  toast_manager->Show(ToastData(kBatterySaverToastId, catalog_name, toast_text,
+                                ToastData::kDefaultToastDuration, true));
+}
+
+void BatterySaverController::ShowBatterySaverModeDisabledToast() {
+  ShowBatterySaverModeToastHelper(
       ToastCatalogName::kBatterySaverDisabled,
-      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT),
-      ToastData::kDefaultToastDuration, true));
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
+}
+
+void BatterySaverController::ShowBatterySaverModeEnabledToast() {
+  ShowBatterySaverModeToastHelper(
+      ToastCatalogName::kBatterySaverEnabled,
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT));
 }
 
 void BatterySaverController::SetState(bool active, UpdateReason reason) {
@@ -172,7 +195,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     // NB: We show the toast after checking enable_record_ to make sure we were
     // enabled before this Disable call.
     if (reason != UpdateReason::kSettings) {
-      DisplayBatterySaverModeDisabledToast();
+      ShowBatterySaverModeDisabledToast();
     }
 
     // Log metrics.

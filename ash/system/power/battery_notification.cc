@@ -208,8 +208,16 @@ void HandlePowerNotificationButtonClick(
     case 0: {
       Shell::Get()->battery_saver_controller()->SetState(
           active, BatterySaverController::UpdateReason::kThreshold);
+
       if (power_notification_controller) {
         power_notification_controller->SetUserOptStatus(true);
+      }
+
+      // Send an 'Enabled' toast if enabling via button.
+      if (active) {
+        Shell::Get()
+            ->battery_saver_controller()
+            ->ShowBatterySaverModeEnabledToast();
       }
       break;
     }

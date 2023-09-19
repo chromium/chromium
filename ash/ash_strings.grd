@@ -2638,6 +2638,9 @@ Connect your device to power.
       <message name="IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is disabled.">
         Battery Saver has been turned off
       </message>
+      <message name="IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is enabled.">
+        Battery Saver has been turned on
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE" translateable="false" desc="The title for the notification displayed when device battery level is low, and battery saver mode is enabled.">
         Low battery. Battery Saver turned on.
       </message>

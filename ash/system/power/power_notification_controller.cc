@@ -235,12 +235,22 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       if (threshold_conditions_met) {
         battery_saver_triggered_ = true;
         const bool was_active = PowerStatus::Get()->IsBatterySaverActive();
+        Shell::Get()->battery_saver_controller()->ClearBatterySaverModeToast();
 
         // If user_opt_status_ is false in this branch, the user wants bsm
         // auto-enabled (or rather, hasn't explicitly opt-ed out).
         if (!user_opt_status_) {
           Shell::Get()->battery_saver_controller()->SetState(
               true, BatterySaverController::UpdateReason::kThreshold);
+
+          // Show enable toast if previously not active, then activated, in the
+          // critical percentage range.
+          if (!was_active && (rounded_battery_percent <= critical_percentage_ ||
+                              on_USB_power)) {
+            Shell::Get()
+                ->battery_saver_controller()
+                ->ShowBatterySaverModeEnabledToast();
+          }
         }
 
         // Send appropriate notification at
@@ -272,11 +282,19 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       if (threshold_conditions_met) {
         battery_saver_triggered_ = true;
         const bool was_active = PowerStatus::Get()->IsBatterySaverActive();
+        Shell::Get()->battery_saver_controller()->ClearBatterySaverModeToast();
 
         // If user_opt_status_ is true, then the user wants battery saver on.
         if (user_opt_status_) {
           Shell::Get()->battery_saver_controller()->SetState(
               true, BatterySaverController::UpdateReason::kThreshold);
+
+          // Show enable toast if previously not active, then activated.
+          if (!was_active) {
+            Shell::Get()
+                ->battery_saver_controller()
+                ->ShowBatterySaverModeEnabledToast();
+          }
         }
 
         // If the user manually turned on battery saver mode before we got to
