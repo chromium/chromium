@@ -70,6 +70,9 @@ class BasicCrossThreadHandle {
     return ref_.Get();
   }
 
+  // Clears the stored object.
+  void ClearHandle() { ref_.Clear(); }
+
  private:
   template <typename U, typename V>
   friend class blink::BasicUnwrappingCrossThreadHandle;
@@ -106,6 +109,9 @@ class BasicUnwrappingCrossThreadHandle final
 
   // Re-expose the actual getter for the underlying object.
   using Base::GetOnCreationThread;
+
+  // Re-expose the clear method for the underlying object.
+  using Base::ClearHandle;
 
   // Returns whether a value is set.  May only be accessed on the thread the
   // original CrossThreadHandle object was created.
