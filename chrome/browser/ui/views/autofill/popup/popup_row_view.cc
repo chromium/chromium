@@ -28,6 +28,19 @@
 
 namespace autofill {
 
+namespace {
+
+// Returns the margin on the left and right of the row.
+int GetHorizontalPadding() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowAutocompleteDeleteButton)
+             ? ChromeLayoutProvider::Get()->GetDistanceMetric(
+                   DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
+             : 0;
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                    int line_number) {
@@ -76,15 +89,10 @@ PopupRowView::PopupRowView(
       controller_(controller),
       strategy_(std::move(strategy)) {
   CHECK(strategy_);
-  const int kHorizontalPadding =
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)
-          ? ChromeLayoutProvider::Get()->GetDistanceMetric(
-                DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
-          : 0;
+
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_inside_border_insets(gfx::Insets::VH(0, kHorizontalPadding));
+  layout->set_inside_border_insets(gfx::Insets::VH(0, GetHorizontalPadding()));
 
   auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
     cell.SetOnExitedCallback(
@@ -147,7 +155,9 @@ void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
 gfx::RectF PopupRowView::GetCellBounds(CellType cell) const {
   const PopupCellView* view = GetCellView(cell);
   // The view is expected to be present.
-  return gfx::RectF(view->GetBoundsInScreen());
+  gfx::RectF bounds = gfx::RectF(view->GetBoundsInScreen());
+  bounds.Outset(GetHorizontalPadding());
+  return bounds;
 }
 
 bool PopupRowView::HandleKeyPressEvent(
