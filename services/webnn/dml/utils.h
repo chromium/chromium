@@ -47,8 +47,8 @@ D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
 // Helper function to upload data from CPU to GPU, the resource can be created
 // for a single buffer or a big buffer combined from multiple buffers.
 void UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                             ID3D12Resource* dst_resource,
-                             ID3D12Resource* src_buffer,
+                             ComPtr<ID3D12Resource> dst_buffer,
+                             ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size);
 
 }  // namespace webnn::dml

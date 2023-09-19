@@ -176,13 +176,9 @@ UploadAndCreateBufferBinding(
   }
   upload_buffer->Unmap(0, nullptr);
 
-  UploadBufferWithBarrier(command_recorder, default_buffer.Get(),
-                          upload_buffer.Get(), total_byte_length.ValueOrDie());
-  // Keep the default_buffer and upload_buffer alive until the GPU work is done.
-  command_recorder->GetCommandQueue()->ReferenceUntilCompleted(
-      std::move(default_buffer));
-  command_recorder->GetCommandQueue()->ReferenceUntilCompleted(
-      std::move(upload_buffer));
+  UploadBufferWithBarrier(command_recorder, std::move(default_buffer),
+                          std::move(upload_buffer),
+                          total_byte_length.ValueOrDie());
 
   return buffer_binding;
 }
@@ -862,15 +858,6 @@ void GraphImpl::OnCompilationComplete(
 
   scoped_refptr<CommandQueue> command_queue(
       command_recorder->GetCommandQueue());
-
-  // Ensure the GPU resources needed by the initialization work on the
-  // CommandQueue not to be released before the work completes.
-  if (persistent_buffer) {
-    command_queue->ReferenceUntilCompleted(persistent_buffer);
-  }
-  //  The IDMLCompiledOperator should also be referenced before the work
-  //  completes.
-  command_queue->ReferenceUntilCompleted(compiled_operator);
 
   command_queue->WaitAsync(base::BindOnce(
       &GraphImpl::OnInitializationComplete, std::move(command_recorder),
