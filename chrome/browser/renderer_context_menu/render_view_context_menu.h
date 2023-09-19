@@ -231,6 +231,10 @@ class RenderViewContextMenu
   // Writes the specified text/url to the system clipboard.
   void WriteURLToClipboard(const GURL& url);
 
+  // Issues a preconnection request to the given url.
+  void IssuePreconnectionToUrl(const std::string& anonymization_key_url,
+                               const std::string& preconnect_url);
+
   // RenderViewContextMenuBase:
   void InitMenu() override;
   void RecordShownItem(int id, bool is_submenu) override;

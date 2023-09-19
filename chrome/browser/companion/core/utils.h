@@ -13,6 +13,8 @@ namespace companion {
 
 std::string GetHomepageURLForCompanion();
 std::string GetImageUploadURLForCompanion();
+bool GetShouldIssuePreconnectForCompanion();
+std::string GetPreconnectKeyForCompanion();
 bool ShouldEnableOpenCompanionForImageSearch();
 bool ShouldEnableOpenCompanionForWebSearch();
 bool ShouldOpenLinksInCurrentTab();

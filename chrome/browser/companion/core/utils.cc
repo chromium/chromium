@@ -52,6 +52,22 @@ std::string GetImageUploadURLForCompanion() {
   return url;
 }
 
+bool GetShouldIssuePreconnectForCompanion() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "companion-issue-preconnect", true);
+}
+
+std::string GetPreconnectKeyForCompanion() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  std::string url = base::GetFieldTrialParamValueByFeature(
+      *GetFeatureToUse(), "companion-preconnect-key");
+  if (url.empty()) {
+    return std::string("chrome-untrusted://companion-side-panel.top-chrome");
+  }
+  return url;
+}
+
 bool ShouldEnableOpenCompanionForImageSearch() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.

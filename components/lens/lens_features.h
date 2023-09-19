@@ -257,6 +257,16 @@ extern std::string GetLensPingURL();
 // Returns whether or not the Lens ping should be done sequentially.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensPingIsSequential();
+
+// Returns whether to issue Lens preconnect requests when the
+// context menu item is shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldIssuePreconnectForLens();
+
+// Returns the preconnect url to use for when the context menu item
+// is shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetPreconnectKeyForLens();
 }  // namespace features
 }  // namespace lens
 
