@@ -76,6 +76,93 @@ double SumOfFrequency(const std::map<std::string, double>& histogram,
   return sum;
 }
 
+// This functions' algorithm uses the following configuration.
+// For more information, see:
+// https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
+LcppStringFrequencyStatData GetUpdatedLcppStringFrequencyStatData(
+    const LoadingPredictorConfig& config,
+    const LcppStringFrequencyStatData& lcpp_stat_data,
+    const std::string& new_entry) {
+  const size_t sliding_window_size = config.lcpp_histogram_sliding_window_size;
+  const size_t max_histogram_buckets = config.max_lcpp_histogram_buckets;
+
+  // Prepare working variables (histogram and other_bucket_frequency) from
+  // proto. If the data is corrupted, the previous data will be cleared.
+  bool corrupted = false;
+  double other_bucket_frequency = lcpp_stat_data.other_bucket_frequency();
+  if (other_bucket_frequency < 0 ||
+      lcpp_stat_data.main_buckets().size() > max_histogram_buckets) {
+    corrupted = true;
+  }
+  std::map<std::string, double> histogram;
+  for (const auto& [entry, frequency] : lcpp_stat_data.main_buckets()) {
+    if (corrupted || entry.empty() || frequency < 0.0) {
+      corrupted = true;
+      break;
+    }
+    histogram.insert_or_assign(entry, frequency);
+  }
+  if (corrupted) {
+    other_bucket_frequency = 0;
+    histogram.clear();
+  }
+
+  // If there is no room to add a `new_entry` (the capacity is
+  // the same as the sliding window size), create a room by discounting the
+  // existing histogram frequency.
+  if (1 + SumOfFrequency(histogram, other_bucket_frequency) >
+      sliding_window_size) {
+    double discount = 1.0 / sliding_window_size;
+    for (auto it = histogram.begin(); it != histogram.end();) {
+      it->second -= it->second * discount;
+      // Remove item that has too small frequency.
+      if (it->second < 1e-7) {
+        it = histogram.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    other_bucket_frequency -= other_bucket_frequency * discount;
+  }
+
+  // Now we have one free space to store a new lcp_script_url.
+  // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
+  // Adds `1e-5` to avoid floating point errors.
+  DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
+            sliding_window_size + 1e-5);
+
+  // Store new_entry.
+  {
+    auto it = histogram.emplace(new_entry, 1);
+    if (!it.second) {
+      ++it.first->second;
+    }
+  }
+
+  // Before saving histogram, we need to reduce the count of buckets less
+  // than `max_histogram_buckets`. If the bucket count is more than
+  // `max_histogram_buckets`, we can merge the least frequent bucket into
+  // other_bucket.
+  if (histogram.size() > max_histogram_buckets) {
+    const auto& least_frequent_bucket =
+        std::min_element(histogram.begin(), histogram.end(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.second < rhs.second;
+                         });
+    other_bucket_frequency += least_frequent_bucket->second;
+    histogram.erase(least_frequent_bucket);
+  }
+
+  LcppStringFrequencyStatData out_data;
+  // Copy the results (histogram and other_bucket_frequency) into proto.
+  out_data.set_other_bucket_frequency(other_bucket_frequency);
+
+  for (const auto& [url, frequency] : histogram) {
+    out_data.mutable_main_buckets()->insert({url, frequency});
+  }
+  return out_data;
+}
+
 }  // namespace
 
 PreconnectRequest::PreconnectRequest(
@@ -464,8 +551,7 @@ std::vector<GURL> ResourcePrefetchPredictor::PredictLcpInfluencerScripts(
     return {};
   }
 
-  const auto& buckets =
-      data.lcpp_stat().lcp_script_url_stat().lcp_script_url_buckets();
+  const auto& buckets = data.lcpp_stat().lcp_script_url_stat().main_buckets();
   std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency;
   lcp_script_urls_with_frequency.reserve(buckets.size());
   for (const auto& [script_url, frequency] : buckets) {
@@ -938,87 +1024,10 @@ bool ResourcePrefetchPredictor::RecordSingleLcpInfluencerScriptUrlHistogram(
     return false;
   }
 
-  LcpScriptUrlStat& lcp_script_stat =
-      *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat();
-
-  const size_t kSlidingWindowSize = config_.lcpp_histogram_sliding_window_size;
-  const size_t kMaxHistogramBuckets = config_.max_lcpp_histogram_buckets;
-
-  // Prepare working variables (histogram and other_bucket_frequency) from
-  // proto. If the data is corrupted, the previous data will be cleared.
-  bool corrupted = false;
-  double other_bucket_frequency = lcp_script_stat.other_bucket_frequency();
-  if (other_bucket_frequency < 0 ||
-      lcp_script_stat.lcp_script_url_buckets().size() > kMaxHistogramBuckets) {
-    corrupted = true;
-  }
-  std::map<std::string, double> histogram;
-  for (const auto& [url, frequency] :
-       lcp_script_stat.lcp_script_url_buckets()) {
-    if (corrupted || url.empty() || frequency < 0.0) {
-      corrupted = true;
-      break;
-    }
-    histogram.insert_or_assign(url, frequency);
-  }
-  if (corrupted) {
-    other_bucket_frequency = 0;
-    histogram.clear();
-  }
-
-  // If there is no room to add a new `lcp_script_url` (the capacity is
-  // the same as the sliding window size), create a room by discounting the
-  // existing histogram frequency.
-  if (1 + SumOfFrequency(histogram, other_bucket_frequency) >
-      kSlidingWindowSize) {
-    double discount = 1.0 / kSlidingWindowSize;
-    for (auto it = histogram.begin(); it != histogram.end();) {
-      it->second -= it->second * discount;
-      // Remove item that has too small frequency.
-      if (it->second < 1e-7) {
-        it = histogram.erase(it);
-      } else {
-        ++it;
-      }
-    }
-    other_bucket_frequency -= other_bucket_frequency * discount;
-  }
-
-  // Now we have one free space to store a new lcp_script_url.
-  // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
-  // Adds `1e-5` to avoid floating point errors.
-  DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
-            kSlidingWindowSize + 1e-5);
-
-  // Store new lcp_script.
-  {
-    auto it = histogram.emplace(lcpp_script, 1);
-    if (!it.second) {
-      ++it.first->second;
-    }
-  }
-
-  // Before saving histogram, we need to reduce the count of buckets less
-  // than `kMaxHistogramBuckets`. If the bucket count is more than
-  // `kMaxHistogramBuckets`, we can merge the least frequent bucket into
-  // other_bucket.
-  if (histogram.size() > kMaxHistogramBuckets) {
-    const auto& least_frequent_bucket =
-        std::min_element(histogram.begin(), histogram.end(),
-                         [](const auto& lhs, const auto& rhs) {
-                           return lhs.second < rhs.second;
-                         });
-    other_bucket_frequency += least_frequent_bucket->second;
-    histogram.erase(least_frequent_bucket);
-  }
-
-  // Copy the results (histogram and other_bucket_frequency) into proto.
-  lcp_script_stat.set_other_bucket_frequency(other_bucket_frequency);
-  lcp_script_stat.clear_lcp_script_url_buckets();
-
-  for (const auto& [url, frequency] : histogram) {
-    lcp_script_stat.mutable_lcp_script_url_buckets()->insert({url, frequency});
-  }
+  auto new_data = GetUpdatedLcppStringFrequencyStatData(
+      config_, *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat(),
+      lcpp_script);
+  *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat() = new_data;
 
   return true;
 }

@@ -127,9 +127,10 @@ bool operator==(const LcpElementLocatorBucket& lhs,
                 const LcpElementLocatorBucket& rhs);
 bool operator==(const LcpElementLocatorStat& lhs,
                 const LcpElementLocatorStat& rhs);
-bool operator==(const LcpScriptUrlStat& lhs, const LcpScriptUrlStat& rhs);
-bool operator==(const LcppStat& lhs, const LcppStat& rhs);
 bool operator==(const LcppData& lhs, const LcppData& rhs);
+bool operator==(const LcppStat& lhs, const LcppStat& rhs);
+bool operator==(const LcppStringFrequencyStatData& lhs,
+                const LcppStringFrequencyStatData& rhs);
 bool operator==(const OriginStat& lhs, const OriginStat& rhs);
 bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs);
 bool operator==(const PreconnectPrediction& lhs,

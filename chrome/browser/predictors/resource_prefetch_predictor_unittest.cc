@@ -1084,9 +1084,10 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   };
 
   auto SumOfInfluencerUrlFrequency = [](const LcppData& data) {
-    const LcpScriptUrlStat& stat = data.lcpp_stat().lcp_script_url_stat();
+    const LcppStringFrequencyStatData& stat =
+        data.lcpp_stat().lcp_script_url_stat();
     double sum = stat.other_bucket_frequency();
-    for (const auto& [url, frequency] : stat.lcp_script_url_buckets()) {
+    for (const auto& [url, frequency] : stat.main_buckets()) {
       sum += frequency;
     }
     return sum;
