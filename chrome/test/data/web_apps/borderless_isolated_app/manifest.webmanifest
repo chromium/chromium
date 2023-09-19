@@ -7,7 +7,7 @@
   "display": "standalone",
   "display_override": ["borderless"],
   "permissions_policy": {
-    "window-placement": [ "*" ]
+    "window-management": [ "*" ]
   },
   "icons": [
     {
