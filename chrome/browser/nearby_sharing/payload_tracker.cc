@@ -243,17 +243,20 @@ void PayloadTracker::EmitFinalMetrics(
 
   for (const auto& file_attachment : share_target_.file_attachments) {
     RecordNearbySharePayloadFileAttachmentTypeMetric(
-        file_attachment.type(), share_target_.is_incoming, status);
+        file_attachment.type(), share_target_.is_incoming,
+        share_target_.is_known, share_target_.for_self_share, status);
   }
 
   for (const auto& text_attachment : share_target_.text_attachments) {
     RecordNearbySharePayloadTextAttachmentTypeMetric(
-        text_attachment.type(), share_target_.is_incoming, status);
+        text_attachment.type(), share_target_.is_incoming,
+        share_target_.is_known, share_target_.for_self_share, status);
   }
 
   for (size_t i = 0; i < share_target_.wifi_credentials_attachments.size();
        ++i) {
     RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
-        share_target_.is_incoming, status);
+        share_target_.is_incoming, share_target_.is_known,
+        share_target_.for_self_share, status);
   }
 }

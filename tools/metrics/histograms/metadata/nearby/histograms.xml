@@ -1247,6 +1247,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Nearby.Share.Payload.{ContactStatus}.AttachmentType{Variation}"
+    enum="NearbyShareAttachmentType" expires_after="2024-09-12">
+  <owner>brandosocarras@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the attachment types of transfers of trait {Variation} between this
+    device and share targets with contact status {ContactStatus}.
+  </summary>
+  <token key="ContactStatus">
+    <variant name="Contact" summary="contact-based sharing"/>
+    <variant name="NonContact" summary="non-contact-based sharing"/>
+    <variant name="SelfShare" summary="account-based sharing"/>
+  </token>
+  <token key="Variation">
+    <variant name=""
+        summary="any Nearby Share attempt, agnostic of final result and
+                 direction"/>
+    <variant name=".Cancelled" summary="a cancelled Nearby Share attempt"/>
+    <variant name=".Failed" summary="a failed Nearby Share attempt"/>
+    <variant name=".Received"
+        summary="an incoming (receiving) payload transfer"/>
+    <variant name=".Sent" summary="an outgoing (sending) payload transfer"/>
+    <variant name=".Succeeded" summary="a successful Nearby Share attempt"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Payload{Operation}.Success{FilePath}"
     enum="BooleanSuccess" expires_after="2024-07-10">
   <owner>alanding@google.com</owner>

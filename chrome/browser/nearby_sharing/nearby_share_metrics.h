@@ -63,15 +63,21 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
     sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadFileOperationMetrics(

@@ -405,16 +405,30 @@ std::string GetContactStatus(bool is_contact, bool for_self_share) {
   return is_contact ? ".Contact" : ".NonContact";
 }
 
-void RecordNearbySharePayloadAttachmentTypeMetric(
+void RecordNearbySharePayloadAttachmentTypeMetricVariants(
+    const std::string prefix,
     AttachmentType type,
     bool is_incoming,
     nearby::connections::mojom::PayloadStatus status) {
-  const std::string prefix = "Nearby.Share.Payload.AttachmentType";
   base::UmaHistogramEnumeration(prefix, type);
   base::UmaHistogramEnumeration(
       prefix + GetDirectionSubcategoryName(is_incoming), type);
   base::UmaHistogramEnumeration(
       prefix + GetPayloadStatusSubcategoryName(status), type);
+}
+
+void RecordNearbySharePayloadAttachmentTypeMetric(
+    AttachmentType type,
+    bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
+    nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetricVariants(
+      "Nearby.Share.Payload.AttachmentType", type, is_incoming, status);
+  RecordNearbySharePayloadAttachmentTypeMetricVariants(
+      "Nearby.Share.Payload" + GetContactStatus(is_contact, for_self_share) +
+          ".AttachmentType",
+      type, is_incoming, status);
 }
 
 // FuseBox (go/fuse-box) makes virtual file systems (e.g. ARC ContentProvider)
@@ -483,24 +497,33 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
-      FileMetadataTypeToAttachmentType(type), is_incoming, status);
+      FileMetadataTypeToAttachmentType(type), is_incoming, is_contact,
+      for_self_share, status);
 }
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
     sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
-      TextMetadataTypeToAttachmentType(type), is_incoming, status);
+      TextMetadataTypeToAttachmentType(type), is_incoming, is_contact,
+      for_self_share, status);
 }
 
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
-                                               is_incoming, status);
+                                               is_incoming, is_contact,
+                                               for_self_share, status);
 }
 
 void RecordNearbySharePayloadFileOperationMetrics(
