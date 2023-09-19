@@ -109,6 +109,9 @@ class PopupRowView : public views::View {
     return a11y_selection_delegate_.get();
   }
 
+  // Updates the background according to the control cell highlighting state.
+  void UpdateBackground();
+
   // The delegate used for accessibility announcements (implemented by the
   // parent view).
   const raw_ref<AccessibilitySelectionDelegate> a11y_selection_delegate_;

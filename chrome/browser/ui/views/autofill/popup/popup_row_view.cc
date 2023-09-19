@@ -148,6 +148,8 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
     // explicitly with `absl::nullopt`.
     selected_cell_ = absl::nullopt;
   }
+
+  UpdateBackground();
 }
 
 void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
@@ -155,6 +157,8 @@ void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
   if (PopupCellView* view = GetCellView(type)) {
     view->SetPermanentlyHighlighted(highlighted);
   }
+
+  UpdateBackground();
 }
 
 gfx::RectF PopupRowView::GetCellBounds(CellType cell) const {
@@ -191,6 +195,20 @@ const PopupCellView* PopupRowView::GetCellView(CellType type) const {
 
 PopupCellView* PopupRowView::GetCellView(CellType type) {
   return const_cast<PopupCellView*>(std::as_const(*this).GetCellView(type));
+}
+
+void PopupRowView::UpdateBackground() {
+  PopupCellView* control_cell = GetCellView(CellType::kControl);
+  if (!control_cell) {
+    return;
+  }
+
+  ui::ColorId kBackgroundColorId = control_cell->IsHighlighted()
+                                       ? ui::kColorDropdownBackgroundSelected
+                                       : ui::kColorDropdownBackground;
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+                              views::Emphasis::kMedium)));
 }
 
 BEGIN_METADATA(PopupRowView, views::View)
