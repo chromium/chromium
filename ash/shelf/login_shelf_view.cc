@@ -739,7 +739,9 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
 //     to shut down the device after enrollment);
 //  3. On first screen of gaia login flow (same reason as 2).
 bool LoginShelfView::ShouldShowShutdownButton() const {
-  return dialog_state_ == OobeDialogState::HIDDEN ||
+  return ((Shell::Get()->session_controller()->GetSessionState() !=
+           SessionState::OOBE) &&
+          dialog_state_ == OobeDialogState::HIDDEN) ||
          dialog_state_ == OobeDialogState::EXTENSION_LOGIN_CLOSED ||
          dialog_state_ == OobeDialogState::ENROLLMENT_SUCCESS ||
          dialog_state_ == OobeDialogState::EXTENSION_LOGIN ||
