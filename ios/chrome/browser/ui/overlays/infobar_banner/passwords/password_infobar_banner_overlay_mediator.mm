@@ -75,19 +75,6 @@
   [self dismissOverlay];
 }
 
-#pragma mark - InfobarBannerOverlayMediator
-
-- (void)finishDismissal {
-  if (!self.request) {
-    return;
-  }
-  if (!self.passwordDelegate) {
-    return;
-  }
-
-  self.passwordDelegate->InfoBarDismissed();
-}
-
 #pragma mark - Private
 
 // Returns the icon image.
