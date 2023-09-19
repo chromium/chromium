@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ProfileInfo, ProfileInfoBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ProfileInfoBrowserProxy} */
-export class TestProfileInfoBrowserProxy extends TestBrowserProxy {
+export class TestProfileInfoBrowserProxy extends TestBrowserProxy implements
+    ProfileInfoBrowserProxy {
+  fakeProfileInfo: ProfileInfo;
+
   constructor() {
     super([
       'getProfileInfo',
@@ -19,14 +22,12 @@ export class TestProfileInfoBrowserProxy extends TestBrowserProxy {
     };
   }
 
-  /** @override */
-  getProfileInfo() {
+  getProfileInfo(): Promise<ProfileInfo> {
     this.methodCalled('getProfileInfo');
     return Promise.resolve(this.fakeProfileInfo);
   }
 
-  /** @override */
-  getProfileStatsCount() {
+  getProfileStatsCount(): void {
     this.methodCalled('getProfileStatsCount');
   }
 }

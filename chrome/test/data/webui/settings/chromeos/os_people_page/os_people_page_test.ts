@@ -16,9 +16,9 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
-import {TestProfileInfoBrowserProxy} from '../test_profile_info_browser_proxy.js';
 
 import {TestAccountManagerBrowserProxy} from './test_account_manager_browser_proxy.js';
+import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
 
 interface SubpageTriggerData {
   triggerSelector: string;
