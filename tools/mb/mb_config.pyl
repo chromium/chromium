@@ -7,6 +7,10 @@
 # * all keys must be quoted (use single quotes, please);
 # * comments are allowed, using '#' syntax; and
 # * trailing commas are allowed.
+#
+# To generate expecations files in ./mb_config_expectations/, run the following
+# from chromium/src directory:
+#   ./tools/mb/mb.py train -f ./tools/mb/mb_config.pyl
 
 {
   # Paths to gn_args_locations.json relative to the directory containing mb_config.pyl.
