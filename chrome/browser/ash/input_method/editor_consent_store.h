@@ -29,6 +29,8 @@ class EditorConsentStore {
 
   void ProcessPromoCardAction(PromoCardAction promo_card_action);
 
+  void SetPrefService(PrefService* pref_service);
+
  private:
   void SetConsentStatus(ConsentStatus consent_status);
 

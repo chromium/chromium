@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 
@@ -29,6 +30,7 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
   DCHECK(!g_instance_);
   g_instance_ = this;
 
+  user_manager::UserManager::Get()->AddSessionStateObserver(this);
   profile_observation_.Observe(profile_);
   tablet_mode_observation_.Observe(TabletMode::Get());
 
@@ -38,6 +40,10 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
 EditorMediator::~EditorMediator() {
   DCHECK_EQ(g_instance_, this);
   g_instance_ = nullptr;
+
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
+  }
 }
 
 EditorMediator* EditorMediator::Get() {
@@ -170,6 +176,23 @@ bool EditorMediator::CanBeTriggered() {
 
 ConsentStatus EditorMediator::GetConsentStatus() {
   return consent_store_->GetConsentStatus();
+}
+
+void EditorMediator::ActiveUserChanged(user_manager::User* user) {
+  if (user) {
+    user->AddProfileCreatedObserver(
+        base::BindOnce(&EditorMediator::SetProfileByUser,
+                       weak_ptr_factory_.GetWeakPtr(), user));
+  }
+}
+
+void EditorMediator::SetProfileByUser(user_manager::User* user) {
+  profile_ = ProfileHelper::Get()->GetProfileByUser(user);
+  profile_observation_.Reset();
+  profile_observation_.Observe(profile_);
+  editor_switch_->SetProfile(profile_);
+  consent_store_->SetPrefService(profile_->GetPrefs());
+  text_query_provider_->OnProfileChanged(profile_);
 }
 
 void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {

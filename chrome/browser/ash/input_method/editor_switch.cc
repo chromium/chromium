@@ -110,4 +110,8 @@ void EditorSwitch::OnTabletModeUpdated(bool is_enabled) {
   tablet_mode_enabled_ = is_enabled;
 }
 
+void EditorSwitch::SetProfile(Profile* profile) {
+  profile_ = profile;
+}
+
 }  // namespace ash::input_method

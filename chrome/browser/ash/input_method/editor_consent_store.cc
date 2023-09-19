@@ -105,4 +105,8 @@ void EditorConsentStore::OverrideUserPref(bool new_pref_value) {
   pref_service_->SetBoolean(prefs::kOrcaEnabled, new_pref_value);
 }
 
+void EditorConsentStore::SetPrefService(PrefService* pref_service) {
+  pref_service_ = pref_service;
+}
+
 }  // namespace ash::input_method

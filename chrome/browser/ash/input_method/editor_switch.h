@@ -40,6 +40,8 @@ class EditorSwitch {
 
   void OnTabletModeUpdated(bool tablet_mode_enabled);
 
+  void SetProfile(Profile* profile);
+
  private:
   raw_ptr<Profile> profile_;
 

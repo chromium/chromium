@@ -24,6 +24,8 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace input_method {
@@ -32,12 +34,16 @@ namespace input_method {
 // This includes all current (and future) trigger points, providing the required
 // plumbing to broker mojo connections from WebUIs and other clients, and
 // providing an overall unified interface for the backend of the project.
-class EditorMediator : public EditorInstanceImpl::Delegate,
-                       public EditorTextActuator::Delegate,
-                       public EditorPanelManager::Delegate,
-                       public EditorEventSink,
-                       public ProfileObserver,
-                       public TabletModeObserver {
+
+class EditorMediator
+    : public EditorInstanceImpl::Delegate,
+      public EditorEventSink,
+      public ProfileObserver,
+      public EditorPanelManager::Delegate, 
+      public EditorTextActuator::Delegate,
+      public TabletModeObserver,
+      public user_manager::UserManager::UserSessionStateObserver {
+
  public:
   // country_code that determines the country/territory in which the device is
   // situated.
@@ -90,6 +96,10 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
 
   // ProfileObserver overrides:
   void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  void ActiveUserChanged(user_manager::User* user) override;
+
+  void SetProfileByUser(user_manager::User* user);
 
   EditorPanelManager& panel_manager() { return panel_manager_; }
 
