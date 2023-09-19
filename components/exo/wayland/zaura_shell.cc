@@ -46,6 +46,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/xdg_shell.h"
+#include "components/exo/wayland/zaura_output_manager.h"
 #include "components/version_info/version_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -831,9 +832,14 @@ void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
 void AuraToplevel::SetWindowBounds(int32_t x,
                                    int32_t y,
                                    int32_t width,
-                                   int32_t height) {
-  if (!shell_surface_->IsDragged())
+                                   int32_t height,
+                                   int64_t display_id) {
+  if (!shell_surface_->IsDragged()) {
+    if (display_id != display::kInvalidDisplayId) {
+      shell_surface_->SetDisplay(display_id);
+    }
     shell_surface_->SetWindowBounds(gfx::Rect(x, y, width, height));
+  }
 }
 
 void AuraToplevel::SetRestoreInfo(int32_t restore_session_id,
@@ -1443,8 +1449,9 @@ void aura_toplevel_set_window_bounds(wl_client* client,
                                      int32_t width,
                                      int32_t height,
                                      wl_resource* output) {
-  // TODO(crbug.com/1261321): Use output hint.
-  GetUserDataAs<AuraToplevel>(resource)->SetWindowBounds(x, y, width, height);
+  auto display_id = AuraOutputManager::GetDisplayIdForOutput(output);
+  GetUserDataAs<AuraToplevel>(resource)->SetWindowBounds(x, y, width, height,
+                                                         display_id);
 }
 
 void aura_toplevel_set_origin(wl_client* client,

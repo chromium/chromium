@@ -292,6 +292,9 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
 
   // Calculate initial bounds.
   properties.bounds = params.bounds;
+#if BUILDFLAG(IS_CHROMEOS)
+  properties.display_id = params.display_id;
+#endif
 
   // Set extensions delegate.
   DCHECK(!properties.workspace_extension_delegate);

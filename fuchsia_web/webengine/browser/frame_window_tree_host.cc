@@ -56,7 +56,8 @@ class FrameWindowTreeHost::WindowParentingClientImpl
 
   // WindowParentingClient implementation.
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override {
+                                 const gfx::Rect& bounds,
+                                 const int64_t display_id) override {
     return root_window_;
   }
 

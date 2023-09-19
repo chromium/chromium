@@ -144,7 +144,11 @@ class AuraToplevel {
   void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetClientUsesScreenCoordinates();
-  void SetWindowBounds(int32_t x, int32_t y, int32_t width, int32_t height);
+  void SetWindowBounds(int32_t x,
+                       int32_t y,
+                       int32_t width,
+                       int32_t height,
+                       int64_t display_id);
   void SetRestoreInfo(int32_t restore_session_id, int32_t restore_window_id);
   void SetRestoreInfoWithWindowIdSource(
       int32_t restore_session_id,

@@ -508,7 +508,7 @@ TEST_F(WindowRestoreControllerTest, TabletModeChange) {
 }
 
 TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
-  UpdateDisplay("800x700,801+0-800x700");
+  UpdateDisplay("800x700, 800x700");
 
   auto window = CreateAppWindow(gfx::Rect(800, 0, 400, 400), AppType::BROWSER);
   ResetSaveWindowsCount();
@@ -524,6 +524,7 @@ TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
   // window and activate it, resulting in a double save.
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(primary_info);
+  EXPECT_EQ(0, GetSaveWindowsCount(window.get()));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
 

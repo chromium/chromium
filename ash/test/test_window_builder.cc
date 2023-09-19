@@ -134,7 +134,8 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
     }
 
     DCHECK(context_);
-    aura::client::ParentWindowWithContext(window.get(), context_, bounds_);
+    aura::client::ParentWindowWithContext(window.get(), context_, bounds_,
+                                          display::kInvalidDisplayId);
   }
   if (show_)
     window->Show();

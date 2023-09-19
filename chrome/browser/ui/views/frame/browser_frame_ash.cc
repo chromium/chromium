@@ -214,8 +214,12 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
 
   app_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
-  if (!params.bounds.IsEmpty())
+  if (!params.bounds.IsEmpty()) {
     browser->set_override_bounds(params.bounds);
+  } else {
+    params.bounds = browser->create_params().initial_bounds;
+  }
+  params.display_id = browser->create_params().display_id;
 
   if (chromeos::features::IsRoundedWindowsEnabled()) {
     // Corner radius specifies the radius of the frame shadow.
@@ -243,9 +247,11 @@ bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
   const int32_t restore_id =
       browser_view_->browser()->create_params().restore_id;
   // Don't restore unresizable browser apps, because they can get stuck at a
-  // broken size.
+  // broken size, or the browser being dragged because it should use the
+  // specified bounds.
   return !app_restore::HasWindowInfo(restore_id) &&
-         browser_view_->browser()->create_params().can_resize;
+         browser_view_->browser()->create_params().can_resize &&
+         !browser_view_->browser()->create_params().in_tab_dragging;
 }
 
 bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {

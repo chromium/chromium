@@ -22,10 +22,13 @@ namespace ash {
 // Returns the first ancestor of |window| that has a known container ID.
 ASH_EXPORT aura::Window* GetContainerForWindow(aura::Window* window);
 
-// Returns the parent to add |window| to. This is generally used when a window
-// is moved from one root to another.
+// Returns the parent to add |window| to. This is used to find a proper parent
+// for new widget, or a new window. The parent will be picked from a window tree
+// in 'root_window' but if there is a better root window candidate that matches
+// 'bounds_in_screen', then it will be used instead.
 ASH_EXPORT aura::Window* GetDefaultParentForWindow(
     aura::Window* window,
+    aura::Window* root_window,
     const gfx::Rect& bounds_in_screen);
 
 // Returns the list of containers that match |container_id| in all root windows.

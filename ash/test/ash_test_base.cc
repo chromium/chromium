@@ -368,7 +368,8 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
 
 void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
   aura::client::ParentWindowWithContext(window, Shell::GetPrimaryRootWindow(),
-                                        gfx::Rect());
+                                        gfx::Rect(),
+                                        display::kInvalidDisplayId);
 }
 
 AshPixelDiffer* AshTestBase::GetPixelDiffer() {

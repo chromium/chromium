@@ -1424,7 +1424,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(window.get(), GetContext(),
-                                          gfx::Rect(200, 200));
+                                          gfx::Rect(200, 200),
+                                          display::kInvalidDisplayId);
 
     return new TestBrowserWindowAura(std::move(window));
   }

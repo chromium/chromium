@@ -71,9 +71,9 @@ class WaylandDisplayHandler : public display::DisplayObserver,
 
   size_t CountObserversForTesting() const;
 
- protected:
-  wl_resource* output_resource() const { return output_resource_; }
+  const wl_resource* output_resource() const { return output_resource_; }
 
+ protected:
   // Overridable for testing.
   virtual void XdgOutputSendLogicalPosition(const gfx::Point& position);
   virtual void XdgOutputSendLogicalSize(const gfx::Size& size);

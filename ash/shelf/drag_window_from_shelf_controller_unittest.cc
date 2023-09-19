@@ -148,8 +148,9 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
     child->Init(ui::LAYER_NOT_DRAWN);
     child->SetBounds(bounds);
     wm::AddTransientChild(transient_parent, child.get());
-    aura::client::ParentWindowWithContext(
-        child.get(), transient_parent->GetRootWindow(), bounds);
+    aura::client::ParentWindowWithContext(child.get(),
+                                          transient_parent->GetRootWindow(),
+                                          bounds, display::kInvalidDisplayId);
     child->Show();
 
     child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);

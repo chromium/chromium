@@ -31,6 +31,7 @@ views::Widget::InitParams DesktopBrowserFrameLacros::GetWidgetParams() {
       chromeos::kShouldHaveHighlightBorderOverlay, true);
   params.init_properties_container.SetProperty(
       wm::kPersistableKey, browser->profile()->IsRegularProfile());
+  params.display_id = browser->create_params().display_id;
 
   return params;
 }

@@ -255,6 +255,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds,
                        bool adjusted_by_server) override;
+  gfx::Rect GetVisibleBounds() const override;
   gfx::Rect GetShadowBounds() const override;
   void InitializeWindowState(ash::WindowState* window_state) override;
   absl::optional<gfx::Rect> GetWidgetBounds() const override;

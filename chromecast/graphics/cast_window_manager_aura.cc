@@ -295,8 +295,10 @@ CastWindowManagerAura::GetWindowOrder() {
   return window_order_;
 }
 
-aura::Window* CastWindowManagerAura::GetDefaultParent(aura::Window* window,
-                                                      const gfx::Rect& bounds) {
+aura::Window* CastWindowManagerAura::GetDefaultParent(
+    aura::Window* window,
+    const gfx::Rect& bounds,
+    const int64_t display_id) {
   DCHECK(window_tree_host_);
   return window_tree_host_->window();
 }

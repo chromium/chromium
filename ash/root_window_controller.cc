@@ -692,7 +692,7 @@ void RootWindowController::Shutdown() {
   if (ash_host_) {
     ash_host_->PrepareForShutdown();
   }
-
+  window_parenting_controller_.reset();
   system_wallpaper_.reset();
   security_curtain_widget_controller_.reset();
   lock_screen_action_background_controller_.reset();
@@ -1010,9 +1010,8 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
   aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = this;
 
-  window_parenting_controller_ = std::make_unique<WindowParentingController>();
-  aura::client::SetWindowParentingClient(root_window,
-                                         window_parenting_controller_.get());
+  window_parenting_controller_ =
+      std::make_unique<WindowParentingController>(root_window);
   capture_client_ = std::make_unique<::wm::ScopedCaptureClient>(root_window);
 }
 

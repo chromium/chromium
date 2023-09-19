@@ -560,7 +560,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     owned_window_->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(
         owned_window_, widget_.GetNativeView()->GetRootWindow(),
-        gfx::Rect(0, 0, 1900, 1600));
+        gfx::Rect(0, 0, 1900, 1600), display::kInvalidDisplayId);
     owned_window_->Show();
     owned_window_->AddObserver(this);
 

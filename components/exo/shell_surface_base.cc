@@ -1608,6 +1608,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   else
     params.bounds = gfx::Rect(origin_, gfx::Size());
 
+  // This is called before CommitWidget:
+  if (pending_display_id_ != display::kInvalidDisplayId) {
+    params.display_id = pending_display_id_;
+  }
+
   params.name = base::StringPrintf("ExoShellSurface-%d", shell_id++);
 
   WMHelper::AppPropertyResolver::Params property_resolver_params;
@@ -1945,14 +1950,7 @@ gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
     return gfx::Rect(size);
   }
 
-  const auto* screen = display::Screen::GetScreen();
-  display::Display display;
-
-  if (!screen->GetDisplayWithDisplayId(display_id_, &display))
-    return geometry_;
-
-  // Convert from display to screen coordinates.
-  return geometry_ + display.bounds().OffsetFromOrigin();
+  return geometry_;
 }
 
 gfx::Rect ShellSurfaceBase::GetClientViewBounds() const {

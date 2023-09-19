@@ -108,8 +108,15 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
     zaura_surface->SetFrame(ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
 
-  if (screen_coordinates_enabled_)
-    SetBoundsInDIP(GetBoundsInDIP());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (screen_coordinates_enabled_) {
+    auto bounds_dip = GetBoundsInDIP();
+    WaylandWindow::SetBoundsInDIP(bounds_dip);
+    if (shell_toplevel_) {
+      shell_toplevel_->RequestWindowBounds(bounds_dip, initial_display_id_);
+    }
+  }
+#endif
 
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
@@ -678,7 +685,11 @@ bool WaylandToplevelWindow::OnInitialize(
   restore_window_id_ = properties.restore_window_id;
   restore_window_id_source_ = properties.restore_window_id_source;
   persistable_ = properties.persistable;
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (properties.display_id.has_value()) {
+    initial_display_id_ = *properties.display_id;
+  }
+#endif
   SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
   return true;

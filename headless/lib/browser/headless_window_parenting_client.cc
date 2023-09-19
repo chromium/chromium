@@ -20,7 +20,8 @@ HeadlessWindowParentingClient::~HeadlessWindowParentingClient() {
 
 aura::Window* HeadlessWindowParentingClient::GetDefaultParent(
     aura::Window* window,
-    const gfx::Rect& bounds) {
+    const gfx::Rect& bounds,
+    const int64_t display_id) {
   return root_window_;
 }
 

@@ -982,7 +982,8 @@ void WebContentsViewAura::CreateAuraWindow(aura::Window* context) {
     // explicitly add this WebContentsViewAura to their tree after they create
     // us.
     aura::client::ParentWindowWithContext(window_.get(), root_window,
-                                          root_window->GetBoundsInScreen());
+                                          root_window->GetBoundsInScreen(),
+                                          display::kInvalidDisplayId);
   }
   window_->layer()->SetMasksToBounds(true);
   window_->TrackOcclusionState();

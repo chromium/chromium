@@ -168,7 +168,8 @@ void RootWindowController::UpdateSize(const gfx::Size& size) {
 }
 
 aura::Window* RootWindowController::GetDefaultParent(aura::Window* window,
-                                                     const gfx::Rect& bounds) {
+                                                     const gfx::Rect& bounds,
+                                                     const int64_t display_id) {
   return host_->window();
 }
 

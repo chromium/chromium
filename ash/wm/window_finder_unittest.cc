@@ -37,7 +37,8 @@ TEST_F(WindowFinderTest, ToplevelCanBeNotDrawn) {
   window->Init(ui::LAYER_NOT_DRAWN);
   gfx::Rect bounds(0, 0, 100, 100);
   window->SetBounds(bounds);
-  auto* parent = GetDefaultParentForWindow(window.get(), bounds);
+  auto* parent = GetDefaultParentForWindow(
+      window.get(), Shell::GetPrimaryRootWindow(), bounds);
   parent->AddChild(window.get());
   window->Show();
 

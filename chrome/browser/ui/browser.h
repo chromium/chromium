@@ -287,6 +287,10 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS)
     // The id from the restore data to restore the browser window.
     int32_t restore_id = kDefaultRestoreId;
+
+    // If set, the browser should be created on the display given by
+    // `display_id`.
+    absl::optional<int64_t> display_id;
 #endif
 
 #if BUILDFLAG(IS_LINUX)

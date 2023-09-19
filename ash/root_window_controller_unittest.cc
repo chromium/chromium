@@ -662,7 +662,8 @@ TEST_F(RootWindowControllerTest, DontDeleteWindowsNotOwnedByParent) {
   observer1.SetWindow(window1.get());
   window1->Init(ui::LAYER_NOT_DRAWN);
   aura::client::ParentWindowWithContext(
-      window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect());
+      window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect(),
+      display::kInvalidDisplayId);
 
   DestroyedWindowObserver observer2;
   std::unique_ptr<aura::Window> window2 =

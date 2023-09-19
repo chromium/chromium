@@ -90,8 +90,8 @@ std::unique_ptr<aura::Window> CreateCaptureWindow(
   // trying to manage this window.
   window->SetType(aura::client::WINDOW_TYPE_POPUP);
   window->Init(ui::LAYER_NOT_DRAWN);
-  aura::client::ParentWindowWithContext(window.get(), context_root,
-                                        gfx::Rect());
+  aura::client::ParentWindowWithContext(window.get(), context_root, gfx::Rect(),
+                                        display::kInvalidDisplayId);
   ::wm::SetActivationDelegate(window.get(), activation_delegate_instance);
   window->Show();
   DCHECK(window->bounds().size().IsEmpty());

@@ -37,6 +37,10 @@ class AuraOutputManager {
   // Returns nullptr if there is no metrics manager bound to `client`.
   static AuraOutputManager* Get(wl_client* client);
 
+  // Returns the display id associated with the `output_resource`. Returns
+  // display::kInvalidDisplayId if `output_resource` is nullptr.
+  static int64_t GetDisplayIdForOutput(wl_resource* outout_resource);
+
   // Dispatches multiple events to the client for the full set of output state
   // required to correctly represent a display. Returns true if any state events
   // were sent based on the the bit-flags in `changed_metrics`.

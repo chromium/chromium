@@ -409,7 +409,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void UpdateShape();
 
   // Returns the "visible bounds" for the surface from the user's perspective.
-  gfx::Rect GetVisibleBounds() const;
+  // TODO(b/299688152): Make this non virtual back once ARC is updated not to
+  // use geometry to specify the window bounds.
+  virtual gfx::Rect GetVisibleBounds() const;
 
   // Returns the bounds of the client area.
   gfx::Rect GetClientViewBounds() const;

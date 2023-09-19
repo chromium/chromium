@@ -366,7 +366,8 @@ void WindowRestoreController::OnParentWindowToValidContainer(
   window->SetProperty(app_restore::kParentToHiddenContainerKey, false);
   aura::client::ParentWindowWithContext(window,
                                         /*context=*/window->GetRootWindow(),
-                                        window->GetBoundsInScreen());
+                                        window->GetBoundsInScreen(),
+                                        display::kInvalidDisplayId);
 
   UpdateAndObserveWindow(window);
 }

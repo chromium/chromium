@@ -357,6 +357,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // specified, it's in screen's global coordinate system.
     gfx::Rect bounds;
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // If specified and the `bounds` is inside the specified display, the widget
+    // will be created on this display. Otherwise, the display matching the
+    // `bounds` will be used.
+    absl::optional<int64_t> display_id;
+#endif
+
     // The initial workspace of the Widget. Default is "", which means the
     // current workspace.
     std::string workspace;

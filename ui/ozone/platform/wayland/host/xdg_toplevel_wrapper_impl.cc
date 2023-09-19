@@ -512,30 +512,26 @@ void XDGToplevelWrapperImpl::Unlock() {
   }
 }
 
-void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
-  DCHECK(SupportsScreenCoordinates());
-  const auto entered_id = wayland_window_->GetPreferredEnteredOutputId();
+void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds,
+                                                 int64_t display_id) {
   const WaylandOutputManager* manager = connection_->wayland_output_manager();
-  WaylandOutput* entered_output = entered_id.has_value()
-                                      ? manager->GetOutput(entered_id.value())
-                                      : manager->GetPrimaryOutput();
 
-  // Output can be null when the surface has been just created. It should
-  // probably be inferred in that case.
-  LOG_IF(WARNING, !entered_id.has_value()) << "No output has been entered yet.";
+  WaylandOutput* target_output = nullptr;
+  if (display_id != display::kInvalidDisplayId) {
+    auto output_id_for_display_id =
+        manager->wayland_screen()->GetOutputIdForDisplayId(display_id);
+    // the output for the valid display_id should exist.
+    LOG_IF(WARNING, !output_id_for_display_id)
+        << "No output found for display id:" << display_id;
 
-  // `entered_output` can be null in unit tests, where it doesn't wait for
-  // output events.
-  if (!entered_output) {
-    DLOG(WARNING) << "Entered output is null, cannot request window bounds.";
-    return;
+    target_output = manager->GetOutput(output_id_for_display_id);
   }
 
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_WINDOW_BOUNDS_SINCE_VERSION) {
     zaura_toplevel_set_window_bounds(
         aura_toplevel_.get(), bounds.x(), bounds.y(), bounds.width(),
-        bounds.height(), entered_output->get_output());
+        bounds.height(), target_output ? target_output->get_output() : nullptr);
   }
 }
 

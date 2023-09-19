@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 
@@ -114,9 +115,12 @@ class ShellToplevelWrapper {
   // the content area of the surface.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 
-  // Requests a desired window position and size in global screen coordinates.
-  // The compositor may or may not filfill the request.
-  virtual void RequestWindowBounds(const gfx::Rect& bounds) = 0;
+  // Requests a desired window position and size in global screen coordinates,
+  // with a hint in which display the window should be placed.  The compositor
+  // may or may not filfill the request.
+  virtual void RequestWindowBounds(
+      const gfx::Rect& bounds,
+      int64_t display_id = display::kInvalidDisplayId) = 0;
 
   // Sets the minimum size for the top level.
   virtual void SetMinSize(int32_t width, int32_t height) = 0;

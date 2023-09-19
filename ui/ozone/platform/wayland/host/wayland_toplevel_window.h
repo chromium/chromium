@@ -273,6 +273,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.
   std::string window_unique_id_;
+
+  int64_t initial_display_id_ = display::kInvalidDisplayId;
 #else
   // Id of the chromium app passed through
   // PlatformWindowInitProperties::wm_class_name. This is used by Wayland

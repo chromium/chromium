@@ -360,7 +360,8 @@ void ShellPlatformDelegate::CreatePlatformWindow(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shell_data.window_widget = views::Widget::CreateWindowWithContext(
       std::move(delegate),
-      platform_->wm_test_helper->GetDefaultParent(nullptr, gfx::Rect()),
+      platform_->wm_test_helper->GetDefaultParent(nullptr, gfx::Rect(),
+                                                  display::kInvalidDisplayId),
       gfx::Rect(initial_size));
 #else
   shell_data.window_widget = new views::Widget();

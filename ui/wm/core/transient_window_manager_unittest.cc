@@ -95,7 +95,8 @@ class TransientWindowManagerTest : public aura::test::AuraTestBase {
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     AddTransientChild(parent, window);
-    aura::client::ParentWindowWithContext(window, root_window(), gfx::Rect());
+    aura::client::ParentWindowWithContext(window, root_window(), gfx::Rect(),
+                                          display::kInvalidDisplayId);
     return window;
   }
 };

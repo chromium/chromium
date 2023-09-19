@@ -95,6 +95,12 @@ class ShellClientData : public test::TestClient::CustomData {
 
   void DestroySurface() { wl_surface_destroy(surface_.release()); }
 
+  void RequestWindowBounds(const gfx::Rect& bounds, wl_output* target_output) {
+    zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(),
+                                     bounds.y(), bounds.width(),
+                                     bounds.height(), target_output);
+  }
+
   void Close() {
     close_called_ = true;
     if (surface_) {
@@ -137,23 +143,25 @@ class ShellClientData : public test::TestClient::CustomData {
 };
 
 enum TestCases {
+  // Xdg Client (Laros/Crostini)
   XdgByClient,
   XdgWidgetClose,
   XdgWidgetCloseNow,
   XdgWindowDelete,
+  // RemoteSehell (ARC++)
   RemoteByClient,
   RemoteWidgetClose,
   RemoteWidgetCloseNow,
   RemoteWindowDelete,
 };
 
-class ShellTest : public test::WaylandServerTest,
-                  public testing::WithParamInterface<TestCases> {
+class ShellDestructionTest : public test::WaylandServerTest,
+                             public testing::WithParamInterface<TestCases> {
  public:
-  ShellTest() = default;
-  ShellTest(const ShellTest&) = delete;
-  ShellTest& operator=(const ShellTest&) = delete;
-  ~ShellTest() override = default;
+  ShellDestructionTest() = default;
+  ShellDestructionTest(const ShellDestructionTest&) = delete;
+  ShellDestructionTest& operator=(const ShellDestructionTest&) = delete;
+  ~ShellDestructionTest() override = default;
 
   bool IsXdgShell() {
     return GetParam() == XdgWidgetCloseNow || GetParam() == XdgWindowDelete;
@@ -174,13 +182,13 @@ class ShellTest : public test::WaylandServerTest,
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(Xdg,
-                         ShellTest,
+                         ShellDestructionTest,
                          testing::Values(XdgByClient,
                                          XdgWidgetClose,
                                          XdgWidgetCloseNow,
                                          XdgWindowDelete));
 INSTANTIATE_TEST_SUITE_P(Remote,
-                         ShellTest,
+                         ShellDestructionTest,
                          testing::Values(RemoteByClient,
                                          RemoteWidgetClose,
                                          RemoteWidgetCloseNow,
@@ -189,7 +197,7 @@ INSTANTIATE_TEST_SUITE_P(Remote,
 // Make sure that xdg topevel/remote surfaces can be
 // destroyed via Widget::CloseNow and window deletion.
 // (b/276351837)
-TEST_P(ShellTest, ShellDestruction) {
+TEST_P(ShellDestructionTest, ShellDestruction) {
   test::ResourceKey surface_key;
 
   PostToClientAndWait([&](test::TestClient* client) {
@@ -241,12 +249,11 @@ TEST_P(ShellTest, ShellDestruction) {
                                                                   surface_key));
 }
 
-using RemoteShellTest = test::WaylandServerTest;
+using ShellWithClientTest = test::WaylandServerTest;
 
 // Calling SetPined w/o commit should not crash (crbug.com/979128).
-TEST_F(RemoteShellTest, DestroyRootSurfaceBeforeCommit) {
+TEST_F(ShellWithClientTest, DestroyRootSurfaceBeforeCommit) {
   test::ResourceKey surface_key;
-
   PostToClientAndWait([&](test::TestClient* client) {
     ASSERT_TRUE(client->InitShmBufferFactory(256 * 256 * 4));
 
@@ -264,13 +271,12 @@ TEST_F(RemoteShellTest, DestroyRootSurfaceBeforeCommit) {
     data_ptr->DestroySurface();
     data_ptr->Pin();
   });
-
   EXPECT_FALSE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
                                                                   surface_key));
 }
 
 // Tests UnsetSnap() w/o attaching buffer doesn't crash (b/278147793).
-TEST_F(RemoteShellTest, UnsetSnapBeforeCommit) {
+TEST_F(ShellWithClientTest, UnsetSnapBeforeCommit) {
   test::ResourceKey surface_key;
 
   PostToClientAndWait([&](test::TestClient* client) {
@@ -289,13 +295,122 @@ TEST_F(RemoteShellTest, UnsetSnapBeforeCommit) {
       static_cast<ShellSurfaceBase*>(surface->GetDelegateForTesting());
   ASSERT_TRUE(shell_surface_base);
   EXPECT_FALSE(shell_surface_base->GetWidget());
-
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data_ptr = client->GetDataAs<ShellClientData>();
     data_ptr->UnsetSnap();
   });
   EXPECT_TRUE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
                                                                  surface_key));
+}
+
+TEST_F(ShellWithClientTest, CreateWithDisplayId) {
+  UpdateDisplay("800x600, 800x600");
+
+  auto primary_id = GetPrimaryDisplay().id();
+  auto secondary_id = GetSecondaryDisplay().id();
+
+  // Initialize client.
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(client->InitShmBufferFactory(800 * 100 * 4));
+    ASSERT_EQ(client->globals().outputs.size(), 2u);
+  });
+
+  auto create_new_window = [this](const gfx::Rect& bounds, int output_index) {
+    test::ResourceKey surface_key;
+    PostToClientAndWait([&](test::TestClient* client) {
+      auto data = std::make_unique<ShellClientData>(client);
+      auto* data_ptr = data.get();
+      client->set_data(std::move(data));
+      data_ptr->CreateXdgToplevel();
+      wl_output* target_output =
+          output_index == -1 ? nullptr
+                             : client->globals().outputs[output_index].get();
+      data_ptr->RequestWindowBounds(bounds, target_output);
+      data_ptr->Commit();
+      surface_key = data_ptr->GetSurfaceResourceKey();
+    });
+
+    EXPECT_TRUE(test::server_util::GetUserDataForResource<Surface>(
+        server_.get(), surface_key));
+    // Verify the widget is not created yet.
+    Surface* surface = test::server_util::GetUserDataForResource<Surface>(
+        server_.get(), surface_key);
+    ShellSurfaceBase* shell_surface_base =
+        static_cast<ShellSurfaceBase*>(surface->GetDelegateForTesting());
+    return shell_surface_base;
+  };
+
+  auto* screen = display::Screen::GetScreen();
+  constexpr gfx::Rect kPrimarilyOnPrimary{100, 0, 800, 100};
+  {
+    auto* shell_surface_base = create_new_window(kPrimarilyOnPrimary, 1);
+    EXPECT_EQ(secondary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    EXPECT_EQ(kPrimarilyOnPrimary,
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    auto* shell_surface_base = create_new_window(kPrimarilyOnPrimary, 0);
+    EXPECT_EQ(primary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    EXPECT_EQ(kPrimarilyOnPrimary,
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    auto* shell_surface_base = create_new_window(kPrimarilyOnPrimary, -1);
+    EXPECT_EQ(primary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    // If display is not specified, new window will be placed fully inside the
+    // display.
+    // TODO(crbug.com/1291592): This logic is not consistent with
+    // ash. This has to be updated once the bug is fixed.
+    EXPECT_EQ(gfx::Rect{kPrimarilyOnPrimary.size()},
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+
+  constexpr gfx::Rect kAlmostOnPrimary{101, 0, 700, 100};
+  {
+    auto* shell_surface_base = create_new_window(kAlmostOnPrimary, 1);
+    // The window should stay on the secondary display (output_index=1).
+    EXPECT_EQ(secondary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    EXPECT_EQ(kAlmostOnPrimary,
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    auto* shell_surface_base = create_new_window(kAlmostOnPrimary, 0);
+    EXPECT_EQ(primary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    EXPECT_EQ(kAlmostOnPrimary,
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    auto* shell_surface_base = create_new_window(kAlmostOnPrimary, -1);
+    EXPECT_EQ(primary_id,
+              screen
+                  ->GetDisplayNearestWindow(
+                      shell_surface_base->GetWidget()->GetNativeWindow())
+                  .id());
+    // TODO(crbug.com/1291592): This logic is not consistent with
+    // ash. This has to be updated once the bug is fixed.
+    EXPECT_EQ(gfx::Rect({100, 0}, kAlmostOnPrimary.size()),
+              shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
 }
 
 }  // namespace exo::wayland

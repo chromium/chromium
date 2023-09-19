@@ -54,7 +54,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetDecoration(DecorationMode decoration) override;
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
-  void RequestWindowBounds(const gfx::Rect& bounds) override;
+  void RequestWindowBounds(const gfx::Rect& bounds,
+                           int64_t display_id) override;
   void SetRestoreInfo(int32_t, int32_t) override;
   void SetRestoreInfoWithWindowIdSource(int32_t, const std::string&) override;
   void SetSystemModal(bool modal) override;

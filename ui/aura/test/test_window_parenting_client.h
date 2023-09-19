@@ -24,7 +24,9 @@ class TestWindowParentingClient : public client::WindowParentingClient {
   void set_default_parent(Window* parent) { default_parent_ = parent; }
 
   // Overridden from client::WindowParentingClient:
-  Window* GetDefaultParent(Window* window, const gfx::Rect& bounds) override;
+  Window* GetDefaultParent(Window* window,
+                           const gfx::Rect& bounds,
+                           const int64_t display_id) override;
 
  private:
   raw_ptr<Window> root_window_;

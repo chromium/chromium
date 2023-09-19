@@ -442,6 +442,12 @@ void Widget::Init(InitParams params) {
   const gfx::Rect bounds = params.bounds;
   const ui::WindowShowState show_state = params.show_state;
   WidgetDelegate* delegate = params.delegate;
+  bool should_set_initial_bounds = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  // If the target display is specified on ChromeOS, the initial bounds will be
+  // set based on the display.
+  should_set_initial_bounds = !params.display_id.has_value();
+#endif
 
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU)
@@ -463,7 +469,9 @@ void Widget::Init(InitParams params) {
     UpdateWindowIcon();
     UpdateWindowTitle();
     non_client_view_->ResetWindowControls();
-    SetInitialBounds(bounds);
+    if (should_set_initial_bounds) {
+      SetInitialBounds(bounds);
+    }
 
     // Perform the initial layout. This handles the case where the size might
     // not actually change when setting the initial bounds. If it did, child
@@ -478,7 +486,9 @@ void Widget::Init(InitParams params) {
     }
   } else if (delegate) {
     SetContentsView(delegate->TransferOwnershipOfContentsView());
-    SetInitialBoundsForFramelessWindow(bounds);
+    if (should_set_initial_bounds) {
+      SetInitialBoundsForFramelessWindow(bounds);
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {

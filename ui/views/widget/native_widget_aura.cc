@@ -280,11 +280,16 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // the correct values.
   OnSizeConstraintsChanged();
 
+  absl::optional<int64_t> target_display;
+#if BUILDFLAG(IS_CHROMEOS)
+  target_display = params.display_id;
+#endif
   if (parent) {
     parent->AddChild(window_);
   } else {
-    aura::client::ParentWindowWithContext(window_, context->GetRootWindow(),
-                                          window_bounds);
+    aura::client::ParentWindowWithContext(
+        window_, context->GetRootWindow(), window_bounds,
+        target_display.value_or(display::kInvalidDisplayId));
   }
 
   window_->AddObserver(this);
@@ -292,10 +297,11 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // Wait to set the bounds until we have a parent. That way we can know our
   // true state/bounds (the LayoutManager may enforce a particular
   // state/bounds).
-  if (IsMaximized() || IsMinimized())
+  if (IsMaximized() || IsMinimized()) {
     SetRestoreBounds(window_, window_bounds);
-  else
-    SetBounds(window_bounds);
+  } else {
+    SetBoundsInternal(window_bounds, target_display);
+  }
   window_->SetEventTargetingPolicy(
       params.accept_events ? aura::EventTargetingPolicy::kTargetAndDescendants
                            : aura::EventTargetingPolicy::kNone);
@@ -563,19 +569,20 @@ std::string NativeWidgetAura::GetWorkspace() const {
 void NativeWidgetAura::SetBounds(const gfx::Rect& bounds) {
   if (!window_)
     return;
+  SetBoundsInternal(bounds, absl::nullopt);
+}
 
-  aura::Window* root = window_->GetRootWindow();
-  if (root) {
-    aura::client::ScreenPositionClient* screen_position_client =
-        aura::client::GetScreenPositionClient(root);
-    if (screen_position_client) {
-      display::Display dst_display =
-          display::Screen::GetScreen()->GetDisplayMatching(bounds);
-      screen_position_client->SetBounds(window_, bounds, dst_display);
-      return;
-    }
+void NativeWidgetAura::SetBoundsInternal(const gfx::Rect& bounds,
+                                         absl::optional<int64_t> display_id) {
+  display::Display dst_display;
+  auto* screen = display::Screen::GetScreen();
+  // TODO(crbug.com/1480073): Call SetBoundsInScreen directly.
+  if (!display_id ||
+      !screen->GetDisplayWithDisplayId(display_id.value(), &dst_display)) {
+    dst_display = screen->GetDisplayMatching(bounds);
   }
-  window_->SetBounds(bounds);
+  CHECK(dst_display.is_valid());
+  window_->SetBoundsInScreen(bounds, dst_display);
 }
 
 void NativeWidgetAura::SetBoundsConstrained(const gfx::Rect& bounds) {
@@ -1389,7 +1396,8 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
     // always reattach the window to the same RootWindow.
     aura::Window* root_window = native_view->GetRootWindow();
     aura::client::ParentWindowWithContext(native_view, root_window,
-                                          root_window->GetBoundsInScreen());
+                                          root_window->GetBoundsInScreen(),
+                                          display::kInvalidDisplayId);
   }
 
   // And now, notify them that they have a brand new parent.

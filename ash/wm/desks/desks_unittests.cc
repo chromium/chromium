@@ -174,8 +174,9 @@ std::unique_ptr<aura::Window> CreateTransientWindow(
   window->Init(ui::LAYER_NOT_DRAWN);
   window->SetBounds(bounds);
   ::wm::AddTransientChild(transient_parent, window.get());
-  aura::client::ParentWindowWithContext(
-      window.get(), transient_parent->GetRootWindow(), bounds);
+  aura::client::ParentWindowWithContext(window.get(),
+                                        transient_parent->GetRootWindow(),
+                                        bounds, display::kInvalidDisplayId);
   window->Show();
   return window;
 }

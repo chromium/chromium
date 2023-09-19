@@ -1032,6 +1032,17 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
 
   UpdateHostWindowOrigin();
 }
+gfx::Rect ClientControlledShellSurface::GetVisibleBounds() const {
+  const auto* screen = display::Screen::GetScreen();
+  display::Display display;
+
+  if (geometry_.IsEmpty() ||
+      !screen->GetDisplayWithDisplayId(display_id_, &display)) {
+    return ShellSurfaceBase::GetVisibleBounds();
+  }
+  // ARC sends geometry_ in screen coordinates.
+  return geometry_ + display.bounds().OffsetFromOrigin();
+}
 
 gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
   gfx::Rect shadow_bounds = ShellSurfaceBase::GetShadowBounds();

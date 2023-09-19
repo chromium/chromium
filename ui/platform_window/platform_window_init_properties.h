@@ -145,6 +145,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   // Specifies whether the associated window is persistable.
   bool persistable = true;
+
+  // Specifies the id of the target display the window will be created on.
+  absl::optional<int64_t> display_id;
 #endif
 
 #if BUILDFLAG(IS_OZONE)

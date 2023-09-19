@@ -123,7 +123,8 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
 
   // Overridden from aura::client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override {
+                                 const gfx::Rect& bounds,
+                                 const int64_t display_id) override {
     if (!capture_client_) {
       capture_client_ = std::make_unique<aura::client::DefaultCaptureClient>(
           window_->GetRootWindow());
@@ -211,7 +212,8 @@ int DemoMain() {
   window1.Init(ui::LAYER_TEXTURED);
   window1.SetBounds(window1_bounds);
   window1.Show();
-  aura::client::ParentWindowWithContext(&window1, host->window(), gfx::Rect());
+  aura::client::ParentWindowWithContext(&window1, host->window(), gfx::Rect(),
+                                        display::kInvalidDisplayId);
 
   gfx::Rect window2_bounds(200, 200, 350, 350);
   DemoWindowDelegate window_delegate2(SK_ColorRED);
@@ -220,7 +222,8 @@ int DemoMain() {
   window2.Init(ui::LAYER_TEXTURED);
   window2.SetBounds(window2_bounds);
   window2.Show();
-  aura::client::ParentWindowWithContext(&window2, host->window(), gfx::Rect());
+  aura::client::ParentWindowWithContext(&window2, host->window(), gfx::Rect(),
+                                        display::kInvalidDisplayId);
 
   gfx::Rect window3_bounds(10, 10, 50, 50);
   DemoWindowDelegate window_delegate3(SK_ColorGREEN);

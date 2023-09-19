@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/always_on_top_controller.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
@@ -22,11 +23,24 @@
 namespace ash {
 namespace {
 
-aura::Window* FindContainerRoot(const gfx::Rect& bounds_in_screen) {
+aura::Window* FindContainerRoot(aura::Window* root_window,
+                                const gfx::Rect& bounds_in_screen) {
   if (bounds_in_screen == gfx::Rect()) {
     return Shell::GetRootWindowForNewWindows();
   }
-  return window_util::GetRootWindowMatching(bounds_in_screen);
+  auto display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  auto overlap = display.bounds();
+  overlap.Intersect(bounds_in_screen);
+
+  // If the window is nearly invisible on the current display, use matching
+  // display.
+  if (!display.bounds().Contains(bounds_in_screen) &&
+      overlap.width() < kMinimumOnScreenArea &&
+      overlap.height() < kMinimumOnScreenArea) {
+    return window_util::GetRootWindowMatching(bounds_in_screen);
+  }
+  return root_window;
 }
 
 bool HasTransientParentWindow(const aura::Window* window) {
@@ -87,6 +101,7 @@ aura::Window* GetContainerForWindow(aura::Window* window) {
 }
 
 aura::Window* GetDefaultParentForWindow(aura::Window* window,
+                                        aura::Window* root_window,
                                         const gfx::Rect& bounds_in_screen) {
   aura::Window* target_root = nullptr;
   aura::Window* transient_parent = ::wm::GetTransientParent(window);
@@ -94,7 +109,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
     // Transient window should use the same root as its transient parent.
     target_root = transient_parent->GetRootWindow();
   } else {
-    target_root = FindContainerRoot(bounds_in_screen);
+    target_root = FindContainerRoot(root_window, bounds_in_screen);
   }
 
   // For window restore, the window may be created before the associated window
