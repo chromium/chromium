@@ -42,6 +42,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -74,6 +75,74 @@ mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
   };
 }
 
+constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
+    ui::TopRowActionKey action_key) {
+  switch (action_key) {
+    case ui::TopRowActionKey::kBack:
+      return mojom::TopRowActionKey::kBack;
+    case ui::TopRowActionKey::kForward:
+      return mojom::TopRowActionKey::kForward;
+    case ui::TopRowActionKey::kRefresh:
+      return mojom::TopRowActionKey::kRefresh;
+    case ui::TopRowActionKey::kFullscreen:
+      return mojom::TopRowActionKey::kFullscreen;
+    case ui::TopRowActionKey::kOverview:
+      return mojom::TopRowActionKey::kOverview;
+    case ui::TopRowActionKey::kScreenshot:
+      return mojom::TopRowActionKey::kScreenshot;
+    case ui::TopRowActionKey::kScreenBrightnessDown:
+      return mojom::TopRowActionKey::kScreenBrightnessDown;
+    case ui::TopRowActionKey::kScreenBrightnessUp:
+      return mojom::TopRowActionKey::kScreenBrightnessUp;
+    case ui::TopRowActionKey::kMicrophoneMute:
+      return mojom::TopRowActionKey::kMicrophoneMute;
+    case ui::TopRowActionKey::kVolumeMute:
+      return mojom::TopRowActionKey::kVolumeMute;
+    case ui::TopRowActionKey::kVolumeDown:
+      return mojom::TopRowActionKey::kVolumeDown;
+    case ui::TopRowActionKey::kVolumeUp:
+      return mojom::TopRowActionKey::kVolumeUp;
+    case ui::TopRowActionKey::kKeyboardBacklightToggle:
+      return mojom::TopRowActionKey::kKeyboardBacklightToggle;
+    case ui::TopRowActionKey::kKeyboardBacklightDown:
+      return mojom::TopRowActionKey::kKeyboardBacklightDown;
+    case ui::TopRowActionKey::kKeyboardBacklightUp:
+      return mojom::TopRowActionKey::kKeyboardBacklightUp;
+    case ui::TopRowActionKey::kNextTrack:
+      return mojom::TopRowActionKey::kNextTrack;
+    case ui::TopRowActionKey::kPreviousTrack:
+      return mojom::TopRowActionKey::kPreviousTrack;
+    case ui::TopRowActionKey::kPlayPause:
+      return mojom::TopRowActionKey::kPlayPause;
+    case ui::TopRowActionKey::kPrivacyScreenToggle:
+      return mojom::TopRowActionKey::kPrivacyScreenToggle;
+    case ui::TopRowActionKey::kAllApplications:
+      return mojom::TopRowActionKey::kAllApplications;
+    case ui::TopRowActionKey::kEmojiPicker:
+      return mojom::TopRowActionKey::kEmojiPicker;
+    case ui::TopRowActionKey::kDictation:
+      return mojom::TopRowActionKey::kDictation;
+    case ui::TopRowActionKey::kUnknown:
+    case ui::TopRowActionKey::kNone:
+      return mojom::TopRowActionKey::kNone;
+  }
+}
+
+std::vector<mojom::TopRowActionKey> GetTopRowActionKeys(
+    const ui::KeyboardDevice& keyboard) {
+  const auto* action_keys =
+      Shell::Get()->keyboard_capability()->GetTopRowActionKeys(keyboard);
+  if (!action_keys) {
+    return std::vector<mojom::TopRowActionKey>();
+  }
+
+  std::vector<mojom::TopRowActionKey> top_row_keys;
+  for (const auto& key : *action_keys) {
+    top_row_keys.push_back(ConvertTopRowActionKey(key));
+  }
+  return top_row_keys;
+}
+
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
@@ -89,6 +158,9 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
     mojom_keyboard->modifier_keys =
         Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
     mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
+  }
+  if (::features::AreF11AndF12ShortcutsEnabled()) {
+    mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
   }
   return mojom_keyboard;
 }

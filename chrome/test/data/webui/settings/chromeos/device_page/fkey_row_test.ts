@@ -71,13 +71,13 @@ suite('<fkey-row>', () => {
     await initializeFkeyRow();
     const topRowActionKeysTests:
         Array<{topRowActionKeys: TopRowActionKey[], expectedLabel: string}> = [
-          {topRowActionKeys: [TopRowActionKey.BACK], expectedLabel: 'back'},
+          {topRowActionKeys: [TopRowActionKey.kBack], expectedLabel: 'back'},
           {
-            topRowActionKeys: [TopRowActionKey.REFRESH],
+            topRowActionKeys: [TopRowActionKey.kRefresh],
             expectedLabel: 'refresh',
           },
           {
-            topRowActionKeys: [TopRowActionKey.OVERVIEW],
+            topRowActionKeys: [TopRowActionKey.kOverview],
             expectedLabel: 'overview',
           },
         ];
@@ -90,7 +90,8 @@ suite('<fkey-row>', () => {
   test('Correct top row key (f1/f2) label displayed for fkey', async () => {
     await initializeFkeyRow();
     assertTrue(!!fkeyRow.shadowRoot!.querySelector('#fkeyRow'));
-    await settopRowActionKeys([TopRowActionKey.BACK, TopRowActionKey.REFRESH]);
+    await settopRowActionKeys(
+        [TopRowActionKey.kBack, TopRowActionKey.kRefresh]);
     assertEquals('back', fkeyRow.getTopRowKeyLabel());
     await setFkey(Fkey.F12);
     assertEquals('refresh', fkeyRow.getTopRowKeyLabel());

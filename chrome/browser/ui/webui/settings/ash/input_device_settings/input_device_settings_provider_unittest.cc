@@ -34,6 +34,7 @@ const ::ash::mojom::Keyboard kKeyboard1 =
                            /*device_key=*/"fake-device-key1",
                            /*meta_key=*/::ash::mojom::MetaKey::kLauncher,
                            /*modifier_keys=*/{},
+                           /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
 const ::ash::mojom::Keyboard kKeyboard2 =
     ::ash::mojom::Keyboard(/*name=*/"Logitech K580",
@@ -42,6 +43,7 @@ const ::ash::mojom::Keyboard kKeyboard2 =
                            /*device_key=*/"fake-device-key2",
                            /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
                            /*modifier_keys=*/{},
+                           /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
 const ::ash::mojom::Keyboard kKeyboard3 =
     ::ash::mojom::Keyboard(/*name=*/"HP 910 White Bluetooth Keyboard",
@@ -50,6 +52,7 @@ const ::ash::mojom::Keyboard kKeyboard3 =
                            /*device_key=*/"fake-device-key3",
                            /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
                            /*modifier_keys=*/{},
+                           /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
 const ::ash::mojom::Touchpad kTouchpad1 =
     ::ash::mojom::Touchpad(/*name=*/"test touchpad",

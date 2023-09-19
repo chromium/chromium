@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,52 +28,55 @@ import {ExtendedFkeysModifier, Fkey, Keyboard, TopRowActionKey} from './input_de
 
 function getTopRowActionKeyString(topRowActionKey: TopRowActionKey): string {
   switch (topRowActionKey) {
-    case TopRowActionKey.BACK:
+    case TopRowActionKey.kBack:
       return loadTimeData.getString('backKeyLabel');
-    case TopRowActionKey.FORWARD:
+    case TopRowActionKey.kForward:
       return loadTimeData.getString('forwardKeyLabel');
-    case TopRowActionKey.REFRESH:
+    case TopRowActionKey.kRefresh:
       return loadTimeData.getString('refreshKeyLabel');
-    case TopRowActionKey.FULLSCREEN:
+    case TopRowActionKey.kFullscreen:
       return loadTimeData.getString('fullscreenKeyLabel');
-    case TopRowActionKey.OVERVIEW:
+    case TopRowActionKey.kOverview:
       return loadTimeData.getString('overviewKeyLabel');
-    case TopRowActionKey.SCREENSHOT:
+    case TopRowActionKey.kScreenshot:
       return loadTimeData.getString('screenshotKeyLabel');
-    case TopRowActionKey.SCREEN_BRIGHTNESS_DOWN:
+    case TopRowActionKey.kScreenBrightnessDown:
       return loadTimeData.getString('screenBrightnessDownKeyLabel');
-    case TopRowActionKey.SCREEN_BRIGHTNESS_UP:
+    case TopRowActionKey.kScreenBrightnessUp:
       return loadTimeData.getString('screenBrightnessUpKeyLabel');
-    case TopRowActionKey.MICROPHONE_MUTE:
+    case TopRowActionKey.kMicrophoneMute:
       return loadTimeData.getString('microphoneMuteKeyLabel');
-    case TopRowActionKey.VOLUME_MUTE:
+    case TopRowActionKey.kVolumeMute:
       return loadTimeData.getString('muteKeyLabel');
-    case TopRowActionKey.VOLUME_DOWN:
+    case TopRowActionKey.kVolumeDown:
       return loadTimeData.getString('volumeDownKeyLabel');
-    case TopRowActionKey.VOLUME_UP:
+    case TopRowActionKey.kVolumeUp:
       return loadTimeData.getString('volumeUpKeyLabel');
-    case TopRowActionKey.KEYBOARD_BACKLIGHT_TOGGLE:
+    case TopRowActionKey.kKeyboardBacklightToggle:
       return loadTimeData.getString('backlightToggleKeyLabel');
-    case TopRowActionKey.KEYBOARD_BACKLIGHT_DOWN:
+    case TopRowActionKey.kKeyboardBacklightDown:
       return loadTimeData.getString('backlightDownKeyLabel');
-    case TopRowActionKey.KEYBOARD_BACKLIGHT_UP:
+    case TopRowActionKey.kKeyboardBacklightUp:
       return loadTimeData.getString('backlightUpKeyLabel');
-    case TopRowActionKey.NEXT_TRACK:
+    case TopRowActionKey.kNextTrack:
       return loadTimeData.getString('trackNextKeyLabel');
-    case TopRowActionKey.PREVIOUS_TRACK:
+    case TopRowActionKey.kPreviousTrack:
       return loadTimeData.getString('trackPreviousKeyLabel');
-    case TopRowActionKey.PLAY_PAUSE:
+    case TopRowActionKey.kPlayPause:
       return loadTimeData.getString('playPauseKeyLabel');
-    case TopRowActionKey.ALL_APPLICATIONS:
+    case TopRowActionKey.kAllApplications:
       return loadTimeData.getString('allApplicationsKeyLabel');
-    case TopRowActionKey.EMOJI_PICKER:
+    case TopRowActionKey.kEmojiPicker:
       return loadTimeData.getString('emojiPickerKeyLabel');
-    case TopRowActionKey.DICTATION:
+    case TopRowActionKey.kDictation:
       return loadTimeData.getString('dicationKeyLabel');
-    case TopRowActionKey.PRIVACY_SCREEN_TOGGLE:
+    case TopRowActionKey.kPrivacyScreenToggle:
       return loadTimeData.getString('privacyScreenToggleKeyLabel');
-    case TopRowActionKey.SCREEN_MIRROR:
-      return loadTimeData.getString('screenMirrorKeyLabel');
+    case TopRowActionKey.kNone:
+    case TopRowActionKey.kUnknown:
+      return '';
+    default:
+      assertNotReached();
   }
 }
 

@@ -38,6 +38,9 @@ export const ExtendedFkeysModifier =
 
 export type SixPackKeyInfo = InputDeviceSettingsTypes.SixPackKeyInfo;
 
+export type TopRowActionKey = InputDeviceSettingsTypes.TopRowActionKey;
+export const TopRowActionKey = InputDeviceSettingsTypes.TopRowActionKey;
+
 export enum SixPackKey {
   DELETE = 'del',
   INSERT = 'insert',
@@ -52,38 +55,11 @@ export enum Fkey {
   F12 = 'f12',
 }
 
-export enum TopRowActionKey {
-  BACK,
-  FORWARD,
-  REFRESH,
-  FULLSCREEN,
-  OVERVIEW,
-  SCREENSHOT,
-  SCREEN_BRIGHTNESS_DOWN,
-  SCREEN_BRIGHTNESS_UP,
-  MICROPHONE_MUTE,
-  VOLUME_MUTE,
-  VOLUME_DOWN,
-  VOLUME_UP,
-  KEYBOARD_BACKLIGHT_TOGGLE,
-  KEYBOARD_BACKLIGHT_DOWN,
-  KEYBOARD_BACKLIGHT_UP,
-  NEXT_TRACK,
-  PREVIOUS_TRACK,
-  PLAY_PAUSE,
-  ALL_APPLICATIONS,
-  EMOJI_PICKER,
-  DICTATION,
-  PRIVACY_SCREEN_TOGGLE,
-  SCREEN_MIRROR,
-}
-
 export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
-export type Keyboard = InputDeviceSettingsTypes.Keyboard&
-                       Partial<{topRowActionKeys: TopRowActionKey[]}>;
+export type Keyboard = InputDeviceSettingsTypes.Keyboard;
 
 export type Touchpad = InputDeviceSettingsTypes.Touchpad;
 export type Mouse = Omit<InputDeviceSettingsTypes.Mouse, 'settings'>&{

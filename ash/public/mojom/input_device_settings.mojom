@@ -68,6 +68,35 @@ enum MetaKey {
   kCommand
 };
 
+// Contains top row action keys found on different keyboards.
+// Note: that this enumeration will need to be extended if new keys are added.
+enum TopRowActionKey {
+  kNone,
+  kUnknown,
+  kBack,
+  kForward,
+  kRefresh,
+  kFullscreen,
+  kOverview,
+  kScreenshot,
+  kScreenBrightnessDown,
+  kScreenBrightnessUp,
+  kMicrophoneMute,
+  kVolumeMute,
+  kVolumeDown,
+  kVolumeUp,
+  kKeyboardBacklightToggle,
+  kKeyboardBacklightDown,
+  kKeyboardBacklightUp,
+  kNextTrack,
+  kPreviousTrack,
+  kPlayPause,
+  kAllApplications,
+  kEmojiPicker,
+  kDictation,
+  kPrivacyScreenToggle,
+};
+
 // Contains all information needed to display, apply, and update keyboard
 // settings.
 struct Keyboard {
@@ -87,6 +116,9 @@ struct Keyboard {
   MetaKey meta_key;
   // List of modifier keys (caps lock, assistant, etc) present on this device.
   array<ui.mojom.ModifierKey> modifier_keys;
+  // List of top row action keys (back, refresh, etc) present on this device.
+  // The keys are stored in the order they appear on the device.
+  array<TopRowActionKey> top_row_action_keys;
   KeyboardSettings settings;
 };
 
