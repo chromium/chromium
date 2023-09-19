@@ -8618,6 +8618,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kPrivacySandboxSettings4Variations,
                                     "PrivacySandboxSettings4")},
 
+    {"privacy-sandbox-proactive-topics-blocking",
+     flag_descriptions::kPrivacySandboxProactiveTopicsBlockingName,
+     flag_descriptions::kPrivacySandboxProactiveTopicsBlockingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,
      flag_descriptions::kSiteDataImprovementsDescription, kOsAndroid,

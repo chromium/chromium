@@ -2901,6 +2901,11 @@ const char kPrivacySandboxSettings4Name[] = "Privacy Sandbox Settings V4";
 const char kPrivacySandboxSettings4Description[] =
     "Enables updated Privacy Sandbox UI";
 
+const char kPrivacySandboxProactiveTopicsBlockingName[] =
+    "Privacy Sandbox Proactive Topics Blocking";
+const char kPrivacySandboxProactiveTopicsBlockingDescription[] =
+    "Enables Privacy Sandbox Proactive Topics Blocking";
+
 const char kPrivateAggregationDeveloperModeName[] =
     "Private Aggregation developer mode";
 const char kPrivateAggregationDeveloperModeDescription[] =

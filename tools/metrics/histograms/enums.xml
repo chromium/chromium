@@ -61456,6 +61456,8 @@ from previous Chrome versions.
   <int value="-1639211162" label="CodeBasedRBD:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
+  <int value="-1638399923"
+      label="PrivacySandboxProactiveTopicsBlocking:disabled"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
   <int value="-1637519819" label="EnablePolicyTestPage:disabled"/>
   <int value="-1636940108" label="EcheSWACheckAndroidNetworkInfo:enabled"/>
@@ -68027,6 +68029,8 @@ from previous Chrome versions.
   <int value="1622672308" label="ReaderMode:enabled"/>
   <int value="1623345369" label="OmniboxAdaptNarrowTabletWindows:enabled"/>
   <int value="1625988511" label="DurableClientHintsCache:enabled"/>
+  <int value="1626258278"
+      label="PrivacySandboxProactiveTopicsBlocking:enabled"/>
   <int value="1626795933" label="CCTTextFragmentLookupApiEnabled:disabled"/>
   <int value="1626824478" label="ExperimentalAppBanners:disabled"/>
   <int value="1627416551" label="ImeInputLogicMozc:disabled"/>

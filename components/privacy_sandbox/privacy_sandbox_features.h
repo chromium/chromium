@@ -155,6 +155,10 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(
     kPrivacySandboxAttestationsHigherComponentRegistrationPriority);
 
+// Enables Privacy Sandbox Proactive Topics Blocking.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

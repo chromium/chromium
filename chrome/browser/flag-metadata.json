@@ -6847,6 +6847,15 @@
     "expiry_milestone": 119
   },
   {
+    "name": "privacy-sandbox-proactive-topics-blocking",
+    "owners": [
+      "sauski",
+      "olesiamarukhno",
+      "tommasin",
+      "alimariam"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "privacy-sandbox-settings-4",
     "owners": [
       "sauski",

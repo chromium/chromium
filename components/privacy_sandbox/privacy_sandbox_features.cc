@@ -112,4 +112,8 @@ BASE_FEATURE(kPrivacySandboxAttestationsHigherComponentRegistrationPriority,
              "PrivacySandboxAttestationsHigherComponentRegistrationPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
+             "PrivacySandboxProactiveTopicsBlocking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox
