@@ -17,24 +17,25 @@ class ShoppingUserModelTest : public DefaultModelTestBase {
 
 TEST_F(ShoppingUserModelTest, InitAndFetchModel) {
   ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
 }
 
 TEST_F(ShoppingUserModelTest, ExecuteModelWithInput) {
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
+
+  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
+
   // When shopping related features count is less than or equal to 1,
   // the user shouldn't be considered a shopping user.
-  ExpectExecutionWithInput(/*inputs=*/{0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/{0});
-  ExpectExecutionWithInput(/*inputs=*/{1, 0}, /*expected_error=*/false,
-                           /*expected_result=*/{0});
-  ExpectExecutionWithInput(/*inputs=*/{1, 1}, /*expected_error=*/false,
-                           /*expected_result=*/{0});
+  ExpectClassifierResults(/*input=*/{0, 0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(/*input=*/{1, 0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(/*input=*/{1, 1}, {kLegacyNegativeLabel});
 
   // When shopping related features count is greater than or equal to 1,
   // the user should be considered shopping user.
-  ExpectExecutionWithInput(/*inputs=*/{1, 2}, /*expected_error=*/false,
-                           /*expected_result=*/{1});
-  ExpectExecutionWithInput(/*inputs=*/{2, 2}, /*expected_error=*/false,
-                           /*expected_result=*/{1});
+  ExpectClassifierResults(/*input=*/{1, 2}, {kShoppingUserUmaName});
+  ExpectClassifierResults(/*input=*/{2, 2}, {kShoppingUserUmaName});
 
   // Invalid input
   ExpectExecutionWithInput(/*inputs=*/{1, 1, 1, 1, 1}, /*expected_error=*/true,

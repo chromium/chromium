@@ -315,23 +315,6 @@ TEST_F(SegmentationPlatformServiceImplTest,
 }
 
 TEST_F(SegmentationPlatformServiceImplTest,
-       GetSelectedSegmentOnDemandIfDbInitialized) {
-  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
-  int pending_queue_size = GetPendingActionsQueueSize();
-  // Initialize the platform
-  TestInitializationFlow();
-  // Platform is initialized, so the API call to get the selected
-  // segment on demand is executed.
-  EXPECT_TRUE(segmentation_platform_service_impl_->IsPlatformInitialized());
-  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
-  SetUpDefaultModelProviders();
-  AssertSelectedSegmentOnDemand(
-      kTestSegmentationKey4, /*is_ready=*/true,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
-  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
-}
-
-TEST_F(SegmentationPlatformServiceImplTest,
        GetSelectedSegmentOnDemandIfDbFailed) {
   EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
   int pending_queue_size = GetPendingActionsQueueSize();

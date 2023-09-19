@@ -24,9 +24,7 @@ constexpr SegmentId kShoppingUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER;
 constexpr int64_t kShoppingUserSignalStorageLength = 28;
 constexpr int64_t kShoppingUserMinSignalCollectionLength = 1;
-constexpr int64_t kModelVersion = 1;
-constexpr int kShoppingUserDefaultSelectionTTLDays = 7;
-constexpr int kShoppingUserDefaultUnknownSelectionTTLDays = 7;
+constexpr int64_t kModelVersion = 2;
 
 // InputFeatures.
 
@@ -55,10 +53,6 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
       std::make_unique<ShoppingUserModel>());
-  config->segment_selection_ttl =
-      base::Days(kShoppingUserDefaultSelectionTTLDays);
-  config->unknown_selection_ttl =
-      base::Days(kShoppingUserDefaultUnknownSelectionTTLDays);
   config->is_boolean_segment = true;
   return config;
 }
@@ -73,12 +67,20 @@ ShoppingUserModel::GetModelConfig() {
   writer.SetDefaultSegmentationMetadataConfig(
       kShoppingUserMinSignalCollectionLength, kShoppingUserSignalStorageLength);
 
-  // Set discrete mapping.
-  writer.AddBooleanSegmentDiscreteMapping(kShoppingUserSegmentationKey);
-
   // Set features.
   writer.AddUmaFeatures(kShoppingUserUMAFeatures.data(),
                         kShoppingUserUMAFeatures.size());
+
+  // Set OutputConfig.
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5f,
+      /*positive_label=*/kShoppingUserUmaName,
+      /*negative_label=*/kLegacyNegativeLabel);
+
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{}, /*default_ttl=*/7,
+      /*time_unit=*/proto::TimeUnit::DAY);
+
   return std::make_unique<ModelConfig>(std::move(shopping_user_metadata),
                                        kModelVersion);
 }
