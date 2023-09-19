@@ -783,9 +783,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Sample rate applied to this client, expressed as number of clients per 1000
     that are in the sample. Recorded on every log upload but only if the client
-    is eligible for sampling. (As of September 2019, the only clients eligible
-    for sampling are Windows and Android installs on which the UMA checkbox was
-    enabled by default.)
+    is eligible for sampling. (As of February 2021, all clients on Android and
+    Windows are eligible for sampling. Prior to Jan 26 2021, only Windows and
+    Android installs on which the UMA checkbox was enabled by default were
+    eligible, see b/161848997).
 
     Clients not eligible for sampling will not have this histogram recorded.
 
