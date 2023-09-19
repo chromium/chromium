@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <title>
-    Test that promise is rejected when user cancels device selection.
+    Test that the Promise returned by prompt() is rejected when user cancels device selection
   </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -17,7 +17,7 @@
     <button id="prompt-button">Pick device</button>
   </body>
   <script>
-    async_test((t) => {
+    async_test(t => {
       let v = document.createElement("video");
       v.src = getVideoURI("/media/movie_5");
 
@@ -27,11 +27,11 @@
           .prompt()
           .then(t.unreached_func())
           .catch(
-            t.step_func_done((error) =>
+            t.step_func_done(error =>
               assert_equals(error.name, "NotAllowedError")
             )
           )
       );
-    }, "Test that promise is rejected when user cancels device selection.");
+    }, "Test that the Promise returned by prompt() is rejected when user cancels device selection.");
   </script>
 </html>

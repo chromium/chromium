@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <link rel="stylesheet" href="styles.css" />
-  <title>Test that seek() on the local video is reflected on the remote device.</title>
+  <title>Test that seek() on the local video is reflected on the remote device</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -39,7 +39,7 @@
   <script>
     let v = document.getElementById("video");
 
-    async_test((t) => {
+    async_test(t => {
       let button = document.getElementById("prompt-button");
       button.onclick = t.step_func(() => {
         promise_test(() => {
@@ -64,7 +64,7 @@
         }
       };
 
-      let evaluate = (success) =>
+      let evaluate = success =>
         assert_true(success, "Video paused and has correct play position.");
 
       document.getElementById("yes").onclick = t.step_func_done(() =>
@@ -73,6 +73,6 @@
       document.getElementById("no").onclick = t.step_func_done(() =>
         evaluate(false)
       );
-    }, "Test if video is playing on remote device.");
+    }, "Test that seek() on the local video is reflected on the remote device.");
   </script>
 </html>

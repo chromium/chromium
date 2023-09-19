@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that all event handlers are called.</title>
+  <title>
+    Test that all event handlers are called when a remote playback device is connected
+  </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -30,7 +32,7 @@
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_5");
 
-    async_test((t) => {
+    async_test(t => {
       let onConnectingCalled = false;
       let onConnectCalled = false;
       let onDisconnectCalled = false;
@@ -55,6 +57,6 @@
             assert_true(onDisconnectCalled, "ondisconnect was called");
           })
         );
-    }, "Test that all event handlers are called.");
+    }, "Test that all event handlers are called when a remote playback device is connected.");
   </script>
 </html>

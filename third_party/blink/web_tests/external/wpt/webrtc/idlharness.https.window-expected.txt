@@ -239,7 +239,7 @@ PASS RTCRtpSender interface: existence and properties of interface prototype obj
 PASS RTCRtpSender interface: attribute track
 PASS RTCRtpSender interface: attribute transport
 PASS RTCRtpSender interface: operation getCapabilities(DOMString)
-PASS RTCRtpSender interface: operation setParameters(RTCRtpSendParameters)
+PASS RTCRtpSender interface: operation setParameters(RTCRtpSendParameters, optional RTCSetParameterOptions)
 PASS RTCRtpSender interface: operation getParameters()
 PASS RTCRtpSender interface: operation replaceTrack(MediaStreamTrack?)
 PASS RTCRtpSender interface: operation setStreams(MediaStream...)
@@ -251,8 +251,8 @@ PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sen
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "transport" with the proper type
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "getCapabilities(DOMString)" with the proper type
 PASS RTCRtpSender interface: calling getCapabilities(DOMString) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
-PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "setParameters(RTCRtpSendParameters)" with the proper type
-PASS RTCRtpSender interface: calling setParameters(RTCRtpSendParameters) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
+PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "setParameters(RTCRtpSendParameters, optional RTCSetParameterOptions)" with the proper type
+PASS RTCRtpSender interface: calling setParameters(RTCRtpSendParameters, optional RTCSetParameterOptions) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "getParameters()" with the proper type
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "replaceTrack(MediaStreamTrack?)" with the proper type
 PASS RTCRtpSender interface: calling replaceTrack(MediaStreamTrack?) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError

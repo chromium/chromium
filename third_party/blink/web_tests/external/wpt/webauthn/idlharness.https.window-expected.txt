@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 87 tests; 84 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 90 tests; 86 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial dictionary CredentialCreationOptions: original dictionary defined
@@ -12,6 +12,8 @@ PASS Partial interface PublicKeyCredential[2]: original interface defined
 PASS Partial interface PublicKeyCredential[2]: member names are unique
 PASS Partial interface PublicKeyCredential[3]: original interface defined
 PASS Partial interface PublicKeyCredential[3]: member names are unique
+PASS Partial interface PublicKeyCredential[4]: original interface defined
+PASS Partial interface PublicKeyCredential[4]: member names are unique
 PASS Partial dictionary AuthenticationExtensionsClientInputs: original dictionary defined
 PASS Partial dictionary AuthenticationExtensionsClientInputs: member names are unique
 PASS Partial dictionary AuthenticationExtensionsClientOutputs: original dictionary defined
@@ -57,6 +59,7 @@ PASS PublicKeyCredential interface: operation getClientExtensionResults()
 PASS PublicKeyCredential interface: operation isConditionalMediationAvailable()
 PASS PublicKeyCredential interface: operation toJSON()
 PASS PublicKeyCredential interface: operation isUserVerifyingPlatformAuthenticatorAvailable()
+FAIL PublicKeyCredential interface: operation isPasskeyPlatformAuthenticatorAvailable() assert_own_property: interface object missing static operation expected property "isPasskeyPlatformAuthenticatorAvailable" missing
 FAIL PublicKeyCredential interface: operation parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON) assert_own_property: interface object missing static operation expected property "parseCreationOptionsFromJSON" missing
 FAIL PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON) assert_own_property: interface object missing static operation expected property "parseRequestOptionsFromJSON" missing
 PASS AuthenticatorResponse interface: existence and properties of interface object

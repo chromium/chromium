@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <title>
-    Test that watchAvailability returned true when user selects device.
+    Test that watchAvailability() runs the callback with true when user selects a device
   </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -28,12 +28,12 @@
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_5");
 
-    async_test((t) => {
+    async_test(t => {
       let deviceAvailable = false;
       let button = document.getElementById("prompt-button");
       button.onclick = () => {
         v.remote
-          .watchAvailability(t.step_func((avail) => (deviceAvailable = avail)))
+          .watchAvailability(t.step_func(avail => (deviceAvailable = avail)))
           .then(
             t.step_func(() => {
               v.remote
@@ -51,6 +51,6 @@
             t.unreached_func()
           );
       };
-    }, "Test that watchAvailability returned true when user selects device.");
+    }, "Test that watchAvailability() runs the callback with true when user selects a device.");
   </script>
 </html>

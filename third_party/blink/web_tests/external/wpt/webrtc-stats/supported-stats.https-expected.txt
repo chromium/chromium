@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 251 tests; 243 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 255 tests; 245 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -12,7 +12,6 @@ PASS codec's timestamp
 PASS codec's type
 PASS codec's id
 PASS inbound-rtp's trackIdentifier
-PASS inbound-rtp's kind
 PASS inbound-rtp's mid
 PASS inbound-rtp's remoteId
 PASS inbound-rtp's framesDecoded
@@ -33,6 +32,7 @@ PASS inbound-rtp's totalFreezesDuration
 PASS inbound-rtp's lastPacketReceivedTimestamp
 PASS inbound-rtp's headerBytesReceived
 PASS inbound-rtp's packetsDiscarded
+FAIL inbound-rtp's fecBytesReceived assert_true: Is fecBytesReceived present expected true got false
 PASS inbound-rtp's fecPacketsReceived
 PASS inbound-rtp's fecPacketsDiscarded
 PASS inbound-rtp's bytesReceived
@@ -62,10 +62,13 @@ PASS inbound-rtp's framesAssembledFromMultiplePackets
 PASS inbound-rtp's totalAssemblyTime
 PASS inbound-rtp's retransmittedPacketsReceived
 PASS inbound-rtp's retransmittedBytesReceived
+PASS inbound-rtp's rtxSsrc
+FAIL inbound-rtp's fecSsrc assert_true: Is fecSsrc present expected true got false
 PASS inbound-rtp's packetsReceived
 PASS inbound-rtp's packetsLost
 PASS inbound-rtp's jitter
 PASS inbound-rtp's ssrc
+PASS inbound-rtp's kind
 PASS inbound-rtp's transportId
 PASS inbound-rtp's codecId
 PASS inbound-rtp's timestamp
@@ -78,6 +81,7 @@ PRECONDITION_FAILED outbound-rtp's rid outbound-rtp.rid marked as not testable.
 PASS outbound-rtp's headerBytesSent
 PASS outbound-rtp's retransmittedPacketsSent
 PASS outbound-rtp's retransmittedBytesSent
+PASS outbound-rtp's rtxSsrc
 PASS outbound-rtp's targetBitrate
 PASS outbound-rtp's totalEncodedBytesTarget
 PASS outbound-rtp's frameWidth

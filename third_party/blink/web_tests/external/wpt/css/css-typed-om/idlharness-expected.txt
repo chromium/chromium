@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 539 tests; 480 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 544 tests; 485 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -479,12 +479,17 @@ PASS CSSStyleRule interface: attribute styleMap
 PASS CSS namespace: operation escape(CSSOMString)
 PASS CSS namespace: operation number(double)
 PASS CSS namespace: operation percent(double)
+PASS CSS namespace: operation cap(double)
+PASS CSS namespace: operation ch(double)
 PASS CSS namespace: operation em(double)
 PASS CSS namespace: operation ex(double)
-PASS CSS namespace: operation ch(double)
 PASS CSS namespace: operation ic(double)
-PASS CSS namespace: operation rem(double)
 PASS CSS namespace: operation lh(double)
+PASS CSS namespace: operation rcap(double)
+PASS CSS namespace: operation rch(double)
+PASS CSS namespace: operation rem(double)
+PASS CSS namespace: operation rex(double)
+PASS CSS namespace: operation ric(double)
 PASS CSS namespace: operation rlh(double)
 PASS CSS namespace: operation vw(double)
 PASS CSS namespace: operation vh(double)

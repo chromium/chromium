@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 750 tests; 744 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 756 tests; 750 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -424,15 +424,21 @@ PASS CustomElementRegistry interface: existence and properties of interface obje
 PASS ElementInternals interface: existence and properties of interface object
 PASS VisibilityStateEntry interface: existence and properties of interface object
 FAIL UserActivation interface: existence and properties of interface object assert_false: expected false got true
+PASS ToggleEvent interface: existence and properties of interface object
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransferItemList interface: existence and properties of interface object
 PASS DataTransferItem interface: existence and properties of interface object
 PASS DragEvent interface: existence and properties of interface object
-PASS ToggleEvent interface: existence and properties of interface object
 PASS Window interface: existence and properties of interface object
 PASS BarProp interface: existence and properties of interface object
 PASS Location interface: existence and properties of interface object
 PASS History interface: existence and properties of interface object
+PASS Navigation interface: existence and properties of interface object
+PASS NavigationHistoryEntry interface: existence and properties of interface object
+PASS NavigationTransition interface: existence and properties of interface object
+PASS NavigateEvent interface: existence and properties of interface object
+PASS NavigationDestination interface: existence and properties of interface object
+PASS NavigationCurrentEntryChangeEvent interface: existence and properties of interface object
 PASS PopStateEvent interface: existence and properties of interface object
 PASS HashChangeEvent interface: existence and properties of interface object
 PASS PageTransitionEvent interface: existence and properties of interface object

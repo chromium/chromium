@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that promise is resolved when user selects a device.</title>
+  <title>Test that the Promise returned by prompt() is resolved when user selects a device</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -26,13 +26,13 @@
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_5");
 
-    async_test((t) => {
+    async_test(t => {
       let button = document.getElementById("prompt-button");
       button.onclick = t.step_func_done(() => {
         promise_test(() => {
           return v.remote.prompt();
         }, "Prompt resolves");
       });
-    }, "Test that promise is resolved when user selects a device.");
+    }, "Test that the Promise returned by prompt() is resolved when user selects a device.");
   </script>
 </html>

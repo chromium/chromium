@@ -128,15 +128,15 @@ PASS EncodedAudioChunk interface: attribute type
 PASS EncodedAudioChunk interface: attribute timestamp
 PASS EncodedAudioChunk interface: attribute duration
 PASS EncodedAudioChunk interface: attribute byteLength
-PASS EncodedAudioChunk interface: operation copyTo(BufferSource)
+PASS EncodedAudioChunk interface: operation copyTo(AllowSharedBufferSource)
 PASS EncodedAudioChunk must be primary interface of new EncodedAudioChunk(defaultAudioChunkInit)
 PASS Stringification of new EncodedAudioChunk(defaultAudioChunkInit)
 PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "type" with the proper type
 PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "timestamp" with the proper type
 PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "duration" with the proper type
 PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "byteLength" with the proper type
-PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "copyTo(BufferSource)" with the proper type
-PASS EncodedAudioChunk interface: calling copyTo(BufferSource) on new EncodedAudioChunk(defaultAudioChunkInit) with too few arguments must throw TypeError
+PASS EncodedAudioChunk interface: new EncodedAudioChunk(defaultAudioChunkInit) must inherit property "copyTo(AllowSharedBufferSource)" with the proper type
+PASS EncodedAudioChunk interface: calling copyTo(AllowSharedBufferSource) on new EncodedAudioChunk(defaultAudioChunkInit) with too few arguments must throw TypeError
 PASS EncodedVideoChunk interface: existence and properties of interface object
 PASS EncodedVideoChunk interface object length
 PASS EncodedVideoChunk interface object name
@@ -147,15 +147,15 @@ PASS EncodedVideoChunk interface: attribute type
 PASS EncodedVideoChunk interface: attribute timestamp
 PASS EncodedVideoChunk interface: attribute duration
 PASS EncodedVideoChunk interface: attribute byteLength
-PASS EncodedVideoChunk interface: operation copyTo(BufferSource)
+PASS EncodedVideoChunk interface: operation copyTo(AllowSharedBufferSource)
 PASS EncodedVideoChunk must be primary interface of new EncodedVideoChunk(defaultVideoChunkInit)
 PASS Stringification of new EncodedVideoChunk(defaultVideoChunkInit)
 PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "type" with the proper type
 PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "timestamp" with the proper type
 PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "duration" with the proper type
 PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "byteLength" with the proper type
-PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "copyTo(BufferSource)" with the proper type
-PASS EncodedVideoChunk interface: calling copyTo(BufferSource) on new EncodedVideoChunk(defaultVideoChunkInit) with too few arguments must throw TypeError
+PASS EncodedVideoChunk interface: new EncodedVideoChunk(defaultVideoChunkInit) must inherit property "copyTo(AllowSharedBufferSource)" with the proper type
+PASS EncodedVideoChunk interface: calling copyTo(AllowSharedBufferSource) on new EncodedVideoChunk(defaultVideoChunkInit) with too few arguments must throw TypeError
 PASS AudioData interface: existence and properties of interface object
 PASS AudioData interface object length
 PASS AudioData interface object name
@@ -169,7 +169,7 @@ PASS AudioData interface: attribute numberOfChannels
 PASS AudioData interface: attribute duration
 PASS AudioData interface: attribute timestamp
 PASS AudioData interface: operation allocationSize(AudioDataCopyToOptions)
-PASS AudioData interface: operation copyTo(BufferSource, AudioDataCopyToOptions)
+PASS AudioData interface: operation copyTo(AllowSharedBufferSource, AudioDataCopyToOptions)
 PASS AudioData interface: operation clone()
 PASS AudioData interface: operation close()
 PASS AudioData must be primary interface of make_audio_data(1234, 2, 8000, 100)
@@ -182,8 +182,8 @@ PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit prope
 PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "timestamp" with the proper type
 PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "allocationSize(AudioDataCopyToOptions)" with the proper type
 PASS AudioData interface: calling allocationSize(AudioDataCopyToOptions) on make_audio_data(1234, 2, 8000, 100) with too few arguments must throw TypeError
-PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "copyTo(BufferSource, AudioDataCopyToOptions)" with the proper type
-PASS AudioData interface: calling copyTo(BufferSource, AudioDataCopyToOptions) on make_audio_data(1234, 2, 8000, 100) with too few arguments must throw TypeError
+PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "copyTo(AllowSharedBufferSource, AudioDataCopyToOptions)" with the proper type
+PASS AudioData interface: calling copyTo(AllowSharedBufferSource, AudioDataCopyToOptions) on make_audio_data(1234, 2, 8000, 100) with too few arguments must throw TypeError
 PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "clone()" with the proper type
 PASS AudioData interface: make_audio_data(1234, 2, 8000, 100) must inherit property "close()" with the proper type
 PASS VideoFrame interface: existence and properties of interface object
@@ -204,7 +204,7 @@ PASS VideoFrame interface: attribute timestamp
 PASS VideoFrame interface: attribute colorSpace
 FAIL VideoFrame interface: operation metadata() assert_own_property: interface prototype object missing non-static operation expected property "metadata" missing
 PASS VideoFrame interface: operation allocationSize(optional VideoFrameCopyToOptions)
-PASS VideoFrame interface: operation copyTo(BufferSource, optional VideoFrameCopyToOptions)
+PASS VideoFrame interface: operation copyTo(AllowSharedBufferSource, optional VideoFrameCopyToOptions)
 PASS VideoFrame interface: operation clone()
 PASS VideoFrame interface: operation close()
 PASS VideoFrame must be primary interface of new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33})
@@ -222,8 +222,8 @@ PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 1
 FAIL VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "metadata()" with the proper type assert_inherits: property "metadata" not found in prototype chain
 PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "allocationSize(optional VideoFrameCopyToOptions)" with the proper type
 PASS VideoFrame interface: calling allocationSize(optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) with too few arguments must throw TypeError
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "copyTo(BufferSource, optional VideoFrameCopyToOptions)" with the proper type
-PASS VideoFrame interface: calling copyTo(BufferSource, optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) with too few arguments must throw TypeError
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "copyTo(AllowSharedBufferSource, optional VideoFrameCopyToOptions)" with the proper type
+PASS VideoFrame interface: calling copyTo(AllowSharedBufferSource, optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) with too few arguments must throw TypeError
 PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "clone()" with the proper type
 PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "close()" with the proper type
 PASS VideoColorSpace interface: existence and properties of interface object

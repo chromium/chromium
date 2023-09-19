@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
   <title>
-    Test that watchAvailability returned false when there is no device for the
-    user to select.
+    Test that watchAvailability() runs the callback with false when there is no device for the user to select
   </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -29,12 +28,12 @@
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_5");
 
-    async_test((t) => {
+    async_test(t => {
       let deviceAvailable = false;
       let button = document.getElementById("prompt-button");
       button.onclick = function () {
         v.remote
-          .watchAvailability(t.step_func((avail) => (deviceAvailable = avail)))
+          .watchAvailability(t.step_func(avail => (deviceAvailable = avail)))
           .then(
             t.step_func(() => {
               promise_rejects_js(t, NotFoundError, v.remote.prompt());
@@ -43,6 +42,6 @@
             t.unreached_func()
           );
       };
-    }, "Test that watchAvailability returned false when there is no device for the user to select.");
+    }, "Test that watchAvailability() runs the callback with false when there is no device for the user to select.");
   </script>
 </html>

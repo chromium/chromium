@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1425 tests; 1394 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -827,6 +827,7 @@ PASS CustomElementRegistry interface: existence and properties of interface prot
 PASS CustomElementRegistry interface: existence and properties of interface prototype object's @@unscopables property
 PASS CustomElementRegistry interface: operation define(DOMString, CustomElementConstructor, optional ElementDefinitionOptions)
 PASS CustomElementRegistry interface: operation get(DOMString)
+PASS CustomElementRegistry interface: operation getName(CustomElementConstructor)
 PASS CustomElementRegistry interface: operation whenDefined(DOMString)
 PASS CustomElementRegistry interface: operation upgrade(Node)
 PASS ElementInternals interface: existence and properties of interface object
@@ -863,6 +864,18 @@ PASS UserActivation interface: existence and properties of interface prototype o
 PASS UserActivation interface: existence and properties of interface prototype object's @@unscopables property
 PASS UserActivation interface: attribute hasBeenActive
 PASS UserActivation interface: attribute isActive
+PASS ToggleEvent interface: existence and properties of interface object
+PASS ToggleEvent interface object length
+PASS ToggleEvent interface object name
+PASS ToggleEvent interface: existence and properties of interface prototype object
+PASS ToggleEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS ToggleEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS ToggleEvent interface: attribute oldState
+PASS ToggleEvent interface: attribute newState
+PASS ToggleEvent must be primary interface of new ToggleEvent("beforetoggle")
+PASS Stringification of new ToggleEvent("beforetoggle")
+PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "oldState" with the proper type
+PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "newState" with the proper type
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name
@@ -906,18 +919,6 @@ PASS DragEvent interface: existence and properties of interface prototype object
 PASS DragEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS DragEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS DragEvent interface: attribute dataTransfer
-PASS ToggleEvent interface: existence and properties of interface object
-PASS ToggleEvent interface object length
-PASS ToggleEvent interface object name
-PASS ToggleEvent interface: existence and properties of interface prototype object
-PASS ToggleEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS ToggleEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS ToggleEvent interface: attribute oldState
-PASS ToggleEvent interface: attribute newState
-PASS ToggleEvent must be primary interface of new ToggleEvent("beforetoggle")
-PASS Stringification of new ToggleEvent("beforetoggle")
-PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "oldState" with the proper type
-PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "newState" with the proper type
 PASS BarProp interface: existence and properties of interface object
 PASS BarProp interface object length
 PASS BarProp interface object name
@@ -976,6 +977,87 @@ PASS History interface: window.history must inherit property "pushState(any, DOM
 PASS History interface: calling pushState(any, DOMString, optional USVString?) on window.history with too few arguments must throw TypeError
 PASS History interface: window.history must inherit property "replaceState(any, DOMString, optional USVString?)" with the proper type
 PASS History interface: calling replaceState(any, DOMString, optional USVString?) on window.history with too few arguments must throw TypeError
+PASS Navigation interface: existence and properties of interface object
+PASS Navigation interface object length
+PASS Navigation interface object name
+PASS Navigation interface: existence and properties of interface prototype object
+PASS Navigation interface: existence and properties of interface prototype object's "constructor" property
+PASS Navigation interface: existence and properties of interface prototype object's @@unscopables property
+PASS Navigation interface: operation entries()
+PASS Navigation interface: attribute currentEntry
+PASS Navigation interface: operation updateCurrentEntry(NavigationUpdateCurrentEntryOptions)
+PASS Navigation interface: attribute transition
+PASS Navigation interface: attribute canGoBack
+PASS Navigation interface: attribute canGoForward
+PASS Navigation interface: operation navigate(USVString, optional NavigationNavigateOptions)
+PASS Navigation interface: operation reload(optional NavigationReloadOptions)
+PASS Navigation interface: operation traverseTo(DOMString, optional NavigationOptions)
+PASS Navigation interface: operation back(optional NavigationOptions)
+PASS Navigation interface: operation forward(optional NavigationOptions)
+PASS Navigation interface: attribute onnavigate
+PASS Navigation interface: attribute onnavigatesuccess
+PASS Navigation interface: attribute onnavigateerror
+PASS Navigation interface: attribute oncurrententrychange
+PASS NavigationHistoryEntry interface: existence and properties of interface object
+PASS NavigationHistoryEntry interface object length
+PASS NavigationHistoryEntry interface object name
+PASS NavigationHistoryEntry interface: existence and properties of interface prototype object
+PASS NavigationHistoryEntry interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigationHistoryEntry interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigationHistoryEntry interface: attribute url
+PASS NavigationHistoryEntry interface: attribute key
+PASS NavigationHistoryEntry interface: attribute id
+PASS NavigationHistoryEntry interface: attribute index
+PASS NavigationHistoryEntry interface: attribute sameDocument
+PASS NavigationHistoryEntry interface: operation getState()
+PASS NavigationHistoryEntry interface: attribute ondispose
+PASS NavigationTransition interface: existence and properties of interface object
+PASS NavigationTransition interface object length
+PASS NavigationTransition interface object name
+PASS NavigationTransition interface: existence and properties of interface prototype object
+PASS NavigationTransition interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigationTransition interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigationTransition interface: attribute navigationType
+PASS NavigationTransition interface: attribute from
+PASS NavigationTransition interface: attribute finished
+PASS NavigateEvent interface: existence and properties of interface object
+PASS NavigateEvent interface object length
+PASS NavigateEvent interface object name
+PASS NavigateEvent interface: existence and properties of interface prototype object
+PASS NavigateEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigateEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigateEvent interface: attribute navigationType
+PASS NavigateEvent interface: attribute destination
+PASS NavigateEvent interface: attribute canIntercept
+PASS NavigateEvent interface: attribute userInitiated
+PASS NavigateEvent interface: attribute hashChange
+PASS NavigateEvent interface: attribute signal
+PASS NavigateEvent interface: attribute formData
+PASS NavigateEvent interface: attribute downloadRequest
+PASS NavigateEvent interface: attribute info
+PASS NavigateEvent interface: attribute hasUAVisualTransition
+PASS NavigateEvent interface: operation intercept(optional NavigationInterceptOptions)
+PASS NavigateEvent interface: operation scroll()
+PASS NavigationDestination interface: existence and properties of interface object
+PASS NavigationDestination interface object length
+PASS NavigationDestination interface object name
+PASS NavigationDestination interface: existence and properties of interface prototype object
+PASS NavigationDestination interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigationDestination interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigationDestination interface: attribute url
+PASS NavigationDestination interface: attribute key
+PASS NavigationDestination interface: attribute id
+PASS NavigationDestination interface: attribute index
+PASS NavigationDestination interface: attribute sameDocument
+PASS NavigationDestination interface: operation getState()
+PASS NavigationCurrentEntryChangeEvent interface: existence and properties of interface object
+PASS NavigationCurrentEntryChangeEvent interface object length
+PASS NavigationCurrentEntryChangeEvent interface object name
+PASS NavigationCurrentEntryChangeEvent interface: existence and properties of interface prototype object
+PASS NavigationCurrentEntryChangeEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigationCurrentEntryChangeEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigationCurrentEntryChangeEvent interface: attribute navigationType
+PASS NavigationCurrentEntryChangeEvent interface: attribute from
 PASS PopStateEvent interface: existence and properties of interface object
 PASS PopStateEvent interface object length
 PASS PopStateEvent interface object name
@@ -983,9 +1065,11 @@ PASS PopStateEvent interface: existence and properties of interface prototype ob
 PASS PopStateEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS PopStateEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS PopStateEvent interface: attribute state
+PASS PopStateEvent interface: attribute hasUAVisualTransition
 PASS PopStateEvent must be primary interface of new PopStateEvent("popstate", { data: {} })
 PASS Stringification of new PopStateEvent("popstate", { data: {} })
 PASS PopStateEvent interface: new PopStateEvent("popstate", { data: {} }) must inherit property "state" with the proper type
+PASS PopStateEvent interface: new PopStateEvent("popstate", { data: {} }) must inherit property "hasUAVisualTransition" with the proper type
 PASS HashChangeEvent interface: existence and properties of interface object
 PASS HashChangeEvent interface object length
 PASS HashChangeEvent interface object name

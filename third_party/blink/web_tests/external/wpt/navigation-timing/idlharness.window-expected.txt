@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 146 tests; 145 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 148 tests; 147 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Performance: original interface defined
@@ -31,6 +31,7 @@ PASS PerformanceNavigationTiming interface: attribute loadEventStart
 PASS PerformanceNavigationTiming interface: attribute loadEventEnd
 PASS PerformanceNavigationTiming interface: attribute type
 PASS PerformanceNavigationTiming interface: attribute redirectCount
+PASS PerformanceNavigationTiming interface: attribute criticalCHRestart
 PASS PerformanceNavigationTiming interface: operation toJSON()
 PASS PerformanceNavigationTiming must be primary interface of performance.getEntriesByType("navigation")[0]
 PASS Stringification of performance.getEntriesByType("navigation")[0]
@@ -44,6 +45,7 @@ PASS PerformanceNavigationTiming interface: performance.getEntriesByType("naviga
 PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "loadEventEnd" with the proper type
 PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "type" with the proper type
 PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "redirectCount" with the proper type
+PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "criticalCHRestart" with the proper type
 PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "toJSON()" with the proper type
 FAIL PerformanceNavigationTiming interface: default toJSON operation on performance.getEntriesByType("navigation")[0] Type RenderBlockingStatusType not found
 PASS PerformanceTiming interface: existence and properties of interface object

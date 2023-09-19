@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1025 tests; 1018 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1027 tests; 1019 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -185,6 +185,7 @@ PASS Window interface: existence and properties of interface prototype object's 
 PASS Window interface: attribute self
 PASS Window interface: attribute name
 PASS Window interface: attribute history
+FAIL Window interface: attribute navigation assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set navigation() { [native code] }"
 PASS Window interface: attribute customElements
 PASS Window interface: attribute locationbar
 PASS Window interface: attribute menubar
@@ -340,6 +341,7 @@ PASS Window interface: window must have own property "document"
 PASS Window interface: window must inherit property "name" with the proper type
 PASS Window interface: window must have own property "location"
 PASS Window interface: window must inherit property "history" with the proper type
+PASS Window interface: window must inherit property "navigation" with the proper type
 PASS Window interface: window must inherit property "customElements" with the proper type
 PASS Window interface: window must inherit property "locationbar" with the proper type
 PASS Window interface: window must inherit property "menubar" with the proper type

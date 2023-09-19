@@ -116,6 +116,10 @@
     fuzzy_test_valid_color(`rgb(from rgb(none none none / none) r g b / alpha)`, `color(srgb 0 0 0 / 0)`);
     fuzzy_test_valid_color(`rgb(from rgb(20% none 60%) r g b)`, `color(srgb 0.2 0 0.6)`);
     fuzzy_test_valid_color(`rgb(from rgb(20% 40% 60% / none) r g b / alpha)`, `color(srgb 0.2 0.4 0.6 / 0)`);
+
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`rgb(from currentColor r g b)`, `rgb(from currentColor r g b)`);
+
     // hsl(from ...)
 
     // Testing no modifications.
@@ -191,6 +195,9 @@
     fuzzy_test_valid_color(`hsl(from hsl(120deg 20% 50% / none) h s l / alpha)`, `color(srgb 0.4 0.6 0.4 / 0)`);
     fuzzy_test_valid_color(`hsl(from hsl(none 20% 50% / .5) h s l / alpha)`, `color(srgb 0.6 0.4 0.4 / 0.5)`);
 
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`hsl(from currentColor h s l)`, `hsl(from currentColor h s l)`);
+
     // hwb(from ...)
 
     // Testing no modifications.
@@ -261,6 +268,9 @@
     fuzzy_test_valid_color(`hwb(from hwb(120deg 20% 50% / none) h w b / alpha)`, `color(srgb 0.2 0.5 0.2 / 0)`);
     fuzzy_test_valid_color(`hwb(from hwb(none 20% 50% / .5) h w b / alpha)`, `color(srgb 0.5 0.2 0.2 / 0.5)`);
 
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`hwb(from currentColor h w b)`, `hwb(from currentColor h w b)`);
+
     // lab()
 
     // Testing no modifications.
@@ -324,6 +334,9 @@
     fuzzy_test_valid_color(`lab(from lab(25 none 50) l a b)`, `lab(25 0 50)`);
     fuzzy_test_valid_color(`lab(from lab(25 20 50 / none) l a b / alpha)`, `lab(25 20 50 / 0)`);
 
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`lab(from currentColor l a b)`, `lab(from currentColor l a b)`);
+
     // oklab()
 
     // Testing no modifications.
@@ -386,6 +399,9 @@
     fuzzy_test_valid_color(`oklab(from oklab(none none none / none) l a b / alpha)`, `oklab(0 0 0 / 0)`);
     fuzzy_test_valid_color(`oklab(from oklab(0.25 none 0.5) l a b)`, `oklab(0.25 0 0.5)`);
     fuzzy_test_valid_color(`oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)`, `oklab(0.25 0.2 0.5 / 0)`);
+
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`oklab(from currentColor l a b)`, `oklab(from currentColor l a b)`);
 
     // lch()
 
@@ -458,6 +474,9 @@
     fuzzy_test_valid_color(`lch(from lch(0.7 none 30) l c h)`,                                          `lch(0.7 0 30)`);
     fuzzy_test_valid_color(`lch(from lch(0.7 45 30 / none) l c h / alpha)`,                             `lch(0.7 45 30 / 0)`);
 
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`lch(from currentColor) l c h)`, `lch(from currentColor) l c h)`);
+
     // oklch()
 
     // Testing no modifications.
@@ -529,6 +548,9 @@
     fuzzy_test_valid_color(`oklch(from oklch(none none none / none) l c h / alpha)`,                        `oklch(0 0 0 / 0)`);
     fuzzy_test_valid_color(`oklch(from oklch(0.7 none 30) l c h)`,                                          `oklch(0.7 0 30)`);
     fuzzy_test_valid_color(`oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)`,                             `oklch(0.7 0.45 30 / 0)`);
+
+    // Testing with 'currentColor'
+    fuzzy_test_valid_color(`oklch(from currentColor l c h)`, `oklch(from currentColor l c h)`);
 
     for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
         // Testing no modifications.
@@ -615,6 +637,10 @@
         fuzzy_test_valid_color(`color(from color(${colorSpace} none none none / none) ${colorSpace} r g b / alpha)`,            `color(${colorSpace} 0 0 0 / 0)`);
         fuzzy_test_valid_color(`color(from color(${colorSpace} 0.7 none 0.3) ${colorSpace} r g b)`,                             `color(${colorSpace} 0.7 0 0.3)`);
         fuzzy_test_valid_color(`color(from color(${colorSpace} 0.7 0.5 0.3 / none) ${colorSpace} r g b / alpha)`,               `color(${colorSpace} 0.7 0.5 0.3 / 0)`);
+
+        // Testing with 'currentColor'
+        fuzzy_test_valid_color(`color(from currentColor ${colorSpace} r g b)`,                                                  `color(from currentColor ${colorSpace} r g b)`);
+
     }
 
     for (const colorSpace of [ "xyz", "xyz-d50", "xyz-d65" ]) {
@@ -675,6 +701,9 @@
         fuzzy_test_valid_color(`color(from color(${colorSpace} none none none / none) ${colorSpace} x y z / alpha)`,            `color(${resultColorSpace} 0 0 0 / 0)`);
         fuzzy_test_valid_color(`color(from color(${colorSpace} 7 none 100) ${colorSpace} x y z)`,                               `color(${resultColorSpace} 7 0 100)`);
         fuzzy_test_valid_color(`color(from color(${colorSpace} 7 -20.5 100 / none) ${colorSpace} x y z / alpha)`,               `color(${resultColorSpace} 7 -20.5 100 / 0)`);
+
+        // Testing with 'currentColor'
+        fuzzy_test_valid_color(`color(from currentColor ${colorSpace} x y z)`,                                                  `color(from currentColor ${colorSpace} x y z)`);
     }
 
     // Spec Examples: https://www.w3.org/TR/css-color-5/#relative-colors

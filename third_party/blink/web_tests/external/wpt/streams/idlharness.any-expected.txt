@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 226 tests; 225 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 229 tests; 226 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -10,6 +10,7 @@ PASS ReadableStream interface object name
 PASS ReadableStream interface: existence and properties of interface prototype object
 PASS ReadableStream interface: existence and properties of interface prototype object's "constructor" property
 PASS ReadableStream interface: existence and properties of interface prototype object's @@unscopables property
+FAIL ReadableStream interface: operation from(any) assert_own_property: interface object missing static operation expected property "from" missing
 PASS ReadableStream interface: attribute locked
 PASS ReadableStream interface: operation cancel(optional any)
 PASS ReadableStream interface: operation getReader(optional ReadableStreamGetReaderOptions)
@@ -19,6 +20,8 @@ PASS ReadableStream interface: operation tee()
 FAIL ReadableStream interface: async iterable<any> Cannot read properties of undefined (reading 'value')
 PASS ReadableStream must be primary interface of new ReadableStream()
 PASS Stringification of new ReadableStream()
+PASS ReadableStream interface: new ReadableStream() must inherit property "from(any)" with the proper type
+FAIL ReadableStream interface: calling from(any) on new ReadableStream() with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "from" missing
 PASS ReadableStream interface: new ReadableStream() must inherit property "locked" with the proper type
 PASS ReadableStream interface: new ReadableStream() must inherit property "cancel(optional any)" with the proper type
 PASS ReadableStream interface: calling cancel(optional any) on new ReadableStream() with too few arguments must throw TypeError
