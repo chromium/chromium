@@ -11,8 +11,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
@@ -158,6 +160,19 @@ public class SurveyThrottlerUnitTest {
         }
         Assert.assertEquals("Numbers should match", 1,
                 mSharedPref.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1));
+    }
+
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
+    public void testCommandLineForceEnableSurvey() {
+        RiggedSurveyThrottler throttler =
+                new RiggedSurveyThrottler(/*randomlySelected=*/false, /*dayOfYear=*/1);
+        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
+                     "Android.Survey.SurveyFilteringResults",
+                     FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT)) {
+            Assert.assertTrue(
+                    "Survey should be enabled by commandline flag.", throttler.canShowSurvey());
+        }
     }
 
     /** Test class used to test the rate limiting logic for {@link SurveyThrottler}. */

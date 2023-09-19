@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.hats;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 @JNINamespace("hats")
 public class SurveyConfig {
+    private static SurveyConfig sConfigForTesting;
     /**
      * Unique key associate with the config.
      */
@@ -55,7 +57,15 @@ public class SurveyConfig {
      */
     @Nullable
     public static SurveyConfig get(String trigger) {
+        if (sConfigForTesting != null && sConfigForTesting.mTrigger.equals(trigger)) {
+            return sConfigForTesting;
+        }
         return Holder.getInstance().getSurveyConfig(trigger);
+    }
+
+    static void setSurveyConfigForTesting(SurveyConfig config) {
+        sConfigForTesting = config;
+        ResettersForTesting.register(() -> sConfigForTesting = null);
     }
 
     /** Clear all the initialized configs. */

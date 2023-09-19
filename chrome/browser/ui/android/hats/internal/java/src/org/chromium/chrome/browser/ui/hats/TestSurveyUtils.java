@@ -46,6 +46,16 @@ public class TestSurveyUtils {
     public static final String TEST_TRIGGER_ID_FOO = "test_trigger_id_foo";
 
     /**
+     * Assume a test SurveyConfig exists for trigger with given PSD. Use to bypass survey config
+     * parsing from native.
+     */
+    public static void setTestSurveyConfigForTrigger(
+            String trigger, String[] psdBitFields, String[] psdStringFields) {
+        SurveyConfig.setSurveyConfigForTesting(new SurveyConfig(
+                trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
+    }
+
+    /**
      * Create a test-only survey component. In test environment:
      *  - The survey throttler check will be ignored and always pass.
      *  - Crash upload will be allowed all the time.
