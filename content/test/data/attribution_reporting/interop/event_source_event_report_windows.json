@@ -103,27 +103,25 @@
         "payload": {
            "attribution_destination": "https://destination.test",
            "randomized_trigger_rate": 0.0000291,
-           // 25200 s = 21600 s + 1 h (base delay).
-           "scheduled_report_time": "25200",
+           "scheduled_report_time": "21600",
            "source_event_id": "123",
            "source_type": "event",
            "trigger_data": "0"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "25200000"
+        "report_time": "21600000"
       },
       {
         "payload": {
            "attribution_destination": "https://destination.test",
            "randomized_trigger_rate": 0.0000291,
-           // 46800 s = 43200 s + 1 h (base delay).
-           "scheduled_report_time": "46800",
+           "scheduled_report_time": "43200",
            "source_event_id": "123",
            "source_type": "event",
            "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "46800000"
+        "report_time": "43200000"
       }
     ],
     "verbose_debug_reports": [

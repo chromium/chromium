@@ -193,41 +193,38 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0008051,
-          // 90000 s = 86400 s + 1 h (base delay).
-          "scheduled_report_time": "90000",
+          "scheduled_report_time": "86400",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "90000000"
+        "report_time": "86400000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0008051,
-          // 1299600 s = 1296000 s + 1 h (base delay).
-          "scheduled_report_time": "1299600",
+          "scheduled_report_time": "1296000",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "2"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1299600000"
+        "report_time": "1296000000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0001372,
-          // 7201 s = 3600 s (rounded window) + 1 h (base delay) + 1 s (source
-          // timestamp).
-          "scheduled_report_time": "7201",
+          // 3601 s = 3600 s (rounded window) + 1 s (source timestamp).
+          "scheduled_report_time": "3601",
           "source_event_id": "456",
           "source_type": "navigation",
           "trigger_data": "4"
         },
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "7201000"
+        "report_time": "3601000"
       }
     ],
     "verbose_debug_reports": [

@@ -15,7 +15,6 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 constexpr base::TimeDelta kWindowTinyOffset = base::Milliseconds(1);
 
 }  // namespace
@@ -28,8 +27,8 @@ base::TimeDelta ExpiryDeadline(base::Time source_time,
 
 base::Time LastTriggerTimeForReportTime(base::Time report_time) {
   // kWindowTinyOffset is needed as the window is not selected right at
-  // report_time - kWindowDeadlineOffset.
-  return report_time - kWindowDeadlineOffset - kWindowTinyOffset;
+  // report_time.
+  return report_time - kWindowTinyOffset;
 }
 
 std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {

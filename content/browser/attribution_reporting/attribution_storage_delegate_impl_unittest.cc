@@ -134,7 +134,7 @@ TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time source_time = base::Time::Now();
   const AttributionReport report =
       GetReport(source_time, /*trigger_time=*/source_time);
-  EXPECT_EQ(source_time + kDefaultFirstWindow + base::Hours(1),
+  EXPECT_EQ(source_time + kDefaultFirstWindow,
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -146,7 +146,7 @@ TEST(AttributionStorageDelegateImplTest,
   base::Time trigger_time =
       source_time + kDefaultFirstWindow - base::Minutes(1);
   const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + kDefaultFirstWindow + base::Hours(1),
+  EXPECT_EQ(source_time + kDefaultFirstWindow,
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -161,7 +161,7 @@ TEST(AttributionStorageDelegateImplTest,
   base::Time trigger_time =
       source_time + kDefaultFirstWindow + base::Minutes(1);
   const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + kDefaultSecondWindow + base::Hours(1),
+  EXPECT_EQ(source_time + kDefaultSecondWindow,
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -175,7 +175,7 @@ TEST(AttributionStorageDelegateImplTest,
   // Set the impression to expire before the first window.
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Hours(2));
-  EXPECT_EQ(source_time + base::Hours(3),
+  EXPECT_EQ(source_time + base::Hours(2),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -190,7 +190,7 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Days(4));
 
-  EXPECT_EQ(source_time + base::Days(4) + base::Hours(1),
+  EXPECT_EQ(source_time + base::Days(4),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -205,8 +205,7 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Days(9));
 
-  // The expiry window is reported one hour after expiry time.
-  EXPECT_EQ(source_time + base::Days(9) + base::Hours(1),
+  EXPECT_EQ(source_time + base::Days(9),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.GetStoredSource()->event_report_windows(), source_time,
                 report.attribution_info().time));
@@ -303,11 +302,10 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
   constexpr base::TimeDelta kExpiry = base::Days(9);
 
   constexpr base::Time kEarlyReportTime1 =
-      kImpressionTime + kDefaultFirstWindow + base::Hours(1);
+      kImpressionTime + kDefaultFirstWindow;
   constexpr base::Time kEarlyReportTime2 =
-      kImpressionTime + kDefaultSecondWindow + base::Hours(1);
-  constexpr base::Time kExpiryReportTime =
-      kImpressionTime + kExpiry + base::Hours(1);
+      kImpressionTime + kDefaultSecondWindow;
+  constexpr base::Time kExpiryReportTime = kImpressionTime + kExpiry;
 
   const struct {
     SourceType source_type;
@@ -325,8 +323,7 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 1,
           .expected = {{
               .trigger_data = 0,
-              .trigger_time =
-                  kExpiryReportTime - base::Hours(1) - base::Milliseconds(1),
+              .trigger_time = kExpiryReportTime - base::Milliseconds(1),
               .report_time = kExpiryReportTime,
           }},
       },
@@ -335,8 +332,7 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 2,
           .expected = {{
               .trigger_data = 1,
-              .trigger_time =
-                  kExpiryReportTime - base::Hours(1) - base::Milliseconds(1),
+              .trigger_time = kExpiryReportTime - base::Milliseconds(1),
               .report_time = kExpiryReportTime,
           }},
       },
@@ -351,8 +347,7 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 20,
           .expected = {{
               .trigger_data = 3,
-              .trigger_time =
-                  kEarlyReportTime1 - base::Hours(1) - base::Milliseconds(1),
+              .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
               .report_time = kEarlyReportTime1,
           }},
       },
@@ -363,14 +358,12 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
                   {
                       .trigger_data = 2,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },
@@ -382,14 +375,12 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
                   {
                       .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },
@@ -401,20 +392,17 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
               {
                   {
                       .trigger_data = 1,
-                      .trigger_time = kExpiryReportTime - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kExpiryReportTime - base::Milliseconds(1),
                       .report_time = kExpiryReportTime,
                   },
                   {
                       .trigger_data = 6,
-                      .trigger_time = kEarlyReportTime2 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime2 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime2,
                   },
                   {
                       .trigger_data = 7,
-                      .trigger_time = kEarlyReportTime1 - base::Hours(1) -
-                                      base::Milliseconds(1),
+                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
                       .report_time = kEarlyReportTime1,
                   },
               },

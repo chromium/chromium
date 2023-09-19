@@ -116,13 +116,13 @@
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0000208,
-          "scheduled_report_time": "176402",
+          "scheduled_report_time": "172802",
           "source_event_id": "456",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "176402000"
+        "report_time": "172802000"
       }
     ],
     "verbose_debug_reports": [
@@ -131,7 +131,7 @@
           "body": {
             "attribution_destination": "https://destination.test",
             "randomized_trigger_rate": 8e-7,
-            "scheduled_report_time": "176400",
+            "scheduled_report_time": "172800",
             "source_event_id": "123",
             "source_type": "navigation",
             "trigger_data": "2"
@@ -146,7 +146,7 @@
            "body": {
               "attribution_destination": "https://destination2.test",
               "randomized_trigger_rate": 0.0000208,
-              "scheduled_report_time": "176402",
+              "scheduled_report_time": "172802",
               "source_event_id": "456",
               "source_type": "navigation",
               "trigger_data": "4"

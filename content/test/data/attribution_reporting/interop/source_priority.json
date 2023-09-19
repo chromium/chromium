@@ -85,13 +85,13 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411974",
+          "scheduled_report_time": "1643408374",
           "source_event_id": "456",
           "source_type": "navigation",
           "trigger_data": "7"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411974000"
+        "report_time": "1643408374000"
       }
     ]
   }

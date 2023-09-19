@@ -278,49 +278,49 @@
         "payload": {
           "attribution_destination": [ "https://another-destination.test", "https://destination.test" ],
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "111",
           "source_type": "navigation",
           "trigger_data": "7"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "1643408373000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411977",
+          "scheduled_report_time": "1643408377",
           "source_event_id": "222",
           "source_type": "navigation",
           "trigger_data": "6"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411977000"
+        "report_time": "1643408377000"
       },
       {
         "payload": {
           "attribution_destination": "https://another-destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411979",
+          "scheduled_report_time": "1643408379",
           "source_event_id": "333",
           "source_type": "navigation",
           "trigger_data": "5"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411979000"
+        "report_time": "1643408379000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "1645831181",
+          "scheduled_report_time": "1645827581",
           "source_event_id": "444",
           "source_type": "event",
           "trigger_data": "1"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1645831181000"
+        "report_time": "1645827581000"
       }
     ],
     "verbose_debug_reports": [
