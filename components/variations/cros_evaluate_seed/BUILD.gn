@@ -19,6 +19,8 @@ source_set("evaluate_seed_lib") {
     "cros_safe_seed_manager.h",
     "cros_variations_field_trial_creator.cc",
     "cros_variations_field_trial_creator.h",
+    "early_boot_enabled_state_provider.cc",
+    "early_boot_enabled_state_provider.h",
     "early_boot_seed_store.cc",
     "early_boot_seed_store.h",
     "evaluate_seed.cc",
@@ -43,6 +45,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "cros_safe_seed_manager_unittest.cc",
+    "early_boot_enabled_state_provider_unittest.cc",
     "early_boot_seed_store_unittest.cc",
     "evaluate_seed_unittest.cc",
   ]
