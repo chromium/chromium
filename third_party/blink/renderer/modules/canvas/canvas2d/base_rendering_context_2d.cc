@@ -2100,7 +2100,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   validate_and_create_params.default_color_space =
       GetDefaultImageDataColorSpace();
 
-  if (UNLIKELY(!CanCreateCanvas2dResourceProvider() || isContextLost())) {
+  if (UNLIKELY(isContextLost() || !CanCreateCanvas2dResourceProvider())) {
     return ImageData::ValidateAndCreate(
         sw, sh, absl::nullopt, image_data_settings, validate_and_create_params,
         exception_state);
