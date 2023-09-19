@@ -4081,7 +4081,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   )HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(2U, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(3U, GetStyleEngine().StyleForElementCount() - start_count);
 
   CheckAffectedByFlagsForHas(
       "div12",
@@ -4106,7 +4106,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   )HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(2U, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(3U, GetStyleEngine().StyleForElementCount() - start_count);
 
   CheckAffectedByFlagsForHas(
       "div13",

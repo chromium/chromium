@@ -1269,6 +1269,24 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     CheckPseudoHasCacheScope::Context cache_scope_context(&document,
                                                           argument_context);
 
+    // In case that the :has() pseudo class checks a relationship to a sibling
+    // element at fixed distance (e.g. '.a:has(+ .b)') or a sibling subtree at
+    // fixed distance (e.g. '.a:has(+ .b .c)'), set the parent of the :has()
+    // anchor element as ChildrenAffectedByDirectAdjacentRules to indicate
+    // that removing a child from the parent may affect a :has() testing result
+    // on a child of the parent.
+    // (e.g. When we have a style rule '.a:has(+ .b) {}' we always need :has()
+    // invalidation if the preceding element of '.b' is removed)
+    // Please refer the :has() invalidation for element removal:
+    //  - StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval()
+    if (argument_context.AdjacentDistanceLimit() > 0 &&
+        argument_context.AdjacentDistanceFixed()) {
+      if (ContainerNode* parent =
+              has_anchor_element->ParentElementOrShadowRoot()) {
+        parent->SetChildrenAffectedByDirectAdjacentRules();
+      }
+    }
+
     if (update_affected_by_has_flags) {
       SetAffectedByHasFlagsForHasAnchorElement(argument_context,
                                                has_anchor_element);
