@@ -16,6 +16,7 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/root_window_controller.h"
+#include "ash/scalable_iph/scalable_iph_ash_notification_view.h"
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -91,6 +92,8 @@ using BubbleIcon = ::scalable_iph::ScalableIphDelegate::BubbleIcon;
 using scalable_iph::ActionType;
 
 constexpr char kNotificationSourceName[] = "ChromeOS";
+constexpr char kScalableIphNotificationType[] =
+    "scalable_iph_notification_type";
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kButtonIndex = 0;
@@ -155,17 +158,6 @@ message_center::NotifierId GetNotifierId() {
 
 bool IsWallpaperNotification(const NotificationParams& params) {
   return params.image_type == NotificationImageType::kWallpaper;
-}
-
-message_center::NotificationType GetNotificationType(
-    const NotificationParams& params) {
-  switch (params.image_type) {
-    case NotificationImageType::kWallpaper:
-      return message_center::NOTIFICATION_TYPE_CUSTOM;
-    case NotificationImageType::kNoImage:
-      return message_center::NOTIFICATION_TYPE_SIMPLE;
-  }
-  NOTREACHED_NORETURN();
 }
 
 bool IsAppValidForProfile(Profile* profile, const std::string& app_id) {
@@ -310,6 +302,10 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
   app_list_controller_observer_.Observe(app_list_controller);
 
   MessageViewFactory::SetCustomNotificationViewFactory(
+      kScalableIphNotificationType,
+      base::BindRepeating(&ScalableIphAshNotificationView::CreateView));
+
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kWallpaperNotificationType,
       base::BindRepeating(&WallpaperAshNotificationView::CreateWithPreview));
 
@@ -341,6 +337,8 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
 // comment of `ScalableIphDelegate::ShowBubble` for details.
 ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
   // Remove the custom notification view factories.
+  MessageViewFactory::ClearCustomNotificationViewFactory(
+      kScalableIphNotificationType);
   MessageViewFactory::ClearCustomNotificationViewFactory(
       kWallpaperNotificationType);
 }
@@ -442,7 +440,7 @@ void ScalableIphDelegateImpl::ShowNotification(
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
-          GetNotificationType(params), params.notification_id,
+          message_center::NOTIFICATION_TYPE_CUSTOM, params.notification_id,
           base::UTF8ToUTF16(notification_title),
           base::UTF8ToUTF16(notification_text),
           base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
@@ -454,6 +452,8 @@ void ScalableIphDelegateImpl::ShowNotification(
           message_center::SystemNotificationWarningLevel::NORMAL);
   if (IsWallpaperNotification(params)) {
     notification->set_custom_view_type(kWallpaperNotificationType);
+  } else {
+    notification->set_custom_view_type(kScalableIphNotificationType);
   }
   AddOrReplaceNotification(std::move(notification));
 }

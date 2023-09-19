@@ -1,4 +1,5 @@
 include_rules = [
   "+chromeos/ash/components/scalable_iph/buildflags.h",
+  "+chromeos/ash/components/scalable_iph/scalable_iph_constants.h",
   "+chromeos/ash/grit/ash_resources.h",
 ]

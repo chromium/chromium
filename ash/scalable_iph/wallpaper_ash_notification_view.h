@@ -6,7 +6,7 @@
 #define ASH_SCALABLE_IPH_WALLPAPER_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/scalable_iph/scalable_iph_ash_notification_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace message_center {
@@ -24,7 +24,8 @@ class RoundedImageView;
 
 // A customized notification view for scalable IPH that adjusts the notification
 // by showing four preview images for wallpaper.
-class ASH_EXPORT WallpaperAshNotificationView : public AshNotificationView {
+class ASH_EXPORT WallpaperAshNotificationView
+    : public ScalableIphAshNotificationView {
  public:
   METADATA_HEADER(WallpaperAshNotificationView);
 

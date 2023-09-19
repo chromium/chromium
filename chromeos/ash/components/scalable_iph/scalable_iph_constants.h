@@ -9,6 +9,8 @@
 
 namespace scalable_iph {
 
+constexpr char16_t kNotificationSummaryText[] = u"Welcome Tips";
+
 constexpr char kScalableIphDebugHost[] = "scalable-iph-debug";
 constexpr char kScalableIphDebugURL[] =
     "chrome-untrusted://scalable-iph-debug/";

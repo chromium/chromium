@@ -5,6 +5,7 @@
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/scalable_iph/scalable_iph_ash_notification_view.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
@@ -62,7 +63,7 @@ void SetImage(RoundedImageView* image_view, int preview_index) {
 WallpaperAshNotificationView::WallpaperAshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
-    : AshNotificationView(notification, shown_in_popup) {
+    : ScalableIphAshNotificationView(notification, shown_in_popup) {
   UpdateWithNotification(notification);
 }
 
@@ -81,7 +82,7 @@ void WallpaperAshNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
   preview_ = nullptr;
 
-  NotificationViewBase::UpdateWithNotification(notification);
+  ScalableIphAshNotificationView::UpdateWithNotification(notification);
   CreatePreview();
 }
 
@@ -101,7 +102,7 @@ void WallpaperAshNotificationView::CreatePreview() {
   }
 }
 
-BEGIN_METADATA(WallpaperAshNotificationView, AshNotificationView)
+BEGIN_METADATA(WallpaperAshNotificationView, ScalableIphAshNotificationView)
 END_METADATA
 
 }  // namespace ash
