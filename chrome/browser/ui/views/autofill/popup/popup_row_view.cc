@@ -22,16 +22,18 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
 namespace {
 
 // Returns the margin on the left and right of the row.
-int GetHorizontalPadding() {
+int GetHorizontalMargin() {
   return base::FeatureList::IsEnabled(
              features::kAutofillShowAutocompleteDeleteButton)
              ? ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -90,9 +92,12 @@ PopupRowView::PopupRowView(
       strategy_(std::move(strategy)) {
   CHECK(strategy_);
 
+  SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_inside_border_insets(gfx::Insets::VH(0, GetHorizontalPadding()));
 
   auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
     cell.SetOnExitedCallback(
@@ -156,7 +161,7 @@ gfx::RectF PopupRowView::GetCellBounds(CellType cell) const {
   const PopupCellView* view = GetCellView(cell);
   // The view is expected to be present.
   gfx::RectF bounds = gfx::RectF(view->GetBoundsInScreen());
-  bounds.Outset(GetHorizontalPadding());
+  bounds.Outset(GetHorizontalMargin());
   return bounds;
 }
 
