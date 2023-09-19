@@ -180,9 +180,7 @@ CaptureLabelView::CaptureLabelView(
 
   capture_mode_util::SetHighlightBorder(
       this, kCaptureLabelRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
   shadow_->SetRoundedCornerRadius(kCaptureLabelRadius);
 }

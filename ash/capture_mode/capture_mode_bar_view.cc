@@ -102,9 +102,7 @@ CaptureModeBarView::CaptureModeBarView()
 
   capture_mode_util::SetHighlightBorder(
       this, border_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
   shadow_->SetRoundedCornerRadius(border_radius);
 }

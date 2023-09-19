@@ -55,9 +55,7 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code)
 
   capture_mode_util::SetHighlightBorder(
       this, kKeyItemHeight / 2,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1);
+      views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
   shadow_->SetRoundedCornerRadius(kKeyItemHeight / 2);
 }
