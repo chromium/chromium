@@ -36,7 +36,7 @@ TEST_F(HistoryTrackerTest, DebugStateTest) {
   EXPECT_FALSE(tracker_->debug_state());
 }
 
-TEST_F(HistoryTrackerTest, CollelctHistoryTest) {
+TEST_F(HistoryTrackerTest, CollectHistoryTest) {
   ERPHealthData data;
   auto* const enqueue_record =
       data.add_history()->mutable_enqueue_record_call();
@@ -136,6 +136,8 @@ TEST_F(HistoryTrackerTest, ObserversTest) {
                        base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
                                       base::Unretained(&waiter)));
   }
+
+  task_environment_.RunUntilIdle();  // Drain possible unfinished tasks.
 }
 }  // namespace
 }  // namespace reporting

@@ -15,11 +15,11 @@ namespace reporting {
 
 HistoryTracker::HistoryTracker(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-    : sequenced_task_runner_(sequenced_task_runner) {}
-
-HistoryTracker::~HistoryTracker() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    : sequenced_task_runner_(sequenced_task_runner) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+HistoryTracker::~HistoryTracker() = default;
 
 // static
 HistoryTracker* HistoryTracker::Get() {
@@ -29,13 +29,27 @@ HistoryTracker* HistoryTracker::Get() {
 }
 
 void HistoryTracker::AddObserver(HistoryTracker::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_list_.AddObserver(observer);
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](HistoryTracker::Observer* observer) {
+            auto* const tracker = HistoryTracker::Get();
+            DCHECK_CALLED_ON_VALID_SEQUENCE(tracker->sequence_checker_);
+            tracker->observer_list_.AddObserver(observer);
+          },
+          observer));
 }
 
 void HistoryTracker::RemoveObserver(const HistoryTracker::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_list_.RemoveObserver(observer);
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const HistoryTracker::Observer* observer) {
+            auto* const tracker = HistoryTracker::Get();
+            DCHECK_CALLED_ON_VALID_SEQUENCE(tracker->sequence_checker_);
+            tracker->observer_list_.RemoveObserver(observer);
+          },
+          observer));
 }
 
 bool HistoryTracker::debug_state() const {
@@ -50,16 +64,28 @@ void HistoryTracker::set_debug_state(bool state) {
 
 void HistoryTracker::retrieve_data(
     base::OnceCallback<void(const ERPHealthData&)> cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(cb).Run(data_);
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce([]() {
+        auto* const tracker = HistoryTracker::Get();
+        DCHECK_CALLED_ON_VALID_SEQUENCE(tracker->sequence_checker_);
+        return tracker->data_;
+      }),
+      std::move(cb));  // Call cb(tracker->data_) on the current thread.
 }
 
 void HistoryTracker::set_data(ERPHealthData data, base::OnceClosure cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  data_ = std::move(data);
-  std::move(cb).Run();
-  for (const auto& observer : observer_list_) {
-    observer.OnNewData(data_);
-  }
+  sequenced_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](ERPHealthData data) {
+            auto* const tracker = HistoryTracker::Get();
+            DCHECK_CALLED_ON_VALID_SEQUENCE(tracker->sequence_checker_);
+            tracker->data_ = std::move(data);
+            for (const auto& observer : tracker->observer_list_) {
+              observer.OnNewData(tracker->data_);
+            }
+          },
+          std::move(data)),
+      std::move(cb));  // Call cb() on the current thread.
 }
 }  // namespace reporting
