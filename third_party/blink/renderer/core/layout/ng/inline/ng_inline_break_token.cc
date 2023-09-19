@@ -108,8 +108,8 @@ bool NGInlineBreakToken::IsAfterBlockInInline() const {
 
 String NGInlineBreakToken::ToString() const {
   StringBuilder string_builder;
-  string_builder.Append(String::Format(" index:%u offset:%u", StartItemIndex(),
-                                       StartTextOffset()));
+  string_builder.Append(String::Format("NGInlineBreakToken index:%u offset:%u",
+                                       StartItemIndex(), StartTextOffset()));
   if (IsForcedBreak())
     string_builder.Append(" forced");
   return string_builder.ToString();

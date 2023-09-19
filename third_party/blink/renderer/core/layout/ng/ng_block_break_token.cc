@@ -107,10 +107,11 @@ const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
 
 String NGBlockBreakToken::ToString() const {
   StringBuilder string_builder;
-  string_builder.Append("(");
   string_builder.Append(InputNode().ToString());
-  string_builder.Append(")");
   if (is_break_before_) {
+    if (is_forced_break_) {
+      string_builder.Append(" forced");
+    }
     string_builder.Append(" break-before");
   } else {
     string_builder.Append(" sequence:");
@@ -118,6 +119,15 @@ String NGBlockBreakToken::ToString() const {
   }
   if (is_repeated_)
     string_builder.Append(" (repeated)");
+  if (is_caused_by_column_spanner_) {
+    string_builder.Append(" (caused by spanner)");
+  }
+  if (has_seen_all_children_) {
+    string_builder.Append(" (seen all children)");
+  }
+  if (is_at_block_end_) {
+    string_builder.Append(" (at block-end)");
+  }
   string_builder.Append(" consumed:");
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");
