@@ -4,9 +4,11 @@
 
 #include "components/metrics/structured/structured_metrics_service.h"
 
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {
 
@@ -171,6 +173,9 @@ void StructuredMetricsService::InitializeUmaProto(
   if (product != uma_proto.product()) {
     uma_proto.set_product(product);
   }
+
+  SystemProfileProto* system_profile = uma_proto.mutable_system_profile();
+  metrics::MetricsLog::RecordCoreSystemProfile(client_, system_profile);
 }
 
 // static:
@@ -193,6 +198,11 @@ StructuredMetricsService::GetLogStoreLimits() {
       .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
       .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
   };
+}
+
+MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
+    const {
+  return client_;
 }
 
 }  // namespace metrics::structured

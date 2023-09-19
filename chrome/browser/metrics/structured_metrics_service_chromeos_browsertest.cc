@@ -16,6 +16,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
@@ -31,6 +32,10 @@ namespace metrics {
 metrics::structured::StructuredMetricsService* GetSMService() {
   return g_browser_process->GetMetricsServicesManager()
       ->GetStructuredMetricsService();
+}
+
+MetricsServiceClient* GetMetricsServiceClient() {
+  return GetSMService()->GetMetricsServiceClient();
 }
 
 // A helper object for overriding metrics enabled state.
@@ -71,6 +76,32 @@ class StructuredMetricsServiceTestBase : public InProcessBrowserTest {
   }
 
   void Wait() { base::RunLoop().RunUntilIdle(); }
+
+  std::unique_ptr<ChromeUserMetricsExtension> GetStagedLog() {
+    if (!HasUnsentLogs()) {
+      return nullptr;
+    }
+
+    auto* log_store = GetSMService()->reporting_service_->log_store();
+    if (log_store->has_staged_log()) {
+      // For testing purposes, we examine the content of a staged log without
+      // ever sending the log, so discard any previously staged log.
+      log_store->DiscardStagedLog();
+    }
+
+    log_store->StageNextLog();
+    if (!log_store->has_staged_log()) {
+      return nullptr;
+    }
+
+    std::unique_ptr<ChromeUserMetricsExtension> uma_proto =
+        std::make_unique<ChromeUserMetricsExtension>();
+    if (!metrics::DecodeLogDataToProto(log_store->staged_log(),
+                                       uma_proto.get())) {
+      return nullptr;
+    }
+    return uma_proto;
+  }
 };
 
 class TestStructuredMetricsService : public StructuredMetricsServiceTestBase {
@@ -204,6 +235,41 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_FALSE(HasStagedLog());
   EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
   EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
+  auto* sm_service = GetSMService();
+
+  // Enable consent for profile.
+  MetricsConsentOverride metrics_consent(true);
+
+  // Wait for the consent to propagate.
+  Wait();
+
+  // Verify that recording and reporting are enabled.
+  EXPECT_TRUE(sm_service->recording_enabled());
+  EXPECT_TRUE(sm_service->reporting_active());
+
+  Wait();
+
+  // Record an event inorder to build a log.
+  structured::events::v2::test_project_one::TestEventOne()
+      .SetTestMetricOne("metric one")
+      .SetTestMetricTwo(10)
+      .Record();
+
+  Wait();
+
+  // Flush the in-memory events to a staged log.
+  sm_service->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetStagedLog();
+  ASSERT_NE(uma_proto.get(), nullptr);
+
+  // Verify that the SystemProfile has been set appropriately.
+  const SystemProfileProto& system_profile = uma_proto->system_profile();
+  EXPECT_EQ(system_profile.app_version(),
+            GetMetricsServiceClient()->GetVersionString());
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,

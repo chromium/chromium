@@ -52,6 +52,8 @@ class StructuredMetricsService final {
   // Clears all event and log data.
   void Purge();
 
+  MetricsServiceClient* GetMetricsServiceClient() const;
+
   bool reporting_active() const {
     return reporting_service_->reporting_active();
   }
