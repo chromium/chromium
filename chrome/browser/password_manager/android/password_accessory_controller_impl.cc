@@ -255,12 +255,12 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
     autofill::FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
+  authenticator_ = password_client_->GetDeviceAuthenticator();
   if (!ShouldTriggerBiometricReauth(selection)) {
+    authenticator_.reset();
     FillSelection(selection);
     return;
   }
-
-  authenticator_ = password_client_->GetDeviceAuthenticator();
 
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
@@ -616,9 +616,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     return false;
   }
 
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      password_client_->GetDeviceAuthenticator();
-  return password_manager_util::CanUseBiometricAuth(authenticator.get(),
+  return password_manager_util::CanUseBiometricAuth(authenticator_.get(),
                                                     password_client_);
 }
 

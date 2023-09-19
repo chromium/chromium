@@ -976,17 +976,11 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
 
   EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-
-  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
-
-  EXPECT_CALL(*mock_authenticator2.get(),
+  EXPECT_CALL(*mock_authenticator,
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
-  // Expect calls for the same method need to be listed in reverse order.
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
       .RetiresOnSaturation();
@@ -1022,17 +1016,11 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
 
   EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-
-  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
-
-  EXPECT_CALL(*mock_authenticator2.get(),
+  EXPECT_CALL(*mock_authenticator,
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
-  // Expect calls for the same method need to be listed in reverse order.
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
       .RetiresOnSaturation();
@@ -1066,20 +1054,14 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       /*selectable=*/true);
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr = mock_authenticator.get();
 
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometrics)
+  EXPECT_CALL(*mock_authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
-
-  auto mock_authenticator2 = std::make_unique<MockDeviceAuthenticator>();
-  auto* mock_authenticator_ptr2 = mock_authenticator2.get();
-
-  EXPECT_CALL(*mock_authenticator_ptr2,
+  EXPECT_CALL(*mock_authenticator_ptr,
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true));
 
-  // Expect calls for the same method need to be listed in reverse order.
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator2))));
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
       .RetiresOnSaturation();
@@ -1090,7 +1072,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 
-  EXPECT_CALL(*mock_authenticator_ptr2,
+  EXPECT_CALL(*mock_authenticator_ptr,
               Cancel(DeviceAuthRequester::kFallbackSheet));
 }
 
