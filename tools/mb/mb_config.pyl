@@ -1143,6 +1143,7 @@
     },
 
     'tryserver.chromium.chromiumos': {
+      'chromeos-amd64-generic-asan-rel': 'chromeos_amd64-generic_asan_reclient',
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
       # and two kevin bots when the PFQ has it enabled.
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
@@ -1160,7 +1161,6 @@
       'gpu-fyi-try-chromeos-skylab-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
       'lacros-amd64-generic-rel-skylab': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient',
-      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
@@ -2197,10 +2197,6 @@
 
     'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on', 'is_skylab',
-    ],
-
-    'chromeos_amd64-generic_lacros_rel_fyi': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel_reclient': [

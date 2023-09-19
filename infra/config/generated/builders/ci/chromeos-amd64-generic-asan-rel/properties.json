@@ -42,6 +42,12 @@
           "builder": "chromeos-amd64-generic-asan-rel",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "chromeos-amd64-generic-asan-rel",
+          "group": "tryserver.chromium.chromiumos"
+        }
       ]
     }
   },

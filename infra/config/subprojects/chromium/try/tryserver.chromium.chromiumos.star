@@ -34,6 +34,13 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "chromeos-amd64-generic-asan-rel",
+    mirrors = [
+        "ci/chromeos-amd64-generic-asan-rel",
+    ],
+)
+
+try_.builder(
     name = "chromeos-amd64-generic-cfi-thin-lto-rel",
     mirrors = [
         "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
@@ -171,34 +178,6 @@ try_.builder(
             gs_bucket = "chromium-try-skylab",
         ),
     ),
-)
-
-try_.builder(
-    name = "lacros-amd64-generic-rel-skylab-fyi",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_platform = "chromeos",
-            target_cros_boards = "eve",
-            cros_boards_with_qemu_images = "amd64-generic",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "gs://lacros-amd64-generic-rel-skylab-try",
-        ),
-    ),
-    builderless = not settings.is_main,
-    main_list_view = "try",
 )
 
 try_.builder(
