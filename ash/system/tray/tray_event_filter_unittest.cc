@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
-#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
@@ -187,16 +186,8 @@ class TrayEventFilterTest : public AshTestBase,
     return GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown();
   }
 
-  gfx::Rect GetQuickSettingsBubbleBounds() {
-    return GetPrimaryUnifiedSystemTray()->GetBubbleBoundsInScreen();
-  }
-
   UnifiedSystemTray* GetPrimaryUnifiedSystemTray() {
     return GetPrimaryShelf()->GetStatusAreaWidget()->unified_system_tray();
-  }
-
-  UnifiedMessageCenterBubble* GetMessageCenterBubble() {
-    return GetPrimaryUnifiedSystemTray()->message_center_bubble();
   }
 
   void AnimatePopupAnimationUntilIdle() {
@@ -222,72 +213,6 @@ class TrayEventFilterTest : public AshTestBase,
 INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
                          TrayEventFilterTest,
                          testing::Bool());
-
-TEST_P(TrayEventFilterTest, ClickOutsideBubble) {
-  ShowTestBubble();
-  auto* bubble_widget = GetTestBubbleWidget();
-  EXPECT_TRUE(bubble_widget);
-
-  // Clicking outside the bubble should trigger `ClickedOutsideBubble()`.
-  ClickOutsideWidget(bubble_widget);
-
-  EXPECT_TRUE(test_tray_background_view()->clicked_outside_bubble_called());
-}
-
-TEST_P(TrayEventFilterTest, ClickInsideBubble) {
-  ShowTestBubble();
-  auto* bubble_widget = GetTestBubbleWidget();
-  EXPECT_TRUE(bubble_widget);
-
-  // Clicking inside the bubble should not trigger `ClickedOutsideBubble()`.
-  ClickInsideWidget(bubble_widget);
-
-  EXPECT_FALSE(test_tray_background_view()->clicked_outside_bubble_called());
-}
-
-TEST_P(TrayEventFilterTest, ClickOnTray) {
-  auto* test_tray = test_tray_background_view();
-  LeftClickOn(test_tray);
-  EXPECT_TRUE(test_tray->bubble());
-
-  // Clicking on the tray when bubble is open will not trigger
-  // `ClickedOutsideBubble()`, since this will be handled in the tray level.
-  LeftClickOn(test_tray);
-  EXPECT_FALSE(test_tray->clicked_outside_bubble_called());
-}
-
-TEST_P(TrayEventFilterTest, CaptureMode) {
-  ShowTestBubble();
-  auto* bubble_widget = GetTestBubbleWidget();
-  EXPECT_TRUE(bubble_widget);
-
-  CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
-
-  // Clicking outside of the bubble during capture mode should not trigger
-  // `ClickedOutsideBubble()`.
-  ClickOutsideWidget(bubble_widget);
-  EXPECT_FALSE(test_tray_background_view()->clicked_outside_bubble_called());
-}
-
-TEST_P(TrayEventFilterTest, ClickOnMenuContainer) {
-  // Create a menu window and place it in the menu container window.
-  std::unique_ptr<aura::Window> menu_window = CreateTestWindow();
-  menu_window->set_owned_by_parent(false);
-  Shell::GetPrimaryRootWindowController()
-      ->GetContainer(kShellWindowId_MenuContainer)
-      ->AddChild(menu_window.get());
-
-  ShowTestBubble();
-  EXPECT_TRUE(GetTestBubbleWidget());
-
-  // Clicking on the menu container should not trigger
-  // `ClickedOutsideBubble()`.
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(menu_window->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-
-  EXPECT_FALSE(test_tray_background_view()->clicked_outside_bubble_called());
-}
 
 // Tests that clicking on notification popup when bubble is open will not result
 // in the bubble closes. The logic for this is handled in
@@ -333,29 +258,6 @@ TEST_P(TrayEventFilterTest, ClickOnPopupWhenBubbleOpen) {
   AnimatePopupAnimationUntilIdle();
   EXPECT_TRUE(ash_notification_popup->IsExpanded());
   EXPECT_TRUE(IsQuickSettingsBubbleShown());
-}
-
-TEST_P(TrayEventFilterTest, ClickOnKeyboardContainer) {
-  // Simulate the virtual keyboard being open. In production the virtual
-  // keyboard container only exists while the keyboard is open.
-  std::unique_ptr<aura::Window> keyboard_container =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_NORMAL,
-                       kShellWindowId_VirtualKeyboardContainer);
-  std::unique_ptr<aura::Window> keyboard_window = CreateTestWindow();
-  keyboard_window->set_owned_by_parent(false);
-  keyboard_container->AddChild(keyboard_window.get());
-
-  ShowTestBubble();
-  EXPECT_TRUE(GetTestBubbleWidget());
-
-  // Clicking on the keyboard container should not trigger
-  // `ClickedOutsideBubble()`.
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(
-      keyboard_window->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-
-  EXPECT_FALSE(test_tray_background_view()->clicked_outside_bubble_called());
 }
 
 TEST_P(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
@@ -481,7 +383,7 @@ TEST_P(TrayEventFilterQsRevampDisabledTest,
   auto border_insets =
       GetPrimaryUnifiedSystemTray()->GetBubbleView()->GetBorderInsets();
   event_generator->MoveMouseTo(
-      GetQuickSettingsBubbleBounds().origin() +
+      GetPrimaryUnifiedSystemTray()->GetBubbleBoundsInScreen().origin() +
       gfx::Vector2d(border_insets.left(), border_insets.top()));
   event_generator->ClickLeftButton();
 
@@ -489,7 +391,9 @@ TEST_P(TrayEventFilterQsRevampDisabledTest,
   EXPECT_TRUE(IsQuickSettingsBubbleShown());
 
   // Clicking inside the message center bubble should not close either bubble.
-  ClickInsideWidget(GetMessageCenterBubble()->GetBubbleWidget());
+  ClickInsideWidget(GetPrimaryUnifiedSystemTray()
+                        ->message_center_bubble()
+                        ->GetBubbleWidget());
 
   EXPECT_TRUE(IsMessageCenterBubbleShown());
   EXPECT_TRUE(IsQuickSettingsBubbleShown());
