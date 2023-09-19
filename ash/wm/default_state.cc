@@ -376,9 +376,6 @@ void DefaultState::HandleBoundsEvents(WindowState* window_state,
           static_cast<const SetBoundsWMEvent*>(event);
       SetBounds(window_state, set_bounds_event);
     } break;
-    case WM_EVENT_CENTER:
-      CenterWindow(window_state);
-      break;
     default:
       NOTREACHED() << "Unknown event:" << event->type();
       break;

@@ -224,11 +224,6 @@ chromeos::OrientationType GetSnapDisplayOrientation(
                                rotation);
 }
 
-void CenterWindow(aura::Window* window) {
-  WMEvent event(WM_EVENT_CENTER);
-  WindowState::Get(window)->OnWMEvent(&event);
-}
-
 void SetBoundsInScreen(aura::Window* window,
                        const gfx::Rect& bounds_in_screen,
                        const display::Display& display) {

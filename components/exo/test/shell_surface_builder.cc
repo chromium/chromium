@@ -8,7 +8,6 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/window_positioning_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
@@ -498,8 +497,14 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (commit_on_build_) {
     shell_surface->root_surface()->Commit();
-    if (centered_)
-      ash::CenterWindow(shell_surface->GetWidget()->GetNativeWindow());
+    if (centered_) {
+      auto* window = shell_surface->GetWidget()->GetNativeWindow();
+      const display::Display display =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      gfx::Rect center_bounds = display.work_area();
+      center_bounds.ClampToCenteredSize(window->bounds().size());
+      window->SetBoundsInScreen(center_bounds, display);
+    }
   } else {
     // 'SetCentered' requires its shell surface to be committed when creatted.
     DCHECK(!centered_);

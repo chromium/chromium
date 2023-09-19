@@ -35,25 +35,6 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
 
 using WindowUtilTest = AshTestBase;
 
-TEST_F(WindowUtilTest, CenterWindow) {
-  UpdateDisplay("500x400, 600x400");
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
-
-  WindowState* window_state = WindowState::Get(window.get());
-  EXPECT_FALSE(window_state->bounds_changed_by_user());
-
-  CenterWindow(window.get());
-  // Centring window is considered as a user's action.
-  EXPECT_TRUE(window_state->bounds_changed_by_user());
-  EXPECT_EQ("200,126 100x100", window->bounds().ToString());
-  EXPECT_EQ("200,126 100x100", window->GetBoundsInScreen().ToString());
-  window->SetBoundsInScreen(gfx::Rect(600, 0, 100, 100), GetSecondaryDisplay());
-  CenterWindow(window.get());
-  EXPECT_EQ("250,126 100x100", window->bounds().ToString());
-  EXPECT_EQ("750,126 100x100", window->GetBoundsInScreen().ToString());
-}
-
 TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
   const gfx::Rect visible_bounds(0, 0, 100, 100);
 

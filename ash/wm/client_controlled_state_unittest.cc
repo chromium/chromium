@@ -416,10 +416,11 @@ TEST_F(ClientControlledStateTest, SetBounds) {
 
 TEST_F(ClientControlledStateTest, CenterWindow) {
   display::Screen* screen = display::Screen::GetScreen();
-  gfx::Rect bounds = screen->GetPrimaryDisplay().work_area();
+  const gfx::Rect bounds = screen->GetPrimaryDisplay().work_area();
 
-  const WMEvent center_event(WM_EVENT_CENTER);
-  window_state()->OnWMEvent(&center_event);
+  gfx::Rect center_bounds = bounds;
+  center_bounds.ClampToCenteredSize(window()->bounds().size());
+  window()->SetBoundsInScreen(center_bounds, screen->GetPrimaryDisplay());
   EXPECT_NEAR(bounds.CenterPoint().x(),
               delegate()->requested_bounds().CenterPoint().x(), 1);
   EXPECT_NEAR(bounds.CenterPoint().y(),

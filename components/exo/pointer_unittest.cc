@@ -815,13 +815,13 @@ TEST_P(PointerTest, OnPointerScrollDiscrete) {
 TEST_P(PointerTest, RegisterPointerEventsOnModal) {
   // Create modal surface.
   auto shell_surface = test::ShellSurfaceBuilder({5, 5})
+                           .SetCentered()
                            .SetCanMinimize(false)
                            .SetUseSystemModalContainer()
                            .SetDisableMovement()
                            .BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
-  ash::CenterWindow(shell_surface->GetWidget()->GetNativeWindow());
   // Make the window modal.
   shell_surface->SetSystemModal(true);
   EXPECT_TRUE(ash::Shell::IsSystemModalWindowOpen());
@@ -868,13 +868,13 @@ TEST_P(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
 
   // Create surface for modal window.
   auto shell_surface2 = test::ShellSurfaceBuilder({5, 5})
+                            .SetCentered()
                             .SetCanMinimize(false)
                             .SetUseSystemModalContainer()
                             .SetDisableMovement()
                             .BuildShellSurface();
   auto* surface2 = shell_surface->surface_for_testing();
 
-  ash::CenterWindow(shell_surface2->GetWidget()->GetNativeWindow());
   // Make the window modal.
   shell_surface2->SetSystemModal(true);
   EXPECT_TRUE(ash::Shell::IsSystemModalWindowOpen());
@@ -927,13 +927,13 @@ TEST_P(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
 TEST_P(PointerTest, IgnorePointerLeaveOnModal) {
   // Create modal surface.
   auto shell_surface = test::ShellSurfaceBuilder({5, 5})
+                           .SetCentered()
                            .SetCanMinimize(false)
                            .SetUseSystemModalContainer()
                            .SetDisableMovement()
                            .BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
-  ash::CenterWindow(shell_surface->GetWidget()->GetNativeWindow());
   // Make the window modal.
   shell_surface->SetSystemModal(true);
   EXPECT_TRUE(ash::Shell::IsSystemModalWindowOpen());
@@ -972,13 +972,12 @@ TEST_P(PointerTest, RegisterPointerEventsOnNonModal) {
 
   // Create another surface for a non-modal window.
   auto shell_surface2 = test::ShellSurfaceBuilder({5, 5})
+                            .SetCentered()
                             .SetCanMinimize(false)
                             .SetUseSystemModalContainer()
                             .SetDisableMovement()
                             .BuildShellSurface();
   auto* surface2 = shell_surface2->surface_for_testing();
-
-  ash::CenterWindow(shell_surface2->GetWidget()->GetNativeWindow());
 
   MockPointerDelegate delegate;
   Seat seat;

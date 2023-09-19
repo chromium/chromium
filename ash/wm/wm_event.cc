@@ -56,14 +56,7 @@ bool WMEvent::IsPinEvent() const {
 }
 
 bool WMEvent::IsBoundsEvent() const {
-  switch (type_) {
-    case WM_EVENT_SET_BOUNDS:
-    case WM_EVENT_CENTER:
-      return true;
-    default:
-      break;
-  }
-  return false;
+  return type_ == WM_EVENT_SET_BOUNDS;
 }
 
 bool WMEvent::IsTransitionEvent() const {

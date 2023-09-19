@@ -80,9 +80,6 @@ enum WMEventType {
   // See description of WM_EVENT_CYCLE_SNAP_PRIMARY.
   WM_EVENT_CYCLE_SNAP_SECONDARY,
 
-  // A user requested to center a window.
-  WM_EVENT_CENTER,
-
   // TODO(oshima): Investigate if this can be removed from ash.
   // Widget requested to show in inactive state.
   WM_EVENT_SHOW_INACTIVE,

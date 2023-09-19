@@ -105,33 +105,6 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
 }
 
 // static
-void BaseState::CenterWindow(WindowState* window_state) {
-  if (!window_state->IsNormalOrSnapped())
-    return;
-  aura::Window* window = window_state->window();
-  if (window_state->IsSnapped()) {
-    gfx::Rect center_in_screen = display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(window)
-                                     .work_area();
-    gfx::Size size = window_state->HasRestoreBounds()
-                         ? window_state->GetRestoreBoundsInScreen().size()
-                         : window->bounds().size();
-    center_in_screen.ClampToCenteredSize(size);
-    window_state->SetRestoreBoundsInScreen(center_in_screen);
-    window_state->Restore();
-  } else {
-    gfx::Rect center_in_parent =
-        screen_util::GetDisplayWorkAreaBoundsInParent(window);
-    center_in_parent.ClampToCenteredSize(window->bounds().size());
-    const SetBoundsWMEvent event(center_in_parent,
-                                 /*animate=*/true);
-    window_state->OnWMEvent(&event);
-  }
-  // Centering window is treated as if a user moved and resized the window.
-  window_state->set_bounds_changed_by_user(true);
-}
-
-// static
 void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
   auto* shell = Shell::Get();
   // For tablet mode, use |TabletModeWindowState::CycleTabletSnap|.

@@ -311,7 +311,6 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_MAXIMIZE:
-    case WM_EVENT_CENTER:
     case WM_EVENT_MAXIMIZE:
       UpdateWindow(window_state, window_state->GetWindowTypeOnMaximizable(),
                    /*animate=*/true);

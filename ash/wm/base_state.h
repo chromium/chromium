@@ -34,7 +34,6 @@ class BaseState : public WindowState::State {
       WindowState* window_state,
       const WMEvent* event);
 
-  static void CenterWindow(WindowState* window_state);
   static void CycleSnap(WindowState* window_state, WMEventType event);
 
   // Handles workspace related events, such as DISPLAY_BOUNDS_CHANGED.

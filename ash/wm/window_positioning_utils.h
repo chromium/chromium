@@ -81,9 +81,6 @@ ASH_EXPORT gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
 chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display);
 
-// Moves the window to the center of the display.
-ASH_EXPORT void CenterWindow(aura::Window* window);
-
 // Sets the bounds of |window| to |bounds_in_screen|. This may move |window|
 // to |display| if necessary.
 ASH_EXPORT void SetBoundsInScreen(aura::Window* window,

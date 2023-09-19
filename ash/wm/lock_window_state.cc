@@ -53,7 +53,6 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_TOGGLE_MAXIMIZE:
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
     case WM_EVENT_CYCLE_SNAP_SECONDARY:
-    case WM_EVENT_CENTER:
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
     case WM_EVENT_NORMAL:

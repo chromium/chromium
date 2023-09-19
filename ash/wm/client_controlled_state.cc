@@ -267,9 +267,6 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
       }
       break;
     }
-    case WM_EVENT_CENTER:
-      CenterWindow(window_state);
-      break;
     default:
       NOTREACHED() << "Unknown event:" << event->type();
   }
