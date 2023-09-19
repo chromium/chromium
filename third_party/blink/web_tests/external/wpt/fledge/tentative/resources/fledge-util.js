@@ -149,7 +149,8 @@ function createBiddingScriptURL(params = {}) {
 //
 // The default reportResult() method is empty.
 function createDecisionScriptURL(uuid, params = {}) {
-  let url = new URL(`${BASE_URL}resources/decision-logic.sub.py`);
+  let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
+  let url = new URL(`${origin}${RESOURCE_PATH}decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
   if (params.scoreAd)
     url.searchParams.append('scoreAd', params.scoreAd);
@@ -264,6 +265,16 @@ async function runBasicFledgeTestExpectingNoWinner(
   assert_true(result === null, 'Auction unexpectedly had a winner');
 }
 
+// Creates a fenced frame and applies fencedFrameConfig to it. Also adds a cleanup
+// method to destroy the fenced frame at the end of the current test.
+function createAndNavigateFencedFrame(test, fencedFrameConfig) {
+  let fencedFrame = document.createElement('fencedframe');
+  fencedFrame.mode = 'opaque-ads';
+  fencedFrame.config = fencedFrameConfig;
+  document.body.appendChild(fencedFrame);
+  test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
+}
+
 // Calls runBasicFledgeAuction(), expecting the auction to have a winner.
 // Creates a fenced frame that will be destroyed on completion of "test", and
 // navigates it to the URN URL returned by the auction. Does not wait for the
@@ -272,12 +283,7 @@ async function runBasicFledgeAuctionAndNavigate(test, uuid,
                                                 auctionConfigOverrides = {}) {
   let config = await runBasicFledgeTestExpectingWinner(test, uuid,
                                                        auctionConfigOverrides);
-
-  let fencedFrame = document.createElement('fencedframe');
-  fencedFrame.mode = 'opaque-ads';
-  fencedFrame.config = config;
-  document.body.appendChild(fencedFrame);
-  test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
+  createAndNavigateFencedFrame(test, config);
 }
 
 // Joins an interest group and runs an auction, expecting a winner to be

@@ -53,6 +53,7 @@
       return;
     let result = 'unexpected';
     try {
+      let param = event.data.param;
       result = await eval(
           `(async () => {
             ${event.data.script};
