@@ -8,5 +8,4 @@
 ++++++[static] name='nested locked element!'
 ++++[static] name='<newline>    '
 ++++[section]
-++++++[static] name='nested non activatable locked element'
 ++++[static] name='<newline>  '
