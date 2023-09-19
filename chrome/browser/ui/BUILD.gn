@@ -5357,6 +5357,8 @@ static_library("ui") {
       "views/permissions/chooser_bubble_ui.cc",
       "views/permissions/embedded_permission_prompt.cc",
       "views/permissions/embedded_permission_prompt.h",
+      "views/permissions/embedded_permission_prompt_ask_view.cc",
+      "views/permissions/embedded_permission_prompt_ask_view.h",
       "views/permissions/embedded_permission_prompt_base_view.cc",
       "views/permissions/embedded_permission_prompt_base_view.h",
       "views/permissions/embedded_permission_prompt_policy_view.cc",

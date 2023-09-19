@@ -66,6 +66,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
     kContinueAllowing = 2,
     kStopAllowing = 3,
     kClose = 4,
+    kAllowThisTime = 5,
   };
 
   struct RequestLineConfiguration {
