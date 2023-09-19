@@ -13,6 +13,8 @@
 #include "base/task/task_traits.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_definition.pb.h"
+#include "chrome/test/base/chromeos/crosier/crosier_util.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,6 +46,22 @@ class FeaturedIntegrationTest : public InteractiveAshTest,
   FeaturedIntegrationTest() {
     feature_list_.InitFromCommandLine(GetParam().enabled_features,
                                       GetParam().disabled_features);
+  }
+
+  // InteractiveAshTest:
+  void SetUpOnMainThread() override {
+    InteractiveAshTest::SetUpOnMainThread();
+
+    chrome_test_base_chromeos_crosier::TestInfo info;
+    info.set_description(
+        "Verifies features are enabled/disabled as expected and parameters are "
+        "unchanged");
+    info.set_team_email("cros-telemetry@google.com");
+    info.add_contacts("kendraketsui@google.com");
+    info.add_contacts("mutexlox@google.com");
+    info.add_contacts("jamescook@google.com");  // Ported from Tast to Crosier.
+    info.set_buganizer("1096648");
+    crosier_util::AddTestInfo(info);
   }
 
   base::test::ScopedFeatureList feature_list_;

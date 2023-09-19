@@ -668,6 +668,8 @@ static_library("test_support") {
       "../browser/ui/views/frame/immersive_mode_tester.h",
       "base/chromeos/crosier/aura_window_title_observer.cc",
       "base/chromeos/crosier/aura_window_title_observer.h",
+      "base/chromeos/crosier/crosier_util.cc",
+      "base/chromeos/crosier/crosier_util.h",
     ]
     deps += [
       "base/chromeos/crosier:proto",
@@ -1009,6 +1011,8 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/interactive_ash_test.h",
         "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
+
+      deps += [ "//chrome/test/base/chromeos/crosier:proto" ]
 
       data_deps = [
         "//chrome/test/base/chromeos/crosier/helper",

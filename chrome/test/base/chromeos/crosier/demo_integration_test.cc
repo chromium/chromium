@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
+#include "chrome/test/base/chromeos/crosier/crosier_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -123,7 +124,7 @@ Manually:
   info.add_contacts("jamescook@chromium.org");
   info.set_team_email("crosier-team@google.com");
   info.set_buganizer("1394295");
-  chromeos_integration_test_mixin_.AddTestInfo(info);
+  crosier_util::AddTestInfo(info);
   base::AddFeatureIdTagToTestResult(
       "screenplay-351d628b-e4a4-41c6-91e4-a4036ad12360");
 

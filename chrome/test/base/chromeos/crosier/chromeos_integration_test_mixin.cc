@@ -5,7 +5,6 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 
 #include "base/command_line.h"
-#include "base/test/gtest_tags.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
@@ -21,26 +20,6 @@ ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     : InProcessBrowserTestMixin(host) {}
 
 ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
-
-void ChromeOSIntegrationTestMixin::AddTestInfo(
-    const chrome_test_base_chromeos_crosier::TestInfo& info) {
-  for (int i = 0; i < info.contacts_size(); ++i) {
-    // This field name aligns with existing Tast test format.
-    base::AddTagToTestResult("contacts", info.contacts(i));
-  }
-  if (info.has_team_email()) {
-    // This field name aligns with 'team_email' in DIR_METADATA.
-    base::AddTagToTestResult("team_email", info.team_email());
-  }
-  if (info.has_buganizer()) {
-    // This field name aligns with 'buganizer' in DIR_METADATA.
-    base::AddTagToTestResult("buganizer", info.buganizer());
-  }
-  if (info.has_buganizer_public()) {
-    // This field name aligns with 'buganizer_public' in DIR_METADATA.
-    base::AddTagToTestResult("buganizer_public", info.buganizer_public());
-  }
-}
 
 void ChromeOSIntegrationTestMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
