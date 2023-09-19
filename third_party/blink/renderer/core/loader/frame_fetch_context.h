@@ -85,7 +85,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                     const DetachableResourceFetcherProperties&);
   ~FrameFetchContext() override = default;
 
-  void AddAdditionalRequestHeaders(ResourceRequest&) override;
   absl::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType type,
       const ResourceRequest& resource_request,

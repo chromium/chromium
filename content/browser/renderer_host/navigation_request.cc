@@ -354,8 +354,6 @@ std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
   return GetContentClient()->browser()->GetUserAgentBasedOnPolicy(context);
 }
 
-// TODO(clamy): This should match what's happening in
-// blink::FrameFetchContext::addAdditionalRequestHeaders.
 void AddAdditionalRequestHeaders(
     net::HttpRequestHeaders* headers,
     const GURL& url,

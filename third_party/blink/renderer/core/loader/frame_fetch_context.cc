@@ -286,15 +286,6 @@ LocalFrameClient* FrameFetchContext::GetLocalFrameClient() const {
   return GetFrame()->Client();
 }
 
-void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
-  // The remaining modifications are only necessary for HTTP and HTTPS.
-  if (!request.Url().IsEmpty() && !request.Url().ProtocolIsInHTTPFamily())
-    return;
-
-  if (GetResourceFetcherProperties().IsDetached())
-    return;
-}
-
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set
 // the ResourceRequest's cache policy. The cache policy determination needs to
 // be factored out from FrameFetchContext and moved to the FrameLoader for
