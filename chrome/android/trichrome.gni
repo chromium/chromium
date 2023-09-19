@@ -186,6 +186,9 @@ template("trichrome_library_apk_tmpl") {
 # files. This is used to support SuperSize on Trichrome.
 template("write_ssargs_trichrome") {
   _extra_args = " --abi-filter ${invoker.abi_filter}"
+  if (defined(invoker.symbols_dir)) {
+    _extra_args += " --symbols-dir ${invoker.symbols_dir}"
+  }
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
   # files using paths relative to itself. It is expected for |ssargs_path| to
