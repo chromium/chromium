@@ -132,6 +132,10 @@ CompanionTabHelper::GetImageQuery() {
   return std::move(image_query_);
 }
 
+bool CompanionTabHelper::HasImageQuery() {
+  return image_query_ != nullptr;
+}
+
 std::string CompanionTabHelper::GetTextQuery() {
   std::string copy = text_query_;
   text_query_.clear();

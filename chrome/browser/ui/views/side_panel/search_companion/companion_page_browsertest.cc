@@ -445,6 +445,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     if (request.method == net::test_server::HttpMethod::METHOD_POST) {
       net::GetValueForKeyInQuery(url, "sourcelang", &last_sourcelang_);
       net::GetValueForKeyInQuery(url, "targetlang", &last_targetlang_);
+      net::GetValueForKeyInQuery(url, "vpw", &last_viewport_width_param_);
+      net::GetValueForKeyInQuery(url, "vph", &last_viewport_height_param_);
     }
     return nullptr;
   }
@@ -459,6 +461,26 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::string GetLastSourceLang() { return last_sourcelang_; }
 
   std::string GetLastTargetLang() { return last_targetlang_; }
+
+  int GetLastViewportWidthParam() {
+    if (last_viewport_width_param_.empty()) {
+      return 0;
+    }
+
+    int viewport_width;
+    base::StringToInt(last_viewport_width_param_, &viewport_width);
+    return viewport_width;
+  }
+
+  int GetLastViewportHeightParam() {
+    if (last_viewport_height_param_.empty()) {
+      return 0;
+    }
+
+    int viewport_height;
+    base::StringToInt(last_viewport_height_param_, &viewport_height);
+    return viewport_height;
+  }
 
   companion::proto::CompanionUrlParams DeserializeCompanionRequest(
       const std::string& companion_url_param) {
@@ -653,6 +675,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   size_t requests_received_on_server_ = 0;
   std::string last_sourcelang_;
   std::string last_targetlang_;
+  std::string last_viewport_width_param_;
+  std::string last_viewport_height_param_;
   bool enable_feature_side_panel_companion_ = true;
   bool enable_feature_visual_search_ = true;
   bool enable_feature_lens_standalone_ = true;
@@ -1679,6 +1703,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // The language params should be unset when is_image_translate=false.
   EXPECT_EQ(GetLastSourceLang(), "");
   EXPECT_EQ(GetLastTargetLang(), "");
+  // The viewport dimension params should be set to a value
+  EXPECT_TRUE(GetLastViewportHeightParam() > 0);
+  EXPECT_TRUE(GetLastViewportWidthParam() > 0);
   histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
                                        true, 1);
 }
