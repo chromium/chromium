@@ -204,10 +204,8 @@ void EditingList::AddZeroStateContent() {
 
   DCHECK(scroll_content_);
   auto* content_container =
-      scroll_content_->AddChildView(std::make_unique<ash::RoundedContainer>());
-  content_container->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
-  content_container->SetBorderInsets(gfx::Insets::VH(48, 32));
+      scroll_content_->AddChildView(std::make_unique<views::View>());
+  content_container->SetProperty(views::kMarginsKey, gfx::Insets::VH(48, 32));
   content_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
