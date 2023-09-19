@@ -10,8 +10,6 @@ import(
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
-import("//weblayer/variables.gni")
-import("//weblayer/weblayer_module.gni")
 
 if (enable_vr) {
   import("//chrome/android/features/vr/vr_module.gni")
@@ -54,9 +52,6 @@ if (false) {  # AR DFM is currently disabled
 }
 
 monochrome_module_descs = chrome_module_descs
-if (webview_includes_weblayer) {
-  monochrome_module_descs += [ weblayer_module_desc ]
-}
 
 # TODO: Remove once unused downstream.
 trichrome_module_descs = chrome_module_descs

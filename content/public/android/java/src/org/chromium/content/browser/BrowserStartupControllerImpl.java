@@ -348,14 +348,12 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     /**
      * Asserts that library process type is one of the supported types.
      * @param libraryProcessType the type of process the shared library is loaded. It must be
-     *                           LibraryProcessType.PROCESS_BROWSER,
-     *                           LibraryProcessType.PROCESS_WEBVIEW or
-     *                           LibraryProcessType.PROCESS_WEBLAYER.
+     *                           LibraryProcessType.PROCESS_BROWSER or
+     *                           LibraryProcessType.PROCESS_WEBVIEW.
      */
     private void assertProcessTypeSupported(@LibraryProcessType int libraryProcessType) {
         assert LibraryProcessType.PROCESS_BROWSER == libraryProcessType
-                || LibraryProcessType.PROCESS_WEBVIEW == libraryProcessType
-                || LibraryProcessType.PROCESS_WEBLAYER == libraryProcessType;
+                || LibraryProcessType.PROCESS_WEBVIEW == libraryProcessType;
         LibraryLoader.getInstance().assertCompatibleProcessType(libraryProcessType);
     }
 

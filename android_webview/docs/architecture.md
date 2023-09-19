@@ -4,8 +4,8 @@
 
 Android WebView is a [content embedder](/content/README.md), meaning it depends
 on code in `//content/` and lower layers (ex. `//net/`, `//base/`), but does not
-depend on sibling layers such as `//chrome/` or `//weblayer/`. Android WebView
-can also depend on [components](/components/README.md).
+depend on sibling layers such as `//chrome/`. Android WebView can also depend on
+[components](/components/README.md).
 
 ## Java and C++
 

@@ -37,7 +37,6 @@ import("//third_party/icu/config.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
-import("//weblayer/variables.gni")
 import("channel.gni")
 import("java_sources.gni")
 import("static_initializers.gni")
@@ -2304,13 +2303,6 @@ if (current_toolchain == default_toolchain) {
       deps = []
 
       additional_extra_paks = []
-      if (_is_monochrome) {
-        if (webview_includes_weblayer) {
-          additional_extra_paks +=
-              [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]
-          deps += [ "//weblayer:resources" ]
-        }
-      }
       if (!dfmify_dev_ui || !_is_bundle_module) {
         additional_extra_paks += [ "$root_gen_dir/chrome/dev_ui_resources.pak" ]
         deps += [ "//chrome/browser/resources:dev_ui_paks" ]
@@ -2356,9 +2348,6 @@ if (current_toolchain == default_toolchain) {
       ]
       if (_is_monochrome) {
         deps += [ "//android_webview:locale_pak_assets" ]
-        if (webview_includes_weblayer && !_is_bundle_module) {
-          deps += [ "//weblayer:locale_pak_assets" ]
-        }
       }
     }
   }
@@ -2523,9 +2512,6 @@ if (current_toolchain == default_toolchain) {
       "//components/version_info/android:version_constants_java",
       "//content/public/android:content_java",
     ]
-    if (webview_includes_weblayer) {
-      deps += [ "//weblayer/browser/java:base_module_java" ]
-    }
   }
 
   generate_jni("base_module_jni") {
@@ -3750,11 +3736,6 @@ template("libmonochrome_apk_or_bundle_tmpl") {
     }
 
     defines = []
-    if (webview_includes_weblayer) {
-      defines += [ "WEBVIEW_INCLUDES_WEBLAYER" ]
-      deps += [ "//weblayer:weblayer_lib" ]
-    }
-
     if (android_64bit_target_cpu) {
       java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
     } else {

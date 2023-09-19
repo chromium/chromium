@@ -57,10 +57,6 @@ file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIAN
 # deprecation and versioning steps must be taken when doing so.
 file://chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS
 
-# The Weblayer API is supposed to be stable and will be used outside of the
-# chromium repository.
-file://weblayer/API_OWNERS
-
 # New features for lock/login UI on Chrome OS need to work stably in all corner
 # cases.
 file://ash/login/LOGIN_LOCK_OWNERS

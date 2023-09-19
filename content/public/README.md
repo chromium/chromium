@@ -77,9 +77,9 @@ e.g. `//content/browser`, `//content/renderer` etc...
 ## Dependencies on content
 
 Large parts of the Chromium codebase depend on `//content/public`. Some notable
-directories that depend on it are (parts of) `//extensions`, `//chrome`,
-and `//weblayer`. Some directories in `//components` also depend on it, while
-conversely `//content` depends on some components.
+directories that depend on it are (parts of) `//extensions`,  and `//chrome`.
+Some directories in `//components` also depend on it, while conversely
+`//content` depends on some components.
 
 Directories that do not depend on content include `//third_party/blink` and
 `//services`.

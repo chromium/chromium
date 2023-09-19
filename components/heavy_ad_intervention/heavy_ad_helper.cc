@@ -19,12 +19,6 @@
 
 namespace heavy_ad_intervention {
 
-// NOTE: If adding usage of more strings/resources here, make sure that they
-// are allowlisted in //weblayer/grit_{resources, strings}_allowlist.txt;
-// otherwise empty data will be used for the new resources/strings in WebLayer.
-// For strings there is a partial safeguard as //weblayer's integration tests
-// will crash if a new-but-not-allowlisted string is fetched in a codepath that
-// the presentation of the heavy ad page in those tests exercises.
 std::string PrepareHeavyAdPage(const std::string& application_locale) {
   int resource_id = IDR_SECURITY_INTERSTITIAL_QUIET_HTML;
   std::string uncompressed;

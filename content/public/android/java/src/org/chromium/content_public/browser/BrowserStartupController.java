@@ -43,9 +43,8 @@ public interface BrowserStartupController {
      * Note that this can only be called on the UI thread.
      *
      * @param libraryProcessType the type of process the shared library is loaded. It must be
-     *                           LibraryProcessType.PROCESS_BROWSER,
-     *                           LibraryProcessType.PROCESS_WEBVIEW or
-     *                           LibraryProcessType.PROCESS_WEBLAYER.
+     *                           LibraryProcessType.PROCESS_BROWSER or
+     *                           LibraryProcessType.PROCESS_WEBVIEW.
      * @param startGpuProcess Whether to start the GPU process if it is not started. Only has
      *                        effect if browser isn't already started.
      * @param startMinimalBrowser Whether browser startup will be paused after a minimal environment
@@ -63,9 +62,8 @@ public interface BrowserStartupController {
      * Note that this can only be called on the UI thread.
      *
      * @param libraryProcessType the type of process the shared library is loaded. It must be
-     *                           LibraryProcessType.PROCESS_BROWSER,
-     *                           LibraryProcessType.PROCESS_WEBVIEW or
-     *                           LibraryProcessType.PROCESS_WEBLAYER.
+     *                           LibraryProcessType.PROCESS_BROWSER or
+     *                           LibraryProcessType.PROCESS_WEBVIEW.
      * @param singleProcess true iff the browser should run single-process, ie. keep renderers in
      *                      the browser process
      * @param startGpuProcess Whether to start the GPU process if it is not started. Only has

@@ -192,17 +192,11 @@ out a production method), instead make the method protected and
 
 To embed the component, it's necessary to install
 InterceptNavigationDelegateImpl for each "tab" of the embedder (where a tab is
-the embedder-level object that holds a WebContents). For an example of a
-relatively straightforward embedding, look at //weblayer's creation of
-InterceptNavigationDelegateImpl.
+the embedder-level object that holds a WebContents).
 
 There are two interfaces that the embedder must implement in order to embed the
 component: InterceptNavigationDelegateClient and ExternalNavigationDelegate.
-Again, //weblayer's implementation of these interfaces provides a good starting
-point to follow. //chrome's implementations are significantly more complex for
-several reasons: handling of differences between Chrome browser and Chrome
-Custom Tabs, integration with handling of incoming intents, an extended set
-of use cases, ....
+
 
 # Differences between Chrome and WebLayer Embedding
 
