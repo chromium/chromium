@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
@@ -276,6 +277,20 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   if (top_document.Loader() &&
       top_document.Loader()->IsReloadedOrFormSubmitted()) {
     return false;
+  }
+
+  // Check if LCP influencing scripts are to be excluded.
+  static const bool exclude_lcp_influencers =
+      features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
+          .Get();
+  if (exclude_lcp_influencers &&
+      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+      base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+    if (LCPCriticalPathPredictor* lcpp = top_document.GetFrame()->GetLCPP()) {
+      if (lcpp->IsLcpInfluencerScript(GetResource()->Url())) {
+        return false;
+      }
+    }
   }
 
   static const bool cross_site_only =

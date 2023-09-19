@@ -1665,6 +1665,19 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "low-priority-async-script-execution",
+    "platforms": ["Linux", "Mac", "Win"],
+    "exclusive_tests": "ALL",
+    "bases": ["http/tests/low-priority-async-script-execution"],
+    "args": ["--enable-features=LCPCriticalPathPredictor,LCPScriptObserver,LowPriorityAsyncScriptExecution:low_pri_async_exec_timeout/100ms/low_pri_async_exec_exclude_lcp_influencers/true",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": [
+      "alexnj@chromium.org",
+      "chikamune@chromium.org"
+    ],
+    "expires": "Mar 1, 2024"
+  },
+  {
     "prefix": "browsing-topics",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

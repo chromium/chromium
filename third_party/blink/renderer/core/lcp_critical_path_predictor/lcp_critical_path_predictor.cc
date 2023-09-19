@@ -119,6 +119,10 @@ LCPCriticalPathPredictor::GetHost() {
   return *host_.get();
 }
 
+bool LCPCriticalPathPredictor::IsLcpInfluencerScript(const KURL& url) {
+  return lcp_influencer_scripts_.Contains(url);
+}
+
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(host_);
