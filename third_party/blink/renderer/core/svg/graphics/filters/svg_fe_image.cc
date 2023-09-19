@@ -88,19 +88,28 @@ static gfx::SizeF ComputeViewportAdjustmentScale(
                     target_size.height() / viewport_size.height());
 }
 
+AffineTransform FEImage::SourceToDestinationTransform(
+    const LayoutObject& layout_object,
+    const gfx::RectF& dest_rect) const {
+  gfx::SizeF viewport_scale(GetFilter()->Scale(), GetFilter()->Scale());
+  if (element_->HasRelativeLengths()) {
+    viewport_scale =
+        ComputeViewportAdjustmentScale(layout_object, dest_rect.size());
+  }
+  AffineTransform transform;
+  transform.Translate(dest_rect.x(), dest_rect.y());
+  transform.Scale(viewport_scale.width(), viewport_scale.height());
+  return transform;
+}
+
 gfx::RectF FEImage::MapInputs(const gfx::RectF&) const {
   gfx::RectF dest_rect =
       GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
   if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
-    gfx::RectF src_rect = GetLayoutObjectRepaintRect(*layout_object);
-    if (element_->HasRelativeLengths()) {
-      const gfx::SizeF viewport_scale =
-          ComputeViewportAdjustmentScale(*layout_object, dest_rect.size());
-      src_rect.Scale(viewport_scale.width(), viewport_scale.height());
-    } else {
-      src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-    }
-    src_rect.Offset(dest_rect.OffsetFromOrigin());
+    const AffineTransform transform =
+        SourceToDestinationTransform(*layout_object, dest_rect);
+    const gfx::RectF src_rect =
+        transform.MapRect(GetLayoutObjectRepaintRect(*layout_object));
     dest_rect.Intersect(src_rect);
     return dest_rect;
   }
@@ -140,18 +149,10 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     const LayoutObject& layout_object,
     const gfx::RectF& dst_rect,
     const gfx::RectF& crop_rect) {
-  gfx::RectF src_rect = GetLayoutObjectRepaintRect(layout_object);
-  AffineTransform transform;
-  transform.Translate(dst_rect.x(), dst_rect.y());
-  if (element_->HasRelativeLengths()) {
-    const gfx::SizeF viewport_scale =
-        ComputeViewportAdjustmentScale(layout_object, dst_rect.size());
-    src_rect.Scale(viewport_scale.width(), viewport_scale.height());
-    transform.Scale(viewport_scale.width(), viewport_scale.height());
-  } else {
-    src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-  }
-  src_rect.Offset(dst_rect.OffsetFromOrigin());
+  const AffineTransform transform =
+      SourceToDestinationTransform(layout_object, dst_rect);
+  const gfx::RectF src_rect =
+      transform.MapRect(GetLayoutObjectRepaintRect(layout_object));
   // Intersect with the (transformed) source rect to remove "empty" bits of the
   // image.
   const gfx::RectF cull_rect = gfx::IntersectRects(crop_rect, src_rect);

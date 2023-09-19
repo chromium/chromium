@@ -28,6 +28,7 @@
 
 namespace blink {
 
+class AffineTransform;
 class Image;
 class LayoutObject;
 class SVGElement;
@@ -55,6 +56,9 @@ class FEImage final : public FilterEffect {
     return kFilterEffectTypeImage;
   }
 
+  AffineTransform SourceToDestinationTransform(
+      const LayoutObject& layout_object,
+      const gfx::RectF& dest_rect) const;
   gfx::RectF MapInputs(const gfx::RectF&) const override;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
