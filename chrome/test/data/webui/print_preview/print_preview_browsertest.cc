@@ -788,3 +788,155 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ManagePrinterMetricsCros) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ViewportSizeChanges) {
   RunTestCase("ViewportSizeChanges");
 }
+
+class PrintPreviewCustomMarginsTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/custom_margins_test.js",
+        base::StringPrintf("runMochaTest('CustomMarginsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest, ControlsCheck) {
+  RunTestCase("ControlsCheck");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest, SetFromStickySettings) {
+  RunTestCase("SetFromStickySettings");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest, DragControls) {
+  RunTestCase("DragControls");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest, SetControlsWithTextbox) {
+  RunTestCase("SetControlsWithTextbox");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       SetControlsWithTextboxMetric) {
+  RunTestCase("SetControlsWithTextboxMetric");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       RestoreStickyMarginsAfterDefault) {
+  RunTestCase("RestoreStickyMarginsAfterDefault");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       MediaSizeClearsCustomMargins) {
+  RunTestCase("MediaSizeClearsCustomMargins");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       LayoutClearsCustomMargins) {
+  RunTestCase("LayoutClearsCustomMargins");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       IgnoreDocumentMarginsFromPDF) {
+  RunTestCase("IgnoreDocumentMarginsFromPDF");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       MediaSizeClearsCustomMarginsPDF) {
+  RunTestCase("MediaSizeClearsCustomMarginsPDF");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest,
+                       RequestScrollToOutOfBoundsTextbox) {
+  RunTestCase("RequestScrollToOutOfBoundsTextbox");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCustomMarginsTest, ControlsDisabledOnError) {
+  RunTestCase("ControlsDisabledOnError");
+}
+
+class PrintPreviewDestinationSearchTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+#if BUILDFLAG(IS_CHROMEOS)
+        "print_preview/destination_search_test_chromeos.js",
+#else
+        "print_preview/destination_search_test.js",
+#endif
+        base::StringPrintf("runMochaTest('DestinationSearchTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
+                       ReceiveSuccessfulSetup) {
+  RunTestCase("ReceiveSuccessfulSetup");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest, ResolutionFails) {
+  RunTestCase("ResolutionFails");
+}
+
+#else
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
+                       GetCapabilitiesSucceeds) {
+  RunTestCase("GetCapabilitiesSucceeds");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
+                       GetCapabilitiesFails) {
+  RunTestCase("GetCapabilitiesFails");
+}
+#endif
+
+class PrintPreviewHeaderTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/header_test.js",
+        base::StringPrintf("runMochaTest('HeaderTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewHeaderTest, HeaderPrinterTypes) {
+  RunTestCase("HeaderPrinterTypes");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewHeaderTest, HeaderChangesForState) {
+  RunTestCase("HeaderChangesForState");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewHeaderTest, EnterprisePolicy) {
+  RunTestCase("EnterprisePolicy");
+}
+
+class PrintPreviewButtonStripTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/button_strip_test.js",
+        base::StringPrintf("runMochaTest('ButtonStripTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest,
+                       ButtonStripChangesForState) {
+  RunTestCase("ButtonStripChangesForState");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, ButtonOrder) {
+  RunTestCase("ButtonOrder");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, ButtonStripFiresEvents) {
+  RunTestCase("ButtonStripFiresEvents");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, InvalidPinDisablesPrint) {
+  RunTestCase("InvalidPinDisablesPrint");
+}
+#endif
