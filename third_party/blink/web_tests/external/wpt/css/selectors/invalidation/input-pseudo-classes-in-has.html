@@ -29,7 +29,12 @@
 </div>
 <script>
   test(function() {
+    let input = null;
     this.add_cleanup(() => {
+      if (input) {
+        // Need to put the input back for the rest of the tests.
+        subject.prepend(input);
+      }
       checkme.checked = false;
     });
     checkme.checked = false;
@@ -41,13 +46,14 @@
     checkme.indeterminate = true;
     assert_equals(getComputedStyle(subject).color, "rgb(154, 205, 50)",
                   "ancestor should be yellowgreen");
-    const input = checkme;
+    input = checkme;
     checkme.remove();
     input.indeterminate = false;
     assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)",
                   "ancestor should be black");
 
     subject.prepend(input);
+    input = null;
     checkme.checked = true;
     assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)",
                   "ancestor should be green");
