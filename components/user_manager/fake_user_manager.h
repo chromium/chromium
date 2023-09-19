@@ -125,7 +125,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
+  const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const override;
   std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,

@@ -373,7 +373,7 @@ bool FakeUserManager::IsDeprecatedSupervisedAccountId(
   return false;
 }
 
-const gfx::ImageSkia& FakeUserManager::GetResourceImagekiaNamed(int id) const {
+const gfx::ImageSkia& FakeUserManager::GetResourceImageSkiaNamed(int id) const {
   NOTIMPLEMENTED();
   return empty_image_;
 }

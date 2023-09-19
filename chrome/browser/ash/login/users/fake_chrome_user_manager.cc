@@ -303,7 +303,7 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(
+const gfx::ImageSkia& FakeChromeUserManager::GetResourceImageSkiaNamed(
     int id) const {
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }

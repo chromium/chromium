@@ -1232,7 +1232,7 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImagekiaNamed(
+const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImageSkiaNamed(
     int id) const {
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }

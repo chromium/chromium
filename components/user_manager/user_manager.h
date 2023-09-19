@@ -462,7 +462,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool HasBrowserRestarted() const = 0;
 
   // Returns image from resources bundle.
-  virtual const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const = 0;
+  virtual const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const = 0;
 
   // Returns string from resources bundle.
   virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
