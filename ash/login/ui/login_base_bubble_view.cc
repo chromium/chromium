@@ -161,8 +161,7 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
                                                          kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleBorderRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
+      kBubbleBorderRadius, views::HighlightBorder::Type::kHighlightBorder1));
   // Set shadow
   if (chromeos::features::IsJellyrollEnabled()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(

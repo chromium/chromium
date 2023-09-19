@@ -742,7 +742,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
         kJellyRoundRectCornerRadiusDp));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kJellyRoundRectCornerRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderNoShadow));
+        views::HighlightBorder::Type::kHighlightBorder1));
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
         this, SystemShadow::Type::kElevation12);
     shadow_->SetRoundedCornerRadius(kJellyRoundRectCornerRadiusDp);
