@@ -5,8 +5,9 @@
 #ifndef MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 #define MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 
+#include "base/moving_window.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
-#include "media/base/moving_average.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -37,7 +38,7 @@ class MEDIA_EXPORT FrameRateEstimator {
   int GetMaxSamplesForTesting() const;
 
  private:
-  MovingAverage duration_;
+  base::MovingMinMax<base::TimeDelta> min_max_duration_;
 
   uint64_t required_samples_;
 

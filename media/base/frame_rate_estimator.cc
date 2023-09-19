@@ -33,23 +33,23 @@ int ToBucket(base::TimeDelta duration) {
 }  // namespace
 
 FrameRateEstimator::FrameRateEstimator()
-    : duration_(kMaxSamples), required_samples_(kMinSamples) {}
+    : min_max_duration_(kMaxSamples), required_samples_(kMinSamples) {}
 
 FrameRateEstimator::~FrameRateEstimator() = default;
 
 void FrameRateEstimator::AddSample(base::TimeDelta frame_duration) {
-  duration_.AddSample(frame_duration);
+  min_max_duration_.AddSample(frame_duration);
 
   // See if the duration averages have enough samples.  If not, then we can't
   // do anything else yet.
-  if (duration_.count() < required_samples_)
+  if (min_max_duration_.Count() <
+      static_cast<unsigned int>(required_samples_)) {
     return;
+  }
 
   // Make sure that the entire window is in the same bucket.
-  auto extremes = duration_.GetMinAndMax();
-  // See if the current sample is too far from the bucketed average.
-  int bucketed_fps_min = ToBucket(extremes.first);
-  int bucketed_fps_max = ToBucket(extremes.second);
+  int bucketed_fps_min = ToBucket(min_max_duration_.Min());
+  int bucketed_fps_max = ToBucket(min_max_duration_.Max());
 
   if (bucketed_fps_min != bucketed_fps_max) {
     // There's no current bucket until the entire window agrees.  Use the
@@ -67,7 +67,7 @@ absl::optional<int> FrameRateEstimator::ComputeFPS() {
 }
 
 void FrameRateEstimator::Reset() {
-  duration_.Reset();
+  min_max_duration_.Reset();
   most_recent_bucket_.reset();
   required_samples_ = kMinSamples;
 }

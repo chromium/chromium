@@ -45,9 +45,6 @@ class MEDIA_EXPORT MovingAverage {
 
   size_t depth() const { return depth_; }
 
-  // |first| is min, |second| is max of all samples in the window.
-  std::pair<base::TimeDelta, base::TimeDelta> GetMinAndMax();
-
  private:
   // Maximum number of elements allowed in the average.
   const size_t depth_;

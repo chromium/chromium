@@ -58,18 +58,4 @@ void MovingAverage::Reset() {
   std::fill(samples_.begin(), samples_.end(), base::TimeDelta());
 }
 
-std::pair<base::TimeDelta, base::TimeDelta> MovingAverage::GetMinAndMax() {
-  std::pair<base::TimeDelta, base::TimeDelta> result(samples_[0], samples_[0]);
-
-  const uint64_t size = std::min(static_cast<uint64_t>(depth_), count_);
-  for (uint64_t i = 1; i < size; i++) {
-    if (samples_[i] < result.first)
-      result.first = samples_[i];
-    if (samples_[i] > result.second)
-      result.second = samples_[i];
-  }
-
-  return result;
-}
-
 }  // namespace media

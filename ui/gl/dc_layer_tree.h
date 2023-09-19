@@ -14,8 +14,8 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
+#include "base/moving_window.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/base/moving_max.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -528,10 +528,10 @@ class GL_EXPORT DCLayerTree {
   // To reduce resource usage, we keep track of the largest input/output
   // dimensions for several last VideoProcessor usages. All 4 dimensions must be
   // tracked separately.
-  ui::MovingMax max_video_processor_input_height_;
-  ui::MovingMax max_video_processor_input_width_;
-  ui::MovingMax max_video_processor_output_height_;
-  ui::MovingMax max_video_processor_output_width_;
+  base::MovingMax<int> max_video_processor_input_height_;
+  base::MovingMax<int> max_video_processor_input_width_;
+  base::MovingMax<int> max_video_processor_output_height_;
+  base::MovingMax<int> max_video_processor_output_width_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/power_monitor/moving_average.h"
+#include "base/moving_window.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,6 +115,25 @@ TEST(MovingAverageTest, VerifyNoOverflow) {
   EXPECT_EQ(moving_average.GetAverageRoundedDown(), kMaxInt);
   EXPECT_EQ(moving_average.GetAverageRoundedToClosest(), kMaxInt);
   EXPECT_EQ(moving_average.GetUnroundedAverage(), kMaxInt);
+}
+
+// TODO(crbug.com/1475160): Remove MovingAverage altogether in favor of a
+// MovingWindow class. This test confirms that the new implementation is
+// functionally equivalent to the new one.
+TEST(MovingAverageTest, TheNewIsSameAsOld) {
+  const int kSamples = 32;
+  MovingAverage moving_average(kSamples);
+  base::MovingMean<int, int64_t> new_window(kSamples);
+
+  int64_t cur_val = 1;
+  for (int i = 0; i < kSamples * 1000; ++i) {
+    cur_val *= 239017;
+    cur_val %= 64001;
+    moving_average.AddSample(cur_val);
+    new_window.AddSample(cur_val);
+    EXPECT_EQ(new_window.Mean(), moving_average.GetAverageRoundedDown());
+    EXPECT_EQ(new_window.Mean<double>(), moving_average.GetUnroundedAverage());
+  }
 }
 
 }  // namespace test

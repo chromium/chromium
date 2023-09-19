@@ -396,10 +396,10 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   }
 
   // Calculate input and output size to be maximum in a sliding window.
-  max_video_processor_input_width_.Put(input_size.width());
-  max_video_processor_input_height_.Put(input_size.height());
-  max_video_processor_output_width_.Put(output_size.width());
-  max_video_processor_output_height_.Put(output_size.height());
+  max_video_processor_input_width_.AddSample(input_size.width());
+  max_video_processor_input_height_.AddSample(input_size.height());
+  max_video_processor_output_width_.AddSample(output_size.width());
+  max_video_processor_output_height_.AddSample(output_size.height());
   gfx::Size effective_input_size(max_video_processor_input_width_.Max(),
                                  max_video_processor_input_height_.Max());
   gfx::Size effective_output_size(max_video_processor_output_width_.Max(),
