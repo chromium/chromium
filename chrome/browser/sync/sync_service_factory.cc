@@ -104,16 +104,14 @@ std::unique_ptr<KeyedService> BuildSyncService(
   // Incognito, guest, or system profiles aren't relevant for Sync, and
   // no SyncService should be created for those types of profiles.
   CHECK(profile->IsRegularProfile());
-  init_params.is_regular_profile_for_uma = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Ash, there are additional non-interesting profile types (sign-in
   // profile and lockscreen profile).
-  // TODO(crbug.com/1483981): No SyncService should be created for these kinds
-  // of profiles; then the `is_regular_profile_for_uma` param can be retired.
-  init_params.is_regular_profile_for_uma =
-      init_params.is_regular_profile_for_uma &&
-      ash::ProfileHelper::IsUserProfile(profile);
+  CHECK(ash::ProfileHelper::IsUserProfile(profile));
 #endif
+  // TODO(crbug.com/1483981): Remove `is_regular_profile_for_uma` since it's
+  // always true.
+  init_params.is_regular_profile_for_uma = true;
 
   init_params.sync_client =
       std::make_unique<browser_sync::ChromeSyncClient>(profile);
@@ -223,8 +221,7 @@ SyncServiceFactory::SyncServiceFactory()
           "SyncService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1483981): Exclude AshInternals profiles (add
-              // `.WithAshInternals(ProfileSelection::kNone)`).
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
