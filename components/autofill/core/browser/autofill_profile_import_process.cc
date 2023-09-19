@@ -197,7 +197,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     if (!base::FeatureList::IsEnabled(
             features::test::kAutofillDisableSilentProfileUpdates)) {
       merged_profile.set_modification_date(AutofillClock::Now());
-      updated_profiles_.emplace_back(merged_profile);
+      silently_updated_profiles_.emplace_back(merged_profile);
     } else {
       ++number_of_unchanged_profiles;
     }
@@ -222,7 +222,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
       import_type_ = AutofillProfileImportType::kUnusableIncompleteProfile;
     }
   } else {
-    bool silent_updates_present = updated_profiles_.size() > 0;
+    bool silent_updates_present = !silently_updated_profiles_.empty();
 
     if (merge_candidate_.has_value()) {
       import_type_ =
@@ -263,7 +263,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // One of the unchanged or updated profiles might be considered for migration.
   // In this case, `import_type()` is `kProfileMigrationAndMaybeSilentUpdates`.
   DCHECK_EQ(existing_profiles.size(),
-            number_of_unchanged_profiles + updated_profiles_.size() +
+            number_of_unchanged_profiles + silently_updated_profiles_.size() +
                 (merge_candidate_.has_value() ? 1 : 0));
   DCHECK_NE(import_type_, AutofillProfileImportType::kImportTypeUnspecified);
 }
@@ -304,8 +304,8 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
   std::vector<AutofillProfile> resulting_profiles;
   std::set<std::string> guids_of_changed_profiles;
 
-  // Add all updated profiles.
-  for (const auto& updated_profile : updated_profiles_) {
+  // Add all silently updated profiles.
+  for (const auto& updated_profile : silently_updated_profiles_) {
     resulting_profiles.push_back(updated_profile);
     guids_of_changed_profiles.insert(updated_profile.guid());
   }
@@ -324,7 +324,7 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
       // revived below as one of the unchanged profiles.
       guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
       // If the `import_candidate_` was silently updated, it is part of
-      // `updated_profiles_`. Remove the corresponding
+      // `silently_updated_profiles_`. Remove the corresponding
       // `confirmed_import_candidate_` from `reesulting_profiles`, so it doesn't
       // get revived.
       base::EraseIf(resulting_profiles, [&](const AutofillProfile& profile) {
@@ -431,8 +431,7 @@ bool ProfileImportProcess::ProfilesChanged() const {
   // At this point, a user decision must have been supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
-  // If there are any updated profiles, return true.
-  if (updated_profiles_.size() > 0) {
+  if (!silently_updated_profiles_.empty()) {
     return true;
   }
 

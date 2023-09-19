@@ -575,7 +575,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   ASSERT_TRUE(import_data.merge_candidate().has_value());
   EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
   // But there should be no further updates profiles.
-  EXPECT_EQ(import_data.updated_profiles().size(), 0u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 0u);
 
   // Simulate the decline by the user.
   import_data.Declined();
@@ -621,7 +621,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   // There should be no merge candidate since this is only a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
   // But there should be one updated profiles.
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // In this scenario, the user should not be prompted.
   import_data.AcceptWithoutPrompt();
@@ -667,7 +667,7 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
   ASSERT_TRUE(import_data.merge_candidate().has_value());
   EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
   // And also an updated profile.
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // Simulate that the user accepts the prompt without edits.
   import_data.AcceptWithoutEdits();
@@ -710,7 +710,7 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
   ASSERT_TRUE(import_data.merge_candidate().has_value());
   EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
   // And also an updated profile.
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // Simulate that the user declines the merge.
   import_data.Declined();
@@ -755,7 +755,7 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
   // There should be no merge candidate because the only potential candidate is
   // blocked but there should be a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // The user should not be asked.
   import_data.AcceptWithoutPrompt();
@@ -796,7 +796,7 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
   // There should be no merge candidate because the only potential candidate is
   // blocked and also no silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
-  EXPECT_EQ(import_data.updated_profiles().size(), 0u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 0u);
 
   // The user should not be asked.
   import_data.AcceptWithoutPrompt();
@@ -838,7 +838,7 @@ TEST_F(AutofillProfileImportProcessTest,
   // There should be no merge candidate since this is only a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
   // But there should be one updated profiles.
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // In this scenario, the user should not be prompted.
   import_data.AcceptWithoutPrompt();
@@ -880,7 +880,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
   // There should be no merge candidate since this is only a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
   // But there should be one updated profiles.
-  EXPECT_TRUE(import_data.updated_profiles().empty());
+  EXPECT_TRUE(import_data.silently_updated_profiles().empty());
 
   // In this scenario, the user should not be prompted.
   import_data.AcceptWithoutPrompt();
@@ -915,7 +915,7 @@ TEST_F(AutofillProfileImportProcessTest,
   // There should be no merge candidate because the only potential candidate is
   // blocked but there should be a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
-  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
 
   // The user should not be asked.
   import_data.AcceptWithoutPrompt();

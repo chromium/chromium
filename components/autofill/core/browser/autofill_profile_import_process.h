@@ -141,8 +141,8 @@ class ProfileImportProcess {
     return merge_candidate_;
   }
 
-  const std::vector<AutofillProfile>& updated_profiles() const {
-    return updated_profiles_;
+  const std::vector<AutofillProfile>& silently_updated_profiles() const {
+    return silently_updated_profiles_;
   }
 
   const AutofillProfileImportId& import_id() const { return import_id_; }
@@ -265,7 +265,7 @@ class ProfileImportProcess {
   AutofillProfile observed_profile_;
 
   // Profiles that are silently updatable with the observed profile.
-  std::vector<AutofillProfile> updated_profiles_;
+  std::vector<AutofillProfile> silently_updated_profiles_;
 
   // A profile in its original state that can be merged with the observed
   // profile.
