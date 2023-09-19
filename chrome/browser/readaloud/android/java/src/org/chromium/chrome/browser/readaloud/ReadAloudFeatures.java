@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 /** Functions for getting the values of ReadAloud feature params. */
 public final class ReadAloudFeatures {
     private static final String API_KEY_OVERRIDE_PARAM_NAME = "api_key_override";
+    private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
 
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
@@ -18,5 +19,15 @@ public final class ReadAloudFeatures {
         String apiKeyOverride = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);
         return apiKeyOverride.isEmpty() ? null : apiKeyOverride;
+    }
+
+    /**
+     * Returns the voice list override param value in serialized form, or empty
+     * string if the param is absent. Value is a base64-encoded ListVoicesResponse
+     * binarypb.
+     */
+    public static String getVoicesParam() {
+        return ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.READALOUD, VOICES_OVERRIDE_PARAM_NAME);
     }
 }

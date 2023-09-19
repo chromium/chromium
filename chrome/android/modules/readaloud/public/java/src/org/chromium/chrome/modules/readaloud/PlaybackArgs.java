@@ -29,7 +29,7 @@ public class PlaybackArgs {
      * Description is only relevant for the UI, language and voiceId are required
      * for the server request.
      */
-    class PlaybackVoice {
+    static class PlaybackVoice {
         private final String mLanguage;
         private final String mVoiceId;
         @Nullable
