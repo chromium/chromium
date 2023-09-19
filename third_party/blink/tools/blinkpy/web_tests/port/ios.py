@@ -42,7 +42,7 @@ class IOSPort(base.Port):
         if result:
             _log.error('For complete ios build requirements, please see:')
             _log.error('')
-            _log.error(BUILD_REQUIREMENTS_URL)
+            _log.error(self.BUILD_REQUIREMENTS_URL)
 
         return result
 
