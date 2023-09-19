@@ -28,9 +28,9 @@ class MockDialogModel : public AuthenticatorRequestDialogModel {
 
   MOCK_METHOD(base::span<const Mechanism>, mechanisms, (), (const));
   MOCK_METHOD(absl::optional<std::u16string>,
-              GetPrioritySyncedPhoneName,
+              GetPriorityPhoneName,
               (),
-              (const));
+              (const override));
 };
 
 class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
@@ -114,7 +114,7 @@ constexpr char16_t kPhoneName[] = u"pixel 7";
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
   MockDialogModel dialog_model;
   std::vector<Mechanism> mechanisms;
-  EXPECT_CALL(dialog_model, GetPrioritySyncedPhoneName)
+  EXPECT_CALL(dialog_model, GetPriorityPhoneName)
       .WillRepeatedly(testing::Return(kPhoneName));
   mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
@@ -139,7 +139,7 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
   MockDialogModel dialog_model;
   std::vector<Mechanism> mechanisms;
-  EXPECT_CALL(dialog_model, GetPrioritySyncedPhoneName)
+  EXPECT_CALL(dialog_model, GetPriorityPhoneName)
       .WillRepeatedly(testing::Return(kPhoneName));
   mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),

@@ -939,7 +939,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, cable, internal},
-       {one_phone_cred, two_cred},
+       {one_phone_cred, two_cred, has_plat, empty_al},
        {psync("a")},
        {c(cred1), c(cred2), c(phonecred1), add},
        mss},
@@ -947,7 +947,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, cable, internal},
-       {two_cred},
+       {two_cred, has_plat, empty_al},
        {psync("a")},
        {c(cred1), c(cred2), add},
        mss},
@@ -959,7 +959,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, internal},
-       {two_cred},
+       {two_cred, has_plat, empty_al},
        {psync("a")},
        {c(cred1), c(cred2), t(usb)},
        mss},
@@ -967,11 +967,20 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, cable, internal},
-       {two_phone_cred},
+       {two_phone_cred, empty_al},
        {psync("a")},
        {c(phonecred1), c(phonecred2), add},
        mss},
-      // Single internal credential.
+      // Single internal credential with empty allow list.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {one_cred, has_plat, empty_al},
+       {psync("a")},
+       {c(cred1), add},
+       hero,
+     },
+      // Single internal credential with non-empty allow list.
       {L,
        ga,
        {usb, cable, internal},
@@ -992,6 +1001,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {psync("a")},
        {c(phonecred1), add},
        hero},
+      // Single phone credential with non-empty allow list.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {one_phone_cred},
+       {psync("a")},
+       {c(phonecred1), add},
+       pconf},
 
 #if BUILDFLAG(IS_MAC)
       // Even with iCloud Keychain present, we shouldn't jump to it without
@@ -1019,41 +1036,42 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
   Test kListSyncedPasskeysTests_Windows_NoWinHybrid[]{
       // Mix of phone and internal credentials, but no USB/NFC.
-      // This should not offer dispatching directly to the Windows API.
+      // This should jump to Windows, as there is a match with the local
+      // authenticator.
       {L,
        ga,
        {cable},
-       {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
+       {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal,
+        has_plat},
        {psync("a")},
        {c(wincred1), c(wincred2), c(phonecred1), add},
-       mss},
-      // Mix of phone, internal credentials, and USB/NFC.
+       plat_ui},
+      // Mix of phone, internal credentials, and USB/NFC (empty allow list).
       // This should offer dispatching to the Windows API for USB/NFC.
       {L,
        ga,
        {cable},
-       {one_phone_cred, two_cred, has_winapi},
+       {one_phone_cred, two_cred, has_winapi, empty_al, has_plat},
        {psync("a")},
        {c(wincred1), c(wincred2), c(phonecred1), add, winapi},
        mss},
-      // Phone credentials and unknown Windows Hello credential status.
-      // This should offer dispatching to the Windows API for Windows Hello.
+      // Phone credentials and unknown Windows Hello credential status. This
+      // should offer dispatching to the Windows API for Windows Hello.
       {L,
        ga,
        {cable},
-       {two_phone_cred, has_winapi, maybe_plat, only_hybrid_or_internal},
+       {two_phone_cred, has_winapi, maybe_plat, empty_al},
        {psync("a")},
        {c(phonecred1), c(phonecred2), winapi, add},
        mss},
   };
 
   Test kListSyncedPasskeysTests_Windows_WinHybrid[]{
-      // Mix of phone and internal credentials, no USB/NFC.
-      // This should offer dispatching directly to the Windows API for hybrid.
+      // Mix of phone and internal credentials (empty allow list).
       {L,
        ga,
        {cable},
-       {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
+       {one_phone_cred, two_cred, has_winapi, empty_al, has_plat},
        {psync("a")},
        {c(wincred1), c(wincred2), c(phonecred1), winapi},
        mss},
@@ -1062,7 +1080,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {},
-       {two_cred, has_winapi, only_internal},
+       {two_cred, has_winapi, only_internal, has_plat},
        {},
        {c(wincred1), c(wincred2)},
        plat_ui},
@@ -2135,7 +2153,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, JumpToWindowsWithNewUI) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
+// Tests that if the user does not have a phone from sync, Chrome offers a phone
+// confirmation screen for an allow-list request when there is a single
+// previously paired phone, no local matches, and only hybrid or internal
+// credentials in the allow-list.
+TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_NoSync) {
   AuthenticatorRequestDialogModel model(main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
@@ -2146,11 +2168,52 @@ TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
+  transports_info.is_only_hybrid_or_internal = true;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
+  transports_info.has_icloud_keychain_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
+  EXPECT_EQ(model.current_step(), Step::kPhoneConfirmationSheet);
+  EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from QR");
   model.ContactPriorityPhone();
   EXPECT_EQ(model.current_step(), Step::kCableActivate);
   EXPECT_EQ(model.selected_phone_name(), "Phone from QR");
+}
+
+// Tests that if the user has a phone from sync, Chrome offers a phone
+// confirmation screen for an allow-list request when there is a phone passkey
+// match and no local matches.
+TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_WithSync) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+      /*disabled_features=*/{});
+  AuthenticatorRequestDialogModel model(main_rfh());
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+  phones.emplace_back(GetPairingFromQR());
+  phones.emplace_back(GetPairingFromSync());
+  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+                                 std::move(phones), base::DoNothing(),
+                                 absl::nullopt);
+  TransportAvailabilityInfo transports_info;
+  transports_info.recognized_credentials = {kPhoneCred1, kPhoneCred2};
+  transports_info.is_ble_powered = true;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = {AuthenticatorTransport::kHybrid};
+  transports_info.is_only_hybrid_or_internal = true;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
+  transports_info.has_icloud_keychain_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+  EXPECT_EQ(model.current_step(), Step::kPhoneConfirmationSheet);
+  EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from sync");
+  model.ContactPriorityPhone();
+  EXPECT_EQ(model.current_step(), Step::kCableActivate);
+  EXPECT_EQ(model.selected_phone_name(), "Phone from sync");
 }
 
 #if BUILDFLAG(IS_MAC)

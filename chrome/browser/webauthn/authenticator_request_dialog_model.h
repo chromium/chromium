@@ -538,8 +538,10 @@ class AuthenticatorRequestDialogModel {
     return ephemeral_state_.priority_mechanism_index_;
   }
 
-  // Contacts the "priority" paired phone. This is only valid to call when there
-  // is a single phone paired.
+  // Contacts the "priority" paired phone. This is the phone from sync if there
+  // are a priori discovered GPM passkeys, or the first phone on the list
+  // otherwise.
+  // Only valid to call if |GetPriorityPhoneName()| returns a value.
   void ContactPriorityPhone();
 
   // ContactPhoneForTesting triggers a contact for a phone with the given name.
@@ -547,10 +549,10 @@ class AuthenticatorRequestDialogModel {
   // user-visible mechanisms and use the callbacks therein.
   void ContactPhoneForTesting(const std::string& name);
 
-  // Returns the name of the phone from sync that will be dispatched to when a
-  // user selects a Mechanism::Credential corresponding to a phone credential,
-  // or absl::nullopt if there isn't one.
-  virtual absl::optional<std::u16string> GetPrioritySyncedPhoneName() const;
+  // Returns the name of the "priority" paired phone. This is the phone from
+  // sync if there are a priori discovered GPM passkeys, or the first phone on
+  // the list otherwise.
+  virtual absl::optional<std::u16string> GetPriorityPhoneName() const;
 
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
@@ -730,10 +732,6 @@ class AuthenticatorRequestDialogModel {
 
   void StartICloudKeychain();
 
-  // Contacts the "priority" paired phone from sync. At least one sync phone
-  // must be available to call this.
-  void ContactPrioritySyncedPhone();
-
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
@@ -747,7 +745,7 @@ class AuthenticatorRequestDialogModel {
 
   // Returns the index (into `paired_phones_`) of a phone that has been paired
   // through Chrome Sync, or absl::nullopt if there isn't one.
-  absl::optional<size_t> GetPrioritySyncedPhoneIndex() const;
+  absl::optional<size_t> GetIndexOfMostRecentlyUsedPhoneFromSync() const;
 
   // SortRecognizedCredentials sorts
   // `transport_availability_.recognized_credentials` into username order.
@@ -851,6 +849,10 @@ class AuthenticatorRequestDialogModel {
   // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
   // QR-based pairing. The entries are sorted by name.
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones_;
+
+  // priority_phone_index_ contains an index in `paired_phones_` for the phone
+  // that should be dispatched to by default, if any.
+  absl::optional<size_t> priority_phone_index_;
 
   // paired_phones_contacted_ is the same length as |paired_phones_| and
   // contains true whenever the corresponding phone as already been contacted.

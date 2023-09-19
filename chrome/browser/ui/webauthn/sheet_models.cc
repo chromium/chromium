@@ -1527,7 +1527,7 @@ AuthenticatorMultiSourcePickerSheetModel::
   }
 
   const absl::optional<std::u16string>& phone_name =
-      dialog_model->GetPrioritySyncedPhoneName();
+      dialog_model->GetPriorityPhoneName();
   if (phone_name) {
     primary_passkeys_label_ =
         l10n_util::GetStringFUTF16(IDS_WEBAUTHN_FROM_PHONE_LABEL, *phone_name);
