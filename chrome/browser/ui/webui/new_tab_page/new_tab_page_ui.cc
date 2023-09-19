@@ -512,7 +512,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING_FOR},
       {"modulesThisTypeOfCardText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME},
-      {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
+      {"modulesJourneyDisable",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT},
       {"modulesJourneysDismissButton",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON},
       {"modulesJourneysDoneButton",
@@ -545,14 +546,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean("wideModulesEnabled", base::FeatureList::IsEnabled(
                                                ntp_features::kNtpWideModules));
-
-  if (base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)) {
-    source->AddLocalizedString("modulesJourneysInfo",
-                               IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO2);
-    source->AddLocalizedString(
-        "modulesJourneyDisable",
-        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT);
-  }
 
   source->AddBoolean(
       "modulesHeaderIconEnabled",
