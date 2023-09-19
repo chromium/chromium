@@ -32,10 +32,14 @@ enum class AccessPoint : int;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Creates the coordinator with the given parameters. showUserEmail should be
+// YES if the user has seen the account email just before the History Sync
+// Opt-In screen is shown. (e.g. if a manual sign-in is done)
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                              showUserEmail:(BOOL)showUserEmail
                          signOutIfDeclined:(BOOL)signOutIfDeclined
+                                isOptional:(BOOL)isOptional
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;

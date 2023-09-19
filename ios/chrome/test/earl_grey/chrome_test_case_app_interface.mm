@@ -30,6 +30,7 @@ NSMutableSet* invokedCompletionUUID = nil;
   chrome_test_util::ResetMockAuthentication();
   chrome_test_util::ResetUserApprovedAccountListManager();
   chrome_test_util::ResetSyncSelectedDataTypes();
+  chrome_test_util::ResetHistorySyncPreferencesForTesting();
 }
 
 + (void)removeInfoBarsAndPresentedStateWithCompletionUUID:

@@ -10,6 +10,7 @@
 
 class AuthenticationService;
 @class HistorySyncCoordinator;
+class PrefService;
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -27,6 +28,7 @@ enum class HistorySyncSkipReason {
   kNotSignedIn,
   kSyncForbiddenByPolicies,
   kAlreadyOptedIn,
+  kDeclinedTooOften,
 };
 
 // Delegate for the history sync coordinator.
@@ -48,7 +50,9 @@ enum class HistorySyncSkipReason {
 // should not be skipped.
 + (HistorySyncSkipReason)
     getHistorySyncOptInSkipReason:(syncer::SyncService*)syncService
-            authenticationService:(AuthenticationService*)authenticationService;
+            authenticationService:(AuthenticationService*)authenticationService
+                      prefService:(PrefService*)prefService
+            isHistorySyncOptional:(BOOL)isOptional;
 
 // Records metric if the History Sync Opt-In screen is skipped for the given
 // reason, for the given access point.
@@ -68,6 +72,7 @@ enum class HistorySyncSkipReason {
                                 (id<HistorySyncCoordinatorDelegate>)delegate
                             firstRun:(BOOL)firstRun
                        showUserEmail:(BOOL)showUserEmail
+                          isOptional:(BOOL)isOptional
                          accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 

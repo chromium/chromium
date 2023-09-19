@@ -13,6 +13,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
@@ -143,6 +145,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // Chrome account manager service observer bridge.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountAccountManagerServiceObserver;
+  // The pref service.
+  PrefService* _prefService;
   // Signed-in identity. Note: may be nil while signing out.
   id<SystemIdentity> _signedInIdentity;
 }
@@ -152,6 +156,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+              prefService:(PrefService*)prefService
       initialAccountState:(SyncSettingsAccountState)initialAccountState {
   self = [super init];
   if (self) {
@@ -169,6 +174,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
             self, _chromeAccountManagerService);
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
+    _prefService = prefService;
     _initialAccountState = initialAccountState;
   }
   return self;
@@ -181,6 +187,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _authenticationService = nullptr;
   _chromeAccountManagerService = nullptr;
   _accountAccountManagerServiceObserver.reset();
+  _prefService = nullptr;
   _signedInIdentity = nil;
 }
 
@@ -1106,6 +1113,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         break;
       case HistoryDataTypeItemType: {
         DCHECK(syncSwitchItem);
+        // Update History Sync decline prefs.
+        value ? history_sync::ResetDeclinePrefs(_prefService)
+              : history_sync::RecordDeclinePrefs(_prefService);
         // Don't try to toggle the managed item.
         if (![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
                                                      kHistory]) {

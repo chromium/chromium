@@ -14,6 +14,7 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+class PrefService;
 @protocol ManageSyncSettingsCommandHandler;
 @protocol ManageSyncSettingsConsumer;
 @protocol SyncErrorSettingsCommandHandler;
@@ -63,6 +64,7 @@ class SyncService;
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+              prefService:(PrefService*)prefService
       initialAccountState:(SyncSettingsAccountState)initialAccountState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

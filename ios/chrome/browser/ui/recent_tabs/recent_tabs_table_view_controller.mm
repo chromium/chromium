@@ -1894,7 +1894,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // correct screen to handle the error (ex. passphrase screen).
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:self.syncService
-              authenticationService:authenticationService];
+              authenticationService:authenticationService
+                        prefService:_browserState->GetPrefs()
+              isHistorySyncOptional:NO];
   return skipReason == HistorySyncSkipReason::kNone;
 }
 

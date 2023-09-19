@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 namespace chrome_test_util {
@@ -176,6 +177,12 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
   [authenticationFlow startSignInWithCompletion:^(BOOL success) {
     authenticationFlow = nil;
   }];
+}
+
+void ResetHistorySyncPreferencesForTesting() {
+  ChromeBrowserState* browser_state = GetOriginalBrowserState();
+  PrefService* prefs = browser_state->GetPrefs();
+  history_sync::ResetDeclinePrefs(prefs);
 }
 
 void ResetSyncSelectedDataTypes() {
