@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "base/debug/crash_logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -154,6 +155,9 @@ void JavaScriptContentWorld::ScriptMessageReceived(
     JavaScriptFeature::ScriptMessageHandler handler,
     BrowserState* browser_state,
     WKScriptMessage* script_message) {
+  SCOPED_CRASH_KEY_STRING32("ScriptMessage", "name",
+                            base::SysNSStringToUTF8(script_message.name));
+
   web::WebViewWebStateMap* map =
       web::WebViewWebStateMap::FromBrowserState(browser_state);
   web::WebState* web_state = map->GetWebStateForWebView(script_message.webView);
