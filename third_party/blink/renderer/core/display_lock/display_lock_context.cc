@@ -731,6 +731,10 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
     } scoped_force(this);
 
     auto* layout_object = element_->GetLayoutObject();
+
+    // Ensure any layout-type specific caches are dirty.
+    layout_object->SetGridPlacementDirty(true);
+
     if (child_layout_was_blocked_ || HasStashedScrollOffset()) {
       // We've previously blocked a child traversal when doing self-layout for
       // the locked element, so we're marking it with child-needs-layout so that
