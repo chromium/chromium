@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   cookie_list = GetAllCookies(iwa_main_storage_partition);
   EXPECT_EQ(cookie_list.size(), 0UL);
   // Verify localStorage cleared.
-  EXPECT_EQ(GetLocalStorageCount(cookie_iframe_rfh), 0);
+  EXPECT_EQ(GetLocalStorageCount(content::ChildFrameAt(rfh, 0)), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
@@ -809,7 +809,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     cookie_list = GetAllCookies(controlled_frame_partition);
     EXPECT_EQ(cookie_list.size(), 0UL);
     // Verify localStorage cleared.
-    EXPECT_EQ(GetLocalStorageCount(controlled_frame_rfh), 0);
+    EXPECT_EQ(
+        GetLocalStorageCount(
+            web_contents->GetInnerWebContents()[0]->GetPrimaryMainFrame()),
+        0);
   }
 }
 
