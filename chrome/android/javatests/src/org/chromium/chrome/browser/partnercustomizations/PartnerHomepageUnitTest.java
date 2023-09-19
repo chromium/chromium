@@ -22,16 +22,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Unit test suite for partner homepage.
@@ -51,7 +50,7 @@ public class PartnerHomepageUnitTest {
 
     public static final String TAG = "PartnerHomepageUnitTest";
 
-    private static final GURL TEST_CUSTOM_HOMEPAGE_GURL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL TEST_CUSTOM_HOMEPAGE_GURL = new GURL("http://chrome.com");
 
     private HomepageManager mHomepageManager;
     private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
@@ -174,7 +173,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertNull(HomepageManager.getHomepageUri());
+        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
     }
 
     /**
@@ -206,7 +205,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_GURL.getSpec(), HomepageManager.getHomepageUri());
+        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_GURL, HomepageManager.getHomepageGurl());
     }
 
     /**
@@ -236,7 +235,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertNull(mPartnerBrowserCustomizations.getHomePageUrl());
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertNull(HomepageManager.getHomepageUri());
+        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
 
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 2000);
 
@@ -279,7 +278,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertNull(mPartnerBrowserCustomizations.getHomePageUrl());
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertNull(HomepageManager.getHomepageUri());
+        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
 
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 3000);
 
@@ -291,7 +290,7 @@ public class PartnerHomepageUnitTest {
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsDelayedProvider.HOMEPAGE_URI,
-                HomepageManager.getHomepageUri());
+                HomepageManager.getHomepageGurl().getSpec());
     }
 
     /**
@@ -324,12 +323,12 @@ public class PartnerHomepageUnitTest {
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
-                HomepageManager.getHomepageUri());
+                HomepageManager.getHomepageGurl().getSpec());
     }
 
     private void assertHomePageIsNtp() {
         // The home page should default to the NTP
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(UrlConstants.NTP_URL, HomepageManager.getHomepageUri());
+        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getHomepageGurl());
     }
 }

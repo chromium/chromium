@@ -187,7 +187,8 @@ public class HomepagePolicyIntegrationTest {
 
     private String getHomepageUrlOnUiThread() {
         AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { res.set(HomepageManager.getHomepageUri()); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { res.set(HomepageManager.getHomepageGurl().getSpec()); });
         return res.get();
     }
 }

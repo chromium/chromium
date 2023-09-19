@@ -85,6 +85,7 @@ import org.chromium.components.segmentation_platform.proto.SegmentationProto.Seg
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
@@ -97,7 +98,7 @@ public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
     static class ShadowHomepageManager {
-        static String sHomepageUrl;
+        static GURL sHomepageGurl;
         static boolean sIsHomepageEnabled;
 
         @Implementation
@@ -106,8 +107,8 @@ public class ReturnToChromeUtilUnitTest {
         }
 
         @Implementation
-        public static String getHomepageUri() {
-            return sHomepageUrl;
+        public static GURL getHomepageGurl() {
+            return sHomepageGurl;
         }
     }
 
@@ -166,9 +167,9 @@ public class ReturnToChromeUtilUnitTest {
         ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
         // HomepageManager:
-        ShadowHomepageManager.sHomepageUrl = UrlConstants.NTP_NON_NATIVE_URL;
+        ShadowHomepageManager.sHomepageGurl = UrlConstants.ntpGurl();
         ShadowHomepageManager.sIsHomepageEnabled = true;
-        Assert.assertEquals(UrlConstants.NTP_NON_NATIVE_URL, HomepageManager.getHomepageUri());
+        Assert.assertEquals(UrlConstants.ntpGurl(), HomepageManager.getHomepageGurl());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
 
         ShadowHomepagePolicyManager.sIsInitialized = true;
@@ -460,7 +461,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
 
         // Sets a customized homepage:
-        ShadowHomepageManager.sHomepageUrl = "foo.com";
+        ShadowHomepageManager.sHomepageGurl = new GURL("http://foo.com");
         Assert.assertFalse(ReturnToChromeUtil.useChromeHomepage());
 
         // Sets main intent from launcher:
@@ -483,7 +484,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                 mContext, intent, mTabModelSelector, mInactivityTracker, false /* isTablet */));
 
-        ShadowHomepageManager.sHomepageUrl = UrlConstants.NTP_NON_NATIVE_URL;
+        ShadowHomepageManager.sHomepageGurl = UrlConstants.ntpGurl();
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
     }

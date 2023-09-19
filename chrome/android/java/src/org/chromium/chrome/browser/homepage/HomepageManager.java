@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.homepage;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -125,50 +124,50 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public static boolean shouldCloseAppWithZeroTabs() {
         return HomepageManager.isHomepageEnabled()
-                && !UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri());
+                && !UrlUtilities.isNTPUrl(HomepageManager.getHomepageGurl());
     }
 
     /**
-     * Get the current homepage URI string. If the homepage is disabled, return null; otherwise it
-     * will always return a non-empty string. In cases when the homepage is specifically set as
-     * empty, this function will fallback to return {@link UrlConstants.NTP_URL}. If the default
-     * search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
+     * Get the current homepage URI. If the homepage is disabled, return an empty GURL; otherwise it
+     * will always return a non-empty GURL. In cases when the homepage is specifically set as
+     * empty, this function will fallback to return {@link ChromeUrlConstants.nativeNtpGurl()}.
+     * If the default search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
      *
      * This function needs to be called on UI thread since Profile.getLastUsedRegularProfile() is
      * called.
      *
-     * This function checks different source to get the current homepage, which listed below
+     * This function checks different sources to get the current homepage, which is listed below
      * according to their priority:
      *
-     * <b>isManagedByPolicy > useChromeNTP > useDefaultUri > useCustomUri</b>
+     * <b>isManagedByPolicy > useChromeNTP > useDefaultGurl > useCustomGurl</b>
      *
-     * @return A non-empty homepage URI string, if homepage is enabled. Null otherwise.
+     * @return A non-empty GURL, if homepage is enabled. An empty GURL otherwise.
      *
      * @see HomepagePolicyManager#isHomepageManagedByPolicy()
      * @see #getPrefHomepageUseChromeNTP()
      * @see #getPrefHomepageUseDefaultUri()
      */
-    public static @Nullable String getHomepageUri() {
-        if (!isHomepageEnabled()) return null;
+    public static @Nullable GURL getHomepageGurl() {
+        if (!isHomepageEnabled()) return GURL.emptyGURL();
 
-        String homepageUri = getInstance().getHomepageUriIgnoringEnabledState().getSpec();
-        if (TextUtils.isEmpty(homepageUri)) {
-            homepageUri = UrlConstants.NTP_URL;
+        GURL homepageGurl = getInstance().getHomepageGurlIgnoringEnabledState();
+        if (homepageGurl.isEmpty()) {
+            homepageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
 
         // We have to use Profile.getLastUsedRegularProfile() to get the last used regular Profile
         // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
         // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
         // NTP.
-        return DseNewTabUrlManager.maybeGetOverrideUrl(homepageUri,
+        return DseNewTabUrlManager.maybeGetOverrideUrl(homepageGurl,
                 ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null);
     }
 
     /**
-     * @return The default homepage URI if the homepage is partner provided or the new tab page
-     *         if the homepage button is force enabled via flag.
+     * @return A GURL for the default homepage URI if the homepage is partner provided, or the new
+     *         tab page if the homepage button is force enabled via flag.
      */
-    public static GURL getDefaultHomepageUri() {
+    public static GURL getDefaultHomepageGurl() {
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
             return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
         }
@@ -204,28 +203,15 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @return Whether the current homepage is something other than the NTP.
      */
     public static boolean isHomepageNonNtp() {
-        String currentHomepage = getHomepageUri();
-        return !TextUtils.isEmpty(currentHomepage) && !UrlUtilities.isNTPUrl(currentHomepage);
-    }
-
-    /**
-     * Determines whether the homepage is set to something other than the NTP or empty/null. This is
-     * the same as {@link #isHomepageNonNtp()}, but uses {@link UrlUtilities#isCanonicalizedNTPUrl}
-     * instead of {@link UrlUtilities#isNTPUrl} to make it possible to use before native is loaded.
-     * Prefer {@link #isHomepageNonNtp()} if possible.
-     * @return Whether the current homepage is something other than the NTP.
-     */
-    public static boolean isHomepageNonNtpPreNative() {
-        String currentHomepage = getHomepageUri();
-        return !TextUtils.isEmpty(currentHomepage)
-                && !UrlUtilities.isCanonicalizedNTPUrl(currentHomepage);
+        GURL currentHomepage = getHomepageGurl();
+        return !currentHomepage.isEmpty() && !UrlUtilities.isNTPUrl(currentHomepage);
     }
 
     /**
      * Get homepage URI without checking if the homepage is enabled.
-     * @return Homepage URI based on policy and shared preference settings.
+     * @return Homepage GURL based on policy and shared preference settings.
      */
-    private @NonNull GURL getHomepageUriIgnoringEnabledState() {
+    private @NonNull GURL getHomepageGurlIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
             return HomepagePolicyManager.getHomepageUrl();
         }
@@ -233,9 +219,9 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
             return ChromeUrlConstants.nativeNtpGurl();
         }
         if (getPrefHomepageUseDefaultUri()) {
-            return getDefaultHomepageUri();
+            return getDefaultHomepageGurl();
         }
-        return getPrefHomepageCustomUri();
+        return getPrefHomepageCustomGurl();
     }
 
     /**
@@ -257,9 +243,9 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     }
 
     /**
-     * @return User specified homepage custom URI string.
+     * @return User specified homepage custom GURL.
      */
-    public GURL getPrefHomepageCustomUri() {
+    public GURL getPrefHomepageCustomGurl() {
         String homepageCustomGurlSerialized =
                 mSharedPreferencesManager.readString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, "");
         if (!homepageCustomGurlSerialized.equals("")) {
@@ -303,22 +289,22 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * These shared preference values will reflect what homepage we are using.
      *
      * The priority of the input pref values during value checking:
-     * useChromeNTP > useDefaultUri > customUri
+     * useChromeNTP > useDefaultGurl > customGurl
      *
      * @param useChromeNtp True if homepage is set as Chrome's New tab page.
-     * @param useDefaultUri True if homepage is using default URI.
-     * @param customUri String value for user customized homepage URI.
+     * @param useDefaultGurl True if homepage is using default URI.
+     * @param customGurl A GURL for the user customized homepage URI.
      *
-     * @see #getHomepageUri()
+     * @see #getHomepageGurl()
      */
     public void setHomepagePreferences(
-            boolean useChromeNtp, boolean useDefaultUri, GURL customUri) {
+            boolean useChromeNtp, boolean useDefaultGurl, GURL customGurl) {
         boolean wasUseChromeNTP = getPrefHomepageUseChromeNTP();
         boolean wasUseDefaultUri = getPrefHomepageUseDefaultUri();
-        GURL oldCustomUri = getPrefHomepageCustomUri();
+        GURL oldCustomGurl = getPrefHomepageCustomGurl();
 
-        if (useChromeNtp == wasUseChromeNTP && useDefaultUri == wasUseDefaultUri
-                && oldCustomUri.equals(customUri)) {
+        if (useChromeNtp == wasUseChromeNTP && useDefaultGurl == wasUseDefaultUri
+                && oldCustomGurl.equals(customGurl)) {
             return;
         }
 
@@ -327,14 +313,14 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
                     ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, useChromeNtp);
         }
 
-        if (wasUseDefaultUri != useDefaultUri) {
+        if (wasUseDefaultUri != useDefaultGurl) {
             mSharedPreferencesManager.writeBoolean(
-                    ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI, useDefaultUri);
+                    ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI, useDefaultGurl);
         }
 
-        if (!oldCustomUri.equals(customUri)) {
+        if (!oldCustomGurl.equals(customGurl)) {
             mSharedPreferencesManager.writeString(
-                    ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, customUri.serialize());
+                    ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, customGurl.serialize());
         }
 
         RecordUserAction.record("Settings.Homepage.LocationChanged_V2");
@@ -377,7 +363,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
                     : HomepageLocationType.PARTNER_PROVIDED_OTHER;
         }
         // If user type NTP URI as their customized homepage, we'll record user is using NTP
-        return UrlUtilities.isNTPUrl(getPrefHomepageCustomUri())
+        return UrlUtilities.isNTPUrl(getPrefHomepageCustomGurl())
                 ? HomepageLocationType.USER_CUSTOMIZED_NTP
                 : HomepageLocationType.USER_CUSTOMIZED_OTHER;
     }

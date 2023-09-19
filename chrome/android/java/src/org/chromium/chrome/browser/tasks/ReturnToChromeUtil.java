@@ -82,6 +82,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -488,12 +489,11 @@ public final class ReturnToChromeUtil {
      */
     @VisibleForTesting
     public static boolean useChromeHomepage() {
-        String homePageUrl = HomepageManager.getHomepageUri();
+        GURL homePageGurl = HomepageManager.getHomepageGurl();
         return HomepageManager.isHomepageEnabled()
                 && ((HomepagePolicyManager.isInitializedWithNative()
                             || sSkipInitializationCheckForTesting)
-                        && (TextUtils.isEmpty(homePageUrl)
-                                || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl)));
+                        && (homePageGurl.isEmpty() || UrlUtilities.isNTPUrl(homePageGurl)));
     }
 
     /**

@@ -76,17 +76,17 @@ public class DseNewTabUrlManager {
      * @param url The URL to check.
      * @param profile The instance of the current {@link Profile}.
      */
-    public static String maybeGetOverrideUrl(String url, Profile profile) {
+    public static GURL maybeGetOverrideUrl(GURL gurl, Profile profile) {
         if ((profile != null && profile.isOffTheRecord())
                 || !isNewTabSearchEngineUrlAndroidEnabled() || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(url)) {
-            return url;
+                || !UrlUtilities.isNTPUrl(gurl)) {
+            return gurl;
         }
 
         TemplateUrlService templateUrlService =
                 profile != null ? TemplateUrlServiceFactory.getForProfile(profile) : null;
         String newTabUrl = getDSENewTabUrl(templateUrlService);
-        return newTabUrl != null ? newTabUrl : url;
+        return newTabUrl != null ? new GURL(newTabUrl) : gurl;
     }
 
     /**

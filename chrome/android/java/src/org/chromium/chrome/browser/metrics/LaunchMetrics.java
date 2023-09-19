@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,16 +98,15 @@ public class LaunchMetrics {
      * Records metrics about the state of the homepage on launch.
      * @param showHomeButton Whether the home button is shown.
      * @param homepageIsNtp Whether the homepage is set to the NTP.
-     * @param homepageUrl The value of the homepage URL.
+     * @param homepageUrl The homepage GURL.
      */
     public static void recordHomePageLaunchMetrics(
-            boolean showHomeButton, boolean homepageIsNtp, String homepageUrl) {
-        if (homepageUrl == null) {
-            homepageUrl = "";
-            assert !showHomeButton : "Homepage should be disabled for a null URL";
+            boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl) {
+        if (homepageGurl.isEmpty()) {
+            assert !showHomeButton : "Homepage should be disabled for an empty GURL";
         }
         LaunchMetricsJni.get().recordHomePageLaunchMetrics(
-                showHomeButton, homepageIsNtp, homepageUrl);
+                showHomeButton, homepageIsNtp, homepageGurl);
     }
 
     /**
@@ -134,6 +134,6 @@ public class LaunchMetrics {
         void recordLaunch(boolean isShortcut, String url, int source,
                 @DisplayMode.EnumType int displayMode, WebContents webContents);
         void recordHomePageLaunchMetrics(
-                boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
+                boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl);
     }
 }

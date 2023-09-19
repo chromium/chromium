@@ -111,7 +111,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         if (!newHomepage.isValid()) {
             newHomepage = GURL.emptyGURL();
         }
-        boolean useDefaultUri = HomepageManager.getDefaultHomepageUri().equals(newHomepage);
+        boolean useDefaultUri = HomepageManager.getDefaultHomepageGurl().equals(newHomepage);
 
         mHomepageManager.setHomepagePreferences(setToUseNTP, useDefaultUri, newHomepage);
     }
@@ -124,17 +124,17 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
             return HomepagePolicyManager.getHomepageUrl();
         }
 
-        GURL defaultUrl = HomepageManager.getDefaultHomepageUri();
-        GURL customUrl = mHomepageManager.getPrefHomepageCustomUri();
+        GURL defaultGurl = HomepageManager.getDefaultHomepageGurl();
+        GURL customGurl = mHomepageManager.getPrefHomepageCustomGurl();
         if (mHomepageManager.getPrefHomepageUseDefaultUri()) {
-            return UrlUtilities.isNTPUrl(defaultUrl) ? GURL.emptyGURL() : defaultUrl;
+            return UrlUtilities.isNTPUrl(defaultGurl) ? GURL.emptyGURL() : defaultGurl;
         }
 
-        if (customUrl.isEmpty() && !UrlUtilities.isNTPUrl(defaultUrl)) {
-            return defaultUrl;
+        if (customGurl.isEmpty() && !UrlUtilities.isNTPUrl(defaultGurl)) {
+            return defaultGurl;
         }
 
-        return customUrl;
+        return customGurl;
     }
 
     private PreferenceValues createPreferenceValuesForRadioGroup() {
@@ -149,7 +149,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         } else {
             shouldCheckNTP = mHomepageManager.getPrefHomepageUseChromeNTP()
                     || (mHomepageManager.getPrefHomepageUseDefaultUri()
-                            && UrlUtilities.isNTPUrl(HomepageManager.getDefaultHomepageUri()));
+                            && UrlUtilities.isNTPUrl(HomepageManager.getDefaultHomepageGurl()));
         }
 
         @HomepageOption

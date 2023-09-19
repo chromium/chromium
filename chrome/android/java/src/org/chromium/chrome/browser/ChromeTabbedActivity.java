@@ -222,6 +222,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1441,14 +1442,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         long createInitialTabStartTime = SystemClock.elapsedRealtime();
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (!shouldShowOverviewPageOnStart) {
-            url = HomepageManager.getHomepageUri();
-            if (TextUtils.isEmpty(url)) {
+            GURL homepageGurl = HomepageManager.getHomepageGurl();
+            if (homepageGurl.isEmpty()) {
                 url = UrlConstants.NTP_URL;
             } else {
                 // Migrate legacy NTP URLs (chrome://newtab) to the newer format
                 // (chrome-native://newtab)
-                if (UrlUtilities.isNTPUrl(url)) {
+                if (UrlUtilities.isNTPUrl(homepageGurl)) {
                     url = UrlConstants.NTP_URL;
+                } else {
+                    url = homepageGurl.getSpec();
                 }
             }
             getTabCreator(false).launchUrl(url, TabLaunchType.FROM_STARTUP);

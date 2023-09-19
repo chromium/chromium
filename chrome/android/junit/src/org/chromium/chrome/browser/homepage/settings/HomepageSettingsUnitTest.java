@@ -77,7 +77,7 @@ public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_EDIT_TEXT =
             "EditText does not contains the expected homepage in test settings.";
     private static final String ASSERT_HOMEPAGE_MANAGER_SETTINGS =
-            "HomepageManager#getHomepageUri is different than test homepage settings.";
+            "HomepageManager#getHomepageGurl is different than test homepage settings.";
 
     private static final String ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH =
             "HomepageLocationType is different than test settings.";
@@ -376,7 +376,8 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_BAR,
                 mCustomUriRadioButton.getPrimaryText().toString());
 
-        Assert.assertNull(ASSERT_HOMEPAGE_MANAGER_SETTINGS, HomepageManager.getHomepageUri());
+        Assert.assertTrue(
+                ASSERT_HOMEPAGE_MANAGER_SETTINGS, HomepageManager.getHomepageGurl().isEmpty());
     }
 
     /**
@@ -458,8 +459,8 @@ public class HomepageSettingsUnitTest {
                 ASSERT_MESSAGE_RADIO_BUTTON_CUSTOMIZED_CHECK, mCustomUriRadioButton.isChecked());
         Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_FOO,
                 mCustomUriRadioButton.getPrimaryText().toString());
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO, HomepageManager.getHomepageUri());
+        Assert.assertEquals(ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO,
+                HomepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(false);
 
         // Check radio button to select NTP as homepage. Homepage is not changed yet at this time.
@@ -482,8 +483,8 @@ public class HomepageSettingsUnitTest {
         // End the activity. The homepage should be the customized url, and the location counter
         // should stay at 0 as nothing is changed.
         finishSettingsActivity();
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO, HomepageManager.getHomepageUri());
+        Assert.assertEquals(ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO,
+                HomepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(false);
     }
 
@@ -505,7 +506,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri()));
+                UrlUtilities.isNTPUrl(HomepageManager.getHomepageGurl()));
         assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the
@@ -525,8 +526,8 @@ public class HomepageSettingsUnitTest {
         mCustomUriRadioButton.setPrimaryText(TEST_URL_BAR);
         finishSettingsActivity();
 
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_BAR, HomepageManager.getHomepageUri());
+        Assert.assertEquals(ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_BAR,
+                HomepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(true);
     }
 

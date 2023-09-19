@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
@@ -77,15 +76,11 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,13 +195,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         when(identityServicesProviderJniMock.getSigninManager(any()))
                 .thenReturn(Mockito.mock(SigninManager.class));
         mJniMocker.mock(IdentityServicesProviderJni.TEST_HOOKS, identityServicesProviderJniMock);
-
-        // Set home page url.
-        GURL homePageGURL = JUnitTestGURLs.NTP_URL;
-        UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
-        when(urlFormatterJniMock.fixupUrl(HomepageManager.getHomepageUri()))
-                .thenReturn(homePageGURL);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
 
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, Mockito.mock(FaviconHelper.Natives.class));
         mJniMocker.mock(

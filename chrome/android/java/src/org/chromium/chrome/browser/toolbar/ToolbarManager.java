@@ -12,7 +12,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -1744,9 +1743,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     @VisibleForTesting
     static String homepageUrl() {
-        String homePageUrl = HomepageManager.getHomepageUri();
-        if (TextUtils.isEmpty(homePageUrl)) homePageUrl = UrlConstants.NTP_URL;
-        return homePageUrl;
+        GURL homepageGurl = HomepageManager.getHomepageGurl();
+        if (homepageGurl.isEmpty()) {
+            return UrlConstants.NTP_URL;
+        } else {
+            return homepageGurl.getSpec();
+        }
     }
 
     private void registerTemplateUrlObserver() {

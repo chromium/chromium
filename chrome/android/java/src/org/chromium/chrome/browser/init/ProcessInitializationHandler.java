@@ -115,6 +115,7 @@ import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -176,8 +177,6 @@ public class ProcessInitializationHandler {
      * Performs the shared class initialization.
      */
     protected void handlePreNativeInitialization() {
-        Context application = ContextUtils.getApplicationContext();
-
         // Initialize the AccountManagerFacade with the correct AccountManagerDelegate. Must be done
         // only once and before AccountManagerFacadeProvider.getInstance() is invoked.
         AccountManagerFacadeProvider.setInstance(
@@ -337,10 +336,10 @@ public class ProcessInitializationHandler {
                         new Runnable() {
                             @Override
                             public void run() {
-                                String homepageUrl = HomepageManager.getHomepageUri();
+                                GURL homepageGurl = HomepageManager.getHomepageGurl();
                                 LaunchMetrics.recordHomePageLaunchMetrics(
                                         HomepageManager.isHomepageEnabled(),
-                                        UrlUtilities.isNTPUrl(homepageUrl), homepageUrl);
+                                        UrlUtilities.isNTPUrl(homepageGurl), homepageGurl);
                             }
                         });
 
