@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
@@ -381,12 +378,6 @@ public class AwMetricsIntegrationTest {
             AwBrowserProcess.setWebViewPackageName(appPackageName);
             AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
                     InstallerPackageType.GOOGLE_PLAY_STORE);
-            // A valid version string and non expired date means the app package name should be
-            // recorded.
-            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
-                    /* allowlistComponentVersion= */ "123.456.78.9",
-                    /* allowlistExpiryDateMs= */ System.currentTimeMillis()
-                            + TimeUnit.DAYS.toMillis(1));
         });
 
         // Disregard the first UMA log because it's recorded before loading the allowlist.
@@ -431,41 +422,6 @@ public class AwMetricsIntegrationTest {
                         && expected.getOmahaFingerprint() == item.getOmahaFingerprint();
             }
         };
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    public void testMetadata_chromeComponents() throws Throwable {
-        final String allowlistComponentVersion = "123.456.78.9";
-        // A fake expiry date, the allowlist component info should be recorded regardless of the
-        // expiry date.
-        final long allowlistExpiryDateMs = 1234567891011L;
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
-                    allowlistComponentVersion, allowlistExpiryDateMs);
-        });
-
-        // Ignore the first log because it will likely be recorded before setting the allowlist
-        // version above.
-        mPlatformServiceBridge.waitForNextMetricsLog();
-
-        // The start of a page load should be enough to indicate to the MetricsService that the app
-        // is "in use" and it's OK to upload the next record.
-        mRule.loadUrlAsync(mAwContents, "about:blank");
-        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
-        SystemProfileProto systemProfile = log.getSystemProfile();
-
-        assertEquals(
-                "Should have exactly one component", systemProfile.getChromeComponentCount(), 1);
-        ChromeComponent expectedAllowlistComponent =
-                ChromeComponent.newBuilder()
-                        .setComponentId(
-                                SystemProfileProto.ComponentId.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST)
-                        .setVersion(allowlistComponentVersion)
-                        .build();
-        assertThat(systemProfile.getChromeComponentList(),
-                contains(matchesChromeComponent(expectedAllowlistComponent)));
     }
 
     @Test
@@ -574,20 +530,5 @@ public class AwMetricsIntegrationTest {
                 log.getSystemProfile().getAppPackageNameAllowlistFilter();
         assertEquals(filter,
                 SystemProfileProto.AppPackageNameAllowlistFilter.SERVER_SIDE_FILTER_REQUIRED);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.
-    Add("disable-features=" + AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_SERVER_SIDE_ALLOWLIST)
-    public void testServerSideAllowlistFilteringNotRequiredDueToClientSideFiltering()
-            throws Throwable {
-        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
-        SystemProfileProto.AppPackageNameAllowlistFilter filter =
-                log.getSystemProfile().getAppPackageNameAllowlistFilter();
-        assertEquals(filter,
-                SystemProfileProto.AppPackageNameAllowlistFilter
-                        .NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING);
     }
 }

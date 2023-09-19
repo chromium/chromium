@@ -150,9 +150,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
                     "Uses GooglePlayService's 'connectionless' APIs for Safe Browsing "
                             + "security checks."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_SERVER_SIDE_ALLOWLIST,
-                    "Enables usage of server-side allowlist filtering of"
-                            + " app package names."),
             Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                     "Enables brotli compression support in WebView."),
             Flag.baseFeature(NetFeatures.ZSTD_CONTENT_ENCODING,
@@ -245,9 +242,6 @@ public final class ProductionSupportedFlagList {
                             + "accessory."),
             Flag.baseFeature(NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
                     "Enables the prototype Private State Tokens API."),
-            Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_PACKAGE_ALLOWLIST_THROTTLING,
-                    "Disables throttling querying apps package names allowlist components in"
-                            + "WebView clients."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EMPTY_COMPONENT_LOADER_POLICY,
                     "Enables loading a fake empty (no-op) component during WebView startup."),
             Flag.commandLine(AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,

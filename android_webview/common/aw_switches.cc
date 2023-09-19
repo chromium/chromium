@@ -60,11 +60,6 @@ const char kFinchSeedMinUpdatePeriod[] = "finch-seed-min-update-period";
 const char kWebViewEnableModernCookieSameSite[] =
     "webview-enable-modern-cookie-same-site";
 
-// Disables throttling querying apps package names allowlist components in
-// WebView clients.
-const char kWebViewDisablePackageAllowlistThrottling[] =
-    "webview-disable-package-allowlist-throttling";
-
 // Enables use selective image inversion to automatically darken page, it will
 // be used when WebView is in dark mode, but website doesn't provide dark style.
 const char kWebViewSelectiveImageInversionDarkening[] =
