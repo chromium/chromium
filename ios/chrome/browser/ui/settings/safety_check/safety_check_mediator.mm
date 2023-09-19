@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/passwords/password_store_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -173,6 +174,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // Service used to check user preference values.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
 
+// Service used to check local preference values.
+@property(nonatomic, assign, readonly) PrefService* localPrefService;
+
 // When the check was started.
 @property(nonatomic, assign) base::Time checkStartTime;
 
@@ -183,6 +187,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 @synthesize passwordCheckManager = _passwordCheckManager;
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
+                            localPrefService:(PrefService*)localPrefService
                    passwordCheckManager:
                        (scoped_refptr<IOSChromePasswordCheckManager>)
                            passwordCheckManager
@@ -191,11 +196,13 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
+    DCHECK(localPrefService);
     DCHECK(passwordCheckManager);
     DCHECK(authService);
     DCHECK(syncService);
 
     _userPrefService = userPrefService;
+    _localPrefService = localPrefService;
     _authService = authService;
     _syncService = syncService;
 
@@ -763,6 +770,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   // Otherwise start a check.
   self.checkStartTime = base::Time::Now();
 
+  if (IsSafetyCheckMagicStackEnabled()) {
+    [self updateTimestampOfLastRun];
+  }
+
   // Record the current state of the checks.
   self.previousUpdateCheckRowState = self.updateCheckRowState;
   self.previousPasswordCheckRowState = self.passwordCheckRowState;
@@ -868,6 +879,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       (FoundInsecurePasswords(self.passwordCheckRowState));
   if (self.checkDidRun && issuesFound) {
     [self updateTimestampOfLastCheck];
+
+    if (IsSafetyCheckMagicStackEnabled()) {
+      [self updateTimestampOfLastRun];
+    }
+
     self.checkDidRun = NO;
   } else if (self.checkDidRun && !issuesFound) {
     // Clear the timestamp if the last check found no issues.
@@ -875,6 +891,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         setDouble:base::Time().ToDoubleT()
            forKey:kTimestampOfLastIssueFoundKey];
     self.checkDidRun = NO;
+
+    if (IsSafetyCheckMagicStackEnabled()) {
+      [self updateTimestampOfLastRun];
+    }
   }
   // If no checks are still running, reset `checkStartItem`.
   self.checkStartState = CheckStartStateDefault;
@@ -1295,6 +1315,15 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setDouble:base::Time::Now().ToDoubleT()
                forKey:kTimestampOfLastIssueFoundKey];
+}
+
+// Updates the timestamp of when the safety check was most recently run.
+//
+// TODO(crbug.com/1481230): Remove this method once Settings Safety Check is
+// refactored to use the new Safety Check Manager.
+- (void)updateTimestampOfLastRun {
+  _localPrefService->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
+                             base::Time::Now());
 }
 
 // Shows the timestamp if the last safety check found issues.

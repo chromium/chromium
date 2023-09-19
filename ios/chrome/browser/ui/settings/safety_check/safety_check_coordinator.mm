@@ -111,6 +111,7 @@ using password_manager::WarningType;
           self.browser->GetBrowserState());
   self.mediator = [[SafetyCheckMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+             localPrefService:GetApplicationContext()->GetLocalState()
          passwordCheckManager:passwordCheckManager
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())

@@ -257,6 +257,11 @@ const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
 const char kIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
 
+// Time preference containing the last run time of the Safety Check (via
+// Settings).
+const char kIosSettingsSafetyCheckLastRunTime[] =
+    "ios.settings.safety_check.last_run_time";
+
 // The count of how many times the user has shared the app.
 const char kIosShareChromeCount[] = "ios.share_chrome.count";
 
