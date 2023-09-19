@@ -183,8 +183,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             try {
                 if (!mStartSurfaceSupplier.hasValue() && !mTabSwitcherSupplier.hasValue()) {
                     final ViewGroup containerView = mCreateStartSurfaceCallable.call();
-                    createOverviewLayout(mStartSurfaceSupplier.get(), mTabSwitcherSupplier.get(),
-                            mHost.getBrowserControlsManager(), mScrimCoordinator, containerView);
+                    createLayoutsForStartSurfaceAndTabSwitcher(mStartSurfaceSupplier.get(),
+                            mTabSwitcherSupplier.get(), mHost.getBrowserControlsManager(),
+                            mScrimCoordinator, containerView);
                     mThemeColorObserver =
                             (color, shouldAnimate) -> containerView.setBackgroundColor(color);
                     mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
