@@ -5,6 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CXX20_IS_CONSTANT_EVALUATED_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CXX20_IS_CONSTANT_EVALUATED_H_
 
+#include <type_traits>
+
 namespace partition_alloc::internal::base {
 
 // std::is_constant_evaluated was introduced in C++20. PartitionAlloc's minimum
@@ -12,7 +14,6 @@ namespace partition_alloc::internal::base {
 #if defined(__cpp_lib_is_constant_evaluated) && \
     __cpp_lib_is_constant_evaluated >= 201811L
 
-#include <type_traits>
 using std::is_constant_evaluated;
 
 #else

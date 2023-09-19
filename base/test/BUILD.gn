@@ -429,8 +429,10 @@ shared_library("test_shared_library") {
 if (is_fuchsia || is_linux || is_chromeos) {
   shared_library("malloc_wrapper") {
     testonly = true
-    sources = [ "malloc_wrapper.cc" ]
-    deps = [ "//base" ]
+    sources = [
+      "malloc_wrapper.cc",
+      "malloc_wrapper.h",
+    ]
   }
 }
 

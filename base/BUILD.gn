@@ -822,7 +822,6 @@ component("base") {
     "task/thread_pool/worker_thread_set.h",
     "task/updateable_sequenced_task_runner.h",
     "template_util.h",
-    "test/malloc_wrapper.h",
     "test/scoped_logging_settings.h",
     "test/spin_wait.h",
     "third_party/cityhash/city.cc",
