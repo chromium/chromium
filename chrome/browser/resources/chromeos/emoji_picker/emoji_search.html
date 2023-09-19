@@ -38,9 +38,16 @@
     align-items: center;
     background-color: var(--emoji-picker-search-field-container-color);
     border: 2px solid transparent;
-    border-radius: 40px;
     font-size: 13px;
     height: var(--emoji-picker-search-height);
+  }
+
+  cr-search-field.jelly {
+    border-radius: 8px;
+  }
+
+  cr-search-field:not(.jelly) {
+      border-radius: 40px;
   }
 
   cr-search-field:focus-within {
@@ -165,6 +172,7 @@
 
 <div id="searchShadow">
   <cr-search-field id="search"
+    class$="[[computeCrSearchFieldClass(jellySupport)]]"
     label="[[getSearchPlaceholderLabel(gifSupport)]]"
     autofocus="true">
   </cr-search-field>

@@ -434,6 +434,10 @@ export class EmojiSearch extends PolymerElement {
   setSearchQuery(value: string): void {
     this.$.search.setValue(value);
   }
+
+  computeCrSearchFieldClass(jellySupport: boolean): string {
+    return jellySupport ? 'jelly' : '';
+  }
 }
 
 declare global {
