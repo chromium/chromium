@@ -34,8 +34,8 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 14.3 14E222b along with the macOS 13.3 SDK
-# (13.3 22E245). To build these packages, see comments in
+# This contains binaries from Xcode 15.0 15A240d along with the macOS 14.0 SDK
+# (14.0 23A334). To build these packages, see comments in
 # build/xcode_binaries.yaml
 # To update the version numbers, open Xcode's "About Xcode" for the first number
 # and run `xcrun --show-sdk-build-version` for the second.
@@ -43,11 +43,11 @@ def LoadPList(path):
 # xcode_binaries.yaml.
 
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'ajH0-Cuzzqtyj98qUlsgO1-lepRhXoVVNAjVXDIYHxcC'
+MAC_BINARIES_TAG = 'dC_BLs9U850OLk8m4V7yxysPhP-ixJ2b5c7hVm8B7tIC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
-# is the major version number for macOS 10.15. Xcode 14.0 14B47b only runs on
-# macOS 12.4 and newer, but some bots are still running older OS versions. macOS
+# is the major version number for macOS 10.15. Xcode 15.0 only runs on macOS
+# 13.5 and newer, but some bots are still running older OS versions. macOS
 # 10.15.4, the OS minimum through Xcode 12.4, still seems to work.
 MAC_MINIMUM_OS_VERSION = [19, 4]
 

@@ -47,12 +47,12 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available official builds
   # will fail.
-  mac_sdk_official_version = "13.3"
+  mac_sdk_official_version = "14.0"
 
   # The SDK build version used when making official builds.  This is a single
   # exact version found at "System/Library/CoreServices/SystemVersion.plist"
   # inside the SDK.
-  mac_sdk_official_build_version = "21E226"
+  mac_sdk_official_build_version = "23A334"
 
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
