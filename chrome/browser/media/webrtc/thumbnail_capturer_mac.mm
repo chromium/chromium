@@ -8,10 +8,11 @@
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 #include <VideoToolbox/VideoToolbox.h>
 
-#include <unordered_set>
-
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +26,7 @@
 #include "third_party/webrtc/modules/desktop_capture/mac/desktop_frame_utils.h"
 
 using SampleCallback =
-    base::RepeatingCallback<void(CGImageRef image,
+    base::RepeatingCallback<void(base::apple::ScopedCFTypeRef<CGImageRef> image,
                                  ThumbnailCapturer::SourceId source_id)>;
 using ErrorCallback = base::RepeatingClosure;
 
@@ -101,8 +102,9 @@ API_AVAILABLE(macos(13.2))
   if (!pixelBuffer) {
     return;
   }
-  CGImageRef cgImage = nil;
-  auto result = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, nil, &cgImage);
+  base::apple::ScopedCFTypeRef<CGImageRef> cgImage;
+  auto result = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, nil,
+                                                 cgImage.InitializeInto());
 
   if (result != 0) {
     return;
@@ -116,8 +118,8 @@ API_AVAILABLE(macos(13.2))
     return;
   }
 
-  CGImageRef croppedImage = CGImageCreateWithImageInRect(cgImage, cropRegion);
-  CGImageRelease(cgImage);
+  base::apple::ScopedCFTypeRef<CGImageRef> croppedImage(
+      CGImageCreateWithImageInRect(cgImage, cropRegion));
   _sampleCallback.Run(croppedImage, _sourceId);
 }
 
@@ -264,7 +266,8 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   bool IsShareable(SCWindow* window) const;
   NSArray<SCWindow*>* FilterOutUnshareable(NSArray<SCWindow*>* windows);
   void RemoveInactiveStreams();
-  void OnCapturedFrame(CGImageRef image, SourceId source_id);
+  void OnCapturedFrame(base::apple::ScopedCFTypeRef<CGImageRef> image,
+                       SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const SortMode sort_mode_;
@@ -279,8 +282,9 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   NSArray<SCWindow*>* __strong shareable_windows_;
   NSArray<SCDisplay*>* __strong shareable_displays_;
 
-  std::unordered_map<SourceId, StreamAndDelegate> streams_;
+  base::flat_map<SourceId, StreamAndDelegate> streams_;
   base::RepeatingTimer refresh_timer_;
+
   base::WeakPtrFactory<ThumbnailCapturerMac> weak_factory_{this};
 };
 
@@ -408,9 +412,10 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
   // https://developer.apple.com/documentation/coregraphics/cgwindowlistoption/1454105-optiononscreenonly
   // when kCGWindowListOptionOnScreenOnly is used, the order of windows are
   // in decreasing z-order.
-  CFArrayRef window_array = CGWindowListCopyWindowInfo(
-      kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
-      kCGNullWindowID);
+  base::apple::ScopedCFTypeRef<CFArrayRef> window_array(
+      CGWindowListCopyWindowInfo(
+          kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
+          kCGNullWindowID));
   if (!window_array) {
     DVLOG(2) << "Cannot sort list, nothing returned from "
                 "CGWindowListCopyWindowInfo.";
@@ -421,9 +426,9 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
   // by CGWindowListCopyWindowInfo.
   // The windowID is the key matching entries in these containers.
   NSMutableArray<SCWindow*>* sorted_windows = [[NSMutableArray alloc] init];
-  CFIndex count = CFArrayGetCount(window_array);
+  CFIndex count = CFArrayGetCount(window_array.get());
   for (CFIndex i = 0; i < count; i++) {
-    CGWindowID window_id = GetWindowId(window_array, i);
+    CGWindowID window_id = GetWindowId(window_array.get(), i);
     SCWindow* window = FindWindow(current_windows, window_id);
     if (window) {
       [sorted_windows addObject:window];
@@ -505,7 +510,7 @@ void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Create SCStreamConfiguration.
-  SCStreamConfiguration* __strong config = [[SCStreamConfiguration alloc] init];
+  SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
   config.width = thumbnail_size.width();
   config.height = thumbnail_size.height();
   config.scalesToFit = YES;
@@ -520,9 +525,7 @@ void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
   ErrorCallback error_callback = base::DoNothing();
 
   // Create a stream for any source that doesn't have a stream.
-  std::unordered_set<SourceId> selected_sources;
   for (SourceId id : ids) {
-    selected_sources.insert(id);
     if (streams_.find(id) != streams_.end()) {
       continue;
     }
@@ -538,19 +541,18 @@ void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
     if (!selected_window) {
       continue;
     }
-    SCContentFilter* __strong filter = [[SCContentFilter alloc]
+    SCContentFilter* filter = [[SCContentFilter alloc]
         initWithDesktopIndependentWindow:selected_window];
 
-    SCKStreamDelegateAndOutput* __strong delegate =
-        [[SCKStreamDelegateAndOutput alloc]
-            initWithSampleCallback:sample_callback
-                     errorCallback:error_callback
-                          sourceId:selected_window.windowID];
+    SCKStreamDelegateAndOutput* delegate = [[SCKStreamDelegateAndOutput alloc]
+        initWithSampleCallback:sample_callback
+                 errorCallback:error_callback
+                      sourceId:selected_window.windowID];
 
     // Create and start stream.
-    SCStream* __strong stream = [[SCStream alloc] initWithFilter:filter
-                                                   configuration:config
-                                                        delegate:delegate];
+    SCStream* stream = [[SCStream alloc] initWithFilter:filter
+                                          configuration:config
+                                               delegate:delegate];
 
     NSError* error = nil;
     bool add_stream_output_result =
@@ -576,25 +578,24 @@ void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
 
   // Remove any stream that is not in the list of selected sources anymore.
   for (auto it = streams_.begin(); it != streams_.end();) {
-    if (selected_sources.find(it->first) == selected_sources.end()) {
-      it = streams_.erase(it);
-    } else {
+    if (base::Contains(ids, it->first)) {
       ++it;
+    } else {
+      it = streams_.erase(it);
     }
   }
 }
 
 void ThumbnailCapturerMac::OnCapturedFrame(
-    CGImageRef image,
+    base::apple::ScopedCFTypeRef<CGImageRef> cg_image,
     ThumbnailCapturer::SourceId source_id) {
-  if (!image) {
+  if (!cg_image) {
     return;
   }
 
   // The image has been captured, pass it on to the consumer as a DesktopFrame.
-  rtc::ScopedCFTypeRef<CGImageRef> cg_image(image);
   std::unique_ptr<webrtc::DesktopFrame> frame =
-      webrtc::CreateDesktopFrameFromCGImage(cg_image);
+      webrtc::CreateDesktopFrameFromCGImage(rtc::AdoptCF(cg_image.get()));
   consumer_->OnRecurrentCaptureResult(Result::SUCCESS, std::move(frame),
                                       source_id);
 }
