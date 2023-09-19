@@ -45,6 +45,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -724,6 +725,10 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_request_throttled_listener_browser_impl.h"
 #include "chrome/common/bound_session_request_throttled_listener.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;
@@ -8052,6 +8057,17 @@ bool ChromeContentBrowserClient::
     ShouldAllowBackForwardCacheForCacheControlNoStorePage(
         content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not store CCNS page into BFCache in the kiosk session.
+  if (chromeos::IsKioskSession()) {
+    return false;
+  }
+#endif
+
+  if (chrome::IsRunningInAppMode()) {
+    return false;
+  }
+
   const PrefService::Preference* pref =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()

@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -79,19 +80,21 @@ class BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+const auto test_suite_value = ::testing::Values(
+    BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
+        CacheControlNoStorePagePolicy::kDefault,
+        /* expected_allow_bfcache_ccns_page= */ true},
+    BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
+        CacheControlNoStorePagePolicy::kAllowed,
+        /* expected_allow_bfcache_ccns_page= */ true},
+    BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
+        CacheControlNoStorePagePolicy::kDisallowed,
+        /* expected_allow_bfcache_ccns_page= */ false});
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest,
-    ::testing::Values(
-        BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
-            CacheControlNoStorePagePolicy::kDefault,
-            /* expected_allow_bfcache_ccns_page= */ true},
-        BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
-            CacheControlNoStorePagePolicy::kAllowed,
-            /* expected_allow_bfcache_ccns_page= */ true},
-        BackForwardCacheWithCacheControlNoStorePagePolicyTestParam{
-            CacheControlNoStorePagePolicy::kDisallowed,
-            /* expected_allow_bfcache_ccns_page= */ false}),
+    test_suite_value,
     &BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest::
         DescribeParams);
 
@@ -142,6 +145,52 @@ IN_PROC_BROWSER_TEST_P(
 
   ASSERT_EQ(should_allow_bfcache_ccns_page,
             GetParam().expected_allow_bfcache_ccns_page);
+}
+
+class BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTestKioskMode
+    : public BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kKioskMode);
+    BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest::
+        SetUpCommandLine(command_line);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTestKioskMode,
+    test_suite_value,
+    &BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTest::
+        DescribeParams);
+
+// Test that a page loaded with "Cache-Control:no-store" header cannot enter
+// BackForwardCache if the ContentBrowserClient disables BFCache for CCNS pages.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheWithCacheControlNoStorePagePolicyBrowserTestKioskMode,
+    PolicyIsOverridenByKioskMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToUrl(url_a, this));
+  content::RenderFrameHostWrapper rfh_a(current_render_frame_host());
+
+  // 2) Navigate away. If the enterprise policy disallows BFCaching CCNS page,
+  // `rfh_a` should not enter BFCache. Otherwise, `rfh_a` should be stored in
+  // BFCache.
+  ASSERT_TRUE(NavigateToUrl(url_b, this));
+  content::RenderFrameHostWrapper rfh_b(current_render_frame_host());
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 3) Verify that the page without CCNS is eligible for BFCache.
+  ASSERT_TRUE(NavigateToUrl(url_c, this));
+  ASSERT_TRUE(rfh_b->GetLifecycleState() ==
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 }  // namespace policy

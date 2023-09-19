@@ -104,6 +104,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -297,6 +298,23 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientWindowTest,
+       BackForwardCacheIsDisallowedForCacheControlNoStorePageWhenInKioskMode) {
+// Enter Kiosk session.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::SetUpFakeKioskSession();
+
+  ChromeContentBrowserClient client;
+  ASSERT_FALSE(client.ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+      browser()->profile()));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // NOTE: Any updates to the expectations in these tests should also be done in
 // the browser test WebRtcDisableEncryptionFlagBrowserTest.
