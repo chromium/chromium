@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-forward.h"
 
 #include <string>
 
@@ -33,7 +34,7 @@ namespace blink {
 class DOMRectInit;
 class PlaneLayout;
 
-base::ScopedClosureRunner MakeScopedGarbageCollectionRequest();
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(v8::Isolate*);
 
 class FakeFunction : public ScriptFunction::Callable {
  public:

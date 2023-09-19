@@ -36,4 +36,8 @@ BlinkFuzzerTestSupport::~BlinkFuzzerTestSupport() {
 #endif  // defined(ADDRESS_SANITIZER)
 }
 
+v8::Isolate* BlinkFuzzerTestSupport::GetIsolate() {
+  return content::GetMainThreadIsolateForTestEnvironment();
+}
+
 }  // namespace blink

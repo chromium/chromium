@@ -7,6 +7,7 @@
 
 #include "base/at_exit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -22,6 +23,8 @@ class BlinkFuzzerTestSupport {
   // Use this constructor in LLVMFuzzerInitialize only if argv is necessary.
   BlinkFuzzerTestSupport(int argc, char** argv);
   ~BlinkFuzzerTestSupport();
+
+  v8::Isolate* GetIsolate();
 
  private:
   base::AtExitManager at_exit_;

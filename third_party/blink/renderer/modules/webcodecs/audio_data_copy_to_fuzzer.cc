@@ -27,7 +27,8 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::AudioDataCopyToCase& proto) {
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());

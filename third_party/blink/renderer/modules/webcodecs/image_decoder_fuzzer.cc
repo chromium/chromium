@@ -86,7 +86,8 @@ DEFINE_BINARY_PROTO_FUZZER(
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below

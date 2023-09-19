@@ -157,7 +157,8 @@ DEFINE_TEXT_PROTO_FUZZER(
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
 #if HAS_AAC_ENCODER
   base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);
