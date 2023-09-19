@@ -38,6 +38,8 @@ class EditLabel : public views::LabelButton {
   friend class EditLabelTest;
 
   void Init();
+  // Set label content depends on whether the label is in new state.
+  void SetLabelContent();
   void SetTextLabel(const std::u16string& text);
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
   std::u16string CalculateAccessibleName();

@@ -7,6 +7,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -18,9 +19,11 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
 
 namespace arc::input_overlay {
 
@@ -39,23 +42,16 @@ EditLabel::~EditLabel() = default;
 
 void EditLabel::OnActionInputBindingUpdated() {
   is_new_ = false;
-  if (action_->GetCurrentDisplayedInput().input_sources() ==
-      InputSource::IS_NONE) {
-    SetTextLabel(kUnknownBind);
-  } else {
-    const auto& keys = action_->GetCurrentDisplayedInput().keys();
-    DCHECK(index_ < keys.size());
-    SetTextLabel(GetDisplayText(keys[index_]));
-  }
+  SetLabelContent();
 }
 
 bool EditLabel::IsInputUnbound() {
-  return GetText().compare(kUnknownBind) == 0;
+  return GetText().compare(kUnknownBind) == 0 || GetText().empty();
 }
 
 void EditLabel::RemoveNewState() {
   is_new_ = false;
-  OnActionInputBindingUpdated();
+  SetLabelContent();
 }
 
 void EditLabel::Init() {
@@ -72,7 +68,31 @@ void EditLabel::Init() {
   SetHasInkDropActionOnClick(false);
   ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
                                 cros_tokens::kCrosSysOnPrimaryContainer);
-  OnActionInputBindingUpdated();
+  SetLabelContent();
+}
+
+void EditLabel::SetLabelContent() {
+  // Clear icon if it is not for new action label.
+  SetImageModel(views::Button::STATE_NORMAL,
+                is_new_ ? ui::ImageModel::FromVectorIcon(
+                              kGameControlsEditPenIcon,
+                              cros_tokens::kCrosSysHighlightShape)
+                        : ui::ImageModel());
+  if (is_new_) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysHighlightShape,
+        /*radius=*/8));
+    return;
+  }
+
+  std::u16string output_string = kUnknownBind;
+  if (action_->GetCurrentDisplayedInput().input_sources() !=
+      InputSource::IS_NONE) {
+    const auto& keys = action_->GetCurrentDisplayedInput().keys();
+    DCHECK(index_ < keys.size());
+    output_string = GetDisplayText(keys[index_]);
+  }
+  SetTextLabel(output_string);
 }
 
 void EditLabel::SetTextLabel(const std::u16string& text) {
@@ -92,8 +112,9 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
 void EditLabel::SetNameTagState(bool is_error,
                                 const std::u16string& error_tooltip) {
   DCHECK(parent());
+  DCHECK(!is_new_);
   auto* parent_view = static_cast<EditLabels*>(parent());
-  parent_view->SetNameTagState(is_error && !is_new_, error_tooltip);
+  parent_view->SetNameTagState(is_error, error_tooltip);
 }
 
 std::u16string EditLabel::CalculateAccessibleName() {
@@ -119,21 +140,36 @@ void EditLabel::SetToFocused() {
 
 void EditLabel::OnFocus() {
   LabelButton::OnFocus();
+  if (is_new_) {
+    // Hide the pen icon once the label is focused to edit.
+    SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
+  }
   SetToFocused();
 }
 
 void EditLabel::OnBlur() {
   LabelButton::OnBlur();
+  // The label is considered not in new state anymore once it leaves focus.
+  is_new_ = false;
   SetToDefault();
   // Reset the error state if an reserved key was pressed.
   SetNameTagState(/*is_error=*/false, u"");
 }
 
 bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
+  // The label is considered not in new state anymore once it tries to edit the
+  // label.
+  is_new_ = false;
   auto code = event.code();
   std::u16string new_bind = GetDisplayText(code);
-  if (GetText() == new_bind ||
-      (!action_->support_modifier_key() &&
+  // Don't show error when the same key is pressed.
+  if (GetText() == new_bind) {
+    SetNameTagState(/*is_error=*/false, u"");
+    return true;
+  }
+
+  // Show error when the reserved keys and modifier keys are pressed.
+  if ((!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
     SetNameTagState(
