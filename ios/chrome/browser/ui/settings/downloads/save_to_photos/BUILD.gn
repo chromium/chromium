@@ -36,6 +36,15 @@ source_set("save_to_photos") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_save_to_photos_settings_mutator.h",
+    "fake_save_to_photos_settings_mutator.mm",
+  ]
+  deps = [ ":save_to_photos" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -44,6 +53,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":save_to_photos",
+    ":test_support",
     "//base/test:test_support",
     "//components/prefs",
     "//components/signin/public/identity_manager:test_support",

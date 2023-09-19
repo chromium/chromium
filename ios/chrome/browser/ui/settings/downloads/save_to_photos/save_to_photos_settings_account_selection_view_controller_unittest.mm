@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/settings/downloads/save_to_photos/fake_save_to_photos_settings_mutator.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_mutator.h"
@@ -37,18 +38,6 @@ AccountPickerSelectionScreenIdentityItemConfigurator* CreateConfigurator(
 }
 
 }  // namespace
-
-// Fake mutator.
-@interface FakeSaveToPhotosSettingsMutator
-    : NSObject <SaveToPhotosSettingsMutator>
-
-@property(nonatomic, copy) NSString* selectedIdentityGaiaID;
-
-@end
-
-@implementation FakeSaveToPhotosSettingsMutator
-
-@end
 
 // Fake presentation delegate.
 @interface FakeSaveToPhotosSettingsAccountSelectionViewControllerPresentationDelegate
