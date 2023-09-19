@@ -181,7 +181,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     base::TimeTicks local_response_start;
     base::TimeTicks remote_request_start;
     net::LoadTimingInfo load_timing_info;
-    bool should_follow_redirect = true;
     bool redirect_requires_loader_restart = false;
     // Network error code the request completed with, or net::ERR_IO_PENDING if
     // it's not completed. Used both to distinguish completion from

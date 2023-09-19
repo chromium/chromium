@@ -353,8 +353,7 @@ ResourceRequestSender::PendingRequestInfo::~PendingRequestInfo() = default;
 
 void ResourceRequestSender::FollowPendingRedirect(
     PendingRequestInfo* request_info) {
-  if (request_info->has_pending_redirect &&
-      request_info->should_follow_redirect) {
+  if (request_info->has_pending_redirect) {
     request_info->has_pending_redirect = false;
     // net::URLRequest clears its request_start on redirect, so should we.
     request_info->local_request_start = base::TimeTicks::Now();
@@ -448,17 +447,7 @@ void ResourceRequestSender::OnReceivedRedirect(
   if (!request_info_) {
     return;
   }
-  if (!request_info_->url_loader && request_info_->should_follow_redirect) {
-    // This is a redirect that synchronously came as the loader is being
-    // constructed, due to a URLLoaderThrottle that changed the starting
-    // URL. Handle this in a posted task, as we don't have the loader
-    // pointer yet.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ResourceRequestSender::OnReceivedRedirect,
-                                  weak_factory_.GetWeakPtr(), redirect_info,
-                                  std::move(response_head), task_runner));
-    return;
-  }
+  CHECK(request_info_->url_loader);
 
   request_info_->local_response_start = base::TimeTicks::Now();
   request_info_->remote_request_start =
