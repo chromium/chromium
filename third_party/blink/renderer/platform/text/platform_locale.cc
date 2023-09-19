@@ -371,16 +371,9 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
   DCHECK_EQ(input.Find(IsASCIISpace), WTF::kNotFound);
   start_index = 0;
   end_index = input.length();
-  if (negative_prefix_.empty() && negative_suffix_.empty()) {
-    if (input.StartsWith(positive_prefix_) &&
-        input.EndsWith(positive_suffix_)) {
-      is_negative = false;
-      start_index = positive_prefix_.length();
-      end_index -= positive_suffix_.length();
-    } else {
-      is_negative = true;
-    }
-  } else {
+  const bool negative_empty =
+      negative_prefix_.empty() && negative_suffix_.empty();
+  if (!negative_empty) {
     // For some locales the negative prefix and/or suffix are preceded or
     // followed by whitespace. Exclude that for the purposes of this search
     // since the input string has already been stripped of whitespace.
@@ -393,18 +386,21 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
       is_negative = true;
       start_index = negative_prefix_without_whitespace.length();
       end_index -= negative_suffix_without_whitespace.length();
-    } else {
-      is_negative = false;
-      if (input.StartsWith(positive_prefix_) &&
-          input.EndsWith(positive_suffix_)) {
-        start_index = positive_prefix_.length();
-        end_index -= positive_suffix_.length();
-      } else {
-        return false;
-      }
+      return true;
     }
   }
-  return true;
+
+  // Note: Positive prefix and suffix may be empty, in which case this will
+  // always succeed.
+  if (input.StartsWith(positive_prefix_) && input.EndsWith(positive_suffix_)) {
+    is_negative = false;
+    start_index = positive_prefix_.length();
+    end_index -= positive_suffix_.length();
+    return true;
+  }
+
+  is_negative = negative_empty;
+  return is_negative;
 }
 
 unsigned Locale::MatchedDecimalSymbolIndex(const String& input,
