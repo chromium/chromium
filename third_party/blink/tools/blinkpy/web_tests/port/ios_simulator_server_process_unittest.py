@@ -3,15 +3,17 @@
 # found in the LICENSE file.
 
 import json
-import sys
+import socket
 import subprocess
+import sys
+import threading
 import unittest
 
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.web_tests.port import ios_simulator_server_process
 from blinkpy.web_tests.port.factory import PortFactory
 
-TEST_MESSAGE = b'writing test of a web test name'
+TEST_FILE_NAME = b'dom/parent_node/append-on-document.html'
 
 
 class TestIOSSimulatorServerProcess(unittest.TestCase):
@@ -30,6 +32,11 @@ class TestIOSSimulatorServerProcess(unittest.TestCase):
         except subprocess.CalledProcessError:
             return False
 
+    def _start_simulator_server(
+            self,
+            proc: ios_simulator_server_process.IOSSimulatorServerProcess):
+        proc.write(TEST_FILE_NAME)
+
     def test_write(self):
         # Test only when the iOS simulator is installed on Mac.
         if sys.platform != 'darwin' or not self._is_ios_simulator_installed():
@@ -44,20 +51,29 @@ class TestIOSSimulatorServerProcess(unittest.TestCase):
         port = factory.get('ios')
         proc = ios_simulator_server_process.IOSSimulatorServerProcess(
             port, 'python', cmd)
-        proc.write(b'')
+        server = threading.Thread(target=self._start_simulator_server,
+                                  args=(proc, ),
+                                  name='simulator-server',
+                                  daemon=True)
+        # Start to the simulator server, and it sends a test file name to the
+        # client.
+        server.start()
 
         self.assertIsNone(proc.poll())
         self.assertFalse(proc.has_crashed())
 
-        # Check if the iOS simulator server process creates a test file for
-        # communicating between run_web_test.py and a content shell.
-        web_test_file_path = proc._get_web_test_file_path()
-        self.assertIsNotNone(web_test_file_path)
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            # Connect to the server.
+            client_socket.connect(('127.0.0.1', port.stdio_redirect_port()))
 
-        proc.write(TEST_MESSAGE)
-
-        test_file = open(web_test_file_path, 'r')
-        read_line = test_file.readline().strip()
-        self.assertEqual(read_line.encode(), TEST_MESSAGE)
+            # Check if the received data is the expected test file name.
+            received_data = client_socket.recv(1024)
+            self.assertEqual(received_data, TEST_FILE_NAME)
+        except socket.error as e:
+            raise ValueError('Connection error: {%s}' % e)
+        finally:
+            client_socket.close()
+            server.join()
 
         proc.stop(0)

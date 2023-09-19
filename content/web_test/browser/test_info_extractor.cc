@@ -17,51 +17,9 @@
 #include "content/web_test/common/web_test_switches.h"
 #include "net/base/filename_util.h"
 
-#if BUILDFLAG(IS_IOS)
-#include <filesystem>
-#include <fstream>
-
-#include "base/files/file_util.h"
-#include "base/threading/platform_thread.h"
-#endif
-
 namespace content {
 
 namespace {
-
-#if BUILDFLAG(IS_IOS)
-constexpr char kWebTestTestName[] = "webtest_test_name";
-
-bool GetTempDirectory(base::FilePath& temp_dir) {
-  if (!base::GetTempDir(&temp_dir)) {
-    LOG(ERROR) << "GetTempDir failed.";
-    return false;
-  }
-  return true;
-}
-
-std::fstream GetFileStreamToReadTestFileName() {
-  base::FilePath temp_dir;
-  if (!GetTempDirectory(temp_dir)) {
-    return std::fstream();
-  }
-
-  std::string test_input_file_path =
-      temp_dir.AppendASCII(kWebTestTestName).value();
-  return std::fstream(test_input_file_path);
-}
-
-void ClearFileNameInFileStream() {
-  base::FilePath temp_dir;
-  if (!GetTempDirectory(temp_dir)) {
-    return;
-  }
-
-  // Truncate file.
-  std::filesystem::resize_file(temp_dir.AppendASCII(kWebTestTestName).value(),
-                               0);
-}
-#endif
 
 std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
     const std::string& test_name,
@@ -147,37 +105,11 @@ std::unique_ptr<TestInfo> TestInfoExtractor::GetNextTest() {
   std::string test_string;
   bool protocol_mode = false;
   if (cmdline_args_[cmdline_position_] == FILE_PATH_LITERAL("-")) {
-#if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1421239): iOS port reads the test file through a file
-    // stream until using sockets for the communication between run_web_tests.py
-    // and content_shell.
-    std::fstream file_name_input = GetFileStreamToReadTestFileName();
-    if (!file_name_input.is_open()) {
-      return nullptr;
-    }
-    do {
-      // Need to wait for a while to wait until write function of
-      // |server_process.py| writes a test name in the file.
-      base::PlatformThread::Sleep(base::Milliseconds(10));
-      bool success = !!std::getline(file_name_input, test_string, '\n');
-      if (!success) {
-        return nullptr;
-      }
-    } while (test_string.empty());
-    // Clear the content of the file_name_input stream to ensure that the caller
-    // of GetNextTest doesn't repeatedly read the same test name until the next
-    // file name is written by the run_web_tests script. Since run_web_tests.py
-    // always writes a test name using 'wb' mode, clearing the content of the
-    // file stream is sufficient.
-    ClearFileNameInFileStream();
-    file_name_input.close();
-#else
     do {
       bool success = !!std::getline(std::cin, test_string, '\n');
       if (!success)
         return nullptr;
     } while (test_string.empty());
-#endif  // BUILDFLAG(IS_IOS)
     protocol_mode = true;
   } else {
 #if BUILDFLAG(IS_WIN)

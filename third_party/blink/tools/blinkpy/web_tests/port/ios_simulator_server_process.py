@@ -4,23 +4,22 @@
 
 import json
 import logging
+import os
+import select
+import socket
 import time
 
 from blinkpy.web_tests.port.server_process import ServerProcess
+from blinkpy.web_tests.port import driver
 
 _log = logging.getLogger(__name__)
 
 BOOT_STATE = 'Booted'
 
+CONN_WAITING_TIMEOUT = 20
 
-# Define a custom version of ServerProcess for running tests on the iOS
-# simulator. The default ServerProcess does not work as it uses
-# stdin/stdout/stderr to communicate, which the iOS simulator does not
-# allow for security.
-#
-# TODO(crbug.com/1421239): iOS port communicates with the content shell
-# through a file handle temporarily. Socket connection should be used
-# instead.
+
+# Custom version of ServerProcess that runs processes on the iOS simulator.
 class IOSSimulatorServerProcess(ServerProcess):
     def __init__(self,
                  port_obj,
@@ -32,16 +31,66 @@ class IOSSimulatorServerProcess(ServerProcess):
         super(IOSSimulatorServerProcess,
               self).__init__(port_obj, name, cmd, env, treat_no_data_as_crash,
                              more_logging)
-
         self._boot_simulator()
 
-        self._web_test_path_file = self._get_web_test_file_path()
-        if not self._web_test_path_file:
-            raise RuntimeError('_web_test_path_file does not exist.')
+    def _start(self):
+        if self._proc:
+            raise ValueError('%s already running' % self._name)
+        self._reset()
 
-        # Create a file at the path.
-        test_file_handle = open(self._web_test_path_file, 'wb')
-        test_file_handle.close()
+        # The iOS simulator doesn't allow to use stdin stream for packaged apps.
+        # Additionally, the stdout from run-test-suite not only includes
+        # additional data from the iOS test infrastructure but also combines
+        # stderr and stdout. As a result, when executing content_shell on the
+        # iOS simulator, it becomes impractical to employ stdin for transmitting
+        # a list of tests or to dependably utilize stdout for outputting
+        # results. To address this issue in the context of web tests, we employ
+        # a workaround by redirecting stdin and stdout to a TCP socket connected
+        # to the web test runner. Similar to Fuchsia, the runner also uses the
+        # --stdio-redirect flag to specify the address and port for stdin and
+        # stdout redirection.
+        listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listen_socket.bind(('127.0.0.1', self._port.stdio_redirect_port()))
+        listen_socket.listen(1)
+
+        proc = self._host.executive.popen(self._cmd,
+                                          stdin=self._host.executive.PIPE,
+                                          stdout=self._host.executive.PIPE,
+                                          stderr=self._host.executive.PIPE,
+                                          env=self._env)
+
+        # Wait for incoming connection from the iOS content_shell.
+        fd = listen_socket.fileno()
+
+        read_fds, _, _ = select.select([fd], [], [], CONN_WAITING_TIMEOUT)
+        while fd not in read_fds:
+            _log.error(
+                'Timed out waiting connection from content_shell. Try to launch the content_shell again.'
+            )
+            proc.kill()
+            # TODO(gyuyoung): There is sometimes no incoming connection when
+            # attempting to launch a content shell. We need to investigate why
+            # launching the content shell occasionally fails. To resolve the
+            # issue, consider repeatedly attempting to launch the content shell
+            # until it successfully launches.
+            proc = self._host.executive.popen(self._cmd,
+                                              stdin=self._host.executive.PIPE,
+                                              stdout=self._host.executive.PIPE,
+                                              stderr=self._host.executive.PIPE,
+                                              env=self._env)
+            read_fds, _, _ = select.select([fd], [], [], CONN_WAITING_TIMEOUT)
+
+        stdio_socket, _ = listen_socket.accept()
+        fd = stdio_socket.fileno()  # pylint: disable=no-member
+        stdin_pipe = os.fdopen(os.dup(fd), 'wb', 0)
+        stdout_pipe = os.fdopen(os.dup(fd), 'rb', 0)
+        stdio_socket.close()
+
+        proc.stdin = stdin_pipe
+        proc.stdout = stdout_pipe
+
+        self._set_proc(proc)
 
     def _boot_simulator(self):
         device = self._get_device(self._port.device_name())
@@ -58,53 +107,6 @@ class IOSSimulatorServerProcess(ServerProcess):
                 if state == BOOT_STATE:
                     break
                 time.sleep(2)  # Wait for 2 seconds before checking again.
-
-    def _get_web_test_file_path(self):
-        simulator_root = self._host.filesystem.expanduser(
-            '~/Library/Developer/CoreSimulator/Devices/')
-        udid = self._get_simulator_udid()
-        if not udid:
-            raise RuntimeError('The udid value of the Simulator is none.')
-
-        app_data_path = self._host.filesystem.join(
-            simulator_root, udid, 'data/Containers/Data/Application')
-
-        content_shell_dir = self._get_content_shell_dir(app_data_path)
-        if not content_shell_dir:
-            _log.error('Cannot find the content shell directory.')
-            return None
-
-        content_shell_data_path = self._host.filesystem.join(
-            app_data_path, content_shell_dir)
-        content_shell_tmp_path = self._host.filesystem.join(
-            content_shell_data_path, 'tmp')
-        if not self._host.filesystem.exists(content_shell_tmp_path):
-            raise RuntimeError('%s path does not exist.' %
-                               content_shell_tmp_path)
-
-        return self._host.filesystem.join(content_shell_tmp_path,
-                                          'webtest_test_name')
-
-    def _get_content_shell_dir(self, app_data_path):
-        for app_dir in self._host.filesystem.listdir(app_data_path):
-            # Check if |app_dir| has the content shell directory.
-            content_shell_dir = self._host.filesystem.join(
-                app_data_path, app_dir,
-                'Library/Application Support/Chromium Content Shell')
-            if self._host.filesystem.exists(content_shell_dir):
-                return app_dir
-        return None
-
-    def _get_simulator_udid(self):
-        device = self._get_device(self._port.device_name())
-        if not device:
-            _log.error('There is no available device.')
-            return None
-        udid = device.get('udid')
-        if not udid:
-            _log.error('Cannot find the udid of the iOS simulator.')
-            return None
-        return udid
 
     def _get_device(self, device_name):
         devices = json.loads(self._run_simctl('list -j devices available'))
@@ -134,14 +136,3 @@ class IOSSimulatorServerProcess(ServerProcess):
         prefix_commands = ['/usr/bin/xcrun', 'simctl']
         command_array = prefix_commands + command.split()
         return self._host.executive.run_command(command_array)
-
-    #
-    # PROTECTED METHODS
-    #
-
-    def write(self, bytes):
-        super().write(bytes)
-        # iOS application can't communicate with the Mac host through stdin yet.
-        # Instead a file stream is used for the communication temporarily.
-        self._host.filesystem.write_binary_file(self._web_test_path_file,
-                                                bytes)

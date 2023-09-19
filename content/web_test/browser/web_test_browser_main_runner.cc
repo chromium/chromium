@@ -52,10 +52,13 @@
 #include "content/public/test/ppapi_test_utils.h"
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include <lib/sys/cpp/component_context.h>
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 #include <sys/socket.h>
 #include <unistd.h>
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
@@ -66,7 +69,7 @@ namespace content {
 
 namespace {
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 // Fuchsia doesn't support stdin stream for packaged apps, and stdout from
 // run-test-suite not only has extra emissions from the Fuchsia test
 // infrastructure, it also merges stderr and stdout together. Combined, these
@@ -75,6 +78,10 @@ namespace {
 // workaround this issue for web tests we redirect stdin and stdout to a TCP
 // socket connected to the web test runner. The runner uses --stdio-redirect to
 // specify address and port for stdin and stdout redirection.
+//
+// iOS is in a similar situation where the simulator does not support the use of
+// the stdin stream for applications. Therefore, iOS also redirects stdin and
+// stdout to a TCP socket that is connected to the web test runner.
 constexpr char kStdioRedirectSwitch[] = "stdio-redirect";
 
 void ConnectStdioSocket(const std::string& host_and_port) {
@@ -124,7 +131,7 @@ bool RunOneTest(const content::TestInfo& test_info,
 }
 
 void RunTests(content::BrowserMainRunner* main_runner) {
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
   if (auto& cmd_line = *base::CommandLine::ForCurrentProcess();
       cmd_line.HasSwitch(kStdioRedirectSwitch)) {
     ConnectStdioSocket(cmd_line.GetSwitchValueASCII(kStdioRedirectSwitch));

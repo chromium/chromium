@@ -303,14 +303,6 @@ void PrepareWebTests(NSString* udid, NSString* app_path) {
   XCRunTask* install_task = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"install", udid, app_path ]];
   [install_task run];
-
-  XCRunTask* launch_task = [[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"launch", udid, bundle_identifier ]];
-  [launch_task run];
-
-  XCRunTask* terminate_task = [[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"terminate", udid, bundle_identifier ]];
-  [terminate_task run];
 }
 
 int RunWebTest(NSString* app_path, NSString* udid, NSMutableArray* cmd_args) {

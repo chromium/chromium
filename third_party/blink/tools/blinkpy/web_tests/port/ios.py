@@ -4,6 +4,7 @@
 """Chromium iOS implementation of the Port interface."""
 
 import logging
+import socket
 
 from blinkpy.web_tests.port.ios_simulator_server_process import IOSSimulatorServerProcess
 from blinkpy.web_tests.port import base
@@ -36,6 +37,7 @@ class IOSPort(base.Port):
         super(IOSPort, self).__init__(host, port_name, **kwargs)
         self.server_process_constructor = IOSSimulatorServerProcess
         self._version = port_name[port_name.index('ios-') + len('ios-'):]
+        self._stdio_redirect_port = self._get_available_port()
 
     def check_build(self, needs_http, printer):
         result = super(IOSPort, self).check_build(needs_http, printer)
@@ -47,11 +49,10 @@ class IOSPort(base.Port):
         return result
 
     def cmd_line(self):
-        flags = self.additional_driver_flags()
         return [
             self._path_to_simulator(), '-d',
             self.device_name(), '-c',
-            '%s -' % " ".join(flags)
+            '%s -' % self.additional_driver_flags()
         ]
 
     def reinstall_cmd_line(self):
@@ -73,12 +74,37 @@ class IOSPort(base.Port):
     def _driver_class(self):
         return ChromiumIOSDriver
 
+    def _get_available_port(self):
+        # TODO(gyuyoung): Can we get a port in the iOS server process that it
+        # really binds to a socket?
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(('localhost', 0))
+        port = int(s.getsockname()[1])
+        return port
+
     #
     # PROTECTED METHODS
     #
 
     def operating_system(self):
         return 'ios'
+
+    def num_workers(self, requested_num_workers):
+        # Only support a single worker because the iOS simulator is not able to
+        # run multiple instances of the same application at the same time. And,
+        # we do not support running multiple simulators for testing yet.
+        return min(1, requested_num_workers)
+
+    def additional_driver_flags(self):
+        flags = super(IOSPort, self).additional_driver_flags()
+        flags += ['--no-sandbox']
+        stdio_redirect_flag = '--stdio-redirect=127.0.0.1:' + str(
+            self._stdio_redirect_port)
+        flags += [stdio_redirect_flag]
+        return " ".join(flags)
+
+    def stdio_redirect_port(self):
+        return self._stdio_redirect_port
 
     def path_to_apache(self):
         import platform
@@ -97,9 +123,9 @@ class IOSPort(base.Port):
 
     def setup_test_run(self):
         super(IOSPort, self).setup_test_run()
-        # Because the tests are being run on a simulator rather than directly on this
-        # device, re-deploy the content shell app to the simulator to ensure it is up
-        # to date.
+        # Because the tests are being run on a simulator rather than directly on
+        # this device, re-deploy the content shell app to the simulator to
+        # ensure it is up to date.
         self.host.executive.run_command(self.reinstall_cmd_line())
 
 
