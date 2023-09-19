@@ -216,7 +216,6 @@ void BookmarkBridge::GetImageUrlForBookmark(
   }
 
   page_image_service::mojom::Options options;
-  options.suggest_images = true;
   options.optimization_guide_images = true;
   image_service_->FetchImageFor(
       page_image_service::mojom::ClientId::Bookmarks,
