@@ -2227,7 +2227,8 @@
           '--test-launcher-jobs=3',
         ],
         'swarming': {
-          'shards': 16,
+          # ASAN bot is slow: https://crbug.com/1484550#c3
+          'shards': 32,
         },
       },
       'win-rel-cft': {
@@ -4563,6 +4564,12 @@
         'args': [
           '--top-chrome-touch-ui=disabled',
         ],
+      },
+      'win-asan': {
+        'swarming': {
+          # ASAN bot is slow: https://crbug.com/1484550#c4
+          'shards': 4,
+        },
       },
       'win10-code-coverage': {
         'swarming': {
