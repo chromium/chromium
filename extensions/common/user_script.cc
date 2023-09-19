@@ -199,24 +199,20 @@ UserScript::Source UserScript::GetSource() const {
 }
 
 bool UserScript::MatchesURL(const GURL& url) const {
-  if (!url_set_.is_empty()) {
-    if (!url_set_.MatchesURL(url))
-      return false;
+  if (!url_set_.is_empty() && !url_set_.MatchesURL(url)) {
+    return false;
   }
 
-  if (!exclude_url_set_.is_empty()) {
-    if (exclude_url_set_.MatchesURL(url))
-      return false;
+  if (!exclude_url_set_.is_empty() && exclude_url_set_.MatchesURL(url)) {
+    return false;
   }
 
-  if (!globs_.empty()) {
-    if (!UrlMatchesGlobs(&globs_, url))
-      return false;
+  if (!globs_.empty() && !UrlMatchesGlobs(&globs_, url)) {
+    return false;
   }
 
-  if (!exclude_globs_.empty()) {
-    if (UrlMatchesGlobs(&exclude_globs_, url))
-      return false;
+  if (!exclude_globs_.empty() && UrlMatchesGlobs(&exclude_globs_, url)) {
+    return false;
   }
 
   return true;
