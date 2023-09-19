@@ -1209,7 +1209,8 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
 
   DCHECK(commit_reason_ == CommitReason::kInitialization ||
          !frame_->GetPage()->Paused() ||
-         MainThreadDebugger::Instance()->IsPaused());
+         MainThreadDebugger::Instance(frame_->DomWindow()->GetIsolate())
+             ->IsPaused());
 
   if (loading_main_document_from_mhtml_archive_ && state_ < kCommitted) {
     // The browser process should block any navigation to an MHTML archive

@@ -110,14 +110,15 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     instance_ = nullptr;
   }
 
-  static void EnsureMainThreadDebuggerCreated() {
+  static void EnsureMainThreadDebuggerCreated(v8::Isolate* isolate) {
     if (instance_)
       return;
     std::unique_ptr<ClientMessageLoopAdapter> instance(
         new ClientMessageLoopAdapter(
             Platform::Current()->CreateNestedMessageLoopRunner()));
     instance_ = instance.get();
-    MainThreadDebugger::Instance()->SetClientMessageLoop(std::move(instance));
+    MainThreadDebugger::Instance(isolate)->SetClientMessageLoop(
+        std::move(instance));
   }
 
   static void ContinueProgram() {
@@ -287,10 +288,12 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   if (!network_agents_.size())
     Thread::Current()->AddTaskObserver(this);
 
-  ClientMessageLoopAdapter::EnsureMainThreadDebuggerCreated();
-  MainThreadDebugger* main_thread_debugger = MainThreadDebugger::Instance();
-  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
   InspectedFrames* inspected_frames = inspected_frames_.Get();
+  v8::Isolate* isolate =
+      inspected_frames->Root()->GetPage()->GetAgentGroupScheduler().Isolate();
+  ClientMessageLoopAdapter::EnsureMainThreadDebuggerCreated(isolate);
+  MainThreadDebugger* main_thread_debugger =
+      MainThreadDebugger::Instance(isolate);
 
   int context_group_id =
       main_thread_debugger->ContextGroupId(inspected_frames->Root());
@@ -589,14 +592,18 @@ void WebDevToolsAgentImpl::WillProcessTask(
     bool was_blocked_or_low_priority) {
   if (network_agents_.empty())
     return;
-  ThreadDebugger::IdleFinished(V8PerIsolateData::MainThreadIsolate());
+  v8::Isolate* isolate =
+      inspected_frames_->Root()->GetPage()->GetAgentGroupScheduler().Isolate();
+  ThreadDebugger::IdleFinished(isolate);
 }
 
 void WebDevToolsAgentImpl::DidProcessTask(
     const base::PendingTask& pending_task) {
   if (network_agents_.empty())
     return;
-  ThreadDebugger::IdleStarted(V8PerIsolateData::MainThreadIsolate());
+  v8::Isolate* isolate =
+      inspected_frames_->Root()->GetPage()->GetAgentGroupScheduler().Isolate();
+  ThreadDebugger::IdleStarted(isolate);
   FlushProtocolNotifications();
 }
 

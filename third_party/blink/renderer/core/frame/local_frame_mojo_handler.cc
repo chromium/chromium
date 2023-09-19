@@ -1289,7 +1289,8 @@ void LocalFrameMojoHandler::OnPortalActivated(
       frame_, portal_token, std::move(portal), std::move(portal_client),
       std::move(data.message), ports, std::move(callback));
 
-  ThreadDebugger* debugger = MainThreadDebugger::Instance();
+  v8::Isolate* isolate = dom_window->GetIsolate();
+  ThreadDebugger* debugger = MainThreadDebugger::Instance(isolate);
   if (debugger)
     debugger->ExternalAsyncTaskStarted(data.sender_stack_trace_id);
   dom_window->DispatchEvent(*event);

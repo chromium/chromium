@@ -93,7 +93,8 @@ void PortalPostMessageHelper::CreateAndDispatchMessageEvent(
     event = MessageEvent::CreateError(source_origin->ToString(), event_target);
   }
 
-  ThreadDebugger* debugger = MainThreadDebugger::Instance();
+  v8::Isolate* isolate = context->GetIsolate();
+  ThreadDebugger* debugger = MainThreadDebugger::Instance(isolate);
   if (debugger)
     debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
   event_target->DispatchEvent(*event);

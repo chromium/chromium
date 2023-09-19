@@ -65,7 +65,7 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
   MainThreadDebugger& operator=(const MainThreadDebugger&) = delete;
   ~MainThreadDebugger() override;
 
-  static MainThreadDebugger* Instance();
+  static MainThreadDebugger* Instance(v8::Isolate*);
 
   bool IsWorker() override { return false; }
   bool IsPaused() const { return paused_; }

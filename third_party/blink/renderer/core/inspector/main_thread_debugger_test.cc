@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -77,7 +78,8 @@ TEST_P(MainThreadDebuggerMultipleMainFramesTest, Allow) {
   Page::InsertOrdinaryPageForTesting(&GetPage());
   Page::InsertOrdinaryPageForTesting(&GetSecondPage());
   GetFrame().GetSettings()->SetScriptEnabled(true);
-  auto* debugger = MainThreadDebugger::Instance();
+  auto* debugger =
+      MainThreadDebugger::Instance(GetDocument().GetAgent().isolate());
   int context_group_id = debugger->ContextGroupId(&GetFrame());
 
   if (IsDebuggerAllowed()) {

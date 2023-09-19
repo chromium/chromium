@@ -223,10 +223,9 @@ int MainThreadDebugger::ContextGroupId(LocalFrame* frame) {
   return WeakIdentifierMap<LocalFrame>::Identifier(&local_frame_root);
 }
 
-MainThreadDebugger* MainThreadDebugger::Instance() {
+MainThreadDebugger* MainThreadDebugger::Instance(v8::Isolate* isolate) {
   DCHECK(IsMainThread());
-  ThreadDebugger* debugger =
-      ThreadDebugger::From(V8PerIsolateData::MainThreadIsolate());
+  ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   DCHECK(debugger && !debugger->IsWorker());
   return static_cast<MainThreadDebugger*>(debugger);
 }

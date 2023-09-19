@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
@@ -37,11 +38,11 @@ std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject> ResolveNode(
   if (!frame)
     return nullptr;
 
-  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
+  v8::Isolate* isolate = document->GetAgent().isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
   if (v8_execution_context_id.has_value()) {
-    if (!MainThreadDebugger::Instance()
+    if (!MainThreadDebugger::Instance(isolate)
              ->GetV8Inspector()
              ->contextById(v8_execution_context_id.value())
              .ToLocal(&context)) {

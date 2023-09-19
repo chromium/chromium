@@ -77,8 +77,9 @@ protocol::Response InspectorMemoryAgent::forciblyPurgeJavaScriptMemory() {
       local_frame->ForciblyPurgeV8Memory();
     }
   }
-  V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
-      v8::MemoryPressureLevel::kCritical);
+  v8::Isolate* isolate =
+      frames_->Root()->GetPage()->GetAgentGroupScheduler().Isolate();
+  isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
   return protocol::Response::Success();
 }
 

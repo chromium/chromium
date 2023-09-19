@@ -1692,7 +1692,7 @@ void InspectorPageAgent::CreateIsolatedWorldImpl(
 
   LocalWindowProxy* isolated_world_window_proxy =
       frame.DomWindow()->GetScriptController().WindowProxy(*world);
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
+  v8::HandleScope handle_scope(frame.DomWindow()->GetIsolate());
 
   callback->sendSuccess(v8_inspector::V8ContextInfo::executionContextId(
       isolated_world_window_proxy->ContextIfInitialized()));

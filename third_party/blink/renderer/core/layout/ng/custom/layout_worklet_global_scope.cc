@@ -34,9 +34,10 @@ LayoutWorkletGlobalScope* LayoutWorkletGlobalScope::Create(
       frame, std::move(creation_params), reporting_proxy,
       pending_layout_registry);
   global_scope->ScriptController()->Initialize(NullURL());
-  MainThreadDebugger::Instance()->ContextCreated(
-      global_scope->ScriptController()->GetScriptState(),
-      global_scope->GetFrame(), global_scope->DocumentSecurityOrigin());
+  MainThreadDebugger::Instance(global_scope->GetIsolate())
+      ->ContextCreated(global_scope->ScriptController()->GetScriptState(),
+                       global_scope->GetFrame(),
+                       global_scope->DocumentSecurityOrigin());
   return global_scope;
 }
 
@@ -51,8 +52,8 @@ LayoutWorkletGlobalScope::LayoutWorkletGlobalScope(
 LayoutWorkletGlobalScope::~LayoutWorkletGlobalScope() = default;
 
 void LayoutWorkletGlobalScope::Dispose() {
-  MainThreadDebugger::Instance()->ContextWillBeDestroyed(
-      ScriptController()->GetScriptState());
+  MainThreadDebugger::Instance(GetIsolate())
+      ->ContextWillBeDestroyed(ScriptController()->GetScriptState());
 
   WorkletGlobalScope::Dispose();
 

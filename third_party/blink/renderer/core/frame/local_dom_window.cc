@@ -500,7 +500,7 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
 }
 
 void LocalDOMWindow::ExceptionThrown(ErrorEvent* event) {
-  MainThreadDebugger::Instance()->ExceptionThrown(this, event);
+  MainThreadDebugger::Instance(GetIsolate())->ExceptionThrown(this, event);
 }
 
 // https://w3c.github.io/webappsec-referrer-policy/#determine-requests-referrer
@@ -985,7 +985,8 @@ void LocalDOMWindow::FrameDestroyed() {
   GetAgent()->DetachContext(this);
   NotifyContextDestroyed();
   RemoveAllEventListeners();
-  MainThreadDebugger::Instance()->DidClearContextsForFrame(GetFrame());
+  MainThreadDebugger::Instance(GetIsolate())
+      ->DidClearContextsForFrame(GetFrame());
   DisconnectFromFrame();
 }
 

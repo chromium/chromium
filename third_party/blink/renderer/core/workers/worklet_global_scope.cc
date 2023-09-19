@@ -203,7 +203,8 @@ void WorkletGlobalScope::AddInspectorIssue(AuditsIssue issue) {
 
 void WorkletGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
   if (IsMainThreadWorkletGlobalScope()) {
-    MainThreadDebugger::Instance()->ExceptionThrown(this, error_event);
+    MainThreadDebugger::Instance(GetIsolate())
+        ->ExceptionThrown(this, error_event);
     return;
   }
   if (WorkerThreadDebugger* debugger =
