@@ -58,6 +58,20 @@ def __disable_remote_b289968566(ctx, step_config):
     step_config["rules"].insert(0, rule)
     return step_config
 
+def __disable_remote_crbug1484474(ctx, step_config):
+    rule = {
+        # TODO(crbug.com/1484474): they timed out and never cache hit.
+        "name": "crbug1484474/timeout",
+        "action_outs": [
+            "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
+        ],
+        "remote": False,
+    }
+    if reproxy.enabled(ctx):
+        rule["handler"] = "strip_rewrapper"
+    step_config["rules"].insert(0, rule)
+    return step_config
+
 def __step_config(ctx, step_config):
     config.check(ctx)
     step_config["platforms"].update({
@@ -69,6 +83,7 @@ def __step_config(ctx, step_config):
     })
 
     step_config = __disable_remote_b289968566(ctx, step_config)
+    step_config = __disable_remote_crbug1484474(ctx, step_config)
 
     if android.enabled(ctx):
         step_config = android.step_config(ctx, step_config)
