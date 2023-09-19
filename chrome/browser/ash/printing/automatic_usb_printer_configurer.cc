@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -182,6 +183,25 @@ void AutomaticUsbPrinterConfigurer::OnSetupComplete(
   }
 
   auto it_ref = ppd_references_.find(printer.id());
+
+  // Notify metrics when necessary.
+  if (printer.ppd_reference().autoconf) {
+    // This setup attempt was performed via IPP Everywhere.
+    if (it_ref != ppd_references_.end()) {
+      // And there is a PPD file for this printer.
+      base::UmaHistogramEnumeration(
+          "Printing.CUPS.AutomaticIppSetupResultOfUsbPrinterWithPpd", result);
+    }
+  } else {
+    // This setup attempt was performed with PPD file.
+    if (printer.supports_ippusb()) {
+      // And the printer supports IPP-over-USB.
+      base::UmaHistogramEnumeration(
+          "Printing.CUPS.AutomaticPpdSetupResultOfUsbPrinterSupportingIpp",
+          result);
+    }
+  }
+
   if (it_ref != ppd_references_.end()) {
     // We have a PPD for this printer. We can try to use it if IPP Everywhere
     // setup failed.
