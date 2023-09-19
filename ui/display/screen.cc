@@ -217,47 +217,25 @@ ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
   return result;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_APPLE)
 
 ScopedNativeScreen::ScopedNativeScreen(const base::Location& location) {
-  MaybeInit(location);
-}
-
-ScopedNativeScreen::ScopedNativeScreen(bool call_maybe_init,
-                                       const base::Location& location) {
-  if (call_maybe_init)
-    MaybeInit(location);
-}
-
-ScopedNativeScreen::~ScopedNativeScreen() {
-  Shutdown();
-}
-
-void ScopedNativeScreen::MaybeInit(const base::Location& location) {
-  maybe_init_called_ = true;
   if (!Screen::HasScreen()) {
 #if BUILDFLAG(IS_IOS)
     Screen::GetScreen();
 #else
-    screen_ = base::WrapUnique(CreateScreen());
-    // ScreenOzone and DesktopScreenWin sets the instance by itself.
-    if (Screen::GetScreen() != screen_.get())
-      Screen::SetScreenInstance(screen_.get(), location);
+    screen_ = base::WrapUnique(CreateNativeScreen());
+    Screen::SetScreenInstance(screen_.get(), location);
 #endif
   }
 }
 
-void ScopedNativeScreen::Shutdown() {
-  DCHECK(maybe_init_called_);
+ScopedNativeScreen::~ScopedNativeScreen() {
   if (screen_) {
     DCHECK_EQ(screen_.get(), Screen::GetScreen());
     Screen::SetScreenInstance(nullptr);
     screen_.reset();
   }
-}
-
-Screen* ScopedNativeScreen::CreateScreen() {
-  return CreateNativeScreen();
 }
 
 #endif

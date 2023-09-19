@@ -11,9 +11,7 @@ TestDesktopScreenOzone* g_instance = nullptr;
 
 // static
 std::unique_ptr<display::Screen> TestDesktopScreenOzone::Create() {
-  auto screen = std::make_unique<TestDesktopScreenOzone>();
-  screen->Initialize();
-  return screen;
+  return std::make_unique<TestDesktopScreenOzone>();
 }
 
 TestDesktopScreenOzone* TestDesktopScreenOzone::GetInstance() {

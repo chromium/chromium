@@ -237,37 +237,24 @@ class DISPLAY_EXPORT Screen {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 };
 
+#if BUILDFLAG(IS_APPLE)
+
+// TODO(oshima): move this to separate apple specific file.
+
 // TODO(crbug.com/1317416): Make this static private member of
 // ScopedNativeScreen.
 DISPLAY_EXPORT Screen* CreateNativeScreen();
 
-// Android does not have `CreateNativeScreen()`.
-#if !BUILDFLAG(IS_ANDROID)
-
 // ScopedNativeScreen creates a native screen if there is no screen created yet
 // (e.g. by a unit test).
-class DISPLAY_EXPORT ScopedNativeScreen {
+class DISPLAY_EXPORT ScopedNativeScreen final {
  public:
   explicit ScopedNativeScreen(const base::Location& location = FROM_HERE);
   ScopedNativeScreen(const ScopedNativeScreen&) = delete;
   ScopedNativeScreen& operator=(const ScopedNativeScreen&) = delete;
-  virtual ~ScopedNativeScreen();
-
-  // Create and initialize the screen instance if the screen instance does not
-  // exist yet.
-  void MaybeInit(const base::Location& location = FROM_HERE);
-  void Shutdown();
-
-  Screen* screen() { return screen_.get(); }
-
-  virtual Screen* CreateScreen();
-
- protected:
-  explicit ScopedNativeScreen(bool call_maybe_init,
-                              const base::Location& location = FROM_HERE);
+  ~ScopedNativeScreen();
 
  private:
-  bool maybe_init_called_{false};
   std::unique_ptr<Screen> screen_;
 };
 

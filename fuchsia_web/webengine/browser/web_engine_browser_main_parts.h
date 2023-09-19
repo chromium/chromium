@@ -22,8 +22,8 @@ namespace base {
 class FuchsiaIntlProfileWatcher;
 }
 
-namespace display {
-class ScopedNativeScreen;
+namespace aura {
+class ScreenOzone;
 }
 
 namespace content {
@@ -122,7 +122,7 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   content::ContentBrowserClient* const browser_client_;
 
-  std::unique_ptr<display::ScopedNativeScreen> screen_;
+  std::unique_ptr<aura::ScreenOzone> screen_;
 
   // Used to publish diagnostics including the active Contexts and FrameHosts.
   std::unique_ptr<sys::ComponentInspector> component_inspector_;

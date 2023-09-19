@@ -50,9 +50,7 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
 };
 
 std::unique_ptr<display::Screen> CreateDesktopScreen() {
-  auto screen = std::make_unique<DesktopScreenOzoneLinux>();
-  screen->Initialize();
-  return screen;
+  return std::make_unique<DesktopScreenOzoneLinux>();
 }
 
 }  // namespace views
