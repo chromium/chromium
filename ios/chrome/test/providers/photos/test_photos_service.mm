@@ -31,6 +31,10 @@ id<SystemIdentity> TestPhotosService::GetIdentity() {
 
 #pragma mark - PhotosService
 
+bool TestPhotosService::IsSupported() const {
+  return true;
+}
+
 bool TestPhotosService::IsAvailable() const {
   return !cancelable_upload_completion_.callback();
 }

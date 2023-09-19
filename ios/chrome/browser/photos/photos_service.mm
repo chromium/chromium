@@ -7,3 +7,7 @@
 PhotosService::PhotosService() = default;
 
 PhotosService::~PhotosService() = default;
+
+bool PhotosService::IsSupported() const {
+  return true;
+}

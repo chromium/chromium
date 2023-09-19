@@ -12,6 +12,7 @@ class ChromiumPhotosService final : public PhotosService {
   ChromiumPhotosService() = default;
   ~ChromiumPhotosService() final = default;
 
+  bool IsSupported() const final { return false; }
   bool IsAvailable() const final { return false; }
 
   void UploadImage(NSString* image_name,

@@ -22,6 +22,7 @@ class TestPhotosService final : public PhotosService {
   id<SystemIdentity> GetIdentity();
 
   // PhotosService implementation
+  bool IsSupported() const final;
   bool IsAvailable() const final;
   void UploadImage(NSString* image_name,
                    NSData* image_data,

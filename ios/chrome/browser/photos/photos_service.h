@@ -40,6 +40,10 @@ class PhotosService : public KeyedService {
   PhotosService();
   ~PhotosService() override;
 
+  // Whether the service is supported. This value does not change during the
+  // execution of the application.
+  virtual bool IsSupported() const;
+
   // Whether the service is available e.g. can be used to upload an image.
   virtual bool IsAvailable() const = 0;
 
