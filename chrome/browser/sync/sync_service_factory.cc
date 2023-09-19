@@ -109,9 +109,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
   // profile and lockscreen profile).
   CHECK(ash::ProfileHelper::IsUserProfile(profile));
 #endif
-  // TODO(crbug.com/1483981): Remove `is_regular_profile_for_uma` since it's
-  // always true.
-  init_params.is_regular_profile_for_uma = true;
 
   init_params.sync_client =
       std::make_unique<browser_sync::ChromeSyncClient>(profile);
@@ -132,10 +129,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   syncer::SyncPrefs prefs(profile->GetPrefs());
   local_sync_backend_enabled = prefs.IsLocalSyncEnabled();
-  if (init_params.is_regular_profile_for_uma) {
-    base::UmaHistogramBoolean("Sync.Local.Enabled2",
-                              local_sync_backend_enabled);
-  }
+  base::UmaHistogramBoolean("Sync.Local.Enabled2", local_sync_backend_enabled);
 
   if (local_sync_backend_enabled) {
     base::FilePath local_sync_backend_folder =
@@ -143,10 +137,8 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
     // If the user has not specified a folder and we can't get the default
     // roaming profile location the sync service will not be created.
-    if (init_params.is_regular_profile_for_uma) {
-      base::UmaHistogramBoolean("Sync.Local.RoamingProfileUnavailable2",
-                                local_sync_backend_folder.empty());
-    }
+    base::UmaHistogramBoolean("Sync.Local.RoamingProfileUnavailable2",
+                              local_sync_backend_folder.empty());
     if (local_sync_backend_folder.empty()) {
       return nullptr;
     }

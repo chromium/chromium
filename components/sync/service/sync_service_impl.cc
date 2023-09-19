@@ -212,7 +212,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       expect_sync_configuration_aborted_(false),
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
-      is_regular_profile_for_uma_(init_params.is_regular_profile_for_uma),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
@@ -292,7 +291,7 @@ void SyncServiceImpl::Initialize() {
       GetSyncAccountStateForPrefs(),
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
 
-  if (!IsLocalSyncEnabled() && is_regular_profile_for_uma_) {
+  if (!IsLocalSyncEnabled()) {
     const bool account_info_fully_loaded =
         auth_manager_->IsActiveAccountInfoFullyLoaded();
     base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded2",
@@ -319,25 +318,23 @@ void SyncServiceImpl::Initialize() {
 #endif
   }
 
-  if (is_regular_profile_for_uma_) {
-    // Note: We need to record the initial state *after* calling
-    // RegisterForAuthNotifications(), because before that the authenticated
-    // account isn't initialized.
-    RecordSyncInitialState(
-        GetDisableReasons(),
-        /*is_sync_feature_requested=*/
-        IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
-        user_settings_->IsInitialSyncFeatureSetupComplete());
+  // Note: We need to record the initial state *after* calling
+  // RegisterForAuthNotifications(), because before that the authenticated
+  // account isn't initialized.
+  RecordSyncInitialState(
+      GetDisableReasons(),
+      /*is_sync_feature_requested=*/
+      IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
+      user_settings_->IsInitialSyncFeatureSetupComplete());
 
-    ModelTypeSet data_types_to_track =
-        Intersection(GetRegisteredDataTypes(), ProtocolTypes());
-    if (!data_types_to_track.Empty()) {
-      download_status_recorder_ = std::make_unique<DownloadStatusRecorder>(
-          this,
-          base::BindOnce(&SyncServiceImpl::OnDownloadStatusRecorderFinished,
-                         weak_factory_.GetWeakPtr()),
-          data_types_to_track);
-    }
+  ModelTypeSet data_types_to_track =
+      Intersection(GetRegisteredDataTypes(), ProtocolTypes());
+  if (!data_types_to_track.Empty()) {
+    download_status_recorder_ = std::make_unique<DownloadStatusRecorder>(
+        this,
+        base::BindOnce(&SyncServiceImpl::OnDownloadStatusRecorderFinished,
+                       weak_factory_.GetWeakPtr()),
+        data_types_to_track);
   }
 
   // Call Stop() on controllers for non-preferred types to clear metadata.

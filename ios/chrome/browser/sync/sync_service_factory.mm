@@ -83,9 +83,6 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
 
   syncer::SyncServiceImpl::InitParams init_params;
-  // On non-iOS platforms, there are some "uninteresting" types of profiles such
-  // as guest or system profiles. There's no such thing on iOS.
-  init_params.is_regular_profile_for_uma = true;
   init_params.identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   init_params.sync_client =
