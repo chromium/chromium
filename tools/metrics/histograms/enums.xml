@@ -39977,7 +39977,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="745" label="BackgroundSync"/>
   <int value="746" label="TabStopProperty"/>
   <int value="747" label="TabStopAttribute"/>
-  <int value="748" label="LegacyConst"/>
+  <int value="748" label="OBSOLETE_LegacyConst"/>
   <int value="749" label="SVGFilterRes"/>
   <int value="750" label="V8Permissions_Query_Method"/>
   <int value="751" label="LegacyCSSValueIntrinsic"/>
@@ -40330,7 +40330,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1074" label="DisableRemotePlaybackAttribute"/>
   <int value="1075" label="V8SloppyMode"/>
   <int value="1076" label="V8StrictMode"/>
-  <int value="1077" label="V8StrongMode"/>
+  <int value="1077" label="OBSOLETE_V8StrongMode"/>
   <int value="1078" label="AudioNodeConnectToAudioNode"/>
   <int value="1079" label="AudioNodeConnectToAudioParam"/>
   <int value="1080" label="AudioNodeDisconnectFromAudioNode"/>
@@ -40389,12 +40389,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1131" label="ContentEditableTrueOnHTML"/>
   <int value="1132" label="ContentEditablePlainTextOnly"/>
   <int value="1133" label="V8RegExpPrototypeUnicodeGetter"/>
-  <int value="1134" label="V8IntlV8Parse"/>
-  <int value="1135" label="V8IntlPattern"/>
-  <int value="1136" label="V8IntlResolved"/>
-  <int value="1137" label="V8PromiseChain"/>
-  <int value="1138" label="V8PromiseAccept"/>
-  <int value="1139" label="V8PromiseDefer"/>
+  <int value="1134" label="OBSOLETE_V8IntlV8Parse"/>
+  <int value="1135" label="OBSOLETE_V8IntlPattern"/>
+  <int value="1136" label="OBSOLETE_V8IntlResolved"/>
+  <int value="1137" label="OBSOLETE_V8PromiseChain"/>
+  <int value="1138" label="OBSOLETE_V8PromiseAccept"/>
+  <int value="1139" label="OBSOLETE_V8PromiseDefer"/>
   <int value="1140" label="EventComposed"/>
   <int value="1141" label="GeolocationInsecureOriginIframe"/>
   <int value="1142" label="GeolocationSecureOriginIframe"/>
@@ -40651,14 +40651,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1387" label="DocumentCreateEventSensorErrorEvent"/>
   <int value="1388" label="DocumentCreateEventSensorReadingEvent"/>
   <int value="1389" label="MediaStreamConstraintsOldAndNew"/>
-  <int value="1390" label="V8ArrayProtectorDirtied"/>
+  <int value="1390" label="OBSOLETE_V8ArrayProtectorDirtied"/>
   <int value="1391" label="V8ArraySpeciesModified"/>
   <int value="1392" label="V8ArrayPrototypeConstructorModified"/>
-  <int value="1393" label="V8ArrayInstanceProtoModified"/>
+  <int value="1393" label="OBSOLETE_V8ArrayInstanceProtoModified"/>
   <int value="1394" label="V8ArrayInstanceConstructorModified"/>
-  <int value="1395" label="V8LegacyFunctionDeclaration"/>
-  <int value="1396" label="V8RegExpPrototypeSourceGetter"/>
-  <int value="1397" label="V8RegExpPrototypeOldFlagGetter"/>
+  <int value="1395" label="OBSOLETE_V8LegacyFunctionDeclaration"/>
+  <int value="1396" label="OBSOLETE_V8RegExpPrototypeSourceGetter"/>
+  <int value="1397" label="OBSOLETE_V8RegExpPrototypeOldFlagGetter"/>
   <int value="1398" label="V8DecimalWithLeadingZeroInStrictMode"/>
   <int value="1399" label="OBSOLETE_FormSubmissionNotInDocumentTree"/>
   <int value="1400" label="GetUserMediaPrefixed"/>
@@ -41338,7 +41338,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2051" label="LinearAccelerationSensorConstructor"/>
   <int value="2052" label="ReportUriMultipleEndpoints"/>
   <int value="2053" label="ReportUriSingleEndpoint"/>
-  <int value="2054" label="V8ConstructorNonUndefinedPrimitiveReturn"/>
+  <int value="2054" label="OBSOLETE_V8ConstructorNonUndefinedPrimitiveReturn"/>
   <int value="2055"
       label="EncryptedMediaDisallowedByFeaturePolicyInCrossOriginIframe"/>
   <int value="2056"
@@ -41409,7 +41409,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2116" label="ARIAValueMinAttribute"/>
   <int value="2117" label="ARIAValueNowAttribute"/>
   <int value="2118" label="ARIAValueTextAttribute"/>
-  <int value="2119" label="V8LabeledExpressionStatement"/>
+  <int value="2119" label="OBSOLETE_V8LabeledExpressionStatement"/>
   <int value="2120" label="PaymentRequestSupportedMethodsArray"/>
   <int value="2121" label="NavigatorDeviceMemory"/>
   <int value="2122" label="FixedWidthTableDistributionChanged"/>
@@ -41733,7 +41733,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2434" label="PerformanceResourceTimingInitiatorType"/>
   <int value="2435" label="PaymentRequestInvalidCurrencyCode"/>
   <int value="2436" label="V8ArraySortNoElementsProtector"/>
-  <int value="2437" label="V8ArrayPrototypeSortJSArrayModifiedPrototype"/>
+  <int value="2437"
+      label="OBSOLETE_V8ArrayPrototypeSortJSArrayModifiedPrototype"/>
   <int value="2438" label="V8Document_PictureInPictureEnabled_AttributeGetter"/>
   <int value="2439" label="V8Document_PictureInPictureElement_AttributeGetter"/>
   <int value="2440" label="V8Document_ExitPictureInPicture_Method"/>
@@ -41923,7 +41924,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2599" label="ListFormat"/>
   <int value="2600" label="Segmenter"/>
   <int value="2601" label="StringLocaleCompare"/>
-  <int value="2602" label="StringToLocaleUpperCase"/>
+  <int value="2602" label="OBSOLETE_StringToLocaleUpperCase"/>
   <int value="2603" label="StringToLocaleLowerCase"/>
   <int value="2604" label="NumberToLocaleString"/>
   <int value="2605" label="DateToLocaleString"/>
@@ -41933,7 +41934,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2609" label="V8AttemptOverrideReadOnlyOnPrototypeSloppy"/>
   <int value="2610" label="V8AttemptOverrideReadOnlyOnPrototypeStrict"/>
   <int value="2611" label="HTMLCanvasElementLowLatency"/>
-  <int value="2612" label="V8OptimizedFunctionWithOneShotBytecode"/>
+  <int value="2612" label="OBSOLETE_V8OptimizedFunctionWithOneShotBytecode"/>
   <int value="2613" label="SVGGeometryPropertyHasNonZeroUnitlessValue"/>
   <int value="2614" label="CSSValueAppearanceNoImplementationSkipBorder"/>
   <int value="2615" label="InstantiateModuleScript"/>
@@ -43882,7 +43883,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4456" label="WebAppEnableScopeExtensions"/>
   <int value="4457"
       label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
-  <int value="4458" label="V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
+  <int value="4458"
+      label="OBSOLETE_V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
   <int value="4459" label="FedCmAutoReauthn"/>
   <int value="4460" label="TopicsAPIFetch"/>
   <int value="4461" label="TopicsAPIXhr"/>
