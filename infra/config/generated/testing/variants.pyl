@@ -2,7 +2,7 @@
 # Instead:
 # 1. Modify //infra/config/targets/variants.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-py-files.py
+# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   'DISABLE_FIELD_TRIAL_CONFIG': {

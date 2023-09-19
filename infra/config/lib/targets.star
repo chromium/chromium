@@ -517,7 +517,7 @@ _PYL_HEADER_FMT = """\
 # Instead:
 # 1. Modify //infra/config/targets/{star_file}
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-py-files.py
+# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {{
 {entries}
