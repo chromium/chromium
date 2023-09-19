@@ -1815,6 +1815,26 @@ inline constexpr char kFocusModeSessionDuration[] =
 inline constexpr char kFocusModeDoNotDisturb[] =
     "ash.focus_mode.do_not_disturb";
 
+// An integer pref that holds enum value of current demo mode configuration.
+// Values are defined by DemoSession::DemoModeConfig enum.
+inline constexpr char kDemoModeConfig[] = "demo_mode.config";
+
+// A string pref holding the value of the current country for demo sessions.
+inline constexpr char kDemoModeCountry[] = "demo_mode.country";
+
+// A string pref holding the value of the retailer name input for demo sessions.
+// This is now mostly called "retailer_name" in code other than in this pref and
+// in Omaha request attributes
+inline constexpr char kDemoModeRetailerId[] = "demo_mode.retailer_id";
+
+// A string pref holding the value of the store number input for demo sessions.
+// This is now mostly called "store_number" in code other than in this pref and
+// in Omaha request attributes
+inline constexpr char kDemoModeStoreId[] = "demo_mode.store_id";
+
+// A string pref holding the value of the default locale for demo sessions.
+inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
