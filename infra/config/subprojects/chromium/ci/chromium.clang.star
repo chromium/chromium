@@ -103,6 +103,21 @@ def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
 
 ci.builder(
     name = "CFI Linux CF",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            archive_name_prefix = "cfi",
+            gs_acl = "public-read",
+            gs_bucket = "chromium-browser-cfi",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "CFI|Linux",
         short_name = "CF",
@@ -115,6 +130,19 @@ ci.builder(
 
 ci.builder(
     name = "CFI Linux ToT",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "CFI|Linux",
         short_name = "ToT",
@@ -125,6 +153,19 @@ ci.builder(
 
 ci.builder(
     name = "CrWinAsan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
@@ -135,6 +176,19 @@ ci.builder(
 
 ci.builder(
     name = "CrWinAsan(dll)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
@@ -145,6 +199,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroid",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "rel",
@@ -154,6 +227,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroid (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "dbg",
@@ -163,6 +255,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroid x64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "x64",
@@ -172,6 +283,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroid x86",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "x86",
@@ -181,6 +311,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroidCoverage x86",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "and",
@@ -190,6 +339,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroid64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "a64",
@@ -199,6 +367,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroidASan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android_asan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "asan_symbolize"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "asn",
@@ -208,6 +395,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTAndroidOfficial",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_android",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",
         short_name = "off",
@@ -217,6 +423,23 @@ ci.builder(
 
 ci.builder(
     name = "ToTChromeOS",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_chromeos",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT ChromeOS",
         short_name = "rel",
@@ -226,6 +449,23 @@ ci.builder(
 
 ci.builder(
     name = "ToTChromeOS (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_chromeos",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT ChromeOS",
         short_name = "dbg",
@@ -235,6 +475,25 @@ ci.builder(
 
 ci.builder(
     name = "ToTFuchsia x64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "fuchsia_x64",
+                "fuchsia_no_hooks",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_fuchsia",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "ToT Fuchsia",
@@ -252,6 +511,27 @@ ci.builder(
 
 ci.builder(
     name = "ToTFuchsiaOfficial arm64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_pgo_profiles",
+                "clang_tot",
+                "fuchsia_arm64",
+                "fuchsia_arm64_host",
+                "fuchsia_no_hooks",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_fuchsia",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "ToT Fuchsia",
@@ -269,21 +549,77 @@ ci.builder(
 
 clang_tot_linux_builder(
     name = "ToTLinux",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "rel",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinux (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "dbg",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinuxASan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux_asan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "asn",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinuxASanLibfuzzer",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux_asan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     # Requires a large disk, so has a machine specifically devoted to it
     builderless = False,
     short_name = "fuz",
@@ -298,27 +634,96 @@ clang_tot_linux_builder(
 
 clang_tot_linux_builder(
     name = "ToTLinuxMSan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.LINUX_FOCAL,
     short_name = "msn",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinuxPGO",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "pgo",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinuxTSan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "tsn",
 )
 
 clang_tot_linux_builder(
     name = "ToTLinuxUBSanVptr",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux_ubsan_vptr",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     short_name = "usn",
 )
 
 ci.builder(
     name = "ToTWin",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
@@ -330,6 +735,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin(dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -341,6 +759,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin(dll)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
@@ -351,6 +782,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -361,6 +805,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64(dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
@@ -372,6 +829,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64(dll)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
@@ -383,6 +853,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWinASanLibfuzzer",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -435,6 +918,19 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64PGO",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -445,6 +941,23 @@ ci.builder(
 
 ci.builder(
     name = "linux-win_cross-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+                "win",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "lxw",
@@ -454,6 +967,23 @@ ci.builder(
 
 ci.builder(
     name = "ToTiOS",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_ios",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -468,6 +998,23 @@ ci.builder(
 
 ci.builder(
     name = "ToTiOSDevice",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_ios",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -482,6 +1029,19 @@ ci.builder(
 
 clang_mac_builder(
     name = "ToTMac",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
@@ -491,6 +1051,19 @@ clang_mac_builder(
 
 clang_mac_builder(
     name = "ToTMac (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "dbg",
@@ -500,6 +1073,19 @@ clang_mac_builder(
 
 clang_mac_builder(
     name = "ToTMacASan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["clang_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_mac_asan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",
