@@ -43,6 +43,7 @@
   FullscreenController* controller =
       FullscreenController::FromBrowser(self.browser);
   self.viewController.fullscreenController = controller;
+  self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
 
   [super start];
 }

@@ -7,9 +7,14 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
+@protocol ToolbarHeightDelegate;
+
 // Coordinator for the secondary part of the adaptive toolbar. It is the part
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarCoordinator : AdaptiveToolbarCoordinator
+
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 @end
 

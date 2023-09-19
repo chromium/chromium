@@ -135,6 +135,8 @@
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
   [self.primaryToolbarCoordinator start];
+  self.secondaryToolbarCoordinator.toolbarHeightDelegate =
+      self.toolbarHeightDelegate;
   [self.secondaryToolbarCoordinator start];
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];

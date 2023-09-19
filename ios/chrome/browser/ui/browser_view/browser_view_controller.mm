@@ -2502,6 +2502,20 @@ enum HeaderBehaviour {
   [self updateForFullscreenProgress:self.footerFullscreenProgress];
 }
 
+- (void)secondaryToolbarMovedAboveKeyboard {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  // Lower the height constraint priority, allowing UIKeyboardLayoutGuide to
+  // move the toolbar above the keyboard.
+  self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+}
+
+- (void)secondaryToolbarRemovedFromKeyboard {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
+  // toolbar minimum height to the bottom safe area.
+  self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
+}
+
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {

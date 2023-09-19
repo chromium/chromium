@@ -127,6 +127,21 @@ UIView* SecondaryToolbarLocationBarContainerView(
   return CGSizeMake(UIViewNoIntrinsicMetric, kSecondaryToolbarHeight);
 }
 
+- (void)willMoveToSuperview:(UIView*)newSuperview {
+  [super willMoveToSuperview:newSuperview];
+
+  if (IsBottomOmniboxSteadyStateEnabled() && newSuperview) {
+    _locationBarKeyboardConstraint.active = NO;
+
+    // UIKeyboardLayoutGuide is updated sooner in superview's
+    // keyboardLayoutGuide rendering smoother animation. Constraint is updated
+    // in view controller.
+    _locationBarKeyboardConstraint = [newSuperview.keyboardLayoutGuide.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.locationBarContainer
+                                                 .bottomAnchor];
+  }
+}
+
 #pragma mark - Setup
 
 // Sets all the subviews and constraints of the view.
@@ -218,12 +233,6 @@ UIView* SecondaryToolbarLocationBarContainerView(
     _locationBarBottomConstraint = [self.buttonStackView.topAnchor
         constraintEqualToAnchor:self.locationBarContainer.bottomAnchor
                        constant:kBottomAdaptiveLocationBarBottomMargin];
-
-    // Constraint used to move the location bar above the keyboard. The view
-    // controller will set the constant to the keyboard's size when necessary.
-    _locationBarKeyboardConstraint = [self.bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:self.locationBarContainer
-                                                 .bottomAnchor];
 
     _buttonStackViewNoOmniboxConstraint = [self.buttonStackView.topAnchor
         constraintEqualToAnchor:self.topAnchor

@@ -16,16 +16,11 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-
-namespace {
-// This is how many bits UIViewAnimationCurve needs to be shifted to be in
-// UIViewAnimationOptions format. Must match the one in UIView.h.
-const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
-}  // namespace
 
 @interface SecondaryToolbarViewController ()
 
@@ -135,6 +130,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   }
   self.view.locationBarTopConstraint.constant = 0;
   self.view.bottomSeparator.alpha = 1.0;
+  [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
 }
 
 /// Resets secondary toolbar when it's detached from the keyboard.
@@ -144,6 +140,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     _keyboardDisabler = nullptr;
   }
   self.view.bottomSeparator.alpha = 0.0;
+  [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
 }
 
 /// Updates keyboard constraints with `notification`. When
@@ -160,36 +157,14 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       if (![self.view.locationBarKeyboardConstraint isActive]) {
         self.view.locationBarKeyboardConstraint.active = YES;
         [self collapseForKeyboard];
+        [self.view layoutIfNeeded];
       }
     }
-    const CGRect keyboardFrame =
-        [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    const CGRect keyboardInFrame =
-        CGRectIntersection(keyboardFrame, self.view.window.bounds);
-    const CGFloat keyboardHeight = CGRectGetHeight(keyboardInFrame);
-
-    NSTimeInterval duration =
-        [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey]
-            doubleValue];
-    UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
-        [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey]
-            integerValue]);
-    UIViewAnimationOptions options = curve
-                                     << kUIViewAnimationCurveToOptionsShift;
-    [UIView animateWithDuration:duration
-                          delay:0
-                        options:options
-                     animations:^{
-                       self.view.locationBarKeyboardConstraint.constant =
-                           keyboardHeight;
-                       [self.view layoutIfNeeded];
-                     }
-                     completion:nil];
   } else if ([self.view.locationBarKeyboardConstraint isActive]) {
     self.view.locationBarKeyboardConstraint.active = NO;
     [self removeFromKeyboard];
+    [self.view layoutIfNeeded];
   }
-  [self.view layoutIfNeeded];
 }
 
 @end
