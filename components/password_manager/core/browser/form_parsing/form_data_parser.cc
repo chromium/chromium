@@ -100,19 +100,19 @@ bool StringMatchesCVC(const std::u16string& str) {
 
 // Returns true if the |str| contains words related to SSN fields.
 bool StringMatchesSSN(const std::u16string& str) {
-  return autofill::MatchesRegex<autofill::kSocialSecurityRe>(str);
+  return autofill::MatchesRegex<constants::kSocialSecurityRe>(str);
 }
 
 // Returns true if the |str| contains words related to one time password fields.
 bool StringMatchesOTP(const std::u16string& str) {
-  return autofill::MatchesRegex<autofill::kOneTimePwdRe>(str);
+  return autofill::MatchesRegex<constants::kOneTimePwdRe>(str);
 }
 
 // Returns true if the |str| consists of one repeated non alphanumeric symbol.
 // This is likely a result of website modifying the value, and such value should
 // not be saved.
 bool StringMatchesHiddenValue(const std::u16string& str) {
-  return autofill::MatchesRegex<autofill::kHiddenValueRe>(str);
+  return autofill::MatchesRegex<constants::kHiddenValueRe>(str);
 }
 
 // Return true if the |field| is suspected to be a credit card field based on

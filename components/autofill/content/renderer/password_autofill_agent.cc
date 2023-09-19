@@ -34,7 +34,6 @@
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -822,8 +821,10 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   std::u16string id_attribute = element.GetIdAttribute().Utf16();
 
   bool is_likely_otp =
-      autofill::MatchesRegex<autofill::kOneTimePwdRe>(name_attribute) ||
-      autofill::MatchesRegex<autofill::kOneTimePwdRe>(id_attribute) ||
+      autofill::MatchesRegex<password_manager::constants::kOneTimePwdRe>(
+          name_attribute) ||
+      autofill::MatchesRegex<password_manager::constants::kOneTimePwdRe>(
+          id_attribute) ||
       base::Contains(autocomplete_attribute,
                      password_manager::constants::kAutocompleteOneTimePassword);
 

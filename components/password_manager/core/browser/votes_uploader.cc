@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -28,6 +27,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -220,14 +220,17 @@ AutofillUploadContents::ValueType GetValueType(
     return AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN;
   }
 
-  if (autofill::MatchesRegex<autofill::kEmailValueRe>(username_value))
+  if (autofill::MatchesRegex<constants::kEmailValueRe>(username_value)) {
     return AutofillUploadContents::EMAIL;
+  }
 
-  if (autofill::MatchesRegex<autofill::kPhoneValueRe>(username_value))
+  if (autofill::MatchesRegex<constants::kPhoneValueRe>(username_value)) {
     return AutofillUploadContents::PHONE;
+  }
 
-  if (autofill::MatchesRegex<autofill::kUsernameLikeValueRe>(username_value))
+  if (autofill::MatchesRegex<constants::kUsernameLikeValueRe>(username_value)) {
     return AutofillUploadContents::USERNAME_LIKE;
+  }
 
   if (username_value.find(' ') != std::u16string::npos)
     return AutofillUploadContents::VALUE_WITH_WHITESPACE;

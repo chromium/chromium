@@ -3114,28 +3114,6 @@
       }
     ]
   },
-  "SOCIAL_SECURITY": {
-    "en": [
-      {
-        "positive_pattern": "ssn|social.?security.?(num(ber)?|#)*",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
-  "ONE_TIME_PASSWORD": {
-    "en": [
-      {
-        "positive_pattern": "one.?time|sms.?(code|token|password|pwd|pass)",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
   "MERCHANT_PROMO_CODE": {
     "en": [
       {
