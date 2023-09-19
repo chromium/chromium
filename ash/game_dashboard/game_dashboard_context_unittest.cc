@@ -5,11 +5,13 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
@@ -22,6 +24,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
@@ -39,6 +42,7 @@
 #include "extensions/common/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/button.h"
@@ -211,6 +215,31 @@ class GameDashboardContextTest : public GameDashboardTestBase {
               ToolbarSnapLocation::kTopLeft);
   }
 
+  // Verifies the Game Dashboard button is in the respective state for the given
+  // `test_api`. If `is_recording` is true, then the Game Dashboard button must
+  // be in the recording state, and the recording timer is running. Otherwise,
+  // it should be in the default state and the timer should not be running.
+  void VerifyGameDashboardButtonState(GameDashboardContextTestApi* test_api,
+                                      bool is_recording) {
+    EXPECT_EQ(is_recording, test_api->GetGameDashboardButton()->is_recording());
+
+    std::u16string expected_title;
+    if (is_recording) {
+      expected_title = l10n_util::GetStringFUTF16(
+          IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_RECORDING,
+          test_api->GetRecordingDuration());
+    } else {
+      expected_title = l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE);
+    }
+    EXPECT_EQ(expected_title,
+              test_api->GetGameDashboardButtonTitle()->GetText());
+  }
+
+  void VerifyGameDashboardButtonState(bool is_recording) {
+    VerifyGameDashboardButtonState(test_api_.get(), is_recording);
+  }
+
   // Starts recording `recording_window_test_api`'s window, and verifies its
   // record game buttons are enabled and toggled on, while the record game
   // buttons in `other_window_test_api` are disabled and toggled off.
@@ -242,6 +271,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_FALSE(recording_window_timer.IsRunning());
     EXPECT_FALSE(other_window_timer.IsRunning());
 
+    // Verify the game dashboard buttons are not in the recording state.
+    VerifyGameDashboardButtonState(recording_window_test_api,
+                                   /*is_recording=*/false);
+    VerifyGameDashboardButtonState(other_window_test_api,
+                                   /*is_recording=*/false);
+
     // Activate the recording_window.
     auto* recording_window =
         recording_window_test_api->context()->game_window();
@@ -259,6 +294,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // Verify the recording timer is only running in `recording_window`.
     EXPECT_TRUE(recording_window_timer.IsRunning());
     EXPECT_FALSE(other_window_timer.IsRunning());
+
+    // Verify the game dashboard button state.
+    VerifyGameDashboardButtonState(recording_window_test_api,
+                                   /*is_recording=*/true);
+    VerifyGameDashboardButtonState(other_window_test_api,
+                                   /*is_recording=*/false);
 
     // Retrieve the record game buttons from both windows.
     auto* recording_window_record_game_tile =
@@ -309,6 +350,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // Verify the recording timer is not running in both windows.
     EXPECT_FALSE(recording_window_timer.IsRunning());
     EXPECT_FALSE(other_window_timer.IsRunning());
+
+    // Verify the game dashboard buttons are no longer in the recording state.
+    VerifyGameDashboardButtonState(recording_window_test_api,
+                                   /*is_recording=*/false);
+    VerifyGameDashboardButtonState(other_window_test_api,
+                                   /*is_recording=*/false);
 
     // Close the toolbar and main menu in both windows.
     for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
@@ -750,6 +797,9 @@ TEST_P(GameTypeGameDashboardContextTest,
 
   test_api_->OpenTheMainMenu();
 
+  // Verify the game dashboard button is initially not in the recording state.
+  VerifyGameDashboardButtonState(/*is_recording=*/false);
+
   // Retrieve the record game tile from the main menu, and verify it's
   // enabled and toggled off.
   auto* main_menu_record_game_button = test_api_->GetMainMenuRecordGameTile();
@@ -777,6 +827,9 @@ TEST_P(GameTypeGameDashboardContextTest,
   EXPECT_FALSE(toolbar_record_game_button->GetEnabled());
   EXPECT_FALSE(toolbar_record_game_button->toggled());
 
+  // Verify the game dashboard button is not in the recording state.
+  VerifyGameDashboardButtonState(/*is_recording=*/false);
+
   // Stop video recording.
   CaptureModeTestApi().StopVideoRecording();
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
@@ -786,6 +839,9 @@ TEST_P(GameTypeGameDashboardContextTest,
   EXPECT_FALSE(main_menu_record_game_button->IsToggled());
   EXPECT_TRUE(toolbar_record_game_button->GetEnabled());
   EXPECT_FALSE(toolbar_record_game_button->toggled());
+
+  // Verify the game dashboard button is still in not in the recording state.
+  VerifyGameDashboardButtonState(/*is_recording=*/false);
 }
 
 // Verifies the toolbar opens and closes when the toolbar button in the main
@@ -1206,6 +1262,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
   test_api_->OpenTheMainMenu();
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
   EXPECT_FALSE(timer.IsRunning());
+  VerifyGameDashboardButtonState(/*is_recording=*/false);
 
   if (should_start_from_main_menu_) {
     // Retrieve the record game tile from the main menu.
@@ -1229,6 +1286,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
 
   EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
   EXPECT_TRUE(timer.IsRunning());
+  VerifyGameDashboardButtonState(/*is_recording=*/true);
 
   if (should_stop_from_main_menu_) {
     // Stop the video recording from the main menu.
@@ -1248,6 +1306,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
   }
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
   EXPECT_FALSE(timer.IsRunning());
+  VerifyGameDashboardButtonState(/*is_recording=*/false);
   WaitForCaptureFileToBeSaved();
 }
 

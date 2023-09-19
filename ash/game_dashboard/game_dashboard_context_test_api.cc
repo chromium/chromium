@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
@@ -45,11 +46,15 @@ GameDashboardWidget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
   return context_->game_dashboard_button_widget();
 }
 
-PillButton* GameDashboardContextTestApi::GetGameDashboardButton() const {
-  auto* game_dashboard_button_widget = GetGameDashboardButtonWidget();
-  CHECK(game_dashboard_button_widget);
-  return views::AsViewClass<PillButton>(
-      game_dashboard_button_widget->GetContentsView());
+GameDashboardButton* GameDashboardContextTestApi::GetGameDashboardButton()
+    const {
+  return context_->game_dashboard_button_;
+}
+
+views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
+  auto* game_dashboard_button = GetGameDashboardButton();
+  CHECK(game_dashboard_button);
+  return game_dashboard_button->title_view_;
 }
 
 views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {

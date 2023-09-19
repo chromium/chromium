@@ -20,6 +20,7 @@ class EventGenerator;
 
 namespace views {
 class Button;
+class Label;
 class LabelButton;
 class View;
 class Widget;
@@ -28,6 +29,7 @@ class Widget;
 namespace ash {
 
 class FeatureTile;
+class GameDashboardButton;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 class GameDashboardWidget;
@@ -49,9 +51,10 @@ class GameDashboardContextTestApi {
   const base::RepeatingTimer& GetRecordingTimer() const;
   const std::u16string& GetRecordingDuration() const;
 
-  // Returns the Game Dashboard button widget and button.
+  // Returns the Game Dashboard button widget, button, and title view.
   GameDashboardWidget* GetGameDashboardButtonWidget() const;
-  PillButton* GetGameDashboardButton() const;
+  GameDashboardButton* GetGameDashboardButton() const;
+  views::Label* GetGameDashboardButtonTitle() const;
 
   // Returns the main menu widget and all its views.
   views::Widget* GetMainMenuWidget();

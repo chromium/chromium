@@ -7083,8 +7083,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard help icon button.">
         Help center
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The title of the main Game Dashboard button.">
-        Game Dashboard
+      <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_RECORDING" desc="The title of the Game Dashboard button when the window is being recorded, and also shows the recording duration.">
+        <ph name="DURATION">$1<ex>00:00</ex></ph>&#x0020;&#x0020;Recording
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The default title of the Game Dashboard button.">
+        Game dashboard
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS" translateable="false" desc="The hidden state for compact Game Dashboard tile sub-labels.">
         Hidden
