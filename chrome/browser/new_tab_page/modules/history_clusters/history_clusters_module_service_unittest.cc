@@ -159,6 +159,7 @@ history::ClusterVisit SampleVisitForURL(
 }
 
 history::Cluster SampleCluster(int id,
+                               const std::string& sample_label,
                                int srp_visits,
                                int non_srp_visits,
                                const std::vector<std::string> related_searches =
@@ -183,7 +184,6 @@ history::Cluster SampleCluster(int id,
   }
   visits.insert(visits.end(), non_srp_visits, sample_non_srp_visit);
 
-  std::string kSampleLabel = "LabelOne";
   return history::Cluster(id, std::move(visits),
                           {{u"apples", history::ClusterKeywordData()},
                            {u"Red Oranges", history::ClusterKeywordData()}},
@@ -191,14 +191,15 @@ history::Cluster SampleCluster(int id,
                           /*label=*/
                           l10n_util::GetStringFUTF16(
                               IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
-                              base::UTF8ToUTF16(kSampleLabel)));
+                              base::UTF8ToUTF16(sample_label)));
 }
 
 history::Cluster SampleCluster(int srp_visits,
                                int non_srp_visits,
                                const std::vector<std::string> related_searches =
                                    {"fruits", "red fruits", "healthy fruits"}) {
-  return SampleCluster(1, srp_visits, non_srp_visits, related_searches);
+  return SampleCluster(1, "Fruits", srp_visits, non_srp_visits,
+                       related_searches);
 }
 
 TEST_F(HistoryClustersModuleServiceTest, GetClustersJourneysNotEnabled) {
@@ -216,7 +217,8 @@ TEST_F(HistoryClustersModuleServiceTest, GetClusters) {
   std::vector<history::Cluster> sample_clusters;
   for (int i = 0; i < kSampleClusterCount; i++) {
     sample_clusters.push_back(
-        SampleCluster(i, /*srp_visits=*/1, /*non_srp_visits=*/2));
+        SampleCluster(i, base::StringPrintf("Fruits %d", i), /*srp_visits=*/1,
+                      /*non_srp_visits=*/2));
   }
   test_history_clusters_service().SetClustersToReturnOnFirstCall(
       sample_clusters);
@@ -246,12 +248,33 @@ TEST_F(HistoryClustersModuleServiceTest, GetClusters) {
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
 }
 
+TEST_F(HistoryClustersModuleServiceTest, GetClustersFiltersLabelDuplicates) {
+  base::HistogramTester histogram_tester;
+
+  const std::string kSampleLabel = "Fruits";
+  test_history_clusters_service().SetClustersToReturnForCalls(
+      {{SampleCluster(1, kSampleLabel, /*srp_visits=*/1, /*non_srp_visits=*/2)},
+       {SampleCluster(2, kSampleLabel, /*srp_visits=*/1,
+                      /*non_srp_visits=*/2)}});
+
+  std::vector<history::Cluster> clusters = GetClusters();
+  ASSERT_EQ(1u, clusters.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.IneligibleReason", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
+}
+
 TEST_F(HistoryClustersModuleServiceTest, GetClustersRefetchesUntilExhausted) {
   base::HistogramTester histogram_tester;
 
   test_history_clusters_service().SetClustersToReturnForCalls(
-      {{SampleCluster(1, /*srp_visits=*/1, /*non_srp_visits=*/2)},
-       {SampleCluster(2, /*srp_visits=*/1, /*non_srp_visits=*/2)}});
+      {{SampleCluster(1, "Fruits", /*srp_visits=*/1, /*non_srp_visits=*/2)},
+       {SampleCluster(2, "Healthy Fruits", /*srp_visits=*/1,
+                      /*non_srp_visits=*/2)}});
 
   std::vector<history::Cluster> clusters = GetClusters();
   ASSERT_EQ(2u, clusters.size());
@@ -415,7 +438,7 @@ TEST_F(HistoryClustersModuleServiceTest,
   base::HistogramTester histogram_tester;
 
   const history::Cluster kSampleCluster = SampleCluster(
-      /*id=*/1, /*srp_visits=*/1, /*non_srp_visits=*/2,
+      /*id=*/1, "Label", /*srp_visits=*/1, /*non_srp_visits=*/2,
       /*related_searches=*/{});
   test_history_clusters_service().SetClustersToReturnOnFirstCall(
       {kSampleCluster});
@@ -541,12 +564,15 @@ TEST_F(HistoryClustersModuleServiceDoesNotRefetchTest, GetClustersNoRefetch) {
   std::vector<history::Cluster> first_fetch_sample_clusters;
   for (size_t i = 0; i < kFirstFetchSampleClusterCount; i++) {
     first_fetch_sample_clusters.push_back(
-        SampleCluster(i, /*srp_visits=*/1, /*non_srp_visits=*/2));
+        SampleCluster(i, base::StringPrintf("Fruits %zu", i), /*srp_visits=*/1,
+                      /*non_srp_visits=*/2));
   }
 
+  const std::string kSampleLabel = "Fruits";
   test_history_clusters_service().SetClustersToReturnForCalls(
       {first_fetch_sample_clusters,
-       {SampleCluster(3, /*srp_visits=*/1, /*non_srp_visits=*/2)}});
+       {SampleCluster(3, kSampleLabel, /*srp_visits=*/1,
+                      /*non_srp_visits=*/2)}});
 
   std::vector<history::Cluster> clusters = GetClusters();
   ASSERT_EQ(kFirstFetchSampleClusterCount, clusters.size());

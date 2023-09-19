@@ -153,11 +153,23 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
   // Do additional filtering on clusters.
   history_clusters::CoalesceRelatedSearches(clusters);
 
-  // Cull clusters that do not have the minimum number of visits with and
-  // without images to be eligible for display.
+  // Maintain a list of observed cluster labels and discard any clusters
+  // associated with a duplicate label.
+  std::set<std::u16string> seen_cluster_labels = {};
   NTPHistoryClustersIneligibleReason ineligible_reason =
       clusters.empty() ? kNoClusters : kNone;
   base::EraseIf(clusters, [&](auto& cluster) {
+    // Cull clusters that do not have a label.
+    if (!cluster.label.has_value()) {
+      return true;
+    }
+
+    // Cull clusters with a label that has already been observed.
+    if (base::Contains(seen_cluster_labels, cluster.label.value())) {
+      return true;
+    }
+    seen_cluster_labels.insert(cluster.label.value());
+
     // Cull non prominent clusters.
     if (!cluster.should_show_on_prominent_ui_surfaces) {
       ineligible_reason = kNonProminent;
@@ -207,6 +219,8 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                              .has_url_keyed_image &&
                          v.annotated_visit.visit_row.is_known_to_sync);
         });
+    // Cull clusters that do not have the minimum number of visits with images
+    // to be eligible for display.
     if (visits_with_images < filter_params.min_visits_with_images) {
       ineligible_reason = kInsufficientImages;
       return true;
