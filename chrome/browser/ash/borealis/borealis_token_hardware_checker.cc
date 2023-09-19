@@ -60,7 +60,7 @@ AllowStatus BorealisTokenHardwareChecker::Check() const {
 // Helper method that performs different checks based on the user's board.
 AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
   if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
-               "volteer-borealis", "aurora-borealis"})) {
+               "volteer-borealis"})) {
     if (HasNamedToken("dogfood", "MXlY+SFZ!2,P_k^02]hK",
                       "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
       return AllowStatus::kAllowed;
@@ -94,7 +94,7 @@ AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
       return AllowStatus::kAllowed;
     }
     return AllowStatus::kHardwareChecksFailed;
-  } else if (BoardIn({"draco", "hades"})) {
+  } else if (BoardIn({"aurora"})) {
     return AllowStatus::kAllowed;
   } else if (BoardIn({"myst"})) {
     return AllowStatus::kAllowed;

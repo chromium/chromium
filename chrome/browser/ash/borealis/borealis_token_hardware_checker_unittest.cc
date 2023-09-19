@@ -63,8 +63,8 @@ TEST(BorealisTokenHardwareCheckerTest, GuybrushMajolica) {
       AllowStatus::kHardwareChecksFailed);
 }
 
-TEST(BorealisTokenHardwareCheckerTest, Draco) {
-  EXPECT_EQ(check("draco", "", "", 0, ""), AllowStatus::kAllowed);
+TEST(BorealisTokenHardwareCheckerTest, Aurora) {
+  EXPECT_EQ(check("aurora", "", "", 0, ""), AllowStatus::kAllowed);
 }
 
 TEST(BorealisTokenHardwareCheckerTest, Myst) {
