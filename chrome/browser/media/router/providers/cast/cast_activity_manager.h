@@ -81,14 +81,12 @@ class CastActivityManager : public CastActivityManagerBase,
                      const std::string& presentation_id,
                      const url::Origin& origin,
                      int frame_tree_node_id,
-                     bool incognito,
                      mojom::MediaRouteProvider::CreateRouteCallback callback);
 
   void JoinSession(const CastMediaSource& cast_source,
                    const std::string& presentation_id,
                    const url::Origin& origin,
                    int frame_tree_node_id,
-                   bool incognito,
                    mojom::MediaRouteProvider::JoinRouteCallback callback);
 
   // Terminates a Cast session represented by |route_id|.
@@ -168,7 +166,6 @@ class CastActivityManager : public CastActivityManagerBase,
       const std::string& presentation_id,
       const url::Origin& origin,
       int frame_tree_node_id,
-      bool incognito,
       mojom::MediaRouteProvider::CreateRouteCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
 
@@ -266,8 +263,7 @@ class CastActivityManager : public CastActivityManagerBase,
                                        const url::Origin& origin,
                                        int frame_tree_node_id);
   bool CanJoinSession(const AppActivity& activity,
-                      const CastMediaSource& cast_source,
-                      bool incognito) const;
+                      const CastMediaSource& cast_source) const;
   AppActivity* FindActivityForSessionJoin(const CastMediaSource& cast_source,
                                           const std::string& presentation_id);
 

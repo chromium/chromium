@@ -77,15 +77,13 @@ class MediaRouterDesktop : public MediaRouterBase,
                    const url::Origin& origin,
                    content::WebContents* web_contents,
                    MediaRouteResponseCallback callback,
-                   base::TimeDelta timeout,
-                   bool off_the_record) final;
+                   base::TimeDelta timeout) final;
   void JoinRoute(const MediaSource::Id& source_id,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  content::WebContents* web_contents,
                  MediaRouteResponseCallback callback,
-                 base::TimeDelta timeout,
-                 bool off_the_record) final;
+                 base::TimeDelta timeout) final;
   void TerminateRoute(const MediaRoute::Id& route_id) final;
   // TODO(https://crbug.com/1198580): Remove DetachRoute(), SendRouteMessage(),
   // and SendRouteBinaryMessage().
@@ -178,7 +176,6 @@ class MediaRouterDesktop : public MediaRouterBase,
   // into a local callback.
   void RouteResponseReceived(const std::string& presentation_id,
                              mojom::MediaRouteProviderId provider_id,
-                             bool is_off_the_record,
                              MediaRouteResponseCallback callback,
                              bool is_join,
                              const absl::optional<MediaRoute>& media_route,
@@ -231,7 +228,6 @@ class MediaRouterDesktop : public MediaRouterBase,
       const url::Origin& origin,
       content::WebContents* web_contents,
       base::TimeDelta timeout,
-      bool off_the_record,
       mojom::MediaRouteProvider::CreateRouteCallback mr_callback,
       const std::string& err,
       content::DesktopMediaID media_id);
@@ -300,8 +296,6 @@ class MediaRouterDesktop : public MediaRouterBase,
   friend class MediaRouterIntegrationBrowserTest;
   friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteTimedOutFails);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
-                           JoinRouteIncognitoMismatchFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandleIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallback);
@@ -310,7 +304,6 @@ class MediaRouterDesktop : public MediaRouterBase,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            TestRecordPresentationRequestUrlBySink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, TestGetCurrentRoutes);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, CreateIncognitoRoute);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, CreateRouteFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            CreateRouteIncognitoMismatchFails);

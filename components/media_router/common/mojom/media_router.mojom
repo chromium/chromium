@@ -107,8 +107,6 @@ struct MediaRoute {
   // The type of route controller that can be created for this route. See
   // media_controller.mojom for details.
   RouteControllerType controller_type;
-  // Set to true if this route was created by an OffTheRecord profile.
-  bool is_off_the_record;
   // Set to true if this route corresponds to a local presentation.
   bool is_local_presentation;
   // Set to true if this route has been created by the MRP but is waiting for
@@ -217,9 +215,6 @@ interface MediaRouteProvider {
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
   //
-  // If |off_the_record| is true, the request was made by an OffTheRecord
-  // profile.
-  //
   // If the operation was successful, |route| will be defined and |error_text|
   // will be null.  If the operation failed, |route| will be null and
   // |error_text| will be set.  If |connection| is set, it should be returned to
@@ -234,8 +229,7 @@ interface MediaRouteProvider {
               string original_presentation_id,
               url.mojom.Origin origin,
               int32 frame_tree_node_id,
-              mojo_base.mojom.TimeDelta timeout,
-              bool off_the_record) =>
+              mojo_base.mojom.TimeDelta timeout) =>
                   (MediaRoute? route,
                    RoutePresentationConnection? connection,
                    string? error_text,
@@ -250,9 +244,6 @@ interface MediaRouteProvider {
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
   //
-  // If the route request was created by an OffTheRecord profile,
-  // |off_the_record| must be true.
-  //
   // If the operation was successful, |route| will be defined and |error_text|
   // will be null.  If the operation failed, |route| will be null and
   // |error_text| will be set.  If |connection| is set, it should be returned to
@@ -266,8 +257,7 @@ interface MediaRouteProvider {
             string presentation_id,
             url.mojom.Origin origin,
             int32 frame_tree_node_id,
-            mojo_base.mojom.TimeDelta timeout,
-            bool off_the_record) =>
+            mojo_base.mojom.TimeDelta timeout) =>
                 (MediaRoute? route,
                  RoutePresentationConnection? connection,
                  string? error_text,

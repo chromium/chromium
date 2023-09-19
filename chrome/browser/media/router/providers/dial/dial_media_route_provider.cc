@@ -81,9 +81,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
                                          const std::string& presentation_id,
                                          const url::Origin& origin,
                                          int32_t frame_tree_node_id,
-
                                          base::TimeDelta timeout,
-                                         bool incognito,
                                          CreateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const MediaSinkInternal* sink = media_sink_service_->GetSinkById(sink_id);
@@ -99,8 +97,8 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
     return;
   }
 
-  auto activity = DialActivity::From(presentation_id, *sink, media_source,
-                                     origin, incognito);
+  auto activity =
+      DialActivity::From(presentation_id, *sink, media_source, origin);
   if (!activity) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Failed to create route. Unsupported source.", sink_id,
@@ -162,10 +160,9 @@ void DialMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const url::Origin& origin,
                                        int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
-                                       bool incognito,
                                        JoinRouteCallback callback) {
   const DialActivity* activity = activity_manager_->GetActivityToJoin(
-      presentation_id, MediaSource(media_source), origin, incognito);
+      presentation_id, MediaSource(media_source), origin);
   if (activity) {
     std::move(callback).Run(
         activity->route, /*presentation_connection*/ nullptr,

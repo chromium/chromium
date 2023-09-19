@@ -15,8 +15,8 @@ class BrowserContext;
 
 namespace media_router {
 
-// A version of MediaRouterFactory for Chrome, which refers incognito contexts
-// to their parent Profile. It also adds support for desktop features.
+// A version of MediaRouterFactory for Chrome. It adds support for desktop
+// features.
 class ChromeMediaRouterFactory : public MediaRouterFactory {
  public:
   ChromeMediaRouterFactory(const ChromeMediaRouterFactory&) = delete;

@@ -56,8 +56,7 @@ struct DialActivity {
   static std::unique_ptr<DialActivity> From(const std::string& presentation_id,
                                             const MediaSinkInternal& sink,
                                             const MediaSource::Id& source_id,
-                                            const url::Origin& client_origin,
-                                            bool off_the_record);
+                                            const url::Origin& client_origin);
 
   DialActivity(const DialLaunchInfo& launch_info,
                const MediaRoute& route,
@@ -132,8 +131,7 @@ class DialActivityManager {
   // properties, or a nullptr if there is no such activity.
   const DialActivity* GetActivityToJoin(const std::string& presentation_id,
                                         const MediaSource& media_source,
-                                        const url::Origin& client_origin,
-                                        bool off_the_record) const;
+                                        const url::Origin& client_origin) const;
 
   // Launches the app specified in the activity associated with |route_id|.
   // If |message.launch_parameter| is set, then it overrides the post data

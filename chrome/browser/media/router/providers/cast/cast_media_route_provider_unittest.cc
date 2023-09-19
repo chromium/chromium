@@ -192,7 +192,6 @@ TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSink) {
   provider_->CreateRoute(
       kCastSource, "sinkId", kPresentationId, origin_, kFrameTreeNodeId,
       kRouteTimeout,
-      /* incognito */ false,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
                      mojom::RouteRequestResultCode::SINK_NOT_FOUND));
@@ -204,7 +203,7 @@ TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSource) {
 
   provider_->CreateRoute(
       "invalidSource", sink.sink().id(), kPresentationId, origin_,
-      kFrameTreeNodeId, kRouteTimeout, /* incognito */ false,
+      kFrameTreeNodeId, kRouteTimeout,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
                      mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER));
@@ -226,7 +225,7 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
       }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
-      kRouteTimeout, /* incognito */ false,
+      kRouteTimeout,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));
@@ -247,7 +246,7 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
       }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
-      kRouteTimeout, /* incognito */ false,
+      kRouteTimeout,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));

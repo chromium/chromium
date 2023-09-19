@@ -219,7 +219,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
     EXPECT_CALL(*router(),
                 CreateRouteInternal(source.id(), cast_sink_1().sink().id(), _,
-                                    web_contents(), _, timeout, false));
+                                    web_contents(), _, timeout));
 
     handler()->CastToSink(mock_callback.Get());
   }
@@ -240,7 +240,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(*router(),
                 CreateRouteInternal(source.id(), cast_sink_1().sink().id(),
                                     request.frame_origin, web_contents(), _,
-                                    base::Seconds(20), false));
+                                    base::Seconds(20)));
     handler()->CastToSink(mock_callback.Get());
   }
 
@@ -299,13 +299,13 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback, which should call the page's callback.
-    ON_CALL(*router(), CreateRouteInternal(_, _, _, _, _, _, _))
+    ON_CALL(*router(), CreateRouteInternal(_, _, _, _, _, _))
         .WillByDefault([this](const MediaSource::Id& source_id,
                               const MediaSink::Id& sink_id,
                               const url::Origin& origin,
                               content::WebContents* web_contents,
                               MediaRouteResponseCallback& callback,
-                              base::TimeDelta timeout, bool incognito) {
+                              base::TimeDelta timeout) {
           std::unique_ptr<RouteRequestResult> result;
           if (result_code_ == mojom::RouteRequestResultCode::OK) {
             MediaSource source(source_id);

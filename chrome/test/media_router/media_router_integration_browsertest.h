@@ -193,8 +193,6 @@ class MediaRouterIntegrationBrowserTest
 
   std::unique_ptr<TestMediaRouteProvider> test_provider_;
 
-  bool is_incognito() { return browser()->profile()->IsOffTheRecord(); }
-
   // Returns the superclass' browser(). Marked virtual so that it can
   // be overridden by MediaRouterIntegrationIncognitoBrowserTest.
   virtual Browser* browser();
@@ -203,15 +201,6 @@ class MediaRouterIntegrationBrowserTest
   std::unique_ptr<content::TestNavigationObserver> test_navigation_observer_;
   policy::MockConfigurationPolicyProvider provider_;
   base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaRouterIntegrationIncognitoBrowserTest
-    : public MediaRouterIntegrationBrowserTest {
- protected:
-  Browser* browser() override;
-
- private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 }  // namespace media_router

@@ -18,10 +18,6 @@ using the test provider `TestMediaRouteProvider`. Test cases that specifically
 test the functionalities of the Media Router dialog are in
 `media_router_integration_ui_browsertest.cc`.
 
-* `MediaRouterIntegrationIncognitoBrowserTest`: Same as
-`MediaRouterIntegrationBrowserTest`, except for that the tests are run using an
-incognito profile.
-
 * `MediaRouterE2EBrowserTest`: Tests Chromecast-specific functionality of Media
 Router using the Cast Media Route Provider.  Requires an actual Chromecast
 device.

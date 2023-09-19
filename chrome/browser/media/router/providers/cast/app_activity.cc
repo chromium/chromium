@@ -172,15 +172,11 @@ void AppActivity::OnInternalMessage(
   }
 }
 
-bool AppActivity::CanJoinSession(const CastMediaSource& cast_source,
-                                 bool off_the_record) const {
+bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
   if (!cast_source.ContainsApp(app_id()))
     return false;
 
   if (base::Contains(connected_clients_, cast_source.client_id()))
-    return false;
-
-  if (route().is_off_the_record() != off_the_record)
     return false;
 
   return true;

@@ -201,13 +201,13 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback.
-    ON_CALL(*media_router(), CreateRouteInternal(_, _, _, _, _, _, _))
+    ON_CALL(*media_router(), CreateRouteInternal(_, _, _, _, _, _))
         .WillByDefault([this](const MediaSource::Id& source_id,
                               const MediaSink::Id& sink_id,
                               const url::Origin& origin,
                               content::WebContents* web_contents,
                               MediaRouteResponseCallback& callback,
-                              base::TimeDelta timeout, bool incognito) {
+                              base::TimeDelta timeout) {
           // This indicates the test did not properly set the expected result
           EXPECT_NE(mojom::RouteRequestResultCode::UNKNOWN_ERROR, result_code_);
           std::unique_ptr<RouteRequestResult> result;
@@ -383,7 +383,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(*media_router(),
                 CreateRouteInternal(params->source_id, params->request->sink_id,
                                     params->origin, web_contents(), _,
-                                    params->timeout, params->off_the_record));
+                                    params->timeout));
 
     media_route_starter()->StartRoute(std::move(params));
   }
@@ -625,7 +625,6 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_DesktopMirroring) {
   // route_result_callbacks should only be filled in by caller
   EXPECT_EQ(0ul, params->route_result_callbacks.size());
   EXPECT_EQ(base::Seconds(120), params->timeout);
-  EXPECT_FALSE(params->off_the_record);
 }
 
 // Demonstrates that when tab mirroring is available and requested that the
@@ -649,7 +648,6 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_TabMirroring) {
   // route_result_callbacks should only be filled in by caller
   EXPECT_EQ(0ul, params->route_result_callbacks.size());
   EXPECT_EQ(base::Seconds(60), params->timeout);
-  EXPECT_FALSE(params->off_the_record);
 }
 
 // Demonstrates that when presentation mode is available for the default
@@ -677,7 +675,6 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_WebContentPresentation) {
   // route_result_callbacks should only be filled in by caller
   EXPECT_EQ(0ul, params->route_result_callbacks.size());
   EXPECT_EQ(base::Seconds(20), params->timeout);
-  EXPECT_FALSE(params->off_the_record);
 }
 
 // Demonstrates that when presentation mode is requested and a start
@@ -707,7 +704,6 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_StartPresentationContext) {
   // route_result_callbacks should only be filled in by caller
   EXPECT_EQ(0ul, params->route_result_callbacks.size());
   EXPECT_EQ(base::Seconds(20), params->timeout);
-  EXPECT_FALSE(params->off_the_record);
 
   // This is to deal with the error callback in the d'tor that's not part of
   // this test. See the Dtor_* tests below where this case is actually

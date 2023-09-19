@@ -237,7 +237,7 @@ void CastConfigControllerMediaRouter::CastToSink(const std::string& sink_id) {
     GetMediaRouter()->CreateRoute(
         media_router::MediaSource::ForUnchosenDesktop().id(), sink_id,
         url::Origin::Create(GURL("http://cros-cast-origin/")), nullptr,
-        base::DoNothing(), base::TimeDelta(), false);
+        base::DoNothing(), base::TimeDelta());
   }
 }
 

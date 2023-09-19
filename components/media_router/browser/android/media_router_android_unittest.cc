@@ -87,7 +87,7 @@ TEST_F(MediaRouterAndroidTest, DetachRoute) {
       .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
-                       base::DoNothing(), base::TimeDelta(), false);
+                       base::DoNothing(), base::TimeDelta());
   router_->OnRouteCreated("route", "sink", 1, false);
 
   EXPECT_NE(nullptr, router_->FindRouteBySource("source"));
@@ -106,7 +106,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteTerminated) {
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
-                       base::DoNothing(), base::TimeDelta(), false);
+                       base::DoNothing(), base::TimeDelta());
   router_->OnRouteCreated("route", "sink", 1, false);
 
   EXPECT_NE(nullptr, router_->FindRouteBySource("source"));
@@ -135,7 +135,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteClosed) {
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
-                       base::DoNothing(), base::TimeDelta(), false);
+                       base::DoNothing(), base::TimeDelta());
   router_->OnRouteCreated("route", "sink", 1, false);
 
   EXPECT_NE(nullptr, router_->FindRouteBySource("source"));
@@ -163,7 +163,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteClosedWithError) {
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
-                       base::DoNothing(), base::TimeDelta(), false);
+                       base::DoNothing(), base::TimeDelta());
   router_->OnRouteCreated("route", "sink", 1, false);
 
   EXPECT_NE(nullptr, router_->FindRouteBySource("source"));
@@ -188,7 +188,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteMediaSourceUpdated) {
       .WillOnce(Return());
 
   router_->CreateRoute(source_id, sink_id, origin, nullptr, base::DoNothing(),
-                       base::TimeDelta(), false);
+                       base::TimeDelta());
   router_->OnRouteCreated(route_id, sink_id, 1, false);
 
   EXPECT_NE(nullptr, router_->FindRouteBySource(source_id));

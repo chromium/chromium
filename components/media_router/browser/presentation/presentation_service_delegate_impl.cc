@@ -530,7 +530,6 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
   } else {
     // TODO(crbug.com/1418744): Handle multiple URLs.
     const GURL& presentation_url = presentation_urls[0];
-    bool incognito = GetWebContents().GetBrowserContext()->IsOffTheRecord();
     router_->JoinRoute(
         MediaSource::ForPresentationUrl(presentation_url).id(), presentation_id,
         request.frame_origin, &GetWebContents(),
@@ -538,7 +537,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
                        weak_factory_.GetWeakPtr(), render_frame_host_id,
                        presentation_url, presentation_id, std::move(success_cb),
                        std::move(error_cb)),
-        base::TimeDelta(), incognito);
+        base::TimeDelta());
   }
 }
 

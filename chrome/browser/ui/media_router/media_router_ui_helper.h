@@ -116,9 +116,6 @@ struct RouteParameters {
   // A timeout value, after which the request should be considered to have
   // failed.
   base::TimeDelta timeout;
-
-  // Whether the route is for an off-the-record profile.
-  bool off_the_record;
 };
 
 }  // namespace media_router

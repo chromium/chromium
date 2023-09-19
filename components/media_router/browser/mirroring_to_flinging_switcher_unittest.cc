@@ -128,12 +128,10 @@ TEST_F(MirroringToFlingingSwitcherTest, SwitchToFlinging) {
   const auto source_id =
       MediaSource::ForPresentationUrl(presentation_request.presentation_urls[0])
           .id();
-  bool incognito = web_contents_->GetBrowserContext()->IsOffTheRecord();
-  EXPECT_CALL(
-      *media_router_,
-      JoinRouteInternal(source_id, kAutoJoinPresentationId,
-                        presentation_request.frame_origin, web_contents_.get(),
-                        _, base::TimeDelta(), incognito));
+  EXPECT_CALL(*media_router_,
+              JoinRouteInternal(source_id, kAutoJoinPresentationId,
+                                presentation_request.frame_origin,
+                                web_contents_.get(), _, base::TimeDelta()));
 
   // Switch to flinging request is expected to be sent.
   SwitchToFlingingIfPossible(GetNewTabSource());

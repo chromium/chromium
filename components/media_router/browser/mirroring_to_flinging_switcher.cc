@@ -43,15 +43,13 @@ void SwitchToFlingingIfPossible(int frame_tree_node_id) {
   const auto source_id =
       MediaSource::ForPresentationUrl(presentation_request.presentation_urls[0])
           .id();
-  bool incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
-
   media_router->JoinRoute(
       source_id, kAutoJoinPresentationId, presentation_request.frame_origin,
       web_contents,
       base::BindOnce(&WebContentsPresentationManager::OnPresentationResponse,
                      std::move(web_contents_presentation_manager),
                      presentation_request),
-      base::TimeDelta(), incognito);
+      base::TimeDelta());
 }
 
 }  // namespace media_router

@@ -47,11 +47,6 @@ TEST(MediaRouteTest, TestEquals) {
   // The ID is different from route1's.
   MediaRoute route5(kRouteId2, media_source, kSinkId, kDescription, false);
   EXPECT_FALSE(route1 == route5);
-
-  // Same as route1 with different off_the_record.
-  MediaRoute route6(kRouteId1, media_source, kSinkId, kDescription, true);
-  route6.set_off_the_record(true);
-  EXPECT_FALSE(route1 == route6);
 }
 
 TEST(MediaRouteTest, TestParsingMediaRouteId) {

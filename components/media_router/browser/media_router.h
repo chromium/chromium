@@ -89,14 +89,12 @@ class MediaRouter : public KeyedService {
   // success or failure, in the order they are listed.
   // If |timeout| is positive, then any un-invoked |callbacks| will be invoked
   // with a timeout error after the timeout expires.
-  // If |incognito| is true, the request was made by an incognito profile.
   virtual void CreateRoute(const MediaSource::Id& source_id,
                            const MediaSink::Id& sink_id,
                            const url::Origin& origin,
                            content::WebContents* web_contents,
                            MediaRouteResponseCallback callback,
-                           base::TimeDelta timeout,
-                           bool incognito) = 0;
+                           base::TimeDelta timeout) = 0;
 
   // Joins an existing route identified by |presentation_id|.
   // |source|: The source to route to the existing route.
@@ -108,14 +106,12 @@ class MediaRouter : public KeyedService {
   // success or failure, in the order they are listed.
   // If |timeout| is positive, then any un-invoked |callbacks| will be invoked
   // with a timeout error after the timeout expires.
-  // If |incognito| is true, the request was made by an incognito profile.
   virtual void JoinRoute(const MediaSource::Id& source,
                          const std::string& presentation_id,
                          const url::Origin& origin,
                          content::WebContents* web_contents,
                          MediaRouteResponseCallback callback,
-                         base::TimeDelta timeout,
-                         bool incognito) = 0;
+                         base::TimeDelta timeout) = 0;
 
   // Terminates the media route specified by |route_id|.
   virtual void TerminateRoute(const MediaRoute::Id& route_id) = 0;

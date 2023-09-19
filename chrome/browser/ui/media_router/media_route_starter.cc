@@ -174,10 +174,6 @@ std::unique_ptr<RouteParameters> MediaRouteStarter::CreateRouteParameters(
                                            : url::Origin::Create(GURL());
 
   params->timeout = GetRouteRequestTimeout(cast_mode);
-  params->off_the_record =
-      GetWebContents() &&
-      GetWebContents()->GetBrowserContext()->IsOffTheRecord();
-
   return params;
 }
 
@@ -214,7 +210,7 @@ void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
       base::BindOnce(&RunRouteResponseCallbacks,
                      std::move(presentation_callback),
                      std::move(params->route_result_callbacks)),
-      params->timeout, params->off_the_record);
+      params->timeout);
 }
 
 std::u16string MediaRouteStarter::GetPresentationRequestSourceName() const {

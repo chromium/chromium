@@ -122,8 +122,7 @@ void CastHandler::StartDesktopMirroring(
       base::BindOnce(&CastHandler::OnDesktopMirroringStarted,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       media_router::GetRouteRequestTimeout(
-          media_router::MediaCastMode::DESKTOP_MIRROR),
-      web_contents_->GetBrowserContext()->IsOffTheRecord());
+          media_router::MediaCastMode::DESKTOP_MIRROR));
 }
 
 void CastHandler::StartTabMirroring(
@@ -147,8 +146,7 @@ void CastHandler::StartTabMirroring(
       base::BindOnce(&CastHandler::OnTabMirroringStarted,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       media_router::GetRouteRequestTimeout(
-          media_router::MediaCastMode::TAB_MIRROR),
-      web_contents_->GetBrowserContext()->IsOffTheRecord());
+          media_router::MediaCastMode::TAB_MIRROR));
 }
 
 Response CastHandler::StopCasting(const std::string& in_sink_name) {
@@ -233,8 +231,7 @@ void CastHandler::StartPresentation(
       base::BindOnce(&CastHandler::OnPresentationStarted,
                      weak_factory_.GetWeakPtr(), std::move(context)),
       media_router::GetRouteRequestTimeout(
-          media_router::MediaCastMode::PRESENTATION),
-      web_contents_->GetBrowserContext()->IsOffTheRecord());
+          media_router::MediaCastMode::PRESENTATION));
 }
 
 media_router::MediaSink::Id CastHandler::GetSinkIdByName(

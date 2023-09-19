@@ -111,8 +111,7 @@ void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
                                      const url::Origin& origin,
                                      content::WebContents* web_contents,
                                      MediaRouteResponseCallback callback,
-                                     base::TimeDelta timeout,
-                                     bool incognito) {
+                                     base::TimeDelta timeout) {
   DCHECK(callback);
   // TODO(avayvod): Implement timeouts (crbug.com/583036).
   std::string presentation_id = MediaRouterBase::CreatePresentationId();
@@ -129,8 +128,7 @@ void MediaRouterAndroid::JoinRoute(const MediaSource::Id& source_id,
                                    const url::Origin& origin,
                                    content::WebContents* web_contents,
                                    MediaRouteResponseCallback callback,
-                                   base::TimeDelta timeout,
-                                   bool incognito) {
+                                   base::TimeDelta timeout) {
   DCHECK(callback);
   // TODO(avayvod): Implement timeouts (crbug.com/583036).
   DVLOG(2) << "JoinRoute: " << source_id << ", " << presentation_id << ", "

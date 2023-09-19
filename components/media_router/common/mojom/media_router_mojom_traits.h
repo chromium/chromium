@@ -318,10 +318,6 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     return route.controller_type();
   }
 
-  static bool is_off_the_record(const media_router::MediaRoute& route) {
-    return route.is_off_the_record();
-  }
-
   static bool is_local_presentation(const media_router::MediaRoute& route) {
     return route.is_local_presentation();
   }

@@ -185,7 +185,7 @@ class PresentationServiceDelegateImplTest
     return *mock_local_manager_;
   }
 
-  void RunDefaultPresentationUrlCallbackTest(bool off_the_record) {
+  void RunDefaultPresentationUrlCallbackTest() {
     auto callback = base::BindRepeating(
         &PresentationServiceDelegateImplTest::OnDefaultPresentationStarted,
         base::Unretained(this));
@@ -209,7 +209,6 @@ class PresentationServiceDelegateImplTest
         frame_origin_);
     MediaRoute media_route("differentRouteId", source2_, "mediaSinkId", "",
                            true);
-    media_route.set_off_the_record(off_the_record);
     result =
         RouteRequestResult::FromSuccess(media_route, "differentPresentationId");
     delegate_impl_->OnPresentationResponse(different_request,
@@ -219,7 +218,6 @@ class PresentationServiceDelegateImplTest
     // Should trigger callback since request matches.
     EXPECT_CALL(*this, OnDefaultPresentationStarted(_)).Times(1);
     MediaRoute media_route2("routeId", source1_, "mediaSinkId", "", true);
-    media_route2.set_off_the_record(off_the_record);
     result = RouteRequestResult::FromSuccess(media_route2, "presentationId");
     delegate_impl_->OnPresentationResponse(request, /** connection */ nullptr,
                                            *result);
@@ -266,34 +264,6 @@ class PresentationServiceDelegateImplTest
 
   // Set in SetUp().
   std::unique_ptr<content::PresentationRequest> presentation_request_;
-};
-
-class PresentationServiceDelegateImplIncognitoTest
-    : public PresentationServiceDelegateImplTest {
- public:
-  PresentationServiceDelegateImplIncognitoTest() = default;
-
- protected:
-  content::WebContents* GetWebContents() override {
-    if (!off_the_record_web_contents_) {
-      Profile* incognito_profile =
-          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-      off_the_record_web_contents_ =
-          content::WebContentsTester::CreateTestWebContents(incognito_profile,
-                                                            nullptr);
-    }
-    return off_the_record_web_contents_.get();
-  }
-
-  void TearDown() override {
-    // We must delete the OffTheRecord WC first, as that triggers observers
-    // which require RenderViewHost, etc., that in turn are deleted by
-    // RenderViewHostTestHarness::TearDown().
-    off_the_record_web_contents_.reset();
-    PresentationServiceDelegateImplTest::TearDown();
-  }
-
-  std::unique_ptr<content::WebContents> off_the_record_web_contents_{nullptr};
 };
 
 TEST_F(PresentationServiceDelegateImplTest, AddScreenAvailabilityListener) {
@@ -392,12 +362,7 @@ TEST_F(PresentationServiceDelegateImplTest, SetDefaultPresentationUrl) {
 }
 
 TEST_F(PresentationServiceDelegateImplTest, DefaultPresentationUrlCallback) {
-  RunDefaultPresentationUrlCallbackTest(false);
-}
-
-TEST_F(PresentationServiceDelegateImplIncognitoTest,
-       DefaultPresentationUrlCallback) {
-  RunDefaultPresentationUrlCallbackTest(true);
+  RunDefaultPresentationUrlCallbackTest();
 }
 
 TEST_F(PresentationServiceDelegateImplTest, NotifyDefaultPresentationChanged) {
@@ -464,7 +429,7 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnectionStateChange) {
 
   // Set up a PresentationConnection so we can listen to it.
   MediaRouteResponseCallback route_response_callback;
-  EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _, false))
+  EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke(
           [&route_response_callback](MediaRouteResponseCallback& callback) {
             route_response_callback = std::move(callback);
@@ -771,7 +736,7 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   // A request to reconnect to a presentation with the special presentation ID
   // should succeed.
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
-  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _, _))
+  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _))
       .Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,

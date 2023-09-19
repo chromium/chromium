@@ -99,7 +99,6 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
     const url::Origin& origin,
     int32_t frame_tree_node_id,
     base::TimeDelta timeout,
-    bool off_the_record,
     CreateRouteCallback callback) {
   DCHECK(!base::Contains(presentations_, presentation_id));
   absl::optional<Display> display = GetDisplayBySinkId(sink_id);
@@ -117,7 +116,6 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
                    GetRouteDescription(media_source), true);
   route.set_local_presentation(true);
-  route.set_off_the_record(profile_->IsOffTheRecord());
   route.set_controller_type(RouteControllerType::kGeneric);
 
   Presentation& presentation =
@@ -136,7 +134,6 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
     const url::Origin& origin,
     int32_t frame_tree_node_id,
     base::TimeDelta timeout,
-    bool off_the_record,
     JoinRouteCallback callback) {
   std::move(callback).Run(
       absl::nullopt, nullptr,

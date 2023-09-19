@@ -48,10 +48,9 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                    const url::Origin& origin,
                    int frame_tree_node_id,
                    base::TimeDelta timeout,
-                   bool incognito,
                    CreateRouteCallback callback) override {
     CreateRouteInternal(source_urn, sink_id, presentation_id, origin,
-                        frame_tree_node_id, timeout, incognito, callback);
+                        frame_tree_node_id, timeout, callback);
   }
   MOCK_METHOD(void,
               CreateRouteInternal,
@@ -61,17 +60,15 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                const url::Origin& origin,
                int frame_tree_node_id,
                base::TimeDelta timeout,
-               bool incognito,
                CreateRouteCallback& callback));
   void JoinRoute(const std::string& source_urn,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  int frame_tree_node_id,
                  base::TimeDelta timeout,
-                 bool incognito,
                  JoinRouteCallback callback) override {
     JoinRouteInternal(source_urn, presentation_id, origin, frame_tree_node_id,
-                      timeout, incognito, callback);
+                      timeout, callback);
   }
   MOCK_METHOD(void,
               JoinRouteInternal,
@@ -80,7 +77,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                const url::Origin& origin,
                int frame_tree_node_id,
                base::TimeDelta timeout,
-               bool incognito,
                JoinRouteCallback& callback));
   MOCK_METHOD(void, DetachRoute, (const std::string& route_id));
   void TerminateRoute(const std::string& route_id,

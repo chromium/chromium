@@ -53,8 +53,7 @@ class AppActivity : public CastActivity {
       const CastInternalMessage& cast_message,
       cast_channel::ResultCallback callback) override;
 
-  bool CanJoinSession(const CastMediaSource& cast_source,
-                      bool off_the_record) const;
+  bool CanJoinSession(const CastMediaSource& cast_source) const;
   bool HasJoinableClient(AutoJoinPolicy policy,
                          const url::Origin& origin,
                          int tab_id) const;

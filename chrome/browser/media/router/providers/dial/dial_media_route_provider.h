@@ -75,14 +75,12 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                    const url::Origin& origin,
                    int32_t frame_tree_node_id,
                    base::TimeDelta timeout,
-                   bool incognito,
                    CreateRouteCallback callback) override;
   void JoinRoute(const std::string& media_source,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  int32_t frame_tree_node_id,
                  base::TimeDelta timeout,
-                 bool incognito,
                  JoinRouteCallback callback) override;
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override;

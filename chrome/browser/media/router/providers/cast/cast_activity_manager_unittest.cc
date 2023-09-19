@@ -251,8 +251,7 @@ class CastActivityManagerTest : public testing::Test,
 
     // Callback needs to be invoked by running |launch_session_callback_|.
     manager_->LaunchSession(*source, sink_, kPresentationId, origin_,
-                            kFrameTreeNodeId,
-                            /*incognito*/ false, std::move(callback));
+                            kFrameTreeNodeId, std::move(callback));
 
     RunUntilIdle();
   }
@@ -697,7 +696,6 @@ TEST_F(CastActivityManagerTest, LaunchAppSessionFailsWithAppParams) {
   // Callback will be invoked synchronously.
   manager_->LaunchSession(
       *source, sink_, kPresentationId, origin_, kFrameTreeNodeId,
-      /*incognito*/ false,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionFailure,
                      base::Unretained(this)));
 
@@ -713,9 +711,7 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionFromTab) {
   // Use LaunchSessionParsed() instead of LaunchSession() here because
   // LaunchSessionParsed() is called asynchronously and will fail the test.
   manager_->LaunchSessionParsed(
-      *source, sink2_, kPresentationId2, origin_,
-      kFrameTreeNodeId, /*incognito*/
-      false,
+      *source, sink2_, kPresentationId2, origin_, kFrameTreeNodeId,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
                      base::Unretained(this)),
       data_decoder::DataDecoder::ValueOrError());
@@ -731,9 +727,7 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesPendingLaunchFromTab) {
   // Use LaunchSessionParsed() instead of LaunchSession() here because
   // LaunchSessionParsed() is called asynchronously and will fail the test.
   manager_->LaunchSessionParsed(
-      *source, sink2_, kPresentationId2, origin_,
-      kFrameTreeNodeId, /*incognito*/
-      false,
+      *source, sink2_, kPresentationId2, origin_, kFrameTreeNodeId,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
                      base::Unretained(this)),
       data_decoder::DataDecoder::ValueOrError());
@@ -877,9 +871,7 @@ TEST_F(CastActivityManagerTest, OnSourceChanged) {
   auto source2 =
       CastMediaSource::FromMediaSourceId(MakeSourceId(cast_streaming_app_id_));
   manager_->LaunchSession(
-      *source2, sink2_, kPresentationId2, origin_,
-      kFrameTreeNodeId2, /*incognito*/
-      false,
+      *source2, sink2_, kPresentationId2, origin_, kFrameTreeNodeId2,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
                      base::Unretained(this)));
 
@@ -904,7 +896,6 @@ TEST_F(CastActivityManagerTest, StartSessionAndRemoveExistingSessionOnSink) {
   auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
   manager_->LaunchSessionParsed(
       *source, sink_, kPresentationId2, origin_, kFrameTreeNodeId2,
-      /*incognito*/ false,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
                      base::Unretained(this)),
       data_decoder::DataDecoder::ValueOrError());
@@ -953,9 +944,7 @@ TEST_F(CastActivityManagerWithTerminatingTest,
   // LaunchSessionParsed() is called asynchronously and will fail the test.
   manager_->LaunchSessionParsed(
       // TODO(crbug.com/1291744): Verify that presentation ID is used correctly.
-      *source, sink_, kPresentationId2, origin_,
-      kFrameTreeNodeId2, /*incognito*/
-      false,
+      *source, sink_, kPresentationId2, origin_, kFrameTreeNodeId2,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
                      base::Unretained(this)),
       data_decoder::DataDecoder::ValueOrError());
@@ -993,7 +982,6 @@ TEST_F(CastActivityManagerWithTerminatingTest,
   for (int i = 0; i < 2; i++) {
     manager_->LaunchSession(*source, sink_, kPresentationId, origin_,
                             kFrameTreeNodeId,
-                            /*incognito*/ false,
                             base::BindOnce(&MockLaunchSessionCallback::Run,
                                            base::Unretained(&callback)));
   }

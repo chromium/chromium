@@ -521,32 +521,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
   StartSessionAndAssertNotFoundError();
 }
 
-Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
-  if (!incognito_browser_)
-    incognito_browser_ = CreateIncognitoBrowser();
-  return incognito_browser_;
-}
-
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
-  RunBasicTest();
-  // If we tear down before route observers are notified of route termination,
-  // MediaRouter will create another TerminateRoute() request which will have a
-  // dangling Mojo callback at shutdown. So we must wait for the update.
-  WaitUntilNoRoutes(GetActiveWebContents());
-}
-
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
-                       ReconnectSession) {
-  RunReconnectSessionTest();
-  // If we tear down before route observers are notified of route termination,
-  // MediaRouter will create another TerminateRoute() request which will have a
-  // dangling Mojo callback at shutdown. So we must wait for the update.
-  WaitUntilNoRoutes(GetActiveWebContents());
-}
-
 INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
     MediaRouterIntegrationBrowserTest);
-INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
-    MediaRouterIntegrationIncognitoBrowserTest);
 
 }  // namespace media_router

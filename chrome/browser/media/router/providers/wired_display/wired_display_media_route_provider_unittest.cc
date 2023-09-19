@@ -334,7 +334,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
       url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
-      base::Seconds(100), false,
+      base::Seconds(100),
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -370,7 +370,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
       url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
-      base::Seconds(100), false,
+      base::Seconds(100),
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -399,7 +399,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, ExitFullscreenOnDisplayRemoved) {
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), "presentationId",
       url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
-      base::Seconds(100), false,
+      base::Seconds(100),
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 

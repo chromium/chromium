@@ -181,14 +181,13 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     ui_->OnRoutesUpdated(routes);
   }
 
-  void StartTabCasting(bool is_incognito) {
+  void StartTabCasting() {
     MediaSource media_source = MediaSource::ForTab(
         sessions::SessionTabHelper::IdForTab(web_contents()).id());
     MediaRouteResponseCallback callback;
-    EXPECT_CALL(
-        *mock_router_,
-        CreateRouteInternal(media_source.id(), kSinkId, _, web_contents(), _,
-                            base::Seconds(60), is_incognito))
+    EXPECT_CALL(*mock_router_,
+                CreateRouteInternal(media_source.id(), kSinkId, _,
+                                    web_contents(), _, base::Seconds(60)))
         .WillOnce(SaveArgWithMove<4>(&callback));
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
@@ -216,9 +215,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
     ui_->OnSinksUpdated({{sink, {cast_mode}}});
     MediaRouteResponseCallback callback;
-    EXPECT_CALL(*mock_router_,
-                CreateRouteInternal(_, _, _, _, _,
-                                    base::Seconds(timeout_seconds), false))
+    EXPECT_CALL(
+        *mock_router_,
+        CreateRouteInternal(_, _, _, _, _, base::Seconds(timeout_seconds)))
         .WillOnce(SaveArgWithMove<4>(&callback));
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
@@ -389,7 +388,7 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
 }
 
 TEST_F(MediaRouterViewsUITest, StartCasting) {
-  StartTabCasting(false);
+  StartTabCasting();
 }
 
 TEST_F(MediaRouterViewsUITest, StopCasting) {

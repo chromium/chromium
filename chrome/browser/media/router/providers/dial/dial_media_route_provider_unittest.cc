@@ -156,7 +156,6 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     provider_->CreateRoute(
         source_id, sink_id, presentation_id, origin_, kFrameTreeNodeId,
         base::TimeDelta(),
-        /* off_the_record */ false,
         base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
                        base::Unretained(this),
                        mojom::RouteRequestResultCode::OK));
@@ -168,7 +167,6 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     CreateRoute(presentation_id);
     ASSERT_TRUE(route_);
     EXPECT_EQ(presentation_id, route_->presentation_id());
-    EXPECT_FALSE(route_->is_off_the_record());
 
     const MediaRoute::Id& route_id = route_->media_route_id();
     std::vector<RouteMessagePtr> received_messages;
@@ -193,8 +191,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
       mojom::RouteRequestResultCode expected_result,
       absl::optional<std::string> source_to_join = absl::nullopt,
       absl::optional<std::string> presentation_to_join = absl::nullopt,
-      absl::optional<url::Origin> client_origin = absl::nullopt,
-      absl::optional<bool> client_incognito = absl::nullopt) {
+      absl::optional<url::Origin> client_origin = absl::nullopt) {
     CreateRoute();
     ASSERT_TRUE(route_);
 
@@ -204,12 +201,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
                                           ? *presentation_to_join
                                           : route_->presentation_id();
     const url::Origin& origin = client_origin ? *client_origin : origin_;
-    const bool incognito =
-        client_incognito ? *client_incognito : route_->is_off_the_record();
-
     provider_->JoinRoute(
         source, presentation, origin, kFrameTreeNodeId, base::TimeDelta(),
-        incognito,
         base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
                        base::Unretained(this), expected_result));
   }
@@ -649,11 +642,6 @@ TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongOrigin) {
                 url::Origin::Create(GURL("https://wrong-origin.com")));
 }
 
-TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForIncognitoMismatch) {
-  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
-                absl::nullopt, absl::nullopt, true);
-}
-
 TEST_F(DialMediaRouteProviderTest, TerminateRoute) {
   TestCreateRoute();
   TestSendClientConnectMessage();
@@ -708,7 +696,6 @@ TEST_F(DialMediaRouteProviderTest, CreateRouteTerminatesExistingRoute) {
   provider_->CreateRoute(
       source_id, sink_id, presentation_id_2, origin_, kFrameTreeNodeId,
       base::TimeDelta(),
-      /* off_the_record */ false,
       base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
                      base::Unretained(this),
                      mojom::RouteRequestResultCode::OK));
