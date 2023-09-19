@@ -924,7 +924,8 @@ void PersonalDataManager::MigrateProfileToAccount(
 }
 
 std::string PersonalDataManager::AddIban(const Iban& iban) {
-  if (!IsAutofillIbanEnabled()) {
+  // IBAN shares the same pref with payment methods enablement toggle.
+  if (!IsAutofillCreditCardEnabled()) {
     return std::string();
   }
 
@@ -1655,8 +1656,7 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled() ||
-         IsAutofillIbanEnabled();
+  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
 }
 
 bool PersonalDataManager::IsAutofillProfileEnabled() const {
@@ -1673,10 +1673,6 @@ bool PersonalDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
 
 void PersonalDataManager::SetAutofillHasSeenIban() {
   prefs::SetAutofillHasSeenIban(pref_service_);
-}
-
-bool PersonalDataManager::IsAutofillIbanEnabled() const {
-  return prefs::IsAutofillIbanEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {

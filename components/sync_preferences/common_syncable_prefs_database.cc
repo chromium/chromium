@@ -46,7 +46,7 @@ enum {
   kAutofillCreditCardEnabled = 1,
   kAutofillEnabledDeprecated = 2,
   kAutofillHasSeenIban = 3,
-  kAutofillIbanEnabled = 4,
+  kAutofillIbanEnabled = 4,  // Obsolete.
   kAutofillLastVersionDeduped = 5,
   kAutofillLastVersionDisusedAddressesDeleted = 6,
   kAutofillProfileEnabled = 7,
@@ -128,9 +128,6 @@ const auto& SyncablePreferences() {
           false}},
         {autofill::prefs::kAutofillHasSeenIban,
          {syncable_prefs_ids::kAutofillHasSeenIban, syncer::PREFERENCES,
-          false}},
-        {autofill::prefs::kAutofillIbanEnabled,
-         {syncable_prefs_ids::kAutofillIbanEnabled, syncer::PREFERENCES,
           false}},
         {autofill::prefs::kAutofillLastVersionDeduped,
          {syncable_prefs_ids::kAutofillLastVersionDeduped, syncer::PREFERENCES,

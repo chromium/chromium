@@ -29,7 +29,6 @@ class IbanSaveManagerTest : public testing::Test {
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
-    prefs::SetAutofillIbanEnabled(autofill_client_.GetPrefs(), true);
     personal_data().Init(/*profile_database=*/nullptr,
                          /*account_database=*/nullptr,
                          /*pref_service=*/autofill_client_.GetPrefs(),

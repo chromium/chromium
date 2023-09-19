@@ -155,9 +155,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kAutofillCreditCardEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kAutofillIbanEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       prefs::kAutofillPaymentCvcStorage, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
@@ -192,6 +189,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kAutofillEnabledDeprecated, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
+  registry->RegisterBooleanPref(prefs::kAutofillIbanEnabled, true);
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
@@ -204,6 +202,8 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kAutofillEnabledDeprecated);
   // Added 05/2023.
   pref_service->ClearPref(prefs::kAutofillOrphanRowsRemoved);
+  // Added 09/2023.
+  pref_service->ClearPref(prefs::kAutofillIbanEnabled);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
@@ -234,14 +234,6 @@ bool HasSeenIban(const PrefService* prefs) {
 // user around forever.
 void SetAutofillHasSeenIban(PrefService* prefs) {
   prefs->SetBoolean(kAutofillHasSeenIban, true);
-}
-
-bool IsAutofillIbanEnabled(const PrefService* prefs) {
-  return prefs->GetBoolean(kAutofillIbanEnabled);
-}
-
-void SetAutofillIbanEnabled(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kAutofillIbanEnabled, enabled);
 }
 
 bool IsAutofillManaged(const PrefService* prefs) {

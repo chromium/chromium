@@ -554,9 +554,6 @@ class PersonalDataManager : public KeyedService,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
-  // Returns the value of the AutofillIbanEnabled pref.
-  virtual bool IsAutofillIbanEnabled() const;
-
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 

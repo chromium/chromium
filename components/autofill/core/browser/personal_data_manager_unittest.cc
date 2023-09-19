@@ -1005,7 +1005,8 @@ TEST_F(PersonalDataManagerTest,
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
-  prefs::SetAutofillIbanEnabled(prefs_.get(), false);
+  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+
   personal_data_->AddIban(autofill::test::GetIban());
   personal_data_->AddIban(autofill::test::GetIban2());
 
@@ -1013,7 +1014,6 @@ TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
 }
 
 TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
-  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
   // The pref should always start disabled.
   ASSERT_FALSE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
   Iban iban = test::GetIban();
@@ -1025,7 +1025,6 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
-  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
   Iban iban0 = autofill::test::GetIban();
 
   Iban iban1 = autofill::test::GetIban2();
@@ -1095,8 +1094,6 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
 // Ensure that new IBANs can be updated and saved via
 // `OnAcceptedLocalIbanSave()`.
 TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
-  prefs::SetAutofillIbanEnabled(prefs_.get(), true);
-
   // Start with a new IBAN.
   Iban iban0 = autofill::test::GetIban();
   // Add the IBAN to the database.
@@ -2028,7 +2025,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // profiles.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
-  prefs::SetAutofillIbanEnabled(prefs_.get(), false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   EXPECT_EQ(default_country,
             personal_data_->GetDefaultCountryCodeForNewAddress());
