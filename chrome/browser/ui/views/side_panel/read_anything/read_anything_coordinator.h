@@ -52,7 +52,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   ReadAnythingCoordinator& operator=(const ReadAnythingCoordinator&) = delete;
   ~ReadAnythingCoordinator() override;
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterSidePanelEntry(SidePanelRegistry* registry);
   ReadAnythingController* GetController();
   ReadAnythingModel* GetModel();
 

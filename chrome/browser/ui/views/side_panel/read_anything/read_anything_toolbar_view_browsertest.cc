@@ -43,8 +43,8 @@ class MockReadAnythingCoordinator : public ReadAnythingCoordinator {
       : ReadAnythingCoordinator(browser) {}
 
   MOCK_METHOD(void,
-              CreateAndRegisterEntry,
-              (SidePanelRegistry * global_registry));
+              CreateAndRegisterSidePanelEntry,
+              (SidePanelRegistry * registry));
   MOCK_METHOD(ReadAnythingController*, GetController, ());
   MOCK_METHOD(ReadAnythingModel*, GetModel, ());
   MOCK_METHOD(void,
