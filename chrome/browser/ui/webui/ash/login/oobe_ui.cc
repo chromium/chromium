@@ -322,7 +322,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsOobeTouchpadScrollEnabled());
 
   source->AddBoolean("isDrivePinningEnabled",
-                     drive::util::IsOobeDrivePinningAvailable(profile));
+                     drive::util::IsOobeDrivePinningScreenEnabled());
 
   // Whether the timings in oobe_trace.js will be output to the console.
   source->AddBoolean(
@@ -553,8 +553,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<AddChildScreenHandler>());
 
-  Profile* const profile = Profile::FromWebUI(web_ui());
-  if (drive::util::IsOobeDrivePinningAvailable(profile)) {
+  if (drive::util::IsOobeDrivePinningScreenEnabled()) {
     AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
   }
 
@@ -562,6 +561,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
 
+  Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
