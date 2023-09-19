@@ -969,7 +969,6 @@
       "vendor_id": "0x1002",
       "device_id": ["0x9440", "0x944a", "0x9488", "0x9490"],
       "features": [
-        "disable_overlay_ca_layers",
         "disable_post_sub_buffers_for_onscreen_surfaces"
       ]
     },
@@ -1160,23 +1159,6 @@
       },
       "disabled_extensions": [
         "EGL_KHR_fence_sync"
-      ]
-    },
-    {
-      "id": 158,
-      "description": "IOSurface use becomes pathologically slow over time on 10.10.",
-      "cr_bugs": [580616],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "=",
-          "value": "10.10"
-        }
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fd5"],
-      "features": [
-        "disable_overlay_ca_layers"
       ]
     },
     {
@@ -1411,18 +1393,6 @@
       ]
     },
     {
-      "id": 183,
-      "description": "Result of abs(i) where i is an integer in vertex shader is wrong",
-      "cr_bugs": [642227],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "emulate_abs_int_function"
-      ]
-    },
-    {
       "id": 184,
       "description": "Rewrite texelFetchOffset to texelFetch for Intel Mac",
       "cr_bugs": [642605],
@@ -1478,22 +1448,6 @@
       ]
     },
     {
-      "id": 189,
-      "description": "Do TexImage2D first before CopyTexImage2D for cube map texture on Intel Mac 10.11",
-      "cr_bugs": [648197],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.11"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "init_one_cube_map_level_before_copyteximage"
-      ]
-    },
-    {
       "id": 190,
       "description": "Disable partial swaps on Mesa drivers (detected with GL_VERSION)",
       "cr_bugs": [339493],
@@ -1504,24 +1458,6 @@
       "gl_version_string": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
-      ]
-    },
-    {
-      "id": 191,
-      "description": "Emulate GLSL function isnan() on Intel Mac",
-      "cr_bugs": [650547],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.13.2"
-        }
-      },
-      "intel_gpu_series" : [
-        "skylake"
-      ],
-      "features" : [
-        "emulate_isnan_on_float"
       ]
     },
     {
@@ -1553,22 +1489,6 @@
       },
       "features": [
         "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 194,
-      "description": "Init first two levels before CopyTexImage2D for cube map texture on Intel Mac 10.12",
-      "cr_bugs": [648197],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": ">=",
-          "value": "10.12"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "init_two_cube_map_levels_before_copyteximage"
       ]
     },
     {
@@ -2414,19 +2334,6 @@
       "device_id": ["0x6900"],
       "features": [
         "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 279,
-      "description": "WindowServer crashes on VMWare bots using CA renderer",
-      "cr_bugs": [828031],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x15ad",
-      "multi_gpu_category": "any",
-      "features": [
-        "disable_overlay_ca_layers"
       ]
     },
     {

@@ -3892,16 +3892,12 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     driver_bug_workarounds.scalarizeVecAndMatConstructorArgs = true;
   if (workarounds().regenerate_struct_names)
     driver_bug_workarounds.regenerateStructNames = true;
-  if (workarounds().emulate_abs_int_function)
-    driver_bug_workarounds.emulateAbsIntFunction = true;
   if (workarounds().rewrite_texelfetchoffset_to_texelfetch)
     driver_bug_workarounds.rewriteTexelFetchOffsetToTexelFetch = true;
   if (workarounds().add_and_true_to_loop_condition)
     driver_bug_workarounds.addAndTrueToLoopCondition = true;
   if (workarounds().rewrite_do_while_loops)
     driver_bug_workarounds.rewriteDoWhileLoops = true;
-  if (workarounds().emulate_isnan_on_float)
-    driver_bug_workarounds.emulateIsnanFloatFunction = true;
   if (workarounds().use_unused_standard_shared_blocks)
     driver_bug_workarounds.useUnusedStandardSharedBlocks = true;
   if (workarounds().remove_invariant_and_centroid_for_essl3)
@@ -14588,30 +14584,6 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
       }
     }
   } else {
-    if (workarounds().init_two_cube_map_levels_before_copyteximage &&
-        texture->target() == GL_TEXTURE_CUBE_MAP &&
-        target != GL_TEXTURE_CUBE_MAP_POSITIVE_X) {
-      for (int i = 0; i < 2; ++i) {
-        TextureManager::DoTexImageArguments args = {
-            target,
-            i,
-            final_internal_format,
-            width,
-            height,
-            1,
-            border,
-            format,
-            type,
-            nullptr,
-            pixels_size,
-            0,
-            TextureManager::DoTexImageArguments::CommandType::kTexImage2D};
-        texture_manager()->WorkaroundCopyTexImageCubeMap(
-            &texture_state_, &state_, error_state_.get(), &framebuffer_state_,
-            texture_ref, func_name, args);
-      }
-    }
-
     if (requires_luma_blit) {
       copy_tex_image_blit_->DoCopyTexImage2DToLUMACompatibilityTexture(
           this, texture->service_id(), texture->target(), target, format, type,
@@ -14619,27 +14591,6 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
           GetBoundReadFramebufferServiceId(),
           GetBoundReadFramebufferInternalFormat());
     } else {
-      if (workarounds().init_one_cube_map_level_before_copyteximage &&
-          texture->target() == GL_TEXTURE_CUBE_MAP &&
-          target != GL_TEXTURE_CUBE_MAP_POSITIVE_X) {
-        TextureManager::DoTexImageArguments args = {
-            target,
-            level,
-            final_internal_format,
-            width,
-            height,
-            1,
-            border,
-            format,
-            type,
-            nullptr,
-            pixels_size,
-            0,
-            TextureManager::DoTexImageArguments::CommandType::kTexImage2D};
-        texture_manager()->WorkaroundCopyTexImageCubeMap(
-            &texture_state_, &state_, error_state_.get(), &framebuffer_state_,
-            texture_ref, func_name, args);
-      }
       if (workarounds().clear_pixel_unpack_buffer_before_copyteximage)
         state_.PushTextureUnpackState();
       api()->glCopyTexImage2DFn(target, level, final_internal_format, x, y,
