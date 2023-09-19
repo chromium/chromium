@@ -1235,6 +1235,9 @@ bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
     return false;
   const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
       download_->GetURL(), download_->GetReferrerUrl());
+  if (!authority_url.is_valid()) {
+    return true;
+  }
   return files_controller->ShouldPromptBeforeDownload(
       policy::DlpFileDestination(authority_url), download_path);
 #else

@@ -2912,6 +2912,34 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
 };
 
+// Download URL might be invalid. Dlp must not crash in that case
+// (b/300605501).
+TEST_F(DownloadTargetDeterminerDlpTest, InvalidUrl) {
+  SetupRulesManager();
+
+  const DownloadTestCase kManagedPathTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetManagedDownloadPath(test_download_dir());
+  ASSERT_TRUE(download_prefs()->IsDownloadPathManaged());
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  EXPECT_CALL(*mock_files_controller_, ShouldPromptBeforeDownload).Times(0);
+  RunTestCasesWithActiveItem(&kManagedPathTestCase, 1);
+}
+
 // Even if the download path is managed, we should prompt if the download path
 // is blocked by DLP.
 TEST_F(DownloadTargetDeterminerDlpTest, ManagedPath_ShouldPrompt) {
