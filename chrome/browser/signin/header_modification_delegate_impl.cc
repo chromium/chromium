@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
@@ -149,7 +150,8 @@ void HeaderModificationDelegateImpl::ProcessResponse(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled()) {
+  if (gaia::HasGaiaSchemeHostPort(response_adapter->GetUrl()) &&
+      switches::IsBoundSessionCredentialsEnabled()) {
     BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
     if (bound_session_cookie_refresh_service) {
