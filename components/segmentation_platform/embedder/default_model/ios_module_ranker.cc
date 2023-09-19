@@ -53,17 +53,17 @@ constexpr std::array<int32_t, 1> kEnumValueForParcelTracking{
 
 // TODO(ritikagup) : Loop through all the modules for these features for better
 // readability. Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
+constexpr std::array<MetadataWriter::UMAFeature, 30> kUMAFeatures = {
     // Most Visited Tiles
     // 0
     MetadataWriter::UMAFeature::FromEnumHistogram("IOS.MagicStack.Module.Click",
-                                                  28,
+                                                  7,
                                                   kEnumValueForMVT.data(),
                                                   kEnumValueForMVT.size()),
     // 1
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.TopImpression",
-        28,
+        7,
         kEnumValueForMVT.data(),
         kEnumValueForMVT.size()),
 
@@ -71,13 +71,13 @@ constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
     // 2
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.Click",
-        28,
+        7,
         kEnumValueForShortcuts.data(),
         kEnumValueForShortcuts.size()),
     // 3
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.TopImpression",
-        28,
+        7,
         kEnumValueForShortcuts.data(),
         kEnumValueForShortcuts.size()),
 
@@ -85,24 +85,110 @@ constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
     // 4
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.Click",
-        28,
+        7,
         kEnumValueForSafetyCheck.data(),
         kEnumValueForSafetyCheck.size()),
     // 5
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        7,
+        kEnumValueForSafetyCheck.data(),
+        kEnumValueForSafetyCheck.size()),
+
+    // Most Visited Tiles
+    // 6
+    MetadataWriter::UMAFeature::FromEnumHistogram("IOS.MagicStack.Module.Click",
+                                                  28,
+                                                  kEnumValueForMVT.data(),
+                                                  kEnumValueForMVT.size()),
+    // 7
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        28,
+        kEnumValueForMVT.data(),
+        kEnumValueForMVT.size()),
+
+    // Shortcuts
+    // 8
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        28,
+        kEnumValueForShortcuts.data(),
+        kEnumValueForShortcuts.size()),
+    // 9
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        28,
+        kEnumValueForShortcuts.data(),
+        kEnumValueForShortcuts.size()),
+
+    // Safety Check
+    // 10
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        28,
+        kEnumValueForSafetyCheck.data(),
+        kEnumValueForSafetyCheck.size()),
+    // 11
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.TopImpression",
         28,
         kEnumValueForSafetyCheck.data(),
         kEnumValueForSafetyCheck.size()),
 
+    // 12
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileOmniboxShortcutsOpenMostVisitedItem",
+        7),
+    // 13
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileOmniboxShortcutsOpenMostVisitedItem",
+        28),
+    // 14
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileBookmarkManagerEntryOpened",
+        7),
+    // 15
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileBookmarkManagerEntryOpened",
+        28),
+    // 16
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileOmniboxShortcutsOpenReadingList",
+        7),
+    // 17
+    MetadataWriter::UMAFeature::FromUserAction(
+        "MobileOmniboxShortcutsOpenReadingList",
+        28),
+    // 18
+    MetadataWriter::UMAFeature::FromUserAction("MobileReadingListOpen", 7),
+    // 19
+    MetadataWriter::UMAFeature::FromUserAction("MobileReadingListOpen", 28),
+    // 20
+    MetadataWriter::UMAFeature::FromUserAction("MobileReadingListAdd", 7),
+    // 21
+    MetadataWriter::UMAFeature::FromUserAction("MobileReadingListAdd", 28),
+
     // Tab Resumption
-    // 6
+    // 22
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        7,
+        kEnumValueForTabResumption.data(),
+        kEnumValueForTabResumption.size()),
+    // 23
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        7,
+        kEnumValueForTabResumption.data(),
+        kEnumValueForTabResumption.size()),
+    // 24
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.Click",
         28,
         kEnumValueForTabResumption.data(),
         kEnumValueForTabResumption.size()),
-    // 7
+    // 25
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.TopImpression",
         28,
@@ -110,13 +196,25 @@ constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
         kEnumValueForTabResumption.size()),
 
     // Parcel Tracking
-    // 8
+    // 26
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        7,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
+    // 27
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        7,
+        kEnumValueForParcelTracking.data(),
+        kEnumValueForParcelTracking.size()),
+    // 28
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.Click",
         28,
         kEnumValueForParcelTracking.data(),
         kEnumValueForParcelTracking.size()),
-    // 9
+    // 29
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "IOS.MagicStack.Module.TopImpression",
         28,
