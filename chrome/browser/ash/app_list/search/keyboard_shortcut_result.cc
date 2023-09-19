@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shell.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
@@ -160,6 +161,19 @@ std::u16string GetAccessibleStringForIcon(IconCode icon_code) {
 std::u16string GetAccessibleStringForKey(const std::u16string& key_string) {
   return l10n_util::GetStringFUTF16(
       IDS_SHORTCUT_CUSTOMIZATION_ARIA_LABEL_FOR_A_KEY, key_string);
+}
+
+bool IsModifierKey(ui::KeyboardCode keycode) {
+  switch (keycode) {
+    case ui::KeyboardCode::VKEY_COMMAND:
+    case ui::KeyboardCode::VKEY_LMENU:
+    case ui::KeyboardCode::VKEY_RCONTROL:
+    case ui::KeyboardCode::VKEY_CONTROL:
+    case ui::KeyboardCode::VKEY_SHIFT:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // namespace
@@ -387,10 +401,14 @@ void KeyboardShortcutResult::PopulateTextVector(
   for (auto key_code : key_codes) {
     const absl::optional<IconCode> icon_code =
         GetIconCodeFromKeyboardCode(key_code);
+    bool use_alternative_styling = IsModifierKey(key_code);
     if (icon_code) {
       // The KeyboardCode has a corresponding IconCode, and therefore an
       // icon image is supported by the front-end.
-      text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+      ash::SearchResultTextItem result_item =
+          CreateIconCodeTextItem(icon_code.value());
+      result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+      text_vector->push_back(result_item);
       accessible_strings.push_back(
           GetAccessibleStringForIcon(icon_code.value()));
     } else {
@@ -401,7 +419,11 @@ void KeyboardShortcutResult::PopulateTextVector(
       // All keys including modifiers should be displayed in lower case.
       const std::u16string key_string =
           base::ToLowerASCII(ash::GetStringForKeyboardCode(key_code));
-      text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+      ash::SearchResultTextItem result_item =
+          CreateIconifiedTextTextItem(key_string);
+
+      result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+      text_vector->push_back(result_item);
       accessible_strings.push_back(GetAccessibleStringForKey(key_string));
     }
   }
@@ -432,14 +454,22 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
       case ash::mojom::TextAcceleratorPartType::kKey:
       case ash::mojom::TextAcceleratorPartType::kModifier:
         const auto icon_code = GetIconCodeByKeyString(part->text);
+        bool use_alternative_styling =
+            part->type == ash::mojom::TextAcceleratorPartType::kModifier;
         if (icon_code) {
-          text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+          ash::SearchResultTextItem result_item =
+              CreateIconCodeTextItem(icon_code.value());
+          result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+          text_vector->push_back(result_item);
           accessible_strings.push_back(
               GetAccessibleStringForIcon(icon_code.value()));
         } else {
           // All keys including modifiers should be displayed in lower case.
           const std::u16string key_string = base::ToLowerASCII(part->text);
-          text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+          ash::SearchResultTextItem result_item =
+              CreateIconifiedTextTextItem(key_string);
+          result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+          text_vector->push_back(result_item);
           accessible_strings.push_back(GetAccessibleStringForKey(key_string));
         }
         break;
