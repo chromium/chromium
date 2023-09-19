@@ -2552,7 +2552,7 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   const Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
-  EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
+  EXPECT_TRUE(target->GetLayoutObject()->IsFragmented());
   EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
             animation.CheckCanStartAnimationOnCompositor(
                 GetDocument().View()->GetPaintArtifactCompositor()));

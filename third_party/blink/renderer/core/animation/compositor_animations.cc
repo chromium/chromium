@@ -555,7 +555,7 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     // DCHECK_GE(GetDocument().Lifecycle().GetState(),
     //           DocumentLifecycle::kPrePaintClean);
     bool has_direct_compositing_reasons = false;
-    if (layout_object->FirstFragment().NextFragment()) {
+    if (layout_object->IsFragmented()) {
       // Composited animation on multiple fragments is not supported.
       reasons |= kTargetHasInvalidCompositingState;
     } else if (const auto* paint_properties =

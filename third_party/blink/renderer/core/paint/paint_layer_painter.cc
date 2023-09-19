@@ -171,7 +171,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer;
 
   PaintResult result = kFullyPainted;
-  if (object.FirstFragment().NextFragment() ||
+  if (object.IsFragmented() ||
       // When printing, the LayoutView's background should extend infinitely
       // regardless of LayoutView's visual rect, so don't check intersection
       // between the visual rect and the cull rect (custom for each page).

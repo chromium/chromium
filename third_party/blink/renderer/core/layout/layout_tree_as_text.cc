@@ -337,7 +337,7 @@ static void WriteTextFragment(WTF::TextStream& ts,
 static void WritePaintProperties(WTF::TextStream& ts,
                                  const LayoutObject& o,
                                  int indent) {
-  bool has_fragments = o.FirstFragment().NextFragment();
+  bool has_fragments = o.IsFragmented();
   if (has_fragments) {
     WriteIndent(ts, indent);
     ts << "fragments:\n";

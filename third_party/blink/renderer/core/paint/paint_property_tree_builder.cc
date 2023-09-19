@@ -3580,8 +3580,9 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
 
   // This fast path does not support iterating over each fragment, so do not
   // run the fast path in the presence of fragmentation.
-  if (object.FirstFragment().NextFragment())
+  if (object.IsFragmented()) {
     return false;
+  }
 
   auto* properties = object.FirstFragment().PaintProperties();
   // Cannot directly update properties if they have not been created yet.
@@ -3606,8 +3607,9 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
 
   // This fast path does not support iterating over each fragment, so do not
   // run the fast path in the presence of fragmentation.
-  if (object.FirstFragment().NextFragment())
+  if (object.IsFragmented()) {
     return false;
+  }
 
   auto* properties = object.FirstFragment().PaintProperties();
   // Cannot directly update properties if they have not been created yet.

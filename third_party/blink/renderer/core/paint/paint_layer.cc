@@ -1686,8 +1686,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
   // As an optimization, pass nullptr as the new container_fragment if this
   // layer has only one fragment.
   const auto* new_container_fragment =
-      GetLayoutObject().FirstFragment().NextFragment() ? &local_fragment
-                                                       : nullptr;
+      GetLayoutObject().IsFragmented() ? &local_fragment : nullptr;
   return HitTestLayer(*this, new_container_fragment, result, new_recursion_data,
                       /*applied_transform*/ true, &new_transform_state,
                       z_offset, overflow_controls_only);

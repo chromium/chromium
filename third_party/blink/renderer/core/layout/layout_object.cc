@@ -2234,8 +2234,9 @@ const LayoutObject* LayoutObject::GetPropertyContainer(
   while (!property_container->FirstFragment().HasLocalBorderBoxProperties()) {
     property_container = property_container->Container(skip_info);
     if (!property_container || (skip_info && skip_info->AncestorSkipped()) ||
-        property_container->FirstFragment().NextFragment())
+        property_container->IsFragmented()) {
       return nullptr;
+    }
   }
   if (container_properties) {
     if (property_container == this) {

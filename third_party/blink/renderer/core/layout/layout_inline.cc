@@ -602,7 +602,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // Fragment traversal requires a target fragment to be specified,
     // unless there's only one.
     DCHECK(!CanTraversePhysicalFragments() || target_fragment_idx >= 0 ||
-           !FirstFragment().NextFragment());
+           !IsFragmented());
     // Convert from inline fragment index to container fragment index, as the
     // inline may not start in the first fragment generated for the inline
     // formatting context.

@@ -4302,12 +4302,12 @@ TEST_P(PaintPropertyTreeBuilderTest,
   // top-left of the border box.
   EXPECT_EQ(PhysicalOffset(8, 8), target1->FirstFragment().PaintOffset());
   // |target1| is only in the first column.
-  EXPECT_FALSE(target1->FirstFragment().NextFragment());
+  EXPECT_FALSE(target1->IsFragmented());
 
   LayoutObject* target2 = GetLayoutObjectByElementId("target2");
   EXPECT_EQ(PhysicalOffset(158, 8), target2->FirstFragment().PaintOffset());
   // |target2| is only in the second column.
-  EXPECT_FALSE(target2->FirstFragment().NextFragment());
+  EXPECT_FALSE(target2->IsFragmented());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
@@ -4367,9 +4367,9 @@ TEST_P(PaintPropertyTreeBuilderTest,
     LayoutObject* first = GetLayoutObjectByElementId("first");
     LayoutObject* second = GetLayoutObjectByElementId("second");
     EXPECT_EQ(PhysicalOffset(), first->FirstFragment().PaintOffset());
-    EXPECT_FALSE(first->FirstFragment().NextFragment());
+    EXPECT_FALSE(first->IsFragmented());
     EXPECT_EQ(PhysicalOffset(70, 0), second->FirstFragment().PaintOffset());
-    EXPECT_FALSE(second->FirstFragment().NextFragment());
+    EXPECT_FALSE(second->IsFragmented());
   };
 
   test();
