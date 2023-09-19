@@ -93,7 +93,6 @@ class BatteryNotificationTest : public AshTestBase {
   }
 
   void TestBatterySaverNotification(
-      const PowerStatus& status,
       const ExpectedNotificationValues& expected_values,
       PowerNotificationController::NotificationState notification_state,
       bool expected_bsm_state_after_click) {
@@ -121,6 +120,9 @@ class BatteryNotificationTest : public AshTestBase {
     // Click the button to turn off/on battery saver mode depending on
     // NotificationState.
     notification->delegate()->Click(0, absl::nullopt);
+
+    // Test that notification is dismissed after button is pressed.
+    EXPECT_EQ(GetBatteryNotification(), nullptr);
 
     // Test Enable Toast on Button Click in Opt-In Branch.
     if (notification_state ==
@@ -281,7 +283,7 @@ TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptOutNotification) {
 
   // Battery Saver should turn off when the button is clicked.
   TestBatterySaverNotification(
-      *PowerStatus::Get(), expected_values,
+      expected_values,
       PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD,
       /*expected_bsm_state_after_click=*/false);
 }
@@ -303,7 +305,7 @@ TEST_F(BatteryNotificationTest,
 
   // Battery Saver should turn off when the button is clicked.
   TestBatterySaverNotification(
-      *PowerStatus::Get(), expected_values,
+      expected_values,
       PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD,
       /*expected_bsm_state_after_click=*/false);
 }
@@ -324,7 +326,7 @@ TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptInNotification) {
 
   // Battery Saver should turn on when the button is clicked.
   TestBatterySaverNotification(
-      *PowerStatus::Get(), expected_values,
+      expected_values,
       PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN,
       /*expected_bsm_state_after_click=*/true);
 }
@@ -347,7 +349,7 @@ TEST_F(BatteryNotificationTest,
 
   // Battery Saver should turn on when the button is clicked.
   TestBatterySaverNotification(
-      *PowerStatus::Get(), expected_values,
+      expected_values,
       PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN,
       /*expected_bsm_state_after_click=*/true);
 }

@@ -219,6 +219,10 @@ void HandlePowerNotificationButtonClick(
             ->battery_saver_controller()
             ->ShowBatterySaverModeEnabledToast();
       }
+
+      // Dismiss notification from Message Center.
+      message_center::MessageCenter::Get()->RemoveNotification(
+          BatteryNotification::kNotificationId, false);
       break;
     }
     default:
