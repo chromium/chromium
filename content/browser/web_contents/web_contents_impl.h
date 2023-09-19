@@ -996,6 +996,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   ui::WindowShowState GetWindowShowState() override;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool GetResizable() override;
+#endif
+  void UpdateResizable(bool resizable) override;
   void LostMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   RenderWidgetHostImpl* GetMouseLockWidget() override;
@@ -2323,6 +2327,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // if the app specifies the 'window-controls-overlay' DisplayMode in its
   // manifest. This is in frame space coordinates.
   gfx::Rect window_controls_overlay_rect_;
+
+  // Stores whether the widget can be resized or not.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool resizable_ = true;
+#endif
 
   // Observe native theme for changes to dark mode, preferred color scheme, and
   // preferred contrast. Used to notify the renderer of preferred color scheme

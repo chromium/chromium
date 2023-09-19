@@ -906,6 +906,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     UpdateWindowControlsOverlayEnabled();
     UpdateBorderlessModeEnabled();
   }
+
+  UpdateResizable();
+
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
       browser_->tab_strip_model(), this, std::move(tab_menu_model_factory));
@@ -1613,6 +1616,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     old_contents->StoreFocus();
   }
 
+  UpdateResizable();
+
   // If |contents_container_| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
   // Visibility API under Windows, as ChangeWebContents will briefly hide
@@ -2153,6 +2158,20 @@ bool BrowserView::AppUsesWindowControlsOverlay() const {
 
 bool BrowserView::IsWindowControlsOverlayEnabled() const {
   return window_controls_overlay_enabled_;
+}
+
+// TODO(laurila, crbug.com/1466855): Now this is only called when `BrowserView`
+// is initialized / tab changed and that's not enough. This should also be
+// called every time `WidgetDelegate::SetCanResize` is called.
+void BrowserView::UpdateResizable() {
+  // Additional windowing controls (AWC) is a desktop-only feature.
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  web_contents->UpdateResizable(CanResize());
+#endif
 }
 
 void BrowserView::UpdateWindowControlsOverlayEnabled() {

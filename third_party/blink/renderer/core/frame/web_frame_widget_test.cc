@@ -1068,6 +1068,55 @@ TEST_F(WebFrameWidgetSimTest, DisplayStateMatchesWindowShowState) {
   }
 }
 
+TEST_F(WebFrameWidgetSimTest, ResizableMatchesCanResize) {
+  base::test::ScopedFeatureList feature_list(
+      ScopedDesktopPWAsAdditionalWindowingControlsForTest);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+        <!doctype html>
+        <style>
+          body {
+            /* This should never activate. */
+            background-color: white;
+          }
+          @media (resizable: true) {
+            body {
+              background-color: yellow;
+            }
+          }
+          @media (resizable: false) {
+            body {
+              background-color: cyan;
+            }
+          }
+        </style>
+        <body></body>
+      )HTML");
+
+  auto* widget = WebView().MainFrameViewWidget();
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+
+  // resizable: true
+  // Default is set in /third_party/blink/renderer/core/frame/settings.json5.
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(Color::FromRGB(/*yellow*/ 255, 255, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+
+  // resizable: false
+  visual_properties.resizable = false;
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(Color::FromRGB(/*cyan*/ 0, 255, 255),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+}
+
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   base::test::ScopedFeatureList feature_list(
       features::kReportVisibleLineBounds);

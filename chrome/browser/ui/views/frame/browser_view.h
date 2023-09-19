@@ -990,6 +990,10 @@ class BrowserView : public BrowserWindow,
 
   void UpdateWindowControlsOverlayEnabled();
 
+  // Sends widget's `can_resize` to blink to update `resizable` CSS @media
+  // feature.
+  void UpdateResizable();
+
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
 

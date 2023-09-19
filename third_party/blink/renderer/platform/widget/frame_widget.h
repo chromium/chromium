@@ -118,6 +118,9 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the WindowShowState in use for the widget.
   virtual ui::WindowShowState WindowShowState() const = 0;
 
+  // Returns the CanResize value of the widget.
+  virtual bool Resizable() const = 0;
+
   // Returns the window segments for the widget.
   virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
 

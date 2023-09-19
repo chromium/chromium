@@ -237,6 +237,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       cc::EventListenerClass) const final;
   mojom::blink::DisplayMode DisplayMode() const override;
   ui::WindowShowState WindowShowState() const override;
+  bool Resizable() const override;
   const WebVector<gfx::Rect>& WindowSegments() const override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) final;
@@ -463,6 +464,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Sets the window show state.
   void SetWindowShowState(ui::WindowShowState);
+
+  void SetResizable(bool);
 
   absl::optional<gfx::Point> GetAndResetContextMenuLocation();
 
@@ -1027,6 +1030,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   mojom::blink::DisplayMode display_mode_;
   ui::WindowShowState window_show_state_;
+  bool resizable_;
 
   WebVector<gfx::Rect> window_segments_;
 

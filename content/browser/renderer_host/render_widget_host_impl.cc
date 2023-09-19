@@ -1078,15 +1078,14 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
     visual_properties.virtual_keyboard_resize_height_physical_px =
         delegate_->GetVirtualKeyboardResizeHeight();
     visual_properties.window_show_state = delegate_->GetWindowShowState();
+    visual_properties.resizable = delegate_->GetResizable();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
     visual_properties.window_show_state = ui::SHOW_STATE_DEFAULT;
-  }
 
-  // These properties come from the top-level main frame's renderer. The
-  // top-level main frame in the browser doesn't specify a value.
-  if (!is_top_most_widget) {
+    // These properties come from the top-level main frame's renderer. The
+    // top-level main frame in the browser doesn't specify a value.
     visual_properties.page_scale_factor =
         properties_from_parent_local_root_.page_scale_factor;
     visual_properties.is_pinch_gesture_active =
@@ -2866,6 +2865,7 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.display_mode ||
          old_visual_properties->window_show_state !=
              new_visual_properties.window_show_state ||
+         old_visual_properties->resizable != new_visual_properties.resizable ||
          old_visual_properties->browser_controls_params !=
              new_visual_properties.browser_controls_params ||
          old_visual_properties->visible_viewport_size !=

@@ -25,6 +25,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.auto_resize_enabled;
   }
 
+  static bool resizable(const blink::VisualProperties& r) {
+    return r.resizable;
+  }
+
   static const gfx::Size& min_size_for_auto_resize(
       const blink::VisualProperties& r) {
     return r.min_size_for_auto_resize;

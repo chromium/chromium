@@ -3895,6 +3895,28 @@ ui::WindowShowState WebContentsImpl::GetWindowShowState() {
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool WebContentsImpl::GetResizable() {
+  return resizable_;
+}
+#endif
+
+void WebContentsImpl::UpdateResizable(bool resizable) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return;
+#else
+  if (resizable_ == resizable) {
+    return;
+  }
+
+  resizable_ = resizable;
+  if (RenderWidgetHost* render_widget_host =
+          GetPrimaryMainFrame()->GetRenderWidgetHost()) {
+    render_widget_host->SynchronizeVisualProperties();
+  }
+#endif
+}
+
 void WebContentsImpl::FullscreenFrameSetUpdated() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::FullscreenFrameSetUpdated");

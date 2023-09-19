@@ -19,6 +19,9 @@ struct VisualProperties {
   // Whether or not blink should be in auto-resize mode.
   bool auto_resize_enabled = false;
 
+  // Whether or not the widget can be resized.
+  bool resizable = true;
+
   // The minimum size for Blink if auto-resize is enabled.
   gfx.mojom.Size min_size_for_auto_resize;
 

@@ -32,6 +32,7 @@ bool StructTraits<
     return false;
   }
   out->auto_resize_enabled = data.auto_resize_enabled();
+  out->resizable = data.resizable();
   out->scroll_focused_node_into_view = data.scroll_focused_node_into_view();
   out->is_fullscreen_granted = data.is_fullscreen_granted();
   out->display_mode = data.display_mode();

@@ -211,6 +211,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the window show state.
   virtual ui::WindowShowState GetWindowShowState();
 
+  // Returns whether the window can be resized or not. Defaults to true for
+  // desktopOSs and false for mobileOSs.
+  virtual bool GetResizable();
+
   // Returns the Window Control Overlay rectangle. Only applies to an
   // outermost main frame's widget. Other widgets always returns an empty rect.
   virtual gfx::Rect GetWindowsControlsOverlayRect() const;

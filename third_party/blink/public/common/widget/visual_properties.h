@@ -104,6 +104,8 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted = false;
 
+  bool resizable = true;
+
   // The display mode.
   mojom::DisplayMode display_mode = mojom::DisplayMode::kUndefined;
 

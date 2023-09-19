@@ -90,6 +90,14 @@ ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::WindowShowState::SHOW_STATE_DEFAULT;
 }
 
+bool RenderWidgetHostDelegate::GetResizable() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 gfx::Rect RenderWidgetHostDelegate::GetWindowsControlsOverlayRect() const {
   return gfx::Rect();
 }

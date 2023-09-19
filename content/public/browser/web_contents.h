@@ -1354,6 +1354,10 @@ class WebContents : public PageNavigator,
   // This sends the available title bar area bounds to the renderer process.
   virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
 
+  // Intermediate function sending widget's `can_resize` to blink to update
+  // `resizable` CSS @media feature.
+  virtual void UpdateResizable(bool resizable) = 0;
+
   // Returns the Window Control Overlay rectangle. Only applies to an
   // outermost main frame's widget. Other widgets always returns an empty rect.
   virtual gfx::Rect GetWindowsControlsOverlayRect() const = 0;

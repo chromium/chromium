@@ -1675,6 +1675,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
   SetDisplayMode(visual_properties.display_mode);
   SetWindowShowState(visual_properties.window_show_state);
+  SetResizable(visual_properties.resizable);
 
   if (ForMainFrame()) {
     SetAutoResizeMode(
@@ -1935,6 +1936,10 @@ mojom::blink::DisplayMode WebFrameWidgetImpl::DisplayMode() const {
 
 ui::WindowShowState WebFrameWidgetImpl::WindowShowState() const {
   return window_show_state_;
+}
+
+bool WebFrameWidgetImpl::Resizable() const {
+  return resizable_;
 }
 
 const WebVector<gfx::Rect>& WebFrameWidgetImpl::WindowSegments() const {
@@ -2716,6 +2721,17 @@ void WebFrameWidgetImpl::SetWindowShowState(ui::WindowShowState state) {
   }
 
   window_show_state_ = state;
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->MediaQueryAffectingValueChangedForLocalSubtree(
+      MediaValueChange::kOther);
+}
+
+void WebFrameWidgetImpl::SetResizable(bool resizable) {
+  if (resizable_ == resizable) {
+    return;
+  }
+
+  resizable_ = resizable;
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->MediaQueryAffectingValueChangedForLocalSubtree(
       MediaValueChange::kOther);
