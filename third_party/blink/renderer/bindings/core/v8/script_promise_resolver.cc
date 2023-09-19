@@ -50,9 +50,7 @@ ScriptPromiseResolver::ScriptPromiseResolver(
       state_(kPending),
       script_state_(script_state),
       resolver_(script_state),
-      exception_context_(exception_context),
-      class_like_name_(exception_context_.GetClassName()),
-      property_like_name_(exception_context_.GetPropertyName()) {
+      exception_context_(exception_context) {
   if (GetExecutionContext()->IsContextDestroyed()) {
     state_ = kDetached;
     resolver_.Clear();
@@ -146,15 +144,14 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
   probe::WillHandlePromise(GetExecutionContext(), script_state_,
-                           state_ == kResolving, class_like_name_,
-                           property_like_name_, script_url_);
-  {
-    if (state_ == kResolving) {
-      resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
-    } else {
-      DCHECK_EQ(state_, kRejecting);
-      resolver_.Reject(value_.Get(script_state_->GetIsolate()));
-    }
+                           state_ == kResolving,
+                           exception_context_.GetClassName(),
+                           exception_context_.GetPropertyName(), script_url_);
+  if (state_ == kResolving) {
+    resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
+  } else {
+    DCHECK_EQ(state_, kRejecting);
+    resolver_.Reject(value_.Get(script_state_->GetIsolate()));
   }
   Detach();
 }

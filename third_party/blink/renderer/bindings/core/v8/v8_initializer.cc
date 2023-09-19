@@ -642,8 +642,9 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
           script_state->GetContext(), v8::Local<v8::Module>(),
           v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  resolver->SetPropertyName("import");
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state,
+      ExceptionContext(ExceptionContext::Context::kUnknown, "", "import"));
   ScriptPromise promise = resolver->Promise();
 
   String invalid_attribute_key;

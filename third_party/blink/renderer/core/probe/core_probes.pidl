@@ -162,7 +162,7 @@ interface CoreProbes {
   void DocumentWriteFetchScript([Keep] Document*);
   void DidChangeViewport(LocalFrame* document);
   void BreakableLocation(ExecutionContext* context, const char* name);
-  void WillHandlePromise([Keep] ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like, const String& property_like, const String& script_url);
+  void WillHandlePromise([Keep] ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, const String& property_like_name, const String& script_url);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
   ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
