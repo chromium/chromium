@@ -24,7 +24,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                 'args': [
                     'webgl_conformance',
                 ],
-                'isolate_name': 'telemetry_gpu_integration_test',
+                'test': 'telemetry_gpu_integration_test',
             },
         ],
     }
@@ -52,7 +52,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                 'args': [
                     'webgl_conformance',
                 ],
-                'isolate_name': 'not_telemetry',
+                'test': 'not_telemetry',
             },
         ],
     }
@@ -80,7 +80,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                 'args': [
                     'not_a_suite',
                 ],
-                'isolate_name': 'telemetry_gpu_integration_test',
+                'test': 'telemetry_gpu_integration_test',
             },
         ],
     }
