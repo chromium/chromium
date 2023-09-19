@@ -25,7 +25,7 @@ class PrefetchResponseReader;
 class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
-  static base::WeakPtr<PrefetchStreamingURLLoader> Create(
+  static base::WeakPtr<PrefetchStreamingURLLoader> CreateAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const network::ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
@@ -37,7 +37,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       base::OnceClosure on_received_head_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader);
 
-  // Must be called only from `Create()`.
+  // Must be called only from `CreateAndStart()`.
   PrefetchStreamingURLLoader(
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
       OnPrefetchResponseCompletedCallback

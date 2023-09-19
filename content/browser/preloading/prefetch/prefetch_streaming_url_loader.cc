@@ -62,7 +62,8 @@ void PrefetchStreamingURLLoader::Start(
 PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() = default;
 
 // static
-base::WeakPtr<PrefetchStreamingURLLoader> PrefetchStreamingURLLoader::Create(
+base::WeakPtr<PrefetchStreamingURLLoader>
+PrefetchStreamingURLLoader::CreateAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,

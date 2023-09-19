@@ -1118,7 +1118,7 @@ void PrefetchService::SendPrefetchRequest(
             policy_exception_justification: "Not implemented."
         })");
 
-  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+  auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
       GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
       *prefetch_container->GetResourceRequest(), traffic_annotation,
       PrefetchTimeoutDuration(),
