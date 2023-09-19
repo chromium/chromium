@@ -177,4 +177,45 @@ void LoginDatabase::DeleteKeychainItemByPrimaryId(int id) {
   DeleteEncryptedPasswordFromKeychain(keychain_identifier);
 }
 
+OSStatus GetAllPasswordsFromKeychain(
+    std::unordered_map<std::string, std::u16string>* key_password_pairs) {
+  CHECK(key_password_pairs);
+  ScopedCFTypeRef<CFMutableDictionaryRef> query(
+      CFDictionaryCreateMutable(NULL, 4, &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
+  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
+  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query, kSecAttrAccessible,
+                       kSecAttrAccessibleWhenUnlocked);
+  CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue);
+
+  ScopedCFTypeRef<CFTypeRef> result;
+  OSStatus status = SecItemCopyMatching(query, result.InitializeInto());
+  if (status != errSecSuccess) {
+    return status;
+  }
+  CFArrayRef results = base::apple::CFCast<CFArrayRef>(result);
+  const CFIndex count = CFArrayGetCount(results);
+  for (CFIndex i = 0; i < count; ++i) {
+    CFDictionaryRef dict = base::apple::CFCast<CFDictionaryRef>(
+        CFArrayGetValueAtIndex(results, i));
+    std::string key = base::SysCFStringRefToUTF8(
+        base::apple::GetValueFromDictionary<CFStringRef>(dict,
+                                                         kSecAttrAccount));
+
+    if (CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
+            dict, kSecValueData)) {
+      const size_t size = CFDataGetLength(data);
+      std::vector<UInt8> buffer(size);
+      CFDataGetBytes(data, CFRangeMake(0, size), buffer.data());
+
+      std::u16string plain_text = base::UTF8ToUTF16(std::string_view(
+          static_cast<char*>(static_cast<void*>(buffer.data())), size));
+      key_password_pairs->emplace(key, std::move(plain_text));
+    }
+  }
+  return errSecSuccess;
+}
+
 }  // namespace password_manager

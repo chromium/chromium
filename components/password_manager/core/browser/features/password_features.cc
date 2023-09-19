@@ -61,6 +61,13 @@ BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// Enables migration to OSCrypt with a single query to the keychain.
+BASE_FEATURE(kOneReadLoginDatabaseMigration,
+             "OneReadLoginDatabaseMigration",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 // Enables the notification UI that is displayed to the user when visiting a
 // website for which a stored password has been shared by another user.
 BASE_FEATURE(kSharedPasswordNotificationUI,
