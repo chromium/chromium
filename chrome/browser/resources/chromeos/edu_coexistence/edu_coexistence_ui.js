@@ -102,6 +102,11 @@ class EduCoexistenceUi extends EduCoexistenceUiBase {
         });
   }
 
+  /** @param {WebView} webview */
+  setWebviewForTest(webview) {
+    this.webview_ = webview;
+  }
+
   /** @private */
   showError_() {
     this.dispatchEvent(new CustomEvent('go-error', {

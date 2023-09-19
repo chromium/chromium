@@ -161,7 +161,7 @@ export class EduCoexistenceController extends PostMessageApiServer {
         'getEduAccountEmail', this.getEduAccountEmail_.bind(this));
     this.registerMethod(
         'getTimeDeltaSinceSigninSeconds',
-        this.getTimeDeltaSinceSigninSeconds_.bind(this));
+        this.getTimeDeltaSinceSigninSeconds.bind(this));
 
     // Add listeners for Authenticator.
     this.addAuthExtHostListeners_();
@@ -297,11 +297,11 @@ export class EduCoexistenceController extends PostMessageApiServer {
   }
 
   /**
-   * @private
+   * Made public for testing purposes.
    * @return {number} Returns the number of seconds that have elapsed since
    * the user's initial signin.
    */
-  getTimeDeltaSinceSigninSeconds_() {
+  getTimeDeltaSinceSigninSeconds() {
     return (Date.now() - this.signinTime_) / MILLISECONDS_PER_SECOND;
   }
 }

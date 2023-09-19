@@ -22,8 +22,9 @@ edu_coexistence_ui_tests.TestNames = {
 };
 
 suite(edu_coexistence_ui_tests.suiteName, function() {
-  let appComponent;
+  let coexistenceUi;
   let testBrowserProxy;
+  let webview;
   setup(function() {
     testBrowserProxy = new TestEduCoexistenceBrowserProxy();
     EduCoexistenceBrowserProxyImpl.setInstance(testBrowserProxy);
@@ -43,13 +44,14 @@ suite(edu_coexistence_ui_tests.suiteName, function() {
 
 
     document.body.innerHTML = window.trustedTypes.emptyHTML;
-    appComponent = document.createElement('edu-coexistence-ui');
-    document.body.appendChild(appComponent);
+    coexistenceUi = document.createElement('edu-coexistence-ui');
+    document.body.appendChild(coexistenceUi);
     // The webview needs to be set explicitly in for the test because
     // the component itself doesn't initialize the webview until
     // too late.  This is OK because we just need a webview in there
     // to access the back() and focus() methods.
-    appComponent.webview_ = document.createElement('webview');
+    webview = document.createElement('webview');
+    coexistenceUi.setWebviewForTest(webview);
     flush();
   });
 
@@ -59,17 +61,18 @@ suite(edu_coexistence_ui_tests.suiteName, function() {
       function() {
         // Fake out the relevant webview methods.
         let backCalled = false;
-        appComponent.webview_.back = (success) => {
+        webview.back = (success) => {
           backCalled = true;
         };
 
-        const backButton = appComponent.root.getElementById('gaia-back-button');
+        const backButton =
+            coexistenceUi.shadowRoot.querySelector('#gaia-back-button');
         // Simulate being on the Gaia signin page by enabling the
         // Gaia back button
         backButton.disabled = false;
 
         // Call the back button action.
-        appComponent.handleGaiaLoginGoBack_(new Event('click'));
+        backButton.dispatchEvent(new CustomEvent('go-back'));
 
         // Should have called webview_.back() and disabled the button.
         assertTrue(backCalled);
@@ -79,8 +82,8 @@ suite(edu_coexistence_ui_tests.suiteName, function() {
         backCalled = false;
 
         // Simulate a rapid double-click by immediately calling
-        // the actiona gain.
-        appComponent.handleGaiaLoginGoBack_(new Event('click'));
+        // the action again.
+        backButton.dispatchEvent(new CustomEvent('go-back'));
 
         // The webview_.back() method should not be called again.
         assertFalse(backCalled);

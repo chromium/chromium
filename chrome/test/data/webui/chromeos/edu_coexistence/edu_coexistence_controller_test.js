@@ -66,7 +66,7 @@ suite(edu_coexistence_controller_tests.suiteName, function() {
         const expectedDeltaSeconds =
             (FAKE_NOW_MILLISECONDS - FAKE_SIGNIN_TIME_MILLISECONDS) / 1000;
         assertEquals(
-            eduCoexistenceController.getTimeDeltaSinceSigninSeconds_(),
+            eduCoexistenceController.getTimeDeltaSinceSigninSeconds(),
             expectedDeltaSeconds);
 
         // Restore original Date.now()

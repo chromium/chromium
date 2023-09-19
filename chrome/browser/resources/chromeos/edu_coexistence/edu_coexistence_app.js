@@ -68,13 +68,13 @@ class EduCoexistenceApp extends EduCoexistenceAppBase {
         },
         readOnly: true,
       },
-
-      /**
-       * Specifies what the current screen is.
-       * @private
-       */
-      currentScreen_: {type: String},
     };
+  }
+
+  constructor() {
+    super();
+    /** @type {?Screens} */
+    this.currentScreen_ = null;
   }
 
   /** @override */
@@ -102,6 +102,11 @@ class EduCoexistenceApp extends EduCoexistenceAppBase {
       }
     });
     this.setInitialScreen_(navigator.onLine);
+  }
+
+  /** @return {?Screens} */
+  getCurrentScreenForTest() {
+    return this.currentScreen_;
   }
 
   /**

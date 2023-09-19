@@ -83,13 +83,13 @@ suite(edu_coexistence_app_tests.suiteName, function() {
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.InitOnline), function() {
-    appComponent.setInitialScreen_(true /** online **/);
-    assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+    window.dispatchEvent(new Event('online'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.InitOffline), function() {
-    appComponent.setInitialScreen_(false /** online **/);
-    assertEquals(appComponent.currentScreen_, Screens.OFFLINE);
+    window.dispatchEvent(new Event('offline'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.OFFLINE);
 
     const offlineScreen =
         appComponent.shadowRoot.querySelector('edu-coexistence-offline');
@@ -102,27 +102,27 @@ suite(edu_coexistence_app_tests.suiteName, function() {
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.ShowOffline), function() {
-    appComponent.setInitialScreen_(true /** online **/);
-    assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+    window.dispatchEvent(new Event('online'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
 
     window.dispatchEvent(new Event('offline'));
-    assertEquals(appComponent.currentScreen_, Screens.OFFLINE);
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.OFFLINE);
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.ShowOnline), function() {
-    appComponent.setInitialScreen_(false /** online **/);
-    assertEquals(appComponent.currentScreen_, Screens.OFFLINE);
+    window.dispatchEvent(new Event('offline'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.OFFLINE);
 
     window.dispatchEvent(new Event('online'));
-    assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.ShowError), function() {
-    appComponent.setInitialScreen_(true /** online **/);
-    assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+    window.dispatchEvent(new Event('online'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
 
-    appComponent.fire('go-error');
-    assertEquals(appComponent.currentScreen_, Screens.ERROR);
+    appComponent.dispatchEvent(new CustomEvent('go-error'));
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
 
     const errorScreen =
         appComponent.shadowRoot.querySelector('edu-coexistence-error');
@@ -140,18 +140,21 @@ suite(edu_coexistence_app_tests.suiteName, function() {
         setupWithParams(
             {isAvailableInArc: true, showArcAvailabilityPicker: true});
         const switchViewPromise = waitForSwitchViewPromise();
-        appComponent.setInitialScreen_(true /** online **/);
+        window.dispatchEvent(new Event('online'));
         await switchViewPromise;
-        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ARC_ACCOUNT_PICKER);
 
         window.dispatchEvent(new Event('offline'));
-        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ARC_ACCOUNT_PICKER);
 
         window.dispatchEvent(new Event('online'));
-        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ARC_ACCOUNT_PICKER);
 
-        appComponent.fire('go-error');
-        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+        appComponent.dispatchEvent(new CustomEvent('go-error'));
+        assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
       });
 
   test(
@@ -160,43 +163,49 @@ suite(edu_coexistence_app_tests.suiteName, function() {
         setupWithParams(
             {isAvailableInArc: true, showArcAvailabilityPicker: true});
         const switchViewPromise = waitForSwitchViewPromise();
-        appComponent.setInitialScreen_(true /** online **/);
+        window.dispatchEvent(new Event('online'));
         await switchViewPromise;
-        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ARC_ACCOUNT_PICKER);
 
         const arcAccountPickerComponent =
             /** @type {ArcAccountPickerAppElement} */ (
-                appComponent.$$('arc-account-picker-app'));
+                appComponent.shadowRoot.querySelector(
+                    'arc-account-picker-app'));
         arcAccountPickerComponent.shadowRoot.querySelector('#addAccountButton')
             .click();
-        assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
       });
 
   test(
       assert(
           edu_coexistence_app_tests.TestNames.DontSwitchViewIfDisplayingError),
       function() {
-        appComponent.fire('go-error');
-        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+        appComponent.dispatchEvent(new CustomEvent('go-error'));
+        assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
 
         window.dispatchEvent(new Event('offline'));
         // Should still show error screen.
-        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+        assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
 
         window.dispatchEvent(new Event('online'));
         // Should still show error screen.
-        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+        assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
       });
 
   test(
       assert(edu_coexistence_app_tests.TestNames
                  .ShowErrorScreenImmediatelyOnLoadAbort),
       function() {
-        assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
-        appComponent.$$('edu-coexistence-ui')
-            .webview_.dispatchEvent(new Event('loadabort'));
+        assertEquals(
+            appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
+        const coexistenceUi =
+            appComponent.shadowRoot.querySelector('edu-coexistence-ui');
+        coexistenceUi.shadowRoot.querySelector('webview').dispatchEvent(
+            new CustomEvent('loadabort'));
 
         // Should show error screen.
-        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+        assertEquals(appComponent.getCurrentScreenForTest(), Screens.ERROR);
       });
 });
