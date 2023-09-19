@@ -38,23 +38,8 @@ class Invoker(invoker.Base):
             'notarization tool and are intended to specify authentication '
             'parameters.')
 
-        # Legacy arguments that will be removed in the future.
-        legacy_help = ('This argument is deprecated. '
-                       'Please use --notary-arg instead.')
-        parser.add_argument('--notary-user', help=legacy_help)
-        parser.add_argument('--notary-password', help=legacy_help)
-        parser.add_argument('--notary-team-id', help=legacy_help)
-
     def __init__(self, args, config):
         self._notary_args = args.notary_arg
-
-        if any([
-                getattr(args, arg, None)
-                for arg in ('notary_user', 'notary_password', 'notary_team_id')
-        ]):
-            logger.warning(
-                'Explicit notarization authentication arguments are deprecated. Use --notary-arg instead.'
-            )
 
     @property
     def notary_args(self):
