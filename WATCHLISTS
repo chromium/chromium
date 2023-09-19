@@ -911,6 +911,10 @@
                   '|chrome/browser/ash/policy/status_collector/'\
                   '|components/policy/proto/record',
     },
+    'crosapi': {
+      'filepath': 'chromeos/crosapi/'\
+                  '|chrome/browser/ash/crosapi/',
+    },
     'crosapi_mojom': {
       'filepath': 'chromeos/crosapi/mojom/crosapi.mojom',
     },
@@ -2682,6 +2686,7 @@
               'wry+watch-creator@chromium.org',],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
+    'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
     'crosapi_mojom': ['elkurin+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
