@@ -496,6 +496,7 @@
     {
       name: "BlinkExtensionDiagnostics",
       depends_on: ["BlinkExtensionChromeOS"],
+      browser_process_read_write_access: true,
       base_feature: "none",
       // TODO(b/294479032): Remove when access control is implemented.
       public: true,
