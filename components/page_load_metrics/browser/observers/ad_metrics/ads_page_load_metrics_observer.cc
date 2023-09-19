@@ -131,7 +131,7 @@ const char kDisallowedByBlocklistHistogramName[] =
     "PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist";
 
 void RecordHeavyAdInterventionDisallowedByBlocklist(bool disallowed) {
-  UMA_HISTOGRAM_BOOLEAN(kDisallowedByBlocklistHistogramName, disallowed);
+  base::UmaHistogramBoolean(kDisallowedByBlocklistHistogramName, disallowed);
 }
 
 using ResourceMimeType = AdsPageLoadMetricsObserver::ResourceMimeType;
@@ -978,12 +978,13 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
                 aggregate_frame_data_->total_cpu_usage() -
                     aggregate_frame_data_->total_ad_cpu_usage());
   ADS_HISTOGRAM("Cpu.NonAdFrames.Aggregate.PeakWindowedPercent2",
-                UMA_HISTOGRAM_PERCENTAGE, visibility,
+                base::UmaHistogramPercentage, visibility,
                 aggregate_frame_data_->peak_windowed_non_ad_cpu_percent());
   ADS_HISTOGRAM("Cpu.FullPage.TotalUsage2", PAGE_LOAD_HISTOGRAM, visibility,
                 aggregate_frame_data_->total_cpu_usage());
-  ADS_HISTOGRAM("Cpu.FullPage.PeakWindowedPercent2", UMA_HISTOGRAM_PERCENTAGE,
-                visibility, aggregate_frame_data_->peak_windowed_cpu_percent());
+  ADS_HISTOGRAM("Cpu.FullPage.PeakWindowedPercent2",
+                base::UmaHistogramPercentage, visibility,
+                aggregate_frame_data_->peak_windowed_cpu_percent());
 }
 
 void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
@@ -996,18 +997,18 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   const auto& visibility_data =
       aggregate_frame_data_->get_ad_data_by_visibility(visibility);
 
-  ADS_HISTOGRAM("FrameCounts.AdFrames.Total", UMA_HISTOGRAM_COUNTS_1000,
+  ADS_HISTOGRAM("FrameCounts.AdFrames.Total", base::UmaHistogramCounts1000,
                 visibility, visibility_data.frames);
 
   // Only record AllPages histograms for the AnyVisibility suffix as these
   // numbers do not change for different visibility types.
   if (visibility == FrameVisibility::kAnyVisibility) {
-    ADS_HISTOGRAM("AllPages.PercentTotalBytesAds", UMA_HISTOGRAM_PERCENTAGE,
+    ADS_HISTOGRAM("AllPages.PercentTotalBytesAds", base::UmaHistogramPercentage,
                   visibility,
                   resource_data.ad_bytes() * 100 / resource_data.bytes());
     if (resource_data.network_bytes()) {
-      ADS_HISTOGRAM("AllPages.PercentNetworkBytesAds", UMA_HISTOGRAM_PERCENTAGE,
-                    visibility,
+      ADS_HISTOGRAM("AllPages.PercentNetworkBytesAds",
+                    base::UmaHistogramPercentage, visibility,
                     resource_data.ad_network_bytes() * 100 /
                         resource_data.network_bytes());
     }
@@ -1030,12 +1031,12 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
 
   if (resource_data.bytes()) {
     ADS_HISTOGRAM("Bytes.FullPage.Total2.PercentAdFrames",
-                  UMA_HISTOGRAM_PERCENTAGE, visibility,
+                  base::UmaHistogramPercentage, visibility,
                   visibility_data.bytes * 100 / resource_data.bytes());
   }
   if (resource_data.network_bytes()) {
     ADS_HISTOGRAM(
-        "Bytes.FullPage.Network.PercentAdFrames", UMA_HISTOGRAM_PERCENTAGE,
+        "Bytes.FullPage.Network.PercentAdFrames", base::UmaHistogramPercentage,
         visibility,
         visibility_data.network_bytes * 100 / resource_data.network_bytes());
   }
@@ -1064,8 +1065,8 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
     PAGE_BYTES_HISTOGRAM(
         "PageLoad.Clients.Ads.Memory.MainFrame.Max",
         aggregate_frame_data_->outermost_main_frame_max_memory());
-    UMA_HISTOGRAM_COUNTS_10000("PageLoad.Clients.Ads.Memory.UpdateCount",
-                               memory_update_count_);
+    base::UmaHistogramCounts10000("PageLoad.Clients.Ads.Memory.UpdateCount",
+                                  memory_update_count_);
   }
 }
 
@@ -1095,7 +1096,7 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForCpuUsage(
     // Report the peak windowed usage, which is independent of activation status
     // (measured only for the unactivated period).
     ADS_HISTOGRAM("Cpu.AdFrames.PerFrame.PeakWindowedPercent2",
-                  UMA_HISTOGRAM_PERCENTAGE, visibility,
+                  base::UmaHistogramPercentage, visibility,
                   ad_frame_data.peak_windowed_cpu_percent());
 
     if (ad_frame_data.user_activation_status() ==
@@ -1143,20 +1144,20 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, resource_data.network_bytes());
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.OriginStatus",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.origin_status());
 
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.CreativeOriginStatus",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.creative_origin_status());
 
     ADS_HISTOGRAM(
         "FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling",
-        UMA_HISTOGRAM_ENUMERATION, visibility,
+        base::UmaHistogramEnumeration, visibility,
         ad_frame_data.GetCreativeOriginStatusWithThrottling());
 
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.UserActivation",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.user_activation_status());
 
     if (auto first_contentful_paint =
@@ -1177,7 +1178,7 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
   for (const auto visibility :
        {FrameVisibility::kAnyVisibility, ad_frame_data.visibility()}) {
     ADS_HISTOGRAM("HeavyAds.ComputedTypeWithThresholdNoise",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.heavy_ad_status_with_noise());
   }
 }
@@ -1344,10 +1345,10 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, blink::mojom::WebFeature::kHeavyAdIntervention);
 
-  ADS_HISTOGRAM("HeavyAds.InterventionType2", UMA_HISTOGRAM_ENUMERATION,
+  ADS_HISTOGRAM("HeavyAds.InterventionType2", base::UmaHistogramEnumeration,
                 FrameVisibility::kAnyVisibility,
                 frame_data->heavy_ad_status_with_policy());
-  ADS_HISTOGRAM("HeavyAds.InterventionType2", UMA_HISTOGRAM_ENUMERATION,
+  ADS_HISTOGRAM("HeavyAds.InterventionType2", base::UmaHistogramEnumeration,
                 frame_data->visibility(),
                 frame_data->heavy_ad_status_with_policy());
 

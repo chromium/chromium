@@ -279,7 +279,7 @@ void BackForwardCachePageLoadMetricsObserver::
   if (page_load_metrics::
           WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
               first_input_delay, GetDelegate(), index)) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore,
         *first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
 
@@ -445,11 +445,11 @@ void BackForwardCachePageLoadMetricsObserver::
       restored_layout_shift_score_.value();
   DCHECK_GE(layout_shift_score, 0);
 
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       internal::
           kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore,
       page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       internal::kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore,
       page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
 
@@ -486,10 +486,10 @@ void BackForwardCachePageLoadMetricsObserver::
 
   if (base::FeatureList::IsEnabled(
           internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-    UMA_HISTOGRAM_COUNTS_100(
+    base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
         page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
-    UMA_HISTOGRAM_COUNTS_100(
+    base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.CumulativeShiftScore",
         page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
   }

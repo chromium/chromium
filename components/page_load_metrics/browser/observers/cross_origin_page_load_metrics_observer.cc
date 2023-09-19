@@ -96,11 +96,11 @@ void CrossOriginPageLoadMetricsObserver::RecordTimingHistograms() {
                         largest_contentful_paint.Time().value());
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       kHistogramCrossOriginCumulativeLayoutShiftScore,
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetPageRenderData().layout_shift_score));
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       kHistogramCrossOriginCumulativeLayoutShiftMainFrame,
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));

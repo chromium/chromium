@@ -538,13 +538,13 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
               .InMilliseconds());
 
       if (current_main_frame_nav_info_->is_same_document_navigation) {
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+        base::UmaHistogramCustomTimes(
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelay),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
             base::Milliseconds(1), base::Seconds(60), 50);
       } else {
-        UMA_HISTOGRAM_CUSTOM_TIMES(
+        base::UmaHistogramCustomTimes(
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelayFullNavigation),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
