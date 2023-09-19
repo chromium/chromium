@@ -148,8 +148,7 @@ void HTMLPortalElement::ActivateDefault() {
   data.message = SerializedScriptValue::UndefinedValue();
   data.message->UnregisterMemoryAllocatedWithCurrentScriptContext();
   data.sender_origin = context->GetSecurityOrigin()->IsolatedCopy();
-  if (ThreadDebugger* debugger =
-          ThreadDebugger::From(V8PerIsolateData::MainThreadIsolate())) {
+  if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate())) {
     data.sender_stack_trace_id =
         debugger->StoreCurrentStackTrace("activate (implicit)");
   }

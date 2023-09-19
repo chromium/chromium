@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 namespace blink {
 
@@ -37,9 +36,10 @@ PortalActivateEvent* PortalActivateEvent::Create(
 }
 
 PortalActivateEvent* PortalActivateEvent::Create(
+    v8::Isolate* isolate,
     const AtomicString& type,
     const PortalActivateEventInit* init) {
-  return MakeGarbageCollected<PortalActivateEvent>(type, init);
+  return MakeGarbageCollected<PortalActivateEvent>(isolate, type, init);
 }
 
 PortalActivateEvent::PortalActivateEvent(
@@ -64,12 +64,12 @@ PortalActivateEvent::PortalActivateEvent(
       ports_(ports),
       on_portal_activated_callback_(std::move(callback)) {}
 
-PortalActivateEvent::PortalActivateEvent(const AtomicString& type,
+PortalActivateEvent::PortalActivateEvent(v8::Isolate* isolate,
+                                         const AtomicString& type,
                                          const PortalActivateEventInit* init)
     : Event(type, init) {
   if (init->hasData()) {
-    data_from_init_.Set(V8PerIsolateData::MainThreadIsolate(),
-                        init->data().V8Value());
+    data_from_init_.Set(isolate, init->data().V8Value());
   }
 
   // Remaining fields, such as |document_|, are left null.

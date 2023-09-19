@@ -7,7 +7,7 @@
 [
  Exposed=Window, RuntimeEnabled=Portals
 ] interface PortalActivateEvent : Event {
-  constructor(DOMString type, optional PortalActivateEventInit eventInitDict = {});
+  [CallWith=Isolate] constructor(DOMString type, optional PortalActivateEventInit eventInitDict = {});
   [CallWith=ScriptState, Measure] readonly attribute any data;
   [RaisesException, Measure] HTMLPortalElement adoptPredecessor();
 };

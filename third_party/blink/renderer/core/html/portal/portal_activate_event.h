@@ -49,7 +49,8 @@ class CORE_EXPORT PortalActivateEvent : public Event {
       OnPortalActivatedCallback callback);
 
   // Web-exposed and called directly by authors.
-  static PortalActivateEvent* Create(const AtomicString& type,
+  static PortalActivateEvent* Create(v8::Isolate* isolate,
+                                     const AtomicString& type,
                                      const PortalActivateEventInit*);
 
   PortalActivateEvent(
@@ -61,7 +62,9 @@ class CORE_EXPORT PortalActivateEvent : public Event {
       UnpackedSerializedScriptValue* data,
       MessagePortArray*,
       OnPortalActivatedCallback callback);
-  PortalActivateEvent(const AtomicString& type, const PortalActivateEventInit*);
+  PortalActivateEvent(v8::Isolate* isolate,
+                      const AtomicString& type,
+                      const PortalActivateEventInit*);
 
   ~PortalActivateEvent() override;
 
