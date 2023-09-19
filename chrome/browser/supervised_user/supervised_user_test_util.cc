@@ -58,4 +58,25 @@ void PopulateAccountInfoWithName(AccountInfo& info,
   CHECK(info.IsValid());
 }
 
+void SetManualFilterForHost(Profile* profile,
+                            const std::string& host,
+                            bool allowlist) {
+  supervised_user::SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+
+  const base::Value::Dict& local_settings =
+      settings_service->LocalSettingsForTest();
+  base::Value::Dict dict_to_insert;
+
+  if (const base::Value::Dict* dict_value = local_settings.FindDict(
+          supervised_user::kContentPackManualBehaviorHosts)) {
+    dict_to_insert = dict_value->Clone();
+  }
+
+  dict_to_insert.Set(host, allowlist);
+  settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts,
+      std::move(dict_to_insert));
+}
+
 }  // namespace supervised_user_test_util

@@ -26,6 +26,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -214,11 +215,14 @@ class SupervisedUserNavigationThrottleTest
   void SetUpOnMainThread() override;
 
   void BlockHost(const std::string& host) {
-    SetManualFilterForHost(host, /* allowlist */ false);
+    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+                                                      host,
+                                                      /* allowlist */ false);
   }
 
   void AllowlistHost(const std::string& host) {
-    SetManualFilterForHost(host, /* allowlist */ true);
+    supervised_user_test_util::SetManualFilterForHost(
+        browser()->profile(), host, /* allowlist */ true);
   }
 
   bool IsInterstitialBeingShownInMainFrame(Browser* browser);
@@ -236,27 +240,6 @@ class SupervisedUserNavigationThrottleTest
   }
 
  private:
-  void SetManualFilterForHost(const std::string& host, bool allowlist) {
-    Profile* profile = browser()->profile();
-    supervised_user::SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForKey(
-            profile->GetProfileKey());
-
-    const base::Value::Dict& local_settings =
-        settings_service->LocalSettingsForTest();
-    base::Value::Dict dict_to_insert;
-
-    if (const base::Value::Dict* dict_value = local_settings.FindDict(
-            supervised_user::kContentPackManualBehaviorHosts)) {
-      dict_to_insert = dict_value->Clone();
-    }
-
-    dict_to_insert.Set(host, allowlist);
-    settings_service->SetLocalSetting(
-        supervised_user::kContentPackManualBehaviorHosts,
-        std::move(dict_to_insert));
-  }
-
   std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
   content::test::PrerenderTestHelper prerender_helper_;
 };

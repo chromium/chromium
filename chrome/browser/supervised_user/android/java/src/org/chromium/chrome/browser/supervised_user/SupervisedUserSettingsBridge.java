@@ -19,8 +19,14 @@ class SupervisedUserSettingsBridge {
         SupervisedUserSettingsBridgeJni.get().setFilteringBehavior(profile, setting);
     }
 
+    /** Adds the given host to the manuel allowlist or denylist*/
+    static void setManualFilterForHost(Profile profile, String host, boolean allowlist) {
+        SupervisedUserSettingsBridgeJni.get().setManualFilterForHost(profile, host, allowlist);
+    }
+
     @NativeMethods
     interface Natives {
         void setFilteringBehavior(Profile profile, int setting);
+        void setManualFilterForHost(Profile profile, String host, boolean allowlist);
     }
 }
