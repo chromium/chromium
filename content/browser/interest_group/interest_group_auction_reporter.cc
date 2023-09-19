@@ -934,13 +934,6 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
     interest_group_manager_->RecordInterestGroupWin(
         blink::InterestGroupKey(winning_group.owner, winning_group.name),
         winning_bid_info_.ad_metadata);
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::kWin,
-        winning_group.owner, winning_group.name);
-  } else {
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::kAdditionalBidWin,
-        winning_group.owner, winning_group.name);
   }
 
   interest_group_manager_->RegisterAdKeysAsJoined(

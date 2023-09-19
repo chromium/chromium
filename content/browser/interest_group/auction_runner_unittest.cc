@@ -4752,24 +4752,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
           ElementsAreRequests(
               BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/23),
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/43)))));
-
   // Bid count should only be incremented by 1.
-  base::RunLoop run_loop;
-  interest_group_manager_->GetInterestGroup(
-      kBidder1Key,
-      base::BindLambdaForTesting(
-          [&](absl::optional<StorageInterestGroup> interest_group) {
-            ASSERT_TRUE(interest_group);
-            // MakeInterestGroup() set `bid_count` to 5, so it should be 6
-            // (not 7).
-            EXPECT_EQ(6, interest_group->bidding_browser_signals->bid_count);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
-  // Both uses should get reported to the observer, however.
   EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key, kBidder1Key));
+              testing::UnorderedElementsAre(kBidder1Key));
   EXPECT_EQ(R"({"renderURL":"https://component2-bid.test/"})",
             result_.winning_group_ad_metadata);
   // Currently an interest group participating twice in an auction is counted

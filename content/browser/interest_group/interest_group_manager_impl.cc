@@ -249,6 +249,10 @@ void InterestGroupManagerImpl::RecordInterestGroupBids(
   if (group_keys.empty()) {
     return;
   }
+  for (const auto& group_key : group_keys) {
+    NotifyInterestGroupAccessed(InterestGroupObserver::kBid, group_key.owner,
+                                group_key.name);
+  }
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupBids)
       .WithArgs(group_keys);
 }
@@ -256,6 +260,8 @@ void InterestGroupManagerImpl::RecordInterestGroupBids(
 void InterestGroupManagerImpl::RecordInterestGroupWin(
     const blink::InterestGroupKey& group_key,
     const std::string& ad_json) {
+  NotifyInterestGroupAccessed(InterestGroupObserver::kWin, group_key.owner,
+                              group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupWin)
       .WithArgs(group_key, std::move(ad_json));
 }

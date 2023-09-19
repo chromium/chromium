@@ -976,10 +976,6 @@ class InterestGroupAuction::BuyerHelper
       if (bid_state->made_bid) {
         interest_groups.emplace(bid_state->bidder->interest_group.owner,
                                 bid_state->bidder->interest_group.name);
-        auction_->interest_group_manager_->NotifyInterestGroupAccessed(
-            InterestGroupManagerImpl::InterestGroupObserver::kBid,
-            bid_state->bidder->interest_group.owner,
-            bid_state->bidder->interest_group.name);
         bid_count++;
       }
     }
@@ -2650,12 +2646,6 @@ void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
   if (saved_response_) {
     interest_groups.insert(saved_response_->bidding_groups.begin(),
                            saved_response_->bidding_groups.end());
-    for (const auto& ig_bid : interest_groups) {
-      interest_group_manager_->NotifyInterestGroupAccessed(
-          InterestGroupManagerImpl::InterestGroupObserver::
-              InterestGroupObserver::kBid,
-          ig_bid.owner, ig_bid.name);
-    }
     return;
   }
 
@@ -2663,16 +2653,13 @@ void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
     buyer_helper->GetInterestGroupsThatBidAndReportBidCounts(interest_groups);
   }
 
-  // Notify devtools of additional bids. These don't go into `interest_groups`,
-  // that's only things in the database.
-  for (const auto& bid_state : bid_states_for_additional_bids_) {
-    DCHECK(bid_state->made_bid);
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::InterestGroupObserver::
-            kAdditionalBid,
-        bid_state->bidder->interest_group.owner,
-        bid_state->bidder->interest_group.name);
-  }
+  // TODO(http://crbug.com/1464874, https://crbug.com/1475640): Report
+  // additional bids to devtools as well, similar to what
+  // BuyerHelper::GetInterestGroupsThatBidAndReportBidCounts does for things
+  // from interest groups. Likely will need to untangle
+  // InterestGroupManagerImpl::RecordInterestGroupBids doing both DB recording
+  // and debugging notification (and reporting is the wrong time for the debug
+  // info, too).
 
   // Retrieve data from component auctions as well.
   for (const auto& component_auction_info : component_auctions_) {
