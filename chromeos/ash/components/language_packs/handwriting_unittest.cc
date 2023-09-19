@@ -376,6 +376,38 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<HandwritingLocaleToDlcTest::ParamType>&
            info) { return info.param.test_name; });
 
+struct DlcToHandwritingLocaleTestCase {
+  std::string test_name;
+  std::string_view dlc_id;
+  absl::optional<std::string> expected;
+};
+
+class DlcToHandwritingLocaleTest
+    : public HandwritingTest,
+      public testing::WithParamInterface<DlcToHandwritingLocaleTestCase> {};
+
+TEST_P(DlcToHandwritingLocaleTest, Test) {
+  const DlcToHandwritingLocaleTestCase& test_case = GetParam();
+
+  EXPECT_EQ(DlcToHandwritingLocale(test_case.dlc_id), test_case.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    DlcToHandwritingLocaleTests,
+    DlcToHandwritingLocaleTest,
+    testing::ValuesIn<DlcToHandwritingLocaleTestCase>(
+        {{"InvalidEmpty", "", absl::nullopt},
+         {"InvalidEn", "handwriting-en", absl::nullopt},
+         {"InvalidCy", "handwriting-cy", absl::nullopt},
+         {"InvalidDeDe", "handwriting-de-DE", absl::nullopt},
+         {"InvalidTypoDe", "handwritting-de", absl::nullopt},
+         {"InvalidTtsEnUs", "tts-en-us", absl::nullopt},
+         {"InvalidDeWithoutPrefix", "de", absl::nullopt},
+         {"ValidDe", "handwriting-de", "de"},
+         {"ValidZhHk", "handwriting-zh-HK", "zh-HK"}}),
+    [](const testing::TestParamInfo<DlcToHandwritingLocaleTest::ParamType>&
+           info) { return info.param.test_name; });
+
 struct IsHandwritingDlcTestCase {
   std::string test_name;
   std::string_view dlc_id;

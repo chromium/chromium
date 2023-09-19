@@ -61,6 +61,10 @@ absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
 // one using `ResolveLocale`.
 absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
 
+// Given a DLC ID, returns the handwriting recognition locale for it if it
+// exists.
+absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id);
+
 // Given a DLC ID, returns whether it is a DLC for handwriting recognition.
 // Intended to be used to filter a list of DLCs that a user has installed to
 // only the relevant handwriting recognition ones.

@@ -69,12 +69,11 @@ absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
   return GetDlcIdForLanguagePack(kHandwritingFeatureId, std::string(locale));
 }
 
-bool IsHandwritingDlc(std::string_view dlc_id) {
-  // TODO: b/285993323 - Statically create this instead of at runtime to be
-  // shared with the implementation of `HandwritingLocaleToDlc`.
-  static const base::NoDestructor<const base::flat_set<std::string>>
-      handwriting_dlcs([] {
-        std::vector<std::string> handwriting_dlcs;
+absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id) {
+  static const base::NoDestructor<
+      const base::flat_map<std::string, std::string>>
+      handwriting_locale_from_dlc([] {
+        std::vector<std::pair<std::string, std::string>> handwriting_dlcs;
 
         const base::flat_map<PackSpecPair, std::string>& all_ids =
             GetAllLanguagePackDlcIds();
@@ -84,14 +83,22 @@ bool IsHandwritingDlc(std::string_view dlc_id) {
         auto it = all_ids.upper_bound({kHandwritingFeatureId, ""});
         while (it != all_ids.end() &&
                it->first.feature_id == kHandwritingFeatureId) {
-          handwriting_dlcs.push_back(it->second);
+          handwriting_dlcs.emplace_back(it->second, it->first.locale);
           it++;
         }
 
         return handwriting_dlcs;
       }());
 
-  return handwriting_dlcs->contains(dlc_id);
+  auto it = handwriting_locale_from_dlc->find(dlc_id);
+  if (it == handwriting_locale_from_dlc->end()) {
+    return absl::nullopt;
+  }
+  return it->second;
+}
+
+bool IsHandwritingDlc(std::string_view dlc_id) {
+  return DlcToHandwritingLocale(dlc_id).has_value();
 }
 
 base::flat_set<std::string> FilterHandwritingDlcsWithContent(
