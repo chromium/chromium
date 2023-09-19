@@ -458,7 +458,7 @@ interface BidderWorklet {
   // be loaded first, if needed.
   //
   // Arguments:
-  //  `is_for_additional_bid` If true, this will call reportContextualWin()
+  //  `is_for_additional_bid` If true, this will call reportAdditionalBidWin()
   //  rather than reportWin().
   //
   // `reporting_id_field` Describes which kind of ad campaign identification

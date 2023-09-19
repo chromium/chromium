@@ -5348,8 +5348,8 @@ TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
       sendReportTo("https://report-win.test/");
     }
 
-    function reportContextualWin() {
-      sendReportTo("https://report-contextual-win.test/");
+    function reportAdditionalBidWin() {
+      sendReportTo("https://report-additional-bid-win.test/");
     }
   )";
 
@@ -5359,7 +5359,7 @@ TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
 
   is_for_additional_bid_ = true;
   RunReportWinWithJavascriptExpectingResult(
-      kScript, GURL("https://report-contextual-win.test/"));
+      kScript, GURL("https://report-additional-bid-win.test/"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinReportingId) {
