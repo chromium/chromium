@@ -102,7 +102,61 @@ test("components_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
-    data = [ "test/data/" ]
+    # Ideally these would be added to the specific :unit_tests targets they are
+    # relevant for. Please try to do this rather than add to this list.
+    data = [
+      "test/data/ads_observer/",
+      "test/data/ad_tagging/",
+      "test/data/autofill/",
+      "test/data/bookmarks/",
+      "test/data/browsing_topics/",
+      "test/data/crx_file/",
+      "test/data/custom_handlers/",
+      "test/data/device_signals/",
+      "test/data/dom_distiller/",
+      "test/data/environment_integrity/",
+      "test/data/explore_sites/",
+      "test/data/feed/",
+      "test/data/fenced_frames/",
+      "test/data/history/",
+      "test/data/html_viewer/",
+      "test/data/json_schema/",
+      "test/data/language/",
+      "test/data/media_router/",
+      "test/data/ntp/",
+      "test/data/offline_pages/",
+      "test/data/omnibox/",
+      "test/data/optimization_guide/",
+      "test/data/paint_preview/",
+      "test/data/password_manager/",
+      "test/data/payments/",
+      "test/data/performance_manager/",
+      "test/data/printing/",
+      "test/data/protocol_handler/",
+      "test/data/resource_provider/",
+      "test/data/safe_browsing/",
+      "test/data/screen_ai/",
+      "test/data/search_engines/",
+      "test/data/search_provider_logos/",
+      "test/data/segmentation_platform/",
+      "test/data/service_worker/",
+      "test/data/sessions/",
+      "test/data/shared_highlighting/",
+      "test/data/storage/",
+      "test/data/subresource_filter/",
+      "test/data/translate/",
+      "test/data/ui_devtools/",
+      "test/data/unzip_service/",
+      "test/data/update_client/",
+      "test/data/url_rewrite/",
+      "test/data/value_store/",
+      "test/data/webapps/",
+      "test/data/webcrypto/",
+      "test/data/web_database/",
+      "test/data/web_package/",
+      "test/data/webp_transcode/",
+      "test/data/web_view/",
+    ]
   }
 
   if (is_fuchsia) {
