@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -117,7 +118,14 @@ class DisableMaybeTests : public testing::EmptyTestEventListener {
 
 class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
  public:
-  ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {}
+  ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {
+    // TODO(crbug.com/1123627): Remove this after A/B test is done.
+    // Workaround a test-specific race conditon with StatisticsRecorder lock
+    // initialization checking CommandLine by ensuring it's created here (when
+    // we start the test process), rather than in some arbitrary test. This
+    // prevents a race with OnTestEnd().
+    StatisticsRecorder::FindHistogram("Dummy");
+  }
 
   ResetCommandLineBetweenTests(const ResetCommandLineBetweenTests&) = delete;
   ResetCommandLineBetweenTests& operator=(const ResetCommandLineBetweenTests&) =
