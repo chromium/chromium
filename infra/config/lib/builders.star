@@ -956,7 +956,7 @@ def builder(
     register_bootstrap(bucket, name, bootstrap, executable)
 
     health_spec = defaults.get_value("health_spec", health_spec)
-    register_health_spec(bucket, name, health_spec)
+    register_health_spec(bucket, name, health_spec, kwargs.get("contact_team_email"))
 
     register_gn_args(builder_group, bucket, name, gn_args)
 
