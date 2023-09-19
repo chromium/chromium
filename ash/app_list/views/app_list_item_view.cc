@@ -503,6 +503,11 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
       item_weak_->GetMetadata()->app_status == AppStatus::kPending ||
       item_weak_->GetMetadata()->app_status == AppStatus::kInstalling;
 
+  // Draw the promise ring for the first time before waiting for updates.
+  if (is_promise_app_) {
+    ItemProgressUpdated();
+  }
+
   const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   StyleUtil::SetUpInkDropForButton(
       this, gfx::Insets(),
@@ -1849,7 +1854,7 @@ void AppListItemView::ItemProgressUpdated() {
           return view->GetColorProvider()->GetColor(color_id);
         },
         base::Unretained(this))));
-    progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary90);
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysOnPrimaryContainer);
   }
 
   UpdateProgressRingBounds();
