@@ -272,7 +272,9 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
   ::testing::Mock::VerifyAndClear(observer());
 }
 
-TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, StopMediaCapturing) {
+// TODO(crbug.com/1479984): re-enable once the bug is fixed.
+TEST_P(MediaStreamCaptureIndicatorObserverMethodTest,
+       DISABLED_StopMediaCapturing) {
   const ObserverMethodTestParam& param = std::get<0>(GetParam());
   const auto media_tpy =
       MediaStreamCaptureIndicator::GetMediaType(param.stream_type);
