@@ -1832,7 +1832,7 @@ void StyleChange::ExtractTextStyles(Document* document,
       GetPrimitiveValueNumber(style, CSSPropertyID::kFontWeight, weight);
   if (GetIdentifierValue(style, CSSPropertyID::kFontWeight) ==
           CSSValueID::kBold ||
-      (is_number && weight >= BoldThreshold())) {
+      (is_number && weight >= kBoldThreshold)) {
     style->RemoveProperty(CSSPropertyID::kFontWeight);
     apply_bold_ = true;
   }
@@ -1948,7 +1948,7 @@ static bool FontWeightIsBold(const CSSValue* font_weight) {
   }
 
   CHECK(To<CSSPrimitiveValue>(font_weight)->IsNumber());
-  return To<CSSPrimitiveValue>(font_weight)->GetFloatValue() >= BoldThreshold();
+  return To<CSSPrimitiveValue>(font_weight)->GetFloatValue() >= kBoldThreshold;
 }
 
 static bool FontWeightNeedsResolving(const CSSValue* font_weight) {

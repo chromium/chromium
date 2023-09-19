@@ -42,13 +42,13 @@ static float PointsToPixels(float points) {
 // static
 const FontSelectionValue& LayoutThemeFontProvider::SystemFontStyle(
     CSSValueID system_font_id) {
-  return NormalSlopeValue();
+  return kNormalSlopeValue;
 }
 
 // static
 const FontSelectionValue& LayoutThemeFontProvider::SystemFontWeight(
     CSSValueID system_font_id) {
-  return NormalWeightValue();
+  return kNormalWeightValue;
 }
 
 // static

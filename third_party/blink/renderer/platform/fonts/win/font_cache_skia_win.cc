@@ -284,8 +284,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   // First try the specified font with standard style & weight.
   if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
-      (font_description.Style() == ItalicSlopeValue() ||
-       font_description.Weight() >= BoldWeightValue())) {
+      (font_description.Style() == kItalicSlopeValue ||
+       font_description.Weight() >= kBoldWeightValue)) {
     scoped_refptr<SimpleFontData> font_data =
         FallbackOnStandardFontStyle(font_description, character);
     if (font_data)
@@ -392,15 +392,15 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
   // Also includes Narrow as a synonym for Condensed to to support Arial
   // Narrow and other fonts following the same naming scheme.
   const static FamilyStretchSuffix kVariantForSuffix[] = {
-      {u" ultracondensed", 15, UltraCondensedWidthValue()},
-      {u" extracondensed", 15, ExtraCondensedWidthValue()},
-      {u" condensed", 10, CondensedWidthValue()},
-      {u" narrow", 7, CondensedWidthValue()},
-      {u" semicondensed", 14, SemiCondensedWidthValue()},
-      {u" semiexpanded", 13, SemiExpandedWidthValue()},
-      {u" expanded", 9, ExpandedWidthValue()},
-      {u" extraexpanded", 14, ExtraExpandedWidthValue()},
-      {u" ultraexpanded", 14, UltraExpandedWidthValue()}};
+      {u" ultracondensed", 15, kUltraCondensedWidthValue},
+      {u" extracondensed", 15, kExtraCondensedWidthValue},
+      {u" condensed", 10, kCondensedWidthValue},
+      {u" narrow", 7, kCondensedWidthValue},
+      {u" semicondensed", 14, kSemiCondensedWidthValue},
+      {u" semiexpanded", 13, kSemiExpandedWidthValue},
+      {u" expanded", 9, kExpandedWidthValue},
+      {u" extraexpanded", 14, kExtraExpandedWidthValue},
+      {u" ultraexpanded", 14, kUltraExpandedWidthValue}};
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyStretchSuffix& entry = kVariantForSuffix[i];
@@ -496,11 +496,11 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   }
 
   bool synthetic_bold_requested =
-      (font_description.Weight() >= BoldThreshold() && !typeface->isBold()) ||
+      (font_description.Weight() >= kBoldThreshold && !typeface->isBold()) ||
       font_description.IsSyntheticBold();
 
   bool synthetic_italic_requested =
-      ((font_description.Style() == ItalicSlopeValue()) &&
+      ((font_description.Style() == kItalicSlopeValue) &&
        !typeface->isItalic()) ||
       font_description.IsSyntheticItalic();
 

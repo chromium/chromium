@@ -134,9 +134,15 @@ class CORE_EXPORT FontBuilder {
   static OpticalSizing InitialFontOpticalSizing() { return kAutoOpticalSizing; }
   static FontSmoothingMode InitialFontSmoothing() { return kAutoSmoothing; }
 
-  static FontSelectionValue InitialStretch() { return NormalWidthValue(); }
-  static FontSelectionValue InitialStyle() { return NormalSlopeValue(); }
-  static FontSelectionValue InitialWeight() { return NormalWeightValue(); }
+  static constexpr FontSelectionValue InitialStretch() {
+    return kNormalWidthValue;
+  }
+  static constexpr FontSelectionValue InitialStyle() {
+    return kNormalSlopeValue;
+  }
+  static constexpr FontSelectionValue InitialWeight() {
+    return kNormalWeightValue;
+  }
   static FontDescription::FontSynthesisWeight InitialFontSynthesisWeight() {
     return FontDescription::kAutoFontSynthesisWeight;
   }

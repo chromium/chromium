@@ -2520,12 +2520,12 @@ String BaseRenderingContext2D::font() const {
   StringBuilder serialized_font;
   const FontDescription& font_description = GetState().GetFontDescription();
 
-  if (font_description.Style() == ItalicSlopeValue()) {
+  if (font_description.Style() == kItalicSlopeValue) {
     serialized_font.Append("italic ");
   }
-  if (font_description.Weight() == BoldWeightValue()) {
+  if (font_description.Weight() == kBoldWeightValue) {
     serialized_font.Append("bold ");
-  } else if (font_description.Weight() != NormalWeightValue()) {
+  } else if (font_description.Weight() != kNormalWeightValue) {
     int weight_as_int = static_cast<int>((float)font_description.Weight());
     serialized_font.AppendNumber(weight_as_int);
     serialized_font.Append(" ");

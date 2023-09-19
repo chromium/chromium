@@ -31,9 +31,9 @@ class DummyFontFaceSource : public CSSFontFaceSource {
     FontDescription font_description;
     font_description.SetComputedSize(size);
     FontSelectionCapabilities normal_capabilities(
-        {NormalWidthValue(), NormalWidthValue()},
-        {NormalSlopeValue(), NormalSlopeValue()},
-        {NormalWeightValue(), NormalWeightValue()});
+        {kNormalWidthValue, kNormalWidthValue},
+        {kNormalSlopeValue, kNormalSlopeValue},
+        {kNormalWeightValue, kNormalWeightValue});
     return GetFontData(font_description, normal_capabilities);
   }
 };
@@ -67,9 +67,9 @@ TEST(CSSFontFaceSourceTest, UnboundedGrowth) {
   DummyFontFaceSource font_face_source;
   FontDescription font_description_variable;
   FontSelectionCapabilities normal_capabilities(
-      {NormalWidthValue(), NormalWidthValue()},
-      {NormalSlopeValue(), NormalSlopeValue()},
-      {NormalWeightValue(), NormalWeightValue()});
+      {kNormalWidthValue, kNormalWidthValue},
+      {kNormalSlopeValue, kNormalSlopeValue},
+      {kNormalWeightValue, kNormalWeightValue});
 
   // Roughly 3000 font variants.
   for (float wght = 700; wght < 705; wght += 1 / 6.f) {

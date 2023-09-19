@@ -51,8 +51,9 @@ namespace {
 // TODO crbug.com/516675 Add stretch to serialization
 
 const char* FontStyleToString(FontSelectionValue slope) {
-  if (slope == ItalicSlopeValue())
+  if (slope == kItalicSlopeValue) {
     return "italic";
+  }
   return "normal";
 }
 
@@ -444,7 +445,7 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
     AddProperty("fontSize", font_description.ComputedPixelSize(), data);
   }
   // Our UA stylesheet has font-weight:normal for OPTION.
-  if (NormalWeightValue() != font_description.Weight()) {
+  if (kNormalWeightValue != font_description.Weight()) {
     AddProperty("fontWeight", font_description.Weight().ToString(), data);
   }
   if (base_font.Family() != font_description.Family()) {

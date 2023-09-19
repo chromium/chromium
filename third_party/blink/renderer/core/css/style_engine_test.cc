@@ -357,9 +357,9 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   FontSelectionCapabilities capabilities =
       font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
-            FontSelectionRange({BoldWeightValue(), BoldWeightValue()}));
+            FontSelectionRange({kBoldWeightValue, kBoldWeightValue}));
   ASSERT_EQ(capabilities.slope,
-            FontSelectionRange({NormalSlopeValue(), NormalSlopeValue()}));
+            FontSelectionRange({kNormalSlopeValue, kNormalSlopeValue}));
 
   auto* font_face_parsed_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
@@ -386,9 +386,9 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
-            FontSelectionRange({BoldWeightValue(), BoldWeightValue()}));
+            FontSelectionRange({kBoldWeightValue, kBoldWeightValue}));
   ASSERT_EQ(capabilities.slope,
-            FontSelectionRange({ItalicSlopeValue(), ItalicSlopeValue()}));
+            FontSelectionRange({kItalicSlopeValue, kItalicSlopeValue}));
 
   auto* style_element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   style_element->setInnerHTML(
@@ -412,9 +412,9 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
-            FontSelectionRange({BoldWeightValue(), BoldWeightValue()}));
+            FontSelectionRange({kBoldWeightValue, kBoldWeightValue}));
   ASSERT_EQ(capabilities.slope,
-            FontSelectionRange({ItalicSlopeValue(), ItalicSlopeValue()}));
+            FontSelectionRange({kItalicSlopeValue, kItalicSlopeValue}));
 
   GetStyleEngine().RemoveInjectedSheet(font_face_key, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
@@ -431,9 +431,9 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
-            FontSelectionRange({NormalWeightValue(), NormalWeightValue()}));
+            FontSelectionRange({kNormalWeightValue, kNormalWeightValue}));
   ASSERT_EQ(capabilities.slope,
-            FontSelectionRange({ItalicSlopeValue(), ItalicSlopeValue()}));
+            FontSelectionRange({kItalicSlopeValue, kItalicSlopeValue}));
 
   // @keyframes rules
 

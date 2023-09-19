@@ -94,8 +94,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   // First try the specified font with standard style & weight.
   if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
-      (font_description.Style() == ItalicSlopeValue() ||
-       font_description.Weight() >= BoldThreshold())) {
+      (font_description.Style() == kItalicSlopeValue ||
+       font_description.Weight() >= kBoldThreshold)) {
     scoped_refptr<SimpleFontData> font_data =
         FallbackOnStandardFontStyle(font_description, c);
     if (font_data)
@@ -122,19 +122,21 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   bool should_set_synthetic_bold = false;
   bool should_set_synthetic_italic = false;
   FontDescription description(font_description);
-  if (fallback_font.is_bold && description.Weight() < BoldThreshold())
-    description.SetWeight(BoldWeightValue());
-  if (!fallback_font.is_bold && description.Weight() >= BoldThreshold() &&
+  if (fallback_font.is_bold && description.Weight() < kBoldThreshold) {
+    description.SetWeight(kBoldWeightValue);
+  }
+  if (!fallback_font.is_bold && description.Weight() >= kBoldThreshold &&
       font_description.SyntheticBoldAllowed()) {
     should_set_synthetic_bold = true;
-    description.SetWeight(NormalWeightValue());
+    description.SetWeight(kNormalWeightValue);
   }
-  if (fallback_font.is_italic && description.Style() == NormalSlopeValue())
-    description.SetStyle(ItalicSlopeValue());
-  if (!fallback_font.is_italic && (description.Style() == ItalicSlopeValue()) &&
+  if (fallback_font.is_italic && description.Style() == kNormalSlopeValue) {
+    description.SetStyle(kItalicSlopeValue);
+  }
+  if (!fallback_font.is_italic && (description.Style() == kItalicSlopeValue) &&
       font_description.SyntheticItalicAllowed()) {
     should_set_synthetic_italic = true;
-    description.SetStyle(NormalSlopeValue());
+    description.SetStyle(kNormalSlopeValue);
   }
 
   FontPlatformData* substitute_platform_data =

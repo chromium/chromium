@@ -105,9 +105,9 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   // pass font_description to avoid breaking Google Fonts.
   FontDescription unstyled_description(font_description);
 #if !BUILDFLAG(IS_ANDROID)
-  unstyled_description.SetStretch(NormalWidthValue());
-  unstyled_description.SetStyle(NormalSlopeValue());
-  unstyled_description.SetWeight(NormalWeightValue());
+  unstyled_description.SetStretch(kNormalWidthValue);
+  unstyled_description.SetStyle(kNormalSlopeValue);
+  unstyled_description.SetWeight(kNormalWeightValue);
 #endif
   // TODO(https://crbug.com/1302264): Enable passing down of font-palette
   // information here (font_description.GetFontPalette()).

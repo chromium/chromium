@@ -150,8 +150,8 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       weight_coordinate = {
           kWghtTag,
           SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
-      synthetic_bold = bold && wght_range.maximum < BoldThreshold() &&
-                       selection_request.weight >= BoldThreshold();
+      synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
+                       selection_request.weight >= kBoldThreshold;
     }
 
     SkFontArguments::VariationPosition::Coordinate width_coordinate = {
@@ -186,8 +186,8 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       slant_coordinate = {
           kSlntTag,
           SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
-      synthetic_italic = italic && slnt_range.maximum < ItalicSlopeValue() &&
-                         selection_request.slope >= ItalicSlopeValue();
+      synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
+                         selection_request.slope >= kItalicSlopeValue;
     }
 
     variation.push_back(weight_coordinate);

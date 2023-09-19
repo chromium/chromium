@@ -327,31 +327,31 @@ void CanvasRenderingContext2DState::SetFontStretch(
   FontSelectionValue stretch_value;
   switch (font_stretch.AsEnum()) {
     case (V8CanvasFontStretch::Enum::kUltraCondensed):
-      stretch_value = UltraCondensedWidthValue();
+      stretch_value = kUltraCondensedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kExtraCondensed):
-      stretch_value = ExtraCondensedWidthValue();
+      stretch_value = kExtraCondensedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kCondensed):
-      stretch_value = CondensedWidthValue();
+      stretch_value = kCondensedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kSemiCondensed):
-      stretch_value = SemiCondensedWidthValue();
+      stretch_value = kSemiCondensedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kNormal):
-      stretch_value = NormalWidthValue();
+      stretch_value = kNormalWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kUltraExpanded):
-      stretch_value = UltraExpandedWidthValue();
+      stretch_value = kUltraExpandedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kExtraExpanded):
-      stretch_value = ExtraExpandedWidthValue();
+      stretch_value = kExtraExpandedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kExpanded):
-      stretch_value = ExpandedWidthValue();
+      stretch_value = kExpandedWidthValue;
       break;
     case (V8CanvasFontStretch::Enum::kSemiExpanded):
-      stretch_value = SemiExpandedWidthValue();
+      stretch_value = kSemiExpandedWidthValue;
       break;
     default:
       NOTREACHED();

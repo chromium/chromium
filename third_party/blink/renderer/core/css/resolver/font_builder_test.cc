@@ -105,14 +105,14 @@ static void FontWeightBase(FontDescription& d) {
   d.SetWeight(FontSelectionValue(900));
 }
 static void FontWeightValue(FontBuilder& b) {
-  b.SetWeight(NormalWeightValue());
+  b.SetWeight(kNormalWeightValue);
 }
 
 static void FontStretchBase(FontDescription& d) {
-  d.SetStretch(UltraExpandedWidthValue());
+  d.SetStretch(kUltraExpandedWidthValue);
 }
 static void FontStretchValue(FontBuilder& b) {
-  b.SetStretch(ExtraCondensedWidthValue());
+  b.SetStretch(kExtraCondensedWidthValue);
 }
 
 static void FontFamilyBase(FontDescription& d) {
@@ -131,10 +131,10 @@ static void FontFeatureSettingsValue(FontBuilder& b) {
 }
 
 static void FontStyleBase(FontDescription& d) {
-  d.SetStyle(ItalicSlopeValue());
+  d.SetStyle(kItalicSlopeValue);
 }
 static void FontStyleValue(FontBuilder& b) {
-  b.SetStyle(NormalSlopeValue());
+  b.SetStyle(kNormalSlopeValue);
 }
 
 static void FontVariantCapsBase(FontDescription& d) {

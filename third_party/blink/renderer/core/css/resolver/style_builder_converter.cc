@@ -804,34 +804,34 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStretch(
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kUltraCondensed:
-        return UltraCondensedWidthValue();
+        return kUltraCondensedWidthValue;
       case CSSValueID::kExtraCondensed:
-        return ExtraCondensedWidthValue();
+        return kExtraCondensedWidthValue;
       case CSSValueID::kCondensed:
-        return CondensedWidthValue();
+        return kCondensedWidthValue;
       case CSSValueID::kSemiCondensed:
-        return SemiCondensedWidthValue();
+        return kSemiCondensedWidthValue;
       case CSSValueID::kNormal:
-        return NormalWidthValue();
+        return kNormalWidthValue;
       case CSSValueID::kSemiExpanded:
-        return SemiExpandedWidthValue();
+        return kSemiExpandedWidthValue;
       case CSSValueID::kExpanded:
-        return ExpandedWidthValue();
+        return kExpandedWidthValue;
       case CSSValueID::kExtraExpanded:
-        return ExtraExpandedWidthValue();
+        return kExtraExpandedWidthValue;
       case CSSValueID::kUltraExpanded:
-        return UltraExpandedWidthValue();
+        return kUltraExpandedWidthValue;
       default:
         break;
     }
   }
 
   if (value.IsPendingSystemFontValue()) {
-    return NormalWidthValue();
+    return kNormalWidthValue;
   }
 
   NOTREACHED();
-  return NormalWidthValue();
+  return kNormalWidthValue;
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontStretch(
@@ -848,19 +848,19 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kItalic:
       case CSSValueID::kOblique:
-        return ItalicSlopeValue();
+        return kItalicSlopeValue;
       case CSSValueID::kNormal:
-        return NormalSlopeValue();
+        return kNormalSlopeValue;
       default:
         NOTREACHED();
-        return NormalSlopeValue();
+        return kNormalSlopeValue;
     }
   } else if (const auto* system_font =
                  DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
-    if (system_font->ResolveFontStyle() == ItalicSlopeValue()) {
-      return ItalicSlopeValue();
+    if (system_font->ResolveFontStyle() == kItalicSlopeValue) {
+      return kItalicSlopeValue;
     }
-    return NormalSlopeValue();
+    return kNormalSlopeValue;
   } else if (const auto* style_range_value =
                  DynamicTo<cssvalue::CSSFontStyleRangeValue>(value)) {
     const CSSValueList* values = style_range_value->GetObliqueValues();
@@ -871,17 +871,17 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     } else {
       identifier_value = style_range_value->GetFontStyleValue();
       if (identifier_value->GetValueID() == CSSValueID::kNormal) {
-        return NormalSlopeValue();
+        return kNormalSlopeValue;
       }
       if (identifier_value->GetValueID() == CSSValueID::kItalic ||
           identifier_value->GetValueID() == CSSValueID::kOblique) {
-        return ItalicSlopeValue();
+        return kItalicSlopeValue;
       }
     }
   }
 
   NOTREACHED();
-  return NormalSlopeValue();
+  return kNormalSlopeValue;
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontStyle(
@@ -907,20 +907,20 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kNormal:
-        return NormalWeightValue();
+        return kNormalWeightValue;
       case CSSValueID::kBold:
-        return BoldWeightValue();
+        return kBoldWeightValue;
       case CSSValueID::kBolder:
         return FontDescription::BolderWeight(parent_weight);
       case CSSValueID::kLighter:
         return FontDescription::LighterWeight(parent_weight);
       default:
         NOTREACHED();
-        return NormalWeightValue();
+        return kNormalWeightValue;
     }
   }
   NOTREACHED();
-  return NormalWeightValue();
+  return kNormalWeightValue;
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontWeight(

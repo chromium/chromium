@@ -43,7 +43,7 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
-  return CreateFontStretchValue(NormalWidthValue());
+  return CreateFontStretchValue(kNormalWidthValue);
 }
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInherit(

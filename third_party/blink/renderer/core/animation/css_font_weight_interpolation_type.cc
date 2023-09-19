@@ -43,7 +43,7 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
-  return CreateFontWeightValue(NormalWeightValue());
+  return CreateFontWeightValue(kNormalWeightValue);
 }
 
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInherit(
@@ -88,7 +88,7 @@ void CSSFontWeightInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   state.GetFontBuilder().SetWeight(FontSelectionValue(
       ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
-              MinWeightValue(), MaxWeightValue())));
+              kMinWeightValue, kMaxWeightValue)));
 }
 
 }  // namespace blink

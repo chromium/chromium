@@ -1037,11 +1037,11 @@ CSSPrimitiveValue* ComputedStyleUtils::ValueForFontStretch(
 
 CSSValue* ComputedStyleUtils::ValueForFontStyle(const ComputedStyle& style) {
   FontSelectionValue angle = style.GetFontDescription().Style();
-  if (angle == NormalSlopeValue()) {
+  if (angle == kNormalSlopeValue) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
-  if (angle == ItalicSlopeValue()) {
+  if (angle == kItalicSlopeValue) {
     return CSSIdentifierValue::Create(CSSValueID::kItalic);
   }
 
@@ -1295,34 +1295,34 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontOpticalSizing(
 CSSIdentifierValue* ValueForFontStretchAsKeyword(const ComputedStyle& style) {
   FontSelectionValue stretch_value = style.GetFontDescription().Stretch();
   CSSValueID value_id = CSSValueID::kInvalid;
-  if (stretch_value == UltraCondensedWidthValue()) {
+  if (stretch_value == kUltraCondensedWidthValue) {
     value_id = CSSValueID::kUltraCondensed;
   }
-  if (stretch_value == UltraCondensedWidthValue()) {
+  if (stretch_value == kUltraCondensedWidthValue) {
     value_id = CSSValueID::kUltraCondensed;
   }
-  if (stretch_value == ExtraCondensedWidthValue()) {
+  if (stretch_value == kExtraCondensedWidthValue) {
     value_id = CSSValueID::kExtraCondensed;
   }
-  if (stretch_value == CondensedWidthValue()) {
+  if (stretch_value == kCondensedWidthValue) {
     value_id = CSSValueID::kCondensed;
   }
-  if (stretch_value == SemiCondensedWidthValue()) {
+  if (stretch_value == kSemiCondensedWidthValue) {
     value_id = CSSValueID::kSemiCondensed;
   }
-  if (stretch_value == NormalWidthValue()) {
+  if (stretch_value == kNormalWidthValue) {
     value_id = CSSValueID::kNormal;
   }
-  if (stretch_value == SemiExpandedWidthValue()) {
+  if (stretch_value == kSemiExpandedWidthValue) {
     value_id = CSSValueID::kSemiExpanded;
   }
-  if (stretch_value == ExpandedWidthValue()) {
+  if (stretch_value == kExpandedWidthValue) {
     value_id = CSSValueID::kExpanded;
   }
-  if (stretch_value == ExtraExpandedWidthValue()) {
+  if (stretch_value == kExtraExpandedWidthValue) {
     value_id = CSSValueID::kExtraExpanded;
   }
-  if (stretch_value == UltraExpandedWidthValue()) {
+  if (stretch_value == kUltraExpandedWidthValue) {
     value_id = CSSValueID::kUltraExpanded;
   }
 
@@ -1502,7 +1502,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
 
   {
     CSSNumericLiteralValue* font_weight = ValueForFontWeight(style);
-    if (font_weight->DoubleValue() != NormalWeightValue()) {
+    if (font_weight->DoubleValue() != kNormalWeightValue) {
       list->Append(*font_weight);
     }
   }

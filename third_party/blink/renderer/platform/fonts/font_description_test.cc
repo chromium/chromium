@@ -41,13 +41,13 @@ TEST_F(FontDescriptionTest, TestHashCollision) {
       FontSelectionValue(700), FontSelectionValue(800),
       FontSelectionValue(900)};
   FontSelectionValue stretches[]{
-      UltraCondensedWidthValue(), ExtraCondensedWidthValue(),
-      CondensedWidthValue(),      SemiCondensedWidthValue(),
-      NormalWidthValue(),         SemiExpandedWidthValue(),
-      ExpandedWidthValue(),       ExtraExpandedWidthValue(),
-      UltraExpandedWidthValue()};
+      kUltraCondensedWidthValue, kExtraCondensedWidthValue,
+      kCondensedWidthValue,      kSemiCondensedWidthValue,
+      kNormalWidthValue,         kSemiExpandedWidthValue,
+      kExpandedWidthValue,       kExtraExpandedWidthValue,
+      kUltraExpandedWidthValue};
 
-  FontSelectionValue slopes[] = {NormalSlopeValue(), ItalicSlopeValue()};
+  FontSelectionValue slopes[] = {kNormalSlopeValue, kItalicSlopeValue};
 
   FontDescription source;
   WTF::Vector<unsigned> hashes;

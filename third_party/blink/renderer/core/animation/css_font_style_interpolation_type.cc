@@ -43,7 +43,7 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
-  return CreateFontStyleValue(NormalSlopeValue());
+  return CreateFontStyleValue(kNormalSlopeValue);
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
@@ -81,7 +81,7 @@ void CSSFontStyleInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   state.GetFontBuilder().SetStyle(FontSelectionValue(
       ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
-              MinObliqueValue(), MaxObliqueValue())));
+              kMinObliqueValue, kMaxObliqueValue)));
 }
 
 }  // namespace blink

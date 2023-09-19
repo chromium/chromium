@@ -84,9 +84,9 @@ FontDescription::FontDescription()
       adjusted_size_(0),
       letter_spacing_(0),
       word_spacing_(0),
-      font_selection_request_(NormalWeightValue(),
-                              NormalWidthValue(),
-                              NormalSlopeValue()) {
+      font_selection_request_(kNormalWeightValue,
+                              kNormalWidthValue,
+                              kNormalSlopeValue) {
   fields_as_unsigned_.parts[0] = 0;
   fields_as_unsigned_.parts[1] = 0;
   fields_.orientation_ = static_cast<unsigned>(FontOrientation::kHorizontal);
@@ -442,41 +442,51 @@ void FontDescription::UpdateSyntheticOblique() {
   fields_.synthetic_oblique_ =
       IsVerticalAnyUpright() && original_slope < FontSelectionValue(0);
   font_selection_request_.slope =
-      fields_.synthetic_oblique_ ? NormalSlopeValue() : original_slope;
+      fields_.synthetic_oblique_ ? kNormalSlopeValue : original_slope;
 }
 
 SkFontStyle FontDescription::SkiaFontStyle() const {
   // FIXME(drott): This is a lossy conversion, compare
   // https://bugs.chromium.org/p/skia/issues/detail?id=6844
   int skia_width = SkFontStyle::kNormal_Width;
-  if (Stretch() <= UltraCondensedWidthValue())
+  if (Stretch() <= kUltraCondensedWidthValue) {
     skia_width = SkFontStyle::kUltraCondensed_Width;
-  if (Stretch() <= ExtraCondensedWidthValue())
+  }
+  if (Stretch() <= kExtraCondensedWidthValue) {
     skia_width = SkFontStyle::kExtraCondensed_Width;
-  if (Stretch() <= CondensedWidthValue())
+  }
+  if (Stretch() <= kCondensedWidthValue) {
     skia_width = SkFontStyle::kCondensed_Width;
-  if (Stretch() <= SemiCondensedWidthValue())
+  }
+  if (Stretch() <= kSemiCondensedWidthValue) {
     skia_width = SkFontStyle::kSemiCondensed_Width;
-  if (Stretch() >= SemiExpandedWidthValue())
+  }
+  if (Stretch() >= kSemiExpandedWidthValue) {
     skia_width = SkFontStyle::kSemiExpanded_Width;
-  if (Stretch() >= ExpandedWidthValue())
+  }
+  if (Stretch() >= kExpandedWidthValue) {
     skia_width = SkFontStyle::kExpanded_Width;
-  if (Stretch() >= ExtraExpandedWidthValue())
+  }
+  if (Stretch() >= kExtraExpandedWidthValue) {
     skia_width = SkFontStyle::kExtraExpanded_Width;
-  if (Stretch() >= UltraExpandedWidthValue())
+  }
+  if (Stretch() >= kUltraExpandedWidthValue) {
     skia_width = SkFontStyle::kUltraExpanded_Width;
+  }
 
   SkFontStyle::Slant slant = SkFontStyle::kUpright_Slant;
   FontSelectionValue style = Style();
-  if (style > NormalSlopeValue() && style <= ItalicThreshold())
+  if (style > kNormalSlopeValue && style <= kItalicThreshold) {
     slant = SkFontStyle::kItalic_Slant;
-  if (style > ItalicThreshold()) {
+  }
+  if (style > kItalicThreshold) {
     slant = SkFontStyle::kOblique_Slant;
   }
 
   int skia_weight = SkFontStyle::kNormal_Weight;
-  if (Weight() >= MinWeightValue() && Weight() <= MaxWeightValue())
+  if (Weight() >= kMinWeightValue && Weight() <= kMaxWeightValue) {
     skia_weight = static_cast<int>(Weight());
+  }
 
   return SkFontStyle(skia_weight, skia_width, slant);
 }
@@ -486,35 +496,35 @@ void FontDescription::UpdateFromSkiaFontStyle(const SkFontStyle& font_style) {
 
   switch (font_style.width()) {
     case (SkFontStyle::kUltraCondensed_Width):
-      SetStretch(UltraCondensedWidthValue());
+      SetStretch(kUltraCondensedWidthValue);
       break;
     case (SkFontStyle::kExtraCondensed_Width):
-      SetStretch(ExtraCondensedWidthValue());
+      SetStretch(kExtraCondensedWidthValue);
       break;
     case (SkFontStyle::kCondensed_Width):
-      SetStretch(CondensedWidthValue());
+      SetStretch(kCondensedWidthValue);
       break;
     case (SkFontStyle::kSemiCondensed_Width):
-      SetStretch(SemiCondensedWidthValue());
+      SetStretch(kSemiCondensedWidthValue);
       break;
     case (SkFontStyle::kSemiExpanded_Width):
-      SetStretch(SemiExpandedWidthValue());
+      SetStretch(kSemiExpandedWidthValue);
       break;
     case (SkFontStyle::kExpanded_Width):
-      SetStretch(ExpandedWidthValue());
+      SetStretch(kExpandedWidthValue);
       break;
     case (SkFontStyle::kExtraExpanded_Width):
-      SetStretch(ExtraExpandedWidthValue());
+      SetStretch(kExtraExpandedWidthValue);
       break;
     case (SkFontStyle::kUltraExpanded_Width):
-      SetStretch(UltraExpandedWidthValue());
+      SetStretch(kUltraExpandedWidthValue);
       break;
   }
 
   if (font_style.slant() == SkFontStyle::kOblique_Slant)
-    SetStyle(ItalicSlopeValue());
+    SetStyle(kItalicSlopeValue);
   else
-    SetStyle(NormalSlopeValue());
+    SetStyle(kNormalSlopeValue);
 }
 
 int FontDescription::MinimumPrefixWidthToHyphenate() const {
@@ -575,24 +585,25 @@ String FontDescription::ToString(Kerning kerning) {
 }
 
 String FontDescription::ToString(FontSelectionValue selection_value) {
-  if (selection_value == UltraCondensedWidthValue())
+  if (selection_value == kUltraCondensedWidthValue) {
     return "Ultra-Condensed";
-  else if (selection_value == ExtraCondensedWidthValue())
+  } else if (selection_value == kExtraCondensedWidthValue) {
     return "Extra-Condensed";
-  else if (selection_value == CondensedWidthValue())
+  } else if (selection_value == kCondensedWidthValue) {
     return "Condensed";
-  else if (selection_value == SemiCondensedWidthValue())
+  } else if (selection_value == kSemiCondensedWidthValue) {
     return "Semi-Condensed";
-  else if (selection_value == NormalWidthValue())
+  } else if (selection_value == kNormalWidthValue) {
     return "Normal";
-  else if (selection_value == SemiExpandedWidthValue())
+  } else if (selection_value == kSemiExpandedWidthValue) {
     return "Semi-Expanded";
-  else if (selection_value == ExpandedWidthValue())
+  } else if (selection_value == kExpandedWidthValue) {
     return "Expanded";
-  else if (selection_value == ExtraExpandedWidthValue())
+  } else if (selection_value == kExtraExpandedWidthValue) {
     return "Extra-Expanded";
-  else if (selection_value == UltraExpandedWidthValue())
+  } else if (selection_value == kUltraExpandedWidthValue) {
     return "Ultra-Expanded";
+  }
 
   return "Unknown";
 }

@@ -30,7 +30,7 @@ static Font ReplacementTextFont(const Document* document) {
   FontDescription font_description;
   LayoutTheme::GetTheme().SystemFont(CSSValueID::kWebkitSmallControl,
                                      font_description, document);
-  font_description.SetWeight(BoldWeightValue());
+  font_description.SetWeight(kBoldWeightValue);
   font_description.SetComputedSize(font_description.SpecifiedSize());
   Font font(font_description);
   return font;

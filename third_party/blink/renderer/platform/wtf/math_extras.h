@@ -145,9 +145,9 @@ constexpr float RoundHalfTowardsPositiveInfinity(float value) {
 // (2) The default type promotions/conversions are sufficient to handle things
 //     correctly
 template <typename LimitType, typename ValueType>
-inline LimitType ClampToDirectComparison(ValueType value,
-                                         LimitType min,
-                                         LimitType max) {
+inline constexpr LimitType ClampToDirectComparison(ValueType value,
+                                                   LimitType min,
+                                                   LimitType max) {
   if (value >= max)
     return max;
   return (value <= min) ? min : static_cast<LimitType>(value);
@@ -175,9 +175,9 @@ class ClampToNonLongLongHelper<true, LimitType, ValueType> {
   STATIC_ONLY(ClampToNonLongLongHelper);
 
  public:
-  static inline LimitType ClampTo(ValueType value,
-                                  LimitType min,
-                                  LimitType max) {
+  static inline constexpr LimitType ClampTo(ValueType value,
+                                            LimitType min,
+                                            LimitType max) {
     return ClampToDirectComparison(value, min, max);
   }
 };
@@ -187,9 +187,9 @@ class ClampToNonLongLongHelper<false, LimitType, ValueType> {
   STATIC_ONLY(ClampToNonLongLongHelper);
 
  public:
-  static inline LimitType ClampTo(ValueType value,
-                                  LimitType min,
-                                  LimitType max) {
+  static inline constexpr LimitType ClampTo(ValueType value,
+                                            LimitType min,
+                                            LimitType max) {
     const double double_value = static_cast<double>(value);
     if (double_value >= static_cast<double>(max))
       return max;
@@ -209,9 +209,9 @@ class ClampToNonLongLongHelper<false, LimitType, ValueType> {
 template <typename LimitType, typename ValueType>
 class ClampToHelper {
  public:
-  static inline LimitType ClampTo(ValueType value,
-                                  LimitType min,
-                                  LimitType max) {
+  static inline constexpr LimitType ClampTo(ValueType value,
+                                            LimitType min,
+                                            LimitType max) {
     // We only use ClampToDirectComparison() when the integerness and
     // signedness of the two types matches.
     //
@@ -313,7 +313,9 @@ constexpr LimitType ClampTo(
     ValueType value,
     LimitType min = DefaultMinimumForClamp<LimitType>(),
     LimitType max = DefaultMaximumForClamp<LimitType>()) {
-  DCHECK(!std::isnan(static_cast<double>(value)));
+  // We use __builtin_isnan instead of std::isnan here because std::isnan
+  // is not constexpr prior to C++23.
+  DCHECK(!__builtin_isnan(static_cast<double>(value)));
   DCHECK_LE(min, max);  // This also ensures |min| and |max| aren't NaN.
   return ClampToHelper<LimitType, ValueType>::ClampTo(value, min, max);
 }

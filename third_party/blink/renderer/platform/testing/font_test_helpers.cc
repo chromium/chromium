@@ -46,9 +46,9 @@ class TestFontSelector : public FontSelector {
   scoped_refptr<FontData> GetFontData(const FontDescription& font_description,
                                       const FontFamily&) override {
     FontSelectionCapabilities normal_capabilities(
-        {NormalWidthValue(), NormalWidthValue()},
-        {NormalSlopeValue(), NormalSlopeValue()},
-        {NormalWeightValue(), NormalWeightValue()});
+        {kNormalWidthValue, kNormalWidthValue},
+        {kNormalSlopeValue, kNormalSlopeValue},
+        {kNormalWeightValue, kNormalWeightValue});
     FontPlatformData platform_data = custom_platform_data_->GetFontPlatformData(
         font_description.EffectiveFontSize(),
         font_description.AdjustedSpecifiedSize(),

@@ -118,7 +118,7 @@ TEST_F(FontFaceCacheTest, Instantiate) {
   CSSIdentifierValue* stretch_value_condensed =
       CSSIdentifierValue::Create(CSSValueID::kCondensed);
   CSSPrimitiveValue* weight_value = CSSNumericLiteralValue::Create(
-      BoldWeightValue(), CSSPrimitiveValue::UnitType::kNumber);
+      kBoldWeightValue, CSSPrimitiveValue::UnitType::kNumber);
   CSSIdentifierValue* style_value =
       CSSIdentifierValue::Create(CSSValueID::kItalic);
 
@@ -135,7 +135,7 @@ TEST_F(FontFaceCacheTest, SimpleWidthMatch) {
   CSSIdentifierValue* stretch_value_condensed =
       CSSIdentifierValue::Create(CSSValueID::kCondensed);
   CSSPrimitiveValue* weight_value = CSSNumericLiteralValue::Create(
-      NormalWeightValue(), CSSPrimitiveValue::UnitType::kNumber);
+      kNormalWeightValue, CSSPrimitiveValue::UnitType::kNumber);
   CSSIdentifierValue* style_value =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
   AppendTestFaceForCapabilities(*stretch_value_expanded, *style_value,
@@ -145,7 +145,7 @@ TEST_F(FontFaceCacheTest, SimpleWidthMatch) {
   ASSERT_EQ(cache_->GetNumSegmentedFacesForTesting(), 2ul);
 
   const FontDescription& description_condensed = FontDescriptionForRequest(
-      CondensedWidthValue(), NormalSlopeValue(), NormalWeightValue());
+      kCondensedWidthValue, kNormalSlopeValue, kNormalWeightValue);
   CSSSegmentedFontFace* result =
       cache_->Get(description_condensed, kFontNameForTesting);
   ASSERT_TRUE(result);
@@ -153,11 +153,11 @@ TEST_F(FontFaceCacheTest, SimpleWidthMatch) {
   FontSelectionCapabilities result_capabilities =
       result->GetFontSelectionCapabilities();
   ASSERT_EQ(result_capabilities.width,
-            FontSelectionRange({CondensedWidthValue(), CondensedWidthValue()}));
+            FontSelectionRange({kCondensedWidthValue, kCondensedWidthValue}));
   ASSERT_EQ(result_capabilities.weight,
-            FontSelectionRange({NormalWeightValue(), NormalWeightValue()}));
+            FontSelectionRange({kNormalWeightValue, kNormalWeightValue}));
   ASSERT_EQ(result_capabilities.slope,
-            FontSelectionRange({NormalSlopeValue(), NormalSlopeValue()}));
+            FontSelectionRange({kNormalSlopeValue, kNormalSlopeValue}));
 }
 
 TEST_F(FontFaceCacheTest, SimpleWeightMatch) {
@@ -176,19 +176,19 @@ TEST_F(FontFaceCacheTest, SimpleWeightMatch) {
   ASSERT_EQ(cache_->GetNumSegmentedFacesForTesting(), 2ul);
 
   const FontDescription& description_bold = FontDescriptionForRequest(
-      NormalWidthValue(), NormalSlopeValue(), BoldWeightValue());
+      kNormalWidthValue, kNormalSlopeValue, kBoldWeightValue);
   CSSSegmentedFontFace* result =
       cache_->Get(description_bold, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
       result->GetFontSelectionCapabilities();
   ASSERT_EQ(result_capabilities.width,
-            FontSelectionRange({NormalWidthValue(), NormalWidthValue()}));
+            FontSelectionRange({kNormalWidthValue, kNormalWidthValue}));
   ASSERT_EQ(
       result_capabilities.weight,
       FontSelectionRange({FontSelectionValue(900), FontSelectionValue(900)}));
   ASSERT_EQ(result_capabilities.slope,
-            FontSelectionRange({NormalSlopeValue(), NormalSlopeValue()}));
+            FontSelectionRange({kNormalSlopeValue, kNormalSlopeValue}));
 }
 
 // For each capability, we can either not have it at all, have two of them, or
@@ -240,10 +240,10 @@ TEST_F(FontFaceCacheTest, DISABLED_MatchCombinations) {
       CSSNumericLiteralValue::Create(900,
                                      CSSPrimitiveValue::UnitType::kNumber)};
 
-  Vector<FontSelectionValue> width_choices = {CondensedWidthValue(),
-                                              ExpandedWidthValue()};
-  Vector<FontSelectionValue> slope_choices = {NormalSlopeValue(),
-                                              ItalicSlopeValue()};
+  Vector<FontSelectionValue> width_choices = {kCondensedWidthValue,
+                                              kExpandedWidthValue};
+  Vector<FontSelectionValue> slope_choices = {kNormalSlopeValue,
+                                              kItalicSlopeValue};
   Vector<FontSelectionValue> weight_choices = {FontSelectionValue(100),
                                                FontSelectionValue(900)};
 
@@ -319,19 +319,19 @@ TEST_F(FontFaceCacheTest, WidthRangeMatching) {
   ASSERT_EQ(cache_->GetNumSegmentedFacesForTesting(), 2ul);
 
   const FontDescription& description_bold = FontDescriptionForRequest(
-      NormalWidthValue(), NormalSlopeValue(), BoldWeightValue());
+      kNormalWidthValue, kNormalSlopeValue, kBoldWeightValue);
   CSSSegmentedFontFace* result =
       cache_->Get(description_bold, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
       result->GetFontSelectionCapabilities();
   ASSERT_EQ(result_capabilities.width,
-            FontSelectionRange({NormalWidthValue(), NormalWidthValue()}));
+            FontSelectionRange({kNormalWidthValue, kNormalWidthValue}));
   ASSERT_EQ(
       result_capabilities.weight,
       FontSelectionRange({FontSelectionValue(700), FontSelectionValue(800)}));
   ASSERT_EQ(result_capabilities.slope,
-            FontSelectionRange({NormalSlopeValue(), NormalSlopeValue()}));
+            FontSelectionRange({kNormalSlopeValue, kNormalSlopeValue}));
 }
 
 TEST_F(FontFaceCacheTest, WidthRangeMatchingBetween400500) {
@@ -371,7 +371,7 @@ TEST_F(FontFaceCacheTest, WidthRangeMatchingBetween400500) {
   FontSelectionValue test_weight(450);
 
   const FontDescription& description_expanded = FontDescriptionForRequest(
-      NormalWidthValue(), NormalSlopeValue(), test_weight);
+      kNormalWidthValue, kNormalSlopeValue, test_weight);
   CSSSegmentedFontFace* result =
       cache_->Get(description_expanded, kFontNameForTesting);
   ASSERT_TRUE(result);
@@ -428,7 +428,7 @@ TEST_F(FontFaceCacheTest, StretchRangeMatching) {
   ASSERT_EQ(cache_->GetNumSegmentedFacesForTesting(), 2ul);
 
   const FontDescription& description_expanded = FontDescriptionForRequest(
-      FontSelectionValue(105), NormalSlopeValue(), NormalWeightValue());
+      FontSelectionValue(105), kNormalSlopeValue, kNormalWeightValue);
   CSSSegmentedFontFace* result =
       cache_->Get(description_expanded, kFontNameForTesting);
   ASSERT_TRUE(result);
@@ -438,9 +438,9 @@ TEST_F(FontFaceCacheTest, StretchRangeMatching) {
             FontSelectionRange({FontSelectionValue(kStretchFrom),
                                 FontSelectionValue(kStretchTo)}));
   ASSERT_EQ(result_capabilities.weight,
-            FontSelectionRange({NormalWeightValue(), NormalWeightValue()}));
+            FontSelectionRange({kNormalWeightValue, kNormalWeightValue}));
   ASSERT_EQ(result_capabilities.slope,
-            FontSelectionRange({NormalSlopeValue(), NormalSlopeValue()}));
+            FontSelectionRange({kNormalSlopeValue, kNormalSlopeValue}));
 }
 
 TEST_F(FontFaceCacheTest, ObliqueRangeMatching) {
@@ -481,16 +481,16 @@ TEST_F(FontFaceCacheTest, ObliqueRangeMatching) {
   ASSERT_EQ(cache_->GetNumSegmentedFacesForTesting(), 2ul);
 
   const FontDescription& description_italic = FontDescriptionForRequest(
-      NormalWidthValue(), ItalicSlopeValue(), NormalWeightValue());
+      kNormalWidthValue, kItalicSlopeValue, kNormalWeightValue);
   CSSSegmentedFontFace* result =
       cache_->Get(description_italic, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
       result->GetFontSelectionCapabilities();
   ASSERT_EQ(result_capabilities.width,
-            FontSelectionRange({NormalWidthValue(), NormalWidthValue()}));
+            FontSelectionRange({kNormalWidthValue, kNormalWidthValue}));
   ASSERT_EQ(result_capabilities.weight,
-            FontSelectionRange({NormalWeightValue(), NormalWeightValue()}));
+            FontSelectionRange({kNormalWeightValue, kNormalWeightValue}));
   ASSERT_EQ(
       result_capabilities.slope,
       FontSelectionRange({FontSelectionValue(30), FontSelectionValue(35)}));

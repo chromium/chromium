@@ -2777,10 +2777,12 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
   *text_strikethrough_style = ax::mojom::blink::TextDecorationStyle::kNone;
   *text_underline_style = ax::mojom::blink::TextDecorationStyle::kNone;
 
-  if (style->GetFontWeight() == BoldWeightValue())
+  if (style->GetFontWeight() == kBoldWeightValue) {
     *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kBold);
-  if (style->GetFontDescription().Style() == ItalicSlopeValue())
+  }
+  if (style->GetFontDescription().Style() == kItalicSlopeValue) {
     *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kItalic);
+  }
 
   for (const auto& decoration : style->AppliedTextDecorations()) {
     if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kOverline)) {
