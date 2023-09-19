@@ -234,6 +234,9 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
                  << profile_path->AsUTF8Unsafe();
       SCOPED_CRASH_KEY_STRING256("DeleteProfileHelper", "profile_path",
                                  profile_path->AsUTF8Unsafe());
+      SCOPED_CRASH_KEY_STRING256(
+          "DeleteProfileHelper", "user_data_dir",
+          profile_manager_->user_data_dir().AsUTF8Unsafe());
       SCOPED_CRASH_KEY_BOOL(
           "DeleteProfileHelper", "allowed_path",
           profile_manager_->IsAllowedProfilePath(*profile_path));
