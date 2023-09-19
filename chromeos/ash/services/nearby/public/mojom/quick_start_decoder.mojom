@@ -52,4 +52,10 @@ interface QuickStartDecoder {
   // Decode the UserVerificationResult sent from the target device.
   DecodeUserVerificationResult(array<uint8>? data) => (
     UserVerificationResponse? response, QuickStartDecoderError? error);
+
+  // Decode any kind of Quick Start message and return either a
+  // QuickStartMessage, which is a union over all the message types, or an
+  // error if the data cannot be parsed as any known message.
+  DecodeQuickStartMessage(array<uint8>? data) => (
+    QuickStartMessage? result, QuickStartDecoderError? error);
 };

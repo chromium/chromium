@@ -114,20 +114,20 @@ class QuickStartDecoderTest : public testing::Test {
   void DoDecodeGetAssertionResponse(
       const std::vector<uint8_t>& data,
       QuickStartDecoder::DecodeGetAssertionResponseCallback callback) {
-    return decoder_->DoDecodeGetAssertionResponse(data, std::move(callback));
+    decoder_->DecodeGetAssertionResponse(data, std::move(callback));
   }
 
   void DoDecodeBootstrapConfigurations(
       const std::vector<uint8_t>& data,
       QuickStartDecoder::DecodeBootstrapConfigurationsCallback callback) {
-    return decoder_->DoDecodeBootstrapConfigurations(data, std::move(callback));
+    decoder_->DecodeBootstrapConfigurations(data, std::move(callback));
   }
 
   void DoDecodeWifiCredentialsResponse(
       QuickStartMessage* message,
       QuickStartDecoder::DecodeWifiCredentialsResponseCallback callback) {
-    return decoder_->DoDecodeWifiCredentialsResponse(
-        ConvertMessageToBytes(message), std::move(callback));
+    decoder_->DecodeWifiCredentialsResponse(ConvertMessageToBytes(message),
+                                            std::move(callback));
   }
 
   void DoDecodeNotifySourceOfUpdateResponse(
@@ -135,11 +135,6 @@ class QuickStartDecoderTest : public testing::Test {
       QuickStartDecoder::DecodeNotifySourceOfUpdateResponseCallback callback) {
     decoder_->DecodeNotifySourceOfUpdateResponse(ConvertMessageToBytes(message),
                                                  std::move(callback));
-  }
-
-  absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
-      const std::vector<uint8_t>& data) {
-    return decoder_->ExtractFidoDataFromJsonResponse(data);
   }
 
   QuickStartDecoder* decoder() const { return decoder_.get(); }
@@ -422,19 +417,33 @@ TEST_F(QuickStartDecoderTest, ExtractFidoDataFromValidJsonResponse) {
 
   std::vector<uint8_t> payload = BuildSecondDeviceAuthPayload(data);
 
-  absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(payload);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), data);
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(payload, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_FALSE(future.Get<1>().has_value());
 }
 
 TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfFidoDataMissingFromPayload) {
   QuickStartMessage message(QuickStartMessageType::kSecondDeviceAuthPayload);
 
-  absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(ConvertMessageToBytes(&message));
-  EXPECT_FALSE(result.has_value());
+  std::string json_serialized_payload;
+  base::JSONWriter::Write(*message.GetPayload(), &json_serialized_payload);
+  std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
+                                      json_serialized_payload.end());
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(response_bytes, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().has_value());
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -446,9 +455,14 @@ TEST_F(QuickStartDecoderTest,
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 
-  absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(response_bytes);
-  EXPECT_FALSE(result.has_value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(response_bytes, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().has_value());
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -460,9 +474,14 @@ TEST_F(QuickStartDecoderTest,
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 
-  absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(response_bytes);
-  EXPECT_FALSE(result.has_value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(response_bytes, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().has_value());
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -470,9 +489,14 @@ TEST_F(QuickStartDecoderTest,
   // This is just a random payload that is not a valid JSON.
   std::vector<uint8_t> random_payload = {0x01, 0x02, 0x03};
 
-  absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(random_payload);
-  EXPECT_FALSE(result.has_value());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(random_payload, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().has_value());
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
@@ -862,8 +886,7 @@ TEST_F(QuickStartDecoderTest,
   DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
   histogram_tester_.ExpectBucketCount(
       kWifiTransferResultFailureReasonHistogramName,
       quick_start_metrics::WifiTransferResultFailureReason::
@@ -964,8 +987,7 @@ TEST_F(QuickStartDecoderTest,
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -1038,8 +1060,7 @@ TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestFailsIfKeyMissing) {
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kUnknownPayload);
 }
 
 }  // namespace ash::quick_start

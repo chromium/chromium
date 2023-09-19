@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -53,6 +55,10 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeUserVerificationRequested(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationRequestedCallback callback) override;
+
+  void DecodeQuickStartMessage(
+      const absl::optional<std::vector<uint8_t>>& data,
+      DecodeQuickStartMessageCallback callback) override;
   // mojom::QuickStartDecoder:
 
  private:
@@ -66,11 +72,18 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   void DoDecodeWifiCredentialsResponse(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeWifiCredentialsResponseCallback callback);
-  absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
-      const std::vector<uint8_t>& data);
-  void DoDecodeNotifySourceOfUpdateResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeNotifySourceOfUpdateResponseCallback callback);
+
+  base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
+  DoDecodeQuickStartMessage(const std::vector<uint8_t>& data);
+  base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
+  DecodeSecondDeviceAuthPayload(const base::Value::Dict& payload);
+  base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
+  DecodeBootstrapConfigurations(const base::Value::Dict& payload);
+  base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
+  DecodeQuickStartPayload(const base::Value::Dict& payload);
+  base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
+  DecodeWifiCredentials(const base::Value::Dict& wifi_network_information);
+
   mojo::Receiver<mojom::QuickStartDecoder> receiver_;
 };
 

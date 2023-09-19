@@ -79,6 +79,16 @@ void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
                           absl::nullopt);
 }
 
+void FakeQuickStartDecoder::DecodeQuickStartMessage(
+    const absl::optional<std::vector<uint8_t>>& data,
+    DecodeQuickStartMessageCallback callback) {
+  if (error_ != absl::nullopt) {
+    std::move(callback).Run(nullptr, error_);
+  } else {
+    std::move(callback).Run(std::move(quick_start_message_), absl::nullopt);
+  }
+}
+
 void FakeQuickStartDecoder::SetUserVerificationRequested(
     bool is_awaiting_user_verification) {
   user_verification_request_ =
@@ -125,6 +135,11 @@ void FakeQuickStartDecoder::SetBootstrapConfigurationsResponse(
     absl::optional<mojom::QuickStartDecoderError> error) {
   response_cryptauth_device_id_ = cryptauth_device_id;
   error_ = error;
+}
+
+void FakeQuickStartDecoder::SetQuickStartMessage(
+    mojom::QuickStartMessagePtr quick_start_message) {
+  quick_start_message_ = std::move(quick_start_message);
 }
 
 }  // namespace ash::quick_start

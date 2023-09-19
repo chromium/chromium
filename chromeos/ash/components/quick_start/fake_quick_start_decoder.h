@@ -42,6 +42,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeUserVerificationResult(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationResultCallback callback) override;
+  void DecodeQuickStartMessage(
+      const absl::optional<std::vector<uint8_t>>& data,
+      DecodeQuickStartMessageCallback callback) override;
 
   void SetExpectedData(std::vector<uint8_t> expected_data);
   void SetAssertionResponse(mojom::FidoAssertionResponsePtr fido_assertion);
@@ -64,6 +67,8 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
       const std::string& cryptauth_device_id,
       absl::optional<mojom::QuickStartDecoderError> error);
 
+  void SetQuickStartMessage(mojom::QuickStartMessagePtr quick_start_message);
+
  private:
   std::vector<uint8_t> expected_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
@@ -72,6 +77,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   mojom::FidoAssertionResponsePtr fido_assertion_;
   mojom::UserVerificationRequestedPtr user_verification_request_;
   mojom::UserVerificationResponsePtr user_verification_response_;
+  mojom::QuickStartMessagePtr quick_start_message_;
   absl::optional<mojom::QuickStartDecoderError> error_;
   std::string response_cryptauth_device_id_;
 };
