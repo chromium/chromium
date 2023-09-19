@@ -191,14 +191,23 @@ source_set("audio") {
     sources += [
       "mac/audio_device_listener_mac.cc",
       "mac/audio_device_listener_mac.h",
+      "mac/audio_loopback_input_mac.h",
+      "mac/audio_loopback_input_mac_impl.h",
+      "mac/audio_loopback_input_mac_impl.mm",
       "mac/audio_low_latency_input_mac.cc",
       "mac/audio_low_latency_input_mac.h",
       "mac/audio_manager_mac.cc",
       "mac/audio_manager_mac.h",
       "mac/coreaudio_dispatch_override.cc",
       "mac/coreaudio_dispatch_override.h",
+      "mac/screen_capture_kit_swizzler.h",
+      "mac/screen_capture_kit_swizzler.mm",
     ]
-    frameworks += [ "AudioUnit.framework" ]
+    frameworks += [
+      "AudioUnit.framework",
+      "CoreMedia.framework",
+    ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
   if (is_ios) {
@@ -468,9 +477,13 @@ source_set("unit_tests") {
   if (is_mac) {
     sources += [
       "mac/audio_device_listener_mac_unittest.cc",
+      "mac/audio_loopback_input_mac_unittest.mm",
       "mac/audio_low_latency_input_mac_unittest.cc",
       "mac/audio_manager_mac_unittest.cc",
     ]
+    deps += [ "//third_party/ocmock" ]
+    frameworks = [ "CoreMedia.framework" ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
   if (is_chromeos_ash || is_castos || is_cast_android) {

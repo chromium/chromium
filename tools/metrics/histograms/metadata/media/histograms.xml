@@ -581,6 +581,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimedOut"
+    enum="Boolean" expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Indicates if SCShareableContent enumeration has timed out during a call to
+    SCKAudioInputStream::Open(). The timeout exists to prevent a deadlock if the
+    API is misbehaving. We do not expect any timeouts under normal conditions.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimeMs" units="ms"
+    expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Measures the time required for SCShareableContent enumeration (displays and
+    open applications/windows) when calling SCKAudioInputStream::Open(). The
+    duration can vary based on the amount of applications and windows open on
+    the system. This enumeration is a blocking operation, and as such should
+    complete as fast as possible. If metrics show long times, the operation
+    might have to be made asynchronous.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.SCK.StreamError" units="errorcode"
+    expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Error codes reported by ScreenCaptureKit in
+    SCKAudioInputStream::OnStreamError() during stream setup or while streaming
+    samples.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.StreamCallbackError2"
     enum="AudioCaptureDeviceError" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->

@@ -20,6 +20,13 @@
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
 
+namespace base {
+
+namespace apple {
+class ScopedObjCClassSwizzler;
+}  // namespace apple
+}  // namespace base
+
 namespace media {
 
 class AUAudioInputStream;
@@ -222,6 +229,10 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   std::list<AudioInputStream*> basic_input_streams_;
   std::list<AUAudioInputStream*> low_latency_input_streams_;
   std::list<AUHALStream*> output_streams_;
+
+  // Used to swizzle SCStreamManager when performing loopback capture.
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
+      screen_capture_kit_swizzler_;
 
   // Set to true in the destructor. Ensures that methods that touches native
   // Core Audio APIs are not executed during shutdown.
