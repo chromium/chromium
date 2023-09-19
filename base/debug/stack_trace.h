@@ -134,7 +134,7 @@ class BASE_EXPORT StackTrace {
   void InitTrace(const _CONTEXT* context_record);
 #endif
 
-  void* trace_[kMaxTraces];
+  const void* trace_[kMaxTraces];
 
   // The number of valid frames in |trace_|.
   size_t count_;
@@ -145,7 +145,7 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 
 // Record a stack trace with up to |count| frames into |trace|. Returns the
 // number of frames read.
-BASE_EXPORT size_t CollectStackTrace(void** trace, size_t count);
+BASE_EXPORT size_t CollectStackTrace(const void** trace, size_t count);
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 

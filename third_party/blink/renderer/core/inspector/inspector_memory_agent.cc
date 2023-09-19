@@ -189,14 +189,14 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
 }
 
 Vector<String> InspectorMemoryAgent::Symbolize(
-    const WebVector<void*>& addresses) {
+    const WebVector<const void*>& addresses) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(alph): Move symbolization to the client.
-  Vector<void*> addresses_to_symbolize;
-  for (size_t i = 0; i < addresses.size(); i++) {
-    void* address = addresses[i];
-    if (!symbols_cache_.Contains(address))
+  Vector<const void*> addresses_to_symbolize;
+  for (const void* address : addresses) {
+    if (!symbols_cache_.Contains(address)) {
       addresses_to_symbolize.push_back(address);
+    }
   }
 
   String text(base::debug::StackTrace(addresses_to_symbolize.data(),
@@ -217,7 +217,7 @@ Vector<String> InspectorMemoryAgent::Symbolize(
 #endif
 
   Vector<String> result;
-  for (void* address : addresses) {
+  for (const void* address : addresses) {
     char buffer[20];
     std::snprintf(buffer, sizeof(buffer), "0x%" PRIxPTR,
                   reinterpret_cast<uintptr_t>(address));

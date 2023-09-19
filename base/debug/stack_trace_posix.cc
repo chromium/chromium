@@ -163,7 +163,7 @@ class BacktraceOutputHandler {
 };
 
 #if defined(HAVE_BACKTRACE)
-void OutputPointer(void* pointer, BacktraceOutputHandler* handler) {
+void OutputPointer(const void* pointer, BacktraceOutputHandler* handler) {
   // This should be more than enough to store a 64-bit number in hex:
   // 16 hex digits + 1 for null-terminator.
   char buf[17] = { '\0' };
@@ -191,7 +191,7 @@ void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
 }
 #endif  // defined(USE_SYMBOLIZE)
 
-void ProcessBacktrace(void* const* trace,
+void ProcessBacktrace(const void* const* trace,
                       size_t size,
                       const char* prefix_string,
                       BacktraceOutputHandler* handler) {
@@ -218,8 +218,8 @@ void ProcessBacktrace(void* const* trace,
 
     // Subtract by one as return address of function may be in the next
     // function when a function is annotated as noreturn.
-    void* address = static_cast<char*>(trace[i]) - 1;
-    if (google::Symbolize(address, buf, sizeof(buf))) {
+    const void* address = static_cast<const char*>(trace[i]) - 1;
+    if (google::Symbolize(const_cast<void*>(address), buf, sizeof(buf))) {
       handler->HandleOutput(buf);
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
       // Only output the source line number if the offset was found. Otherwise,
@@ -268,8 +268,8 @@ void ProcessBacktrace(void* const* trace,
     }
     printed = true;
 #else   // defined(HAVE_DLADDR)
-    std::unique_ptr<char*, FreeDeleter> trace_symbols(
-        backtrace_symbols(trace, static_cast<int>(size)));
+    std::unique_ptr<char*, FreeDeleter> trace_symbols(backtrace_symbols(
+        const_cast<void* const*>(trace), static_cast<int>(size)));
     if (trace_symbols.get()) {
       for (size_t i = 0; i < size; ++i) {
         std::string trace_symbol = trace_symbols.get()[i];
@@ -1026,19 +1026,18 @@ bool SetStackDumpFirstChanceCallback(bool (*handler)(int, siginfo_t*, void*)) {
 }
 #endif
 
-size_t CollectStackTrace(void** trace, size_t count) {
+size_t CollectStackTrace(const void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
 #if defined(NO_UNWIND_TABLES) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // If we do not have unwind tables, then try tracing using frame pointers.
-  return base::debug::TraceStackFramePointers(const_cast<const void**>(trace),
-                                              count, 0);
+  return base::debug::TraceStackFramePointers(trace, count, 0);
 #elif defined(HAVE_BACKTRACE)
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
   return base::saturated_cast<size_t>(
-      backtrace(trace, base::saturated_cast<int>(count)));
+      backtrace(const_cast<void**>(trace), base::saturated_cast<int>(count)));
 #else
   return 0;
 #endif

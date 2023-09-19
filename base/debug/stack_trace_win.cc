@@ -324,9 +324,9 @@ bool EnableInProcessStackDumping() {
   return InitializeSymbols();
 }
 
-NOINLINE size_t CollectStackTrace(void** trace, size_t count) {
+NOINLINE size_t CollectStackTrace(const void** trace, size_t count) {
   // When walking our own stack, use CaptureStackBackTrace().
-  return CaptureStackBackTrace(0, count, trace, NULL);
+  return CaptureStackBackTrace(0, count, const_cast<void**>(trace), NULL);
 }
 
 StackTrace::StackTrace(EXCEPTION_POINTERS* exception_pointers) {

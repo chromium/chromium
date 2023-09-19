@@ -29,7 +29,7 @@ namespace debug {
 namespace {
 
 struct BacktraceData {
-  void** trace_array;
+  const void** trace_array;
   size_t* count;
   size_t max;
 };
@@ -203,7 +203,7 @@ void SymbolMap::Populate() {
 
 // Returns true if |address| is contained by any of the memory regions
 // mapped for |module_entry|.
-bool ModuleContainsFrameAddress(void* address,
+bool ModuleContainsFrameAddress(const void* address,
                                 const SymbolMap::Module& module_entry) {
   for (size_t i = 0; i < module_entry.segment_count; ++i) {
     const SymbolMap::Segment& segment = module_entry.segments[i];
@@ -229,7 +229,7 @@ bool EnableInProcessStackDumping() {
   return true;
 }
 
-size_t CollectStackTrace(void** trace, size_t count) {
+size_t CollectStackTrace(const void** trace, size_t count) {
   size_t frame_count = 0;
   BacktraceData data = {trace, &frame_count, count};
   _Unwind_Backtrace(&UnwindStore, &data);

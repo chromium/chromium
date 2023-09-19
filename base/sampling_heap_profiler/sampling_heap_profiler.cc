@@ -92,9 +92,8 @@ const char* UpdateAndGetThreadName(const char* name) {
 
 // Checks whether unwinding from this function works.
 [[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
-  void* stack[kMaxStackEntries];
-  size_t frame_count = base::debug::CollectStackTrace(const_cast<void**>(stack),
-                                                      kMaxStackEntries);
+  const void* stack[kMaxStackEntries];
+  size_t frame_count = base::debug::CollectStackTrace(stack, kMaxStackEntries);
   // First frame is the current function and can be found without unwind tables.
   return frame_count > 1 ? StackUnwinder::kDefault
                          : StackUnwinder::kUnavailable;
@@ -186,9 +185,9 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
-                                               size_t max_entries,
-                                               size_t* count) {
+const void** SamplingHeapProfiler::CaptureStackTrace(const void** frames,
+                                                     size_t max_entries,
+                                                     size_t* count) {
   // Skip top frames as they correspond to the profiler itself.
   size_t skip_frames = 3;
   size_t frame_count = 0;
@@ -250,10 +249,10 @@ void SamplingHeapProfiler::SampleAdded(void* address,
 
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
                                               Sample* sample) {
-  void* stack[kMaxStackEntries];
+  const void* stack[kMaxStackEntries];
   size_t frame_count;
   // One frame is reserved for the thread name.
-  void** first_frame =
+  const void** first_frame =
       CaptureStackTrace(stack, kMaxStackEntries - 1, &frame_count);
   DCHECK_LT(frame_count, kMaxStackEntries);
   sample->stack.assign(first_frame, first_frame + frame_count);

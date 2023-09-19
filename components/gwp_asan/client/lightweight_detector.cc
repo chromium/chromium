@@ -70,7 +70,7 @@ void LightweightDetector::RecordLightweightDeallocation(void* ptr,
   slot_metadata.alloc_size = size;
   slot_metadata.alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
 
-  void* trace[LightweightDetectorState::kMaxStackFrames];
+  const void* trace[LightweightDetectorState::kMaxStackFrames];
   size_t len = AllocationInfo::GetStackTrace(
       trace, LightweightDetectorState::kMaxStackFrames);
   slot_metadata.dealloc.trace_len =
