@@ -216,6 +216,12 @@ class WebContentsViewMac : public WebContentsView,
   // The id that may be used to look up this NSView.
   const uint64_t ns_view_id_;
 
+  // Bounding rect for the part at the top of the WebContents that is not
+  // covered by window controls when window controls overlay is enabled.
+  // This is cached here in case this rect is set before the web contents has
+  // been attached to a remote view.
+  gfx::Rect window_controls_overlay_bounding_rect_;
+
   // The WebContentsViewCocoa that lives in the NSView hierarchy in this
   // process. This is always non-null, even when the view is being displayed
   // in another process.

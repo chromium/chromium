@@ -146,6 +146,7 @@ void WebContentsViewMac::FullscreenStateChanged(bool is_fullscreen) {}
 
 void WebContentsViewMac::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect) {
+  window_controls_overlay_bounding_rect_ = bounding_rect;
   if (remote_ns_view_) {
     remote_ns_view_->UpdateWindowControlsOverlay(bounding_rect);
   } else {
@@ -641,6 +642,10 @@ void WebContentsViewMac::ViewsHostableAttach(
     remote_cocoa_application->CreateWebContentsNSView(
         ns_view_id_, std::move(stub_host), std::move(stub_ns_view_receiver));
     remote_ns_view_->SetParentNSView(views_host_->GetNSViewId());
+    if (!window_controls_overlay_bounding_rect_.IsEmpty()) {
+      remote_ns_view_->UpdateWindowControlsOverlay(
+          window_controls_overlay_bounding_rect_);
+    }
 
     // Because this view is being displayed from a remote process, reset the
     // in-process NSView's client pointer, so that the in-process NSView will
