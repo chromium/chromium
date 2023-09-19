@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import android.graphics.Color;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -21,6 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
@@ -47,7 +47,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private static final Class<CriticalPersistedTabData> USER_DATA_KEY =
             CriticalPersistedTabData.class;
 
-    private static final int UNSPECIFIED_THEME_COLOR = Color.TRANSPARENT;
     private static final String NULL_OPENER_APP_ID = " ";
     private static final PersistedTabDataMapper<SerializedCriticalPersistedTabData> sMapper =
             new PersistedTabDataMapper<SerializedCriticalPersistedTabData>() {
@@ -112,7 +111,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private WebContentsState mWebContentsState;
     private int mContentStateVersion;
     private String mOpenerAppId;
-    private int mThemeColor;
+
     /**
      * Saves how this tab was initially launched so that we can record metrics on how the
      * tab was created. This is different than {@link Tab#getLaunchType()}, since {@link
@@ -140,22 +139,20 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param timestampMillis creation timestamp for the {@link Tab}
      * @param contentStateVersion content state version for the {@link Tab}
      * @param openerAppId identifier for app opener
-     * @param themeColor theme color
      * @param launchTypeAtCreation launch type at creation
      * @param userAgent user agent for the {@link Tab}
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     CriticalPersistedTabData(Tab tab, String url, String title, int rootId,
             WebContentsState webContentsState, int contentStateVersion, String openerAppId,
-            int themeColor, @Nullable @TabLaunchType Integer launchTypeAtCreation,
-            @TabUserAgent int userAgent, long lastNavigationCommittedTimestampMillis) {
+            @Nullable @TabLaunchType Integer launchTypeAtCreation, @TabUserAgent int userAgent,
+            long lastNavigationCommittedTimestampMillis) {
         this(tab);
         mUrl = url == null || url.isEmpty() ? GURL.emptyGURL() : new GURL(url);
         mTitle = title;
         mWebContentsState = webContentsState;
         mContentStateVersion = contentStateVersion;
         mOpenerAppId = openerAppId;
-        mThemeColor = themeColor;
         mTabLaunchTypeAtCreation = launchTypeAtCreation;
         mUserAgent = userAgent;
         mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
@@ -187,8 +184,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
     public CriticalPersistedTabData(Tab tab, SerializedCriticalPersistedTabData serialized) {
         this(tab, serialized.getUrl(), serialized.getTitle(), serialized.getRootId(),
                 serialized.getWebContentsState(), serialized.getWebContentsStateVersion(),
-                serialized.getOpenerAppId(), serialized.getThemeColor(), serialized.getLaunchType(),
-                serialized.getUserAgent(), serialized.getLastNavigationCommittedTimestampMillis());
+                serialized.getOpenerAppId(), serialized.getLaunchType(), serialized.getUserAgent(),
+                serialized.getLastNavigationCommittedTimestampMillis());
     }
 
     /**
@@ -261,9 +258,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static CriticalPersistedTabData build(Tab tab) {
         // CriticalPersistedTabData is initialized with default values
-        CriticalPersistedTabData criticalPersistedTabData =
-                new CriticalPersistedTabData(tab, "", "", tab.getId(), null, -1, "",
-                        UNSPECIFIED_THEME_COLOR, null, TabUserAgent.DEFAULT, INVALID_TIMESTAMP);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
+                "", tab.getId(), null, -1, "", null, TabUserAgent.DEFAULT, INVALID_TIMESTAMP);
         criticalPersistedTabData.save();
         return criticalPersistedTabData;
     }
@@ -293,7 +289,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             mOpenerAppId = NULL_OPENER_APP_ID.equals(deserialized.openerAppId())
                     ? null
                     : deserialized.openerAppId();
-            mThemeColor = deserialized.themeColor();
             mTabLaunchTypeAtCreation = getLaunchType(deserialized.launchTypeAtCreation());
             mUserAgent = getTabUserAgentType(deserialized.userAgent());
             return true;
@@ -497,7 +492,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             private ByteBuffer mByteBufferSnapshot;
             private String mOpenerAppIdSnapshot;
             private int mWebContentsStateVersionSnapshot;
-            private int mThemeColorSnapshot;
             private int mLaunchTypeSnapshot;
             private int mUserAgentTypeSnapshot;
             private long mLastNavigationCommittedTimestampMillisSnapshot;
@@ -535,7 +529,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     CriticalPersistedTabDataFlatBuffer.addContentStateVersion(
                             fbb, mWebContentsStateVersionSnapshot);
                     CriticalPersistedTabDataFlatBuffer.addOpenerAppId(fbb, oaid);
-                    CriticalPersistedTabDataFlatBuffer.addThemeColor(fbb, mThemeColorSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addThemeColor(
+                            fbb, TabState.UNSPECIFIED_THEME_COLOR);
                     CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(
                             fbb, mLaunchTypeSnapshot);
                     CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, mUserAgentTypeSnapshot);
@@ -563,7 +558,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                             webContentsState == null ? null : webContentsState.buffer();
                     mOpenerAppIdSnapshot = mOpenerAppId;
                     mWebContentsStateVersionSnapshot = mContentStateVersion;
-                    mThemeColorSnapshot = mThemeColor;
                     mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
                     mUserAgentTypeSnapshot = getUserAgentType(mUserAgent);
                     mLastNavigationCommittedTimestampMillisSnapshot =
@@ -714,13 +708,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public String getOpenerAppId() {
         return mOpenerAppId;
-    }
-
-    /**
-     * @return theme color
-     */
-    public int getThemeColor() {
-        return mThemeColor;
     }
 
     /**

@@ -173,8 +173,8 @@ public class CriticalPersistedTabDataTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(
                     new MockTab(TAB_ID, isEncrypted), "", "", ROOT_ID, WEB_CONTENTS_STATE,
-                    CONTENT_STATE_VERSION, OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION,
-                    USER_AGENT_A, LAST_NAVIGATION_COMMITTED_TIMESTAMP);
+                    CONTENT_STATE_VERSION, OPENER_APP_ID, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A,
+                    LAST_NAVIGATION_COMMITTED_TIMESTAMP);
             criticalPersistedTabData.setShouldSaveForTesting(true);
             mStorage.setSemaphore(saveSemaphore);
             ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
@@ -188,7 +188,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertNotNull(mCriticalPersistedTabData);
         assertEquals(mCriticalPersistedTabData.getContentStateVersion(), CONTENT_STATE_VERSION);
         assertEquals(mCriticalPersistedTabData.getOpenerAppId(), OPENER_APP_ID);
-        assertEquals(mCriticalPersistedTabData.getThemeColor(), THEME_COLOR);
         assertEquals(
                 mCriticalPersistedTabData.getTabLaunchTypeAtCreation(), LAUNCH_TYPE_AT_CREATION);
         Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
@@ -309,7 +308,7 @@ public class CriticalPersistedTabDataTest {
     public void testSerializationBug() throws InterruptedException {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
-                "", ROOT_ID, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, OPENER_APP_ID, THEME_COLOR,
+                "", ROOT_ID, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, OPENER_APP_ID,
                 LAUNCH_TYPE_AT_CREATION, USER_AGENT_A, LAST_NAVIGATION_COMMITTED_TIMESTAMP);
         Serializer<ByteBuffer> serializer = criticalPersistedTabData.getSerializer();
         serializer.preSerialize();
@@ -321,7 +320,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertNotNull(deserialized);
         assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
-        assertEquals(THEME_COLOR, deserialized.getThemeColor());
         assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
                 CriticalPersistedTabData.getContentStateByteArray(
@@ -344,8 +342,8 @@ public class CriticalPersistedTabDataTest {
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(
                         tab, "", "", ROOT_ID, TabStateExtractor.getWebContentsState(tab),
-                        CONTENT_STATE_VERSION, OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION,
-                        USER_AGENT_A, LAST_NAVIGATION_COMMITTED_TIMESTAMP);
+                        CONTENT_STATE_VERSION, OPENER_APP_ID, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A,
+                        LAST_NAVIGATION_COMMITTED_TIMESTAMP);
                 PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                         CriticalPersistedTabData.class, tab.isIncognito());
                 FilePersistedTabDataStorage persistedTabDataStorage =
@@ -360,9 +358,6 @@ public class CriticalPersistedTabDataTest {
         semaphore.acquire();
         ThreadUtils.runOnUiThreadBlocking(() -> {
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-                PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
-                        CriticalPersistedTabData.class, tab.isIncognito());
-
                 SerializedCriticalPersistedTabData serialized =
                         CriticalPersistedTabData.restore(tab.getId(), tab.isIncognito());
                 CriticalPersistedTabData deserialized =
@@ -380,7 +375,7 @@ public class CriticalPersistedTabDataTest {
     public void testOpenerAppIdNull() {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
-                "", ROOT_ID, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null, THEME_COLOR,
+                "", ROOT_ID, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
                 LAUNCH_TYPE_AT_CREATION, USER_AGENT_A, LAST_NAVIGATION_COMMITTED_TIMESTAMP);
         Serializer<ByteBuffer> serializer = criticalPersistedTabData.getSerializer();
         serializer.preSerialize();
@@ -763,7 +758,6 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData deserialized = CriticalPersistedTabData.from(tab);
         assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
-        assertEquals(THEME_COLOR, deserialized.getThemeColor());
         assertEquals(LaunchTypeAtCreationTest.FROM_LINK,
                 (int) deserialized.getTabLaunchTypeAtCreation());
         assertEquals(TabUserAgent.DEFAULT, deserialized.getUserAgent());
