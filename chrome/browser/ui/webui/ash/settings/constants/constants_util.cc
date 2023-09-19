@@ -45,6 +45,7 @@ void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
     return section == mojom::Section::kDateAndTime ||
            section == mojom::Section::kFiles ||
            section == mojom::Section::kLanguagesAndInput ||
+           section == mojom::Section::kPrinting ||
            section == mojom::Section::kReset ||
            section == mojom::Section::kSearchAndAssistant;
   };

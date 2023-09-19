@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_stylus_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/printing_section.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -964,9 +965,16 @@ enum class TouchpadSensitivity {
 
 DeviceSection::DeviceSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
+                             CupsPrintersManager* printers_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       power_subsection_(profile, search_tag_registry, pref_service),
+      printing_subsection_(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<PrintingSection>(profile,
+                                                     search_tag_registry,
+                                                     printers_manager)
+              : absl::nullopt),
       storage_subsection_(profile, search_tag_registry) {
   CHECK(profile);
   CHECK(search_tag_registry);
@@ -1065,7 +1073,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
 
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(printing_subsection_);
+    printing_subsection_->AddLoadTimeData(html_source);
+  } else {
     power_subsection_.AddLoadTimeData(html_source);
     storage_subsection_.AddLoadTimeData(html_source);
   }
@@ -1077,7 +1088,10 @@ void DeviceSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PointerHandler>());
   web_ui->AddMessageHandler(std::make_unique<StylusHandler>());
 
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(printing_subsection_);
+    printing_subsection_->AddHandlers(web_ui);
+  } else {
     power_subsection_.AddHandlers(web_ui);
     storage_subsection_.AddHandlers(web_ui);
   }
@@ -1290,7 +1304,11 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kDisplay, kDisplaySettings,
                             generator);
 
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    // Printing.
+    CHECK(printing_subsection_);
+    printing_subsection_->RegisterHierarchy(generator);
+  } else {
     // Power.
     power_subsection_.RegisterHierarchy(generator);
 

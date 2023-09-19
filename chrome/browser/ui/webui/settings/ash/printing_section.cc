@@ -21,6 +21,7 @@
 namespace ash::settings {
 
 namespace mojom {
+using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kPrintingDetailsSubpagePath;
 using ::chromeos::settings::mojom::kPrintingSectionPath;
 using ::chromeos::settings::mojom::Section;
@@ -79,10 +80,11 @@ const std::vector<SearchConcept>& GetPrintingManagementSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetScanningAppSearchConcepts() {
+const std::vector<SearchConcept>& GetScanningAppSearchConcepts(
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SCANNING_APP,
-       mojom::kPrintingSectionPath,
+       section_path,
        mojom::SearchResultIcon::kPrinter,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -101,7 +103,7 @@ PrintingSection::PrintingSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
   updater.AddSearchTags(GetPrintingManagementSearchConcepts());
-  updater.AddSearchTags(GetScanningAppSearchConcepts());
+  updater.AddSearchTags(GetScanningAppSearchConcepts(GetSectionPath()));
 
   // Saved Printers search tags are added/removed dynamically.
   if (printers_manager_) {
@@ -343,7 +345,9 @@ int PrintingSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section PrintingSection::GetSection() const {
-  return mojom::Section::kPrinting;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kDevice
+             : mojom::Section::kPrinting;
 }
 
 mojom::SearchResultIcon PrintingSection::GetSectionIcon() const {
@@ -351,7 +355,9 @@ mojom::SearchResultIcon PrintingSection::GetSectionIcon() const {
 }
 
 const char* PrintingSection::GetSectionPath() const {
-  return mojom::kPrintingSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kDeviceSectionPath
+             : mojom::kPrintingSectionPath;
 }
 
 bool PrintingSection::LogMetric(mojom::Setting setting,

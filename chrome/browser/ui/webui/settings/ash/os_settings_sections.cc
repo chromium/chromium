@@ -69,8 +69,9 @@ OsSettingsSections::OsSettingsSections(
              std::make_unique<PeopleSection>(profile, search_tag_registry,
                                              identity_manager, prefs));
 
-  AddSection(mojom::Section::kDevice, std::make_unique<DeviceSection>(
-                                          profile, search_tag_registry, prefs));
+  AddSection(mojom::Section::kDevice,
+             std::make_unique<DeviceSection>(profile, search_tag_registry,
+                                             printers_manager, prefs));
 
   AddSection(mojom::Section::kPersonalization,
              std::make_unique<PersonalizationSection>(
@@ -87,10 +88,6 @@ OsSettingsSections::OsSettingsSections(
   AddSection(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
-
-  AddSection(mojom::Section::kPrinting,
-             std::make_unique<PrintingSection>(profile, search_tag_registry,
-                                               printers_manager));
 
   AddSection(mojom::Section::kAccessibility,
              std::make_unique<AccessibilitySection>(
@@ -122,6 +119,10 @@ OsSettingsSections::OsSettingsSections(
     AddSection(mojom::Section::kLanguagesAndInput,
                std::make_unique<LanguagesSection>(profile, search_tag_registry,
                                                   prefs));
+
+    AddSection(mojom::Section::kPrinting,
+               std::make_unique<PrintingSection>(profile, search_tag_registry,
+                                                 printers_manager));
 
     AddSection(mojom::Section::kReset,
                std::make_unique<ResetSection>(profile, search_tag_registry));
