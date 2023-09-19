@@ -7275,7 +7275,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.VideoConferenceTray.StopScreenSharingButton.Click"
+<histogram name="Ash.VideoConferenceTray.StopScreenShareButton.Click"
     enum="BooleanClicked" expires_after="2024-03-16">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
