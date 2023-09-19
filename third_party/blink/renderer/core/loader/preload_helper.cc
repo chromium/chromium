@@ -917,18 +917,22 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       break;
     case ResourceType::kScript: {
       Page* page = document.GetPage();
+      v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+          v8_compile_hints_producer = nullptr;
       v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
           v8_compile_hints_consumer = nullptr;
       if (page->MainFrame()->IsLocalFrame()) {
+        v8_compile_hints_producer =
+            &page->GetV8CrowdsourcedCompileHintsProducer();
         v8_compile_hints_consumer =
             &page->GetV8CrowdsourcedCompileHintsConsumer();
       }
 
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
-      resource = ScriptResource::Fetch(params, resource_fetcher, nullptr,
-                                       ScriptResource::kAllowStreaming,
-                                       v8_compile_hints_consumer);
+      resource = ScriptResource::Fetch(
+          params, resource_fetcher, nullptr, ScriptResource::kAllowStreaming,
+          v8_compile_hints_producer, v8_compile_hints_consumer);
       break;
     }
     case ResourceType::kCSSStyleSheet:

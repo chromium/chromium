@@ -84,11 +84,13 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
 
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+        kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
-    resource_ = ScriptResource::Fetch(params, fetcher, nullptr,
-                                      ScriptResource::kNoStreaming,
-                                      kNoCompileHintsConsumer);
+    resource_ = ScriptResource::Fetch(
+        params, fetcher, nullptr, ScriptResource::kNoStreaming,
+        kNoCompileHintsProducer, kNoCompileHintsConsumer);
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);

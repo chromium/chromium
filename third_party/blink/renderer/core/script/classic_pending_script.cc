@@ -101,14 +101,17 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
   // SetClientIsWaitingForFinished is always set on the resource.
 
   Page* page = element_document.GetPage();
+  v8_compile_hints::V8CrowdsourcedCompileHintsProducer* compile_hints_producer =
+      nullptr;
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
       nullptr;
   if (page->MainFrame()->IsLocalFrame()) {
+    compile_hints_producer = &page->GetV8CrowdsourcedCompileHintsProducer();
     compile_hints_consumer = &page->GetV8CrowdsourcedCompileHintsConsumer();
   }
 
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
-                        ScriptResource::kAllowStreaming,
+                        ScriptResource::kAllowStreaming, compile_hints_producer,
                         compile_hints_consumer);
   pending_script->CheckState();
   return pending_script;

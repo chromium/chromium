@@ -214,10 +214,13 @@ void PossiblyFetchBlockedDocWriteScript(
   AddHeader(&params);
 
   // If streaming is not allowed, no compile hints are needed either.
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+      kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
-                        ScriptResource::kNoStreaming, kNoCompileHintsConsumer);
+                        ScriptResource::kNoStreaming, kNoCompileHintsProducer,
+                        kNoCompileHintsConsumer);
 }
 
 }  // namespace blink

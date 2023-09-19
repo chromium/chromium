@@ -31,7 +31,6 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -47,6 +46,11 @@ class FetchParameters;
 class KURL;
 class ResourceFetcher;
 class ScriptCachedMetadataHandler;
+
+namespace v8_compile_hints {
+class V8CrowdsourcedCompileHintsConsumer;
+class V8CrowdsourcedCompileHintsProducer;
+}  // namespace v8_compile_hints
 
 // ScriptResource is a resource representing a JavaScript, either a classic or
 // module script. Based on discussions (crbug.com/1178198) ScriptResources are
@@ -71,6 +75,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       ResourceFetcher*,
       ResourceClient*,
       StreamingAllowed,
+      v8_compile_hints::V8CrowdsourcedCompileHintsProducer*,
       v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*);
 
   // Public for testing
@@ -143,6 +148,11 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Visible for tests.
   void SetRevalidatingRequest(const ResourceRequestHead&) override;
+
+  v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+  GetV8CrowdsourcedCompileHintsProducer() const {
+    return v8_compile_hints_producer_;
+  }
 
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
   GetV8CrowdsourcedCompileHintsConsumer() const {
@@ -254,6 +264,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   const mojom::blink::ScriptType initial_request_script_type_;
   std::unique_ptr<TextResourceDecoder> stream_text_decoder_;
 
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsProducer>
+      v8_compile_hints_producer_;
   // The data V8CrowdsourcedCompileHintsConsumer consumes is tied to a Page.
   // It's possible that another Page requests the same script while streaming is
   // ongoing, and starts using the same ScriptResource. This is safe to do, as

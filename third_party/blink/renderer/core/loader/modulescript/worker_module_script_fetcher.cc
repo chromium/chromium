@@ -81,11 +81,13 @@ void WorkerModuleScriptFetcher::Fetch(
   // response.</spec>
 
   // If streaming is not allowed, no compile hints are needed either.
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+      kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, ScriptResource::kNoStreaming,
-                        kNoCompileHintsConsumer);
+                        kNoCompileHintsProducer, kNoCompileHintsConsumer);
 }
 
 void WorkerModuleScriptFetcher::Trace(Visitor* visitor) const {

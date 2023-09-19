@@ -19,6 +19,8 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -749,17 +751,16 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream_ptr), encoding_);
 
-  // Call FeatureList::IsEnabled only once.
-  static bool produce_compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints);
-
   v8::ScriptCompiler::CompileOptions compile_options =
       v8::ScriptCompiler::kNoCompileOptions;
   v8::CompileHintCallback compile_hint_callback = nullptr;
 
+  v8_compile_hints::V8CrowdsourcedCompileHintsProducer* compile_hints_producer =
+      script_resource_->GetV8CrowdsourcedCompileHintsProducer();
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
       script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
-  if (produce_compile_hints_enabled) {
+  if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
+    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints));
     compile_options = v8::ScriptCompiler::kProduceCompileHints;
   } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
     // This doesn't need to be gated behind a runtime flag, because there won't
