@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
+#import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
-#import "ios/chrome/browser/text_selection/text_selection_util.h"
+#import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
+#import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 
 // static
 TextClassifierModelServiceFactory*
@@ -52,8 +52,9 @@ TextClassifierModelServiceFactory::BuildServiceInstanceFor(
   // model service to be created.
   auto* opt_guide =
       OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
-  if (!opt_guide)
+  if (!opt_guide) {
     return nullptr;
+  }
   return std::make_unique<TextClassifierModelService>(opt_guide);
 }
 

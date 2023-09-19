@@ -90,7 +90,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
-#import "ios/chrome/browser/text_selection/text_selection_util.h"
+#import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"

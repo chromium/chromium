@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/lens/lens_browser_agent.h",
   "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",
   "+ios/chrome/browser/mailto_handler",
-  "+ios/chrome/browser/text_selection",
+  "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/flags/chrome_switches.h",
