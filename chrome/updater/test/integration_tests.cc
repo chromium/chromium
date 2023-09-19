@@ -951,11 +951,7 @@ TEST_F(IntegrationTest, ChangeTag) {
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
-
-  // TODO(crbug.com/1471724): An overinstall with a new AP should change the AP.
-  // Once this is fixed, the below assertion should be:
-  // ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo2"));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo2"));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

@@ -581,6 +581,13 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
     // Pre-register the app if there is no registration for it. This app
     // registration is removed later if the app install encounters an error.
     persisted_data_->RegisterApp(registration);
+  } else {
+    // Update brand and ap.
+    RegistrationRequest request;
+    request.app_id = registration.app_id;
+    request.brand_code = registration.brand_code;
+    request.ap = registration.ap;
+    persisted_data_->RegisterApp(request);
   }
 
   std::multimap<std::string, base::RepeatingClosure>::iterator pos =
