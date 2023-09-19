@@ -56,7 +56,10 @@ export class NetworkRequest {
   } = {};
 
   #response: {
-    info?: Protocol.Network.ResponseReceivedEvent;
+    info?: {
+      hasExtraInfo: boolean;
+      response: Protocol.Network.Response;
+    };
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
   } = {};
 
@@ -85,12 +88,13 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  handleRedirect(): void {
+  handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
+    this.#queueResponseCompletedEvent();
+    this.#response.info = {
+      hasExtraInfo: event.redirectHasExtraInfo,
+      response: event.redirectResponse!,
+    };
     this.#emitEventsIfReady(true);
-    this.#responseCompletedDeferred.resolve({
-      kind: 'error',
-      error: new Error('Redirects produce no response'),
-    });
   }
 
   #emitEventsIfReady(wasRedirected = false) {

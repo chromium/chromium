@@ -79,7 +79,7 @@ export class NetworkManager {
           params.requestId
         );
         if (request && request.isRedirecting()) {
-          request.handleRedirect();
+          request.handleRedirect(params);
           networkManager.#forgetNetworkRequest(params.requestId);
           networkManager.#networkStorage
             .createRequest(params.requestId, request.redirectCount + 1)
