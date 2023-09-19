@@ -18,6 +18,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
+#include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
@@ -67,11 +69,19 @@ using ScopedPK11GenericObjects =
 // would be useful here, however it does not actually return all relevant
 // slots.)
 std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert) {
+GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert,
+                             bool ignore_chaps_module) {
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>> r;
   crypto::AutoSECMODListReadLock lock_id;
   for (const SECMODModuleList* item = SECMOD_GetDefaultModuleList();
        item != nullptr; item = item->next) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (ignore_chaps_module && crypto::IsChapsModule(item->module)) {
+      // This check avoids unnecessary IPCs between NSS and Chaps.
+      continue;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     for (int i = 0; i < item->module->slotCount; ++i) {
       PK11SlotInfo* slot = item->module->slots[i];
       if (PK11_IsPresent(slot)) {
@@ -93,8 +103,11 @@ bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
 }
 
 bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
+  // In this path, `cert` could be a client certificate, so we should not skip
+  // the chaps module.
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(cert);
+      slots_and_handles_for_cert =
+          GetAllSlotsAndHandlesForCert(cert, /*ignore_chaps_module=*/false);
   for (const auto& [slot, handle] : slots_and_handles_for_cert) {
     if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
       // Cert is an NSS root. Continue looking to see if it also is present in
@@ -326,8 +339,13 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // came from. Do a more careful check to only honor trust settings from slots
   // we care about.
 
+  // We expect that CERT_GetCertTrust() != SECSuccess for client certs stored in
+  // Chaps. So, `nss_cert` should be a CA certificate and should not be stored
+  // in Chaps. Thus, we don't scan the chaps module in the following call for
+  // performance reasons.
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(nss_cert);
+      slots_and_handles_for_cert =
+          GetAllSlotsAndHandlesForCert(nss_cert, /*ignore_chaps_module=*/true);
 
   // Generally this shouldn't happen, though it is possible (ex, a builtin
   // distrust record with no matching cert in the builtin trust store could

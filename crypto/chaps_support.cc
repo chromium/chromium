@@ -111,13 +111,13 @@ ScopedPK11Slot GetChapsSlot(SECMODModule* chaps_module, CK_SLOT_ID slot_id) {
   return slot;
 }
 
-bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {
-  if (!slot)
-    return false;
-
-  SECMODModule* pk11_module = PK11_GetModule(slot);
+bool IsChapsModule(SECMODModule* pk11_module) {
   return pk11_module && std::string_view(pk11_module->commonName) ==
                             std::string_view(kChapsModuleName);
+}
+
+bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {
+  return slot && IsChapsModule(PK11_GetModule(slot));
 }
 
 }  // namespace crypto

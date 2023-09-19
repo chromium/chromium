@@ -20,6 +20,10 @@ CRYPTO_EXPORT SECMODModule* LoadChaps();
 CRYPTO_EXPORT ScopedPK11Slot GetChapsSlot(SECMODModule* chaps_module,
                                           CK_SLOT_ID slot_id);
 
+// Returns true if the given module is the Chaps module. Should be called on a
+// worker thread.
+CRYPTO_EXPORT bool IsChapsModule(SECMODModule* pk11_module);
+
 // Returns true if chaps is the module to which |slot| is attached. Should be
 // called on a worker thread.
 CRYPTO_EXPORT bool IsSlotProvidedByChaps(PK11SlotInfo* slot);
