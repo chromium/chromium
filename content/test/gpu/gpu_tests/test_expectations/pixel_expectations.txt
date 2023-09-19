@@ -226,6 +226,7 @@ crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 # increases runtime (by ~50%), pushing it from flaky to failing.
 crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/1474637 [ linux nvidia debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/1474637 [ mac graphite-disabled amd release no-asan ] Pixel_SVGHuge [ Skip ]
 
 # Fuchsia devices do not have enough memory for this test.
 crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
