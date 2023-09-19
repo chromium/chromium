@@ -111,26 +111,27 @@ struct MaskFilterInfoExt {
         return false;
       }
 
+      // Take the bounds of the sqs filter and apply clipping rect as it may
+      // make current mask fit the |mask_filter_info|'s bounds. Not doing so may
+      // result in marking this mask not suitable for merging while it never
+      // spans outside another mask.
+      auto rounded_corner_bounds = sqs->mask_filter_info.bounds();
+      if (sqs->clip_rect.has_value()) {
+        rounded_corner_bounds.Intersect(gfx::RectF(*sqs->clip_rect));
+      }
+
       // Before checking if current mask's rounded corners do not intersect with
       // the upper level rounded corner mask, its system coordinate must be
       // transformed to that target's system coordinate.
-      gfx::MaskFilterInfo sqs_filter = sqs->mask_filter_info;
-      sqs_filter.ApplyTransform(parent_target_transform);
+      rounded_corner_bounds =
+          parent_target_transform.MapRect(rounded_corner_bounds);
 
-      // Also apply clipping rect as it may make current mask fit the
-      // |mask_filter_info|'s bounds. Not doing so may result in marking this
-      // mask not suitable for merging while it never spans outside another
-      // mask.
-      auto clip_bounds = sqs_filter.bounds();
-      if (sqs->clip_rect.has_value()) {
-        clip_bounds.Intersect(gfx::RectF(*sqs->clip_rect));
-      }
-
-      // This is the only case when quads of this render pass with a mask
+      // This is the only case when quads of this render pass with the mask
       // filter info that has fast rounded corners set can be merged into the
       // embedding render pass. So, if they don't intersect with the "toplevel"
       // rounded corners, we can merge.
-      if (!mask_filter_info.rounded_corner_bounds().Contains(clip_bounds)) {
+      if (!mask_filter_info.rounded_corner_bounds().Contains(
+              rounded_corner_bounds)) {
         return false;
       }
     }
