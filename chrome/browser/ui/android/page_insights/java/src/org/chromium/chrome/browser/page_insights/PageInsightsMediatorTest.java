@@ -13,10 +13,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.DEFAULT_TRIGGER_DELAY_MS;
 import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -82,6 +86,7 @@ public class PageInsightsMediatorTest {
     private static final String TEST_CHILD_PAGE_TITLE = "People also View";
     private static final byte[] TEST_FEED_ELEMENTS_OUTPUT = new byte[123];
     private static final byte[] TEST_CHILD_ELEMENTS_OUTPUT = new byte[456];
+    private static final int SHORT_TRIGGER_DELAY_MS = 2 * (int) DateUtils.SECOND_IN_MILLIS;
 
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -125,6 +130,8 @@ public class PageInsightsMediatorTest {
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParams;
     @Captor
     private ArgumentCaptor<ShareParams> mShareParams;
+    @Captor
+    private ArgumentCaptor<Callback<Tab>> mTabObserver;
 
     private ShadowLooper mShadowLooper;
 
@@ -133,7 +140,6 @@ public class PageInsightsMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Context mContext = ContextUtils.getApplicationContext();
         mShadowLooper = ShadowLooper.shadowMainLooper();
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
@@ -149,9 +155,25 @@ public class PageInsightsMediatorTest {
         when(mPageInsightsDataLoader.getData()).thenReturn(getPageInsightsMetadata());
         when(mMockTabProvider.get()).thenReturn(mTab);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
-        mMediator = new PageInsightsMediator(mContext, mMockTabProvider, mShareDelegateSupplier,
+    }
+
+    private void createMediator() {
+        createMediator(DEFAULT_TRIGGER_DELAY_MS);
+    }
+
+    private void createMediator(int triggerDelayMs) {
+        createMediator(triggerDelayMs, 0);
+    }
+
+    private void createMediator(int triggerDelayMs, long firstLoadTimeMs) {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, String.valueOf(triggerDelayMs));
+        FeatureList.setTestValues(testValues);
+        Context context = ContextUtils.getApplicationContext();
+        mMediator = new PageInsightsMediator(context, mMockTabProvider, mShareDelegateSupplier,
                 mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
-                mControlsStateProvider, mBrowserControlsSizer, () -> true);
+                mControlsStateProvider, mBrowserControlsSizer, () -> true, firstLoadTimeMs);
         mMediator.setPageInsightsDataLoaderForTesting(mPageInsightsDataLoader);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
         setBackgroundDrawable();
@@ -160,12 +182,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_doesNotTriggerImmediately() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
-        FeatureList.setTestValues(testValues);
-
+        createMediator(SHORT_TRIGGER_DELAY_MS);
         mMediator.onLoadStopped(mTab, true);
         mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
 
@@ -175,12 +192,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_notEnoughDuration_doesNotTrigger() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
-        FeatureList.setTestValues(testValues);
-
+        createMediator(SHORT_TRIGGER_DELAY_MS);
         mMediator.onLoadStopped(mTab, true);
         mShadowLooper.idleFor(250, TimeUnit.MILLISECONDS);
         mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
@@ -191,11 +203,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_enoughDuration_showsBottomSheet() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
-        FeatureList.setTestValues(testValues);
+        createMediator(SHORT_TRIGGER_DELAY_MS);
         View feedView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
 
@@ -227,9 +235,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testOpenInExpandedState_showsBottomSheet() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        FeatureList.setTestValues(testValues);
+        createMediator();
         View feedView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
 
@@ -256,9 +262,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void actionHandler_navigateToPageInsightsPage_childPageOpened() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        FeatureList.setTestValues(testValues);
+        createMediator();
         View childView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(
                      eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
@@ -292,9 +296,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void actionHandler_openUrl_opensUrl() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        FeatureList.setTestValues(testValues);
+        createMediator();
         when(mSurfaceRenderer.render(
                      eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
                 .thenReturn(new View(ContextUtils.getApplicationContext()));
@@ -312,9 +314,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void actionHandler_share_shares() throws Exception {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        FeatureList.setTestValues(testValues);
+        createMediator();
         when(mSurfaceRenderer.render(
                      eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
                 .thenReturn(new View(ContextUtils.getApplicationContext()));
@@ -329,6 +329,53 @@ public class PageInsightsMediatorTest {
         verify(mShareDelegate).share(mShareParams.capture(), any(), eq(ShareOrigin.PAGE_INSIGHTS));
         assertEquals(url, mShareParams.getValue().getUrl());
         assertEquals(title, mShareParams.getValue().getTitle());
+    }
+
+    @Test
+    @MediumTest
+    public void setupAutoTriggerForDelayedInstantation_beforeTabLoading() throws Exception {
+        createMediator();
+        verify(mMockTabProvider).addObserver(mTabObserver.capture());
+
+        // Nothing happens for null tab.
+        mTabObserver.getValue().onResult(null);
+        verify(mTab, never()).addObserver(mMediator);
+
+        // Tab is still loading -> autotrigger setup will be handled by Mediator#onLoadStopped
+        when(mTab.isLoading()).thenReturn(true);
+        mTabObserver.getValue().onResult(mTab);
+        verify(mTab).addObserver(mMediator);
+        mShadowLooper.idleFor(DEFAULT_TRIGGER_DELAY_MS + 1, TimeUnit.MILLISECONDS);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    @MediumTest
+    public void setupAutoTriggerForDelayedInstantation_afterTabLoading() throws Exception {
+        // PIH was instantiated 20 seconds after tab loading completes.
+        long timeAfterLoading = 20 * DateUtils.SECOND_IN_MILLIS;
+        Supplier<Long> fakeTimer = Mockito.mock(Supplier.class);
+        final long currentTime = 139583732;
+        when(fakeTimer.get()).thenReturn(currentTime);
+
+        createMediator(DEFAULT_TRIGGER_DELAY_MS, currentTime - timeAfterLoading);
+        mMediator.setElapsedRealtimeSupplierForTesting(fakeTimer);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        verify(mMockTabProvider).addObserver(mTabObserver.capture());
+
+        when(mTab.isLoading()).thenReturn(false);
+        mTabObserver.getValue().onResult(mTab);
+        verify(mTab).addObserver(mMediator);
+
+        // Verify that the PIH was autotriggered in 40 seconds.
+        mShadowLooper.idleFor(
+                DEFAULT_TRIGGER_DELAY_MS - timeAfterLoading - 1, TimeUnit.MILLISECONDS);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+
+        // + 2 == DEFAULT_TRIGGER_DELAY_MS - timeAfterLoading + 1
+        mShadowLooper.idleFor(2, TimeUnit.MILLISECONDS);
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 
     private PageInsightsMetadata getPageInsightsMetadata() {

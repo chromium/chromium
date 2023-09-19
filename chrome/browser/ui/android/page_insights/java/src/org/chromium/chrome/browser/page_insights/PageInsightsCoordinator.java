@@ -53,13 +53,15 @@ public class PageInsightsCoordinator {
      * @param controlsStateProvider Provides the browser controls' state.
      * @param browserControlsSizer Bottom browser controls resizer.
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
+     * @param firstLoadTimeMs Timestamp for the first page load completion.
      */
     public PageInsightsCoordinator(Context context, ObservableSupplier<Tab> tabProvider,
             Supplier<ShareDelegate> shareDelegateSupplier,
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
-            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled) {
+            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled,
+            long firstLoadTimeMs) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -69,7 +71,8 @@ public class PageInsightsCoordinator {
         mBrowserControlsSizer = browserControlsSizer;
         mMediator = new PageInsightsMediator(mContext, mTabProvider, shareDelegateSupplier,
                 mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
-                mControlsStateProvider, mBrowserControlsSizer, isPageInsightsHubEnabled);
+                mControlsStateProvider, mBrowserControlsSizer, isPageInsightsHubEnabled,
+                firstLoadTimeMs);
     }
 
     /**

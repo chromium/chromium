@@ -33,12 +33,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -119,6 +121,8 @@ public class PageInsightsCoordinatorTest {
 
     private GradientDrawable mBackgroundDrawable;
 
+    private FeatureList.TestValues mFeatureListValues;
+
     @BeforeClass
     public static void setupSuite() {
         sTestRule.launchActivity(null);
@@ -134,6 +138,10 @@ public class PageInsightsCoordinatorTest {
                 .when(mSurfaceRenderer)
                 .render(any(), any());
         doReturn(false).when(mIsPageInsightsHubEnabled).getAsBoolean();
+        mFeatureListValues = new FeatureList.TestValues();
+        FeatureList.setTestValues(mFeatureListValues);
+        mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, String.valueOf(2000));
     }
 
     private static Activity getActivity() {
@@ -175,7 +183,7 @@ public class PageInsightsCoordinatorTest {
         mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
                 mShareDelegateSupplier, mPageInsightsController, mBottomUiController,
                 mExpandedSheetHelper, mBrowserControlsStateProvider, mBrowserControlsSizer,
-                mIsPageInsightsHubEnabled);
+                mIsPageInsightsHubEnabled, 0);
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
         waitForAnimationToFinish();
     }

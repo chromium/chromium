@@ -15,6 +15,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.EXTRA_QUERY_INTERVAL_MS;
 import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.MSG_REFRESH;
 import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.MSG_RETRY;
 import static org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker.REFRESH_PERIOD_MS;
@@ -131,11 +132,18 @@ public class PageInsightsSwaaCheckerUnitTest {
         assertFalse(mSwaaChecker.isSwaaEnabled().get());
         assertTrue(mSwaaChecker.isUpdateScheduled());
 
+        // Set the sWAA state to |true| for the next step.
+        mSwaaChecker.onSwaaResponse(true);
+        clearInvocations(mActivateCallback);
+
         // The 2nd CCT instance picks up the cached value without sending a new query
         // if the cache is valid. Verify the handler has an update scheduled.
         long timeNow2 = timeNow + REFRESH_PERIOD_MS / 2;
         mSwaaChecker.setElapsedRealtimeSupplierForTesting(() -> timeNow2);
         mSwaaChecker.start();
+
+        // Verify the activation i.e. PIH instantion is attempted immediately.
+        verify(mActivateCallback).run();
         verify(mHandler, never()).sendEmptyMessage(eq(MSG_REFRESH));
         verify(mHandler, never()).sendEmptyMessageDelayed(eq(MSG_REFRESH), anyInt());
         assertTrue(mSwaaChecker.isUpdateScheduled());
@@ -156,13 +164,19 @@ public class PageInsightsSwaaCheckerUnitTest {
 
         // On signing in, a new query is made to update the cache immediately.
         mSwaaChecker.onSignedIn();
-        verifyRequestSent();
+        verify(mHandler).sendEmptyMessage(eq(MSG_REFRESH));
     }
 
     private void verifyRequestSent() {
+        // At the beginning when there is no cached data (or when sWAA is false), we send
+        // 2 successive requests to work around a problem that often receives |false| for
+        // the first request.
         verify(mHandler).sendEmptyMessage(eq(MSG_REFRESH));
-        // sendEmptyMessage sends the request immediately. Simulate that.
+        verify(mHandler).sendEmptyMessageDelayed(eq(MSG_REFRESH), eq(EXTRA_QUERY_INTERVAL_MS));
+
+        // Simulate handling the message.
         handleMessage(MSG_REFRESH);
+
         verify(mPageInsightsSwaaCheckerJni).queryStatus(any(), any());
         assertTrue(mSwaaChecker.isUpdateScheduled());
         clearInvocations(mHandler);

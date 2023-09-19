@@ -9,7 +9,6 @@ import static androidx.annotation.VisibleForTesting.PRIVATE;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.SystemClock;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
@@ -34,6 +33,9 @@ public class PageInsightsSwaaChecker {
     @VisibleForTesting(otherwise = PRIVATE)
     static final long REFRESH_PERIOD_MS = DateUtils.MINUTE_IN_MILLIS * 5;
 
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final long EXTRA_QUERY_INTERVAL_MS = DateUtils.SECOND_IN_MILLIS;
+
     private static final long[] RETRY_PERIODS_MS = new long[] {5 * DateUtils.SECOND_IN_MILLIS,
             10 * DateUtils.SECOND_IN_MILLIS, 30 * DateUtils.SECOND_IN_MILLIS};
 
@@ -51,7 +53,7 @@ public class PageInsightsSwaaChecker {
     private int mRetryCount;
 
     PageInsightsSwaaChecker(Profile profile, Runnable activateCallback) {
-        mElapsedRealtime = SystemClock::elapsedRealtime;
+        mElapsedRealtime = System::currentTimeMillis;
         mProfile = profile;
         mActivateCallback = activateCallback;
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -78,12 +80,20 @@ public class PageInsightsSwaaChecker {
      * Start periodic querying of supplemental Web and App Activity setting.
      */
     void start() {
-        Optional<Boolean> swaaStatus = isSwaaEnabled();
-        if (!swaaStatus.isPresent()) {
+        boolean swaaEnabled = isSwaaEnabled().orElse(false);
+        if (!swaaEnabled) {
             mHandler.sendEmptyMessage(MSG_REFRESH);
-        } else if (!isUpdateScheduled()) {
-            mHandler.sendEmptyMessageDelayed(
-                    MSG_REFRESH, REFRESH_PERIOD_MS - timeSinceLastUpdateMs());
+            // The very first sWAA query to the server often returns false. To get around it,
+            // Send another query in quick succession if not cached or the current state is false.
+            // TODO(crbug/1482474): Figure out why this happens and remove this extra query.
+            mHandler.sendEmptyMessageDelayed(MSG_REFRESH, EXTRA_QUERY_INTERVAL_MS);
+        } else {
+            // Invoke activate callback if sWAA bit is on. This speeds up the intantiation of PIH.
+            mActivateCallback.run();
+            if (!isUpdateScheduled()) {
+                mHandler.sendEmptyMessageDelayed(
+                        MSG_REFRESH, REFRESH_PERIOD_MS - timeSinceLastUpdateMs());
+            }
         }
     }
 
@@ -126,10 +136,10 @@ public class PageInsightsSwaaChecker {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onSwaaResponse(boolean enabled) {
         mHandler.removeMessages(MSG_RETRY);
-        if (enabled) mActivateCallback.run();
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.writeLong(ChromePreferenceKeys.SWAA_TIMESTAMP, mElapsedRealtime.get());
         prefs.writeBoolean(ChromePreferenceKeys.SWAA_STATUS, enabled);
+        if (enabled) mActivateCallback.run();
     }
 
     /**

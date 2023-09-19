@@ -108,6 +108,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private int mPageInsightsToken;
 
     /**
+     * Stores the timestamp when the first tab page load completed. If PIH instantiation is delayed
+     * due to enable conditions not being met for some time, it could miss the load completion
+     * event necessary to auto-trigger PIH sheet. This value is passed to PIH to take care of
+     * the autotriggering if such race condition occurs.
+     */
+    private long mPageInsightsFirstLoadTimeMs;
+
+    /**
      * Construct a new BaseCustomTabRootUiCoordinator.
      * @param activity The activity whose UI the coordinator is responsible for.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
@@ -256,17 +264,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
-        maybeCreatePageInsightsComponent();
         if (isPageInsightsCapable(mIntentDataProvider.get())) {
-            // Start sWAA checking handler while page insight-capable CCT is in use. We give some
-            // delay in starting it to avoid the first call failing, which is observed sometimes.
+            var activator = PageInsightsActivator.getForProfile(mProfileSupplier.get());
+            mPageInsightsToken = activator.start(() -> maybeCreatePageInsightsComponent());
             Tab tab = mTabModelSelectorSupplier.get().getCurrentTab();
             tab.addObserver(new EmptyTabObserver() {
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
+                    mPageInsightsFirstLoadTimeMs = System.currentTimeMillis();
                     tab.removeObserver(this);
-                    var activator = PageInsightsActivator.getForProfile(mProfileSupplier.get());
-                    mPageInsightsToken = activator.start(() -> maybeCreatePageInsightsComponent());
                 }
             });
         }
@@ -297,7 +303,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mPageInsightsCoordinator = new PageInsightsCoordinator(mActivity, mActivityTabProvider,
                 mShareDelegateSupplier, controller, getBottomSheetController(),
                 mExpandedBottomSheetHelper, mBrowserControlsManager, mBrowserControlsManager,
-                this::isPageInsightsHubEnabled);
+                this::isPageInsightsHubEnabled, mPageInsightsFirstLoadTimeMs);
 
         mContextualSearchObserver = new ContextualSearchObserver() {
             @Override

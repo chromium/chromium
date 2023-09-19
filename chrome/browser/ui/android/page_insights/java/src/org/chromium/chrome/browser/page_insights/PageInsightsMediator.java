@@ -55,7 +55,7 @@ import java.util.function.BooleanSupplier;
  * </ul>
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
-    private static final int DEFAULT_TRIGGER_DELAY_MS = (int) DateUtils.MINUTE_IN_MILLIS;
+    static final int DEFAULT_TRIGGER_DELAY_MS = (int) DateUtils.MINUTE_IN_MILLIS;
     private static final float MINIMUM_CONFIDENCE = 0.5f;
     static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END =
             "page_insights_can_autotrigger_after_end";
@@ -107,20 +107,35 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // when notified when the UI was closed.
     private boolean mShouldRestore;
 
+    // Amount of time to wait before triggering the sheet automatically. Can be overridden
+    // for testing.
+    private long mAutoTriggerDelayMs;
+    private Supplier<Long> mCurrentTime;
+
     public PageInsightsMediator(Context context, ObservableSupplier<Tab> tabObservable,
             Supplier<ShareDelegate> shareDelegateSupplier,
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
-            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled) {
+            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled,
+            long firstLoadTimeMs) {
         mContext = context;
         mSheetContent = new PageInsightsSheetContent(mContext);
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
+        mCurrentTime = System::currentTimeMillis;
         tabObservable.addObserver(tab -> {
-            if (tab != null) {
-                tab.addObserver(this);
+            if (tab == null) return;
+
+            // Handle autotrigger if tab loading has already finished, which can happen
+            // when PIH components creation is delayed due to sWAA bit being enabled
+            // later than tab loading process.
+            if (!tab.isLoading() && firstLoadTimeMs > 0) {
+                long triggerTimeMs = firstLoadTimeMs + mAutoTriggerDelayMs;
+                long delayMs = Math.max(0, triggerTimeMs - mCurrentTime.get());
+                delayStartAutoTrigger(Math.min(mAutoTriggerDelayMs, delayMs));
             }
+            tab.addObserver(this);
         });
         mExpandedSheetHelper = expandedSheetHelper;
         mHandler = new Handler(Looper.getMainLooper());
@@ -149,6 +164,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSurfaceRendererContextValues =
                 PageInsightsActionHandlerImpl.createContextValues(new PageInsightsActionHandlerImpl(
                         tabObservable, shareDelegateSupplier, this::changeToChildPage));
+        mAutoTriggerDelayMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                DEFAULT_TRIGGER_DELAY_MS);
     }
 
     void initView(View bottomSheetContainer) {
@@ -211,10 +229,15 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         // onPageLoadFinished is not suitable as it is not fired when going back to a cached page.
         if (!toDifferentDocument) return;
         resetAutoTriggerTimer();
-        mHandler.postDelayed(mAutoTriggerRunnable,
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                        PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, DEFAULT_TRIGGER_DELAY_MS));
+        delayStartAutoTrigger(mAutoTriggerDelayMs);
+    }
+
+    private void delayStartAutoTrigger(long delayMs) {
+        if (delayMs > 0) {
+            mHandler.postDelayed(mAutoTriggerRunnable, delayMs);
+        } else {
+            mAutoTriggerRunnable.run();
+        }
     }
 
     private void maybeAutoTriggerPageInsights() {
@@ -369,12 +392,20 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mAutoTriggerReady = true;
     }
 
+    boolean getAutoTriggerReadyForTesting() {
+        return mAutoTriggerReady;
+    }
+
     void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {
         mPageInsightsDataLoader = pageInsightsDataLoader;
     }
 
     View getContainerForTesting() {
         return mSheetContainer;
+    }
+
+    void setElapsedRealtimeSupplierForTesting(Supplier<Long> currentTime) {
+        mCurrentTime = currentTime;
     }
 
     private PageInsightsSurfaceRenderer getSurfaceRenderer() {

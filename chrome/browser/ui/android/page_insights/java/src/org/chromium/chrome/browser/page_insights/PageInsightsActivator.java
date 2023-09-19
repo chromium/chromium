@@ -74,9 +74,9 @@ public class PageInsightsActivator implements SignInStateObserver, SyncStateChan
      * @return a token to be used later to stop checking.
      */
     public int start(Runnable callback) {
-        mSwaaChecker.start();
         int token = mTokenHolder.acquireToken();
         mCallbacks.put(token, callback);
+        mSwaaChecker.start();
         return token;
     }
 
