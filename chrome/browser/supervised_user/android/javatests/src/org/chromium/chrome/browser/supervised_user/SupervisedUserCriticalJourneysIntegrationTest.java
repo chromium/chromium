@@ -4,6 +4,16 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.not;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -14,9 +24,11 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -66,5 +78,23 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
+    }
+
+    @Test
+    @LargeTest
+    public void incognitoModeIsUnavailableFromAppMenu() throws InterruptedException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
+        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
+    }
+
+    @Test
+    @LargeTest
+    public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
+        onView(withId(R.id.tab_switcher_button)).perform(longClick());
+        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
+        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
     }
 }
