@@ -171,6 +171,17 @@
           'gtest_tests': 'chromeos_device_no_gtests',
         },
       },
+      'chromeos-volteer-chrome-skylab': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_volteer_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
       # TODO(crbug.com/1218582): Merge this to lacros-amd64-generic-chrome once
       # it's proven to be stable and easy to debug. This is the first time we
       # run Skylab on CI, so wanted to be cautious to avoid causing trouble to
@@ -6804,17 +6815,6 @@
       'chromeos-trogdor-chrome-skylab-tests-fyi': {
         'test_suites': {
           'skylab_tests': 'chromeos_trogdor_skylab_tests',
-        },
-        'os_type': 'chromeos',
-      },
-      'chromeos-volteer-chrome-skylab-fyi': {
-        'additional_compile_targets': [
-          "chrome",
-          "linux_symbols",
-          "symupload",
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_volteer_skylab_tests',
         },
         'os_type': 'chromeos',
       },
