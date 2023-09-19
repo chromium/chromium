@@ -597,7 +597,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   // LCP Critical Path Predictor identified resources get a priority boost.
-  if (is_potentially_lcp_element || is_potentially_lcp_influencer) {
+  if ((is_potentially_lcp_element || is_potentially_lcp_influencer) &&
+      !features::kLCPCriticalPathPredictorDryRun.Get()) {
     features::LcppResourceLoadPriority preferred_priority =
         is_potentially_lcp_element
             ? features::kLCPCriticalPathPredictorImageLoadPriority.Get()
