@@ -662,18 +662,21 @@ void DawnIOSurfaceRepresentation::EndAccess() {
   // with other backings).
   texture_.Destroy();
 
-  if (gl::GetANGLEImplementation() != gl::ANGLEImplementation::kMetal) {
-    // macOS has a global GPU command queue so synchronization between APIs and
-    // devices is automatic. However on Metal, wgpuQueueSubmit "commits" the
-    // Metal command buffers but they aren't "scheduled" in the global queue
-    // immediately. (that work seems offloaded to a different thread?)
-    // Wait for all the previous submitted commands to be scheduled to have
-    // scheduling races between commands using the IOSurface on different APIs.
-    // This isn't needed for ANGLE's Metal backend since it uses the above
-    // MTLSharedEvent to synchronize instead.
-    TRACE_EVENT0("gpu", "DawnIOSurfaceRepresentation::EndAccess");
-    dawn::native::metal::WaitForCommandsToBeScheduled(device_.Get());
-  }
+  // TODO(b/252731382): the following WaitForCommandsToBeScheduled call should
+  // no longer be necessary, but for some reason it is. Removing it
+  // reintroduces intermittent renders of black frames to the WebGPU canvas.
+  // This points to another synchronization bug not resolved by the use of
+  // MTLSharedEvent between Dawn and ANGLE's Metal backend.
+  //
+  // macOS has a global GPU command queue so synchronization between APIs and
+  // devices is automatic. However on Metal, wgpuQueueSubmit "commits" the
+  // Metal command buffers but they aren't "scheduled" in the global queue
+  // immediately. (that work seems offloaded to a different thread?)
+  // Wait for all the previous submitted commands to be scheduled to have
+  // scheduling races between commands using the IOSurface on different APIs.
+  // This is a blocking call but should be almost instant.
+  TRACE_EVENT0("gpu", "DawnIOSurfaceRepresentation::EndAccess");
+  dawn::native::metal::WaitForCommandsToBeScheduled(device_.Get());
 
   texture_ = nullptr;
 }
