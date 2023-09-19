@@ -150,7 +150,9 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 
 // Verifies that focusing on the login shelf widget with a policy wallpaper
 // works as expected (see https://crbug.com/1197052).
-TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
+// Test disabled due to flakiness b/293680827
+TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL,
+       DISABLED_FocusOnShutdownButton) {
   FocusOnShutdownButton();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
