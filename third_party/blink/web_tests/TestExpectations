@@ -1311,10 +1311,6 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-pres
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
 
-# external/wpt/scroll-animations/ failures
-crbug.com/1469282 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Pass Timeout ]
-crbug.com/1469282 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Pass Timeout ]
-
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
