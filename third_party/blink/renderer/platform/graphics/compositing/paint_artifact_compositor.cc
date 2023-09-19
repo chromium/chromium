@@ -150,14 +150,19 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
 }
 
 const TransformPaintPropertyNode&
-PaintArtifactCompositor::NearestScrollTranslationForLayer(
+PaintArtifactCompositor::ScrollTranslationStateForLayer(
     const PendingLayer& pending_layer) {
-  if (pending_layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer)
+  if (pending_layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer) {
     return pending_layer.ScrollTranslationForScrollHitTestLayer();
+  }
 
-  return pending_layer.GetPropertyTreeState()
-      .Transform()
-      .NearestScrollTranslationNode();
+  // When HitTestOpaqueness is enabled, use the correct scroll state for fixed
+  // position content, so scrolls on fixed content is correctly handled on the
+  // compositor if the fixed content is opaque to hit test.
+  const auto& transform = pending_layer.GetPropertyTreeState().Transform();
+  return RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+             ? transform.ScrollTranslationState()
+             : transform.NearestScrollTranslationNode();
 }
 
 bool PaintArtifactCompositor::NeedsCompositedScrolling(
@@ -883,13 +888,9 @@ void PaintArtifactCompositor::Update(
           effect.GetCompositorElementId();
     }
 
-    // The compositor scroll node is not directly stored in the property tree
-    // state but can be created via the scroll offset translation node.
-    const auto& scroll_translation =
-        NearestScrollTranslationForLayer(pending_layer);
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollAndTransformNode(
-            scroll_translation);
+            ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
 

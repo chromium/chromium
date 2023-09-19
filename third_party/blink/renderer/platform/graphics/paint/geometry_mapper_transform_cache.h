@@ -125,6 +125,10 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     DCHECK(nearest_scroll_translation_);
     return *nearest_scroll_translation_;
   }
+  const TransformPaintPropertyNode& scroll_translation_state() const {
+    DCHECK(scroll_translation_state_);
+    return *scroll_translation_state_;
+  }
 
   const TransformPaintPropertyNode* nearest_directly_composited_ancestor()
       const {
@@ -221,6 +225,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   absl::optional<ScreenTransform> screen_transform_;
 
   const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
+  const TransformPaintPropertyNode* scroll_translation_state_ = nullptr;
   const TransformPaintPropertyNode* nearest_directly_composited_ancestor_ =
       nullptr;
 

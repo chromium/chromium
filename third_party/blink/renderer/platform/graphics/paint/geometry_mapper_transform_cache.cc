@@ -37,7 +37,7 @@ void GeometryMapperTransformCache::Update(
     screen_transform_updated_ = true;
 
     DCHECK(node.ScrollNode());
-    nearest_scroll_translation_ = &node;
+    nearest_scroll_translation_ = scroll_translation_state_ = &node;
     return;
   }
 
@@ -54,6 +54,9 @@ void GeometryMapperTransformCache::Update(
 
   nearest_scroll_translation_ =
       node.ScrollNode() ? &node : parent.nearest_scroll_translation_;
+  scroll_translation_state_ = node.ScrollTranslationForFixed()
+                                  ? node.ScrollTranslationForFixed()
+                                  : nearest_scroll_translation_;
 
   nearest_directly_composited_ancestor_ =
       node.HasDirectCompositingReasons()

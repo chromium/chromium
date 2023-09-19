@@ -286,7 +286,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                          const EffectPaintPropertyNode& effect,
                          wtf_size_t layer_index);
 
-  const TransformPaintPropertyNode& NearestScrollTranslationForLayer(
+  const TransformPaintPropertyNode& ScrollTranslationStateForLayer(
       const PendingLayer&);
 
   // if |needs_layer| is false, no cc::Layer is created, |mask_effect_id| is

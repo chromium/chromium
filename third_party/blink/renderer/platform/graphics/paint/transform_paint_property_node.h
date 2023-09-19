@@ -241,6 +241,15 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return GetTransformCache().nearest_scroll_translation();
   }
 
+  // This is different from NearestScrollTranslationNode in that for a
+  // fixed-position paint offset translation, this returns
+  // ScrollTranslationForFixed() instead of the ancestor scroll translation
+  // because a scroll gesture on a fixed-position element should scroll the
+  // containing view.
+  const TransformPaintPropertyNode& ScrollTranslationState() const {
+    return GetTransformCache().scroll_translation_state();
+  }
+
   // Returns the nearest ancestor node (including |this|) that has direct
   // compositing reasons.
   const TransformPaintPropertyNode* NearestDirectlyCompositedAncestor() const {
