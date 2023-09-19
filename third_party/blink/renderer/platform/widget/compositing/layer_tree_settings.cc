@@ -307,7 +307,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     bool is_threaded,
     bool is_for_embedded_frame,
     bool is_for_scalable_page,
-    bool is_for_web_test,
     const gfx::Size& initial_screen_size,
     float initial_device_scale_factor) {
   const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
@@ -678,8 +677,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
   settings.enable_variable_refresh_rate =
       ::features::IsVariableRefreshRateEnabled();
-
-  settings.is_threaded_web_test = is_for_web_test && is_threaded;
 
   std::tie(settings.tiling_interest_area_padding,
            settings.skewport_extrapolation_limit_in_screen_pixels) =

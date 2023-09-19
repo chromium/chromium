@@ -196,8 +196,7 @@ void WidgetBase::InitializeCompositing(
     const display::ScreenInfo& screen_info = screen_infos.current();
     default_settings = GenerateLayerTreeSettings(
         compositing_thread_scheduler, is_embedded_, is_for_scalable_page_,
-        WebTestMode(), screen_info.rect.size(),
-        screen_info.device_scale_factor);
+        screen_info.rect.size(), screen_info.device_scale_factor);
     settings = &default_settings.value();
   }
   screen_infos_ = screen_infos;
@@ -644,8 +643,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   // state changes.
   const cc::LayerTreeSettings& settings = LayerTreeHost()->GetSettings();
   if (settings.disable_frame_rate_limit ||
-      settings.enable_variable_refresh_rate ||
-      (for_web_tests && ThreadScheduler::CompositorThreadScheduler())) {
+      settings.enable_variable_refresh_rate) {
     params->use_begin_frame_presentation_feedback =
         base::FeatureList::IsEnabled(
             features::kUseBeginFramePresentationFeedback);

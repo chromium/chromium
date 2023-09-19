@@ -53,9 +53,6 @@ class CC_EXPORT SchedulerSettings {
   // they would be under the default settings.
   bool disable_frame_rate_limit = false;
 
-  // True if we are running a web test using threaded compositing.
-  bool is_threaded_web_test = false;
-
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 
