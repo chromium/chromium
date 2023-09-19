@@ -95,7 +95,7 @@ public class BackPressManager implements Destroyable {
 
         @Override
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-            assert mActiveHandler != null;
+            if (mActiveHandler == null) return;
             mActiveHandler.handleOnBackProgressed(backEvent);
         }
     };
