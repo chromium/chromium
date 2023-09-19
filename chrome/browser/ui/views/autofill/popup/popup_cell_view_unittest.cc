@@ -105,9 +105,7 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
   // The unselected background.
   EXPECT_FALSE(view().GetSelected());
   views::Background* background = view().GetBackground();
-  ASSERT_TRUE(background);
-  EXPECT_EQ(background->get_color(),
-            view().GetColorProvider()->GetColor(ui::kColorDropdownBackground));
+  ASSERT_FALSE(background);
 
   view().SetSelected(true);
   EXPECT_TRUE(view().GetSelected());
