@@ -301,11 +301,6 @@ void PasswordStatusCheckService::OnStateChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(IsInfrastructureReady());
 
-  // TODO(crbug.com/1443466): Currently this logic only differentiates between
-  // running and not running and treats any non-running state as a successful
-  // run. Depending on the state some additional action may be warranted, such
-  // as changing re-run period on network error. Additionally, when connecting
-  // to the UI we'll likely need to keep the exit state for display.
   switch (state) {
     case password_manager::BulkLeakCheckServiceInterface::State::kRunning:
       return;
@@ -322,10 +317,16 @@ void PasswordStatusCheckService::OnStateChanged(
       is_password_check_running_ = false;
 
       // Set time for next password check and schedule the next run.
-      base::TimeDelta check_interval =
-          features::kBackgroundPasswordCheckInterval.Get();
-      SetPasswordCheckSchedulePrefsWithInterval(
-          GetScheduledPasswordCheckTime() + check_interval);
+      base::Time scheduled_check_time = GetScheduledPasswordCheckTime();
+      // If current check was scheduled to run a long time ago (larger than the
+      // interval) we make sure the next run is in the future.
+      while (scheduled_check_time < base::Time::Now()) {
+        scheduled_check_time +=
+            features::kBackgroundPasswordCheckInterval.Get();
+      }
+
+      SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);
+
       StartRepeatedUpdates();
 
       MaybeResetInfrastructureAsync();
@@ -389,9 +390,11 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
     }
     if (password_manager::IsCompromised(entry)) {
       compromised_credential_count_++;
-    } else if (entry.IsWeak()) {
+    }
+    if (entry.IsWeak()) {
       weak_credential_count_++;
-    } else if (entry.IsReused()) {
+    }
+    if (entry.IsReused()) {
       reused_credential_count_++;
     }
   }
