@@ -79,6 +79,7 @@ void DefaultModelTestBase::ExpectClassifierResults(
   auto result = ExecuteWithInput(input);
   EXPECT_TRUE(result.has_value());
 
+  EXPECT_TRUE(fetched_metadata_);
   EXPECT_TRUE(fetched_metadata_->has_output_config());
   auto prediction_result = metadata_utils::CreatePredictionResult(
       result.value(), fetched_metadata_->output_config(), base::Time::Now(),

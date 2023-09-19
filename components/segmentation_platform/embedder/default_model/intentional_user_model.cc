@@ -26,9 +26,13 @@ constexpr SegmentId kIntentionalUserSegmentId =
 constexpr int64_t kIntentionalUserSignalStorageLength = 28;
 // Wait until we have 7 days of data.
 constexpr int64_t kIntentionalUserMinSignalCollectionLength = 7;
+// Refresh result every 7 days.
+constexpr int64_t kIntentionalUserResultTTLDays = 7;
 // Threshold for our heuristic, if the user launched Chrome directly at least 2
 // times in the last 28 days then we consider them an intentional user.
 constexpr int64_t kIntentionalLaunchThreshold = 2;
+
+constexpr int64_t kIntentionalUserModelVersion = 2;
 
 // InputFeatures.
 
@@ -66,8 +70,6 @@ std::unique_ptr<Config> IntentionalUserModel::GetConfig() {
   config->AddSegmentId(SegmentId::INTENTIONAL_USER_SEGMENT,
                        std::make_unique<IntentionalUserModel>());
   config->auto_execute_and_cache = true;
-  config->segment_selection_ttl = base::Days(7);
-  config->unknown_selection_ttl = base::Days(7);
   config->is_boolean_segment = true;
 
   return config;
@@ -84,15 +86,23 @@ IntentionalUserModel::GetModelConfig() {
       kIntentionalUserMinSignalCollectionLength,
       kIntentionalUserSignalStorageLength);
 
-  // Set discrete mapping.
-  writer.AddBooleanSegmentDiscreteMapping(kIntentionalUserKey);
+  // If the result from ExecuteModelWithInput is greater than 0.5 then return
+  // the intentional user label, otherwise return the non-intentional label.
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5f, /*positive_label=*/
+      SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT),
+      /*negative_label=*/kLegacyNegativeLabel);
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{},
+      /*default_ttl=*/kIntentionalUserResultTTLDays,
+      /*time_unit=*/proto::TimeUnit::DAY);
 
   // Set features.
   writer.AddUmaFeatures(kIntentionalUserUMAFeatures.data(),
                         kIntentionalUserUMAFeatures.size());
 
   return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
-                                       /*model_version=*/1);
+                                       kIntentionalUserModelVersion);
 }
 
 void IntentionalUserModel::ExecuteModelWithInput(

@@ -131,11 +131,9 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       PredictionStatus expected_status,
       absl::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
-    ASSERT_EQ(expected_status, actual_result.status);
+    EXPECT_EQ(actual_result.status, expected_status);
     if (expected_labels.has_value()) {
-      ASSERT_EQ(expected_labels.value().size(),
-                actual_result.ordered_labels.size());
-      ASSERT_EQ(expected_labels.value(), actual_result.ordered_labels);
+      EXPECT_EQ(actual_result.ordered_labels, expected_labels.value());
     }
     std::move(closure).Run();
   }
@@ -315,6 +313,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFrequentFeatureModel) {
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>{kLegacyNegativeLabel});
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestIntentionalUserModel) {
+  InitServiceAndCacheResults(segmentation_platform::kIntentionalUserKey);
+
+  segmentation_platform::PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      segmentation_platform::kIntentionalUserKey, prediction_options, nullptr,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1, kLegacyNegativeLabel));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -4,9 +4,11 @@
 
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -212,6 +214,12 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
   if (prediction_result.result_size() > 0 &&
       prediction_result.has_output_config()) {
     ordered_labels = GetClassifierResults(prediction_result);
+    if (!prediction_result.output_config().has_predicted_result_ttl()) {
+      LOG(ERROR) << "Prediction result has no `predicted_result_ttl` on its "
+                    "`output_config`, returning empty TTL.";
+      return base::TimeDelta();
+    }
+
     auto predicted_result_ttl =
         prediction_result.output_config().predicted_result_ttl();
     auto top_label_to_ttl_map = predicted_result_ttl.top_label_to_ttl_map();

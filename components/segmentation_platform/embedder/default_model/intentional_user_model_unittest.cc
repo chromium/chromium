@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
+#include "components/segmentation_platform/public/constants.h"
 
 namespace segmentation_platform {
 
@@ -43,6 +44,22 @@ TEST_F(IntentionalUserModelTest, ExecuteModelWithInput) {
 
   ExpectExecutionWithInput(/*inputs=*/{10}, /*expected_error=*/false,
                            /*expected_result=*/{1});
+}
+
+TEST_F(IntentionalUserModelTest, TestLabels) {
+  ExpectInitAndFetchModel();
+
+  // If Chrome hasn't been launched from its main launcher icon then the user is
+  // not intentional.
+  ExpectClassifierResults({0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults({1}, {kLegacyNegativeLabel});
+
+  // If chrome was launched at least twice from its main laincher icon then the
+  // user is intentional.
+  ExpectClassifierResults(
+      {2}, {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
+  ExpectClassifierResults(
+      {10}, {SegmentIdToHistogramVariant(SegmentId::INTENTIONAL_USER_SEGMENT)});
 }
 
 }  // namespace segmentation_platform
