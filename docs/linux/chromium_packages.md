@@ -11,7 +11,7 @@ TODO: Move away from tables.
 |:-----------|:------------|:---------------------|:------------------------------------|
 | Ubuntu     | Olivier Tilloy `olivier.tilloy@canonical.com` | https://launchpad.net/ubuntu/+source/chromium-browser | https://code.launchpad.net/~chromium-team |
 | Debian     | chromium@packages.debian.org | https://tracker.debian.org/pkg/chromium | https://sources.debian.org/patches/chromium/ |
-| openSUSE   | Raymond Wooninck  `tittiatcoke@gmail.com` | http://software.opensuse.org/search?baseproject=ALL&p=1&q=chromium | n/a |
+| openSUSE   | https://bugzilla.opensuse.org | https://software.opensuse.org/package/chromium | https://build.opensuse.org/package/show/openSUSE:Factory/chromium |
 | Arch       | Evangelos Foutras `evangelos@foutrelis.com` | http://www.archlinux.org/packages/extra/x86_64/chromium/ | https://github.com/archlinux/svntogit-packages/tree/master/chromium/trunk |
 | Gentoo     | http://www.gentoo.org/proj/en/desktop/chromium/index.xml | http://packages.gentoo.org/package/www-client/chromium | https://gitweb.gentoo.org/proj/chromium-tools.git/ |
 | ALT Linux  | Andrey Cherepanov (Андрей Черепанов) `cas@altlinux.org` | http://packages.altlinux.org/en/Sisyphus/srpms/chromium | http://git.altlinux.org/gears/c/chromium.git?a=tree |
