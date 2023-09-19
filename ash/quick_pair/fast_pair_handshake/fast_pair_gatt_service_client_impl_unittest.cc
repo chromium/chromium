@@ -1291,5 +1291,15 @@ TEST_F(FastPairGattServiceClientTest, WriteEmptyPersonalizedName) {
   WritePersonalizedName(empty);
 }
 
+// Regression test for b/300596153
+TEST_F(FastPairGattServiceClientTest,
+       NoCrashWhenGattDiscoveryCompleteForServiceCalledTwice) {
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService(
+      ash::quick_pair::kFastPairBluetoothUuid);
+  NotifyGattDiscoveryCompleteForService(
+      ash::quick_pair::kFastPairBluetoothUuid);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

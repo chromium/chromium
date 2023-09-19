@@ -524,7 +524,7 @@ void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
 
     if (pair_failure.has_value()) {
       NotifyInitializedError(pair_failure.value());
-    } else {
+    } else if (on_initialized_callback_) {
       is_initialized_ = true;
       RecordGattInitializationStep(
           FastPairGattConnectionSteps::kConnectionEstablished);
