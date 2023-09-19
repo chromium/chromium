@@ -41,7 +41,7 @@ suite('scanToSelectTest', function() {
   // Verifies the 'Scan To' dropdown is initialized enabled with the 'My files'
   // and 'Select folder' option.
   test('initializeScanToSelect', () => {
-    const select = scanToSelect.$$('select');
+    const select = scanToSelect.shadowRoot.querySelector('select');
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(2, select.length);
@@ -61,7 +61,8 @@ suite('scanToSelectTest', function() {
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
     const select =
-        /** @type {!HTMLSelectElement} */ (scanToSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            scanToSelect.shadowRoot.querySelector('select'));
     return changeSelect(select, /* value */ null, /* selectedIndex */ 1)
         .then(() => {
           assertEquals(myDownloads, scanToSelect.selectedFolder);
@@ -95,7 +96,8 @@ suite('scanToSelectTest', function() {
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
     const select =
-        /** @type {!HTMLSelectElement} */ (scanToSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            scanToSelect.shadowRoot.querySelector('select'));
     return changeSelect(select, /* value */ null, /* selectedIndex */ 1)
         .then(() => {
           assertEquals(myDownloads, scanToSelect.selectedFolder);

@@ -30,14 +30,23 @@ suite('actionToolbarTest', function() {
   // changes.
   test('totalPageCountIncrements', () => {
     actionToolbar.pageIndex = 0;
-    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
+    assertEquals(
+        '',
+        actionToolbar.shadowRoot.querySelector('#pageNumbers')
+            .textContent.trim());
 
     actionToolbar.numTotalPages = 3;
-    assertEquals('1 of 3', actionToolbar.$$('#pageNumbers').textContent.trim());
+    assertEquals(
+        '1 of 3',
+        actionToolbar.shadowRoot.querySelector('#pageNumbers')
+            .textContent.trim());
 
     actionToolbar.numTotalPages = 4;
     actionToolbar.pageIndex = 1;
-    assertEquals('2 of 4', actionToolbar.$$('#pageNumbers').textContent.trim());
+    assertEquals(
+        '2 of 4',
+        actionToolbar.shadowRoot.querySelector('#pageNumbers')
+            .textContent.trim());
   });
 
   // Verify clicking the remove page button fires the 'show-remove-page-dialog'
@@ -51,7 +60,7 @@ suite('actionToolbarTest', function() {
       pageIndexFromEvent = e.detail;
     });
 
-    actionToolbar.$$('#removePageIcon').click();
+    actionToolbar.shadowRoot.querySelector('#removePageIcon').click();
     return flushTasks().then(() => {
       assertEquals(expectedPageIndex, pageIndexFromEvent);
     });
@@ -68,7 +77,7 @@ suite('actionToolbarTest', function() {
       pageIndexFromEvent = e.detail;
     });
 
-    actionToolbar.$$('#rescanPageIcon').click();
+    actionToolbar.shadowRoot.querySelector('#rescanPageIcon').click();
     return flushTasks().then(() => {
       assertEquals(expectedPageIndex, pageIndexFromEvent);
     });

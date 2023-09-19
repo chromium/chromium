@@ -46,14 +46,16 @@ suite('multiPageScanTest', function() {
         .then(() => {
           assertEquals(
               'Scan page 2',
-              multiPageScan.$$('#scanButton').textContent.trim());
+              multiPageScan.shadowRoot.querySelector('#scanButton')
+                  .textContent.trim());
           multiPageScan.pageNumber = 2;
           return flushTasks();
         })
         .then(() => {
           assertEquals(
               'Scan page 3',
-              multiPageScan.$$('#scanButton').textContent.trim());
+              multiPageScan.shadowRoot.querySelector('#scanButton')
+                  .textContent.trim());
         });
   });
 
@@ -64,7 +66,7 @@ suite('multiPageScanTest', function() {
       scanNextPageEventFired = true;
     });
 
-    multiPageScan.$$('#scanButton').click();
+    multiPageScan.shadowRoot.querySelector('#scanButton').click();
     assertTrue(scanNextPageEventFired);
   });
 
@@ -75,16 +77,18 @@ suite('multiPageScanTest', function() {
       completeMultiPageScanEventFired = true;
     });
 
-    multiPageScan.$$('#saveButton').click();
+    multiPageScan.shadowRoot.querySelector('#saveButton').click();
     assertTrue(completeMultiPageScanEventFired);
   });
 
   // Verify the cancel button and progress text show while scanning.
   test('cancelButtonShowsWhileScanning', () => {
     const scanButton =
-        /** @type {!HTMLElement} */ (multiPageScan.$$('#scanButton'));
+        /** @type {!HTMLElement} */ (
+            multiPageScan.shadowRoot.querySelector('#scanButton'));
     const cancelButton =
-        /** @type {!HTMLElement} */ (multiPageScan.$$('#cancelButton'));
+        /** @type {!HTMLElement} */ (
+            multiPageScan.shadowRoot.querySelector('#cancelButton'));
     const pageNumber = 4;
 
     // Scan button should be visible.
@@ -93,7 +97,8 @@ suite('multiPageScanTest', function() {
     assertFalse(isVisible(cancelButton));
     assertEquals(
         loadTimeData.getString('multiPageScanInstructionsText'),
-        multiPageScan.$$('#multiPageScanText').innerText.trim());
+        multiPageScan.shadowRoot.querySelector('#multiPageScanText')
+            .innerText.trim());
 
     // Cancel button should be visible while scanning.
     multiPageScan.pageNumber = pageNumber;
@@ -102,14 +107,16 @@ suite('multiPageScanTest', function() {
     assertTrue(isVisible(cancelButton));
     assertEquals(
         loadTimeData.getStringF('multiPageScanProgressText', pageNumber),
-        multiPageScan.$$('#multiPageScanText').innerText.trim());
+        multiPageScan.shadowRoot.querySelector('#multiPageScanText')
+            .innerText.trim());
   });
 
   // Verify the cancel button and canceling text are shown while canceling a
   // scan.
   test('cancelButtonShowsWhileCanceling', () => {
     const cancelButton =
-        /** @type {!HTMLElement} */ (multiPageScan.$$('#cancelButton'));
+        /** @type {!HTMLElement} */ (
+            multiPageScan.shadowRoot.querySelector('#cancelButton'));
 
     // Cancel button should be visible and disabled.
     multiPageScan.appState = AppState.MULTI_PAGE_CANCELING;
@@ -117,7 +124,8 @@ suite('multiPageScanTest', function() {
     assertTrue(cancelButton.disabled);
     assertEquals(
         loadTimeData.getString('multiPageCancelingScanningText'),
-        multiPageScan.$$('#multiPageScanText').innerText.trim());
+        multiPageScan.shadowRoot.querySelector('#multiPageScanText')
+            .innerText.trim());
   });
 
   // Verify clicking the cancel button fires the 'cancel-click' event.
@@ -127,7 +135,7 @@ suite('multiPageScanTest', function() {
       clickCancelEventFired = true;
     });
 
-    multiPageScan.$$('#cancelButton').click();
+    multiPageScan.shadowRoot.querySelector('#cancelButton').click();
     assertTrue(clickCancelEventFired);
   });
 });

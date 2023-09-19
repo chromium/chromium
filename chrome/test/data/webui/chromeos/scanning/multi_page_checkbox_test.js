@@ -30,9 +30,9 @@ suite('multiPageCheckboxTest', function() {
   // both toggle the boolean.
   test('checkboxClicked', () => {
     assertFalse(multiPageCheckbox.multiPageScanChecked);
-    multiPageCheckbox.$$('cr-checkbox').click();
+    multiPageCheckbox.shadowRoot.querySelector('cr-checkbox').click();
     assertTrue(multiPageCheckbox.multiPageScanChecked);
-    multiPageCheckbox.$$('#checkboxText').click();
+    multiPageCheckbox.shadowRoot.querySelector('#checkboxText').click();
     assertFalse(multiPageCheckbox.multiPageScanChecked);
   });
 });

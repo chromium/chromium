@@ -80,16 +80,18 @@ suite('loadingPageTest', function() {
   // Verify the loading page, then the no scanners page is shown when no
   // scanners are available.
   test('noScanners', () => {
-    assertTrue(
-        isVisible(/** @type {!HTMLElement} */ (loadingPage.$$('#loadingDiv'))));
+    assertTrue(isVisible(/** @type {!HTMLElement} */ (
+        loadingPage.shadowRoot.querySelector('#loadingDiv'))));
     assertFalse(isVisible(
-        /** @type {!HTMLElement} */ (loadingPage.$$('#noScannersDiv'))));
+        /** @type {!HTMLElement} */ (
+            loadingPage.shadowRoot.querySelector('#noScannersDiv'))));
 
     loadingPage.appState = AppState.NO_SCANNERS;
-    assertFalse(
-        isVisible(/** @type {!HTMLElement} */ (loadingPage.$$('#loadingDiv'))));
+    assertFalse(isVisible(/** @type {!HTMLElement} */ (
+        loadingPage.shadowRoot.querySelector('#loadingDiv'))));
     assertTrue(isVisible(
-        /** @type {!HTMLElement} */ (loadingPage.$$('#noScannersDiv'))));
+        /** @type {!HTMLElement} */ (
+            loadingPage.shadowRoot.querySelector('#noScannersDiv'))));
   });
 
   // Verify clicking the retry button on the no scanners page fires the
@@ -102,7 +104,7 @@ suite('loadingPageTest', function() {
       retryEventFired = true;
     });
 
-    loadingPage.$$('#retryButton').click();
+    loadingPage.shadowRoot.querySelector('#retryButton').click();
     assertTrue(retryEventFired);
   });
 
@@ -116,7 +118,7 @@ suite('loadingPageTest', function() {
       learnMoreEventFired = true;
     });
 
-    loadingPage.$$('#learnMoreButton').click();
+    loadingPage.shadowRoot.querySelector('#learnMoreButton').click();
     assertTrue(learnMoreEventFired);
   });
 
@@ -127,7 +129,7 @@ suite('loadingPageTest', function() {
     const lightModeSvg = `${scanningSrcBase}svg/no_scanners.svg`;
     const darkModeSvg = `${scanningSrcBase}svg/no_scanners_dark.svg`;
     const getNoScannersSvg = () => (/** @type {!HTMLImageElement} */ (
-        loadingPage.$$('#noScannersDiv img')));
+        loadingPage.shadowRoot.querySelector('#noScannersDiv img')));
 
     // Setup UI to display no scanners div.
     loadingPage.appState = AppState.NO_SCANNERS;
@@ -164,8 +166,8 @@ suite('loadingPageTest', function() {
     await setJellyEnabled(false);
     const lightModeSvg = `${scanningSrcBase}svg/scanners_loading.svg`;
     const darkModeSvg = `${scanningSrcBase}svg/scanners_loading_dark.svg`;
-    const getLoadingSvg = () =>
-        (/** @type {!HTMLImageElement} */ (loadingPage.$$('#loadingDiv img')));
+    const getLoadingSvg = () => (/** @type {!HTMLImageElement} */ (
+        loadingPage.shadowRoot.querySelector('#loadingDiv img')));
 
     // Setup UI to display no scanners div.
     loadingPage.appState = AppState.NO_SCANNERS;

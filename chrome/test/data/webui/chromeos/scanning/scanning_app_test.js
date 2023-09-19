@@ -516,7 +516,8 @@ suite('scanningAppTest', function() {
     document.body.appendChild(scanningApp);
     assertTrue(!!scanningApp);
     assertTrue(isVisible(
-        /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+        /** @type {!HTMLElement} */ (
+            scanningApp.shadowRoot.querySelector('loading-page'))));
     return fakeScanService_.whenCalled('getScanners');
   }
 
@@ -526,7 +527,8 @@ suite('scanningAppTest', function() {
    */
   function getMoreSettingsButton() {
     const button =
-        /** @type {!CrButtonElement} */ (scanningApp.$$('#moreSettingsButton'));
+        /** @type {!CrButtonElement} */ (
+            scanningApp.shadowRoot.querySelector('#moreSettingsButton'));
     assertTrue(!!button);
     return button;
   }
@@ -545,7 +547,8 @@ suite('scanningAppTest', function() {
    * @return {!Promise}
    */
   function clickDoneButton() {
-    const button = scanningApp.$$('scan-done-section').$$('#doneButton');
+    const button = scanningApp.shadowRoot.querySelector('scan-done-section')
+                       .shadowRoot.querySelector('#doneButton');
     assertTrue(!!button);
     button.click();
     return flushTasks();
@@ -556,7 +559,7 @@ suite('scanningAppTest', function() {
    * @return {!Promise}
    */
   function clickScanFailedDialogOkButton() {
-    const button = scanningApp.$$('#okButton');
+    const button = scanningApp.shadowRoot.querySelector('#okButton');
     assertTrue(!!button);
     button.click();
     return flushTasks();
@@ -567,7 +570,7 @@ suite('scanningAppTest', function() {
    * @return {boolean}
    */
   function isSettingsOpen() {
-    return scanningApp.$$('#collapse').opened;
+    return scanningApp.shadowRoot.querySelector('#collapse').opened;
   }
 
   /**
@@ -618,24 +621,43 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('loading-page'))));
 
-          scannerSelect = scanningApp.$$('#scannerSelect').$$('select');
-          sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
-          scanToSelect = scanningApp.$$('#scanToSelect').$$('select');
-          fileTypeSelect = scanningApp.$$('#fileTypeSelect').$$('select');
-          colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
-          pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
-          resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
+          scannerSelect = scanningApp.shadowRoot.querySelector('#scannerSelect')
+                              .shadowRoot.querySelector('select');
+          sourceSelect = scanningApp.shadowRoot.querySelector('#sourceSelect')
+                             .shadowRoot.querySelector('select');
+          scanToSelect = scanningApp.shadowRoot.querySelector('#scanToSelect')
+                             .shadowRoot.querySelector('select');
+          fileTypeSelect =
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select');
+          colorModeSelect =
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select');
+          pageSizeSelect =
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select');
+          resolutionSelect =
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select');
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           cancelButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
-          helperText = scanningApp.$$('#scanPreview').$$('#helperText');
-          scanProgress = scanningApp.$$('#scanPreview').$$('#scanProgress');
-          progressText = scanningApp.$$('#scanPreview').$$('#progressText');
-          progressBar = scanningApp.$$('#scanPreview').$$('paper-progress');
-          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#cancelButton'));
+          helperText = scanningApp.shadowRoot.querySelector('#scanPreview')
+                           .shadowRoot.querySelector('#helperText');
+          scanProgress = scanningApp.shadowRoot.querySelector('#scanPreview')
+                             .shadowRoot.querySelector('#scanProgress');
+          progressText = scanningApp.shadowRoot.querySelector('#scanPreview')
+                             .shadowRoot.querySelector('#progressText');
+          progressBar = scanningApp.shadowRoot.querySelector('#scanPreview')
+                            .shadowRoot.querySelector('paper-progress');
+          scannedImages = scanningApp.shadowRoot.querySelector('#scanPreview')
+                              .shadowRoot.querySelector('#scannedImages');
           return getScannerCapabilities();
         })
         .then(() => {
@@ -674,7 +696,7 @@ suite('scanningAppTest', function() {
           assertFalse(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
 
           // Click the Scan button and wait till the scan is started.
           scanButton.click();
@@ -699,7 +721,7 @@ suite('scanningAppTest', function() {
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
           assertEquals('Scanning page 1', progressText.textContent.trim());
           assertEquals(0, progressBar.value);
 
@@ -742,10 +764,11 @@ suite('scanningAppTest', function() {
           assertEquals(2, scannedImages.querySelectorAll('img').length);
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
           assertArrayEquals(
               scannedFilePaths,
-              scanningApp.$$('scan-done-section').scannedFilePaths);
+              scanningApp.shadowRoot.querySelector('scan-done-section')
+                  .scannedFilePaths);
 
           // Click the Done button to return to READY state.
           return clickDoneButton();
@@ -768,7 +791,7 @@ suite('scanningAppTest', function() {
           assertFalse(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
           assertEquals(0, scannedImages.querySelectorAll('img').length);
         });
@@ -779,7 +802,8 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           return getScannerCapabilities();
         })
         .then(() => {
@@ -797,14 +821,16 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // The scan failed dialog should open.
-          assertTrue(scanningApp.$$('#scanFailedDialog').open);
+          assertTrue(
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog').open);
           // Click the dialog's Ok button to return to READY state.
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
           // After the dialog closes, the scan button should be enabled and
           // ready to start a new scan.
-          assertFalse(scanningApp.$$('#scanFailedDialog').open);
+          assertFalse(
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog').open);
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
         });
@@ -816,7 +842,8 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           return getScannerCapabilities();
         })
         .then(() => {
@@ -834,7 +861,8 @@ suite('scanningAppTest', function() {
           return fakeScanService_.simulateScanComplete(ScanResult.kIoError, []);
         })
         .then(() => {
-          const scanFailedDialog = scanningApp.$$('#scanFailedDialog');
+          const scanFailedDialog =
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog');
 
           // The scan failed dialog should open.
           assertTrue(scanFailedDialog.open);
@@ -843,7 +871,8 @@ suite('scanningAppTest', function() {
           // dialog.
           scanFailedDialog.shadowRoot.querySelector('#dialog').dispatchEvent(
               new Event('cancel'));
-          assertFalse(scanningApp.$$('#scanFailedDialog').open);
+          assertFalse(
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog').open);
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
         });
@@ -868,7 +897,8 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          const scanButton = scanningApp.$$('#scanButton');
+          const scanButton =
+              scanningApp.shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 1', scanButton.textContent.trim());
           scanButton.click();
           return fakeScanService_.whenCalled('startMultiPageScan');
@@ -880,12 +910,15 @@ suite('scanningAppTest', function() {
         .then(() => {
           // The scanned images and multi-page scan page should be visible.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
-              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#scannedImages'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('multi-page-scan'))));
 
           const scanNextPageButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
           scanNextPageButton.click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
@@ -894,10 +927,12 @@ suite('scanningAppTest', function() {
           // Cancel button should be visible while scanning.
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('multi-page-scan').$$('#scanButton'))));
+                  scanningApp.shadowRoot.querySelector('multi-page-scan')
+                      .shadowRoot.querySelector('#scanButton'))));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('multi-page-scan').$$('#cancelButton'))));
+                  scanningApp.shadowRoot.querySelector('multi-page-scan')
+                      .shadowRoot.querySelector('#cancelButton'))));
 
           return fakeScanService_.simulatePageComplete(
               /*pageNumber=*/ 1, newPageIndex++);
@@ -906,15 +941,20 @@ suite('scanningAppTest', function() {
           // The scanned images and multi-page scan page should still be visible
           // after scanning the next page.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
-              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#scannedImages'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('multi-page-scan'))));
 
           const scanNextPageButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 3', scanNextPageButton.textContent.trim());
 
-          scanningApp.$$('multi-page-scan').$$('#saveButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#saveButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled(
               'completeMultiPageScan');
         })
@@ -923,14 +963,16 @@ suite('scanningAppTest', function() {
               ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
-          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+          scannedImages = scanningApp.shadowRoot.querySelector('#scanPreview')
+                              .shadowRoot.querySelector('#scannedImages');
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
           assertArrayEquals(
               scannedFilePaths,
-              scanningApp.$$('scan-done-section').scannedFilePaths);
+              scanningApp.shadowRoot.querySelector('scan-done-section')
+                  .scannedFilePaths);
         });
   });
 
@@ -952,37 +994,41 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
           assertEquals(
               'Scanning page 1',
-              scanningApp.$$('#scanPreview')
-                  .$$('#progressText')
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#progressText')
                   .textContent.trim());
           return fakeScanService_.simulatePageComplete(
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
           assertEquals(
               'Scanning page 2',
-              scanningApp.$$('#scanPreview')
-                  .$$('#progressText')
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#progressText')
                   .textContent.trim());
           return fakeScanService_.simulateMultiPageScanFail(
               ScanResult.kFlatbedOpen);
         })
         .then(() => {
           // The scan failed dialog should open.
-          assertTrue(scanningApp.$$('#scanFailedDialog').open);
+          assertTrue(
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog').open);
           assertEquals(
               loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
 
           // Click the dialog's Ok button to return to MULTI_PAGE_NEXT_ACTION
           // state.
@@ -992,7 +1038,8 @@ suite('scanningAppTest', function() {
           // After the dialog closes, the scan next page button should still
           // say 'Scan Page 2'.
           const scanNextPageButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
           scanNextPageButton.click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
@@ -1000,14 +1047,16 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               'Scanning page 2',
-              scanningApp.$$('#scanPreview')
-                  .$$('#progressText')
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#progressText')
                   .textContent.trim());
           return fakeScanService_.simulatePageComplete(
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#saveButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#saveButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled(
               'completeMultiPageScan');
         })
@@ -1016,7 +1065,8 @@ suite('scanningAppTest', function() {
               ScanResult.kSuccess, [{'path': '/test/path/scan1.pdf'}]);
         })
         .then(() => {
-          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+          scannedImages = scanningApp.shadowRoot.querySelector('#scanPreview')
+                              .shadowRoot.querySelector('#scannedImages');
 
           // There should be 2 images from scanning once, failing once, then
           // scanning again successfully.
@@ -1039,7 +1089,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.multiPageScanChecked = true;
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1047,18 +1097,23 @@ suite('scanningAppTest', function() {
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
           // Click the Cancel button to cancel the scan.
-          scanningApp.$$('multi-page-scan').$$('#cancelButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#cancelButton')
+              .click();
           return fakeScanService_.whenCalled('cancelScan');
         })
         .then(() => {
           // Cancel button should be disabled while canceling is in progress.
-          assertTrue(
-              scanningApp.$$('multi-page-scan').$$('#cancelButton').disabled);
+          assertTrue(scanningApp.shadowRoot.querySelector('multi-page-scan')
+                         .shadowRoot.querySelector('#cancelButton')
+                         .disabled);
 
           // Simulate cancel completing successfully.
           return fakeScanService_.simulateCancelComplete(true);
@@ -1068,13 +1123,15 @@ suite('scanningAppTest', function() {
           // visible and showing the correct page number to scan. The cancel
           // button should be hidden.
           const scanNextPageButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertTrue(
               isVisible(/** @type {!CrButtonElement} */ (scanNextPageButton)));
           assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
           assertFalse(isVisible(/** @type {!CrButtonElement} */ (
-              scanningApp.$$('multi-page-scan').$$('#cancelButton'))));
-          assertTrue(scanningApp.$$('#toast').open);
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#cancelButton'))));
+          assertTrue(scanningApp.shadowRoot.querySelector('#toast').open);
         });
   });
 
@@ -1098,7 +1155,7 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1106,7 +1163,9 @@ suite('scanningAppTest', function() {
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
@@ -1114,7 +1173,9 @@ suite('scanningAppTest', function() {
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
@@ -1123,18 +1184,21 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // Save the current scanned images
-          expectedObjectUrls = scanningApp.$$('#scanPreview').objectUrls;
+          expectedObjectUrls =
+              scanningApp.shadowRoot.querySelector('#scanPreview').objectUrls;
           assertEquals(3, expectedObjectUrls.length);
 
           // Open the remove page dialog.
-          scanningApp.$$('#scanPreview')
-              .$$('action-toolbar')
+          scanningApp.shadowRoot.querySelector('#scanPreview')
+              .shadowRoot.querySelector('action-toolbar')
               .dispatchEvent(new CustomEvent(
                   'show-remove-page-dialog', {detail: pageIndexToRemove}));
           return flushTasks();
         })
         .then(() => {
-          scanningApp.$$('#scanPreview').$$('#actionButton').click();
+          scanningApp.shadowRoot.querySelector('#scanPreview')
+              .shadowRoot.querySelector('#actionButton')
+              .click();
           return flushTasks();
         })
         .then(() => {
@@ -1146,7 +1210,8 @@ suite('scanningAppTest', function() {
           // the correct image was removed from the actual scanned images.
           expectedObjectUrls.splice(pageIndexToRemove, 1);
           assertArrayEquals(
-              expectedObjectUrls, scanningApp.$$('#scanPreview').objectUrls);
+              expectedObjectUrls,
+              scanningApp.shadowRoot.querySelector('#scanPreview').objectUrls);
         });
   });
 
@@ -1169,7 +1234,7 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1178,22 +1243,26 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // Open the remove page dialog.
-          scanningApp.$$('#scanPreview')
-              .$$('action-toolbar')
+          scanningApp.shadowRoot.querySelector('#scanPreview')
+              .shadowRoot.querySelector('action-toolbar')
               .dispatchEvent(
                   new CustomEvent('show-remove-page-dialog', {detail: 0}));
           return flushTasks();
         })
         .then(() => {
-          scanningApp.$$('#scanPreview').$$('#actionButton').click();
+          scanningApp.shadowRoot.querySelector('#scanPreview')
+              .shadowRoot.querySelector('#actionButton')
+              .click();
           return flushTasks();
         })
         .then(() => {
-          assertArrayEquals([], scanningApp.$$('#scanPreview').objectUrls);
+          assertArrayEquals(
+              [],
+              scanningApp.shadowRoot.querySelector('#scanPreview').objectUrls);
           --newPageIndex;
 
           // Attempt a new multi-page scan from the scan settings page.
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1203,12 +1272,15 @@ suite('scanningAppTest', function() {
         .then(() => {
           // The scanned images and multi-page scan page should be visible.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
-              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+              scanningApp.shadowRoot.querySelector('#scanPreview')
+                  .shadowRoot.querySelector('#scannedImages'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('multi-page-scan'))));
 
           const scanNextPageButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
         });
   });
@@ -1225,7 +1297,7 @@ suite('scanningAppTest', function() {
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
-          scanPreview = scanningApp.$$('#scanPreview');
+          scanPreview = scanningApp.shadowRoot.querySelector('#scanPreview');
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1237,7 +1309,7 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1250,7 +1322,7 @@ suite('scanningAppTest', function() {
           assertEquals(1, expectedObjectUrls.length);
 
           // Open the rescan page dialog.
-          scanPreview.$$('action-toolbar')
+          scanPreview.shadowRoot.querySelector('action-toolbar')
               .dispatchEvent(new CustomEvent(
                   'show-rescan-page-dialog', {detail: pageIndexToRescan}));
           return flushTasks();
@@ -1259,15 +1331,16 @@ suite('scanningAppTest', function() {
           // Verify the dialog shows we are rescanning the correct page number.
           assertEquals(
               'Rescan page?',
-              scanPreview.$$('#dialogTitle').textContent.trim());
+              scanPreview.shadowRoot.querySelector('#dialogTitle')
+                  .textContent.trim());
 
-          scanPreview.$$('#actionButton').click();
+          scanPreview.shadowRoot.querySelector('#actionButton').click();
           return fakeMultiPageScanController_.whenCalled('rescanPage');
         })
         .then(() => {
           // Verify the progress text shows we are attempting to rescan the
           // first page.
-          progressText = scanPreview.$$('#progressText');
+          progressText = scanPreview.shadowRoot.querySelector('#progressText');
           assertEquals('Scanning page 1', progressText.textContent.trim());
           assertEquals(
               pageIndexToRescan,
@@ -1283,7 +1356,9 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // Save the one page scan.
-          scanningApp.$$('multi-page-scan').$$('#saveButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#saveButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled(
               'completeMultiPageScan');
         })
@@ -1292,14 +1367,16 @@ suite('scanningAppTest', function() {
               ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
-          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+          scannedImages = scanningApp.shadowRoot.querySelector('#scanPreview')
+                              .shadowRoot.querySelector('#scannedImages');
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('scan-done-section'))));
+                  scanningApp.shadowRoot.querySelector('scan-done-section'))));
           assertArrayEquals(
               scannedFilePaths,
-              scanningApp.$$('scan-done-section').scannedFilePaths);
+              scanningApp.shadowRoot.querySelector('scan-done-section')
+                  .scannedFilePaths);
         });
   });
 
@@ -1315,7 +1392,7 @@ suite('scanningAppTest', function() {
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
-          scanPreview = scanningApp.$$('#scanPreview');
+          scanPreview = scanningApp.shadowRoot.querySelector('#scanPreview');
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1327,7 +1404,7 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1335,7 +1412,9 @@ suite('scanningAppTest', function() {
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
@@ -1348,7 +1427,7 @@ suite('scanningAppTest', function() {
           assertEquals(2, expectedObjectUrls.length);
 
           // Open the rescan page dialog.
-          scanPreview.$$('action-toolbar')
+          scanPreview.shadowRoot.querySelector('action-toolbar')
               .dispatchEvent(new CustomEvent(
                   'show-rescan-page-dialog', {detail: pageIndexToRescan}));
           return flushTasks();
@@ -1357,15 +1436,16 @@ suite('scanningAppTest', function() {
           // Verify the dialog shows we are rescanning the correct page number.
           assertEquals(
               'Rescan page 1?',
-              scanPreview.$$('#dialogTitle').textContent.trim());
+              scanPreview.shadowRoot.querySelector('#dialogTitle')
+                  .textContent.trim());
 
-          scanPreview.$$('#actionButton').click();
+          scanPreview.shadowRoot.querySelector('#actionButton').click();
           return fakeMultiPageScanController_.whenCalled('rescanPage');
         })
         .then(() => {
           // Verify the progress text shows we are attempting to rescan the
           // first page.
-          progressText = scanPreview.$$('#progressText');
+          progressText = scanPreview.shadowRoot.querySelector('#progressText');
           assertEquals('Scanning page 1', progressText.textContent.trim());
           assertEquals(
               pageIndexToRescan,
@@ -1385,7 +1465,8 @@ suite('scanningAppTest', function() {
           // Verify that after rescanning, the scan button shows the correct
           // next page number to scan.
           const scanButton =
-              scanningApp.$$('multi-page-scan').$$('#scanButton');
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton');
           assertEquals('Scan page 3', scanButton.textContent.trim());
 
           scanButton.click();
@@ -1411,7 +1492,7 @@ suite('scanningAppTest', function() {
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
-          scanPreview = scanningApp.$$('#scanPreview');
+          scanPreview = scanningApp.shadowRoot.querySelector('#scanPreview');
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1423,7 +1504,7 @@ suite('scanningAppTest', function() {
           scanningApp.multiPageScanChecked = true;
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
@@ -1431,7 +1512,9 @@ suite('scanningAppTest', function() {
               /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
-          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('multi-page-scan')
+              .shadowRoot.querySelector('#scanButton')
+              .click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
@@ -1444,13 +1527,13 @@ suite('scanningAppTest', function() {
           assertEquals(2, expectedObjectUrls.length);
 
           // Open the rescan page dialog.
-          scanPreview.$$('action-toolbar')
+          scanPreview.shadowRoot.querySelector('action-toolbar')
               .dispatchEvent(new CustomEvent(
                   'show-rescan-page-dialog', {detail: pageIndexToRescan}));
           return flushTasks();
         })
         .then(() => {
-          scanPreview.$$('#actionButton').click();
+          scanPreview.shadowRoot.querySelector('#actionButton').click();
           return fakeMultiPageScanController_.whenCalled('rescanPage');
         })
         .then(() => {
@@ -1459,10 +1542,12 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // The scan failed dialog should open.
-          assertTrue(scanningApp.$$('#scanFailedDialog').open);
+          assertTrue(
+              scanningApp.shadowRoot.querySelector('#scanFailedDialog').open);
           assertEquals(
               loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
 
           // Click the dialog's Ok button to return to MULTI_PAGE_NEXT_ACTION
           // state.
@@ -1477,8 +1562,8 @@ suite('scanningAppTest', function() {
           // Verify the scan button shows the correct next page number to scan.
           assertEquals(
               'Scan page 3',
-              scanningApp.$$('multi-page-scan')
-                  .$$('#scanButton')
+              scanningApp.shadowRoot.querySelector('multi-page-scan')
+                  .shadowRoot.querySelector('#scanButton')
                   .textContent.trim());
         });
   });
@@ -1488,7 +1573,8 @@ suite('scanningAppTest', function() {
   test('SourceChangeUpdatesDropdowns', () => {
     return initializeScanningApp(expectedScanners.slice(1), capabilities)
         .then(() => {
-          sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
+          sourceSelect = scanningApp.shadowRoot.querySelector('#sourceSelect')
+                             .shadowRoot.querySelector('select');
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1498,9 +1584,15 @@ suite('scanningAppTest', function() {
               /* value=*/ null, /* selectedIndex=*/ 0);
         })
         .then(() => {
-          colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
-          pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
-          resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
+          colorModeSelect =
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select');
+          pageSizeSelect =
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select');
+          resolutionSelect =
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select');
 
           assertEquals(2, colorModeSelect.length);
           assertEquals(
@@ -1555,7 +1647,8 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           scanButton.click();
           return fakeScanService_.whenCalled('startScan');
         })
@@ -1566,7 +1659,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogUnknownErrorText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
@@ -1580,7 +1674,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogDeviceBusyText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
@@ -1594,7 +1689,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogAdfJammedText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
@@ -1608,7 +1704,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogAdfEmptyText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
@@ -1622,7 +1719,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         })
         .then(() => {
@@ -1635,7 +1733,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               loadTimeData.getString('scanFailedDialogIoErrorText'),
-              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#scanFailedDialogText')
+                  .textContent.trim());
           return clickScanFailedDialogOkButton();
         });
   });
@@ -1645,9 +1744,11 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           cancelButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#cancelButton'));
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1691,14 +1792,17 @@ suite('scanningAppTest', function() {
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
           assertFalse(
               isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
-          assertTrue(scanningApp.$$('#toast').open);
+          assertTrue(scanningApp.shadowRoot.querySelector('#toast').open);
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#toastInfoIcon'))));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#getHelpLink'))));
           assertEquals(
               scanningApp.i18n('scanCanceledToastText'),
-              scanningApp.$$('#toastText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#toastText')
+                  .textContent.trim());
         });
   });
 
@@ -1707,9 +1811,11 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           cancelButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#cancelButton'));
           return getScannerCapabilities();
         })
         .then(() => {
@@ -1725,7 +1831,7 @@ suite('scanningAppTest', function() {
         .then(() => {
           // Click the cancel button to cancel the scan.
           cancelButton.click();
-          assertFalse(scanningApp.$$('#toast').open);
+          assertFalse(scanningApp.shadowRoot.querySelector('#toast').open);
           return fakeScanService_.whenCalled('cancelScan');
         })
         .then(() => {
@@ -1736,21 +1842,26 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // After canceling fails, the error toast should pop up.
-          assertTrue(scanningApp.$$('#toast').open);
+          assertTrue(scanningApp.shadowRoot.querySelector('#toast').open);
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#toastInfoIcon'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#getHelpLink'))));
           assertEquals(
               scanningApp.i18n('cancelFailedToastText'),
-              scanningApp.$$('#toastText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#toastText')
+                  .textContent.trim());
           // The scan progress page should still be showing with the cancel
           // button visible.
           assertTrue(
-              isVisible(scanningApp.$$('#scanPreview').$$('#scanProgress')));
+              isVisible(scanningApp.shadowRoot.querySelector('#scanPreview')
+                            .shadowRoot.querySelector('#scanProgress')));
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertFalse(
-              isVisible(scanningApp.$$('#scanPreview').$$('#helperText')));
+              isVisible(scanningApp.shadowRoot.querySelector('#scanPreview')
+                            .shadowRoot.querySelector('#helperText')));
           assertFalse(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
         });
   });
@@ -1762,24 +1873,28 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           scanButton =
-              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+              /** @type {!CrButtonElement} */ (
+                  scanningApp.shadowRoot.querySelector('#scanButton'));
           return getScannerCapabilities();
         })
         .then(() => {
-          assertFalse(scanningApp.$$('#toast').open);
+          assertFalse(scanningApp.shadowRoot.querySelector('#toast').open);
           // Click the Scan button and the scan will fail to start.
           scanButton.click();
           return fakeScanService_.whenCalled('startScan');
         })
         .then(() => {
-          assertTrue(scanningApp.$$('#toast').open);
+          assertTrue(scanningApp.shadowRoot.querySelector('#toast').open);
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#toastInfoIcon'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#getHelpLink'))));
           assertEquals(
               scanningApp.i18n('startScanFailedToast'),
-              scanningApp.$$('#toastText').textContent.trim());
+              scanningApp.shadowRoot.querySelector('#toastText')
+                  .textContent.trim());
 
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
@@ -1789,11 +1904,14 @@ suite('scanningAppTest', function() {
   // Verify the left and right panel exist on app initialization.
   test('PanelContainerContent', () => {
     return initializeScanningApp(expectedScanners, capabilities).then(() => {
-      const panelContainer = scanningApp.$$('#panelContainer');
+      const panelContainer =
+          scanningApp.shadowRoot.querySelector('#panelContainer');
       assertTrue(!!panelContainer);
 
-      const leftPanel = scanningApp.$$('#panelContainer > #leftPanel');
-      const rightPanel = scanningApp.$$('#panelContainer > #rightPanel');
+      const leftPanel =
+          scanningApp.shadowRoot.querySelector('#panelContainer > #leftPanel');
+      const rightPanel =
+          scanningApp.shadowRoot.querySelector('#panelContainer > #rightPanel');
 
       assertTrue(!!leftPanel);
       assertTrue(!!rightPanel);
@@ -1827,9 +1945,11 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
         .then(() => {
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('loading-page'))));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#panelContainer'))));
         });
   });
 
@@ -1838,20 +1958,26 @@ suite('scanningAppTest', function() {
     return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
         .then(() => {
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('loading-page'))));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#panelContainer'))));
 
           fakeScanService_.setScanners(expectedScanners);
           fakeScanService_.setCapabilities(capabilities);
-          scanningApp.$$('loading-page').$$('#retryButton').click();
+          scanningApp.shadowRoot.querySelector('loading-page')
+              .shadowRoot.querySelector('#retryButton')
+              .click();
           return fakeScanService_.whenCalled('getScanners');
         })
         .then(() => {
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('loading-page'))));
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.shadowRoot.querySelector('#panelContainer'))));
         });
   });
 
@@ -1863,7 +1989,7 @@ suite('scanningAppTest', function() {
           return getScannerCapabilities();
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           const numScanSettingChanges =
               testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
           assertEquals(0, numScanSettingChanges);
@@ -1879,16 +2005,19 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#fileTypeSelect').$$('select'),
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select'),
               FileType.kJpg.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#resolutionSelect').$$('select'), '75',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select'),
+              '75',
               /* selectedIndex */ null);
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           const numScanSettingChanges =
               testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
           assertEquals(2, numScanSettingChanges);
@@ -1904,26 +2033,32 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#colorModeSelect').$$('select'),
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select'),
               ColorMode.kBlackAndWhite.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#scannerSelect').$$('select'), /* value */ null,
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select'),
+              /* value */ null,
               /* selectedIndex */ 1);
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#fileTypeSelect').$$('select'),
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select'),
               FileType.kJpg.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
-              scanningApp.$$('#resolutionSelect').$$('select'), '150',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select'),
+              '150',
               /* selectedIndex */ null);
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
           const numScanSettingChanges =
               testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
           assertEquals(3, numScanSettingChanges);
@@ -1939,23 +2074,39 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(firstScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
+              PLATEN,
+              scanningApp.shadowRoot.querySelector('#sourceSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               loadTimeData.getString('myFilesSelectOption'),
-              scanningApp.$$('#scanToSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scanToSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               FileType.kPdf.toString(),
-              scanningApp.$$('#fileTypeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               ColorMode.kColor.toString(),
-              scanningApp.$$('#colorModeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+              '300',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
         });
   });
 
@@ -1969,23 +2120,39 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(secondScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              ADF_SIMPLEX, scanningApp.$$('#sourceSelect').$$('select').value);
+              ADF_SIMPLEX,
+              scanningApp.shadowRoot.querySelector('#sourceSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               loadTimeData.getString('myFilesSelectOption'),
-              scanningApp.$$('#scanToSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scanToSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               FileType.kPdf.toString(),
-              scanningApp.$$('#fileTypeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               ColorMode.kBlackAndWhite.toString(),
-              scanningApp.$$('#colorModeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              '600', scanningApp.$$('#resolutionSelect').$$('select').value);
+              '600',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
         });
   });
 
@@ -2015,23 +2182,39 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(firstScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
+              PLATEN,
+              scanningApp.shadowRoot.querySelector('#sourceSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               loadTimeData.getString('myFilesSelectOption'),
-              scanningApp.$$('#scanToSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scanToSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               FileType.kPdf.toString(),
-              scanningApp.$$('#fileTypeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               ColorMode.kColor.toString(),
-              scanningApp.$$('#colorModeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+              '300',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertFalse(scanningApp.multiPageScanChecked);
         });
   });
@@ -2064,23 +2247,39 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(firstScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
+              PLATEN,
+              scanningApp.shadowRoot.querySelector('#sourceSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               selectedPath.baseName,
-              scanningApp.$$('#scanToSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scanToSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               FileType.kPdf.toString(),
-              scanningApp.$$('#fileTypeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               ColorMode.kBlackAndWhite.toString(),
-              scanningApp.$$('#colorModeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               PageSize.kMax.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              '75', scanningApp.$$('#resolutionSelect').$$('select').value);
+              '75',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertTrue(scanningApp.multiPageScanChecked);
         });
   });
@@ -2114,23 +2313,39 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(firstScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
+              PLATEN,
+              scanningApp.shadowRoot.querySelector('#sourceSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               loadTimeData.getString('myFilesSelectOption'),
-              scanningApp.$$('#scanToSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scanToSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               FileType.kPdf.toString(),
-              scanningApp.$$('#fileTypeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#fileTypeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               ColorMode.kColor.toString(),
-              scanningApp.$$('#colorModeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#colorModeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertEquals(
-              '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+              '300',
+              scanningApp.shadowRoot.querySelector('#resolutionSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           assertFalse(scanningApp.multiPageScanChecked);
         });
   });
@@ -2221,7 +2436,9 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertEquals(
               tokenToString(secondScannerId),
-              scanningApp.$$('#scannerSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#scannerSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
         });
   });
 
@@ -2257,7 +2474,7 @@ suite('scanningAppTest', function() {
           scanningApp.selectedResolution =
               scannerSetting.resolutionDpi.toString();
 
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
 
           const actualSavedScanSettings = /** @type {!ScanSettings} */
               (JSON.parse(/** @type {string} */ (
@@ -2332,7 +2549,7 @@ suite('scanningAppTest', function() {
           scanningApp.selectedResolution =
               newSecondScannerSetting.resolutionDpi.toString();
 
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
 
           const actualSavedScanSettings = /** @type {!ScanSettings} */
               (JSON.parse(/** @type {string} */ (
@@ -2381,7 +2598,7 @@ suite('scanningAppTest', function() {
           return getScannerCapabilities();
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
 
           const actualSavedScanSettings = /** @type {!ScanSettings} */
               (JSON.parse(/** @type {string} */ (
@@ -2422,7 +2639,7 @@ suite('scanningAppTest', function() {
           return getScannerCapabilities();
         })
         .then(() => {
-          scanningApp.$$('#scanButton').click();
+          scanningApp.shadowRoot.querySelector('#scanButton').click();
 
           const actualSavedScanSettings = /** @type {!ScanSettings} */
               (JSON.parse(/** @type {string} */ (
@@ -2448,7 +2665,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
+                  scanningApp.shadowRoot.querySelector('multi-page-checkbox')
+                      .shadowRoot.querySelector('#checkboxDiv'))));
 
           scanningApp.selectedSource = PLATEN;
           scanningApp.selectedFileType = FileType.kPng.toString();
@@ -2457,7 +2675,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
+                  scanningApp.shadowRoot.querySelector('multi-page-checkbox')
+                      .shadowRoot.querySelector('#checkboxDiv'))));
 
           scanningApp.selectedSource = ADF_DUPLEX;
           scanningApp.selectedFileType = FileType.kPdf.toString();
@@ -2466,7 +2685,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
+                  scanningApp.shadowRoot.querySelector('multi-page-checkbox')
+                      .shadowRoot.querySelector('#checkboxDiv'))));
 
           scanningApp.selectedSource = PLATEN;
           scanningApp.selectedFileType = FileType.kPdf.toString();
@@ -2475,7 +2695,8 @@ suite('scanningAppTest', function() {
         .then(() => {
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
-                  scanningApp.$$('#multiPageCheckbox').$$('#checkboxDiv'))));
+                  scanningApp.shadowRoot.querySelector('#multiPageCheckbox')
+                      .shadowRoot.querySelector('#checkboxDiv'))));
         });
   });
 
@@ -2496,14 +2717,17 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           assertEquals(
-              'Scan page 1', scanningApp.$$('#scanButton').textContent.trim());
+              'Scan page 1',
+              scanningApp.shadowRoot.querySelector('#scanButton')
+                  .textContent.trim());
 
           // Leave the multi-page checkbox checked but switch the file type.
           scanningApp.selectedFileType = FileType.kPng.toString();
           return flushTasks();
         })
         .then(() => {
-          const scanButton = scanningApp.$$('#scanButton');
+          const scanButton =
+              scanningApp.shadowRoot.querySelector('#scanButton');
           assertEquals('Scan', scanButton.textContent.trim());
 
           // When scan button is clicked expect a normal scan to start.
@@ -2529,14 +2753,17 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           assertEquals(
-              'Scan page 1', scanningApp.$$('#scanButton').textContent.trim());
+              'Scan page 1',
+              scanningApp.shadowRoot.querySelector('#scanButton')
+                  .textContent.trim());
 
           // Leave the multi-page checkbox checked but switch the source.
           scanningApp.selectedSource = ADF_SIMPLEX;
           return flushTasks();
         })
         .then(() => {
-          const scanButton = scanningApp.$$('#scanButton');
+          const scanButton =
+              scanningApp.shadowRoot.querySelector('#scanButton');
           assertEquals('Scan', scanButton.textContent.trim());
 
           // When scan button is clicked expect a normal scan to start.
@@ -2558,19 +2785,24 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           const pageSizeSelector =
-              scanningApp.$$('#pageSizeSelect').$$('select');
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select');
           changeSelect(
               pageSizeSelector, PageSize.kIsoA4.toString(),
               /* selectedIndex */ null);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           changeSelect(
               pageSizeSelector, PageSize.kMax.toString(),
               /* selectedIndex */ null);
           assertEquals(
               PageSize.kMax.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
         })
         .then(() => {
           scanningApp.selectedSource = ADF_DUPLEX;
@@ -2579,25 +2811,32 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           const pageSizeSelector =
-              scanningApp.$$('#pageSizeSelect').$$('select');
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select');
           changeSelect(
               pageSizeSelector, PageSize.kIsoA4.toString(),
               /* selectedIndex */ null);
           assertEquals(
               PageSize.kIsoA4.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           changeSelect(
               pageSizeSelector, PageSize.kNaLetter.toString(),
               /* selectedIndex */ null);
           assertEquals(
               PageSize.kNaLetter.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
           changeSelect(
               pageSizeSelector, PageSize.kMax.toString(),
               /* selectedIndex */ null);
           assertEquals(
               PageSize.kMax.toString(),
-              scanningApp.$$('#pageSizeSelect').$$('select').value);
+              scanningApp.shadowRoot.querySelector('#pageSizeSelect')
+                  .shadowRoot.querySelector('select')
+                  .value);
         });
   });
 

@@ -37,7 +37,7 @@ suite('sourceSelectTest', function() {
   // options.
   test('initializeSourceSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
-    const select = sourceSelect.$$('select');
+    const select = sourceSelect.shadowRoot.querySelector('select');
     assertTrue(!!select);
     assertFalse(select.disabled);
 

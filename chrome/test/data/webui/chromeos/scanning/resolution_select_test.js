@@ -31,7 +31,8 @@ suite('resolutionSelectTest', function() {
   test('initializeResolutionSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
     const select =
-        /** @type {!HTMLSelectElement} */ (resolutionSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            resolutionSelect.shadowRoot.querySelector('select'));
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(0, select.length);
@@ -85,7 +86,8 @@ suite('resolutionSelectTest', function() {
   // and the options change.
   test('selectDefaultWhenOptionsChange', () => {
     const select =
-        /** @type {!HTMLSelectElement} */ (resolutionSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            resolutionSelect.shadowRoot.querySelector('select'));
     resolutionSelect.options = [600, 300, 150];
     flush();
     return changeSelect(select, /* value */ null, /* selectedIndex */ 0)

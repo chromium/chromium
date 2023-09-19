@@ -30,7 +30,8 @@ suite('fileTypeSelectTest', function() {
   // default option should be PDF.
   test('initializeFileTypeSelect', () => {
     const select =
-        /** @type {!HTMLSelectElement} */ (fileTypeSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            fileTypeSelect.shadowRoot.querySelector('select'));
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(3, select.length);

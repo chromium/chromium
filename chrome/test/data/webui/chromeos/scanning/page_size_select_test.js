@@ -34,7 +34,8 @@ suite('pageSizeSelectTest', function() {
   test('initializePageSizeSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
     const select =
-        /** @type {!HTMLSelectElement} */ (pageSizeSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            pageSizeSelect.shadowRoot.querySelector('select'));
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(0, select.length);
@@ -99,7 +100,8 @@ suite('pageSizeSelectTest', function() {
   // and the options change.
   test('selectDefaultWhenOptionsChange', () => {
     const select =
-        /** @type {!HTMLSelectElement} */ (pageSizeSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            pageSizeSelect.shadowRoot.querySelector('select'));
     pageSizeSelect.options =
         [PageSize.kNaLetter, PageSize.kMax, PageSize.kIsoA4];
     flush();

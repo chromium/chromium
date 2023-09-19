@@ -32,7 +32,7 @@ suite('colorModeSelectTest', function() {
   // correct options.
   test('initializeColorModeSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
-    const select = colorModeSelect.$$('select');
+    const select = colorModeSelect.shadowRoot.querySelector('select');
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(0, select.length);
@@ -78,7 +78,8 @@ suite('colorModeSelectTest', function() {
   // and the options change.
   test('selectDefaultWhenOptionsChange', () => {
     const select =
-        /** @type {!HTMLSelectElement} */ (colorModeSelect.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            colorModeSelect.shadowRoot.querySelector('select'));
     colorModeSelect.options =
         [ColorMode.kGrayscale, ColorMode.kBlackAndWhite, ColorMode.kColor];
     flush();
