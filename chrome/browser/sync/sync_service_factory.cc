@@ -292,9 +292,10 @@ SyncServiceFactory::SyncServiceFactory()
 
 SyncServiceFactory::~SyncServiceFactory() = default;
 
-KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildSyncService(context).release();
+  return BuildSyncService(context);
 }
 
 bool SyncServiceFactory::ServiceIsNULLWhileTesting() const {
