@@ -1146,6 +1146,32 @@ class AutofillMetrics {
       FormType form_type,
       const autofill_metrics::FormGroupFillingStats& filling_stats);
 
+  // Logs a form-wide score for the fields of `form_type` based on the
+  // field-wise `filling_stats`. The score is calculated as follows:
+  // S = 2*number(filled and accepted) - 3*number(filled and corrected) + 100
+  // Note that the score is offset by 100 since UMA cannot log negative numbers
+  // It is also limited to 200.
+  // Each filled and accepted field contributes to a positive score of 2, while
+  // each filled and correct field contributes with a negative score of 3.
+  // The metric is only recorded if at least one field was accepted or
+  // corrected.
+  static void LogFormFillingScore(
+      FormType form_type,
+      const autofill_metrics::FormGroupFillingStats& filling_stats);
+
+  // Similar to LogFormFillingScore but with a different score function:
+  // S = number(filled and accepted) * 10 + number(corrected)
+  // This score serves as a 2D histogram to record the number of corrected and
+  // accepted fields into a single histogram.
+  // Note that the number of accepted fields is limited to 19 and the number of
+  // corrected fields is limited to 9.
+  // A score of 45 would mean that 4 fields have been accepted and 5 corrected.
+  // The metric is only recorded if at least one field was accepted or
+  // corrected.
+  static void LogFormFillingComplexScore(
+      FormType form_type,
+      const autofill_metrics::FormGroupFillingStats& filling_stats);
+
   // Logs the number of sections and the number of fields/section.
   static void LogSectioningMetrics(
       const base::flat_map<Section, size_t>& fields_per_section);

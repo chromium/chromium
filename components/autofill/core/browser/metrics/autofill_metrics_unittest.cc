@@ -199,8 +199,9 @@ INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
                          AutofillMetricsIFrameTest,
                          testing::Bool());
 
-// Test the logging of the form filling stats for the different form types.
-TEST_F(AutofillMetricsTest, FieldFillingStats) {
+// Test the logging of the field-wise filling stats and the form-wise filling
+// score for the different form types.
+TEST_F(AutofillMetricsTest, FillingStatsAndScores) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "FieldFillingStats",
        .fields =
@@ -273,6 +274,8 @@ TEST_F(AutofillMetricsTest, FieldFillingStats) {
 
   const std::string histogram_prefix = "Autofill.FieldFillingStats.Address.";
 
+  // Testing of the FormFillingStats expectations.
+
   histogram_tester.ExpectUniqueSample(histogram_prefix + "Accepted", 2, 1);
   histogram_tester.ExpectUniqueSample(histogram_prefix + "CorrectedToSameType",
                                       2, 1);
@@ -296,6 +299,31 @@ TEST_F(AutofillMetricsTest, FieldFillingStats) {
                                       1);
   histogram_tester.ExpectUniqueSample(histogram_prefix + "TotalUnfilled", 7, 1);
   histogram_tester.ExpectUniqueSample(histogram_prefix + "Total", 14, 1);
+
+  // Testing of the FormFillingScore expectations.
+
+  // The form contains a total of 7 autofilled address fields. Two fields are
+  // accepted while 5 are corrected.
+  const int accepted_address_fields = 2;
+  const int corrected_address_fields = 5;
+
+  const int expected_address_score =
+      2 * accepted_address_fields - 3 * corrected_address_fields + 100;
+  const int expected_address_complex_score =
+      accepted_address_fields * 10 + corrected_address_fields;
+
+  histogram_tester.ExpectUniqueSample("Autofill.FormFillingScore.Address",
+                                      expected_address_score, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormFillingComplexScore.Address",
+      expected_address_complex_score, 1);
+
+  // Also test for credit cards where there is exactly one accepted field and
+  // no corrected fields.
+  histogram_tester.ExpectUniqueSample("Autofill.FormFillingScore.CreditCard",
+                                      102, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormFillingComplexScore.CreditCard", 10, 1);
 }
 
 // Test that we log the right number of autofilled fields at submission time.

@@ -2113,6 +2113,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.FormFillingComplexScore.{AutofillFormType}"
+    units="complex filling score" expires_after="2024-08-20">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For {AutofillFormType} logs a filling complex score on form submission that
+    is calculated as following:
+
+    Score = 10 * number_of_accepted_fields + number_of_corrected_fields
+
+    The score resembles a two dimensional histogram to evaluate the number of
+    accepted fields against the number of corrected ones. Both number of fields
+    used in the score are limited to 9 to guaranteed that the score will be
+    within 0 and 99 and that the significant digit corresponds to the number of
+    accepted fields while the least significant digit corresponds to the number
+    of corrected fields.
+
+    The score is only emitted when there is at least one correct or accepted
+    field.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram name="Autofill.FormFillingScore.{AutofillFormType}"
+    units="filling score" expires_after="2024-08-20">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For {AutofillFormType} logs a filling score on form submission that is
+    calculated as following:
+
+    Score = 2 * number_of_accepted_fields - 3 * number_of_corrected_fields + 100
+
+    The score is only emitted when there is at least one correct or accepted
+    field.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
 <histogram name="Autofill.FormFillSuccessIOS"
     enum="BooleanAutofillFormFillSuccessIOS" expires_after="2023-02-12">
   <owner>tmartino@chromium.org</owner>
