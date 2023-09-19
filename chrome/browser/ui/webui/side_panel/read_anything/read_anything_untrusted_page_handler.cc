@@ -68,6 +68,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         features::IsReadAnythingReadAloudEnabled()
             ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
             : kReadAnythingDefaultSpeechRate;
+    read_anything::mojom::HighlightGranularity highlightGranularity =
+        features::IsReadAnythingReadAloudEnabled()
+            ? static_cast<read_anything::mojom::HighlightGranularity>(
+                  prefs->GetDouble(
+                      prefs::kAccessibilityReadAnythingHighlightGranularity))
+            : read_anything::mojom::HighlightGranularity::kDefaultValue;
     page_->OnSettingsRestoredFromPrefs(
         static_cast<read_anything::mojom::LineSpacing>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
@@ -77,7 +83,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-        speechRate);
+        speechRate, highlightGranularity);
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -159,6 +165,13 @@ void ReadAnythingUntrustedPageHandler::OnColorChange(
 void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
   browser_->profile()->GetPrefs()->SetDouble(
       prefs::kAccessibilityReadAnythingSpeechRate, rate);
+}
+
+void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
+    read_anything::mojom::HighlightGranularity granularity) {
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingHighlightGranularity,
+      static_cast<size_t>(granularity));
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(

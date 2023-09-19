@@ -773,6 +773,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
+  updateHighlight(show: boolean) {
+    // TODO(crbug.com/1474951): This is a placeholder color. Use the UX color
+    // once finalized.
+    this.updateStyles({
+      '--current-highlight-bg-color': show ? 'var(--google-yellow-400)' :
+                                             'transparent',
+    });
+  }
+
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   updateThemeFromWebUi(colorSuffix: string) {

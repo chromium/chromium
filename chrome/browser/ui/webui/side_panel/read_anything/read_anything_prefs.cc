@@ -43,11 +43,13 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingSpeechRate,
         kReadAnythingDefaultSpeechRate,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    // TODO(crbug.com/1474951): Update the default value for these integer
-    // prefs to be an enum value, like the ones above
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityReadAnythingHighlightGranularity, 1,
+        prefs::kAccessibilityReadAnythingHighlightGranularity,
+        static_cast<int>(
+            read_anything::mojom::HighlightGranularity::kDefaultValue),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    // TODO(crbug.com/1474951): Update the default value for this integer
+    // pref to be an enum value, like the ones above
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingHighlightColor, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

@@ -198,6 +198,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       this.setRateIcon_(speechRate);
       this.setCheckMarkForMenu_(
           this.$.rateMenu, this.rateOptions_.indexOf(speechRate));
+
+      this.setHighlightState_(
+          chrome.readingMode.highlightGranularity ===
+          chrome.readingMode.highlightOn);
     }
     this.setCheckMarkForMenu_(
         this.$.fontMenu,
@@ -320,13 +324,29 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('highlight');
     assert(button);
     if (this.isHighlightOn_) {
-      this.isHighlightOn_ = false;
-      button.setAttribute('iron-icon', 'read-anything:highlight-off');
-      button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
+      chrome.readingMode.turnedHighlightOff();
     } else {
-      this.isHighlightOn_ = true;
+      chrome.readingMode.turnedHighlightOn();
+    }
+    this.setHighlightState_(!this.isHighlightOn_);
+  }
+
+  private setHighlightState_(turnOn: boolean) {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('highlight');
+    assert(button);
+    this.isHighlightOn_ = turnOn;
+    if (this.isHighlightOn_) {
       button.setAttribute('iron-icon', 'read-anything:highlight-on');
       button.setAttribute('title', loadTimeData.getString('turnHighlightOff'));
+    } else {
+      button.setAttribute('iron-icon', 'read-anything:highlight-off');
+      button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
+    }
+
+    if (this.contentPage) {
+      this.contentPage.updateHighlight(this.isHighlightOn_);
     }
   }
 

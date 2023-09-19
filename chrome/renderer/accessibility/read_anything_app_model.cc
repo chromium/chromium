@@ -45,13 +45,15 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     const std::string& font,
     double font_size,
     read_anything::mojom::Colors color,
-    double speech_rate) {
+    double speech_rate,
+    read_anything::mojom::HighlightGranularity granularity) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
   font_name_ = font;
   font_size_ = font_size;
   color_theme_ = static_cast<size_t>(color);
   speech_rate_ = speech_rate;
+  highlight_granularity_ = static_cast<size_t>(granularity);
 }
 
 void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {

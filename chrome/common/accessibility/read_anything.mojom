@@ -68,6 +68,13 @@ enum LineSpacing {
   kVeryLoose = 3,
 };
 
+[Extensible, Stable, Uuid="b8c27619-fe28-44a6-bb89-f4eda846b0f8"]
+// Granularity used for highlighting text as it's spoken.
+enum HighlightGranularity {
+  [Default]kOn = 0,
+  kOff = 1,
+};
+
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
   // Informs the browser controller that a user tried to copy text from the
@@ -104,6 +111,10 @@ interface UntrustedPageHandler {
   // and 2 is twice as fast, 0.5 is half as fast. See
   // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
   OnSpeechRateChange(double rate);
+
+  // Informs the browser controller that the user updated the granularity of
+  // the highlight that follows along with speech via the webui toolbar.
+  OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
 
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
@@ -164,7 +175,8 @@ interface UntrustedPage {
                            string font,
                            double font_size,
                            read_anything.mojom.Colors color,
-                           double speech_rate);
+                           double speech_rate,
+                           read_anything.mojom.HighlightGranularity granularity);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   [EnableIf=enable_screen_ai_service]

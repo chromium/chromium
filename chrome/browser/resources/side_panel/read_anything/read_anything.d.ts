@@ -36,6 +36,7 @@ declare namespace chrome {
 
     // Current audio settings values.
     let speechRate: number;
+    let highlightGranularity: number;
 
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;
@@ -49,6 +50,7 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
+    let highlightOn: number;
 
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
@@ -136,6 +138,10 @@ declare namespace chrome {
 
     // Called when the speech rate is changed via the webui toolbar.
     function onSpeechRateChange(rate: number): void;
+
+    // Called when the highlight granularity is changed via the webui toolbar.
+    function turnedHighlightOn(): void;
+    function turnedHighlightOff(): void;
 
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.

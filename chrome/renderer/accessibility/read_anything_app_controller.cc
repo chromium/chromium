@@ -575,9 +575,11 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     const std::string& font,
     double font_size,
     read_anything::mojom::Colors color,
-    double speech_rate) {
+    double speech_rate,
+    read_anything::mojom::HighlightGranularity granularity) {
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, color, speech_rate);
+                                     font_size, color, speech_rate,
+                                     granularity);
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readingMode.restoreSettingsFromPrefs();";
@@ -620,6 +622,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("veryWideLetterSpacing",
                    &ReadAnythingAppController::VeryWideLetterSpacing)
       .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
+      .SetProperty("highlightGranularity",
+                   &ReadAnythingAppController::HighlightGranularity)
+      .SetProperty("highlightOn", &ReadAnythingAppController::HighlightOn)
       .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
       .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
@@ -669,6 +674,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
       .SetMethod("onSpeechRateChange",
                  &ReadAnythingAppController::OnSpeechRateChange)
+      .SetMethod("turnedHighlightOn",
+                 &ReadAnythingAppController::TurnedHighlightOn)
+      .SetMethod("turnedHighlightOff",
+                 &ReadAnythingAppController::TurnedHighlightOff)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
       .SetMethod("getLetterSpacingValue",
@@ -743,6 +752,10 @@ float ReadAnythingAppController::SpeechRate() const {
   return model_.speech_rate();
 }
 
+int ReadAnythingAppController::HighlightGranularity() const {
+  return model_.highlight_granularity();
+}
+
 int ReadAnythingAppController::StandardLineSpacing() const {
   return static_cast<int>(read_anything::mojom::LineSpacing::kStandard);
 }
@@ -785,6 +798,10 @@ int ReadAnythingAppController::YellowTheme() const {
 
 int ReadAnythingAppController::BlueTheme() const {
   return static_cast<int>(read_anything::mojom::Colors::kBlue);
+}
+
+int ReadAnythingAppController::HighlightOn() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -1015,6 +1032,16 @@ void ReadAnythingAppController::OnFontChange(const std::string& font) {
 
 void ReadAnythingAppController::OnSpeechRateChange(double rate) {
   page_handler_->OnSpeechRateChange(rate);
+}
+
+void ReadAnythingAppController::TurnedHighlightOn() {
+  page_handler_->OnHighlightGranularityChanged(
+      read_anything::mojom::HighlightGranularity::kOn);
+}
+
+void ReadAnythingAppController::TurnedHighlightOff() {
+  page_handler_->OnHighlightGranularityChanged(
+      read_anything::mojom::HighlightGranularity::kOff);
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {

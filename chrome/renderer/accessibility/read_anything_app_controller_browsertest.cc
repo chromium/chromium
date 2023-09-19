@@ -62,6 +62,10 @@ class MockReadAnythingUntrustedPageHandler
               OnColorChange,
               (read_anything::mojom::Colors color),
               (override));
+  MOCK_METHOD(void,
+              OnHighlightGranularityChanged,
+              (read_anything::mojom::HighlightGranularity color),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -223,6 +227,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   bool isSelectable() { return controller_->IsSelectable(); }
 
   void OnFontSizeReset() { controller_->OnFontSizeReset(); }
+
+  void TurnedHighlightOn() { controller_->TurnedHighlightOn(); }
+
+  void TurnedHighlightOff() { controller_->TurnedHighlightOff(); }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
@@ -1465,6 +1473,30 @@ TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
   EXPECT_CALL(page_handler_, OnFontSizeChange(kReadAnythingDefaultFontScale))
       .Times(1);
   OnFontSizeReset();
+}
+
+TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {
+  EXPECT_CALL(page_handler_,
+              OnHighlightGranularityChanged(
+                  read_anything::mojom::HighlightGranularity::kOn))
+      .Times(1);
+  EXPECT_CALL(page_handler_,
+              OnHighlightGranularityChanged(
+                  read_anything::mojom::HighlightGranularity::kOff))
+      .Times(0);
+  TurnedHighlightOn();
+}
+
+TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
+  EXPECT_CALL(page_handler_,
+              OnHighlightGranularityChanged(
+                  read_anything::mojom::HighlightGranularity::kOn))
+      .Times(0);
+  EXPECT_CALL(page_handler_,
+              OnHighlightGranularityChanged(
+                  read_anything::mojom::HighlightGranularity::kOff))
+      .Times(1);
+  TurnedHighlightOff();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetNextSentence_ReturnsCorrectIndex) {
