@@ -785,9 +785,8 @@ void ScalableIphDelegateImpl::OnNudgeDismissed(const std::string& bubble_id) {
       << "A bubble gets dismissed. Bubble id: " << bubble_id;
   if (bubble_id_ != bubble_id) {
     SCALABLE_IPH_LOG(GetLogger())
-        << "Bubble id " << bubble_id << " is an obsolete id.";
-    DCHECK(false) << "Callback for an obsolete bubble id gets called "
-                  << bubble_id;
+        << "Bubble id " << bubble_id
+        << " is an obsolete id. Current active bubble id is " << bubble_id_;
     return;
   }
   bubble_iph_session_.reset();
