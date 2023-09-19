@@ -46,13 +46,13 @@ inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"    // en
     u"|(haus|^)(nummer|nr)"                    // de
     u"|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
-    u"|дом|номер.?дома"                        // ru
-    u"|exterior";                              // es-MX
+    u"|exterior"                               // es
+    u"|дом|номер.?дома";                       // ru
 inline constexpr char16_t kApartmentNumberRe[] =
     u"apartment"                      // en
     u"|interior|departamento"         // es-MX
     u"|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
-    u"|Wohnung"                       // de
+    u"|wohnung"                       // de
     u"|квартир";                      // ru
 inline constexpr char16_t kAddressLine1Re[] =
     u"^address$|address[_-]?line(one)?|address1|addr1|street"

@@ -158,13 +158,13 @@
     ],
     "es": [
       {
-        "positive_pattern": "n(u|ú)mero.*apartamento|exterior",
+        "positive_pattern": "exterior",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "TELEPHONE", "NUMBER"]
       }
-	],
+    ],
     "ru": [
       {
         "positive_pattern": "дом|номер.?дома",
@@ -1667,7 +1667,7 @@
   "CREDIT_CARD_VERIFICATION_CODE": {
     "en": [
       {
-        "positive_pattern": "verification|card.?identification|security.?code|card.?code|security.?value|security.?number|card.?pin|c-v-v|(cvn|cvv|cvc|csc|cvd|ccv)|\\bcid\\b|cccid",
+        "positive_pattern": "verification|card.?identification|security.?code|card.?code|security.?value|security.?number|card.?pin|c-v-v|(?:cvn|cvv|cvc|csc|cvd|ccv)|\\bcid\\b|cccid",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
