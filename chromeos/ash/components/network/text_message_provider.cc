@@ -53,7 +53,7 @@ void TextMessageProvider::PoliciesChanged(const std::string& userhash) {
 
   // Only log metrics when the suppression state changes.
   if (!old_state.has_value() || policy_suppression_state_ != old_state) {
-    CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionType(
+    CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionState(
         *policy_suppression_state_);
   }
 }

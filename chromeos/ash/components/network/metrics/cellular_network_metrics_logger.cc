@@ -368,7 +368,7 @@ bool CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(
 }
 
 // static
-void CellularNetworkMetricsLogger::LogUserTextMessageSuppressionType(
+void CellularNetworkMetricsLogger::LogUserTextMessageSuppressionState(
     ash::UserTextMessageSuppressionState state) {
   UserTextMessageSuppressionState histogram_type;
   switch (state) {
@@ -379,12 +379,12 @@ void CellularNetworkMetricsLogger::LogUserTextMessageSuppressionType(
       histogram_type = UserTextMessageSuppressionState::kTextMessagesSuppress;
       break;
   }
-  base::UmaHistogramEnumeration(kUserAllowTextMessagesSuppressionTypeHistogram,
+  base::UmaHistogramEnumeration(kUserAllowTextMessagesSuppressionStateHistogram,
                                 histogram_type);
 }
 
 // static
-void CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionType(
+void CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionState(
     ash::PolicyTextMessageSuppressionState state) {
   PolicyTextMessageSuppressionState histogram_type;
   switch (state) {
@@ -399,7 +399,7 @@ void CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionType(
       break;
   }
   base::UmaHistogramEnumeration(
-      kPolicyAllowTextMessagesSuppressionTypeHistogram, histogram_type);
+      kPolicyAllowTextMessagesSuppressionStateHistogram, histogram_type);
 }
 
 void CellularNetworkMetricsLogger::OnConnectionResult(

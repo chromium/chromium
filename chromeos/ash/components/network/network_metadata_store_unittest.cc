@@ -909,13 +909,13 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
   histogram_tester.ExpectBucketCount(
       CellularNetworkMetricsLogger::
-          kUserAllowTextMessagesSuppressionTypeHistogram,
+          kUserAllowTextMessagesSuppressionStateHistogram,
       CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
           kTextMessagesSuppress,
       1u);
   histogram_tester.ExpectTotalCount(
       CellularNetworkMetricsLogger::
-          kUserAllowTextMessagesSuppressionTypeHistogram,
+          kUserAllowTextMessagesSuppressionStateHistogram,
       1u);
 
   // Case: Suppression state should be Allow when the user text message
@@ -927,13 +927,13 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
   histogram_tester.ExpectBucketCount(
       CellularNetworkMetricsLogger::
-          kUserAllowTextMessagesSuppressionTypeHistogram,
+          kUserAllowTextMessagesSuppressionStateHistogram,
       CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
           kTextMessagesAllow,
       1u);
   histogram_tester.ExpectTotalCount(
       CellularNetworkMetricsLogger::
-          kUserAllowTextMessagesSuppressionTypeHistogram,
+          kUserAllowTextMessagesSuppressionStateHistogram,
       2u);
 }
 

@@ -609,7 +609,7 @@ void NetworkMetadataStore::SetUserTextMessageSuppressionState(
 
   SetPref(network_guid, kUserTextMessageSuppressionState,
           base::Value(base::to_underlying(state)));
-  CellularNetworkMetricsLogger::LogUserTextMessageSuppressionType(state);
+  CellularNetworkMetricsLogger::LogUserTextMessageSuppressionState(state);
 }
 
 UserTextMessageSuppressionState

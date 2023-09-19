@@ -111,18 +111,18 @@ class TextMessageProviderTest : public testing::Test {
                            size_t unset_count) {
     histogram_tester_->ExpectBucketCount(
         CellularNetworkMetricsLogger::
-            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+            kPolicyAllowTextMessagesSuppressionStateHistogram,
         CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::kUnset,
         unset_count);
     histogram_tester_->ExpectBucketCount(
         CellularNetworkMetricsLogger::
-            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+            kPolicyAllowTextMessagesSuppressionStateHistogram,
         CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::
             kTextMessagesAllow,
         allow_count);
     histogram_tester_->ExpectBucketCount(
         CellularNetworkMetricsLogger::
-            kPolicyAllowTextMessagesSuppressionTypeHistogram,
+            kPolicyAllowTextMessagesSuppressionStateHistogram,
         CellularNetworkMetricsLogger::PolicyTextMessageSuppressionState::
             kTextMessagesSuppress,
         suppress_count);

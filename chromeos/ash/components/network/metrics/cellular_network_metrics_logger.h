@@ -209,10 +209,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static constexpr char kESimUserInstallUserErrorsIncludedViaSmds[] =
       "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded.ViaSmds";
 
-  static constexpr char kUserAllowTextMessagesSuppressionTypeHistogram[] =
-      "Network.Ash.Cellular.AllowTextMessages.User.SuppressionType";
-  static constexpr char kPolicyAllowTextMessagesSuppressionTypeHistogram[] =
-      "Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionType";
+  static constexpr char kUserAllowTextMessagesSuppressionStateHistogram[] =
+      "Network.Ash.Cellular.AllowTextMessages.User.SuppressionState";
+  static constexpr char kPolicyAllowTextMessagesSuppressionStateHistogram[] =
+      "Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -269,9 +269,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   // invalid activation code.
   static bool HermesResponseStatusIsUserError(HermesResponseStatus status);
 
-  static void LogUserTextMessageSuppressionType(
+  static void LogUserTextMessageSuppressionState(
       ash::UserTextMessageSuppressionState state);
-  static void LogPolicyTextMessageSuppressionType(
+  static void LogPolicyTextMessageSuppressionState(
       ash::PolicyTextMessageSuppressionState state);
 
  private:
