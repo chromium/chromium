@@ -190,7 +190,14 @@ class WPTManifest(object):
     @memoized
     def all_urls(self):
         """Returns a set of the URLs for all items in the manifest."""
-        return frozenset(self.all_url_items().keys())
+        urls_with_nonempty_paths = []
+        for url in self.all_url_items().keys():
+            assert not url.startswith('/')
+            assert not url.endswith('/')
+            # Drop empty path components.
+            url = url.replace('//', '/')
+            urls_with_nonempty_paths.append(url)
+        return frozenset(urls_with_nonempty_paths)
 
     def is_test_file(self, path_in_wpt):
         """Checks if path_in_wpt is a test file according to the manifest."""

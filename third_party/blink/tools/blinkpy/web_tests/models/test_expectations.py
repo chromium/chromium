@@ -408,10 +408,12 @@ class TestExpectations:
                                                      base_test, test))
         return exp
 
+    @memoized
     def get_expectations(self, test):
         return self._get_expectations_with_fallback(self._flag_expectations,
                                                     self._expectations, test)
 
+    @memoized
     def get_flag_expectations(self, test):
         exp = self._get_expectations_with_fallback(self._flag_expectations, [],
                                                    test)
@@ -419,6 +421,7 @@ class TestExpectations:
             return None
         return exp
 
+    @memoized
     def get_base_expectations(self, test):
         return self._get_expectations_with_fallback(self._base_expectations,
                                                     [], test)

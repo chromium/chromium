@@ -1372,6 +1372,7 @@ class Port(object):
             return ('', test_name)
         return (test_name[0:index], test_name[index:])
 
+    @memoized
     def normalize_test_name(self, test_name):
         """Returns a normalized version of the test name or test directory."""
         if test_name.endswith('/'):
@@ -1525,11 +1526,11 @@ class Port(object):
             # For a virtual test, if the base test is in exclusive_tests of the
             # test's own virtual suite, then we should not skip the test.
             virtual_suite = self._lookup_virtual_suite(test)
-            for entry in virtual_suite.exclusive_tests:
-                normalized_entry = self.normalize_test_name(entry)
-                if base_test.startswith(normalized_entry):
+            for exclusive_test in self._normalized_exclusive_tests(
+                    virtual_suite):
+                if base_test.startswith(exclusive_test):
                     return False
-                if normalized_entry.startswith(base_test):
+                if exclusive_test.startswith(base_test):
                     # This means base_test is a directory containing exclusive
                     # tests, so should not skip the directory.
                     return False
@@ -1539,11 +1540,24 @@ class Port(object):
         # For a non-virtual test or a virtual test not listed in exclusive_tests
         # of the test's own virtual suite, we should skip the test if the base
         # test is in exclusive_tests of any virtual suite.
-        for suite in self.virtual_test_suites():
-            for entry in suite.exclusive_tests:
-                if base_test.startswith(self.normalize_test_name(entry)):
-                    return True
+        for exclusive_test in self._all_normalized_exclusive_tests():
+            if base_test.startswith(exclusive_test):
+                return True
         return False
+
+    @memoized
+    def _all_normalized_exclusive_tests(self):
+        tests = set()
+        for suite in self.virtual_test_suites():
+            tests.update(self._normalized_exclusive_tests(suite))
+        return tests
+
+    @memoized
+    def _normalized_exclusive_tests(self, virtual_suite):
+        tests = set()
+        for exclusive_test in virtual_suite.exclusive_tests:
+            tests.add(self.normalize_test_name(exclusive_test))
+        return tests
 
     @memoized
     def skipped_due_to_skip_base_tests(self, test):
@@ -2573,12 +2587,6 @@ class Port(object):
                 # Look for all tests in the manifest that are under the relative
                 # |filter_path_from_wpt|.
                 for test_path_from_wpt in wpt_manifest.all_urls():
-                    assert not test_path_from_wpt.startswith('/')
-                    assert not test_path_from_wpt.endswith('/')
-
-                    # Drop empty path components.
-                    test_path_from_wpt = test_path_from_wpt.replace('//', '/')
-
                     if test_path_from_wpt.startswith(filter_path_from_wpt):
                         # The result is a test path from the root web test
                         # directory. If a |virtual_prefix| was given, we prepend
@@ -2606,6 +2614,7 @@ class Port(object):
 
         return '', test_name
 
+    @memoized
     def lookup_virtual_test_base(self, test_name):
         suite = self._lookup_virtual_suite(test_name)
         if not suite:
