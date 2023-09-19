@@ -547,10 +547,7 @@ class AutotestPrivateSearchTest
     : public AutotestPrivateApiTest,
       public ::testing::WithParamInterface</* tablet_mode =*/bool> {
  public:
-  AutotestPrivateSearchTest() {
-    feature_list.InitAndEnableFeature(
-        ash::features::kAutocompleteExtendedSuggestions);
-  }
+  AutotestPrivateSearchTest() = default;
 
   ~AutotestPrivateSearchTest() override = default;
   AutotestPrivateSearchTest(const AutotestPrivateSearchTest&) = delete;
@@ -595,9 +592,6 @@ class AutotestPrivateSearchTest
     }
     return results;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

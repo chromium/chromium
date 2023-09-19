@@ -103,12 +103,6 @@ const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
     "to catch up to the frame that should be drawn based on current time.";
 
-const char kAppCollectionFolderRefreshName[] =
-    "App Collection feature: Folder icon refresh";
-const char kAppCollectionFolderRefreshDescription[] =
-    "Enables the App Collection feature: the new folder icon style in the app "
-    "list.";
-
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
@@ -3074,11 +3068,6 @@ const char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
     "Pure refactoring, no user-visible behavioral changes are included.";
 
-const char kSearchResultInlineIconName[] = "Search Result Inline Icons";
-const char kSearchResultInlineIconDescription[] =
-    "Show iconified text and vector icons "
-    "in launcher search results.";
-
 const char kDynamicSearchUpdateAnimationName[] =
     "Dynamic Search Result Update Animation";
 const char kDynamicSearchUpdateAnimationDescription[] =
@@ -5532,11 +5521,6 @@ const char kAutoFramingOverrideName[] = "Auto-framing control override";
 const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "
     "feature";
-
-const char kAutocompleteExtendedSuggestionsName[] =
-    "Extended suggestions for CrOS autocomplete";
-const char kAutocompleteExtendedSuggestionsDescription[] =
-    "Enables extended autocomplete suggestions experiment on ChromeOS.";
 
 const char kAutocorrectByDefaultName[] = "CrOS autocorrect by default";
 const char kAutocorrectByDefaultDescription[] =

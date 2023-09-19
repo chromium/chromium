@@ -1486,30 +1486,19 @@ void SearchBoxView::UpdateSearchBoxForSelectedResult(
     return;
   }
 
-  if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-    ClearAutocompleteText();
+  ClearAutocompleteText();
 
-    const std::u16string& details = selected_result->details();
-    const std::u16string& search_text = selected_result->title();
+  const std::u16string& details = selected_result->details();
+  const std::u16string& search_text = selected_result->title();
 
-    // Don't set autocomplete text if it's the same as user typed text.
-    if (current_query_ == details || current_query_ == search_text)
-      return;
+  // Don't set autocomplete text if it's the same as user typed text.
+  if (current_query_ == details || current_query_ == search_text) {
+    return;
+  }
 
-    if (!ProcessPrefixMatchAutocomplete(selected_result, current_query_)) {
-      MaybeSetAutocompleteGhostText(selected_result->title(),
-                                    GetCategoryName(selected_result));
-    }
-  } else {
-    if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
-        !selected_result->is_omnibox_search() &&
-        !selected_result->details().empty()) {
-      // For url (non-search) results, use details to ensure that the url is
-      // displayed.
-      search_box()->SetText(selected_result->details());
-    } else {
-      search_box()->SetText(selected_result->title());
-    }
+  if (!ProcessPrefixMatchAutocomplete(selected_result, current_query_)) {
+    MaybeSetAutocompleteGhostText(selected_result->title(),
+                                  GetCategoryName(selected_result));
   }
 }
 

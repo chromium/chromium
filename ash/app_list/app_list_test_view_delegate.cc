@@ -49,9 +49,6 @@ void AppListTestViewDelegate::OpenSearchResult(
   for (size_t i = 0; i < results->item_count(); ++i) {
     if (results->GetItemAt(i)->id() == result_id) {
       open_search_result_counts_[i]++;
-      if (results->GetItemAt(i)->is_omnibox_search()) {
-        ++open_assistant_ui_count_;
-      }
       break;
     }
   }

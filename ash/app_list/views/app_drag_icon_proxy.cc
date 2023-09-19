@@ -84,26 +84,16 @@ AppDragIconProxy::AppDragIconProxy(
   shadow_->ObserveColorProviderSource(drag_image_widget_.get());
 
   if (is_folder_icon) {
-    ui::Layer* blurred_layer;
-    float corner_radius;
-
-    if (features::IsAppCollectionFolderRefreshEnabled()) {
-      // For the refreshed icon, the blur should be only added on the background
-      // circle, where none of any exising layer is bounded to that area.
-      // Therefore, the `blurred_background_layer_` is needed here to explicitly
-      // blur the background of the icon.
-      blurred_background_layer_ =
-          std::make_unique<ui::LayerOwner>(std::make_unique<ui::Layer>());
-      blurred_layer = blurred_background_layer_->layer();
-      drag_image->AddLayerToRegion(blurred_layer, views::LayerRegion::kBelow);
-      blurred_layer->SetBounds(shadow_->GetContentBounds());
-      corner_radius = shadow_->GetContentBounds().width() / 2.0f;
-    } else {
-      // For the clipped drag icon, the `drag_image` layer can be used for
-      // blurring as the whole clipped area needs to be blurred.
-      blurred_layer = drag_image->layer();
-      corner_radius = size.width() / 2.0f;
-    }
+    // The blur should be only added on the background circle, where none of
+    // any existing layer is bounded to that area.
+    // Therefore, the `blurred_background_layer_` is needed here to explicitly
+    // blur the background of the icon.
+    blurred_background_layer_ =
+        std::make_unique<ui::LayerOwner>(std::make_unique<ui::Layer>());
+    ui::Layer* const blurred_layer = blurred_background_layer_->layer();
+    drag_image->AddLayerToRegion(blurred_layer, views::LayerRegion::kBelow);
+    blurred_layer->SetBounds(shadow_->GetContentBounds());
+    const float corner_radius = shadow_->GetContentBounds().width() / 2.0f;
 
     blurred_layer->SetRoundedCornerRadius(
         {corner_radius, corner_radius, corner_radius, corner_radius});
@@ -192,9 +182,7 @@ views::Widget* AppDragIconProxy::GetWidgetForTesting() {
 }
 
 ui::Layer* AppDragIconProxy::GetBlurredLayerForTesting() {
-  return features::IsAppCollectionFolderRefreshEnabled()
-             ? blurred_background_layer_->layer()
-             : GetImageLayerForTesting();  // IN-TEST
+  return blurred_background_layer_->layer();
 }
 
 void AppDragIconProxy::OnProxyAnimationCompleted() {

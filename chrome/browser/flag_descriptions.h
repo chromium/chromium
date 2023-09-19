@@ -90,9 +90,6 @@ extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 
-extern const char kAppCollectionFolderRefreshName[];
-extern const char kAppCollectionFolderRefreshDescription[];
-
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
@@ -1763,9 +1760,6 @@ extern const char kScrollableTabStripOverflowDescription[];
 extern const char kSplitTabStripName[];
 extern const char kSplitTabStripDescription[];
 
-extern const char kSearchResultInlineIconName[];
-extern const char kSearchResultInlineIconDescription[];
-
 extern const char kDynamicSearchUpdateAnimationName[];
 extern const char kDynamicSearchUpdateAnimationDescription[];
 
@@ -3203,9 +3197,6 @@ extern const char kAudioSuppressSetRTCAudioActiveDescription[];
 
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
-
-extern const char kAutocompleteExtendedSuggestionsName[];
-extern const char kAutocompleteExtendedSuggestionsDescription[];
 
 extern const char kAutocorrectByDefaultName[];
 extern const char kAutocorrectByDefaultDescription[];

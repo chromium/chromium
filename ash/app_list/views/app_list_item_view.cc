@@ -265,7 +265,6 @@ class AppListItemView::FolderIconView : public views::View,
         jelly_style_(chromeos::features::IsJellyEnabled()),
         config_(config),
         icon_scale_(icon_scale) {
-    DCHECK(features::IsAppCollectionFolderRefreshEnabled());
     folder_item_->item_list()->AddObserver(this);
   }
   FolderIconView(const FolderIconView&) = delete;
@@ -491,8 +490,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
       item_weak_(item),
       grid_delegate_(grid_delegate),
       view_delegate_(view_delegate),
-      use_item_icon_(!is_folder_ ||
-                     !features::IsAppCollectionFolderRefreshEnabled()),
+      use_item_icon_(!is_folder_),
       context_(context) {
   DCHECK(app_list_config_);
   DCHECK(grid_delegate_);
@@ -579,16 +577,9 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   }
 
   if (is_folder_) {
-    if (features::IsAppCollectionFolderRefreshEnabled()) {
-      // Draw the background as part of the icon view.
-      EnsureIconBackgroundLayer();
-    } else {
-      views::View* icon_view = GetIconView();
-      icon_view->SetPaintToLayer();
-      icon_view->layer()->SetFillsBoundsOpaquely(false);
-      icon_view->SetBackground(views::CreateThemedSolidBackground(
-          kColorAshControlBackgroundColorInactive));
-    }
+    // Draw the background as part of the icon view.
+    EnsureIconBackgroundLayer();
+
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
@@ -752,8 +743,7 @@ void AppListItemView::ScaleIconImmediatly(float scale_factor) {
 
 void AppListItemView::UpdateBackgroundLayerBounds() {
   auto* background_layer = GetIconBackgroundLayer();
-  if (!background_layer || !features::IsAppCollectionFolderRefreshEnabled() ||
-      GetIconView()->bounds().IsEmpty()) {
+  if (!background_layer || GetIconView()->bounds().IsEmpty()) {
     return;
   }
 
@@ -1042,8 +1032,7 @@ void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // The list of descriptions to be announced.
   std::vector<std::u16string> descriptions;
 
-  if (item_weak_->is_folder() &&
-      features::IsAppCollectionFolderRefreshEnabled()) {
+  if (item_weak_->is_folder()) {
     // For folder items, announce the number of apps in the folder.
     std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
         IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
@@ -1706,14 +1695,7 @@ views::View* AppListItemView::GetIconView() const {
 }
 
 gfx::Rect AppListItemView::GetIconBounds() const {
-  gfx::Rect folder_icon_bounds = GetIconView()->bounds();
-  if (is_folder_ && !features::IsAppCollectionFolderRefreshEnabled()) {
-    // The folder icon is in unclipped size, so clip it before return.
-    folder_icon_bounds.ClampToCenteredSize(
-        app_list_config_->icon_visible_size());
-    return folder_icon_bounds;
-  }
-  return folder_icon_bounds;
+  return GetIconView()->bounds();
 }
 
 gfx::Rect AppListItemView::GetIconBoundsInScreen() const {
@@ -1920,77 +1902,34 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
                                 weak_ptr_factory_.GetWeakPtr(), extend_icon))
       .Once();
 
-  if (features::IsAppCollectionFolderRefreshEnabled()) {
-    UpdateBackgroundLayerBounds();
-    const int width = extend_icon ? app_list_config_->unclipped_icon_dimension()
-                                  : app_list_config_->icon_visible_dimension();
-    gfx::Rect clip_rect(background_layer->size());
-    clip_rect.ClampToCenteredSize(
-        ScaleToRoundedSize(gfx::Size(width, width), icon_scale_));
+  UpdateBackgroundLayerBounds();
+  const int width = extend_icon ? app_list_config_->unclipped_icon_dimension()
+                                : app_list_config_->icon_visible_dimension();
+  gfx::Rect clip_rect(background_layer->size());
+  clip_rect.ClampToCenteredSize(
+      ScaleToRoundedSize(gfx::Size(width, width), icon_scale_));
 
-    const int corner_radius =
-        extend_icon ? app_list_config_->icon_extended_background_radius()
-                    : width / 2;
-    const base::TimeDelta duration =
-        animate ? base::Milliseconds(125) : base::TimeDelta();
-    builder.GetCurrentSequence()
-        .SetDuration(duration)
-        .SetClipRect(background_layer, clip_rect, animation_tween_type)
-        .SetRoundedCorners(background_layer,
-                           gfx::RoundedCornersF(corner_radius * icon_scale_),
-                           animation_tween_type);
-    if (chromeos::features::IsJellyEnabled() && GetWidget()) {
-      builder.GetCurrentSequence().SetColor(
-          background_layer,
-          GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
-          animation_tween_type);
-    }
-    return;
-  }
-
-  // Handle folder icons
-  if (is_folder_) {
-    const int corner_radius =
-        extend_icon ? app_list_config_->unclipped_icon_dimension() / 2
-                    : app_list_config_->icon_visible_dimension() / 2;
-
-    gfx::Rect clip_rect = GetIconView()->GetLocalBounds();
-    if (!extend_icon) {
-      clip_rect.Inset(gfx::Insets(app_list_config_->folder_icon_insets()));
-    }
-    builder.GetCurrentSequence()
-        .SetDuration(base::Milliseconds(animate ? 125 : 0))
-        .SetClipRect(background_layer, clip_rect, animation_tween_type)
-        .SetRoundedCorners(background_layer,
-                           gfx::RoundedCornersF(corner_radius),
-                           animation_tween_type);
-    return;
-  }
-
-  // Handle app icons
-  gfx::Rect background_target_bounds(
-      GetIconView()->layer()->bounds().CenterPoint(), gfx::Size());
-  if (extend_icon) {
-    background_layer->SetBounds(background_target_bounds);
-    background_layer->SetColor(
-        GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
-    background_target_bounds.Outset(
-        app_list_config_->folder_dropping_circle_radius() * icon_scale_);
-  }
+  const int corner_radius =
+      extend_icon ? app_list_config_->icon_extended_background_radius()
+                  : width / 2;
+  const base::TimeDelta duration =
+      animate ? base::Milliseconds(125) : base::TimeDelta();
   builder.GetCurrentSequence()
-      .SetDuration(base::Milliseconds(animate ? 250 : 0))
-      .SetBounds(background_layer, background_target_bounds,
-                 animation_tween_type)
-      .SetRoundedCorners(
-          background_layer,
-          gfx::RoundedCornersF(background_target_bounds.width() / 2),
-          animation_tween_type);
+      .SetDuration(duration)
+      .SetClipRect(background_layer, clip_rect, animation_tween_type)
+      .SetRoundedCorners(background_layer,
+                         gfx::RoundedCornersF(corner_radius * icon_scale_),
+                         animation_tween_type);
+  if (chromeos::features::IsJellyEnabled() && GetWidget()) {
+    builder.GetCurrentSequence().SetColor(
+        background_layer,
+        GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
+        animation_tween_type);
+  }
 }
 
 void AppListItemView::EnsureIconBackgroundLayer() {
-  const bool clip_inner_icons =
-      is_folder_ && !features::IsAppCollectionFolderRefreshEnabled();
-  if (clip_inner_icons || icon_background_layer_) {
+  if (icon_background_layer_) {
     return;
   }
 
@@ -2024,10 +1963,6 @@ void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
 }
 
 ui::Layer* AppListItemView::GetIconBackgroundLayer() {
-  if (is_folder_ && !features::IsAppCollectionFolderRefreshEnabled()) {
-    return GetIconView()->layer();
-  }
-
   if (!icon_background_layer_) {
     return nullptr;
   }

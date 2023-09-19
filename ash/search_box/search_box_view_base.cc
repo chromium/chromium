@@ -541,9 +541,6 @@ void SearchBoxViewBase::TriggerSearch() {
 void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
     const std::u16string& title,
     const std::u16string& category) {
-  if (!features::IsAutocompleteExtendedSuggestionsEnabled())
-    return;
-
   if (title.empty() && category.empty()) {
     ghost_text_container_->SetVisible(false);
     autocomplete_ghost_text_->SetText(std::u16string());
@@ -637,10 +634,8 @@ void SearchBoxViewBase::OnMouseEvent(ui::MouseEvent* event) {
 
 void SearchBoxViewBase::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-    search_box_->SetSelectionBackgroundColor(
-        GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
-  }
+  search_box_->SetSelectionBackgroundColor(
+      GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
   UpdatePlaceholderTextStyle();
 }
 

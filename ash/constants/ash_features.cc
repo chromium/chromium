@@ -139,10 +139,6 @@ BASE_FEATURE(kAmbientModeManagedScreensaver,
 
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppCollectionFolderRefresh,
-             "AppCollectionFolderRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAppLaunchAutomation,
              "AppLaunchAutomation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -241,11 +237,6 @@ BASE_FEATURE(kAutoNightLight,
 // changes.
 BASE_FEATURE(kAutoScreenBrightness,
              "AutoScreenBrightness",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables extended autocomplete results.
-BASE_FEATURE(kAutocompleteExtendedSuggestions,
-             "AutocompleteExtendedSuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables params tuning experiment for autocorrect on ChromeOS.
@@ -2935,10 +2926,6 @@ bool IsAudioHFPMicSRToggleEnabled() {
   return base::FeatureList::IsEnabled(kAudioHFPMicSRToggle);
 }
 
-bool IsAutocompleteExtendedSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(kAutocompleteExtendedSuggestions);
-}
-
 bool IsAutoEnrollmentKioskInOobeEnabled() {
   return base::FeatureList::IsEnabled(kAutoEnrollmentKioskInOobe);
 }
@@ -3009,10 +2996,6 @@ bool IsApnRevampEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
-}
-
-bool IsAppCollectionFolderRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kAppCollectionFolderRefresh);
 }
 
 bool IsArcFuseBoxFileSharingEnabled() {

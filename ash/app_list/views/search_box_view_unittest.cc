@@ -708,21 +708,11 @@ TEST_F(SearchBoxViewFilterButtonTest, FilterButtonVisibleAfterTyping) {
   EXPECT_TRUE(view()->filter_button()->GetVisible());
 }
 
-class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,
-                                      public testing::WithParamInterface<bool> {
+class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAutocompleteTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatureStates({
-        {
-            features::kAutocompleteExtendedSuggestions,
-            IsExtendedAutocompleteEnabled(),
-        },
-        {
-            chromeos::features::kJelly,
-            true,
-        },
-    });
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
   SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
   SearchBoxViewAutocompleteTest& operator=(
@@ -732,8 +722,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,
   void ProcessAutocomplete() {
     view()->ProcessAutocomplete(GetFirstResultView());
   }
-
-  bool IsExtendedAutocompleteEnabled() { return GetParam(); }
 
   // Sets up the test by creating a SearchResult and displaying an autocomplete
   // suggestion.
@@ -750,15 +738,9 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,
   }
 };
 
-// Instantiate the values in the parameterized tests. The boolean
-// determines whether to run the test in tablet mode.
-INSTANTIATE_TEST_SUITE_P(ExtendedAutocomplete,
-                         SearchBoxViewAutocompleteTest,
-                         testing::Bool());
-
 // Tests that autocomplete suggestions are consistent with top SearchResult list
 // titles.
-TEST_P(SearchBoxViewAutocompleteTest,
+TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopListResultTitle) {
   SimulateQuery(u"he");
 
@@ -774,16 +756,14 @@ TEST_P(SearchBoxViewAutocompleteTest,
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo list");
 
-  if (IsExtendedAutocompleteEnabled()) {
-    EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
-    KeyPress(ui::VKEY_DOWN);
-    EXPECT_EQ("Apps", view()->GetSearchBoxGhostTextForTest());
-  }
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  KeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ("Apps", view()->GetSearchBoxGhostTextForTest());
 }
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
 // details.
-TEST_P(SearchBoxViewAutocompleteTest,
+TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopListResultDetails) {
   SimulateQuery(u"he");
 
@@ -799,16 +779,14 @@ TEST_P(SearchBoxViewAutocompleteTest,
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo list");
 
-  if (IsExtendedAutocompleteEnabled()) {
-    EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
-    KeyPress(ui::VKEY_DOWN);
-    EXPECT_EQ("Apps", view()->GetSearchBoxGhostTextForTest());
-  }
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  KeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ("Apps", view()->GetSearchBoxGhostTextForTest());
 }
 
 // Tests that SearchBoxView's textfield text does not autocomplete if the top
 // result title or details do not have a matching prefix.
-TEST_P(SearchBoxViewAutocompleteTest,
+TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxDoesNotAutocompleteWrongCharacter) {
   // Send ABC to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_A);
@@ -822,14 +800,12 @@ TEST_P(SearchBoxViewAutocompleteTest,
   // The text should not be autocompleted.
   EXPECT_EQ(view()->search_box()->GetText(), u"abc");
 
-  if (IsExtendedAutocompleteEnabled()) {
-    EXPECT_EQ("title - Websites", view()->GetSearchBoxGhostTextForTest());
-  }
+  EXPECT_EQ("title - Websites", view()->GetSearchBoxGhostTextForTest());
 }
 
 // Tests that autocomplete suggestion will remain if next key in the suggestion
 // is typed.
-TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
+TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
   SimulateQuery(u"he");
   // Add a search result with a non-empty title field.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello world!",
@@ -849,13 +825,12 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
   EXPECT_EQ(u"lo world!", selected_text);
 
-  if (IsExtendedAutocompleteEnabled())
-    EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
 
 // Tests that autocomplete suggestion is accepted and displayed in SearchModel
 // after clicking or tapping on the search box.
-TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
+TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
   SetupAutocompleteBehaviorTest();
 
   ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -872,11 +847,10 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
   EXPECT_EQ(u"he", view()->current_query());
 
-  if (IsExtendedAutocompleteEnabled())
-    EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
 
-TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
+TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
   SetupAutocompleteBehaviorTest();
 
   ui::GestureEvent gesture_event(0, 0, 0, ui::EventTimeForNow(),
@@ -893,12 +867,11 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
   // trigger another query, thus it is not reflected in Search Model.
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
   EXPECT_EQ(u"he", view()->current_query());
-  if (IsExtendedAutocompleteEnabled())
-    EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
 
 // Tests that autocomplete is not handled if IME is using composition text.
-TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
+TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   // Simulate uncomposited text. The autocomplete should be handled.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
@@ -926,8 +899,7 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   EXPECT_EQ(view()->search_box()->GetText(), u"he");
   EXPECT_EQ(u"", selected_text);
 
-  if (IsExtendedAutocompleteEnabled())
-    EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
+  EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
 
 // TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase.

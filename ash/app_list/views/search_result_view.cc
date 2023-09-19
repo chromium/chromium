@@ -1080,8 +1080,7 @@ void SearchResultView::UpdateKeyboardShortcutContainer() {
   keyboard_shortcut_container_->RemoveAllChildViews();
   keyboard_shortcut_container_tags_.clear();
 
-  if (!app_list_features::IsSearchResultInlineIconEnabled() || !result() ||
-      result()->keyboard_shortcut_text_vector().empty()) {
+  if (!result() || result()->keyboard_shortcut_text_vector().empty()) {
     keyboard_shortcut_container_->SetVisible(false);
     has_keyboard_shortcut_contents_ = false;
     // Reset `title_and_details_container_` orientation.
@@ -1448,9 +1447,7 @@ void SearchResultView::OnMetadataChanged() {
     UpdateBigTitleContainer();
     UpdateBigTitleSuperscriptContainer();
   }
-  if (app_list_features::IsSearchResultInlineIconEnabled()) {
-    UpdateKeyboardShortcutContainer();
-  }
+  UpdateKeyboardShortcutContainer();
   UpdateTitleContainer();
   UpdateProgressBarContainer();
   UpdateDetailsContainer();

@@ -217,11 +217,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "app-collection-folder-refresh",
-    "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "app-deduplication-service-fondue",
     "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 125
@@ -490,11 +485,6 @@
     "name": "auto-framing-override",
     "owners": [ "kamesan", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116
-  },
-  {
-    "name": "autocomplete-extended-suggestions",
-    "owners": [ "yulunwu", "tbarzic" ],
-    "expiry_milestone": 113
   },
   {
     "name": "autofill-account-profiles-storage",
@@ -7336,11 +7326,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "search-result-inline-icon",
-    "owners": ["yulunwu"],
-    "expiry_milestone": 103
-  },
-  {
     "name": "search-suggestion-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 122
@@ -7426,11 +7411,6 @@
     "name": "shelf-auto-hide-separation",
     "owners": [ "yulunwu", "etuck", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 114
-  },
-  {
-    "name": "shelf-drag-to-pin",
-    "owners": ["tbarzic", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 112
   },
   {
     "name": "shelf-stacked-hotseat",

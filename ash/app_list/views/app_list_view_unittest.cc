@@ -615,28 +615,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->GetWidget()->OnKeyEvent(&key_event);
   }
 
-  // Add search results for test on focus movement.
+  // Adds test search results.
   void SetUpSearchResults(int list_results_num) {
-    SearchModel::SearchResults* results = GetSearchModel()->results();
-    results->DeleteAll();
-
-    for (int i = 0; i < list_results_num; ++i) {
-      std::unique_ptr<TestSearchResult> result =
-          std::make_unique<TestSearchResult>();
-      result->set_display_type(SearchResultDisplayType::kList);
-      result->set_display_score(1);
-      result->SetTitle(u"Test");
-      result->set_best_match(true);
-      results->Add(std::move(result));
-    }
-
-    // Adding results will schedule Update().
-    base::RunLoop().RunUntilIdle();
-  }
-
-  // Add search results for test on embedded Assistant UI.
-  void SetUpSearchResultsForAssistantUI(int list_results_num,
-                                        int index_open_assistant_ui) {
     SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
     double display_score = list_results_num;
@@ -652,9 +632,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
       result->SetTitle(u"Test" + base::NumberToString16(i));
       result->set_result_id("Test" + base::NumberToString(i));
       result->set_best_match(true);
-      if (i == index_open_assistant_ui)
-        result->set_is_omnibox_search(true);
-
       results->Add(std::move(result));
     }
 
@@ -686,10 +663,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   int GetTotalOpenSearchResultCount() {
     return delegate_->open_search_result_count();
-  }
-
-  int GetTotalOpenAssistantUICount() {
-    return delegate_->open_assistant_ui_count();
   }
 
   // Test focus traversal across all the views in |view_list|. The initial focus
@@ -1046,7 +1019,7 @@ TEST_F(AppListViewFocusTest, SearchBoxTextDoesNotUpdateOnResultFocus) {
 TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
   Show();
   search_box_view()->search_box()->InsertText(
-      u"test",
+      u"test0",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   constexpr int kListResults = 2;
   SetUpSearchResults(kListResults);
@@ -1058,21 +1031,21 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
   // Focus left the searchbox, so the selected range should be at the end of the
   // search text.
   EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
-  EXPECT_EQ(gfx::Range(4, 4),
+  EXPECT_EQ(gfx::Range(5, 5),
             search_box_view()->search_box()->GetSelectedRange());
 
   // Press Ctrl-A, everything should be selected and the selected range should
   // include the whole text.
   SimulateKeyPress(ui::VKEY_A, false, true);
   EXPECT_TRUE(search_box_view()->search_box()->HasSelection());
-  EXPECT_EQ(gfx::Range(0, 4),
+  EXPECT_EQ(gfx::Range(0, 5),
             search_box_view()->search_box()->GetSelectedRange());
 
   // Advance focus, Focus should leave the searchbox, and the selected range
   // should be at the end of the search text.
   SimulateKeyPress(ui::VKEY_TAB, false);
   EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
-  EXPECT_EQ(gfx::Range(4, 4),
+  EXPECT_EQ(gfx::Range(5, 5),
             search_box_view()->search_box()->GetSelectedRange());
 }
 
@@ -1676,25 +1649,22 @@ TEST_P(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
       u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
-  const int kIndexOpenAssistantUi = 1;
 
-  SetUpSearchResultsForAssistantUI(kListResults, kIndexOpenAssistantUi);
+  SetUpSearchResults(kListResults);
   SimulateKeyPress(ui::VKEY_RETURN, false);
   EXPECT_EQ(1, GetOpenFirstSearchResultCount());
   EXPECT_EQ(1, GetTotalOpenSearchResultCount());
-  EXPECT_EQ(0, GetTotalOpenAssistantUICount());
 
   // Type something in search box to transition to re-open search state and
   // populate fake list results. Then hit Enter key.
   search_box_view()->search_box()->InsertText(
       u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  SetUpSearchResultsForAssistantUI(kListResults, kIndexOpenAssistantUi);
+  SetUpSearchResults(kListResults);
   SimulateKeyPress(ui::VKEY_DOWN, false);
   SimulateKeyPress(ui::VKEY_RETURN, false);
   EXPECT_EQ(1, GetOpenFirstSearchResultCount());
   EXPECT_EQ(2, GetTotalOpenSearchResultCount());
-  EXPECT_EQ(1, GetTotalOpenAssistantUICount());
 }
 
 // Tests that pressing escape in embedded Assistant UI returns to fullscreen

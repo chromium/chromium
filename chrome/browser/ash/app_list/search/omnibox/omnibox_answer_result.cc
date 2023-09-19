@@ -146,9 +146,6 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   set_relevance(search_result_->relevance / kMaxOmniboxScore);
 
-  if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search))
-    SetIsOmniboxSearch(true);
-
   UpdateIcon();
   UpdateTitleAndDetails();
 

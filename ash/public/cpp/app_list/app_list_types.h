@@ -806,9 +806,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // A score to determine the result display order.
   double display_score = 0;
 
-  // Whether this is searched from Omnibox.
-  bool is_omnibox_search = false;
-
   // Whether this result is a recommendation.
   bool is_recommendation = false;
 

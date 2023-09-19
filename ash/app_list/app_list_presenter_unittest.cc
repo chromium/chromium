@@ -137,7 +137,6 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
     const std::string& result_id) {
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
-  suggestion_result->set_is_omnibox_search(true);
   suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;

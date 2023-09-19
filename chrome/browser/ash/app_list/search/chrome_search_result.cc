@@ -154,11 +154,6 @@ void ChromeSearchResult::SetMetricsType(MetricsType metrics_type) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetIsOmniboxSearch(bool is_omnibox_search) {
-  metadata_->is_omnibox_search = is_omnibox_search;
-  SetSearchResultMetadata();
-}
-
 void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   metadata_->is_recommendation = is_recommendation;
   SetSearchResultMetadata();

@@ -138,7 +138,6 @@ class ChromeSearchResult {
   void SetMetricsType(MetricsType metrics_type);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
-  void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
   void SetSkipUpdateAnimation(bool skip_update_animation);
   void SetIcon(const IconInfo& icon);

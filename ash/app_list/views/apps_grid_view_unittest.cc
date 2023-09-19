@@ -297,9 +297,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
 
-    scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor_},
-         {features::kAppCollectionFolderRefresh, folder_icon_refresh_}});
+    scoped_feature_list_.InitWithFeatureState(
+        app_list_features::kDragAndDropRefactor, use_drag_drop_refactor_);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -454,8 +453,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   }
 
   bool use_drag_drop_refactor() const { return use_drag_drop_refactor_; }
-
-  bool folder_icon_refresh() const { return folder_icon_refresh_; }
 
   AppsGridView* folder_apps_grid_view() const {
     return app_list_folder_view_->items_grid_view();
@@ -744,8 +741,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   bool create_as_tablet_mode_ = false;
   // True to test with the drag and drop refactor feature enabled.
   bool use_drag_drop_refactor_ = false;
-  // True if the folder icon refresh feature is enabled.
-  bool folder_icon_refresh_ = false;
 
   std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
 
@@ -837,17 +832,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class AppsGridViewFolderIconRefreshTest
     : public AppsGridViewDragTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  AppsGridViewFolderIconRefreshTest() {
-    is_rtl_ = std::get<0>(GetParam());
-    folder_icon_refresh_ = std::get<1>(GetParam());
-  }
+  AppsGridViewFolderIconRefreshTest() { is_rtl_ = GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(Rtl,
                          AppsGridViewFolderIconRefreshTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 // Tests for legacy behaviour using the old drag and drop code.
 class AppsGridViewDragLegacyTest : public AppsGridViewDragTestBase,
@@ -1854,14 +1846,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   auto* background_layer = folder_view->icon_background_layer_for_test();
 
   // The icon_background_layer is only created if the icon refresh is enabled.
-  if (folder_icon_refresh()) {
-    EXPECT_TRUE(background_layer);
-  } else {
-    EXPECT_FALSE(background_layer);
-    // Return early as the test below verifies the background layer that isn't
-    // available with legacy folder icons.
-    return;
-  }
+  EXPECT_TRUE(background_layer);
 
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
@@ -1891,10 +1876,6 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
 }
 
 TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {
-  if (!folder_icon_refresh()) {
-    return;
-  }
-
   GetTestModel()->CreateAndPopulateFolderWithApps(2);
   GetTestModel()->CreateAndPopulateFolderWithApps(4);
   GetTestModel()->CreateAndPopulateFolderWithApps(10);
@@ -2615,8 +2596,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderAfterFolderDropPoint) {
                                    GetItemRectOnCurrentPageAt(0, 0).x()) /
                           2;
     gfx::Vector2d drag_vector(
-        -2 * half_tile_width -
-            GetAppListConfig()->folder_dropping_circle_radius() - 4,
+        -2 * half_tile_width - GetAppListConfig()->folder_bubble_radius() - 4,
         0);
     // Flip drag vector in rtl.
     if (is_rtl_) {

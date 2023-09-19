@@ -154,7 +154,7 @@ int ItemIconInFolderIconDimensionForType(ash::AppListConfigType type) {
 }
 
 int ItemIconInFolderIconMargin() {
-  return features::IsAppCollectionFolderRefreshEnabled() ? 2 : 4;
+  return 2;
 }
 
 }  // namespace
@@ -208,8 +208,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
       icon_extended_background_radius_(IconExtendedBackgroundRadius(type)),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
-      item_icon_in_folder_icon_margin_(ItemIconInFolderIconMargin()),
-      folder_dropping_circle_radius_(folder_bubble_radius_) {}
+      item_icon_in_folder_icon_margin_(ItemIconInFolderIconMargin()) {}
 
 AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
     : type_(base_config.type_),
@@ -241,9 +240,7 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       item_icon_in_folder_icon_dimension_(
           Scale(base_config.item_icon_in_folder_icon_dimension_, scale_x)),
       item_icon_in_folder_icon_margin_(
-          Scale(base_config.item_icon_in_folder_icon_margin_, scale_x)),
-      folder_dropping_circle_radius_(
-          Scale(base_config.folder_dropping_circle_radius_, scale_x)) {}
+          Scale(base_config.item_icon_in_folder_icon_margin_, scale_x)) {}
 
 AppListConfig::~AppListConfig() = default;
 

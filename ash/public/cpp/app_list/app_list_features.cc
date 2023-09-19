@@ -23,9 +23,6 @@ BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
 BASE_FEATURE(kForceShowContinueSection,
              "ForceShowContinueSection",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSearchResultInlineIcon,
-             "SearchResultInlineIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicSearchUpdateAnimation,
              "DynamicSearchUpdateAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -46,11 +43,6 @@ bool IsExactMatchForNonLatinLocaleEnabled() {
 
 bool IsAppListLaunchRecordingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppListLaunchRecording);
-}
-
-bool IsSearchResultInlineIconEnabled() {
-  // Inline Icons are only supported for categorical search.
-  return base::FeatureList::IsEnabled(kSearchResultInlineIcon);
 }
 
 bool IsDynamicSearchUpdateAnimationEnabled() {
