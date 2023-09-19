@@ -53,7 +53,7 @@ void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
   if (expected_error) {
     EXPECT_FALSE(result.has_value());
   } else {
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), expected_result);
   }
   std::move(closure).Run();
@@ -74,6 +74,8 @@ absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
 void DefaultModelTestBase::ExpectClassifierResults(
     const ModelProvider::Request& input,
     const std::vector<std::string>& expected_ordered_labels) {
+  ASSERT_TRUE(fetched_metadata_)
+      << "Please call ExpectInitAndFetchModel() in each test";
   auto result = ExecuteWithInput(input);
   EXPECT_TRUE(result.has_value());
 

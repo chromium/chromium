@@ -144,6 +144,10 @@ std::string GetSubsegmentKey(const std::string& segmentation_key);
 
 // TODO(shaktisahu): Move these to a nicer location.
 
+// Legacy label used for users not in the segment for binary user segment
+// classifier.
+const char kLegacyNegativeLabel[] = "Other";
+
 // Labels for adaptive toolbar model.
 const char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
 const char kAdaptiveToolbarModelLabelShare[] = "Share";

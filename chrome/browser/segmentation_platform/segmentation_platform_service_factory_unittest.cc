@@ -114,7 +114,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       const std::string& segmentation_key,
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
-      segmentation_platform::PredictionStatus expected_status,
+      PredictionStatus expected_status,
       absl::optional<std::vector<std::string>> expected_labels) {
     base::RunLoop loop;
     service_->GetClassificationResult(
@@ -128,7 +128,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
   void OnGetClassificationResult(
       base::RepeatingClosure closure,
-      segmentation_platform::PredictionStatus expected_status,
+      PredictionStatus expected_status,
       absl::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
     ASSERT_EQ(expected_status, actual_result.status);
@@ -144,7 +144,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       const std::string& segmentation_key,
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
-      segmentation_platform::PredictionStatus expected_status) {
+      PredictionStatus expected_status) {
     base::RunLoop loop;
     service_->GetAnnotatedNumericResult(
         segmentation_key, prediction_options, input_context,
@@ -157,7 +157,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
   void OnGetAnnotatedNumericResult(
       base::RepeatingClosure closure,
-      segmentation_platform::PredictionStatus expected_status,
+      PredictionStatus expected_status,
       const AnnotatedNumericResult& actual_result) {
     ASSERT_EQ(expected_status, actual_result.status);
     std::move(closure).Run();
@@ -216,77 +216,83 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 };
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestPasswordManagerUserSegment) {
-  InitServiceAndCacheResults(segmentation_platform::kPasswordManagerUserKey);
+  InitServiceAndCacheResults(kPasswordManagerUserKey);
 
-  segmentation_platform::PredictionOptions prediction_options;
+  PredictionOptions prediction_options;
 
   ExpectGetClassificationResult(
-      segmentation_platform::kPasswordManagerUserKey, prediction_options,
-      nullptr,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      kPasswordManagerUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, "Not_PasswordManagerUser"));
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestSearchUserModel) {
-  InitServiceAndCacheResults(segmentation_platform::kSearchUserKey);
+  InitServiceAndCacheResults(kSearchUserKey);
 
-  segmentation_platform::PredictionOptions prediction_options;
+  PredictionOptions prediction_options;
 
   ExpectGetClassificationResult(
-      segmentation_platform::kSearchUserKey, prediction_options, nullptr,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      kSearchUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
-      std::vector<std::string>(
-          1, segmentation_platform::kSearchUserModelLabelNone));
+      std::vector<std::string>(1, kSearchUserModelLabelNone));
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
   InitService();
 
-  segmentation_platform::PredictionOptions prediction_options;
+  PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
 
-  auto input_context =
-      base::MakeRefCounted<segmentation_platform::InputContext>();
-  input_context->metadata_args.emplace(
-      "wait_for_device_info_in_seconds",
-      segmentation_platform::processing::ProcessedValue(0));
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace("wait_for_device_info_in_seconds",
+                                       processing::ProcessedValue(0));
 
   ExpectGetClassificationResult(
-      segmentation_platform::kDeviceSwitcherKey, prediction_options,
-      input_context,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      kDeviceSwitcherKey, prediction_options, input_context,
+      /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/std::vector<std::string>(1, "NotSynced"));
 }
 
 #if BUILDFLAG(IS_ANDROID)
 // Tests for models in android platform.
 TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceTierSegment) {
-  InitServiceAndCacheResults(segmentation_platform::kDeviceTierKey);
+  InitServiceAndCacheResults(kDeviceTierKey);
 
-  segmentation_platform::PredictionOptions prediction_options;
+  PredictionOptions prediction_options;
 
   ExpectGetClassificationResult(
-      segmentation_platform::kDeviceTierKey, prediction_options, nullptr,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      kDeviceTierKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/absl::nullopt);
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest,
        TestTabletProductivityUserModel) {
-  InitServiceAndCacheResults(segmentation_platform::kTabletProductivityUserKey);
+  InitServiceAndCacheResults(kTabletProductivityUserKey);
 
-  segmentation_platform::PredictionOptions prediction_options;
+  PredictionOptions prediction_options;
 
   ExpectGetClassificationResult(
-      segmentation_platform::kTabletProductivityUserKey, prediction_options,
-      nullptr,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      kTabletProductivityUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
-      std::vector<std::string>(
-          1, segmentation_platform::kTabletProductivityUserModelLabelNone));
+      std::vector<std::string>(1, kTabletProductivityUserModelLabelNone));
 }
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestFrequentFeatureModel) {
+  InitServiceAndCacheResults(kFrequentFeatureUserKey);
+
+  PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      kFrequentFeatureUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>{kLegacyNegativeLabel});
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace segmentation_platform
