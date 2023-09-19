@@ -1804,6 +1804,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -1812,7 +1813,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230919",
                     "enable_features": [
                         "AutofillUseDomNodeIdForRendererId"
                     ]
