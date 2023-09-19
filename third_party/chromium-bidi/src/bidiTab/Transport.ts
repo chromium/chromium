@@ -73,7 +73,6 @@ export class WindowBidiTransport implements BidiTransport {
     );
 
     if (channel) {
-      // XXX: get rid of any, same code existed in BidiServer.
       this.sendMessage({
         ...errorResponse,
         channel,

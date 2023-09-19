@@ -45,7 +45,11 @@ export class NetworkRequest {
    */
   readonly requestId: Network.Request;
 
+  /** Indicates whether the request is blocked by a network intercept. */
+  #isBlocked = false;
+
   #servedFromCache = false;
+
   #redirectCount: number;
 
   #eventManager: EventManager;
@@ -184,6 +188,11 @@ export class NetworkRequest {
     );
   }
 
+  /** Fired whenever a network request interception is hit. */
+  onRequestPaused(_event: Protocol.Fetch.RequestPausedEvent) {
+    this.#isBlocked = true;
+  }
+
   dispose() {
     const result = {
       kind: 'error' as const,
@@ -199,11 +208,9 @@ export class NetworkRequest {
 
   #getBaseEventParams(): Network.BaseParameters {
     return {
-      // TODO: implement.
-      isBlocked: false,
+      isBlocked: this.#isBlocked,
       context: this.#context,
       navigation: this.#getNavigationId(),
-      // TODO: implement.
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.

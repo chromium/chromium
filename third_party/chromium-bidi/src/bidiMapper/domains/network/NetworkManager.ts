@@ -43,10 +43,6 @@ export class NetworkManager {
     return this.#cdpTarget;
   }
 
-  #forgetNetworkRequest(requestId: Network.Request): void {
-    this.#networkStorage.deleteRequest(requestId);
-  }
-
   #getOrCreateNetworkRequest(id: Network.Request): NetworkRequest {
     const request = this.#networkStorage.getRequest(id);
     if (request) {
@@ -80,7 +76,7 @@ export class NetworkManager {
         );
         if (request && request.isRedirecting()) {
           request.handleRedirect(params);
-          networkManager.#forgetNetworkRequest(params.requestId);
+          networkManager.#networkStorage.deleteRequest(params.requestId);
           networkManager.#networkStorage
             .createRequest(params.requestId, request.redirectCount + 1)
             .onRequestWillBeSentEvent(params);
@@ -136,6 +132,22 @@ export class NetworkManager {
         networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
+      }
+    );
+
+    cdpTarget.cdpClient.on(
+      'Fetch.requestPaused',
+      (params: Protocol.Fetch.RequestPausedEvent) => {
+        if (params.networkId) {
+          networkManager.#networkStorage.addBlockedRequest(params.networkId, {
+            request: params.requestId,
+            // TODO: Populate phase.
+            // TODO: Populate response / ResponseData.
+          });
+          networkManager
+            .#getOrCreateNetworkRequest(params.networkId)
+            .onRequestPaused(params);
+        }
       }
     );
 

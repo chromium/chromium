@@ -31,12 +31,12 @@ import {NetworkRequest} from './NetworkRequest.js';
 export class NetworkStorage {
   #eventManager: EventManager;
   /**
-   * Map of request ID to NetworkRequest objects. Needed as long as information
-   * about requests comes from different events.
+   * A map from network request ID to Network Request objects.
+   * Needed as long as information about requests comes from different events.
    */
   readonly #requestMap = new Map<Network.Request, NetworkRequest>();
 
-  /** A map to define the properties of active network intercepts. */
+  /** A map from intercept ID to track active network intercepts. */
   readonly #interceptMap = new Map<
     Network.Intercept,
     {
@@ -45,13 +45,13 @@ export class NetworkStorage {
     }
   >();
 
-  /** A map to track the requests which are actively being blocked. */
+  /** A map from network request ID to track actively blocked requests. */
   readonly #blockedRequestMap = new Map<
     Network.Request,
     {
-      request: Network.Request;
-      phase: Network.InterceptPhase;
-      response: Network.ResponseData;
+      request: Protocol.Fetch.RequestId; // form: 'interception-job-1.0'
+      phase?: Network.InterceptPhase; // TODO: make non-optional.
+      response?: Network.ResponseData; // TODO: make non-optional.
     }
   >();
 
@@ -240,9 +240,19 @@ export class NetworkStorage {
     );
   }
 
-  // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.
-  get blockedRequestMap() {
-    return this.#blockedRequestMap;
+  addBlockedRequest(
+    requestId: Network.Request,
+    value: {
+      request: Protocol.Fetch.RequestId;
+      phase?: Network.InterceptPhase; // TODO: make non-optional.
+      response?: Network.ResponseData; // TODO: make non-optional.
+    }
+  ) {
+    this.#blockedRequestMap.set(requestId, value);
+  }
+
+  removeBlockedRequest(requestId: Network.Request) {
+    this.#blockedRequestMap.delete(requestId);
   }
 
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */

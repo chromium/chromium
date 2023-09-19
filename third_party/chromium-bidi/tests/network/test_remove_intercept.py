@@ -13,7 +13,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from test_helpers import execute_command
+from anys import ANY_DICT, ANY_LIST, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -71,3 +74,136 @@ async def test_remove_intercept_twice(websocket):
         "error": "no such intercept",
         "message": f"Intercept '{intercept_id}' does not exist."
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("url_patterns", [
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+    ],
+    [
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+],
+                         ids=[
+                             "string",
+                             "pattern",
+                             "string and pattern",
+                         ])
+@pytest.mark.asyncio
+async def test_remove_intercept_unblocks(websocket, context_id,
+                                         another_context_id, url_patterns):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    await subscribe(websocket, ["network"], [another_context_id])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": url_patterns,
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+    intercept_id = result["intercept"]
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    assert event_response == {
+        "method": "cdp.Fetch.requestPaused",
+        "params": {
+            "event": "Fetch.requestPaused",
+            "params": {
+                "frameId": context_id,
+                "networkId": ANY_STR,
+                "request": AnyExtending({
+                    "headers": ANY_DICT,
+                    "url": url,
+                }),
+                "requestId": ANY_STR,
+                "resourceType": "Document",
+            },
+            "session": ANY_STR,
+        },
+        "type": "event",
+    }
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.removeIntercept",
+            "params": {
+                "intercept": intercept_id,
+            },
+        })
+    assert result == {}
+
+    # Try again, with the intercept removed, in another context.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": another_context_id,
+            }
+        })
+
+    # Network events should complete.
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        'type': 'event',
+        "method": "network.responseCompleted",
+        "params": {
+            "isBlocked": False,
+            "context": another_context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP
+        }
+    }

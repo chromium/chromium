@@ -13,7 +13,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from test_helpers import ANY_UUID, execute_command
+from anys import ANY_DICT, ANY_STR
+from test_helpers import (ANY_UUID, AnyExtending, execute_command,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -255,3 +257,86 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
         "error": "invalid argument",
         "message": "URL pattern must specify a port"
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("url_patterns", [
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+    ],
+    [
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+],
+                         ids=[
+                             "string",
+                             "pattern",
+                             "string and pattern",
+                         ])
+async def test_add_intercept_blocks(websocket, context_id, url_patterns):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": url_patterns,
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    assert event_response == {
+        "method": "cdp.Fetch.requestPaused",
+        "params": {
+            "event": "Fetch.requestPaused",
+            "params": {
+                "frameId": context_id,
+                "networkId": ANY_STR,
+                "request": AnyExtending({
+                    "headers": ANY_DICT,
+                    "url": url,
+                }),
+                "requestId": ANY_STR,
+                "resourceType": "Document",
+            },
+            "session": ANY_STR,
+        },
+        "type": "event",
+    }

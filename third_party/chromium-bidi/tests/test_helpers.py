@@ -18,11 +18,15 @@ import base64
 import io
 import itertools
 import json
+import logging
 from typing import Literal
 
 from anys import (ANY_NUMBER, ANY_STR, AnyContains, AnyFullmatch, AnyGT, AnyLT,
                   AnyWithEntries)
 from PIL import Image, ImageChops
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 _command_counter = itertools.count(1)
 
@@ -72,6 +76,9 @@ async def execute_command(websocket, command: dict) -> dict:
 
     await send_JSON_command(websocket, command)
 
+    logger.info(
+        f"Executing command with method '{command['method']}' and params '{command['params']}'..."
+    )
     while True:
         # Wait for the command to be finished.
         resp = await read_JSON_message(websocket)
@@ -101,6 +108,9 @@ async def goto_url(
         url: str,
         wait: Literal["none", "interactive", "complete"] = "complete") -> dict:
     """Open given URL in the given context."""
+    logger.info(
+        f"Navigating to url '{url}' with wait '{wait}' in context '{context_id}'..."
+    )
     return await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -129,6 +139,7 @@ async def set_html_content(websocket, context_id: str, html_content: str):
 
 async def wait_for_event(websocket, event_method: str) -> dict:
     """Wait and return a specific event from BiDi server."""
+    logger.info(f"Waiting for event '{event_method}'...")
     while True:
         event_response = await read_JSON_message(websocket)
         if "method" in event_response and event_response[
