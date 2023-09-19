@@ -93,7 +93,7 @@ namespace autofill {
 using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
 using form_util::IsElementEditable;
-using form_util::IsOwnedByFrame;
+using form_util::MaybeWasOwnedByFrame;
 using form_util::TraverseDomForFourDigitCombinations;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
@@ -374,8 +374,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
     return;
   }
 
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   FormData form;
   FormFieldData field;
@@ -473,12 +472,10 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 void AutofillAgent::FireHostSubmitEvents(const WebFormElement& form,
                                          bool known_success,
                                          SubmissionSource source) {
-  DCHECK(!unsafe_render_frame() || IsOwnedByFrame(form, unsafe_render_frame()));
-
+  DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   FormData form_data;
   if (!form_util::ExtractFormData(form, *field_data_manager_.get(), &form_data))
     return;
-
   FireHostSubmitEvents(form_data, known_success, source);
 }
 
@@ -497,8 +494,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 }
 
 void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   // Sometimes "blur" events are side effects of the password generation
   // handling the page. They should not affect any UI in the browser.
@@ -525,8 +521,7 @@ void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
 }
 
 void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   // The field might have changed while the user was hovering on a suggestion,
   // the preview in that case should be cleared since new suggestions will be
@@ -564,8 +559,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
 
 void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
                                                const WebKeyboardEvent& event) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   if (event.windows_key_code == ui::VKEY_DOWN ||
       event.windows_key_code == ui::VKEY_UP) {
@@ -575,8 +569,7 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   ShowSuggestions(element,
                   AutofillSuggestionTriggerSource::kOpenTextDataListChooser);
 }
@@ -589,8 +582,7 @@ void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
 // the last field. That is, if within one batch the options of different
 // fields changed, all but one of these events will be lost.
 void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   if (element.GetDocument().IsNull() || !is_popup_possibly_visible_ ||
       !element.Focused()) {
@@ -792,8 +784,7 @@ void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
   WebInputElement input_element =
       last_queried_element_.DynamicTo<WebInputElement>();
   if (!input_element.IsNull()) {
-    DCHECK(!unsafe_render_frame() ||
-           IsOwnedByFrame(input_element, unsafe_render_frame()));
+    DCHECK(MaybeWasOwnedByFrame(input_element, unsafe_render_frame()));
     ClearPreviewedForm();
 
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
@@ -924,8 +915,7 @@ void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source) {
   // TODO(crbug.com/1467359): Make this a CHECK.
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   CHECK_NE(trigger_source, AutofillSuggestionTriggerSource::kUnspecified);
 
   if (!element.IsEnabled() || element.IsReadOnly())
@@ -1079,8 +1069,7 @@ void AutofillAgent::QueryAutofillSuggestions(
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
                                          blink::WebFormControlElement& element,
                                          WebAutofillState autofill_state) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   form_tracker_.set_ignore_control_changes(true);
 
@@ -1219,8 +1208,7 @@ void AutofillAgent::SelectControlDidChange(
 // forms changed, all but one of these events will be lost.
 void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
     const blink::WebFormControlElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
   if (!was_last_action_fill_ || last_queried_element_.IsNull()) {
     return;
@@ -1266,13 +1254,12 @@ bool AutofillAgent::ShouldSuppressKeyboard(
 }
 
 void AutofillAgent::FormElementReset(const WebFormElement& form) {
-  DCHECK(!unsafe_render_frame() || IsOwnedByFrame(form, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   password_autofill_agent_->InformAboutFormClearing(form);
 }
 
 void AutofillAgent::PasswordFieldReset(const WebInputElement& element) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   password_autofill_agent_->InformAboutFieldClearing(element);
 }
 
@@ -1441,7 +1428,7 @@ void AutofillAgent::OnProbablyFormSubmitted() {
 }
 
 void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
-  DCHECK(!unsafe_render_frame() || IsOwnedByFrame(form, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   // Fire the submission event here because WILL_SEND_SUBMIT_EVENT is skipped
   // if javascript calls submit() directly.
   FireHostSubmitEvents(form, /*known_success=*/false,
@@ -1535,7 +1522,7 @@ void AutofillAgent::ResetLastInteractedElements() {
 
 void AutofillAgent::UpdateLastInteractedForm(
     const blink::WebFormElement& form) {
-  DCHECK(!unsafe_render_frame() || IsOwnedByFrame(form, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
 
   last_interacted_form_ = form;
   provisionally_saved_form_ = absl::make_optional<FormData>();

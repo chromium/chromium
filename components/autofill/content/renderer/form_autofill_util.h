@@ -350,6 +350,12 @@ void ClearPreviewedElements(
 // a frame does not require being attached to its DOM.
 bool IsOwnedByFrame(const blink::WebNode& node, content::RenderFrame* frame);
 
+// Returns true if `node` is currently owned by `frame` or its frame is nullptr,
+// in which case the frame is not known anymore. It is a weaker condition than
+// `IsOwnedByFrame(node, frame)`.
+bool MaybeWasOwnedByFrame(const blink::WebNode& node,
+                          content::RenderFrame* frame);
+
 // Checks if the webpage is empty.
 // This kind of webpage is considered as empty:
 // <html>
