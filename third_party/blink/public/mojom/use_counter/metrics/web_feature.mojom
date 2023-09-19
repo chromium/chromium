@@ -3996,6 +3996,9 @@ enum WebFeature {
   kPrivateAggregationApiEnableDebugMode = 4656,
   kLineBreakPhrase = 4657,
   kAttributionReportingUnderscorePrefixedFilterKey = 4658,
+  kPercentOrCalcStickyUsedOffset = 4659,
+  kPercentOrCalcRelativeUsedOffset = 4660,
+  kAutoRelativeUsedOffset = 4661,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

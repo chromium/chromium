@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
@@ -732,12 +733,18 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       containing_block_size = use_inline_size
                                   ? scroll_container->ContentLogicalWidth()
                                   : scroll_container->ContentLogicalHeight();
+      UseCounter::Count(layout_object->GetDocument(),
+                        WebFeature::kPercentOrCalcStickyUsedOffset);
     } else {
       containing_block_size =
           is_horizontal_property ==
                   layout_object->ContainingBlock()->IsHorizontalWritingMode()
               ? box->ContainingBlockLogicalWidthForContent()
               : box->ContainingBlockLogicalHeightForGetComputedStyle();
+      if (layout_object->IsRelPositioned()) {
+        UseCounter::Count(layout_object->GetDocument(),
+                          WebFeature::kPercentOrCalcRelativeUsedOffset);
+      }
     }
 
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
@@ -751,6 +758,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     // auto when offset.isAuto() on a sticky position object:
     // https://crbug.com/703816.
     if (layout_object->IsRelPositioned()) {
+      UseCounter::Count(layout_object->GetDocument(),
+                        WebFeature::kAutoRelativeUsedOffset);
       // If e.g. left is auto and right is not auto, then left's computed value
       // is negative right. So we get the opposite length unit and see if it is
       // auto.
