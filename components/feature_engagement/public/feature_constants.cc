@@ -420,6 +420,9 @@ BASE_FEATURE(kIPHWebFeedFollowFeature,
 BASE_FEATURE(kIPHWebFeedPostFollowDialogFeature,
              "IPH_WebFeedPostFollowDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHWebFeedPostFollowDialogFeatureWithUIUpdate,
+             "IPH_WebFeedPostFollowDialogWithUIUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSharedHighlightingBuilder,
              "IPH_SharedHighlightingBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -105,6 +105,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSharingHubLinkToggleFeature,
     &kIPHWebFeedFollowFeature,
     &kIPHWebFeedPostFollowDialogFeature,
+    &kIPHWebFeedPostFollowDialogFeatureWithUIUpdate,
     &kIPHSharedHighlightingBuilder,
     &kIPHSharedHighlightingReceiverFeature,
     &kIPHSharingHubWebnotesStylizeFeature,

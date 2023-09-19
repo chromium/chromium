@@ -941,6 +941,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHWebFeedPostFollowDialogFeatureWithUIUpdate.name == feature->name) {
+    // A config that allows one of the WebFeed post follow dialogs to be
+    // presented 3 times after the UI update.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("web_feed_post_follow_dialog_trigger_with_ui_update",
+                    Comparator(LESS_THAN, 3), 360, 360);
+    config->used =
+        EventConfig("web_feed_post_follow_dialog_shown_with_ui_update",
+                    Comparator(ANY, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHVideoTutorialNTPChromeIntroFeature.name == feature->name) {
     // A config that allows the chrome intro video tutorial card to show up
     // until explicitly interacted upon.

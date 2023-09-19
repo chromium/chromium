@@ -202,6 +202,8 @@ DEFINE_VARIATION_PARAM(kIPHSharingHubLinkToggleFeature,
 DEFINE_VARIATION_PARAM(kIPHWebFeedFollowFeature, "IPH_WebFeedFollow");
 DEFINE_VARIATION_PARAM(kIPHWebFeedPostFollowDialogFeature,
                        "IPH_WebFeedPostFollowDialog");
+DEFINE_VARIATION_PARAM(kIPHWebFeedPostFollowDialogFeatureWithUIUpdate,
+                       "IPH_WebFeedPostFollowDialogWithUIUpdate");
 DEFINE_VARIATION_PARAM(kIPHSharedHighlightingBuilder,
                        "IPH_SharedHighlightingBuilder");
 DEFINE_VARIATION_PARAM(kIPHSharedHighlightingReceiverFeature,
@@ -511,6 +513,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHWebFeedAwarenessFeature),
         VARIATION_ENTRY(kIPHWebFeedFollowFeature),
         VARIATION_ENTRY(kIPHWebFeedPostFollowDialogFeature),
+        VARIATION_ENTRY(kIPHWebFeedPostFollowDialogFeatureWithUIUpdate),
         VARIATION_ENTRY(kIPHSharedHighlightingBuilder),
         VARIATION_ENTRY(kIPHSharedHighlightingReceiverFeature),
         VARIATION_ENTRY(kIPHSharingHubWebnotesStylizeFeature),

@@ -39657,6 +39657,8 @@ should be able to be added at any place in this file.
   <suffix name="WebFeedFollow" label="For Web Feed follow recommendations."/>
   <suffix name="WebFeedPostFollowDialog"
       label="For Web Feed successful follow operations."/>
+  <suffix name="WebFeedPostFollowDialogWithUIUpdate"
+      label="For Web Feed successful follow operations after the UI update."/>
   <suffix name="WebUiHelpBubbleTest" label="For WebUiHelpBubbleTest feature."/>
   <suffix name="WebUITabStrip" label="For the WebUI tab strip."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>

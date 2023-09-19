@@ -174,6 +174,7 @@ BASE_DECLARE_FEATURE(kIPHShareScreenshotFeature);
 BASE_DECLARE_FEATURE(kIPHSharingHubLinkToggleFeature);
 BASE_DECLARE_FEATURE(kIPHWebFeedFollowFeature);
 BASE_DECLARE_FEATURE(kIPHWebFeedPostFollowDialogFeature);
+BASE_DECLARE_FEATURE(kIPHWebFeedPostFollowDialogFeatureWithUIUpdate);
 BASE_DECLARE_FEATURE(kIPHSharedHighlightingBuilder);
 BASE_DECLARE_FEATURE(kIPHSharedHighlightingReceiverFeature);
 BASE_DECLARE_FEATURE(kIPHSharingHubWebnotesStylizeFeature);

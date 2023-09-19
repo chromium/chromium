@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -138,9 +139,11 @@ public class WebFeedSnackbarController {
      */
     public void showPostSuccessfulFollowHelp(String title, boolean isActive,
             @StreamKind int followFromFeed, @Nullable Tab tab, @Nullable GURL url) {
+        String feature = ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
+                ? FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE
+                : FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE;
         if (TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                        .shouldTriggerHelpUI(
-                                FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE)) {
+                        .shouldTriggerHelpUI(feature)) {
             if (followFromFeed == StreamKind.FOLLOWING) {
                 Runnable launchSnackbar = null;
                 if (isActive) {
@@ -149,7 +152,7 @@ public class WebFeedSnackbarController {
                     launchSnackbar = () -> {
                         showPostSuccessfulSnackbar(title, followFromFeed, tab, url);
                     };
-                };
+                }
                 mWebFeedDialogCoordinator.initializeForInFollowingFollow(
                         mContext, launchSnackbar, title, isActive);
             } else {

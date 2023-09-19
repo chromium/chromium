@@ -78,6 +78,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
         FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
+        FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
         FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
         FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
@@ -354,6 +355,12 @@ public @interface FeatureConstants {
      * A dialog IPH feature to inform users about the WebFeed post-follow.
      */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE = "IPH_WebFeedPostFollowDialog";
+
+    /**
+     * A dialog IPH feature to inform users about the WebFeed post-follow after the UI update.
+     */
+    String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE =
+            "IPH_WebFeedPostFollowDialogWithUIUpdate";
 
     /**
      * An IPH feature to inform users about the link-to-text on selection share.
