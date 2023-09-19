@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -44,15 +45,36 @@ base::CommandLine::StringType CommandWrapperForScript(
   return {};
 }
 
-bool RunScript(const base::FilePath& script_path) {
+absl::optional<int> RunScript(const base::FilePath& script_path) {
   // Copy current process's command line so all arguments are forwarded.
   base::CommandLine command = *base::CommandLine::ForCurrentProcess();
   command.SetProgram(script_path);
   command.PrependWrapper(CommandWrapperForScript(script_path));
   int exit_code = -1;
   return base::LaunchProcess(command, {})
-             .WaitForExitWithTimeout(base::Minutes(1), &exit_code) &&
-         exit_code == 0;
+                 .WaitForExitWithTimeout(base::Minutes(1), &exit_code)
+             ? absl::make_optional(exit_code)
+             : absl::nullopt;
+}
+
+absl::optional<base::FilePath> CreateScriptFile(
+    HMODULE module,
+    const std::wstring& name,
+    const std::wstring& type,
+    const base::FilePath& working_dir) {
+  CHECK(name == L"BATCH" || name == L"POWERSHELL" || name == L"PYTHON");
+
+  updater::PEResource resource(name.c_str(), type.c_str(), module);
+  if (!resource.IsValid() || resource.Size() < 1) {
+    return {};
+  }
+
+  const base::FilePath script_path =
+      working_dir.AppendASCII("TestAppSetup")
+          .AddExtension(ExtensionFromResourceName(name));
+  return resource.WriteToDisk(script_path.value().c_str())
+             ? absl::make_optional(script_path)
+             : absl::nullopt;
 }
 
 BOOL CALLBACK OnResourceFound(HMODULE module,
@@ -71,35 +93,39 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
     // Ignore unsupported script type and continue to enumerate other resources.
     return TRUE;
   }
-
-  updater::PEResource resource(name, type, module);
-  if (!resource.IsValid() || resource.Size() < 1) {
-    return FALSE;
-  }
-
   const base::FilePath* working_dir =
       reinterpret_cast<const base::FilePath*>(context);
-  const base::FilePath script_path =
-      working_dir->AppendASCII("TestAppSetup")
-          .AddExtension(ExtensionFromResourceName(name));
-  if (!resource.WriteToDisk(script_path.value().c_str()) ||
-      !RunScript(script_path)) {
-    return FALSE;
-  }
-
-  return TRUE;
+  const auto script_path = CreateScriptFile(module, name, type, *working_dir);
+  return script_path && RunScript(*script_path);
 }
 
 int RunAllResourceScripts() {
+  constexpr char kScriptResourceNameSwitch[] = "script_resource_name";
+
   base::ScopedTempDir working_dir;
   if (!working_dir.CreateUniqueTempDir()) {
     return 1;
   }
 
-  return ::EnumResourceNames(nullptr, L"SCRIPT", OnResourceFound,
-                             reinterpret_cast<LONG_PTR>(&working_dir.GetPath()))
-             ? 0
-             : 1;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kScriptResourceNameSwitch)) {
+    return ::EnumResourceNames(
+               nullptr, L"SCRIPT", OnResourceFound,
+               reinterpret_cast<LONG_PTR>(&working_dir.GetPath()))
+               ? 0
+               : 1;
+  }
+
+  const auto script_resource_name =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          kScriptResourceNameSwitch);
+  const auto script_path = CreateScriptFile(nullptr, script_resource_name,
+                                            L"SCRIPT", working_dir.GetPath());
+  if (!script_path) {
+    return -1;
+  }
+  const auto result = RunScript(*script_path);
+  return result ? *result : -1;
 }
 
 }  // namespace
