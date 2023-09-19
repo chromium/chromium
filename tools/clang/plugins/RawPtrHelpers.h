@@ -434,4 +434,43 @@ AST_MATCHER_P(clang::Type, isCastingUnsafe, CastingUnsafePredicate, checker) {
   return checker.Matches(&Node);
 }
 
+// Matches outermost explicit cast, traversing ancestors.
+//
+// (void*) static_cast<void*>(&v);
+// ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CStyleCastExpr    'void *' <NoOp>
+//         ^~~~~~~~~~~~~~~~~~~~~~ CXXStaticCastExpr 'void *' <NoOp>
+//                            ^~  ImplicitCastExpr  'void *' <BitCast>
+//                                [part_of_explicit_cast = true]
+//
+// This won't match neither |CStyleCastExpr| nor |CXXStaticCastExpr|
+// as they are explicit casts.
+// Given |ImplicitCastExpr|, this runs |InnerMatcher| to |CXXStaticCastExpr|.
+AST_MATCHER_P(clang::CastExpr,
+              hasEnclosingExplicitCastExpr,
+              clang::ast_matchers::internal::Matcher<clang::ExplicitCastExpr>,
+              InnerMatcher) {
+  auto* cast_expr = &Node;
+  auto& context = Finder->getASTContext();
+  while (true) {
+    const auto* implicit_cast =
+        llvm::dyn_cast<clang::ImplicitCastExpr>(cast_expr);
+    if (!implicit_cast || !implicit_cast->isPartOfExplicitCast()) {
+      break;
+    }
+    const auto parents = context.getParents(*implicit_cast);
+    // AST is a tree and |ASTContext::getParents| returns exactly one node,
+    // at least for |clang::CastExpr|.
+    assert(parents.size() == 1);
+    cast_expr = parents[0].get<clang::CastExpr>();
+    assert(cast_expr);
+  }
+  const auto* explicit_cast_expr =
+      llvm::dyn_cast<clang::ExplicitCastExpr>(cast_expr);
+  if (cast_expr == &Node || !explicit_cast_expr) {
+    // No enclosing explicit cast.
+    return false;
+  }
+  return InnerMatcher.matches(*explicit_cast_expr, Finder, Builder);
+}
+
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

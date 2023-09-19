@@ -357,6 +357,11 @@ clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
             in_allowlisted_invocation_ctx, cast_expr_to_const_pointer,
             isInRawPtrCastHeader(), in_template_invocation_ctx);
 
+  // To correctly display the error location, bind enclosing castExpr if
+  // available.
+  auto enclosingCastExpr = hasEnclosingExplicitCastExpr(
+      explicitCastExpr().bind("enclosingCastExpr"));
+
   // Implicit/explicit casting from/to |raw_ptr<T>| matches.
   // Both casting direction is unsafe.
   //   https://godbolt.org/z/zqKMzcKfo
@@ -367,7 +372,8 @@ clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
           allOf(anyOf(hasSourceExpression(hasType(src_type)),
                       implicitCastExpr(hasImplicitDestinationType(dst_type)),
                       explicitCastExpr(hasDestinationType(dst_type))),
-                cast_kind, anyOf(isInStdBitCastHeader(), unless(exclusions))))
+                cast_kind, optionally(enclosingCastExpr),
+                anyOf(isInStdBitCastHeader(), unless(exclusions))))
           .bind("castExpr");
   return cast_matcher;
 }

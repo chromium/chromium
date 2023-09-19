@@ -1,28 +1,28 @@
-bad_raw_ptr_cast.cpp:38:29: error: [chromium-style] casting 'raw_ptr<int> *' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:38:31: error: [chromium-style] casting 'raw_ptr<int> *' to 'void * is not allowed.
   (void)static_cast<void*>(&p0);
-                            ^
-bad_raw_ptr_cast.cpp:38:29: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
-bad_raw_ptr_cast.cpp:39:29: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
+                              ^
+bad_raw_ptr_cast.cpp:38:31: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast.cpp:39:31: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
   (void)static_cast<void*>(&p1);
-                            ^
-bad_raw_ptr_cast.cpp:39:29: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:39:31: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
   raw_ptr<int> ptr;
   ^
-bad_raw_ptr_cast.cpp:40:29: error: [chromium-style] casting 'RawPtrWrapperWrapper *' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:40:31: error: [chromium-style] casting 'RawPtrWrapperWrapper *' to 'void * is not allowed.
   (void)static_cast<void*>(&p2);
-                            ^
-bad_raw_ptr_cast.cpp:40:29: note: [chromium-style] 'RawPtrWrapperWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:40:31: note: [chromium-style] 'RawPtrWrapperWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:12:3: note: [chromium-style] 'RawPtrWrapperWrapper' manages BackupRefPtr or its container here.
   RawPtrWrapper* ptr;
   ^
 bad_raw_ptr_cast.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
   raw_ptr<int> ptr;
   ^
-bad_raw_ptr_cast.cpp:41:29: error: [chromium-style] casting 'RawPtrWrapperWrapperWrapper *' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:41:31: error: [chromium-style] casting 'RawPtrWrapperWrapperWrapper *' to 'void * is not allowed.
   (void)static_cast<void*>(&p3);
-                            ^
-bad_raw_ptr_cast.cpp:41:29: note: [chromium-style] 'RawPtrWrapperWrapperWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:41:31: note: [chromium-style] 'RawPtrWrapperWrapperWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:19:3: note: [chromium-style] 'RawPtrWrapperWrapperWrapper' manages BackupRefPtr or its container here.
   RawPtrWrapperWrapper& ptr_;
   ^
@@ -32,27 +32,27 @@ bad_raw_ptr_cast.cpp:12:3: note: [chromium-style] 'RawPtrWrapperWrapper' manages
 bad_raw_ptr_cast.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
   raw_ptr<int> ptr;
   ^
-bad_raw_ptr_cast.cpp:42:29: error: [chromium-style] casting 'RawPtrWrapper (*)[10]' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:42:31: error: [chromium-style] casting 'RawPtrWrapper (*)[10]' to 'void * is not allowed.
   (void)static_cast<void*>(&p4);
-                            ^
-bad_raw_ptr_cast.cpp:42:29: note: [chromium-style] 'RawPtrWrapper (*)[10]' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:42:31: note: [chromium-style] 'RawPtrWrapper (*)[10]' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
   raw_ptr<int> ptr;
   ^
-bad_raw_ptr_cast.cpp:43:29: error: [chromium-style] casting 'RawPtrWrapperSub *' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:43:31: error: [chromium-style] casting 'RawPtrWrapperSub *' to 'void * is not allowed.
   (void)static_cast<void*>(&p5);
-                            ^
-bad_raw_ptr_cast.cpp:43:29: note: [chromium-style] 'RawPtrWrapperSub *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:43:31: note: [chromium-style] 'RawPtrWrapperSub *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:22:27: note: [chromium-style] 'RawPtrWrapperSub' manages BackupRefPtr or its container here.
 struct RawPtrWrapperSub : RawPtrWrapper {};
                           ^
 bad_raw_ptr_cast.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
   raw_ptr<int> ptr;
   ^
-bad_raw_ptr_cast.cpp:44:29: error: [chromium-style] casting 'RawPtrWrapperVirtualSub *' to 'void * is not allowed.
+bad_raw_ptr_cast.cpp:44:31: error: [chromium-style] casting 'RawPtrWrapperVirtualSub *' to 'void * is not allowed.
   (void)static_cast<void*>(&p6);
-                            ^
-bad_raw_ptr_cast.cpp:44:29: note: [chromium-style] 'RawPtrWrapperVirtualSub *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+                              ^
+bad_raw_ptr_cast.cpp:44:31: note: [chromium-style] 'RawPtrWrapperVirtualSub *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
 bad_raw_ptr_cast.cpp:23:34: note: [chromium-style] 'RawPtrWrapperVirtualSub' manages BackupRefPtr or its container here.
 struct RawPtrWrapperVirtualSub : virtual RawPtrWrapper {};
                                  ^

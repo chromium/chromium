@@ -75,18 +75,24 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
     const auto* dst_type = result.Nodes.getNodeAs<clang::Type>("dstType");
     assert((src_type || dst_type) &&
            "matcher should bind 'srcType' or 'dstType'");
-    compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+
+    const auto* enclosing_cast_expr =
+        result.Nodes.getNodeAs<clang::ExplicitCastExpr>("enclosingCastExpr");
+    const auto* cast_expr_for_display =
+        enclosing_cast_expr ? enclosing_cast_expr : cast_expr;
+
+    compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                       error_bad_cast_signature_)
         << src_name << dst_name;
 
     std::shared_ptr<MatchResult> type_note;
     if (src_type != nullptr) {
-      compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+      compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << src_name;
       type_note = casting_unsafe_predicate_.GetMatchResult(src_type);
     } else {
-      compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+      compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << dst_name;
       type_note = casting_unsafe_predicate_.GetMatchResult(dst_type);
