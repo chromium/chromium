@@ -455,6 +455,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     return false;
   }
 
+  // Some devices implement Vulkan using Swiftshader. We do not want those,
+  // because of performance, and stability (crbug.com/1479335).
+  if (device_info.properties.vendorID == kVendorGoogle &&
+      device_info.properties.deviceID == kDeviceSwiftShader) {
+    return false;
+  }
+
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
