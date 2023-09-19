@@ -46,7 +46,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_FALSE(maybe_key.has_value());
@@ -84,7 +84,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
     SCOPED_TRACE(response);
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_FALSE(maybe_key.has_value());
@@ -102,14 +102,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_FALSE(maybe_key.has_value());
             completed++;
           }));
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_FALSE(maybe_key.has_value());
@@ -128,13 +128,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_FALSE(maybe_key.has_value());
             completed++;
             fetcher.GetOrFetchKey(
-                &url_loader_factory_,
+                &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
                 base::BindLambdaForTesting(
                     [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
                       EXPECT_FALSE(maybe_key.has_value());
@@ -154,7 +154,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_TRUE(maybe_key.has_value());
@@ -177,13 +177,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      &url_loader_factory_,
+      &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
       base::BindLambdaForTesting(
           [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
             EXPECT_TRUE(maybe_key.has_value());
             completed++;
             fetcher.GetOrFetchKey(
-                &url_loader_factory_,
+                &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
                 base::BindLambdaForTesting(
                     [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
                       EXPECT_TRUE(maybe_key.has_value());
@@ -208,7 +208,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_TRUE(maybe_key.has_value());
@@ -230,7 +230,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_TRUE(maybe_key.has_value());
@@ -257,14 +257,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
     content::BiddingAndAuctionServerKey key1, key2;
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_TRUE(maybe_key.has_value());
               key1 = *maybe_key;
             }));
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               key2 = *maybe_key;
@@ -293,7 +293,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_TRUE(maybe_key.has_value());
@@ -317,7 +317,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
     fetcher.GetOrFetchKey(
-        &url_loader_factory_,
+        &url_loader_factory_, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting(
             [&](absl::optional<BiddingAndAuctionServerKey> maybe_key) {
               EXPECT_TRUE(maybe_key.has_value());

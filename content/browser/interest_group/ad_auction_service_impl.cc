@@ -445,6 +445,7 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
 
 void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
+    blink::mojom::AdAuctionCoordinator coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
@@ -456,6 +457,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   BiddingAndAuctionDataConstructionState state;
   state.callback = std::move(callback);
   state.seller = seller;
+  state.coordinator = coordinator;
 
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
@@ -840,8 +842,9 @@ void AdAuctionServiceImpl::OnGotAuctionData(
   }
 
   state.data = std::move(data);
+  blink::mojom::AdAuctionCoordinator coordinator = state.coordinator;
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      GetRefCountedTrustedURLLoaderFactory().get(),
+      GetRefCountedTrustedURLLoaderFactory().get(), coordinator,
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
