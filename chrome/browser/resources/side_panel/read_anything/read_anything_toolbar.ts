@@ -239,6 +239,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:pause');
     this.isPaused_ = false;
+
+    this.updateStyles({
+      '--audio-controls-background': 'var(--color-sys-tonal-container)',
+    });
   }
 
   updateUiForPausing() {
@@ -248,6 +252,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:play');
     this.isPaused_ = true;
+
+    this.updateStyles({
+      '--audio-controls-background': 'transparent',
+    });
   }
 
   private closeMenus_() {
