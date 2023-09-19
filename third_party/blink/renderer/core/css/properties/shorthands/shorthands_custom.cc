@@ -2367,6 +2367,11 @@ const CSSValue* InsetBlock::CSSValueFromComputedStyleInternal(
       insetBlockShorthand(), style, layout_object, allow_visited_style);
 }
 
+bool InsetBlock::IsLayoutDependent(const ComputedStyle* style,
+                                   LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
+}
+
 bool Inset::ParseShorthand(bool important,
                            CSSParserTokenRange& range,
                            const CSSParserContext& context,
@@ -2382,6 +2387,11 @@ const CSSValue* Inset::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValuesForSidesShorthand(
       insetShorthand(), style, layout_object, allow_visited_style);
+}
+
+bool Inset::IsLayoutDependent(const ComputedStyle* style,
+                              LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
 }
 
 bool InsetInline::ParseShorthand(
@@ -2400,6 +2410,11 @@ const CSSValue* InsetInline::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValuesForInlineBlockShorthand(
       insetInlineShorthand(), style, layout_object, allow_visited_style);
+}
+
+bool InsetInline::IsLayoutDependent(const ComputedStyle* style,
+                                    LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
 }
 
 bool ListStyle::ParseShorthand(
