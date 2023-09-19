@@ -29,9 +29,8 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {DangerType, DisplayType, States} from './constants.js';
 import {MojomData} from './data.js';
-import {PageHandlerInterface, SafeBrowsingState} from './downloads.mojom-webui.js';
+import {DangerType, PageHandlerInterface, SafeBrowsingState, State} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
 import {getTemplate} from './item.html.js';
 
@@ -46,6 +45,19 @@ export interface DownloadsItemElement {
 }
 
 const DownloadsItemElementBase = I18nMixin(FocusRowMixin(PolymerElement));
+
+/**
+ * The UI pattern for displaying a download. Computed from DangerType and other
+ * properties of the download and user's profile.
+ */
+enum DisplayType {
+  NORMAL,
+  DANGEROUS,
+  SUSPICIOUS,
+  UNVERIFIED,
+  INSECURE,
+  ERROR,
+}
 
 export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
@@ -269,7 +281,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeCompletelyOnDisk_(): boolean {
-    return this.data.state === States.COMPLETE &&
+    return this.data.state === State.kComplete &&
         !this.data.fileExternallyRemoved;
   }
 
@@ -279,7 +291,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     return this.completelyOnDisk_ &&
-        this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED;
+        this.data.dangerType !== DangerType.kDeepScannedFailed;
   }
 
   private computeHasShowInFolderLink_(): boolean {
@@ -287,7 +299,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return false;
     }
 
-    return this.data.dangerType !== DangerType.DEEP_SCANNED_FAILED &&
+    return this.data.dangerType !== DangerType.kDeepScannedFailed &&
         this.computeCompletelyOnDisk_();
   }
 
@@ -320,7 +332,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeSecondLineVisible_(): boolean {
     return this.updateDeepScanningUx_ && this.data &&
-        this.data.state === States.ASYNC_SCANNING;
+        this.data.state === State.kAsyncScanning;
   }
 
   private computeDisplayType_(): DisplayType {
@@ -329,47 +341,46 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return DisplayType.NORMAL;
     }
 
-    if (this.data.isInsecure || this.data.state === States.INSECURE) {
+    if (this.data.isInsecure || this.data.state === State.kInsecure) {
       return DisplayType.INSECURE;
     }
 
-    if (this.data.state === States.ASYNC_SCANNING ||
-        this.data.state === States.PROMPT_FOR_SCANNING) {
+    if (this.data.state === State.kAsyncScanning ||
+        this.data.state === State.kPromptForScanning) {
       return DisplayType.SUSPICIOUS;
     }
 
     // Enterprise AP verdicts.
     if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-         this.data.dangerType === DangerType.UNCOMMON_CONTENT) ||
-        this.data.dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
+         this.data.dangerType === DangerType.kUncommonContent) ||
+        this.data.dangerType === DangerType.kSensitiveContentWarning) {
       return DisplayType.SUSPICIOUS;
     }
 
     switch (this.data.dangerType) {
       // Mimics logic in download_ui_model.cc for downloads with danger_type
       // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
-      case DangerType.DANGEROUS_FILE:
+      case DangerType.kDangerousFile:
         return this.data.safeBrowsingState ===
                 SafeBrowsingState.kNoSafeBrowsing ?
             DisplayType.UNVERIFIED :
             (this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
                                                 DisplayType.UNVERIFIED);
 
-      case DangerType.DANGEROUS_URL:
-      case DangerType.DANGEROUS_CONTENT:
-      case DangerType.DANGEROUS_HOST:
-      case DangerType.DANGEROUS_ACCOUNT_COMPROMISE:
-      case DangerType.POTENTIALLY_UNWANTED:
-      case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+      case DangerType.kDeepScannedOpenedDangerous:
         return DisplayType.DANGEROUS;
 
-      case DangerType.UNCOMMON_CONTENT:
-      case DangerType.DEEP_SCANNED_FAILED:
+      case DangerType.kUncommonContent:
+      case DangerType.kDeepScannedFailed:
         return DisplayType.SUSPICIOUS;
 
-      case DangerType.SENSITIVE_CONTENT_BLOCK:
-      case DangerType.BLOCKED_TOO_LARGE:
-      case DangerType.BLOCKED_PASSWORD_PROTECTED:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kBlockedPasswordProtected:
         return DisplayType.ERROR;
     }
 
@@ -398,66 +409,61 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const data = this.data;
 
     switch (data.state) {
-      case States.COMPLETE:
+      case State.kComplete:
         switch (data.dangerType) {
-          case DangerType.DEEP_SCANNED_SAFE:
+          case DangerType.kDeepScannedSafe:
             return this.updateDeepScanningUx_ ?
                 '' :
                 loadTimeData.getString('deepScannedSafeDesc');
-          case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
+          case DangerType.kDeepScannedOpenedDangerous:
             return loadTimeData.getString('deepScannedOpenedDangerousDesc');
-          case DangerType.DEEP_SCANNED_FAILED:
+          case DangerType.kDeepScannedFailed:
             return loadTimeData.getString('deepScannedFailedDesc');
         }
         break;
 
-      case States.INSECURE:
+      case State.kInsecure:
         return loadTimeData.getString('insecureDownloadDesc');
 
-      case States.DANGEROUS:
+      case State.kDangerous:
         switch (data.dangerType) {
-          case DangerType.DANGEROUS_FILE:
+          case DangerType.kDangerousFile:
             return data.safeBrowsingState ===
                     SafeBrowsingState.kNoSafeBrowsing ?
                 loadTimeData.getString('noSafeBrowsingDesc') :
                 loadTimeData.getString('dangerFileDesc');
 
-          case DangerType.DANGEROUS_URL:
-          case DangerType.DANGEROUS_CONTENT:
-          case DangerType.DANGEROUS_HOST:
+          case DangerType.kDangerousUrl:
+          case DangerType.kDangerousContent:
+          case DangerType.kDangerousHost:
             return loadTimeData.getString('dangerDownloadDesc');
 
-          case DangerType.UNCOMMON_CONTENT:
+          case DangerType.kUncommonContent:
             return loadTimeData.getString('dangerUncommonDesc');
 
-          case DangerType.POTENTIALLY_UNWANTED:
+          case DangerType.kPotentiallyUnwanted:
             return loadTimeData.getString('dangerSettingsDesc');
 
-          case DangerType.SENSITIVE_CONTENT_WARNING:
+          case DangerType.kSensitiveContentWarning:
             return loadTimeData.getString('sensitiveContentWarningDesc');
-
-          // TODO(crbug.com/1202691): This string should have been cleaned up
-          // and is not actually in use.
-          case DangerType.DANGEROUS_ACCOUNT_COMPROMISE:
-            return loadTimeData.getString('accountCompromiseDownloadDesc');
         }
         break;
 
-      case States.ASYNC_SCANNING:
+      case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
-      case States.PROMPT_FOR_SCANNING:
+      case State.kPromptForScanning:
         return loadTimeData.getString('promptForScanningDesc');
-      case States.IN_PROGRESS:
-      case States.PAUSED:  // Fallthrough.
+      case State.kInProgress:
+      case State.kPaused:  // Fallthrough.
         return data.progressStatusText;
 
-      case States.INTERRUPTED:
+      case State.kInterrupted:
         switch (data.dangerType) {
-          case DangerType.SENSITIVE_CONTENT_BLOCK:
+          case DangerType.kSensitiveContentBlock:
             return loadTimeData.getString('sensitiveContentBlockedDesc');
-          case DangerType.BLOCKED_TOO_LARGE:
+          case DangerType.kBlockedTooLarge:
             return loadTimeData.getString('blockedTooLargeDesc');
-          case DangerType.BLOCKED_PASSWORD_PROTECTED:
+          case DangerType.kBlockedPasswordProtected:
             return loadTimeData.getString('blockedPasswordProtectedDesc');
         }
     }
@@ -497,29 +503,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-           dangerType === DangerType.UNCOMMON_CONTENT) ||
-          dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
+           dangerType === DangerType.kUncommonContent) ||
+          dangerType === DangerType.kSensitiveContentWarning) {
         return 'cr:warning';
       }
 
-      if (dangerType === DangerType.DEEP_SCANNED_FAILED) {
+      if (dangerType === DangerType.kDeepScannedFailed) {
         return 'cr:info';
       }
 
       const ERROR_TYPES = [
-        DangerType.SENSITIVE_CONTENT_BLOCK,
-        DangerType.BLOCKED_TOO_LARGE,
-        DangerType.BLOCKED_PASSWORD_PROTECTED,
+        DangerType.kSensitiveContentBlock,
+        DangerType.kBlockedTooLarge,
+        DangerType.kBlockedPasswordProtected,
       ];
       if (ERROR_TYPES.includes(dangerType)) {
         return 'cr:error';
       }
 
-      if (this.data.state === States.ASYNC_SCANNING) {
+      if (this.data.state === State.kAsyncScanning) {
         return this.updateDeepScanningUx_ ? 'cr:warning' : 'cr:info';
       }
 
-      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+      if (this.data.state === State.kPromptForScanning) {
         return 'cr:warning';
       }
     }
@@ -540,26 +546,26 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-           dangerType === DangerType.UNCOMMON_CONTENT) ||
-          dangerType === DangerType.SENSITIVE_CONTENT_WARNING ||
-          dangerType === DangerType.DEEP_SCANNED_FAILED) {
+           dangerType === DangerType.kUncommonContent) ||
+          dangerType === DangerType.kSensitiveContentWarning ||
+          dangerType === DangerType.kDeepScannedFailed) {
         return 'yellow';
       }
 
       const WARNING_TYPES = [
-        DangerType.SENSITIVE_CONTENT_BLOCK,
-        DangerType.BLOCKED_TOO_LARGE,
-        DangerType.BLOCKED_PASSWORD_PROTECTED,
+        DangerType.kSensitiveContentBlock,
+        DangerType.kBlockedTooLarge,
+        DangerType.kBlockedPasswordProtected,
       ];
       if (WARNING_TYPES.includes(dangerType)) {
         return 'red';
       }
 
-      if (this.data.state === States.ASYNC_SCANNING) {
+      if (this.data.state === State.kAsyncScanning) {
         return this.updateDeepScanningUx_ ? 'yellow' : 'grey';
       }
 
-      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+      if (this.data.state === State.kPromptForScanning) {
         return 'yellow';
       }
     }
@@ -573,27 +579,26 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeIsActive_(): boolean {
-    return this.data.state !== States.CANCELLED &&
-        this.data.state !== States.INTERRUPTED &&
+    return this.data.state !== State.kCancelled &&
+        this.data.state !== State.kInterrupted &&
         !this.data.fileExternallyRemoved;
   }
 
   private computeIsDangerous_(): boolean {
-    return this.data.state === States.DANGEROUS ||
-        this.data.state === States.INSECURE;
+    return this.data.state === State.kDangerous ||
+        this.data.state === State.kInsecure;
   }
 
   private computeIsInProgress_(): boolean {
-    return this.data.state === States.IN_PROGRESS;
+    return this.data.state === State.kInProgress;
   }
 
   private computeIsMalware_(): boolean {
     return this.isDangerous_ &&
-        (this.data.dangerType === DangerType.DANGEROUS_CONTENT ||
-         this.data.dangerType === DangerType.DANGEROUS_HOST ||
-         this.data.dangerType === DangerType.DANGEROUS_URL ||
-         this.data.dangerType === DangerType.POTENTIALLY_UNWANTED ||
-         this.data.dangerType === DangerType.DANGEROUS_ACCOUNT_COMPROMISE);
+        (this.data.dangerType === DangerType.kDangerousContent ||
+         this.data.dangerType === DangerType.kDangerousHost ||
+         this.data.dangerType === DangerType.kDangerousUrl ||
+         this.data.dangerType === DangerType.kPotentiallyUnwanted);
   }
 
   private computeIsReviewable_(): boolean {
@@ -638,43 +643,43 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeShowCancel_(): boolean {
     return !!this.data &&
-        (this.data.state === States.IN_PROGRESS ||
-         this.data.state === States.PAUSED ||
-         (this.data.state === States.ASYNC_SCANNING &&
+        (this.data.state === State.kInProgress ||
+         this.data.state === State.kPaused ||
+         (this.data.state === State.kAsyncScanning &&
           !this.updateDeepScanningUx_));
   }
 
   private computeShowProgress_(): boolean {
-    if (this.data && this.data.state === States.ASYNC_SCANNING) {
+    if (this.data && this.data.state === State.kAsyncScanning) {
       return true;
     }
     return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== States.PROMPT_FOR_SCANNING;
+        this.data.state !== State.kPromptForScanning;
   }
 
   private computeShowOpenNow_(): boolean {
     const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
-    return !!this.data && this.data.state === States.ASYNC_SCANNING &&
+    return !!this.data && this.data.state === State.kAsyncScanning &&
         allowOpenNow && !this.updateDeepScanningUx_;
   }
 
   private computeShowDeepScan_(): boolean {
-    return this.data.state === States.PROMPT_FOR_SCANNING;
+    return this.data.state === State.kPromptForScanning;
   }
 
   private computeShowOpenAnyway_(): boolean {
-    return this.data.dangerType === DangerType.DEEP_SCANNED_FAILED;
+    return this.data.dangerType === DangerType.kDeepScannedFailed;
   }
 
   private computeTag_(): string {
     switch (this.data.state) {
-      case States.CANCELLED:
+      case State.kCancelled:
         return loadTimeData.getString('statusCancelled');
 
-      case States.INTERRUPTED:
+      case State.kInterrupted:
         return this.data.lastReasonText;
 
-      case States.COMPLETE:
+      case State.kComplete:
         return this.data.fileExternallyRemoved ?
             loadTimeData.getString('statusRemoved') :
             '';
@@ -684,8 +689,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private isIndeterminate_(): boolean {
-    return this.data.state === States.ASYNC_SCANNING ||
-        this.data.percent === -1;
+    return this.data.state === State.kAsyncScanning || this.data.percent === -1;
   }
 
   private observeControlledBy_() {
@@ -720,10 +724,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
       // Handle various dangerous cases.
       const OVERRIDDEN_ICON_TYPES = [
-        DangerType.SENSITIVE_CONTENT_BLOCK,
-        DangerType.BLOCKED_TOO_LARGE,
-        DangerType.BLOCKED_PASSWORD_PROTECTED,
-        DangerType.DEEP_SCANNED_FAILED,
+        DangerType.kSensitiveContentBlock,
+        DangerType.kBlockedTooLarge,
+        DangerType.kBlockedPasswordProtected,
+        DangerType.kDeepScannedFailed,
       ];
       if (this.isDangerous_) {
         removeFileUrlLinks();
@@ -732,10 +736,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
         return false;
       }
-      if (this.data.state === States.ASYNC_SCANNING) {
+      if (this.data.state === State.kAsyncScanning) {
         return false;
       }
-      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+      if (this.data.state === State.kPromptForScanning) {
         return false;
       }
       return true;
@@ -758,7 +762,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         .loadIcon(this.$['file-icon'], path)
         .then(success => {
           if (path === this.data.filePath &&
-              this.data.state !== States.ASYNC_SCANNING) {
+              this.data.state !== State.kAsyncScanning) {
             // Check again if we may use the file icon, to avoid a race between
             // loading the icon and determining the proper danger type.
             this.useFileIcon_ = mayUseFileIcon() && success;

@@ -24,7 +24,6 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "constants.ts",
     "data.ts",
     "downloads.ts",
     "icon_loader.ts",

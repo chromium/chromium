@@ -129,11 +129,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  // TODO(crbug.com/1202691): This string should have been cleaned up and is not
-  // actually in use.
-  source->AddLocalizedString("accountCompromiseDownloadDesc",
-                             IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
-
   bool update_deep_scanning_ux =
       base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
   source->AddLocalizedString("asyncScanningDownloadDesc",

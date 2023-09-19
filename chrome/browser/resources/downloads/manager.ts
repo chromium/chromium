@@ -24,9 +24,8 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {States} from './constants.js';
 import {MojomData} from './data.js';
-import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerInterface, State} from './downloads.mojom-webui.js';
 import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
 import {DownloadsToolbarElement} from './toolbar.js';
@@ -206,9 +205,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.$.toolbar.hasClearableDownloads =
         loadTimeData.getBoolean('allowDeletingHistory') &&
         this.items_.some(
-            ({state}) => state !== States.DANGEROUS &&
-                state !== States.INSECURE && state !== States.IN_PROGRESS &&
-                state !== States.PAUSED);
+            ({state}) => state !== State.kDangerous &&
+                state !== State.kInsecure && state !== State.kInProgress &&
+                state !== State.kPaused);
 
     if (this.inSearchMode_) {
       this.announcerDebouncer_ = Debouncer.debounce(

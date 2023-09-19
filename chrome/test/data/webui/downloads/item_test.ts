@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, States} from 'chrome://downloads/downloads.js';
+import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -33,10 +33,10 @@ suite('item tests', function() {
 
   test('dangerous downloads aren\'t linkable', () => {
     item.set('data', createDownload({
-               dangerType: DangerType.DANGEROUS_FILE,
+               dangerType: DangerType.kDangerousFile,
                fileExternallyRemoved: false,
                hideDate: true,
-               state: States.DANGEROUS,
+               state: State.kDangerous,
                url: stringToMojoUrl('http://evil.com'),
              }));
     flush();
@@ -50,7 +50,7 @@ suite('item tests', function() {
     const displayUrl = 'https://test.test';
     item.set('data', createDownload({
                hideDate: false,
-               state: States.COMPLETE,
+               state: State.kComplete,
                url: undefined,
                displayUrl: stringToMojoString16(displayUrl),
              }));
@@ -63,10 +63,10 @@ suite('item tests', function() {
 
   test('failed deep scans aren\'t linkable', () => {
     item.set('data', createDownload({
-               dangerType: DangerType.DEEP_SCANNED_FAILED,
+               dangerType: DangerType.kDeepScannedFailed,
                fileExternallyRemoved: false,
                hideDate: true,
-               state: States.COMPLETE,
+               state: State.kComplete,
                url: stringToMojoUrl('http://evil.com'),
              }));
     flush();
@@ -82,7 +82,7 @@ suite('item tests', function() {
         '啊'.repeat(1000) + '.com/document.pdf';
     item.set('data', createDownload({
                hideDate: false,
-               state: States.COMPLETE,
+               state: State.kComplete,
                url: stringToMojoUrl(url),
                displayUrl: stringToMojoString16(displayUrl),
              }));
@@ -117,7 +117,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
+               dangerType: DangerType.kSensitiveContentBlock,
              }));
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
@@ -126,7 +126,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               dangerType: DangerType.BLOCKED_TOO_LARGE,
+               dangerType: DangerType.kBlockedTooLarge,
              }));
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
@@ -135,7 +135,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               dangerType: DangerType.BLOCKED_PASSWORD_PROTECTED,
+               dangerType: DangerType.kBlockedPasswordProtected,
              }));
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
@@ -144,7 +144,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               dangerType: DangerType.DEEP_SCANNED_FAILED,
+               dangerType: DangerType.kDeepScannedFailed,
              }));
 
     assertEquals('cr:info', item.shadowRoot!.querySelector('iron-icon')!.icon);
@@ -162,7 +162,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
+                   dangerType: DangerType.kSensitiveContentBlock,
                  }));
 
         assertEquals(
@@ -190,7 +190,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kNoSafeBrowsing,
                  }));
 
@@ -205,7 +205,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kEnhancedProtection,
                    hasSafeBrowsingVerdict: true,
                  }));
@@ -221,7 +221,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kStandardProtection,
                    hasSafeBrowsingVerdict: false,
                  }));
@@ -237,7 +237,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DEEP_SCANNED_FAILED,
+                   dangerType: DangerType.kDeepScannedFailed,
                  }));
 
         assertEquals(
@@ -251,7 +251,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_URL,
+                   dangerType: DangerType.kDangerousUrl,
                  }));
 
         assertEquals(
@@ -275,7 +275,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
+                   dangerType: DangerType.kSensitiveContentBlock,
                  }));
 
         assertEquals(
@@ -297,7 +297,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kNoSafeBrowsing,
                  }));
 
@@ -309,7 +309,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kEnhancedProtection,
                    hasSafeBrowsingVerdict: true,
                  }));
@@ -322,7 +322,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_FILE,
+                   dangerType: DangerType.kDangerousFile,
                    safeBrowsingState: SafeBrowsingState.kStandardProtection,
                    hasSafeBrowsingVerdict: false,
                  }));
@@ -335,7 +335,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DEEP_SCANNED_FAILED,
+                   dangerType: DangerType.kDeepScannedFailed,
                  }));
 
         assertEquals(
@@ -346,7 +346,7 @@ suite('item tests', function() {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
-                   dangerType: DangerType.DANGEROUS_URL,
+                   dangerType: DangerType.kDangerousUrl,
                  }));
 
         assertEquals(
@@ -364,7 +364,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               state: States.ASYNC_SCANNING,
+               state: State.kAsyncScanning,
              }));
     flush();
     assertNotEquals(item.shadowRoot!.querySelector('#openNow'), null);
@@ -379,7 +379,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               state: States.ASYNC_SCANNING,
+               state: State.kAsyncScanning,
              }));
     flush();
     assertEquals(item.shadowRoot!.querySelector('#openNow'), null);
@@ -392,7 +392,7 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               state: States.PROMPT_FOR_SCANNING,
+               state: State.kPromptForScanning,
              }));
     flush();
     assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
@@ -406,8 +406,8 @@ suite('item tests', function() {
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
-               state: States.COMPLETE,
-               dangerType: DangerType.DEEP_SCANNED_FAILED,
+               state: State.kComplete,
+               dangerType: DangerType.kDeepScannedFailed,
              }));
     flush();
     assertTrue(!!item.shadowRoot!.querySelector('#openAnyway'));
