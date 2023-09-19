@@ -9,7 +9,7 @@
         aria-labelledby="pageSizeLabel">
       <template is="dom-repeat" items="[[options]]" as="pageSize">
         <option value="[[pageSize]]" selected$="[[isDefaultOption(pageSize)]]">
-          [[getPageSizeString_(pageSize)]]
+          [[getPageSizeAsString(pageSize)]]
         </option>
       </template>
     </select>
