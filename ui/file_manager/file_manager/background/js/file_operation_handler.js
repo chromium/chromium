@@ -103,7 +103,8 @@ export class FileOperationHandler {
                   // Show the dialog to proceed/cancel.
                   chrome.fileManagerPrivate.showPolicyDialog(
                       event.taskId,
-                      chrome.fileManagerPrivate.PolicyDialogType.WARNING);
+                      chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+                      util.checkAPIError);
                 });
           }
           break;
@@ -164,7 +165,8 @@ export class FileOperationHandler {
                   ProgressItemState.ERROR, extraButtonText, () => {
                     chrome.fileManagerPrivate.showPolicyDialog(
                         event.taskId,
-                        chrome.fileManagerPrivate.PolicyDialogType.ERROR);
+                        chrome.fileManagerPrivate.PolicyDialogType.ERROR,
+                        util.checkAPIError);
                   });
             } else {
               item.setExtraButton(

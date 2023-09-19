@@ -1696,8 +1696,9 @@ chrome.fileManagerPrivate.dismissIOTask = function(taskId, callback) {};
  * in each I/O task's progress status.
  * @param {number} taskId
  * @param {!chrome.fileManagerPrivate.PolicyDialogType} type
+ * @param {function(): void} callback Callback that does not take arguments.
  */
-chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type) {};
+chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type, callback) {};
 
 /**
  * Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task

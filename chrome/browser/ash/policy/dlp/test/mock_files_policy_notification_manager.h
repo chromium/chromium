@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -67,6 +68,11 @@ class MockFilesPolicyNotificationManager
               ShowFilesPolicyNotification,
               (const std::string& notification_id,
                const file_manager::io_task::ProgressStatus& status),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowDialog,
+              (file_manager::io_task::IOTaskId task_id, FilesDialogType),
               (override));
 
   MOCK_METHOD(void,

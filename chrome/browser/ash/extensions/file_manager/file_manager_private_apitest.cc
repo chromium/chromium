@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -1177,5 +1178,37 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "progressPausedTasks"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_ShowPolicyDialog) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  // Set up FPNM.
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+
+  // Expect only the calls with valid parameters.
+  testing::InSequence s;
+  EXPECT_CALL(*fpnm_, ShowDialog(1u, policy::FilesDialogType::kWarning));
+  EXPECT_CALL(*fpnm_, ShowDialog(2u, policy::FilesDialogType::kError));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "showPolicyDialog"},
                                {.load_as_component = true}));
 }

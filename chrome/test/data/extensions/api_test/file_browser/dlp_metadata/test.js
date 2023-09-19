@@ -192,6 +192,28 @@ chrome.test.getConfig(config => {
           }
         ]);
         break;
+    case 'showPolicyDialog':
+      chrome.test.runTests([
+        async function showPolicyDialog() {
+          // Invalid task id throws an error.
+          chrome.fileManagerPrivate.showPolicyDialog(
+            -5,
+            chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+            chrome.test.callbackFail('Invalid task id'));
+          // Valid calls: succeed and notify FPNM.
+          chrome.fileManagerPrivate.showPolicyDialog(
+            1,
+            chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+            chrome.test.callbackPass());
+          chrome.fileManagerPrivate.showPolicyDialog(
+            2,
+            chrome.fileManagerPrivate.PolicyDialogType.ERROR,
+            chrome.test.callbackPass());
+
+          chrome.test.succeed();
+        }
+      ]);
+    break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {

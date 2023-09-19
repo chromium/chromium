@@ -106,8 +106,8 @@ class FilesPolicyNotificationManager
 
   // Shows a policy dialog of type `type` for task identified by `task_id`.
   // Used for copy and move operations.
-  void ShowDialog(file_manager::io_task::IOTaskId task_id,
-                  FilesDialogType type);
+  virtual void ShowDialog(file_manager::io_task::IOTaskId task_id,
+                          FilesDialogType type);
 
   // Shows a DLP warning timeout notification for `action`. `notification_id`
   // should have value for IO tasks. When it  doesn't have a value, i.e. for non
