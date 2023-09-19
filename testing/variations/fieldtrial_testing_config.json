@@ -17982,6 +17982,9 @@
                         "SpeakOnMuteEnabled",
                         "SystemLiveCaption",
                         "VideoConference"
+                    ],
+                    "disable_features": [
+                        "VcStopAllScreenShare"
                     ]
                 }
             ]
