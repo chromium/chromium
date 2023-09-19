@@ -86,6 +86,11 @@
         padding-bottom: 12px;
       }
 
+      #firstPartySetsToggle {
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
+
       #toastText {
         align-items: center;
         display: flex;
@@ -227,7 +232,9 @@
                   $i18n{thirdPartyCookiesPageBlockBulTwo}
                 </div>
               </div>
-              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+            </div>
+            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+              <div slot="noSelectionCollapse">
                 <settings-toggle-button
                     id="firstPartySetsToggle"
                     pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
@@ -236,8 +243,8 @@
                     disabled="[[firstPartySetsToggleDisabled_(
                         prefs.profile.cookie_controls_mode.value)]]">
                 </settings-toggle-button>
-              </template>
-            </div>
+              </div>
+            </template>
           </settings-collapse-radio-button>
         </settings-radio-group>
       </div>
@@ -304,17 +311,19 @@
                 <iron-icon icon="settings:block"></iron-icon>
                 <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
               </div>
-              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+            </div>
+            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+              <div slot="noSelectionCollapse">
                 <settings-toggle-button
                     id="firstPartySetsToggle"
                     pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
                     label="$i18n{cookiePageFpsLabel}"
                     sub-label="$i18n{cookiePageFpsSubLabel}"
                     disabled="[[firstPartySetsToggleDisabled_(
-                        prefs.generated.cookie_primary_setting.value)]]">
+                        prefs.profile.cookie_controls_mode.value)]]">
                 </settings-toggle-button>
-              </template>
-            </div>
+              </div>
+            </template>
           </settings-collapse-radio-button>
           <settings-collapse-radio-button id="blockAll"
               pref="[[blockAllPref_]]"
