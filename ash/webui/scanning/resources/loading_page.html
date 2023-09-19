@@ -57,17 +57,17 @@
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
-  query-matches="{{isDarkModeEnabled_}}">
+  query-matches="{{isDarkModeEnabled}}">
 </iron-media-query>
 <div id="loadingContainer">
-  <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
+  <div id="loadingDiv" hidden="[[noScannersAvailable]]">
     <!-- TODO(b/276493795): After the Jelly experiment is launched, remove
                             used image elements and SVGs. -->
-    <template is="dom-if" if="[[!isJellyEnabled_]]">
-      <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
+    <template is="dom-if" if="[[!isJellyEnabled]]">
+      <img src$="[[getScannersLoadingSvgSrc(isDarkModeEnabled)]]"
           alt="[[i18n('scannersLoadingText')]]">
     </template>
-    <template is="dom-if" if="[[isJellyEnabled_]]">
+    <template is="dom-if" if="[[isJellyEnabled]]">
       <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
         <title>[[i18n('scannersLoadingText')]]</title>
         <use href="svg/illo_loading_scanner.svg#illo_loading_scanner"></use>
@@ -76,14 +76,14 @@
     <h1>[[i18n('scannersLoadingText')]]</h1>
     <paper-progress indeterminate></paper-progress>
   </div>
-  <div id="noScannersDiv" hidden="[[!noScannersAvailable_]]">
+  <div id="noScannersDiv" hidden="[[!noScannersAvailable]]">
     <!-- TODO(b/276493795): After the Jelly experiment is launched, remove
                             used image elements and SVGs. -->
-    <template is="dom-if" if="[[!isJellyEnabled_]]">
-      <img src$="[[getNoScannersSvgSrc_(isDarkModeEnabled_)]]"
+    <template is="dom-if" if="[[!isJellyEnabled]]">
+      <img src$="[[getNoScannersSvgSrc(isDarkModeEnabled)]]"
           alt="[[i18n('noScannersText')]]">
     </template>
-    <template is="dom-if" if="[[isJellyEnabled_]]">
+    <template is="dom-if" if="[[isJellyEnabled]]">
       <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
         <title>[[i18n('noScannersSubtext')]]</title>
         <use href="svg/illo_no_scanner.svg#illo_no_scanner"></use>
@@ -93,11 +93,11 @@
     <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
     <div id="buttonDiv">
       <cr-button id="learnMoreButton" class="cancel-button"
-          on-click="onLearnMoreClick_">
+          on-click="onLearnMoreClick">
         [[i18n('learnMoreButtonLabel')]]
       </cr-button>
       <cr-button id="retryButton" class="action-button"
-          on-click="onRetryClick_">
+          on-click="onRetryClick">
         [[i18n('retryButtonLabel')]]
       </cr-button>
     </div>
