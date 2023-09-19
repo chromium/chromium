@@ -25,7 +25,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/base/supported_types.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
@@ -361,9 +360,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
     }
   }
 
-  // If we don't have support support for a given codec, try to initialize
-  // anyways -- otherwise we're certain to fail playback.
-  if (!is_supported && IsBuiltInVideoCodec(config.codec())) {
+  if (!is_supported) {
     return PostDecoderStatus(
         DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)
             .WithData("config", config));

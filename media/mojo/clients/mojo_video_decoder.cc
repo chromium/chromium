@@ -22,7 +22,6 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
-#include "media/base/supported_types.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_media_log_service.h"
@@ -155,12 +154,9 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (gpu_factories_)
     decoder_type_ = gpu_factories_->GetDecoderType();
 
-  // If the codec has software fallback, fail immediately if we know that the
-  // remote side cannot support |config|.
-  if (gpu_factories_ &&
-      gpu_factories_->IsDecoderConfigSupported(config) ==
-          GpuVideoAcceleratorFactories::Supported::kFalse &&
-      IsBuiltInVideoCodec(config.codec())) {
+  // Fail immediately if we know that the remote side cannot support |config|.
+  if (gpu_factories_ && gpu_factories_->IsDecoderConfigSupported(config) ==
+                            GpuVideoAcceleratorFactories::Supported::kFalse) {
     FailInit(std::move(init_cb), DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
