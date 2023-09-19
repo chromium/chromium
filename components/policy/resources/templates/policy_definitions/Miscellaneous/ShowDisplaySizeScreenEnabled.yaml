@@ -19,7 +19,7 @@ owners:
 - cros-oobe@google.com
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:119-
 tags: []
 type: main
