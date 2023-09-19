@@ -201,7 +201,6 @@
 <translation id="1153636665119721804">Google-ի անվտանգության լրացուցիչ կարգավորումների ծրագիր</translation>
 <translation id="1155545602507378023">Ոչ, միայն այս սարքը</translation>
 <translation id="1155816283571436363">Միացում հեռախոսին</translation>
-<translation id="1156684356635483618">Տպիչներ և սկաներներ</translation>
 <translation id="1157952955648710254">Փակել Google Որոնման կողային վահանակը</translation>
 <translation id="1158080958325422608">Դարձնել մեծատառ</translation>
 <translation id="1158238185437008462">Դիտել</translation>
@@ -769,6 +768,7 @@
 <translation id="1604432177629086300">Չհաջողվեց տպել: Ստուգեք տպիչը և նորից փորձեք:</translation>
 <translation id="1604567162047669454">Ճանաչեք տեսողական դասավորության իմաստաբանությունը</translation>
 <translation id="1604774728851271529">Լինուքսը նորացնելու համար ձեզ ինտերնետ է հարկավոր։ Միացեք ինտերնետին և նորից փորձեք։</translation>
+<translation id="1605148987885002237">Ստեղնաշար և ներածման եղանակներ</translation>
 <translation id="1605744057217831567">Տեսնել կայքի բոլոր տվյալները և թույլտվությունները</translation>
 <translation id="1606077700029460857">Փակել կմնիկի կարգավորումները</translation>
 <translation id="1606307079840340755">Passpoint-ի ձեր մատակարարը կհեռացվի միայն այս սարքից։ Ձեր բաժանորդագրությունում փոփոխություններ կատարելու համար դիմեք բաժանորդագրության տրամադրողին։</translation>
@@ -1227,6 +1227,7 @@
 <translation id="1956050014111002555">Ֆայլը պարունակում է մի քանի վկայագիր, նրանցից ոչ մեկը չի ներմուծվել`</translation>
 <translation id="1956167375087861299">Կայքեր, որոնք չունեն նույնացուցիչներ օգտագործելու թույլտվություն՝ պաշտպանված բովանդակություն նվագարկելու համար</translation>
 <translation id="1956390763342388273">Դուք պատրաստվում եք վերբեռնել «<ph name="FOLDER_PATH" />» պանակի բոլոր ֆայլերը։ Մի՛ արեք դա, եթե կայքը վստահելի չեք համարում։</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ընդլայնում ստուգված է}one{{NUM_EXTENSIONS} ընդլայնում ստուգված է}other{{NUM_EXTENSIONS} ընդլայնում ստուգված է}}</translation>
 <translation id="1959421829481337178">Մուտքագրեք օպերատորի տրամադրած ակտիվացման կոդը։</translation>
 <translation id="1962233722219655970">Այս էջն օգտագործում է Native Client հավելված, որը ձեր համակարգիչը չի աջակցում:</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
@@ -1936,6 +1937,7 @@
 <translation id="2492461744635776704">Հավաստագրի ստորագրման հայտի նախապատրաստում</translation>
 <translation id="249330843868392562">Բացել տեքստի հնչեցման կարգավորումները</translation>
 <translation id="2494555621641843783">Հնարավոր չէ տեղադրել Steam-ը</translation>
+<translation id="2495141202137516054">Ձեր Drive-ից</translation>
 <translation id="2495524171012645395">Վերջերս դիտված բաղադրատոմսեր</translation>
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2497229222757901769">Մկնիկի արագությունը</translation>
@@ -2075,6 +2077,7 @@
 <translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="2613210758071148851">Արգելել բոլոր ընդլայնումները <ph name="RESTRICTED_SITE" /> կայքում</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը</translation>
+<translation id="2613747923081026172">Ստեղծել խումբ</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Բացել և փոփոխել <ph name="FILE1" /> ֆայլը այս ընդլայնման մեջ}one{Բացել և փոփոխել <ph name="FILE1" /> ֆայլը այս հավելվածում}other{Բացել և փոփոխել <ph name="FILE1" />, ... ֆայլերը այս հավելվածում}}</translation>
 <translation id="2616366145935564096">Կարդալ և փոխել ձեր տվյալները <ph name="WEBSITE_1" /> վեբկայքում</translation>
 <translation id="2618797463720777311">Կարգավորեք «Փոխանակում մոտակա սարքերի հետ» գործառույթը</translation>
@@ -2237,6 +2240,7 @@
 <translation id="2738771556149464852">Ոչ ուշ</translation>
 <translation id="2739191690716947896">Վրիպազերծել</translation>
 <translation id="2739240477418971307">Փոխել ձեր մատչելիության կարգավորումները</translation>
+<translation id="2739331588276254426">Միացում ինտերնետին «<ph name="HOST_DEVICE_NAME" />» սարքի միջոցով</translation>
 <translation id="274029851662193272">Սեղմված</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2740876196999178364">Այս անցաբառերը պահվում են միայն այս սարքում։ Դրանք չեն պահվում ձեր Google հաշվում։</translation>
@@ -2574,7 +2578,6 @@
 <translation id="3003828226041301643">Չհաջողվեց միացնել սարքը տիրույթին: Ստուգեք ձեր հաշիվը՝ համոզվելու, որ սարքեր ավելացնելու արտոնություններ ունեք:</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> սարքը փակ Wi-Fi կապ կստեղծի։</translation>
 <translation id="3004385386820284928">Անհատականացնել ստեղնաշարի ստեղները</translation>
-<translation id="3005376701115952939">Հավելվածների համաժամացումը կարգավորված է համակարգի կարգավորումներում</translation>
 <translation id="3005574332301273731">Ցույց չտալ</translation>
 <translation id="3006881078666935414">Օգտագործման տվյալներ չկան</translation>
 <translation id="3007410324195400631">Ավելացրեք նշումներ այս էջի մասին</translation>
@@ -3194,6 +3197,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Ձայնն անջատված է</translation>
 <translation id="3537881477201137177">Ավելի ուշ կարող եք սա կարգավորումներում փոխել</translation>
 <translation id="3538066758857505094">Չհաջողվեց ապատեղադրել Linux-ը: Նորից փորձեք:</translation>
+<translation id="3540173484406326944">Չկա միացում ցանցին «<ph name="HOST_DEVICE_NAME" />» սարքի միջոցով</translation>
 <translation id="354060433403403521">AC հարմարիչ</translation>
 <translation id="354068948465830244">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքի տվյալները</translation>
 <translation id="3541823293333232175">Նշանակված է</translation>
@@ -3989,9 +3993,6 @@
 <translation id="4158315983204257156">Կայքի տեքստի չափ և տառատեսակ</translation>
 <translation id="4158364720893025815">Ստուգումն անցել է</translation>
 <translation id="4159149286839604525">Սա նշանակում է, որ կայքի գործառույթների մեծ մասը կաշխատի, սակայն դուք պակաս պաշտպանված կլինեք</translation>
-<translation id="4159501637165962616"><ph name="BEGIN_PARAGRAPH1" />Դուք կարող եք թույլ տալ, որ ձեր ChromeOS սարքերն ավտոմատ կերպով հաշվետվություններ ուղարկեն Google-ին։ Դա մեզ կօգնի որոշել, թե ինչն առաջնահերթ բարելավման կարիք ունի։ Նման հաշվետվությունները կարող են պարունակել տեղեկություններ այն մասին, թե ինչ գործառույթներից եք օգտվում, որքան հիշողություն եք սովորաբար սպառում, ինչպես նաև ChromeOS-ի խափանումների և Android-ի հավելվածների օգտագործման և դիագնոստիկ տվյալները։ Հավաքված տվյալների մի մասը օգտակար կլինի մեր գործընկերների (օր.՝ Android-ի մշակողների) համար։ Եթե նաև հավելվածների համաժամացումն է միացված, կհավաքվեն հավելվածների, այդ թվում՝ Android և վեբ հավելվածների օգտագործման և դիագնոստիկ այլ տվյալներ։<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Դուք ցանկացած ժամանակ կարող եք թույլատրել կամ արգելել հաշվետվությունների ուղարկումը ձեր ChromeOS սարքի կարգավորումներում։ Եթե տիրույթի ադմինիստրատոր եք, ապա կարող եք փոխել այս կարգավորումը ադմինիստրատորի վահանակում։<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է ձեր Google հաշվում, ապա դրանում կարող են պահվել Android-ի տվյալները։ Դուք կարող եք դիտել և ջնջել ձեր տվյալները, ինչպես նաև փոխել հաշվի կարգավորումները account.google.com էջում։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4163560723127662357">Անհայտ ստեղնաշար</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> հասցեն չի պատկանում վավեր կազմակերպության։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/ChromeEnterpriseAccount</translation>
@@ -4343,9 +4344,6 @@
 <translation id="4452898361839215358">կամ ընտեք PPD ֆայլ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Հպեք մատնահետքերի սկաներին, որը ձեր ստեղնաշարի վերևի աջ անկյունում է։ Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="4453946976636652378">Որոնեք <ph name="SEARCH_ENGINE_NAME" />-ում կամ մուտքագրեք URL-ը</translation>
-<translation id="4454537120672169656"><ph name="BEGIN_PARAGRAPH1" />Դուք կարող եք թույլ տալ, որ ChromeOS սարքերն ավտոմատ կերպով հաշվետվություններ ուղարկեն Google-ին։ Դա մեզ կօգնի որոշել, թե ինչը առաջնահերթ բարելավման կարիք ունի։ Այդպիսի հաշվետվությունները կարող են պարունակել տվյալներ ChromeOS-ի խափանումների, օգտագործվող գործառույթների, սովորաբար օգտագործվող հիշողության ծավալի, ինչպես նաև Android-ի հավելվածների օգտագործման և դիագնոստիկ տվյալների մասին։ Հավաքված տվյալների մի մասը օգտակար կլինի մեր գործընկերների (օր.՝ Android-ի մշակողների) համար։ Եթե նաև հավելվածների համաժամացումն է միացված, կհավաքվեն հավելվածների, այդ թվում՝ Android և վեբ հավելվածների օգտագործման և դիագնոստիկ այլ տվյալներ։<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Հաշվետվությունների ուղարկումը ցանկացած ժամանակ կարելի է թույլատրել կամ արգելել ձեր երեխայի ChromeOS սարքի կարգավորումներում։ Եթե դուք տիրույթի ադմինիստրատորն եք, ապա կարող եք փոխել այս կարգավորումը ադմինիստրատորի վահանակում։<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH4" />Եթե Վեբ որոնման և հավելվածների պատմությունը ձեր երեխայի Google հաշվի համար միացված է, երեխայի տվյալները կպահվեն իր Google հաշվում։ Այս կարգավորումների մասին ավելին իմանալու և դրանք ըստ ձեր հայեցողության փոփոխելու համար անցեք families.google.com էջ։<ph name="END_PARAGRAPH4" /></translation>
 <translation id="4457472090507035117">Ընտրեք ընթացիկ ձայնը`</translation>
 <translation id="4459169140545916303">Ակտիվ է եղել <ph name="DEVICE_LAST_ACTIVATED_TIME" /> օր առաջ</translation>
 <translation id="4460014764210899310">Ապախմբավորել</translation>
@@ -5727,6 +5725,7 @@
 <translation id="5616571005307953937">Ամենահինը</translation>
 <translation id="5616726534702877126">Պահպանել չափը</translation>
 <translation id="561698261642843490">Փակեք Firefox-ը</translation>
+<translation id="5620163320393916465">Պահված գաղտնաբառեր չկան</translation>
 <translation id="5620540760831960151">Այս ցուցակի նկատմամբ գործում են <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> կանոնները</translation>
 <translation id="5620568081365989559">Մշակողի գործիքները պահանջում են ամբողջական մուտք <ph name="FOLDER_PATH" /> գրացուցակ: Համոզվեք, որ նրանում գաղտնի տվյալներ չկան:</translation>
 <translation id="5620612546311710611">օգտագործման վիճակագրություն</translation>
@@ -6399,6 +6398,7 @@
 <translation id="6169967265765719844">Steam-ի միջոցով տեղադրված խաղերի ու հավելվածների թույլտվությունները կարող եք կառավարել <ph name="LINK_BEGIN" />Steam հավելվածի կարգավորումներում<ph name="LINK_END" />։</translation>
 <translation id="6170470584681422115">Սենդվիչ</translation>
 <translation id="6170498031581934115">Չհաջողվեց միացնել ADB վրիպազերծումը։ Անցեք կարգավորումներ և նորից փորձեք։</translation>
+<translation id="6170675927290506430">Անցնել ծանուցումների կարգավորումներ</translation>
 <translation id="6171779718418683144">Միշտ հարցնել</translation>
 <translation id="617213288191670920">Լեզուներ չեն ավելացվել</translation>
 <translation id="6173623053897475761">Նորից մուտքագրեք PIN-ը</translation>
@@ -6408,6 +6408,7 @@
 <translation id="6177412385419165772">Հեռացում…</translation>
 <translation id="6178664161104547336">Ընտրեք վկայագիր</translation>
 <translation id="6178682841350631965">Ձեր մուտքի տվյալները թարմացվեցին</translation>
+<translation id="6179830757749383456">Դիտարկիչը կառավարվում է <ph name="BROWSER_DOMAIN" /> տիրույթի, իսկ պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Հեռացնե՞լ ընդլայնումը}one{Հեռացնե՞լ # ընդլայնում}other{Հեռացնե՞լ # ընդլայնում}}</translation>
 <translation id="6180510783007738939">«Գիծ» գործիք</translation>
 <translation id="6180550893222597997">Ո՞ր անցաբառն եք ուզում օգտագործել <ph name="APP_NAME" /> հավելվածի համար</translation>
@@ -6526,6 +6527,7 @@
 <translation id="6271348838875430303">ուղղումը հետարկվեց</translation>
 <translation id="6271824294945464304">Գաղտնաբառի փոխանցում</translation>
 <translation id="6273677812470008672">Որակյալ</translation>
+<translation id="6274089201566806618">Միացում «<ph name="HOST_DEVICE_NAME" />» սարքին</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> պրոքսիի օգտագործման համար անհրաժեշտ է մուտքագրել օգտանուն և գաղտնաբառ։</translation>
 <translation id="6277105963844135994">Ցանցի ժամասպառում</translation>
@@ -6543,6 +6545,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ֆայլը խորհուրդ չի տրվում ներբեռնել, այն կարող է վտանգավոր լինել:</translation>
 <translation id="6285770818046456882">Ուղարկողը չեղարկել է տվյալների փոխանցումը</translation>
 <translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
+<translation id="6287828400772161253">Android հեռախոս (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Մոտակայքում չկան սարքեր, որոնց հետ հնարավոր է տվյալներ փոխանակել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Ակտիվացման կոդը ստուգվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="6291741848715722067">Հաստատման կոդ</translation>
@@ -8548,6 +8551,7 @@
 <translation id="7925285046818567682">Սպասում ենք <ph name="HOST_NAME" />-ին…</translation>
 <translation id="7926423016278357561">Սա ես չեմ։</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
+<translation id="7927610604078150317">Չափսը՝ <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Արդեն փոխե՞լ եք այս գաղտնաբառը</translation>
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7930294771522048157">Վճարման պահված եղանակները կհայտնվեն այստեղ</translation>
@@ -9863,6 +9867,7 @@
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8986494364107987395">Ավտոմատ Google-ին ուղարկել օգտագործման վիճակագրությունները և խափանումների մասին հաշվետվությունները</translation>
 <translation id="8987305927843254629">Յուրաքանչյուր օգտատեր կարող է անհատականացնել սարքը և գաղտնի պահել իր տվյալները։</translation>
+<translation id="8987321822984361516">Դիտարկիչը կառավարվում է կազմակերպության կողմից, պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի</translation>
 <translation id="8987927404178983737">Ամիս</translation>
 <translation id="8988539543012086784">Այս էջը պահվել է «<ph name="BOOKMARK_FOLDER" />» պանակում</translation>
 <translation id="8989359959810288806">Թարմացնել մոդեմի ռեժիմի կարգավիճակը</translation>
@@ -9881,6 +9886,7 @@
 <translation id="8999027165951679951">Անգործուն ներդիր․ ազատվել է <ph name="MEMORY_SAVINGS" /> տարածք</translation>
 <translation id="8999560016882908256">Բաժնի շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Հպեք մատնահետքերի սկաներին, որը ձեր <ph name="DEVICE_TYPE" /> սարքի աջ կողմում է։ Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
+<translation id="9000532564152265066">Բոլոր ներդիրները</translation>
 <translation id="9003185744423389627">Սարքերի կառավարիչի սերվերի միացումը ձախողվեց <ph name="FAILURE_TIME" /> «<ph name="STATUS_TEXT" />» կարգավիճակով</translation>
 <translation id="90033698482696970">Ավտոմատ որոնե՞լ հասանելի eSIM պրոֆիլներ</translation>
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>

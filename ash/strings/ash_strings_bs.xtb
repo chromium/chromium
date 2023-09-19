@@ -299,7 +299,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2248634276911611268">Otvaranje linka u novoj kartici i prelazak na tu novu karticu</translation>
 <translation id="225680501294068881">Traženje uređaja...</translation>
-<translation id="225716114209817872">Maksimalno</translation>
 <translation id="2257486738914982088">Došlo je do problema prilikom preuzimanja fajla <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Predloženi fajlovi</translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
@@ -698,7 +697,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Nije moguće prenositi aplikacije</translation>
 <translation id="3861651314799684201">Pritisnite Enter da snimite cijeli ekran</translation>
-<translation id="3871092408932389764">Najniži</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl + Shift + Q da se odjavite.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -740,7 +738,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4028481283645788203">Potrebna je lozinka za dodatnu sigurnost</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> i strelica ulijevo</translation>
-<translation id="4039699481424758547">Pritisnite Enter da biste snimili snimku zaslona prozora: <ph name="WINDOW_TITLE" /></translation>
+<translation id="4039699481424758547">Pritisnite Enter da snimite snimak ekrana prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Trenutno dijelite ekran</translation>
 <translation id="404437169852192935">Ažuriranja su okončana</translation>
 <translation id="4049230407053723315">Brze postavke</translation>
@@ -1869,7 +1867,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="878215960996152260">Aplikacija <ph name="APP_NAME" /> je instalirana i blokirana</translation>
 <translation id="8785070478575117577">Povezivanje na mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8790998409862094015">Obilno</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -1882,6 +1879,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
 <translation id="8843682306134542540">Uključi/isključi zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
+<translation id="8849001918648564819">Skriveno</translation>
 <translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
@@ -1965,7 +1963,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Preostalo je još <ph name="TIME_REMAINING" /> do potpune napunjenosti baterije</translation>
 <translation id="9215934040295798075">Postavi pozadinsku sliku</translation>
-<translation id="9216699844945104164">Pritisnite Enter za snimanje prozora: <ph name="WINDOW_TITLE" /></translation>
+<translation id="9216699844945104164">Pritisnite Enter da snimite prozor: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="921989828232331238">Roditelj je zaključao uređaj za danas</translation>
 <translation id="9220525904950070496">Ukloni račun</translation>

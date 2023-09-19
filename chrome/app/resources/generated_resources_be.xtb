@@ -201,7 +201,6 @@
 <translation id="1153636665119721804">Праграма палепшанай абароны Google</translation>
 <translation id="1155545602507378023">Не, толькі на гэтай прыладзе</translation>
 <translation id="1155816283571436363">Ідзе падключэнне да тэлефона</translation>
-<translation id="1156684356635483618">Прынтары і сканеры</translation>
 <translation id="1157952955648710254">Закрыць бакавую панэль Google Пошуку</translation>
 <translation id="1158080958325422608">Зрабіць усе літары вялікімі</translation>
 <translation id="1158238185437008462">Паказаць успаміны</translation>
@@ -770,6 +769,7 @@
 <translation id="1604432177629086300">Не ўдалося надрукаваць. Праверце прынтар і паўтарыце спробу.</translation>
 <translation id="1604567162047669454">Распазнаваць семантыку візуальнага макета</translation>
 <translation id="1604774728851271529">Для абнаўлення Linux патрабуецца падключэнне да сеткі. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
+<translation id="1605148987885002237">Клавіятура і ўвод даных</translation>
 <translation id="1605744057217831567">Паказаць усе даныя і дазволы сайтаў</translation>
 <translation id="1606077700029460857">Змяніць налады мышы</translation>
 <translation id="1606307079840340755">Ваш пастаўшчык Passpoint будзе выдалены толькі з гэтай прылады. Каб унесці змяненні ў падпіску, звярніцеся да пастаўшчыка падпіскі.</translation>
@@ -1228,6 +1228,7 @@
 <translation id="1956050014111002555">У файле было некалькі сертыфікатаў, ні адзін з іх не быў імпартаваны:</translation>
 <translation id="1956167375087861299">Сайты, якім не дазволена выкарыстоўваць ідэнтыфікатары для прайгравання абароненага змесціва</translation>
 <translation id="1956390763342388273">Ваша дзеянне запампуе ўсе файлы з размяшчэння "<ph name="FOLDER_PATH" />". Рабіце гэта, толькі калі вы давяраеце сайту.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Праверана 1 пашырэнне}one{Праверана {NUM_EXTENSIONS} пашырэнне}few{Праверана {NUM_EXTENSIONS} пашырэнні}many{Праверана {NUM_EXTENSIONS} пашырэнняў}other{Праверана {NUM_EXTENSIONS} пашырэння}}</translation>
 <translation id="1959421829481337178">Увядзіце код актывацыі, атрыманы ад аператара.</translation>
 <translation id="1962233722219655970">Гэта старонка выкарыстоўвае праграму Native Client, якая не працуе на вашым камп'ютары.</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
@@ -1935,6 +1936,7 @@
 <translation id="2492461744635776704">Рыхтуецца запыт на подпіс сертыфіката</translation>
 <translation id="249330843868392562">Адкрыць налады сінтэзу маўлення</translation>
 <translation id="2494555621641843783">Не ўдалося ўсталяваць Steam</translation>
+<translation id="2495141202137516054">З вашага Дыска</translation>
 <translation id="2495524171012645395">Нядаўна прагледжаныя рэцэпты</translation>
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
 <translation id="2497229222757901769">Хуткасць мышы</translation>
@@ -2076,6 +2078,7 @@
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2613210758071148851">Не дазваляць ніякіх пашырэнняў на сайце <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Сайт <ph name="ORIGIN" /> зможа змяняць файл "<ph name="FILENAME" />"</translation>
+<translation id="2613747923081026172">Стварыць групу</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Адкрыць і змяніць файл "<ph name="FILE1" />" у гэтым пашырэнні}one{Адкрыць і змяніць файлы "<ph name="FILE1" />", ... у гэтай праграме}few{Адкрыць і змяніць файлы "<ph name="FILE1" />", ... у гэтай праграме}many{Адкрыць і змяніць файлы "<ph name="FILE1" />", ... у гэтай праграме}other{Адкрыць і змяніць файлы "<ph name="FILE1" />", ... у гэтай праграме}}</translation>
 <translation id="2616366145935564096">Прагляд і змена вашых даных на сайце <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Наладжванне функцыі "Абагульванне паблізу"</translation>
@@ -2238,6 +2241,7 @@
 <translation id="2738771556149464852">Не пазней</translation>
 <translation id="2739191690716947896">Адладзіць</translation>
 <translation id="2739240477418971307">Змяніць налады спецыяльных магчымасцей</translation>
+<translation id="2739331588276254426">Устаноўлена падключэнне да інтэрнэту праз прыладу "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="274029851662193272">Уціснуты</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ключы доступу захоўваюцца толькі на гэтай прыладзе, а не ва Уліковым запісе Google.</translation>
@@ -2575,7 +2579,6 @@
 <translation id="3003828226041301643">Не ўдалося далучыць прыладу да дамена. Праверце, ці мае ваш уліковы запіс паўнамоцтвы дадаваць прылады.</translation>
 <translation id="3003967365858406397">Ваш тэлефон <ph name="PHONE_NAME" /> створыць прыватнае падключэнне Wi-Fi.</translation>
 <translation id="3004385386820284928">Наладжванне клавіш клавіятуры</translation>
-<translation id="3005376701115952939">Сінхранізацыя праграм зададзена ў наладах сістэмы</translation>
 <translation id="3005574332301273731">Не паказваць</translation>
 <translation id="3006881078666935414">Няма даных аб выкарыстанні</translation>
 <translation id="3007410324195400631">Дадайце нататкі пра гэту старонку</translation>
@@ -3195,6 +3198,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – гук выключаны</translation>
 <translation id="3537881477201137177">Яго можна будзе змяніць пазней у Наладах</translation>
 <translation id="3538066758857505094">Памылка выдалення Linux. Паўтарыце спробу.</translation>
+<translation id="3540173484406326944">Няма падключэння да сеткі праз прыладу "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="354060433403403521">Адаптар пераменнага току</translation>
 <translation id="354068948465830244">Гэта пашырэнне можа чытаць і змяняць даныя на сайце</translation>
 <translation id="3541823293333232175">Прызначана</translation>
@@ -3988,9 +3992,6 @@
 <translation id="4158315983204257156">Шрыфт і памер тэксту на вэб-сайтах</translation>
 <translation id="4158364720893025815">Праверка пройдзена</translation>
 <translation id="4159149286839604525">Гэта азначае, што большасць функцый сайта павінна працаваць, але ваша абароненасць будзе меншай</translation>
-<translation id="4159501637165962616"><ph name="BEGIN_PARAGRAPH1" />Вы можаце дазволіць прыладам з ChromeOS адпраўляць аўтаматычныя справаздачы, каб дапамагаць нам выяўляць, над чым трэба працаваць у першую чаргу. У гэтыя справаздачы можа ўключацца, у прыватнасці, інфармацыя пра збоі ў Chrome OS, пра тое, якія функцыі вы выкарыстоўвалі і які аб'ём памяці быў звычайна задзейнічаны, а таксама даныя пра выкарыстанне і дыягностыку праграм для Android. Некаторыя сукупныя даныя будуць карыснымі для праграм і партнёраў Google, напрыклад, распрацоўшчыкаў Android. Іншыя даныя пра выкарыстанне і дыягностыку, у тым ліку для Android і вэб-праграм, будуць збірацца, калі таксама ўключана сінхранізацыя праграм.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Вы можаце дазволіць або забараніць стварэнне такіх справаздач у любы час у наладах прылады з Chrome OS. Калі вы з'яўляецеся адміністратарам дамена, вы можаце змяніць гэту наладу ў кансолі адміністратара.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Калі захоўванне гісторыі дзеянняў у інтэрнэце і праграмах у вашым Уліковым запісе Google уключана, у ім могуць захоўвацца і даныя Android. Вы можаце праглядаць і выдаляць свае даныя, а таксама змяняць налады ўліковага запісу на сайце account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4163560723127662357">Невядомая клавіятура</translation>
 <translation id="4165942112764990069">Электронны адрас <ph name="USER_EMAIL" /> не з'яўляецца электронным адрасам сапраўднай арганізацыі. Звярніцеся да адміністратара. Калі вы самі з'яўляецеся адміністратарам, вы можаце наладзіць сваю арганізацыю на старонцы g.co/ChromeEnterpriseAccount</translation>
@@ -4342,9 +4343,6 @@
 <translation id="4452898361839215358">або выберыце файл PPD. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Дакраніцеся да сканера адбіткаў пальцаў у правым верхнім вугле клавіятуры. Даныя адбіткаў пальцаў надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="4453946976636652378">Шукайце праз <ph name="SEARCH_ENGINE_NAME" /> або ўвядзіце URL-адрас</translation>
-<translation id="4454537120672169656"><ph name="BEGIN_PARAGRAPH1" />Вы можаце дазволіць прыладам з ChromeOS адпраўляць аўтаматычныя справаздачы, каб дапамагаць нам выяўляць, над чым трэба працаваць у першую чаргу. У гэтыя справаздачы можа ўключацца, у прыватнасці, інфармацыя пра збоі ў ChromeOS, пра тое, якія функцыі выкарыстоўваліся і які аб'ём памяці быў задзейнічаны, а таксама даныя пра выкарыстанне і дыягностыку праграм для Android. Некаторыя сукупныя даныя будуць карыснымі для праграм і партнёраў Google, напрыклад, распрацоўшчыкаў Android. Іншыя даныя пра выкарыстанне і дыягностыку, у тым ліку для Android і вэб-праграм, будуць збірацца, калі таксама ўключана сінхранізацыя праграм.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Вы можаце дазволіць або забараніць стварэнне такіх справаздач у любы час у наладах прылады з ChromeOS вашага дзіцяці. Калі вы з'яўляецеся адміністратарам дамена, вы можаце змяніць гэту наладу ў кансолі адміністратара.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH4" />Калі ва Уліковым запісе Google вашага дзіцяці ўключана захоўванне гісторыі дзеянняў у інтэрнэце і праграмах, то даныя дзіцяці могуць захоўвацца ў яго ўліковым запісе. Даведацца больш пра гэтыя налады і іх карэкціроўку можна на сайце families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="4457472090507035117">Выбар бягучага голасу:</translation>
 <translation id="4459169140545916303">Апошнія дзеянні: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> сут таму</translation>
 <translation id="4460014764210899310">Разгрупаваць</translation>
@@ -5723,6 +5721,7 @@
 <translation id="5616571005307953937">самыя старыя</translation>
 <translation id="5616726534702877126">Зарэзерваваць памер</translation>
 <translation id="561698261642843490">Закрыць Firefox</translation>
+<translation id="5620163320393916465">Няма захаваных пароляў</translation>
 <translation id="5620540760831960151">На гэты спіс распаўсюджваюцца наступныя палітыкі: <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" />
            і <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
@@ -6398,6 +6397,7 @@
 <translation id="6169967265765719844">Дазволамі для гульняў і праграм, усталяваных праз платформу Steam, можна кіраваць у <ph name="LINK_BEGIN" />яе наладах<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
 <translation id="6170498031581934115">Не ўдалося ўключыць адладку ADB. Перайдзіце ў налады і паўтарыце спробу.</translation>
+<translation id="6170675927290506430">Перайсці да налад апавяшчэнняў</translation>
 <translation id="6171779718418683144">Запытваць пры кожным наведванні</translation>
 <translation id="617213288191670920">Мовы не дададзены</translation>
 <translation id="6173623053897475761">Увядзіце PIN-код яшчэ раз</translation>
@@ -6407,6 +6407,7 @@
 <translation id="6177412385419165772">Ідзе выдаленне...</translation>
 <translation id="6178664161104547336">Выберыце сертыфікат</translation>
 <translation id="6178682841350631965">Даныя для ўваходу абноўлены</translation>
+<translation id="6179830757749383456">Браўзерам кіруе дамен <ph name="BROWSER_DOMAIN" />, профілем кіруе дамен <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Выдаліць пашырэнне?}one{Выдаліць # пашырэнне?}few{Выдаліць # пашырэнні?}many{Выдаліць # пашырэнняў?}other{Выдаліць # пашырэння?}}</translation>
 <translation id="6180510783007738939">Інструмент "Лінія"</translation>
 <translation id="6180550893222597997">Які ключ доступу вы хочаце выкарыстаць для <ph name="APP_NAME" />?</translation>
@@ -6525,6 +6526,7 @@
 <translation id="6271348838875430303">выпраўленне адроблена</translation>
 <translation id="6271824294945464304">Ідзе абагульванне пароля</translation>
 <translation id="6273677812470008672">Якасць</translation>
+<translation id="6274089201566806618">Ідзе падключэнне да прылады "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
 <translation id="6276210637549544171">Проксі-сервер <ph name="PROXY_SERVER" /> патрабуе імя карыстальніка і пароль.</translation>
 <translation id="6277105963844135994">Час чакання сеткі</translation>
@@ -6542,6 +6544,7 @@
 <translation id="6285120108426285413">Файл "<ph name="FILE_NAME" />" звычайна не спампоўваецца і можа быць небяспечным.</translation>
 <translation id="6285770818046456882">Перадача скасавана прыладай, якая ажыццяўляла абагульванне</translation>
 <translation id="628726841779494414">Вы можаце кіраваць прынтарамі ў адпаведных наладах</translation>
+<translation id="6287828400772161253">Тэлефон Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Няма даступных прылад, якія б ажыццяўлялі абагульванне паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Ідзе спраўджанне кода актывацыі. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="6291741848715722067">Код пацвярджэння</translation>
@@ -8552,6 +8555,7 @@
 <translation id="7925285046818567682">Чакаецца <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Гэта быў не мой профіль.</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>
+<translation id="7927610604078150317">Памер: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Вы ўжо змянілі гэты пароль?</translation>
 <translation id="7929962904089429003">Адкрыць меню</translation>
 <translation id="7930294771522048157">Захаваныя спосабы аплаты з'явяцца тут</translation>
@@ -9869,6 +9873,7 @@
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="8986494364107987395">Аўтаматычна адпраўляць у Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="8987305927843254629">Дададзеныя карыстальнікі могуць персаналізаваць патрэбныя функцыі. Пры гэтым іх даныя застаюцца прыватнымі.</translation>
+<translation id="8987321822984361516">Браўзерам кіруе арганізацыя, профілем кіруе дамен <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8988539543012086784">Гэта старонка захавана ў папцы "<ph name="BOOKMARK_FOLDER" />"</translation>
 <translation id="8989359959810288806">Абнавіць стан рэжыму мадэма</translation>
@@ -9887,6 +9892,7 @@
 <translation id="8999027165951679951">Неактыўная ўкладка: вызвалена <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Памылка сінтаксісу раздзела: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Дакраніцеся да сканера адбіткаў пальцаў на правай бакавой частцы прылады <ph name="DEVICE_TYPE" />. Даныя адбіткаў пальцаў надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
+<translation id="9000532564152265066">Усе ўкладкі</translation>
 <translation id="9003185744423389627">Не ўдалося падключыцца да сервера кіравання прыладамі (стан: "<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Выконваць аўтаматычны пошук даступных профіляў eSIM-карт?</translation>
 <translation id="9003647077635673607">Дазволіць на ўсіх вэб-сайтах</translation>

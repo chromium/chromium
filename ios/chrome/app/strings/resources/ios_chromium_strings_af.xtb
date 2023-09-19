@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1046370274005147998">Soek met stem in Chromium.</translation>
 <translation id="1047130070405668746">Kies Chromium</translation>
 <translation id="1091252999271033193">Dit beteken dat Chromium elke keer die mobiele werf sal versoek.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Sien Chromium-boekmerke</translation>
 <translation id="2590893390871230428">Sinkroniseer jou Chromium-data</translation>
 <translation id="2618596336309823556">Maak “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" in jou toestel se Instellings oop en kies “Chromium”</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium sal help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chromium sal help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="2650312721222849884">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="2684230048001240293">Stel Chromium as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="2730884209570016437">Chromium kan nie jou kamera gebruik nie omdat dit deur 'n ander program gebruik word</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Jou organisasie vereis dat jy van Chromium afgemeld bly.</translation>
 <translation id="2942241131342758843">Gebruik by verstek Chromium om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan jou help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chromium kan jou help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Meld af by Chromium<ph name="END_LINK" /> om op alle webwerwe by jou Google-rekening af te meld.</translation>
 <translation id="3219277919172823720">Soek met stem in Chromium</translation>
 <translation id="3228349498066165585">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie.
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">Meld aan en skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="5522297504975449419">Sommige Chromium-kenmerke sal nie meer beskikbaar wees nie.</translation>
 <translation id="5571094606370987472">Maak Chromium se onlangse oortjies oop.</translation>
+<translation id="5623083843656850677">Sluit jou Incognito-oortjies wanneer jy Chromium verlaat of na ’n ander app toe oorskakel.</translation>
 <translation id="5688047395118852662">Hierdie kaart wys vir jou voorstelle oor hoe jy Chromium ten beste kan benut.</translation>
 <translation id="5700709190537129682">Chromium kan nie jou wagwoorde nagaan nie</translation>
 <translation id="5777187867430702742">Chromium-bladsy</translation>

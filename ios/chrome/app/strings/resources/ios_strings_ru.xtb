@@ -197,6 +197,7 @@
 <translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется одинаковый пароль</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} сохраненный способ оплаты показан над клавиатурой.}one{{count} сохраненный способ оплаты показан над клавиатурой.}few{{count} сохраненных способа оплаты показаны над клавиатурой.}many{{count} сохраненных способов оплаты показаны над клавиатурой.}other{{count} сохраненного способа оплаты показаны над клавиатурой.}}</translation>
 <translation id="2055515971416882518">Откройте приложение "Настройки".</translation>
+<translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
+<translation id="3599500618468205645">Скрыть действие "Подписаться на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">Копировать URL</translation>
 <translation id="3607167657931203000">Данные автозаполнения</translation>
 <translation id="3609785682760573515">Cинхронизация…</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">Участник семейной группы не может получать пароли. Попросите его обновить Chrome и синхронизировать пароли. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Доступен профиль конфигурации</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3680970647557344817">Скрыть действие "Изменить закладку"</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
 <translation id="3688815115226493214">Подсказки для вкладок</translation>
 <translation id="3700134753671613714">Войдите в свой аккаунт, и закладки будут доступны на всех ваших устройствах.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">Клавиатура</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
 <translation id="4606247758155004938">Этим браузером управляет ваша организация.</translation>
+<translation id="4611811151908969241">Скрыть действие "Отменить подписку на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Поиск с помощью Google</translation>
 <translation id="4616391354457235490">Отменить</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">Режим блокировки входа</translation>
 <translation id="6760509555861141183">Вернуться к последней использовавшейся вкладке</translation>
 <translation id="6762812039470893796">Отменить выбор</translation>
+<translation id="6771287014037609247">Всегда отслеживать обнаруженные посылки</translation>
 <translation id="6780034285637185932">Почтовый индекс</translation>
 <translation id="6781260999953472352">Включить синхронизацию?</translation>
 <translation id="6781405765516175232">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{Посмотреть вкладку}one{Посмотреть все вкладки}few{Посмотреть все вкладки}many{Посмотреть все вкладки}other{Посмотреть все вкладки}}</translation>
 <translation id="8787968206789828143">Найти в интернете</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8793366654064127924">Спрашивать каждый раз</translation>
 <translation id="8803639129939845298">Защищено</translation>
 <translation id="8806823403540278281">Согласно правилам вашей организации, использовать режим инкогнито обязательно. В этом режиме вкладки не сохраняются.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
 <translation id="8855781063981781621">Отключите режим блокировки входа в Chrome на своем устройстве iPad.</translation>
+<translation id="886335568110896118">Скрыть действие "Мобильная версия"</translation>
 <translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
 <translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>

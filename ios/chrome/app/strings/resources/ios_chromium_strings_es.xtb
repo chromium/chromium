@@ -92,6 +92,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chromium en este dispositivo</translation>
 <translation id="4790638144988730920">Sigue usando los datos de Chromium en tu cuenta de Google.</translation>
 <translation id="4828317641996116749">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="4935539884203837577">Chromium puede detectar los números de seguimiento que introduzcas y hacer un seguimiento de tus paquetes en la página Nueva pestaña, además de ayudarte con otras experiencias de compra de Chromium.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede comprobar si hay actualizaciones</translation>
 <translation id="4996471330284142407">Haz más cosas con Chromium: funciona más rápido que nunca y es sencillo y seguro.</translation>
 <translation id="4999538639245140991">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chromium en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
@@ -115,6 +116,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de
 <translation id="5688047395118852662">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chromium.</translation>
 <translation id="5700709190537129682">Chromium no puede comprobar tus contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
+<translation id="584303319228224680">Haz un seguimiento automático de tus paquetes en Chromium</translation>
 <translation id="5889847953983052353">Si esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chromium para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
 

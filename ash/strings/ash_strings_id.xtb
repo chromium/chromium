@@ -299,7 +299,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="2248634276911611268">Buka link di tab baru dan beralih ke tab baru ini</translation>
 <translation id="225680501294068881">Memindai perangkat...</translation>
-<translation id="225716114209817872">Maksimum</translation>
 <translation id="2257486738914982088">Terjadi error saat mendownload <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">File yang disarankan</translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
@@ -698,7 +697,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="385300504083504382">Awal</translation>
 <translation id="3859364108019690">Tidak dapat men-streaming aplikasi</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
-<translation id="3871092408932389764">Terendah</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
@@ -740,6 +738,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4028481283645788203">Perlu sandi untuk keamanan tambahan</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />.<ph name="MINUTES" />.<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + panah kiri</translation>
+<translation id="4039699481424758547">Tekan enter untuk mengambil screenshot jendela: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Anda membagikan layar Anda</translation>
 <translation id="404437169852192935">Update berakhir</translation>
 <translation id="4049230407053723315">Setelan Cepat</translation>
@@ -1868,7 +1867,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="878215960996152260"><ph name="APP_NAME" />, Aplikasi Terinstal, Diblokir</translation>
 <translation id="8785070478575117577">Hubungkan ke <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8790998409862094015">Tebal</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -1881,6 +1879,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
+<translation id="8849001918648564819">Tersembunyi</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8858369206579825206">Kontrol privasi</translation>
@@ -1964,6 +1963,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9211490828691860325">Semua desktop</translation>
 <translation id="9211681782751733685">Kurang <ph name="TIME_REMAINING" /> lagi sampai baterai terisi penuh.</translation>
 <translation id="9215934040295798075">Setel wallpaper</translation>
+<translation id="9216699844945104164">Tekan enter untuk merekam jendela: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="921989828232331238">Orang tuamu mengunci perangkat untuk hari ini</translation>
 <translation id="9220525904950070496">Hapus akun</translation>

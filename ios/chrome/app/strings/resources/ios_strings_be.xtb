@@ -197,6 +197,7 @@
 <translation id="2049727122989709386">У некалькіх (<ph name="COUNT" />) уліковых запісах выкарыстоўваецца такі самы пароль</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} захаваны спосаб аплаты паказваецца над клавіятурай.}one{{count} захаваны спосаб аплаты паказваецца над клавіятурай.}few{{count} захаваныя спосабы аплаты паказваюцца над клавіятурай.}many{{count} захаваных спосабаў аплата паказваюцца над клавіятурай.}other{{count} захаванага спосабу аплаты паказваюцца над клавіятурай.}}</translation>
 <translation id="2055515971416882518">Адкрыйце налады.</translation>
+<translation id="2059166748188874810">Муніцыпальная акруга</translation>
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">Што іменна вы можаце захоўваць ва Уліковы запіс Google, вызначае ваша арганізацыя.</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
 <translation id="3595252146048399851">Вы заўсёды можаце выбраць, якія даныя трэба сінхранізаваць, у <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове гісторыі прагляду вамі сайтаў.</translation>
+<translation id="3599500618468205645">Схаваць пункт "Падпісацца на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">Скапіраваць URL-адрас спасылкі</translation>
 <translation id="3607167657931203000">Аўтазапаўненне даных</translation>
 <translation id="3609785682760573515">Сінхранізацыя...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">Удзельнік сямейнай групы не можа атрымаць паролі. Папрасіце абнавіць Chrome і сінхранізаваць паролі. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Даступны профіль канфігурацыі</translation>
 <translation id="3670030362669914947">Нумар</translation>
+<translation id="3680970647557344817">Схаваць пункт "Рэдагаваць закладку"</translation>
 <translation id="368329460027487650">Выкананы выхад. Адкрываюцца параметры для ўваходу.</translation>
 <translation id="3688815115226493214">Прапановы ўкладак</translation>
 <translation id="3700134753671613714">Каб закладкі былі даступнымі на ўсіх вашых прыладах, выканайце ўваход.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">Клавіятура</translation>
 <translation id="4601095002996233687">Выконвае дэталёвую праверку падазроных спамповак.</translation>
 <translation id="4606247758155004938">Браўзерам кіруе ваша арганізацыя.</translation>
+<translation id="4611811151908969241">Схаваць пункт "Адпісацца ад <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Пошук з дапамогай Google</translation>
 <translation id="4616391354457235490">Адмяніць</translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">Рэжым блакіроўкі</translation>
 <translation id="6760509555861141183">Вярнуцца да апошняй укладкі</translation>
 <translation id="6762812039470893796">Адмяніць выбар усіх</translation>
+<translation id="6771287014037609247">Заўсёды адсочваць выяўленыя пасылкі</translation>
 <translation id="6780034285637185932">Паштовы індэкс</translation>
 <translation id="6781260999953472352">Уключыць сінхранізацыю?</translation>
 <translation id="6781405765516175232">Каб паглядзець варыянты маршруту, націсніце Get Directions ("Пракласці маршрут").</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{Паглядзець укладку...}one{Паглядзець усе ўкладкі...}few{Паглядзець усе ўкладкі...}many{Паглядзець усе ўкладкі...}other{Паглядзець усе ўкладкі...}}</translation>
 <translation id="8787968206789828143">Пошук у інтэрнэце</translation>
 <translation id="8792626944327216835">мікрафон</translation>
+<translation id="8793366654064127924">Заўсёды пытацца</translation>
 <translation id="8803639129939845298">Бяспечны сайт</translation>
 <translation id="8806823403540278281">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта. У гэтым рэжыме ўкладкі не захоўваюцца.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8855242995793521265">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
 <translation id="8855781063981781621">Каб адключыць рэжым Lockdown Mode у Chrome, адключыце яго на iPad.</translation>
+<translation id="886335568110896118">Схаваць пункт "Запытаць мабільны сайт"</translation>
 <translation id="8863431381414769983">Паказваць маршруты і мясцовую інфармацыю з Google Карт</translation>
 <translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} укладка}one{{count} укладка}few{{count} укладкі}many{{count} укладак}other{{count} укладкі}}</translation>

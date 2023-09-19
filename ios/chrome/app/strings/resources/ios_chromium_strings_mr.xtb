@@ -42,6 +42,7 @@
 <translation id="2574528844022712255">Chromium बुकमार्क पहा</translation>
 <translation id="2590893390871230428">तुमचा Chromium डेटा सिंक करा</translation>
 <translation id="2618596336309823556">तुमच्या डिव्हाइसच्या सेटिंग्जमधून, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" उघडून "Chromium" निवडा</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}other{Chromium नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}}</translation>
 <translation id="2650312721222849884">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="2684230048001240293">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब, पासवर्ड आणि पेमेंटशी संबंधित माहिती सिंक करण्यासाठी Chromium डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="2730884209570016437">Chromium तुमचा कॅमेरा वापरू शकत नाही कारण दुसरा ॲप्स तो वापरत आहे</translation>
@@ -51,6 +52,7 @@
 <translation id="2918709798697875261">तुमच्या संस्थेनुसार, तुम्ही Chromium मधून साइन आउट केलेले राहणे आवश्यक आहे.</translation>
 <translation id="2942241131342758843">लिंक उघडण्यासाठी, विजेटमध्ये शोधण्यासाठी आणि इतर ॲप्समध्ये पासवर्ड ऑटोफिल करण्यासाठी बाय डीफॉल्ट Chromium वापरा</translation>
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}other{Chromium तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}}</translation>
 <translation id="3102849287235003384">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3219277919172823720">Chromium मध्ये आवाज वापरून शोधा</translation>
 <translation id="3228349498066165585">तुमचा काही Chromium डेटा अद्याप तुमच्या Google खाते मध्ये सेव्ह केला गेलेला नाही.
@@ -92,6 +94,7 @@
 <translation id="4736424910885271643">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chromium डेटा साफ केला जाईल</translation>
 <translation id="4790638144988730920">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा.</translation>
 <translation id="4828317641996116749">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="4935539884203837577">Chromium मधील इतर खरेदी अनुभवांना मदत करत, Chromium हे तुम्ही इनपुट केलेले ट्रॅकिंग क्रमांक डिटेक्ट करू शकते आणि नवीन टॅब पेज वर तुमचे पॅकेज ट्रॅक करू शकते.</translation>
 <translation id="4985291216379576555">ऑफलाइन, Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="4996471330284142407">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Chromium वापरून आणखी बरेच काही करा.</translation>
 <translation id="4999538639245140991">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chromium डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल.</translation>
@@ -112,9 +115,11 @@
 <translation id="5521125884468363740">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="5522297504975449419">काही Chromium वैशिष्ट्ये यापुढे उपलब्ध असणार नाहीत.</translation>
 <translation id="5571094606370987472">Chromium चे अलीकडील टॅब उघडते.</translation>
+<translation id="5623083843656850677">तुम्ही Chromium मधून बाहेर पडता किंवा वेगळ्या ॲपवर स्विच करता, तेव्हा तुमचा गुप्त टॅब लॉक करा.</translation>
 <translation id="5688047395118852662">हे कार्ड तुम्हाला Chromium चा पुरेपूर वापर कसा करावा याविषयीच्या सूचना दाखवते.</translation>
 <translation id="5700709190537129682">Chromium तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="5777187867430702742">Chromium पेज</translation>
+<translation id="584303319228224680">Chromium वर तुमची पॅकेज ऑटो-ट्रॅक करा</translation>
 <translation id="5889847953983052353">सुरू असल्यास:
 <ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chromium वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />
 
