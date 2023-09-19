@@ -32,6 +32,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
       'unregisterForegroundReceiveSurface',
       'accept',
       'reject',
+      'recordFastInitiationNotificationUsage',
     ]);
     /** @private {!ReceiveObserverInterface} */
     this.observer_;
@@ -72,7 +73,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @param {!ReceiveObserverRemote} observer
+   * @param {!nearbyShareMojom.ReceiveObserverRemote} observer
    */
   addReceiveObserver(observer) {
     this.methodCalled('addReceiveObserver');
@@ -88,7 +89,8 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @return {!Promise<{result: !RegisterReceiveSurfaceResult}>}
+   * @return {!Promise<{result:
+   *     !nearbyShareMojom.RegisterReceiveSurfaceResult}>}
    */
   async registerForegroundReceiveSurface() {
     this.inHighVisibility_ = true;
@@ -131,6 +133,13 @@ export class FakeReceiveManager extends TestBrowserProxy {
     this.lastToken_ = shareTargetId;
     this.methodCalled('reject', shareTargetId);
     return {success: this.nextResult_};
+  }
+
+  /**
+   * @param {!boolean} success
+   */
+  recordFastInitiationNotificationUsage(success) {
+    this.methodCalled('recordFastInitiationNotificationUsage', success);
   }
 
   /**

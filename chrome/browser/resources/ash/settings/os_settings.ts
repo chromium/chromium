@@ -49,7 +49,6 @@ import './device_page/stylus.js';
 import './multidevice_page/multidevice_page.js';
 import './nearby_share_page/nearby_share_high_visibility_page.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
-import './nearby_share_page/nearby_share_subpage.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_apps_page/android_apps_subpage.js';
 import './os_apps_page/app_notifications_page/app_notifications_subpage.js';

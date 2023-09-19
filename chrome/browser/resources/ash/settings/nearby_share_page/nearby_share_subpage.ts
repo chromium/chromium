@@ -45,7 +45,7 @@ const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S: number = 300;
 const SettingsNearbyShareSubpageElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-class SettingsNearbyShareSubpageElement extends
+export class SettingsNearbyShareSubpageElement extends
     SettingsNearbyShareSubpageElementBase {
   static get is() {
     return 'settings-nearby-share-subpage' as const;

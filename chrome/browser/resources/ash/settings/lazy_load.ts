@@ -76,6 +76,7 @@ import './guest_os/guest_os_shared_paths.js';
 import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
+import './nearby_share_page/nearby_share_subpage.js';
 import './os_apps_page/app_management_page/app_details_item.js';
 import './os_apps_page/app_management_page/app_item.js';
 import './os_apps_page/app_management_page/arc_detail_view.js';
@@ -174,6 +175,7 @@ export {SettingsMultideviceSubpageElement} from './multidevice_page/multidevice_
 export {SettingsMultideviceTaskContinuationDisabledLinkElement} from './multidevice_page/multidevice_task_continuation_disabled_link.js';
 export {SettingsMultideviceTaskContinuationItemElement} from './multidevice_page/multidevice_task_continuation_item.js';
 export {SettingsMultideviceWifiSyncDisabledLinkElement} from './multidevice_page/multidevice_wifi_sync_disabled_link.js';
+export {SettingsNearbyShareSubpageElement} from './nearby_share_page/nearby_share_subpage.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';

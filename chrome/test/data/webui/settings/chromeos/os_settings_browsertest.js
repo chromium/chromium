@@ -555,8 +555,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  [
-   'NearbyShareSubpage',
-   'nearby_share_subpage_tests.js',
+   'NearbySharePageNearbyShareSubpage',
+   'nearby_share_page/nearby_share_subpage_test.js',
    {enabled: ['features::kNearbySharing']},
  ],
  ['OncMojoTest', 'onc_mojo_test.js'],
