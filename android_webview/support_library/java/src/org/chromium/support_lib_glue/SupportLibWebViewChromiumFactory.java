@@ -186,7 +186,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.GET_OR_CREATE_PROFILE,
             ApiCall.GET_PROFILE,
             ApiCall.GET_ALL_PROFILE_NAMES,
-            ApiCall.DELETE_PROFILE_ASYNC,
+            ApiCall.DELETE_PROFILE,
             ApiCall.GET_PROFILE_NAME,
             ApiCall.GET_PROFILE_COOKIE_MANAGER,
             ApiCall.GET_PROFILE_WEB_STORAGE,
@@ -289,7 +289,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int GET_OR_CREATE_PROFILE = 84;
         int GET_PROFILE = 85;
         int GET_ALL_PROFILE_NAMES = 86;
-        int DELETE_PROFILE_ASYNC = 87;
+        int DELETE_PROFILE = 87;
         int GET_PROFILE_NAME = 88;
         int GET_PROFILE_COOKIE_MANAGER = 89;
         int GET_PROFILE_WEB_STORAGE = 90;
@@ -491,7 +491,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             synchronized (mAwInit.getLock()) {
                 if (mProfileStore == null) {
                     mProfileStore = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new SupportLibProfileStore(new ProfileStore()));
+                            new SupportLibProfileStore(ProfileStore.getInstance()));
                 }
             }
             return mProfileStore;

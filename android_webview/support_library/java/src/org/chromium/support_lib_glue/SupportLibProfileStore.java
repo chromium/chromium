@@ -58,7 +58,7 @@ public class SupportLibProfileStore implements ProfileStoreBoundaryInterface {
     @Override
     @NonNull
     public boolean deleteProfile(@NonNull String name) {
-        recordApiCall(ApiCall.DELETE_PROFILE_ASYNC);
+        recordApiCall(ApiCall.DELETE_PROFILE);
         return mImpl.deleteProfile(name);
     }
 }

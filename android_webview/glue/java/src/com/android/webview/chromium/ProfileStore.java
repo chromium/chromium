@@ -11,24 +11,40 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Lifetime.Singleton
 public class ProfileStore {
+    private final Map<String, Profile> mProfiles = new HashMap<>();
+
+    private static ProfileStore sINSTANCE;
+
+    private ProfileStore() {}
+
+    public static ProfileStore getInstance() {
+        ThreadUtils.checkUiThread();
+        if (sINSTANCE == null) {
+            sINSTANCE = new ProfileStore();
+        }
+        return sINSTANCE;
+    }
+
     @NonNull
     public Profile getOrCreateProfile(@NonNull String name) {
         ThreadUtils.checkUiThread();
-        return new Profile(AwBrowserContext.getNamedContext(name, true));
+        return mProfiles.computeIfAbsent(name,
+                profileName -> new Profile(AwBrowserContext.getNamedContext(profileName, true)));
     }
 
     @Nullable
     public Profile getProfile(@NonNull String name) {
         ThreadUtils.checkUiThread();
-        AwBrowserContext browserContext = AwBrowserContext.getNamedContext(name, false);
-        if (browserContext != null) {
-            return new Profile(browserContext);
-        }
-        return null;
+        return mProfiles.computeIfAbsent(name, profileName -> {
+            AwBrowserContext browserContext = AwBrowserContext.getNamedContext(profileName, false);
+            return browserContext != null ? new Profile(browserContext) : null;
+        });
     }
 
     @NonNull
@@ -40,6 +56,12 @@ public class ProfileStore {
     @NonNull
     public boolean deleteProfile(@NonNull String name) {
         ThreadUtils.checkUiThread();
-        return AwBrowserContext.deleteNamedContext(name);
+        boolean deletionResult = AwBrowserContext.deleteNamedContext(name);
+        if (deletionResult) {
+            mProfiles.remove(name);
+        } else {
+            assert !mProfiles.containsKey(name);
+        }
+        return deletionResult;
     }
 }
