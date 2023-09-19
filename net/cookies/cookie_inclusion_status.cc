@@ -338,10 +338,13 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
 }
 
 bool CookieInclusionStatus::ExcludedByUserPreferences() const {
-  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES))
+  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
+      HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     return true;
+  }
   return exclusion_reasons_.count() == 2 &&
-         exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] &&
+         (exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] ||
+          exclusion_reasons_[ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT]) &&
          exclusion_reasons_
              [ExclusionReason::
                   EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET];

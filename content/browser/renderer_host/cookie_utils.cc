@@ -108,7 +108,9 @@ bool ShouldReportDevToolsIssueForStatus(
              net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII) ||
          status.HasExclusionReason(
              net::CookieInclusionStatus::
-                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
 
 }  // namespace

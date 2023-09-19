@@ -1,7 +1,8 @@
 Verifies that third-party cookie that is blocked by third-party phaseout files an issue.
 
 Number of cookies: 0
-Number of cookies: 0
+Number of cookies: 1
+Cookie blocked: true
 Issues:
 {
     issue : {
