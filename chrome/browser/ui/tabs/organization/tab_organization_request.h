@@ -17,7 +17,7 @@ struct TabOrganizationResponse {
   struct Organization {
     explicit Organization(std::u16string label_,
                           std::vector<TabData::TabID> tabs_);
-    Organization(Organization& organization);
+    Organization(const Organization& organization);
     ~Organization();
 
     const std::u16string label;

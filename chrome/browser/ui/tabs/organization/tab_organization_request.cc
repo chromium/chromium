@@ -15,7 +15,7 @@ TabOrganizationResponse::Organization::Organization(
     std::vector<TabData::TabID> tabs_)
     : label(label_), tabs(tabs_) {}
 TabOrganizationResponse::Organization::Organization(
-    Organization& organization) = default;
+    const Organization& organization) = default;
 TabOrganizationResponse::Organization::~Organization() = default;
 
 TabOrganizationResponse::TabOrganizationResponse(
