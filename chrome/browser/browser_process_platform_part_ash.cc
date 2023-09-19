@@ -272,9 +272,11 @@ ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
 }
 
 void BrowserProcessPlatformPart::StartTearDown() {
-  // interactive_ui_tests check for memory leaks before this object is
-  // destroyed.  So we need to destroy |timezone_resolver_| here.
+  // Some tests check for memory leaks before this object is
+  // destroyed.  So we need to destroy |timezone_resolver_| and
+  // |timezone_resolver_manager_| here.
   timezone_resolver_.reset();
+  timezone_resolver_manager_.reset();
   profile_helper_.reset();
   browser_context_flusher_.reset();
 }

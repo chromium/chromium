@@ -18,6 +18,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -201,7 +202,10 @@ void MaybeShutdownLoginDisplayHostWebUI() {
     return;
   }
   LoginDisplayHost::default_host()->FinalizeImmediately();
-  CHECK(!LoginDisplayHost::default_host());
+  if (LoginDisplayHost::default_host()) {
+    // Tests may be keeping a fake instance.
+    CHECK_IS_TEST();
+  }
 }
 
 // ShowLoginWizard is split into two parts. This function is sometimes called

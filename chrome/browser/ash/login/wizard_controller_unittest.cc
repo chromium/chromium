@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
@@ -13,16 +14,29 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
+#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
@@ -30,6 +44,8 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -37,10 +53,12 @@
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,6 +78,13 @@ namespace ash {
 namespace {
 
 constexpr char kActionContinue[] = "continue";
+#if !BUILDFLAG(PLATFORM_CFM)
+constexpr char kActionContinueSetup[] = "continue-setup";
+constexpr char kActionStartSetup[] = "start-setup";
+constexpr char kActionBack[] = "back";
+constexpr char kActionSetUpDemoMode[] = "setupDemoMode";
+constexpr char kActionTosAccept[] = "tos-accept";
+#endif  // !BUILDFLAG(PLATFORM_CFM)
 
 constexpr char kEthServicePath[] = "/service/eth/0";
 constexpr char kEthServiceName[] = "eth_service_name";
@@ -67,15 +92,33 @@ constexpr char kEthGuid[] = "eth_guid";
 constexpr char kEthDevicePath[] = "/device/eth1";
 constexpr char kEthName[] = "eth-name";
 
-const StaticOobeScreenId kWelcomeScreen = WelcomeView::kScreenId;
-const StaticOobeScreenId kNetworkScreen = NetworkScreenView::kScreenId;
-const StaticOobeScreenId kUpdateScreen = UpdateView::kScreenId;
-const StaticOobeScreenId kAutoEnrollmentCheckScreen =
+constexpr StaticOobeScreenId kWelcomeScreen = WelcomeView::kScreenId;
+constexpr StaticOobeScreenId kNetworkScreen = NetworkScreenView::kScreenId;
+constexpr StaticOobeScreenId kUpdateScreen = UpdateView::kScreenId;
+constexpr StaticOobeScreenId kAutoEnrollmentCheckScreen =
     AutoEnrollmentCheckScreenView::kScreenId;
-const StaticOobeScreenId kEnrollmentScreen = EnrollmentScreenView::kScreenId;
+constexpr StaticOobeScreenId kEnrollmentScreen =
+    EnrollmentScreenView::kScreenId;
 #if !BUILDFLAG(PLATFORM_CFM)
-const StaticOobeScreenId kUserCreationScreen = UserCreationView::kScreenId;
+constexpr StaticOobeScreenId kDemoModePreferenceScreen =
+    DemoPreferencesScreenView::kScreenId;
+constexpr StaticOobeScreenId kDemoSetupScreen = DemoSetupScreenView::kScreenId;
+constexpr StaticOobeScreenId kConsolidateConsentScreen =
+    ConsolidatedConsentScreenView::kScreenId;
+constexpr StaticOobeScreenId kUserCreationScreen = UserCreationView::kScreenId;
+constexpr StaticOobeScreenId kGaiaSigninScreen = GaiaScreenHandler::kScreenId;
 #endif  // !BUILDFLAG(PLATFORM_CFM)
+
+// Converts an arbitrary number of arguments to a list of `base::Value`.
+base::Value::List ToList() {
+  return base::Value::List();
+}
+template <typename A, typename... Args>
+base::Value::List ToList(A&& value, Args&&... values) {
+  auto list = ToList(values...);
+  list.Insert(list.begin(), base::Value(std::move(value)));
+  return list;
+}
 
 OobeScreenId CurrentScreenId(WizardController* wizard_controller) {
   return wizard_controller->current_screen()->screen_id();
@@ -118,6 +161,15 @@ class ScreenWaiter : public WizardController::ScreenObserver {
   base::OnceClosure screen_reached_;
 };
 
+void CreateExtensionServiceFor(Profile* profile) {
+  extensions::TestExtensionSystem* extension_system =
+      static_cast<extensions::TestExtensionSystem*>(
+          extensions::ExtensionSystem::Get(profile));
+  extension_system->CreateExtensionService(
+      base::CommandLine::ForCurrentProcess(),
+      base::FilePath() /* install_directory */, false /* autoupdate_enabled */);
+}
+
 // Sets up and tears down all global objects and configuration that needs to
 // be done to run unit tests, but is not directly related to the tests.
 class WizardControllerTestBase : public ::testing::Test {
@@ -141,13 +193,19 @@ class WizardControllerTestBase : public ::testing::Test {
     chrome_keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeForAsh();
     CHECK(profile_manager_->SetUp());
-    profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    prefs->SetInitializationCompleted();
+    RegisterUserProfilePrefs(prefs->registry());
+    profile_ = profile_manager_->CreateTestingProfile(
+        ash::kSigninBrowserContextBaseName, std::move(prefs),
+        base::UTF8ToUTF16(ash::kSigninBrowserContextBaseName), 0,
+        TestingProfile::TestingFactories());
     auto* input_method_manager = input_method::InputMethodManager::Get();
-    input_method_manager->SetState(input_method_manager->CreateNewState(
-        ProfileManager::GetActiveUserProfile()));
+    input_method_manager->SetState(
+        input_method_manager->CreateNewState(profile_));
     ash::BiodClient::InitializeFake();
     ash::InstallAttributesClient::InitializeFake();
-    ash::SessionManagerClient::InitializeFake();
     DBusThreadManager::Initialize();
     OobeConfigurationClient::InitializeFake();
     enrollment_launcher_factory_ =
@@ -157,16 +215,32 @@ class WizardControllerTestBase : public ::testing::Test {
     DlcserviceClient::InitializeFake();
     network_portal_detector::InitializeForTesting(&network_portal_detector_);
     chromeos::TpmManagerClient::InitializeFake();
+    StatsReportingController::Initialize(
+        profile_manager_->local_state()->Get());
+    CreateExtensionServiceFor(profile_.get());
+    CreateExtensionServiceFor(
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    auth_events_recorder_ = AuthEventsRecorder::CreateForTesting();
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+    wallpaper_controller_client_->InitForTesting(WallpaperController::Get());
   }
 
   void TearDown() override {
+    wallpaper_controller_client_.reset();
+    auth_events_recorder_.reset();
+    extensions::ExtensionSystem::Get(profile_)->Shutdown();
+    extensions::ExtensionSystem::Get(
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false))
+        ->Shutdown();
+    StatsReportingController::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     network_portal_detector::InitializeForTesting(nullptr);
     DlcserviceClient::Shutdown();
     enrollment_launcher_factory_.reset();
     OobeConfigurationClient::Shutdown();
     DBusThreadManager::Shutdown();
-    ash::SessionManagerClient::Shutdown();
     ash::InstallAttributesClient::Shutdown();
     ash::BiodClient::Shutdown();
     chrome_keyboard_controller_client_test_helper_.reset();
@@ -175,8 +249,20 @@ class WizardControllerTestBase : public ::testing::Test {
     test_context_factories_.reset();
     input_method::Shutdown();
     network_handler_test_helper_.reset();
+    // Need to call `StartTearDown` otherwise timezone resolver still registered
+    // with prefs when we delete profile manager.
+    TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
+    profile_ = nullptr;
     profile_manager_.reset();
   }
+
+  void FakeInstallAttributesForDemoMode() {
+    scoped_stub_install_attributes_.Get()->set_device_locked(true);
+    scoped_stub_install_attributes_.Get()->SetDemoMode();
+  }
+
+ protected:
+  testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_ =
@@ -185,10 +271,10 @@ class WizardControllerTestBase : public ::testing::Test {
           base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> test_context_factories_;
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
-  testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_{&delegate_};
   OobeConfiguration oobe_configuration_;
@@ -200,11 +286,13 @@ class WizardControllerTestBase : public ::testing::Test {
   ScopedTestingCrosSettings settings_;
   KioskAppManager kiosk_app_manager_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  ScopedTestDeviceSettingsService scoped_device_settings_;
+  ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
       enrollment_launcher_factory_;
   NetworkPortalDetectorTestImpl network_portal_detector_;
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };
 
 }  // namespace
@@ -231,8 +319,10 @@ class WizardControllerTest : public WizardControllerTestBase {
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));
+    test_url_loader_factory_ =
+        std::make_unique<network::TestURLLoaderFactory>();
     wizard_controller_->SetSharedURLLoaderFactoryForTesting(
-        test_url_loader_factory_.GetSafeWeakWrapper());
+        test_url_loader_factory_->GetSafeWeakWrapper());
 
     // Make sure to test OOBE on an "official" build.
     OverrideBranding(/*is_branded=*/true);
@@ -242,8 +332,9 @@ class WizardControllerTest : public WizardControllerTestBase {
     cros_network_config_test_helper_.network_state_helper()
         .ResetDevicesAndServices();
 
-    fake_update_engine_client_ = nullptr;
+    test_url_loader_factory_.reset();
     wizard_controller_ = nullptr;
+    fake_update_engine_client_ = nullptr;
     fake_login_display_host_.reset();
     UpdateEngineClient::Shutdown();
     test_web_ui_.reset();
@@ -264,12 +355,13 @@ class WizardControllerTest : public WizardControllerTestBase {
     OobeConfiguration::Get()->CheckConfiguration();
   }
 
-  void PerformUserAction(const std::string& action) {
+  template <typename... Args>
+  void PerformUserAction(std::string action, Args... args) {
     std::string user_acted_method_path = base::StrCat(
         {"login.", CurrentScreenId(wizard_controller_).external_api_prefix,
          ".userActed"});
     test_web_ui_->ProcessWebUIMessage(GURL(), user_acted_method_path,
-                                      base::Value::List().Append(action));
+                                      ToList(action, args...));
   }
 
   // Starts network connection asynchronously.
@@ -303,10 +395,12 @@ class WizardControllerTest : public WizardControllerTestBase {
   network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
   std::unique_ptr<FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  SigninProfileHandler signing_profile_handler_;
 };
 
-// Chromebox For Meetings has forced enrollment.
+// Chromebox For Meetings (CFM) has forced enrollment. Tests that want to do
+// other things must not run on CFM builds.
 #if !BUILDFLAG(PLATFORM_CFM)
 TEST_F(WizardControllerTest,
        ConsumerOobeFlowShouldContinueToUserCreationOnNonCriticalUpdate) {
@@ -321,6 +415,65 @@ TEST_F(WizardControllerTest,
 
   MakeNonCriticalUpdateAvailable();
   ASSERT_TRUE(AwaitScreen(kUserCreationScreen));
+}
+
+TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
+  wizard_controller_->Init(kWelcomeScreen);
+  ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  PerformUserAction(kActionSetUpDemoMode);
+  ASSERT_TRUE(AwaitScreen(kNetworkScreen));
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  StartNetworkConnection();
+  ASSERT_TRUE(AwaitScreen(kDemoModePreferenceScreen));
+
+  PerformUserAction(kActionContinueSetup, "Retailer Name", "Store Number");
+  ASSERT_TRUE(AwaitScreen(kUpdateScreen));
+
+  MakeNonCriticalUpdateAvailable();
+  ASSERT_TRUE(AwaitScreen(kConsolidateConsentScreen));
+
+  // Consolidate consent screen with DCHECKs turned on crashes if you are too
+  // fast. Need to wait for it to fetch owner state asynchronously.
+  base::RunLoop().RunUntilIdle();
+
+  PerformUserAction(kActionTosAccept, /*enable_usage=*/true,
+                    /*enable_backup=*/true, /*enable_location=*/true,
+                    "TOS Content", /*enable_recovery=*/true);
+  ASSERT_TRUE(AwaitScreen(kDemoSetupScreen));
+
+  base::test::TestFuture<void> enrollment_signal;
+  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        FakeInstallAttributesForDemoMode();
+        mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
+        (enrollment_signal.GetCallback()).Run();
+      }));
+
+  PerformUserAction(kActionStartSetup);
+
+  enrollment_signal.Wait();
+
+  ASSERT_TRUE(AwaitScreen(kGaiaSigninScreen));
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+}
+
+TEST_F(WizardControllerTest, BackOnNetworkScreenCancelsDemoMode) {
+  wizard_controller_->Init(kWelcomeScreen);
+  ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  PerformUserAction(kActionSetUpDemoMode);
+  ASSERT_TRUE(AwaitScreen(kNetworkScreen));
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  PerformUserAction(kActionBack);
+  ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 #endif  // !BUILDFLAG(PLATFORM_CFM)
 

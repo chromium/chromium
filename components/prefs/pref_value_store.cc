@@ -211,8 +211,9 @@ void PrefValueStore::UpdateCommandLinePrefStore(PrefStore* command_line_prefs) {
 bool PrefValueStore::IsInitializationComplete() const {
   for (size_t i = 0; i <= PREF_STORE_TYPE_MAX; ++i) {
     const PrefStore* pref_store = GetPrefStore(static_cast<PrefStoreType>(i));
-    if (pref_store && !pref_store->IsInitializationComplete())
+    if (pref_store && !pref_store->IsInitializationComplete()) {
       return false;
+    }
   }
   return true;
 }
