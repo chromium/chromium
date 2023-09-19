@@ -3760,31 +3760,15 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     return ScriptPromise();
   }
 
-  mojom::blink::AdAuctionCoordinator coordinator =
-      mojom::blink::AdAuctionCoordinator::kGCP;
-  if (config->hasCoordinator()) {
-    if (config->coordinator() == blink::V8AdAuctionCoordinator::Enum::kGcp) {
-      coordinator = mojom::blink::AdAuctionCoordinator::kGCP;
-    } else if (config->coordinator() ==
-               blink::V8AdAuctionCoordinator::Enum::kAws) {
-      coordinator = mojom::blink::AdAuctionCoordinator::kAWS;
-    } else {
-      // This should never happen because the error will be thrown by the IDL
-      // parser.
-      NOTREACHED_NORETURN();
-    }
-  }
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
 
   ScriptPromise promise = resolver->Promise();
 
   ad_auction_service_->GetInterestGroupAdAuctionData(
-      seller, coordinator,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
-          WrapPersistent(this))));
+      seller, resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                  &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
+                  WrapPersistent(this))));
   return promise;
 }
 

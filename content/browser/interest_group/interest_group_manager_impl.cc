@@ -31,7 +31,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 #include "url/gurl.h"
@@ -455,10 +454,9 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
     network::mojom::URLLoaderFactory* loader,
-    blink::mojom::AdAuctionCoordinator coordinator,
     base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
         callback) {
-  ba_key_fetcher_.GetOrFetchKey(loader, coordinator, std::move(callback));
+  ba_key_fetcher_.GetOrFetchKey(loader, std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(

@@ -1198,8 +1198,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_aac_bitstream_format.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_signals.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_signals.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_coordinator.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_coordinator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_alpha_option.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_alpha_option.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ancestor_status.cc",
