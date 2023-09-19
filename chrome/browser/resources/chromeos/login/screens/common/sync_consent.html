@@ -246,7 +246,7 @@ found in the LICENSE file.
     <iron-icon icon="oobe-illos:sync-consent-illo" class="illustration-jelly">
     </iron-icon>
   </div>
-  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[isMinorMode_]]">
+  <div slot="bottom-buttons" hidden="[[isMinorMode_]]">
     <oobe-text-button id="manageButtonRegularUser"
         on-click="onManageClicked_"
         label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
@@ -254,16 +254,14 @@ found in the LICENSE file.
         [[i18nDynamic(locale, 'syncConsentScreenManage')]]
       </div>
     </oobe-text-button>
-    <div id="rightButtons">
-      <oobe-text-button class="focus-on-show" inverse
-          id="syncEverythingButton"
-          on-click="onSyncEverything_"
-          label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
-        <div slot="text" consent-description consent-confirmation>
-          [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
-        </div>
-      </oobe-text-button>
-    </div>
+    <oobe-text-button class="focus-on-show" inverse
+        id="syncEverythingButton"
+        on-click="onSyncEverything_"
+        label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
+      <div slot="text" consent-description consent-confirmation>
+        [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
+      </div>
+    </oobe-text-button>
   </div>
   <div class="bottom-buttons" slot="bottom-buttons" hidden="[[!isMinorMode_]]">
     <oobe-text-button id="manageButtonMinorUser"
