@@ -182,16 +182,16 @@ TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
   // "IdleTimeoutActions" is deliberately unset.
   auto clear_browsing_history =
       std::make_unique<MockAction>(ActionType::kClearBrowsingHistory);
-  auto clear_download_history =
-      std::make_unique<MockAction>(ActionType::kClearDownloadHistory);
+  auto clear_cookies_and_site_data =
+      std::make_unique<MockAction>(ActionType::kClearCookiesAndOtherSiteData);
 
   EXPECT_CALL(*clear_browsing_history, Run(_, _)).Times(0);
-  EXPECT_CALL(*clear_download_history, Run(_, _)).Times(0);
+  EXPECT_CALL(*clear_cookies_and_site_data, Run(_, _)).Times(0);
 
   action_factory.Associate(ActionType::kClearBrowsingHistory,
                            std::move(clear_browsing_history));
-  action_factory.Associate(ActionType::kClearDownloadHistory,
-                           std::move(clear_download_history));
+  action_factory.Associate(ActionType::kClearCookiesAndOtherSiteData,
+                           std::move(clear_cookies_and_site_data));
   runner.Run();
 }
 
