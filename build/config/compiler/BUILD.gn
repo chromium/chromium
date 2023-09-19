@@ -370,10 +370,6 @@ config("compiler") {
       } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
         # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
         # See also https://crbug.com/533294
-        if (current_os != "zos") {
-          cflags += [ "--param=ssp-buffer-size=4" ]
-        }
-
         # The x86 toolchain currently has problems with stack-protector.
         if (is_android && current_cpu == "x86") {
           cflags += [ "-fno-stack-protector" ]
