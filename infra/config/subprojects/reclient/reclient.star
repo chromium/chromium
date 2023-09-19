@@ -18,7 +18,10 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            groups = "project-chromium-ci-schedulers",
+            groups = [
+                "project-chromium-ci-schedulers",
+                "mdb/foundry-x-team",
+            ],
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
