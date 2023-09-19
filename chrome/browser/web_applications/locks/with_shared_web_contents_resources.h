@@ -34,7 +34,7 @@ class WithSharedWebContentsResources {
 
  private:
   base::WeakPtr<WebAppLockManager> lock_manager_;
-  raw_ref<content::WebContents> shared_web_contents_;
+  base::WeakPtr<content::WebContents> shared_web_contents_;
 };
 
 }  // namespace web_app
