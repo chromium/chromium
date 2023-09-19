@@ -16038,6 +16038,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PROTECTED_AUDIENCE_DEBUGGING_DISCLAIMER" desc="Text of infobar that shows up when the consented debugging feature for Protected Audiences is enabled.">
       Protected Audiences Debugging is enabled.
     </message>
+
+    <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
+      Dolor
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
+      Sit
+    </message>
   </messages>
 </release>
 </grit>

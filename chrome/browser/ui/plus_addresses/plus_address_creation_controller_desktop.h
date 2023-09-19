@@ -27,12 +27,29 @@ class PlusAddressCreationControllerDesktop
   void OnCanceled() override;
   void OnDialogDestroyed() override;
 
+  // A mechanism to avoid view entanglements, reducing the need for view
+  // mocking, etc., while still allowing tests of specific business logic.
+  // TODO(crbug.com/1467623): Add more end-to-end coverage as the modal behavior
+  // comes fully online.
+  void set_suppress_ui_for_testing(bool should_suppress);
+
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerDesktop(
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerDesktop>;
+
+  base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
+
+  url::Origin relevant_origin_;
+  PlusAddressCallback callback_;
+  bool ui_modal_showing_ = false;
+
+  bool suppress_ui_for_testing_ = false;
+
+  base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

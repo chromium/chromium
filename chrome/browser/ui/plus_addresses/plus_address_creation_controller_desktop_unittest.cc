@@ -41,43 +41,51 @@ class MockPlusAddressService : public PlusAddressService {
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
-class PlusAddressCreationControllerDesktopEnabledTest : public testing::Test {
+class PlusAddressCreationControllerDesktopEnabledTest
+    : public ChromeRenderViewHostTestHarness {
  public:
+  PlusAddressCreationControllerDesktopEnabledTest()
+      : override_profile_selections_(
+            PlusAddressServiceFactory::GetInstance(),
+            PlusAddressServiceFactory::CreateProfileSelections()) {}
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser_context(),
+        base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
+                                PlusAddressServiceTestFactory,
+                            base::Unretained(this)));
+  }
+
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<MockPlusAddressService>();
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList features_{kFeature};
+  // Ensures that the feature is known to be enabled, such that
+  // `PlusAddressServiceFactory` doesn't bail early with a null return.
+  profiles::testing::ScopedProfileSelectionsForFactoryTesting
+      override_profile_selections_;
 };
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
-  // Ensure that the feature is known to be enabled, such that
-  // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      overide_profile_selections(
-          PlusAddressServiceFactory::GetInstance(),
-          PlusAddressServiceFactory::CreateProfileSelections());
-
-  TestingProfile test_profile;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&test_profile, nullptr);
-  PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &test_profile,
-      base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
-                              PlusAddressServiceTestFactory,
-                          base::Unretained(this)));
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
-  PlusAddressCreationController* controller =
-      PlusAddressCreationController::GetOrCreate(web_contents.get());
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
 
   base::MockOnceCallback<void(const std::string&)> callback;
   EXPECT_CALL(callback, Run).Times(1);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+  controller->OnConfirmed();
 }
 
 // With the feature disabled, the `KeyedService` is not present; ensure this is
@@ -100,11 +108,16 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
-  PlusAddressCreationController* controller =
-      PlusAddressCreationController::GetOrCreate(web_contents.get());
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
   base::MockOnceCallback<void(const std::string&)> callback;
   EXPECT_CALL(callback, Run).Times(0);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+  controller->OnConfirmed();
 }
 }  // namespace plus_addresses
