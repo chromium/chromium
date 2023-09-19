@@ -5,10 +5,18 @@
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {
+  DictionaryValue as mojoBase_mojom_DictionaryValue
+} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
   getNextId(): number;
   registerWebView(viewInstanceId: number): void;
+  attachIframeGuest(containerId: number,
+                    guestInstanceId: number,
+                    attachParams: object,
+                    contentWindow: Window | null): void
 }
 
 declare var webshell: WebshellServices;
@@ -38,6 +46,8 @@ class BrowserProxy {
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
   private viewInstanceId: number;
+  private containerId: number;
+  private guestInstanceId: number;
 
   constructor() {
     super();
@@ -49,19 +59,41 @@ class WebviewElement extends HTMLElement {
     this.iframeElement.style.padding = "0";
     this.appendChild(this.iframeElement);
     this.viewInstanceId = webshell.getNextId();
+    this.containerId = webshell.getNextId();
+    this.guestInstanceId = -1;
+    const instance = this;
     webshell.registerWebView(this.viewInstanceId);
+    const createParams: mojoBase_mojom_DictionaryValue = {
+      storage: {"instanceId": {"intValue": this.viewInstanceId}}
+    };
+    BrowserProxy.getInstance().createGuestView(
+        createParams).then((result) => {
+          instance.onGuestViewCreated(result.guestInstanceId);
+        });
+  }
+
+  onGuestViewCreated(guestInstanceId: number) {
+    this.guestInstanceId = guestInstanceId;
+    const createParams: mojoBase_mojom_DictionaryValue = {
+      storage: {"instanceId": {"intValue": this.viewInstanceId}}
+    };
+    const iframeContentWindow = this.iframeElement.contentWindow;
+    webshell.attachIframeGuest(this.containerId,
+                               this.guestInstanceId,
+                               createParams,
+                               iframeContentWindow);
   }
 
   navigate(src: Url) {
-    BrowserProxy.getInstance().navigate(this.viewInstanceId, src);
+    BrowserProxy.getInstance().navigate(this.guestInstanceId, src);
   }
 
   goBack() {
-    BrowserProxy.getInstance().goBack(this.viewInstanceId);
+    BrowserProxy.getInstance().goBack(this.guestInstanceId);
   }
 
   goForward() {
-    BrowserProxy.getInstance().goForward(this.viewInstanceId);
+    BrowserProxy.getInstance().goForward(this.guestInstanceId);
   }
 }
 

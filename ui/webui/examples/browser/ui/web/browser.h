@@ -5,13 +5,12 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_H_
 
+#include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace webui_examples {
-
-class BrowserPageHandler;
 
 class Browser : public ui::MojoWebUIController,
                 public webui_examples::mojom::PageHandlerFactory {
@@ -32,8 +31,6 @@ class Browser : public ui::MojoWebUIController,
   void CreatePageHandler(
       mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver)
       override;
-
-  std::unique_ptr<BrowserPageHandler> page_handler_;
 
   mojo::Receiver<webui_examples::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

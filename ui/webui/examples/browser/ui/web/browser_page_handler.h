@@ -5,27 +5,38 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_PAGE_HANDLER_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_PAGE_HANDLER_H_
 
+#include "base/values.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
 
 namespace webui_examples {
 
-class BrowserPageHandler : public webui_examples::mojom::PageHandler {
+class BrowserPageHandler
+    : public content::DocumentService<webui_examples::mojom::PageHandler> {
  public:
-  explicit BrowserPageHandler(
-      mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
   BrowserPageHandler(const BrowserPageHandler&) = delete;
   BrowserPageHandler& operator=(const BrowserPageHandler&) = delete;
   ~BrowserPageHandler() override;
 
+  static void CreateForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
+
   // webui_examples::mojom::PageHandler
-  void Navigate(int32_t view_instance_id, const GURL& src) override;
-  void GoBack(int32_t view_instance_id) override;
-  void GoForward(int32_t view_instance_id) override;
+  void CreateGuestView(base::Value::Dict create_params,
+                       CreateGuestViewCallback callback) override;
+  void Navigate(int32_t guest_instance_id, const GURL& src) override;
+  void GoBack(int32_t guest_instance_id) override;
+  void GoForward(int32_t guest_instance_id) override;
 
  private:
-  mojo::Receiver<webui_examples::mojom::PageHandler> receiver_;
+  BrowserPageHandler(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
 };
 
 }  // namespace webui_examples

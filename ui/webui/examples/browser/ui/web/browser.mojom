@@ -4,6 +4,7 @@
 
 module webui_examples.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap communication to the browser process.
@@ -14,12 +15,17 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Navigates the WebView with `view_instance_id` to `src`.
-  Navigate(int32 view_instance_id, url.mojom.Url src);
+  // Creates the GuestView from `create_params` and returns the created guest's
+  // ID on success.
+  CreateGuestView(mojo_base.mojom.DictionaryValue create_params)
+      => (int32 guest_instance_id);
 
-  // Navigates the WebView with `view_instance_id` to back in the nav stack.
-  GoBack(int32 view_instance_id);
+  // Navigates the WebView with `guest_instance_id` to `src`.
+  Navigate(int32 guest_instance_id, url.mojom.Url src);
 
-  // Navigates the WebView with `view_instance_id` to forward in the nav stack.
-  GoForward(int32 view_instance_id);
+  // Navigates the WebView with `guest_instance_id` to back in the nav stack.
+  GoBack(int32 guest_instance_id);
+
+  // Navigates the WebView with `guest_instance_id` to forward in the nav stack.
+  GoForward(int32 guest_instance_id);
 };

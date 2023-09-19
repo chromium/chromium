@@ -4,6 +4,7 @@
 
 #include "ui/webui/examples/browser/ui/web/browser.h"
 
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -42,7 +43,9 @@ void Browser::BindInterface(
 
 void Browser::CreatePageHandler(
     mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<BrowserPageHandler>(std::move(receiver));
+  auto* render_frame_host = web_ui()->GetRenderFrameHost();
+  BrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
+                                               std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(Browser)

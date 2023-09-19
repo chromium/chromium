@@ -10,21 +10,39 @@
 #include "base/no_destructor.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/guest_view/renderer/guest_view_container.h"
+#include "components/guest_view/renderer/guest_view_request.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_custom_element.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace webui_examples {
 
 namespace {
+
+class RenderFrameStatus final : public content::RenderFrameObserver {
+ public:
+  explicit RenderFrameStatus(content::RenderFrame* render_frame)
+      : content::RenderFrameObserver(render_frame) {}
+  ~RenderFrameStatus() final = default;
+
+  bool IsRenderFrameAvailable() { return render_frame() != nullptr; }
+
+  // RenderFrameObserver implementation.
+  void OnDestruct() final {}
+};
 
 guest_view::mojom::GuestViewHost* GetGuestViewHost() {
   static base::NoDestructor<
@@ -61,6 +79,74 @@ void RegisterWebView(const v8::FunctionCallbackInfo<v8::Value>& args) {
   int view_instance_id = args[0].As<v8::Int32>()->Value();
   CHECK_NE(view_instance_id, guest_view::kInstanceIDNone);
   GetGuestViewHost()->ViewCreated(view_instance_id, "BrowserWebView");
+  args.GetReturnValue().SetUndefined();
+}
+
+content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
+  v8::Local<v8::Context> context;
+  if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext().ToLocal(
+          &context)) {
+    if (context.IsEmpty()) {
+      return nullptr;
+    }
+  }
+  blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForContext(context);
+  if (!frame) {
+    return nullptr;
+  }
+  return content::RenderFrame::FromWebFrame(frame);
+}
+
+void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  // attachIframeGuest(
+  //     containerId, guestInstanceId, attachParams, contentWindow)
+  CHECK_EQ(args.Length(), 4);
+  CHECK(args[0]->IsInt32());
+  CHECK(args[1]->IsInt32());
+  CHECK(args[2]->IsObject());
+  CHECK(args[3]->IsObject());
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  int container_id = args[0].As<v8::Int32>()->Value();
+  int guest_instance_id = args[1].As<v8::Int32>()->Value();
+  // Getting the attach params could destroy the frame while it executes JS,
+  // so observe the render frame for destruction. We don't expect for this to
+  // occur in the Webshell, so we CHECK against it.
+  content::RenderFrame* render_frame = GetRenderFrame(args[3]);
+  RenderFrameStatus render_frame_status(render_frame);
+  std::unique_ptr<base::Value> attach_params =
+      content::V8ValueConverter::Create()->FromV8Value(args[2], context);
+  CHECK(attach_params);
+  CHECK(attach_params->is_dict());
+  CHECK(render_frame_status.IsRenderFrameAvailable());
+
+  blink::WebLocalFrame* frame = render_frame->GetWebFrame();
+  // Parent must exist.
+  blink::WebFrame* parent_frame = frame->Parent();
+  CHECK(parent_frame);
+  CHECK(parent_frame->IsWebLocalFrame());
+
+  content::RenderFrame* embedder_parent_frame =
+      content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
+
+  auto* guest_view_container =
+      guest_view::GuestViewContainer::FromID(container_id);
+  CHECK(!guest_view_container);
+
+  // Currently, the parent frame will always hold on to the WebView, which means
+  // the Webshell does not have to worry about cleanup upon a GC. The lifetime
+  // below will need to be reassessed if this assumption changes.
+  guest_view_container =
+      new guest_view::GuestViewContainer(embedder_parent_frame, container_id);
+
+  std::unique_ptr<guest_view::GuestViewAttachRequest> request =
+      std::make_unique<guest_view::GuestViewAttachRequest>(
+          guest_view_container, render_frame->GetRoutingID(), guest_instance_id,
+          std::move(*attach_params).TakeDict(), v8::Local<v8::Function>(),
+          args.GetIsolate());
+  guest_view_container->IssueRequest(std::move(request));
+
   args.GetReturnValue().SetUndefined();
 }
 
@@ -208,6 +294,8 @@ void RenderFrameObserver::ReadyToCommitNavigation(
                                              base::BindRepeating(&GetNextId));
   binder_context.AddCallbackToWebshellObject(
       "registerWebView", base::BindRepeating(&RegisterWebView));
+  binder_context.AddCallbackToWebshellObject(
+      "attachIframeGuest", base::BindRepeating(&AttachIframeGuest));
 }
 
 }  // namespace webui_examples

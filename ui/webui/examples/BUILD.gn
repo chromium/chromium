@@ -59,6 +59,7 @@ static_library("webui_examples_lib") {
     "//chrome/browser/resources/webui_gallery:resources",
     "//components/guest_view/browser",
     "//components/guest_view/common:mojom",
+    "//components/guest_view/renderer",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/renderer",
@@ -121,6 +122,7 @@ repack("pak") {
   sources = [
     "$root_gen_dir/chrome/webui_gallery_resources.pak",
     "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
@@ -135,6 +137,7 @@ repack("pak") {
     "resources/browser:resources",
     "//chrome/browser/resources/webui_gallery:resources",
     "//content/browser/devtools:devtools_resources",
+    "//mojo/public/js:resources",
     "//third_party/blink/public:devtools_inspector_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
@@ -146,7 +149,10 @@ repack("pak") {
 
 mojom("browser_mojo_bindings") {
   sources = [ "browser/ui/web/browser.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
   use_typescript_sources = true
 }
