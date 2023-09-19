@@ -140,8 +140,14 @@ public class SysUtils {
                 (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
-        am.getMemoryInfo(info);
-        return info.lowMemory;
+        try {
+            am.getMemoryInfo(info);
+            return info.lowMemory;
+        } catch (SecurityException e) {
+            // Occurs on Redmi devices when called from isolated processes.
+            // https://crbug.com/1480655
+            return false;
+        }
     }
 
     public static boolean hasCamera(final Context context) {
