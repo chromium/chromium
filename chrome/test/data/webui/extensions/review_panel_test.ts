@@ -6,6 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsReviewPanelElement, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -21,6 +22,7 @@ suite('ExtensionsReviewPanel', function() {
   setup(function() {
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('extensions-review-panel');
     const extensionItems = [
@@ -60,6 +62,9 @@ suite('ExtensionsReviewPanel', function() {
     const descriptionArgs = pluralString.getArgs('getPluralString')[1];
     assertEquals('safetyCheckDescription', descriptionArgs.messageName);
     assertEquals(1, descriptionArgs.itemCount);
+
+    const safetyHubHeader = element.$.safetyHubTitleContainer;
+    assertTrue(isVisible(safetyHubHeader));
   });
 
   test('CollapsibleList', function() {

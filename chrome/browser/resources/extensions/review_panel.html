@@ -15,6 +15,12 @@
     display: flex;
   }
 
+  #safetyHubTitleContainer {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0 0 16px 5px;
+  }
+
   .header-with-icon h3 {
     margin: 5px 0 3px 0;
     font-weight: 400;
@@ -126,6 +132,10 @@
   }
 
 </style>
+<h2 id="safetyHubTitleContainer"
+    hidden$="[[!shouldShowSafetyHubHeader_]]">
+  $i18n{safetyHubHeader}
+</h2>
 <div class="card-background"  hidden$="[[shouldHideUnsafePanel_]]">
   <cr-expand-button class="cr-row first" no-hover
       id="expandButton"

@@ -28,6 +28,7 @@ export interface ExtensionsReviewPanelElement {
     makeExceptionMenu: CrActionMenuElement,
     reviewPanelContainer: HTMLDivElement,
     expandButton: CrExpandButtonElement,
+    safetyHubTitleContainer: HTMLElement,
     headingText: HTMLElement,
     secondaryText: HTMLElement,
     removeAllButton: CrButtonElement,
@@ -75,6 +76,11 @@ export class ExtensionsReviewPanelElement extends
        * indicates that there are no unsafe extensions to review.
        */
       unsafeExtensions_: Array,
+
+      shouldShowSafetyHubHeader_: {
+        type: Boolean,
+        computed: 'computeShouldShowSafetyHubHeader_(shouldHideUnsafePanel_)',
+      },
 
       /**
        * Indicates whether to show completion info after user has finished the
@@ -149,6 +155,7 @@ export class ExtensionsReviewPanelElement extends
   private subtitleString_: string;
   private unsafeExtensionsReviewListExpanded_: boolean;
   private completionMessage_: string;
+  private shouldShowSafetyHubHeader_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private shouldShowUnsafeExtensions_: boolean;
   private shouldHideUnsafePanel_: boolean;
@@ -209,6 +216,11 @@ export class ExtensionsReviewPanelElement extends
     } else {
       return false;
     }
+  }
+
+  private computeShouldShowSafetyHubHeader_(): boolean {
+    return loadTimeData.getBoolean('safetyHubShowReviewPanel') &&
+        !this.shouldHideUnsafePanel_;
   }
 
   private computeShouldHideUnsafePanel_(): boolean {
