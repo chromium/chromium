@@ -54,6 +54,7 @@ static_library("report_queue") {
     ":report_queue_configuration",
     "//base",
     "//components/reporting/encryption:encryption_module",
+    "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/storage:storage_module",
