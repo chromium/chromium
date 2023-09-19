@@ -7,8 +7,8 @@ import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './action_toolbar.html.js';
 
@@ -17,17 +17,11 @@ import {getTemplate} from './action_toolbar.html.js';
  * 'action-toolbar' is a floating toolbar that contains post-scan page options.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ActionToolbarElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ActionToolbarElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class ActionToolbarElement extends ActionToolbarElementBase {
   static get is() {
-    return 'action-toolbar';
+    return 'action-toolbar' as const;
   }
 
   static get template() {
@@ -36,25 +30,22 @@ class ActionToolbarElement extends ActionToolbarElementBase {
 
   static get properties() {
     return {
-      /** @type {number} */
       pageIndex: Number,
 
-      /** @type {number} */
       numTotalPages: Number,
 
-      /** @private {string} */
-      pageNumberText_: {
+      pageNumberText: {
         type: String,
-        computed: 'computePageNumberText_(pageIndex, numTotalPages)',
+        computed: 'computePageNumberText(pageIndex, numTotalPages)',
       },
     };
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computePageNumberText_() {
+  pageIndex: number = 0;
+  numTotalPages: number = 0;
+  private pageNumberText: string = '';
+
+  private computePageNumberText(): string {
     if (!this.numTotalPages || this.pageIndex >= this.numTotalPages) {
       return '';
     }
@@ -65,16 +56,25 @@ class ActionToolbarElement extends ActionToolbarElementBase {
         'actionToolbarPageCountText', this.pageIndex + 1, this.numTotalPages);
   }
 
-  /** @private */
-  onRemovePageIconClick_() {
-    this.dispatchEvent(
-        new CustomEvent('show-remove-page-dialog', {detail: this.pageIndex}));
+  private onRemovePageIconClick(): void {
+    this.dispatchEvent(new CustomEvent<number>(
+        'show-remove-page-dialog', {detail: this.pageIndex}));
   }
 
-  /** @private */
-  onRescanPageIconClick_() {
-    this.dispatchEvent(
-        new CustomEvent('show-rescan-page-dialog', {detail: this.pageIndex}));
+  private onRescanPageIconClick(): void {
+    this.dispatchEvent(new CustomEvent<number>(
+        'show-rescan-page-dialog', {detail: this.pageIndex}));
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'show-remove-page-dialog': CustomEvent<number>;
+    'show-rescan-page-dialog': CustomEvent<number>;
+  }
+
+  interface HTMLElementTagNameMap {
+    [ActionToolbarElement.is]: ActionToolbarElement;
   }
 }
 

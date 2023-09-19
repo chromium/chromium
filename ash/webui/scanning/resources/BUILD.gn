@@ -31,7 +31,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "action_toolbar.js",
+    "action_toolbar.ts",
     "color_mode_select.js",
     "file_type_select.js",
     "loading_page.js",
