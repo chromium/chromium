@@ -7,7 +7,7 @@ __handlers = {}
 __handlers.update(typescript_all.handlers)
 
 def __step_config(ctx, step_config):
-    remote_run = not config.get(ctx, "local_typescript")
+    remote_run = True
     step_config["input_deps"].update(typescript_all.input_deps)
 
     # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
