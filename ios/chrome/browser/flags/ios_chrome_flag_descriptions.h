@@ -581,6 +581,11 @@ extern const char kIOSSharedHighlightingV2Description[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
+// Title and description for the flag to enable the Password Manager widget
+// promo IPH.
+extern const char kIPHiOSPromoPasswordManagerWidgetName[];
+extern const char kIPHiOSPromoPasswordManagerWidgetDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];

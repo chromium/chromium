@@ -680,6 +680,12 @@ const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
 
+const char kIPHiOSPromoPasswordManagerWidgetName[] =
+    "Password Manager widget promo IPH";
+const char kIPHiOSPromoPasswordManagerWidgetDescription[] =
+    "Enables displaying the Password Manager widget promo IPH when users "
+    "navigate to the Password Manager";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
