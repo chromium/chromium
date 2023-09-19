@@ -293,14 +293,18 @@ Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
 }
 
 cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
-  if (!is_valid_size_ || !GetOrCreateCanvasResourceProvider())
+  if (UNLIKELY(!is_valid_size_ || isContextLost() ||
+               !GetOrCreateCanvasResourceProvider())) {
     return nullptr;
+  }
   return GetPaintCanvas();
 }
 
 cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
-  if (!is_valid_size_ || !GetCanvasResourceProvider())
+  if (UNLIKELY(!is_valid_size_ || isContextLost() ||
+               !GetCanvasResourceProvider())) {
     return nullptr;
+  }
   return GetCanvasResourceProvider()->Canvas();
 }
 
@@ -422,7 +426,9 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // If lost mode is |kRealLostContext|, it means the context was not lost due
   // to surface failure but rather due to a an eviction, which means image
   // buffer exists.
-  if (context_lost_mode_ == kRealLostContext && GetOrCreatePaintCanvas()) {
+  if (context_lost_mode_ == kRealLostContext &&
+      GetOrCreateCanvasResourceProvider() &&
+      GetCanvasResourceProvider()->Canvas()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -432,8 +438,10 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // new PaintCanvas. Discard the old resource and allocating a new one here.
   Host()->DiscardResourceProvider();
   try_restore_context_event_timer_.Stop();
-  if (GetOrCreatePaintCanvas())
+  if (GetOrCreateCanvasResourceProvider() &&
+      GetCanvasResourceProvider()->Canvas()) {
     DispatchContextRestoredEvent(nullptr);
+  }
 }
 
 void OffscreenCanvasRenderingContext2D::FlushCanvas(
