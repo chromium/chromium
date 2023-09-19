@@ -1931,6 +1931,12 @@ BASE_FEATURE(kOsSyncConsentRevamp,
              "OsSyncConsentRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the os feedback dialog will be used on OOBE and the login
+// screeen.
+BASE_FEATURE(kOsFeedbackDialog,
+             "OsFeedbackDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the os feedback app. Requires
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kOsFeedbackJelly,
@@ -3748,6 +3754,10 @@ bool IsOobeTouchpadScrollEnabled() {
 bool IsOobeDisplaySizeEnabled() {
   return IsOobeChoobeEnabled() &&
          base::FeatureList::IsEnabled(kOobeDisplaySize);
+}
+
+bool isOsFeedbackDialogEnabled() {
+  return base::FeatureList::IsEnabled(kOsFeedbackDialog);
 }
 
 bool IsOsSettingsAppBadgingToggleEnabled() {

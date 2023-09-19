@@ -6412,6 +6412,13 @@
     "expiry_milestone": 130
   },
   {
+    "name": "os-feedback-dialog",
+    "owners": [
+      "xiangdongkong", "cros-peripherals@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "os-feedback-jelly",
     "owners": [
       "ashleydp", "cros-peripherals@google.com"

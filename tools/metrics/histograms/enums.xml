@@ -67266,6 +67266,7 @@ from previous Chrome versions.
   <int value="1240335491"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:disabled"/>
   <int value="1241162639" label="debug-chime-notification"/>
+  <int value="1241606015" label="OsFeedbackDialog:enabled"/>
   <int value="1242100010" label="AutofillProfileClientValidation:disabled"/>
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
@@ -68050,6 +68051,7 @@ from previous Chrome versions.
   <int value="1636721063"
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>
   <int value="1636962093" label="disable-material-design-ntp"/>
+  <int value="1637452114" label="OsFeedbackDialog:disabled"/>
   <int value="1637611166"
       label="ExperimentalAccessibilityDictationCommands:enabled"/>
   <int value="1637615389" label="PrintServerScaling:enabled"/>
