@@ -187,17 +187,18 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // can leave the new top view controller with a toolbar when it doesn't
   // require one. Disabling editing mode to avoid this. See crbug.com/1404111 as
   // an example.
-  if (parent == nullptr) {
-    if ([self respondsToSelector:@selector(settingsWillBeDismissed)]) {
-      [self performSelector:@selector(settingsWillBeDismissed)];
-    }
-
-    if (self.isEditing) {
-      [self setEditing:NO animated:NO];
-    }
+  if (!parent && self.isEditing) {
+    [self setEditing:NO animated:NO];
   }
 
   [self.navigationController setToolbarHidden:YES animated:YES];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent && [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
+    [self performSelector:@selector(settingsWillBeDismissed)];
+  }
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
