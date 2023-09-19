@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -116,7 +117,7 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
     current_frame_timing_info_->SetTotalBlockingDuration(blocking_duration);
 
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
-    RecordLongAnimationFrameUKM(*current_frame_timing_info_);
+    RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
   }
 
   desired_render_start_time_ = base::TimeTicks();
@@ -235,12 +236,48 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   if (frame->IsMainFrame()) {
-    RecordLongAnimationFrameUKM(*timing_info);
+    RecordLongAnimationFrameUKMAndTrace(*timing_info);
   }
 }
 
-void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKM(
+namespace {
+
+void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
+                                   const void* scope) {
+  bool tracing_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+  if (!tracing_enabled) {
+    return;
+  }
+
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetDouble("blockingDuration",
+                          (info.TotalBlockingDuration()).InMillisecondsF());
+  traced_value->SetDouble("duration", info.Duration().InMillisecondsF());
+  if (!info.RenderStartTime().is_null()) {
+    traced_value->SetDouble(
+        "renderDuration",
+        (info.RenderEndTime() - info.RenderStartTime()).InMillisecondsF());
+  }
+  if (!info.StyleAndLayoutStartTime().is_null()) {
+    traced_value->SetDouble(
+        "styleAndLayoutDuration",
+        (info.RenderEndTime() - info.StyleAndLayoutStartTime())
+            .InMillisecondsF());
+  }
+  traced_value->SetInteger("numScripts", info.Scripts().size());
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "devtools.timeline", "LongAnimationFrame", scope, info.FrameStartTime(),
+      "data", std::move(traced_value));
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "devtools.timeline", "LongAnimationFrame", scope, info.RenderEndTime());
+}
+}  // namespace
+
+void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     const AnimationFrameTimingInfo& info) {
+  RecordLongAnimationFrameTrace(info, this);
   if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
     return;
   }

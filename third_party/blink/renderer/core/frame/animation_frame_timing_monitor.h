@@ -128,7 +128,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     return DidExecuteScript(probe, probe.context);
   }
 
-  void RecordLongAnimationFrameUKM(const AnimationFrameTimingInfo&);
+  void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&);
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   absl::optional<PendingScriptInfo> pending_script_info_;
