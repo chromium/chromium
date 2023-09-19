@@ -251,6 +251,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestShoppingUserModel) {
       std::vector<std::string>(1, kLegacyNegativeLabel));
 }
 
+TEST_F(SegmentationPlatformServiceFactoryTest, TestResumeHeavyUserModel) {
+  InitServiceAndCacheResults(kResumeHeavyUserKey);
+
+  PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      kResumeHeavyUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1, kLegacyNegativeLabel));
+}
+
 TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
   InitService();
 

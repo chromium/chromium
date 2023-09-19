@@ -531,8 +531,7 @@ bool SegmentUsesLegacyOutput(proto::SegmentId segment_id) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
       SegmentId::POWER_USER_SEGMENT,
       SegmentId::CROSS_DEVICE_USER_SEGMENT,
-      SegmentId::INTENTIONAL_USER_SEGMENT,
-      SegmentId::RESUME_HEAVY_USER_SEGMENT};
+      SegmentId::INTENTIONAL_USER_SEGMENT};
 
   return segment_ids_use_legacy.contains(segment_id);
 }

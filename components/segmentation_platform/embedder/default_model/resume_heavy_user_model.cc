@@ -22,8 +22,7 @@ using proto::SegmentId;
 
 // Default parameters for the model.
 constexpr SegmentId kSegmentId = SegmentId::RESUME_HEAVY_USER_SEGMENT;
-constexpr int kResumeHeavyUserSegmentSelectionTTLDays = 14;
-constexpr int kResumeHeavyUserSegmentUnknownSelectionTTLDays = 14;
+constexpr int64_t kModelVersion = 2;
 
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 5> kUMAFeatures = {
@@ -50,16 +49,6 @@ std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
   config->AddSegmentId(SegmentId::RESUME_HEAVY_USER_SEGMENT,
                        std::make_unique<ResumeHeavyUserModel>());
   config->auto_execute_and_cache = true;
-  config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kResumeHeavyUserSegmentFeature,
-          kVariationsParamNameSegmentSelectionTTLDays,
-          kResumeHeavyUserSegmentSelectionTTLDays));
-  config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kResumeHeavyUserSegmentFeature,
-          kVariationsParamNameUnknownSelectionTTLDays,
-          kResumeHeavyUserSegmentUnknownSelectionTTLDays));
   config->is_boolean_segment = true;
 
   return config;
@@ -76,13 +65,19 @@ ResumeHeavyUserModel::GetModelConfig() {
       /*min_signal_collection_length_days=*/7,
       /*signal_storage_length_days=*/14);
 
-  // Set discrete mapping.
-  writer.AddBooleanSegmentDiscreteMapping(kResumeHeavyUserKey);
+  // Set OutputConfig.
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5f,
+      /*positive_label=*/SegmentIdToHistogramVariant(kSegmentId),
+      /*negative_label=*/kLegacyNegativeLabel);
+
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{}, /*default_ttl=*/14,
+      /*time_unit=*/proto::TimeUnit::DAY);
 
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
-  return std::make_unique<ModelConfig>(std::move(metadata),
-                                       /*model_version=*/1);
+  return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
 
 void ResumeHeavyUserModel::ExecuteModelWithInput(
