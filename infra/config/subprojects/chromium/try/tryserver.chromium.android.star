@@ -100,8 +100,6 @@ try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
-    # TODO: b/297443583 - Enable remote typescript on production.
-    siso_configs = ["builder", "local_typescript"],
     siso_enabled = True,
 )
 
@@ -504,6 +502,7 @@ try_.compilator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     cores = 64 if settings.is_main else 32,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(
