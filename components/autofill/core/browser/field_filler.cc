@@ -905,6 +905,7 @@ std::u16string GetValueForCreditCard(
   } else {
     switch (storable_type) {
       case CREDIT_CARD_VERIFICATION_CODE:
+      case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         return GetCreditCardVerificationCodeForInput(credit_card,
                                                      action_persistence, cvc);
       case CREDIT_CARD_NUMBER:
@@ -970,6 +971,7 @@ std::u16string GetValueForVirtualCardPreview(const CreditCard& virtual_card,
 
   switch (storable_type) {
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       // For preview virtual card CVC, return three dots unless for American
       // Express, which uses 4-digit CVCs.
       return virtual_card.network() == kAmericanExpressCard

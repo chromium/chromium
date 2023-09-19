@@ -11,6 +11,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
@@ -556,6 +557,60 @@ TEST_P(CreditCardVerificationCodeTest,
                        /*cvc=*/std::u16string(), persistence);
 
   EXPECT_EQ(kEmptyCvc, field.value);
+}
+
+// Tests that CVC is correctly previewed and filled for a standalone CVC field.
+TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+
+  // Credit card related field.
+  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  const mojom::AutofillActionPersistence persistence = GetParam();
+  FieldFiller filler("en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &credit_card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(), persistence);
+
+  switch (persistence) {
+    case mojom::AutofillActionPersistence::kPreview:
+      EXPECT_EQ(kMidlineEllipsis3Dots, field.value);
+      return;
+    case mojom::AutofillActionPersistence::kFill:
+      EXPECT_EQ(credit_card.cvc(), field.value);
+      return;
+    default:
+      NOTREACHED();
+  }
+}
+
+// Tests that CVC is correctly previewed and filled for a standalone CVC field
+// for American Express credit cards, which often use four digit verification
+// codes.
+TEST_P(CreditCardVerificationCodeTest,
+       FillFormField_StandaloneCVCField_AmericanExpress) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+
+  // Credit card related field.
+  CreditCard card = test::GetVirtualCard();
+  test_api(card).set_network_for_virtual_card(kAmericanExpressCard);
+  const std::u16string kCvc = u"1111";
+  card.set_cvc(kCvc);
+  const mojom::AutofillActionPersistence persistence = GetParam();
+  FieldFiller filler("en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field, kCvc,
+                       persistence);
+
+  switch (persistence) {
+    case mojom::AutofillActionPersistence::kPreview:
+      EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
+      return;
+    case mojom::AutofillActionPersistence::kFill:
+      EXPECT_EQ(kCvc, field.value);
+      return;
+    default:
+      NOTREACHED();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
