@@ -2399,6 +2399,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       node_object_mapping_.Contains(node)) {
     RemoveSubtreeWithFlatTraversal(node, /* remove_root */ false,
                                    /* notify_parent */ false);
+    ChildrenChanged(node);
   }
 
   DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
@@ -2757,6 +2758,14 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() const {
         << "No cached values should require an update at this point: "
         << "\n* Object: " << object->ToString(true) << "\n* Included parent: "
         << (included_parent ? included_parent->ToString(true) : "");
+    if (object->AccessibilityIsIncludedInTree()) {
+      for (const auto& child : object->CachedChildrenIncludingIgnored()) {
+        CHECK(child->AccessibilityIsIncludedInTree())
+            << "Included parent cannot have unlincluded child:"
+            << "\n* Parent: " << object->ToString(true, true)
+            << "\n* Child: " << child->ToString(true, true);
+      }
+    }
   }
 #else
   // TODO(crbug.com/1480627) Temporary: do not ship in stable builds.
