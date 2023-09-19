@@ -112,7 +112,7 @@ class BrokerPermissionList {
   const std::vector<BrokerFilePermission> permissions_;
   // permissions_array_ is set up to point to the backing store of
   // permissions_ and is used in async signal safe methods.
-  raw_ptr<const BrokerFilePermission> permissions_array_;
+  raw_ptr<const BrokerFilePermission, AllowPtrArithmetic> permissions_array_;
   const size_t num_of_permissions_;
 };
 

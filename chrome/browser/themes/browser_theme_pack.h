@@ -331,23 +331,24 @@ class BrowserThemePack : public CustomThemeSupplier {
     double s;
     double l;
   };
-  raw_ptr<TintEntry, DanglingUntriaged> tints_ = nullptr;
+  raw_ptr<TintEntry, DanglingUntriaged | AllowPtrArithmetic> tints_ = nullptr;
 
   struct ColorPair {
     int32_t id;
     SkColor color;
   };
-  raw_ptr<ColorPair, DanglingUntriaged> colors_ = nullptr;
+  raw_ptr<ColorPair, DanglingUntriaged | AllowPtrArithmetic> colors_ = nullptr;
 
   struct DisplayPropertyPair {
     int32_t id;
     int32_t property;
   };
-  raw_ptr<DisplayPropertyPair, DanglingUntriaged> display_properties_ = nullptr;
+  raw_ptr<DisplayPropertyPair, DanglingUntriaged | AllowPtrArithmetic>
+      display_properties_ = nullptr;
 
   // A list of included source images. A pointer to a -1 terminated array of
   // our persistent IDs.
-  raw_ptr<int, DanglingUntriaged> source_images_ = nullptr;
+  raw_ptr<int, DanglingUntriaged | AllowPtrArithmetic> source_images_ = nullptr;
 #pragma pack(pop)
 
   // The scale factors represented by the images in the theme pack.

@@ -88,7 +88,7 @@ class CharBufferWriter {
   }
 
  private:
-  raw_ptr<char> buf_;
+  raw_ptr<char, AllowPtrArithmetic> buf_;
   const int max_size_;
   int size_;
 };

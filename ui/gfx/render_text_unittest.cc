@@ -418,7 +418,7 @@ class TestRectangleBuffer {
 
  private:
   const char* string_;
-  raw_ptr<const SkColor> buffer_;
+  raw_ptr<const SkColor, AllowPtrArithmetic> buffer_;
   int stride_;
   int row_count_;
 };

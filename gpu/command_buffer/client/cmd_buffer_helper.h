@@ -315,7 +315,7 @@ class GPU_EXPORT CommandBufferHelper {
   int32_t ring_buffer_id_ = -1;
   uint32_t ring_buffer_size_ = 0;
   scoped_refptr<gpu::Buffer> ring_buffer_;
-  raw_ptr<CommandBufferEntry> entries_ = nullptr;
+  raw_ptr<CommandBufferEntry, AllowPtrArithmetic> entries_ = nullptr;
   int32_t total_entry_count_ = 0;  // the total number of entries
   int32_t immediate_entry_count_ = 0;
   int32_t token_ = 0;

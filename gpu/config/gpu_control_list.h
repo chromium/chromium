@@ -350,8 +350,8 @@ class GPU_EXPORT GpuControlList {
   static OsType GetOsType();
 
   size_t entry_count_;
-  raw_ptr<const Entry> entries_;
-  // This records all the entries that are appliable to the current user
+  raw_ptr<const Entry, AllowPtrArithmetic> entries_;
+  // This records all the entries that are applicable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used
   // later by GetDecisionEntries().
   std::vector<uint32_t> active_entries_;
@@ -369,7 +369,7 @@ class GPU_EXPORT GpuControlList {
 
 struct GPU_EXPORT GpuControlListData {
   size_t entry_count;
-  raw_ptr<const GpuControlList::Entry> entries;
+  raw_ptr<const GpuControlList::Entry, AllowPtrArithmetic> entries;
 
   GpuControlListData() : entry_count(0u), entries(nullptr) {}
 

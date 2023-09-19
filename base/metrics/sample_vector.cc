@@ -80,7 +80,7 @@ class IteratorTemplate : public SampleCountIterator {
     }
   }
 
-  raw_ptr<T> counts_;
+  raw_ptr<T, AllowPtrArithmetic> counts_;
   size_t counts_size_;
   raw_ptr<const BucketRanges> bucket_ranges_;
 

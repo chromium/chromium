@@ -130,11 +130,12 @@ class VisitedLinkCommon {
 
   // pointer to the first item
   // May temporarily point to an old unmapped region during update.
-  raw_ptr<VisitedLinkCommon::Fingerprint, DisableDanglingPtrDetection>
-      hash_table_;
+  raw_ptr<VisitedLinkCommon::Fingerprint,
+          DisableDanglingPtrDetection | AllowPtrArithmetic>
+      hash_table_ = nullptr;
 
   // the number of items in the hash table
-  int32_t table_length_;
+  int32_t table_length_ = 0;
 
   // salt used for each URL when computing the fingerprint
   uint8_t salt_[LINK_SALT_LENGTH];

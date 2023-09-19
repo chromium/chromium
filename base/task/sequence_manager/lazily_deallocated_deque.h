@@ -319,7 +319,7 @@ class LazilyDeallocatedDeque {
     size_t capacity_;
     size_t front_index_;
     size_t back_index_;
-    raw_ptr<T> data_;
+    raw_ptr<T, AllowPtrArithmetic> data_;
     std::unique_ptr<Ring> next_;
   };
 

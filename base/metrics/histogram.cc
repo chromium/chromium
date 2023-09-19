@@ -738,7 +738,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  raw_ptr<const DescriptionPair> descriptions_;
+  raw_ptr<const DescriptionPair, AllowPtrArithmetic> descriptions_;
 };
 
 LinearHistogram::~LinearHistogram() = default;

@@ -239,10 +239,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   static constexpr uint8_t kUValue = 50;
   static constexpr uint8_t kVValue = 150;
 
-  raw_ptr<uint8_t, DanglingUntriaged> y_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> u_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> v_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> uv_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> y_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> u_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> v_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> uv_data_ = nullptr;
 
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;

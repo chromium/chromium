@@ -215,9 +215,9 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   std::unique_ptr<DataSource> data_source_;
 
-  raw_ptr<const Entry> resource_table_;
+  raw_ptr<const Entry, AllowPtrArithmetic> resource_table_;
   size_t resource_count_;
-  raw_ptr<const Alias> alias_table_;
+  raw_ptr<const Alias, AllowPtrArithmetic> alias_table_;
   size_t alias_count_;
 
   // Type of encoding for text resources.
