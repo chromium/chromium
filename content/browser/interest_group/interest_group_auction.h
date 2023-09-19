@@ -590,9 +590,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // Returns all interest groups that bid in an auction. Expected to be called
   // after the bidding and scoring phase completes. Returns an empty set if the
   // auction failed for any reason other than the seller rejecting all bids.
-  // Bids from additional bids are not included, since they do not really have
+  // Bids from additional bids are not returned, since they do not really have
   // interest groups (and we don't want to attribute them to database IGs with
   // aliasing names).
+  //
+  // All bids (including additional bids) are also reported to the observer.
   void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const;
 

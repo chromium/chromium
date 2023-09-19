@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/common/content_export.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -43,7 +44,7 @@ void TestInterestGroupObserver::WaitForAccesses(
     run_loop_->Run();
     run_loop_.reset();
   }
-  EXPECT_EQ(expected, accesses_);
+  EXPECT_THAT(accesses_, ::testing::UnorderedElementsAreArray(expected));
 
   // Clear accesses so can be reused.
   accesses_.clear();
