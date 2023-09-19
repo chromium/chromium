@@ -26,9 +26,7 @@ DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
           std::make_unique<
               password_manager::PasswordSessionDurationsMetricsRecorder>(
               pref_service,
-              sync_service)),
-      download_metrics_recorder_(
-          std::make_unique<DownloadSessionDurationsMetricsRecorder>()) {
+              sync_service)) {
   session_duration_observation_.Observe(tracker);
   if (tracker->in_session()) {
     // The session was started before this service was created. Let's start
@@ -52,7 +50,6 @@ void DesktopProfileSessionDurationsService::Shutdown() {
   password_metrics_recorder_.reset();
   msbb_metrics_recorder_.reset();
   sync_metrics_recorder_.reset();
-  download_metrics_recorder_.reset();
 }
 
 bool DesktopProfileSessionDurationsService::IsSignedIn() const {
@@ -68,7 +65,6 @@ void DesktopProfileSessionDurationsService::OnSessionStarted(
   sync_metrics_recorder_->OnSessionStarted(session_start);
   msbb_metrics_recorder_->OnSessionStarted(session_start);
   password_metrics_recorder_->OnSessionStarted(session_start);
-  download_metrics_recorder_->OnSessionStarted(session_start);
 }
 
 void DesktopProfileSessionDurationsService::OnSessionEnded(
@@ -77,7 +73,6 @@ void DesktopProfileSessionDurationsService::OnSessionEnded(
   sync_metrics_recorder_->OnSessionEnded(session_length);
   msbb_metrics_recorder_->OnSessionEnded(session_length);
   password_metrics_recorder_->OnSessionEnded(session_length);
-  download_metrics_recorder_->OnSessionEnded(session_end);
 }
 
 }  // namespace metrics

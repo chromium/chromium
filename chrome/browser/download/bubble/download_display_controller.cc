@@ -324,7 +324,3 @@ bool DownloadDisplayController::HasRecentCompleteDownload(
   return time_since_last_completion < interval &&
          current_time >= last_complete_time;
 }
-
-bool DownloadDisplayController::IsDisplayShowingDetails() {
-  return display_->IsShowingDetails();
-}

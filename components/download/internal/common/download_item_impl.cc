@@ -2000,14 +2000,6 @@ void DownloadItemImpl::Completed() {
     }
   }
 
-  // TODO(crbug.com/1372476): Remove these histograms after debugging.
-  if (!IsTemporary()) {
-    base::UmaHistogramBoolean("Download.Complete.IsOpenWhenCompleteSet",
-                              GetOpenWhenComplete());
-    base::UmaHistogramBoolean(
-        "Download.Complete.IsShouldOpenFileBasedOnExtensionSet",
-        ShouldOpenFileBasedOnExtension());
-  }
   if (auto_opened_) {
     // If it was already handled by the delegate, do nothing.
   } else if (GetOpenWhenComplete() || ShouldOpenFileBasedOnExtension() ||

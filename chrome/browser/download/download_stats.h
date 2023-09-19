@@ -112,11 +112,6 @@ void RecordDangerousDownloadWarningShown(
 void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
                         const std::string& mime_type_string);
 
-// TODO(crbug.com/1372476): Remove this function after debugging.
-// Record that a download open button was pressed, either on download shelf or
-// download bubble.
-void RecordDownloadOpenButtonPressed(bool is_download_completed);
-
 // Record if the database is available to provide the next download id before
 // starting all downloads.
 void RecordDatabaseAvailability(bool is_available);

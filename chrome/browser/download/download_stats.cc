@@ -40,11 +40,6 @@ void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
                                 download::DownloadContent::MAX);
 }
 
-void RecordDownloadOpenButtonPressed(bool is_download_completed) {
-  base::UmaHistogramBoolean("Download.OpenButtonPressed.IsDownloadCompleted",
-                            is_download_completed);
-}
-
 void RecordDatabaseAvailability(bool is_available) {
   base::UmaHistogramBoolean("Download.Database.IsAvailable", is_available);
 }

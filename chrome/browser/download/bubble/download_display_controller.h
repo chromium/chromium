@@ -44,9 +44,6 @@ class DownloadDisplayController : public FullscreenObserver,
       delete;
   ~DownloadDisplayController() override;
 
-  // Returns whether the display is showing details.
-  bool IsDisplayShowingDetails();
-
   // Notifies the controller that the button is pressed. Called by `display_`.
   void OnButtonPressed();
 

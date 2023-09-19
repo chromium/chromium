@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -725,7 +724,6 @@ void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
         DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
     navigation_handler_->OpenSecurityDialog(model_->GetContentId());
   } else {
-    RecordDownloadOpenButtonPressed(model_->IsDone());
     model_->OpenDownload();
   }
 }
