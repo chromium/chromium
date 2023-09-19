@@ -4857,7 +4857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.IdleLogoutWarningEvent"
-    enum="DemoModeIdleLogoutWarningEvent" expires_after="2023-08-27">
+    enum="DemoModeIdleLogoutWarningEvent" expires_after="2024-05-24">
   <owner>llin@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
@@ -4871,7 +4871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.ResourcesRemoval.Reason"
-    enum="DemoModeResourcesRemovalReason" expires_after="M121">
+    enum="DemoModeResourcesRemovalReason" expires_after="2024-05-24">
   <owner>llin@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
@@ -4885,7 +4885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.ResourcesRemoval.Result"
-    enum="DemoModeResourcesRemovalResult" expires_after="M121">
+    enum="DemoModeResourcesRemovalResult" expires_after="2024-05-24">
   <owner>llin@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
