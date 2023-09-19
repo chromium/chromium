@@ -230,6 +230,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1483337
   "lacros.Activate.keep_alive",
 
+  # b/301133350
+  "privacyhub.SettingsPage.feature_v1_mic_cam_loc_golden",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
