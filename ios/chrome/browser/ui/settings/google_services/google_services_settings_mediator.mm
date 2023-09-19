@@ -421,11 +421,9 @@ bool GetStatusForSigninPolicy() {
     managedItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
   }
 
-  // This item is not controllable, then set the color opacity to 40%.
-  managedItem.textColor =
-      [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
-  managedItem.detailTextColor =
-      [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
+  // This item is not controllable; set to lighter colors.
+  managedItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  managedItem.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
   managedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   return managedItem;
