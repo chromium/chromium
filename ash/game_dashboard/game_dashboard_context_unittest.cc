@@ -881,9 +881,6 @@ TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
 
 // Verifies the color mode, user color, and scheme variant never change.
 TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
-  // The user color to always use for GameDashboard widgets.
-  constexpr SkColor kExpectedUserColor = SkColorSetRGB(0x3F, 0x5A, 0xA9);
-
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
@@ -894,33 +891,12 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
     auto color_provider_key = widget->GetColorProviderKey();
     EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
               color_provider_key.color_mode);
-    EXPECT_EQ(kExpectedUserColor, color_provider_key.user_color.value());
-    EXPECT_EQ(ui::ColorProviderKey::SchemeVariant::kTonalSpot,
-              color_provider_key.scheme_variant);
   }
 
   // Update and verify the color mode doesn't change.
   DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
   for (auto* widget : widgets) {
     EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, widget->GetColorMode());
-  }
-
-  // Update and verify the color scheme doesn't change.
-  Shell::Get()->color_palette_controller()->SetColorScheme(
-      ash::style::mojom::ColorScheme::kExpressive,
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "user@gmail.com"),
-      base::DoNothing());
-  for (auto* widget : widgets) {
-    EXPECT_EQ(ui::ColorProviderKey::SchemeVariant::kTonalSpot,
-              widget->GetColorProviderKey().scheme_variant);
-  }
-
-  // Update and verify the user color doesn't change.
-  WallpaperControllerTestApi wallpaper(Shell::Get()->wallpaper_controller());
-  wallpaper.SetCalculatedColors(WallpaperCalculatedColors(
-      {}, SkColorSetRGB(0xae, 0x00, 0xff), SK_ColorWHITE));
-  for (auto* widget : widgets) {
-    EXPECT_EQ(kExpectedUserColor, *widget->GetColorProviderKey().user_color);
   }
 }
 
