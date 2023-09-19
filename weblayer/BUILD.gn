@@ -323,6 +323,8 @@ source_set("weblayer_lib_base") {
     "browser/system_network_context_manager.h",
     "browser/tab_impl.cc",
     "browser/tab_impl.h",
+    "browser/tracking_protection_settings_factory.cc",
+    "browser/tracking_protection_settings_factory.h",
     "browser/translate_client_impl.cc",
     "browser/translate_client_impl.h",
     "browser/translate_ranker_factory.cc",

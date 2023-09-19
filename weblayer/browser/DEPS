@@ -59,6 +59,7 @@ include_rules = [
   "+components/permissions",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/privacy_sandbox",
   "+components/profile_metrics",
   "+components/no_state_prefetch/browser",
   "+components/no_state_prefetch/common",
