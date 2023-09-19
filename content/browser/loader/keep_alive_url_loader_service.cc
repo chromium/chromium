@@ -132,6 +132,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::CreateLoaderAndStart",
                 "request_id", request_id);
+    if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
+      loader_factory_receivers_.ReportBadMessage(
+          "Unexpected call to "
+          "KeepAliveURLLoaderService::CreateLoaderAndStart()");
+      return;
+    }
 
     if (!resource_request.keepalive) {
       loader_factory_receivers_.ReportBadMessage(
@@ -147,6 +153,13 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
           "Unexpected `resource_request` in "
           "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
           "resource_request.trusted_params must not be set");
+      return;
+    }
+    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+        resource_request.is_fetch_later_api) {
+      loader_factory_receivers_.ReportBadMessage(
+          "Unexpected `resource_request.is_fetch_later_api` in "
+          "KeepAliveURLLoaderService::CreateLoaderAndStart(): must not be set");
       return;
     }
 
@@ -187,9 +200,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
     }
 
     // `loader` must only be started after the above setup.
+    // For non-FetchLater requests, they should be started immediately.
     if (!resource_request.is_fetch_later_api) {
       raw_loader->Start();
     }
+    // For FetchLater requests, see
+    // `KeepAliveURLLoaderService::OnLoaderDisconnected()`.
   }
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
@@ -276,14 +292,11 @@ void KeepAliveURLLoaderService::OnLoaderDisconnected() {
   // object, has been removed from `loader_receivers_`, but it has to stay alive
   // to handle subsequent updates from network service.
 
-  // First, check if the KeepAliveURLLoader object is pending to start.
-  if (!loader_receivers_.current_context()->IsStarted()) {
-    // Last chance to start a deferred loader here.
-    loader_receivers_.current_context()->Start();
-  }
+  // Let the KeepAliveURLLoader object itself aware of being disconnected.
+  loader_receivers_.current_context()->OnURLLoaderDisconnected();
 
-  // Last, move the KeepAliveURLLoader object into a different loader set to
-  // keep it alive until finish.
+  // Move all KeepAliveURLLoader objects into a different loader set to keep
+  // them alive until finish or being dropped.
   disconnected_loaders_.emplace(disconnected_loader_receiver_id,
                                 std::move(loader_receivers_.current_context()));
 }

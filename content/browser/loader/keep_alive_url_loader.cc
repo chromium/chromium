@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/trace_event/trace_event.h"
@@ -30,6 +31,21 @@
 
 namespace content {
 namespace {
+
+// Internally enforces a limit to allow a loader outlive its renderer after
+// receiving disconnection notification from the renderer.
+//
+// Defaults to 30s, the same as pre-migration's timeout.
+constexpr base::TimeDelta kDefaultDisconnectedKeepAliveURLLoaderTimeout =
+    base::Seconds(30);
+
+base::TimeDelta GetDisconnectedKeepAliveURLLoaderTimeout() {
+  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
+      blink::features::kKeepAliveInBrowserMigration,
+      "disconnected_loader_timeout_seconds",
+      base::checked_cast<int32_t>(
+          kDefaultDisconnectedKeepAliveURLLoaderTimeout.InSeconds())));
+}
 
 // A convenient holder to aggregate modified header fields for redirect.
 struct ModifiedHeaders {
@@ -326,8 +342,9 @@ void KeepAliveURLLoader::Start() {
       traffic_annotation_);
   loader_receiver_.set_disconnect_handler(base::BindOnce(
       &KeepAliveURLLoader::OnNetworkConnectionError, base::Unretained(this)));
-  forwarding_client_.set_disconnect_handler(base::BindOnce(
-      &KeepAliveURLLoader::OnRendererConnectionError, base::Unretained(this)));
+  forwarding_client_.set_disconnect_handler(
+      base::BindOnce(&KeepAliveURLLoader::OnForwardingClientDisconnected,
+                     base::Unretained(this)));
 
   // These throttles are also run by `blink::ThrottlingURLLoader`. However, they
   // have to be re-run here in case of handling in-browser redirects.
@@ -361,6 +378,8 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
   TRACE_EVENT("loading", "KeepAliveURLLoader::~KeepAliveURLLoader",
               "request_id", request_id_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "KeepAliveURLLoader", request_id_);
+
+  disconnected_loader_timer_.Stop();
 }
 
 void KeepAliveURLLoader::set_on_delete_callback(
@@ -781,6 +800,7 @@ net::Error KeepAliveURLLoader::WillFollowRedirect(
   return net::OK;
 }
 
+// Browser <- Network connection.
 void KeepAliveURLLoader::OnNetworkConnectionError() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnNetworkConnectionError",
@@ -805,9 +825,10 @@ void KeepAliveURLLoader::OnNetworkConnectionError() {
   // DO NOT touch any members after this line. `this` is already deleted.
 }
 
-void KeepAliveURLLoader::OnRendererConnectionError() {
+// Browser -> Renderer connection
+void KeepAliveURLLoader::OnForwardingClientDisconnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::OnRendererConnectionError",
+  TRACE_EVENT("loading", "KeepAliveURLLoader::OnForwardingClientDisconnected",
               "request_id", request_id_);
 
   // Dropping the client as renderer is gone.
@@ -826,6 +847,33 @@ void KeepAliveURLLoader::OnRendererConnectionError() {
   // `ForwardURLLoad()` anymore.
   DeleteSelf();
   // DO NOT touch any members after this line. `this` is already deleted.
+}
+
+// Browser <- Renderer connection.
+void KeepAliveURLLoader::OnURLLoaderDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("loading", "KeepAliveURLLoader::OnURLLoaderDisconnected",
+              "request_id", request_id_);
+  CHECK(!disconnected_loader_timer_.IsRunning());
+
+  if (!IsStarted()) {
+    // May be the last chance to start a deferred loader.
+    Start();
+  }
+  // For other types of keepalive requests, this loader does not care about
+  // whether messages can be received from renderer or not.
+
+  // Prevents this loader from staying alive indefinitely.
+  disconnected_loader_timer_.Start(
+      FROM_HERE, GetDisconnectedKeepAliveURLLoaderTimeout(),
+      base::BindOnce(&KeepAliveURLLoader::OnDisconnectedLoaderTimerFired,
+                     // `this` owns `disconnected_loader_timer_`.
+                     base::Unretained(this)));
+}
+
+void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
+  // TODO(crbug.com/1465781): Add UMA histogram logging.
+  DeleteSelf();
 }
 
 void KeepAliveURLLoader::DeleteSelf() {

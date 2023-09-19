@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -123,14 +124,13 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
-  // Returns true if request loading has been started, i.e. `Start()` has been
-  // called. Otherwise, returns false by default.
-  bool IsStarted() const;
-
   // Kicks off loading the request, including prepare for requests, and setting
   // up communication with network service.
   // This method must only be called when `IsStarted()` is false.
   void Start();
+
+  // Called when the receiver of URLLoader implemented by this is disconnected.
+  void OnURLLoaderDisconnected();
 
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
@@ -164,6 +164,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void SetObserverForTesting(scoped_refptr<TestObserver> observer);
 
  private:
+  // Returns true if request loading has been started, i.e. `Start()` has been
+  // called. Otherwise, returns false by default.
+  bool IsStarted() const;
+
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
@@ -194,6 +198,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Whether `OnReceiveResponse()` has been called.
   bool HasReceivedResponse() const;
+
   // Forwards the stored chain of redriects, response, completion status to the
   // renderer that initiates this loader, such that the renderer knows what URL
   // the response come from when parsing the response.
@@ -204,16 +209,27 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // See also the "Proposed Call Sequences After Migration" section in
   // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit?pli=1#heading=h.d006i46pmq9
   void ForwardURLLoad();
+
   // Tells if `ForwardURLLoad()` has ever been called.
   bool IsForwardURLLoadStarted() const;
+
   // Tells if this loader is still able to forward actions to the
   // URLLoaderClient in renderer.
   bool IsRendererConnected() const;
+
   // Returns net::OK to allow following the redirect. Otherwise, returns
   // corresponding error code.
   net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
+
+  // Called when `loader_receiver_`, Browser<-Network pipe, is disconnected.
   void OnNetworkConnectionError();
-  void OnRendererConnectionError();
+
+  // Called when `forwarding_client_`, Browser->Renderer pipe, is disconnected.
+  void OnForwardingClientDisconnected();
+
+  // Called when `disconnected_loader_timer_` is fired.
+  void OnDisconnectedLoaderTimerFired();
+
   void DeleteSelf();
 
   // The ID to identify the request being loaded by this loader.
@@ -227,22 +243,30 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
 
-  // Connection with the network service:
+  // Browser -> Network connection:
+  //
   // Connects to the receiver network::URLLoader implemented in the network
   // service that performs actual request loading.
   mojo::Remote<network::mojom::URLLoader> loader_;
-  // Connection with the network service:
+  // Browser <- Network connection:
+  //
   // Receives the result of the request loaded by `loader_` from the network
   // service.
   mojo::Receiver<network::mojom::URLLoaderClient> loader_receiver_{this};
 
-  // Connection with a renderer:
+  // Browser -> Renderer connection:
+  //
   // Connects to the receiver URLLoaderClient implemented in the renderer.
   // It is the client that this loader may forward the URLLoader response from
   // the network service, i.e. message received by `loader_receiver_`, to.
   // It may be disconnected if the renderer is dead. In such case, subsequent
   // URLLoader response may be handled in browser.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+
+  // Browser <- Renderer connection:
+  // Timer used for triggering cleaning up `this` after the receiver is
+  // disconnected from the remote of URLLoader in the renderer.
+  base::OneShotTimer disconnected_loader_timer_;
 
   // The NetworkTrafficAnnotationTag for the request being loaded.
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;

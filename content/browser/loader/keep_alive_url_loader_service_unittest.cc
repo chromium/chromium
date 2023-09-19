@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
@@ -27,6 +28,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -202,7 +204,12 @@ MATCHER_P2(ResponseHasHeader,
 
 }  // namespace
 
-class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
+class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
+ public:
+  KeepAliveURLLoaderServiceTestBase()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  protected:
   void SetUp() override {
     network_url_loader_factory_ =
@@ -255,14 +262,6 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-  }
-
-  network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
-    network::ResourceRequest request;
-    request.url = url;
-    request.keepalive = true;
-    request.is_fetch_later_api = true;
-    return request;
   }
 
   network::ResourceRequest CreateResourceRequest(
@@ -336,8 +335,11 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
     return *network_url_loader_factory_;
   }
   KeepAliveURLLoaderService& loader_service() { return *loader_service_; }
+  base::test::ScopedFeatureList& feature_list() { return scoped_feature_list_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // Intercepts network facotry requests instead of using production factory.
   std::unique_ptr<network::TestURLLoaderFactory> network_url_loader_factory_ =
       nullptr;
@@ -345,6 +347,35 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
   std::unique_ptr<KeepAliveURLLoaderService> loader_service_ = nullptr;
   absl::optional<std::string> mojo_bad_message_;
 };
+
+class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
+ protected:
+  void SetUp() override {
+    feature_list().InitAndEnableFeature(
+        blink::features::kKeepAliveInBrowserMigration);
+    KeepAliveURLLoaderServiceTestBase::SetUp();
+  }
+};
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       LoadKeepAliveRequestWithInvalidFeatureAndTerminate) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads a keepalive request with invalid feature config:
+  feature_list().Reset();
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected call to "
+      "KeepAliveURLLoaderService::CreateLoaderAndStart()");
+}
 
 TEST_F(KeepAliveURLLoaderServiceTest, LoadNonKeepaliveRequestAndTerminate) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
@@ -385,21 +416,6 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
       "resource_request.trusted_params must not be set");
 }
 
-TEST_F(KeepAliveURLLoaderServiceTest, LoadFetchLaterRequestAndDeferred) {
-  FakeRemoteURLLoaderFactory renderer_loader_factory;
-  MockReceiverURLLoaderClient renderer_loader_client;
-  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
-
-  // Loads FetchLater request (which is also keepalive request):
-  renderer_loader_factory.CreateLoaderAndStart(
-      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
-      renderer_loader_client.BindNewPipeAndPassRemote());
-
-  // The KeepAliveURLLoaderService holds a deferred KeepAliveURLLoader.
-  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
-  // As the request is deferred, the pending URLoader in network is 0.
-  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
-}
 
 TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterPageIsUnloaded) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
@@ -1000,6 +1016,125 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   // The KeepAliveURLLoader should be cancelled due to the fact that in-browser
   // throttle requests to defer.
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+}
+
+class FetchLaterKeepAliveURLLoaderServiceTest
+    : public KeepAliveURLLoaderServiceTestBase {
+ protected:
+  void SetUp() override {
+    feature_list().InitAndEnableFeature(blink::features::kFetchLaterAPI);
+    KeepAliveURLLoaderServiceTestBase::SetUp();
+  }
+
+  network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.keepalive = true;
+    request.is_fetch_later_api = true;
+    return request;
+  }
+};
+
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestWithInvalidFeatureAndTerminate) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request) under invalid
+  // configuration:
+  feature_list().Reset();
+  feature_list().InitAndEnableFeature(
+      blink::features::kKeepAliveInBrowserMigration);
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request.is_fetch_later_api` in "
+      "KeepAliveURLLoaderService::CreateLoaderAndStart(): must not be set");
+}
+
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestAndDeferred) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request):
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+
+  // The KeepAliveURLLoaderService holds a deferred KeepAliveURLLoader.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // As the request is deferred, the pending URLoader in network is 0.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+}
+
+// Creates a fetchLater request which is deferred by default. The mojo endpoints
+// in renderer then gets disconnected, which should start the fetchLater
+// request.
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestAndLoaderStayAliveAfterRendererIsDisconnected) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request):
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // As the request is deferred, the pending URLoader in network is 0.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+
+  // Simulates a renderer disconnection:
+  // Disconnects and unbinds the receiver client & remote loader, which should
+  // start all deferred KeepAliveURLLoader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
+
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // The network should now have created pending URLLoader.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+}
+
+// Creates a fetchLater request which is deferred by default. The mojo endpoints
+// in renderer then gets disconnected, and then the loader gets dropped by
+// browser due to exceeding internal timeout.
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestAndLoaderKilledAfterRendererIsDisconnected) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request):
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // As the request is deferred, the pending URLoader in network is 0.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+
+  // Simulates a renderer disconnection:
+  // Disconnects and unbinds the receiver client & remote loader, which should
+  // start all deferred KeepAliveURLLoader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
+  // Fast forwards `kDefaultDisconnectedKeepAliveURLLoaderTimeout` (30s).
+  task_environment()->FastForwardBy(base::Seconds(30));
+
+  // Disconnected KeepAliveURLLoader should be killed.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
+  // The network should not create pending URLLoader.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
 }
 
 }  // namespace content
