@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -47,6 +46,15 @@ BASE_FEATURE(kUnpremultiplyAndDitherLowBitDepthTiles,
 BASE_FEATURE(kScaleScrollbarAnimationTiming,
              "ScaleScrollbarAnimationTiming",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// Whether to use a simpler way to compute compositor memory limits on
+// Android. Intended to become default, but introduced temporarily to check
+// it's not breaking things.
+BASE_FEATURE(kSimpleCompositorMemoryLimits,
+             "SimpleCompositorMemoryLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 constexpr base::FeatureParam<double> kFadeDelayScalingFactor{
     &kScaleScrollbarAnimationTiming, "fade_delay_scaling_factor",
@@ -165,74 +173,77 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // We can't query available GPU memory from the system on Android.
-  // Physical memory is also mis-reported sometimes (eg. Nexus 10 reports
-  // 1262MB when it actually has 2GB, while Razr M has 1GB but only reports
-  // 128MB java heap size). First we estimate physical memory using both.
-  size_t dalvik_mb = base::SysInfo::DalvikHeapSizeMB();
-  size_t physical_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  size_t physical_memory_mb = 0;
-  if (base::SysInfo::IsLowEndDevice()) {
-    // TODO(crbug.com/742534): The code below appears to no longer work.
-    // |dalvik_mb| no longer follows the expected heuristic pattern, causing us
-    // to over-estimate memory on low-end devices. This entire section probably
-    // needs to be re-written, but for now we can address the low-end Android
-    // issues by ignoring |dalvik_mb|.
-    physical_memory_mb = physical_mb;
-  } else if (dalvik_mb >= 256) {
-    physical_memory_mb = dalvik_mb * 4;
-  } else {
-    physical_memory_mb = std::max(dalvik_mb * 4, (physical_mb * 4) / 3);
-  }
-
-  // Now we take a default of 1/8th of memory on high-memory devices,
-  // and gradually scale that back for low-memory devices (to be nicer
-  // to other apps so they don't get killed). Examples:
-  // Nexus 4/10(2GB)    256MB (normally 128MB)
-  // Droid Razr M(1GB)  114MB (normally 57MB)
-  // Galaxy Nexus(1GB)  100MB (normally 50MB)
-  // Xoom(1GB)          100MB (normally 50MB)
-  // Nexus S(low-end)   8MB (normally 8MB)
-  // Note that the compositor now uses only some of this memory for
-  // pre-painting and uses the rest only for 'emergencies'.
-  if (actual.bytes_limit_when_visible == 0) {
-    // NOTE: Non-low-end devices use only 50% of these limits,
-    // except during 'emergencies' where 100% can be used.
-    if (physical_memory_mb >= 1536) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >192MB
-    } else if (physical_memory_mb >= 1152) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >144MB
-    } else if (physical_memory_mb >= 768) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 10;  // >76MB
-    } else if (physical_memory_mb >= 513) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 12;  // <64MB
+  if (base::FeatureList::IsEnabled(kSimpleCompositorMemoryLimits)) {
+    if (base::SysInfo::IsLowEndDevice() ||
+        base::SysInfo::AmountOfPhysicalMemoryMB() < 2000) {
+      actual.bytes_limit_when_visible = 96 * 1024 * 1024;
     } else {
-      // Devices with this little RAM have very little headroom so we hardcode
-      // the limit rather than relying on the heuristics above.  (They also use
-      // 4444 textures so we can use a lower limit.)
-      actual.bytes_limit_when_visible = 8;
+      actual.bytes_limit_when_visible = 256 * 1024 * 1024;
+    }
+    actual.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
+  } else {
+    // We can't query available GPU memory from the system on Android.
+    // Physical memory is also mis-reported sometimes (eg. Nexus 10 reports
+    // 1262MB when it actually has 2GB, while Razr M has 1GB but only reports
+    // 128MB java heap size). First we estimate physical memory using both.
+    size_t dalvik_mb = base::SysInfo::DalvikHeapSizeMB();
+    size_t physical_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+    size_t physical_memory_mb = 0;
+    if (base::SysInfo::IsLowEndDevice()) {
+      // TODO(crbug.com/742534): The code below appears to no longer work.
+      // |dalvik_mb| no longer follows the expected heuristic pattern, causing
+      // us to over-estimate memory on low-end devices. This entire section
+      // probably needs to be re-written, but for now we can address the low-end
+      // Android issues by ignoring |dalvik_mb|.
+      physical_memory_mb = physical_mb;
+    } else if (dalvik_mb >= 256) {
+      physical_memory_mb = dalvik_mb * 4;
+    } else {
+      physical_memory_mb = std::max(dalvik_mb * 4, (physical_mb * 4) / 3);
     }
 
-    actual.bytes_limit_when_visible =
-        actual.bytes_limit_when_visible * 1024 * 1024;
-    // Clamp the observed value to a specific range on Android.
-    actual.bytes_limit_when_visible = std::max(
-        actual.bytes_limit_when_visible, static_cast<size_t>(8 * 1024 * 1024));
-    actual.bytes_limit_when_visible =
-        std::min(actual.bytes_limit_when_visible,
-                 static_cast<size_t>(256 * 1024 * 1024));
+    // Now we take a default of 1/8th of memory on high-memory devices,
+    // and gradually scale that back for low-memory devices (to be nicer
+    // to other apps so they don't get killed). Examples:
+    // Nexus 4/10(2GB)    256MB (normally 128MB)
+    // Droid Razr M(1GB)  114MB (normally 57MB)
+    // Galaxy Nexus(1GB)  100MB (normally 50MB)
+    // Xoom(1GB)          100MB (normally 50MB)
+    // Nexus S(low-end)   8MB (normally 8MB)
+    // Note that the compositor now uses only some of this memory for
+    // pre-painting and uses the rest only for 'emergencies'.
+    if (actual.bytes_limit_when_visible == 0) {
+      // NOTE: Non-low-end devices use only 50% of these limits,
+      // except during 'emergencies' where 100% can be used.
+      if (physical_memory_mb >= 1536) {
+        actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >192MB
+      } else if (physical_memory_mb >= 1152) {
+        actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >144MB
+      } else if (physical_memory_mb >= 768) {
+        actual.bytes_limit_when_visible = physical_memory_mb / 10;  // >76MB
+      } else if (physical_memory_mb >= 513) {
+        actual.bytes_limit_when_visible = physical_memory_mb / 12;  // <64MB
+      } else {
+        // Devices with this little RAM have very little headroom so we hardcode
+        // the limit rather than relying on the heuristics above.  (They also
+        // use 4444 textures so we can use a lower limit.)
+        actual.bytes_limit_when_visible = 8;
+      }
+
+      actual.bytes_limit_when_visible =
+          actual.bytes_limit_when_visible * 1024 * 1024;
+      // Clamp the observed value to a specific range on Android.
+      actual.bytes_limit_when_visible =
+          std::max(actual.bytes_limit_when_visible,
+                   static_cast<size_t>(8 * 1024 * 1024));
+      actual.bytes_limit_when_visible =
+          std::min(actual.bytes_limit_when_visible,
+                   static_cast<size_t>(256 * 1024 * 1024));
+    }
+    actual.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING;
   }
-  actual.priority_cutoff_when_visible =
-      gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING;
-
-  static size_t previous_value = [](size_t bytes_limit) {
-    base::UmaHistogramMemoryKB("Blink.Compositor.MemoryLimitKb",
-                               static_cast<int>(bytes_limit / 1024));
-
-    return bytes_limit;
-  }(actual.bytes_limit_when_visible);
-  DCHECK_EQ(actual.bytes_limit_when_visible, previous_value);
-
 #else
   if (base::FeatureList::IsEnabled(kIncreaseTileMemorySizeProportionally)) {
     // This calculation will increase the tile memory size. It should apply to
