@@ -128,7 +128,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
     }
   }
   gfx::DisplayColorSpaces display_color_spaces(icc_profile.GetColorSpace(),
-                                               gfx::BufferFormat::RGBA_8888);
+                                               gfx::BufferFormat::BGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
