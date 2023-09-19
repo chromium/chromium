@@ -29,6 +29,10 @@
     _reauthModule = reauthenticationModule;
     _reauthUponPresentation = reauthUponPresentation;
     self.navigationItem.hidesBackButton = YES;
+
+    // This view does not support large titles as it uses a custom title view.
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
   }
 
   return self;

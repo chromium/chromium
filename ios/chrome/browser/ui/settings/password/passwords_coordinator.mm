@@ -398,6 +398,8 @@ using password_manager::WarningType;
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   self.passwordSettingsCoordinator.delegate = self;
+  // No auth required as Passwords Coordinator already is auth protected.
+  self.passwordSettingsCoordinator.skipAuthenticationOnStart = YES;
 
   base::RecordAction(base::UserMetricsAction("PasswordManager_OpenSettings"));
   [self.passwordSettingsCoordinator start];

@@ -58,8 +58,10 @@ class SyncService;
 // Indicates that the user completed the export flow.
 - (void)userDidCompleteExportFlow;
 
-// Indicates that the user canceled the export flow while it was processing.
-- (void)userDidCancelExportFlow;
+// Indicates that the export flow was canceled while it was processing.
+// The export flow can be canceled by the user or when reauthentication is
+// required due to the app going to the background.
+- (void)exportFlowCanceled;
 
 // Detaches observers.
 - (void)disconnect;

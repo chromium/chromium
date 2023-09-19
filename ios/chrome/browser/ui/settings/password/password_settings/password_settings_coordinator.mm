@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
@@ -46,6 +48,8 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using password_manager::features::IsAuthOnEntryV2Enabled;
 
 namespace {
 
@@ -110,6 +114,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     PasswordSettingsPresentationDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
+    ReauthenticationCoordinatorDelegate,
     SettingsNavigationControllerDelegate> {
   // Service which gives us a view on users' saved passwords.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
@@ -141,6 +146,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 // Coordinator for the "Passwords in Other Apps" screen.
 @property(nonatomic, strong)
     PasswordsInOtherAppsCoordinator* passwordsInOtherAppsCoordinator;
+
+// Coordinator for blocking Password Settings until Local Authentication is
+// passed. Used for requiring authentication when opening Password Settings
+// from outside the Password Manager and when the app is
+// backgrounded/foregrounded with Password Settings opened.
+@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
 
 @end
 
@@ -188,10 +199,15 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   self.mediator.consumer = self.passwordSettingsViewController;
   self.passwordSettingsViewController.delegate = self.mediator;
 
+  // Don't animate presentation when content will be covered for authentication.
+  // Otherwise content can be visible during the animation phase.
   [self.baseViewController
       presentViewController:self.settingsNavigationController
-                   animated:YES
+                   animated:_skipAuthenticationOnStart ||
+                            !IsAuthOnEntryV2Enabled()
                  completion:nil];
+
+  [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
 }
 
 - (void)stop {
@@ -221,6 +237,8 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   self.mediator.consumer = nil;
   self.mediator = nil;
   _savedPasswordsPresenter.reset();
+
+  [self stopReauthenticationCoordinator];
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate
@@ -289,6 +307,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 - (void)showPasswordsInOtherAppsScreen {
   DCHECK(!self.passwordsInOtherAppsCoordinator);
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordsInOtherAppsCoordinator =
       [[PasswordsInOtherAppsCoordinator alloc]
           initWithBaseNavigationController:self.settingsNavigationController
@@ -324,7 +343,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     (NSString*)message {
   // No need to auth if AuthOnEntryV2 is enabled, since user is presumed to have
   // just recently authed.
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
+  if (IsAuthOnEntryV2Enabled()) {
     [self.mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
     return;
   }
@@ -495,7 +514,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
                                          IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
                                style:UIAlertActionStyleCancel
                              handler:^(UIAlertAction*) {
-                               [weakSelf.mediator userDidCancelExportFlow];
+                               [weakSelf.mediator exportFlowCanceled];
                              }];
   [_preparingPasswordsAlert addAction:cancelAction];
   [self.passwordSettingsViewController
@@ -524,6 +543,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [self.passwordsInOtherAppsCoordinator stop];
   self.passwordsInOtherAppsCoordinator.delegate = nil;
   self.passwordsInOtherAppsCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
@@ -555,6 +575,22 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
   return HandlerForProtocol(self.browser->GetCommandDispatcher(),
                             SnackbarCommands);
+}
+
+#pragma mark - ReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  // No-op.
+}
+
+- (void)willPushReauthenticationViewController {
+  // Cancel password export flow before authentication UI is presented.
+  if (_preparingPasswordsAlert.beingPresented) {
+    [_preparingPasswordsAlert dismissViewControllerAnimated:NO completion:nil];
+    [self.mediator exportFlowCanceled];
+    _preparingPasswordsAlert = nil;
+  }
 }
 
 #pragma mark - Private
@@ -606,6 +642,68 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     [self.passwordSettingsViewController presentViewController:viewController
                                                       animated:YES
                                                     completion:nil];
+  }
+}
+
+// Starts reauthCoordinator.
+// - authOnStart: Pass `YES` to cover Password Settings with an empty view
+// controller until successful Local Authentication when reauthCoordinator
+// starts.
+//
+// Local authentication is required every time the current
+// scene is backgrounded and foregrounded until reauthCoordinator is stopped.
+- (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
+  // No-op if Auth on Entry is not enabled for the password manager.
+  if (!IsAuthOnEntryV2Enabled()) {
+    return;
+  }
+
+  if (_reauthCoordinator) {
+    // The previous reauth coordinator should have been stopped and deallocated
+    // by now. Create a crash report without crashing and gracefully handle the
+    // error by cleaning up the old coordinator.
+    base::debug::DumpWithoutCrashing();
+    [_reauthCoordinator stopAndPopViewController];
+  }
+
+  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_settingsNavigationController
+                               browser:self.browser
+                reauthenticationModule:_reauthModule
+                           authOnStart:authOnStart];
+
+  _reauthCoordinator.delegate = self;
+
+  [_reauthCoordinator start];
+}
+
+// Stops reauthCoordinator.
+- (void)stopReauthenticationCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
+}
+
+// Stop reauth coordinator when a child coordinator will be started.
+//
+// Needed so reauth coordinator doesn't block for reauth if the scene state
+// changes while the child coordinator is presenting its content. The child
+// coordinator will add its own reauth coordinator to block its content for
+// reauth.
+- (void)stopReauthCoordinatorBeforeStartingChildCoordinator {
+  // See PasswordsCoordinator
+  // stopReauthCoordinatorBeforeStartingChildCoordinator.
+  [_reauthCoordinator stopAndPopViewController];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
+}
+
+// Starts reauthCoordinator after a child coordinator content was dismissed.
+- (void)restartReauthCoordinator {
+  // Restart reauth coordinator so it monitors scene state changes and requests
+  // local authentication after the scene goes to the background.
+  if (IsAuthOnEntryV2Enabled()) {
+    [self startReauthCoordinatorWithAuthOnStart:NO];
   }
 }
 

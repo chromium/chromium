@@ -224,7 +224,7 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   [self.passwordExporter resetExportState];
 }
 
-- (void)userDidCancelExportFlow {
+- (void)exportFlowCanceled {
   [self.passwordExporter cancelExport];
 }
 
