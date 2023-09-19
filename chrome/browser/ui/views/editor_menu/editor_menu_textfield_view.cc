@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -21,11 +22,14 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
@@ -41,12 +45,61 @@ constexpr int kTextIconSpacingDip = 8;
 constexpr int kButtonSizeDip = 32;
 constexpr int kBorderThicknessDip = 1;
 
+class EditorMenuTextfield : public views::Textfield {
+ public:
+  METADATA_HEADER(EditorMenuTextfield);
+  EditorMenuTextfield() : views::Textfield() {
+    // TODO(b/300857651): Add a custom hover effect which covers the whole
+    // textfield container view. For now, just disable the default hover effect
+    // since it looks strange to only partially cover the textfield container.
+    RemoveHoverEffect();
+  }
+  EditorMenuTextfield(const EditorMenuTextfield&) = delete;
+  EditorMenuTextfield& operator=(const EditorMenuTextfield&) = delete;
+  ~EditorMenuTextfield() override = default;
+
+  void OnFocus() override {
+    views::Textfield::OnFocus();
+    NotifyTextfieldFocusChanged();
+  }
+
+  void OnBlur() override {
+    views::Textfield::OnBlur();
+    NotifyTextfieldFocusChanged();
+  }
+
+ private:
+  void NotifyTextfieldFocusChanged() {
+    auto* textfield_container =
+        views::AsViewClass<EditorMenuTextfieldView>(parent());
+    CHECK(textfield_container);
+    textfield_container->OnTextfieldFocusChanged();
+  }
+};
+
+BEGIN_METADATA(EditorMenuTextfield, views::Textfield)
+END_METADATA
+
 }  // namespace
 
 EditorMenuTextfieldView::EditorMenuTextfieldView(
     EditorMenuViewDelegate* delegate)
     : delegate_(delegate) {
   CHECK(delegate_);
+
+  // Install a focus ring to show when `textfield_` is focused. This focus ring
+  // is installed on the EditorMenuTextfieldView so that it surrounds the
+  // overall textfield container.
+  views::FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<EditorMenuTextfieldView>(view);
+        CHECK(v);
+        return v->textfield_ && v->textfield_->HasFocus();
+      }));
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kBackgroundRadiusDip);
 }
 
 EditorMenuTextfieldView::~EditorMenuTextfieldView() = default;
@@ -82,6 +135,14 @@ bool EditorMenuTextfieldView::HandleKeyEvent(views::Textfield* sender,
   return true;
 }
 
+void EditorMenuTextfieldView::OnTextfieldFocusChanged() {
+  // The focus ring should be shown when the underlying `textfield_` is focused.
+  // Schedule a repaint to update its visibility if needed.
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Get(this)->SchedulePaint();
+  }
+}
+
 void EditorMenuTextfieldView::InitLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated),
@@ -95,7 +156,7 @@ void EditorMenuTextfieldView::InitLayout() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  textfield_ = AddChildView(std::make_unique<views::Textfield>());
+  textfield_ = AddChildView(std::make_unique<EditorMenuTextfield>());
   textfield_->SetAccessibleName(kContainerTitle);
   textfield_->set_controller(this);
   textfield_->SetBorder(views::NullBorder());

@@ -53,6 +53,8 @@ class EditorMenuTextfieldView : public views::View,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
+  void OnTextfieldFocusChanged();
+
  private:
   void InitLayout();
   void OnTextfieldArrowButtonPressed();
