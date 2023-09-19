@@ -1106,7 +1106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-01-15">
+<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-03-17">
 <!-- This histogram was expired between 2022-11-02 and M111 -->
 
   <owner>marq@chromium.org</owner>
