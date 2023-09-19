@@ -179,13 +179,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // requests rejected by PrerenderHostRegistry can be filtered out. But
     // ideally PrerenderHostRegistry should implement the history management
     // mechanism by itself.
-    started_prerenders_.erase(
-        std::remove_if(started_prerenders_.begin(), started_prerenders_.end(),
-                       [&](const PrerenderInfo& x) {
-                         return base::Contains(removed_prerender_rules_set,
-                                               x.prerender_host_id);
-                       }),
-        started_prerenders_.end());
+    base::EraseIf(started_prerenders_, [&](const PrerenderInfo& x) {
+      return base::Contains(removed_prerender_rules_set, x.prerender_host_id);
+    });
   }
 
   // Actually start the candidates once the diffing is done.
