@@ -17,6 +17,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace password_manager {
 
 using metrics_util::LeakDialogType;
@@ -97,6 +101,11 @@ std::u16string GetLeakDetectionTooltip() {
 }
 
 bool ShouldCheckPasswords(CredentialLeakType leak_type) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
+#endif
   return password_manager::IsPasswordUsedOnOtherSites(leak_type);
 }
 
