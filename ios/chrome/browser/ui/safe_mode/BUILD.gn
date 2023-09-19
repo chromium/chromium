@@ -66,6 +66,9 @@ source_set("eg2_tests") {
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
+
+    # TODO(crbug.com/1484597): Remove this when the issue is fixed.
+    "//components/sync/base:features",
   ]
   frameworks = [ "UIKit.framework" ]
 }

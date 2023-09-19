@@ -22,6 +22,9 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ui/base/l10n/l10n_util.h"
 
+// TODO(crbug.com/1484597): Remove this when the issue is fixed.
+#import "components/sync/base/features.h"
+
 using chrome_test_util::ButtonWithAccessibilityLabel;
 
 namespace {
@@ -68,6 +71,14 @@ void AssertTryAgainButtonOnPage() {
 @end
 
 @implementation SafeModeTestCase
+
+// TODO(crbug.com/1484597): Remove this when the issue is fixed.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+  return config;
+}
 
 // Tests that Safe Mode crash upload screen is displayed when there are crash
 // reports to upload.
