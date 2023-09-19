@@ -89,8 +89,16 @@ class AutofillProfile : public AutofillDataModel {
       const std::string& app_locale) const;
 
   // Given a Java AutofillProfile object, create an equivalent C++ instance.
+  // Java profile can represent either a new or an existing address profile
+  // depending on whether `existing_profile` is set or not. If this is a new
+  // address profile, Java fields are set to the newly created AutofillProfile.
+  // Otherwise, `existing_profile` is copied and Java fields are set to it.
+  // Setting fields to `existing_profile` is done to avoid loosing address
+  // substructure by creating AutofillProfile from scratch based only on the
+  // available Java fields.
   static AutofillProfile CreateFromJavaObject(
       const base::android::JavaParamRef<jobject>& jprofile,
+      const AutofillProfile* existing_profile,
       const std::string& app_locale);
 #endif  // BUILDFLAG(IS_ANDROID)
 

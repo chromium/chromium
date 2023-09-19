@@ -220,33 +220,6 @@ void GetFieldsForDistinguishingProfiles(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void MaybeSetRawInfoWithVerificationStatus(
-    AutofillProfile* profile,
-    ServerFieldType type,
-    const base::android::JavaRef<jstring>& value,
-    jint status) {
-  if (value) {
-    profile->SetRawInfoWithVerificationStatus(
-        type, ConvertJavaStringToUTF16(value),
-        static_cast<VerificationStatus>(status));
-  }
-}
-
-void MaybeSetInfoWithVerificationStatus(
-    AutofillProfile* profile,
-    ServerFieldType type,
-    const base::android::JavaRef<jstring>& value,
-    jint status,
-    const std::string& app_locale) {
-  if (value) {
-    profile->SetInfoWithVerificationStatus(
-        type, ConvertJavaStringToUTF16(value), app_locale,
-        static_cast<VerificationStatus>(status));
-  }
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 AutofillProfile::AutofillProfile()
@@ -356,17 +329,27 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
 // static
 AutofillProfile AutofillProfile::CreateFromJavaObject(
     const base::android::JavaParamRef<jobject>& jprofile,
+    const AutofillProfile* existing_profile,
     const std::string& app_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  AutofillProfile profile(static_cast<AutofillProfile::Source>(
-      Java_AutofillProfile_getSource(env, jprofile)));
 
-  // Only set the guid if it is an existing profile (java guid not empty).
-  // Otherwise, keep the generated one.
-  std::string guid =
-      ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
-  if (!guid.empty()) {
-    profile.set_guid(guid);
+  AutofillProfile profile;
+  if (!existing_profile) {
+    profile = AutofillProfile(static_cast<AutofillProfile::Source>(
+        Java_AutofillProfile_getSource(env, jprofile)));
+    // Only set the guid if it is an existing profile (java guid not empty).
+    // Otherwise, keep the generated one.
+    std::string guid =
+        ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
+    // TODO(crbug.com/1484006): `guid` should be always empty when existing
+    // profile is not set. CHECK should be added when this condition holds.
+    if (!guid.empty()) {
+      profile.set_guid(guid);
+    }
+  } else {
+    profile = *existing_profile;
+    CHECK_EQ(profile.guid(), ConvertJavaStringToUTF8(
+                                 Java_AutofillProfile_getGUID(env, jprofile)));
   }
 
   std::vector<int> field_types;
@@ -374,20 +357,23 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
       env, Java_AutofillProfile_getFieldTypes(env, jprofile), &field_types);
 
   for (int int_field_type : field_types) {
-    auto field_type = ToSafeServerFieldType(int_field_type, NO_SERVER_DATA);
+    ServerFieldType field_type =
+        ToSafeServerFieldType(int_field_type, NO_SERVER_DATA);
     CHECK(field_type != NO_SERVER_DATA);
+    VerificationStatus status = static_cast<VerificationStatus>(
+        Java_AutofillProfile_getInfoStatus(env, jprofile, field_type));
+    const base::android::ScopedJavaLocalRef<jstring> value =
+        Java_AutofillProfile_getInfo(env, jprofile, field_type);
+    if (!value) {
+      continue;
+    }
     // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
     if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
-      MaybeSetInfoWithVerificationStatus(
-          &profile, field_type,
-          Java_AutofillProfile_getInfo(env, jprofile, field_type),
-          Java_AutofillProfile_getInfoStatus(env, jprofile, field_type),
-          app_locale);
+      profile.SetInfoWithVerificationStatus(
+          field_type, ConvertJavaStringToUTF16(value), app_locale, status);
     } else {
-      MaybeSetRawInfoWithVerificationStatus(
-          &profile, field_type,
-          Java_AutofillProfile_getInfo(env, jprofile, field_type),
-          Java_AutofillProfile_getInfoStatus(env, jprofile, field_type));
+      profile.SetRawInfoWithVerificationStatus(
+          field_type, ConvertJavaStringToUTF16(value), status);
     }
   }
 
