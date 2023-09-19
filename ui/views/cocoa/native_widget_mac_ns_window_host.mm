@@ -4,9 +4,6 @@
 
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
-#include <AvailabilityMacros.h>
-#include <AvailabilityVersions.h>
-
 #include <tuple>
 #include <utility>
 
@@ -57,16 +54,6 @@
 
 using remote_cocoa::mojom::NativeWidgetNSWindowInitParams;
 using remote_cocoa::mojom::WindowVisibilityState;
-
-#if !defined(MAC_OS_VERSION_14_0) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_14_0
-
-@interface NSApplication ()
-- (void)yieldActivationToApplicationWithBundleIdentifier:
-    (NSString*)bundleIdentifier API_AVAILABLE(macos(14.0));
-@end
-
-#endif
 
 namespace views {
 
