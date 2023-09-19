@@ -361,12 +361,12 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   }
 
   gfx::GpuMemoryBuffer* buffer = staging_buffer->gpu_memory_buffer.get();
-  DCHECK_EQ(1u, gfx::NumberOfPlanesForLinearBufferFormat(buffer->GetFormat()));
+  CHECK_EQ(1u, gfx::NumberOfPlanesForLinearBufferFormat(buffer->GetFormat()));
   bool rv = buffer->Map();
-  DCHECK(rv);
-  DCHECK(buffer->memory(0));
+  CHECK(rv);
+  CHECK(buffer->memory(0));
   // RasterBufferProvider::PlaybackToMemory only supports unsigned strides.
-  DCHECK_GE(buffer->stride(0), 0);
+  CHECK_GE(buffer->stride(0), 0);
 
   // TODO(https://crbug.com/870663): Temporary diagnostics.
   base::debug::Alias(&playback_rect);
