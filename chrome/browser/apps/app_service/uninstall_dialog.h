@@ -101,7 +101,9 @@ class UninstallDialog {
 
   // Loads the app icon to show the icon in the uninstall dialog before creating
   // the dialog view.
-  void PrepareToShow(IconKey icon_key, apps::IconLoader* icon_loader);
+  void PrepareToShow(IconKey icon_key,
+                     apps::IconLoader* icon_loader,
+                     int32_t icon_size);
 
   // Closes this dialog if it is open. If the dialog is not open yet because
   // icons are still loading, immediately runs `uninstall_callback_` so that

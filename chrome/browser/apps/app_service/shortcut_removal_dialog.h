@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace views {
 class NativeWindowTracker;
 }
@@ -43,13 +47,12 @@ class ShortcutRemovalDialog {
   static base::WeakPtr<views::Widget> Create(
       Profile* profile,
       const apps::ShortcutId& shortcut_id,
+      gfx::ImageSkia icon_with_badge,
       gfx::NativeWindow parent_window,
       base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog);
 
-  // Loads the shortcut icon and show the icon in the shortcut removal dialog
-  // before creating the dialog view.
-  // TODO(crbug.com/1412708): Add icon loading code.
-  void PrepareAndShow();
+  // Create shortcut removal dialog.
+  void CreateDialog(gfx::ImageSkia icon, gfx::ImageSkia badge_icon);
 
   base::WeakPtr<views::Widget> GetWidget();
 

@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
+#include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -73,6 +74,23 @@ class ShortcutRemovalDialogViewBrowserTest
     return proxy()->ShortcutRegistryCache();
   }
 
+  void SetStubIconLoaders(const apps::ShortcutId& shortcut_id,
+                          const std::string& host_app_id) {
+    proxy()->OverrideShortcutInnerIconLoaderForTesting(
+        &shortcut_stub_icon_loader_);
+    shortcut_stub_icon_loader_.timelines_by_app_id_[shortcut_id.value()] = 1;
+    proxy()->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader_);
+    app_stub_icon_loader_.timelines_by_app_id_[host_app_id] = 1;
+  }
+
+  int NumLoadShortcutIcon() {
+    return shortcut_stub_icon_loader_.NumLoadIconFromIconKeyCalls();
+  }
+
+  int NumLoadBadgeIcon() {
+    return app_stub_icon_loader_.NumLoadIconFromIconKeyCalls();
+  }
+
  private:
   void OnShortcutRemoved(const apps::ShortcutId& shortcut_id) override {
     std::move(shortcut_removed_callback_).Run(shortcut_id);
@@ -82,6 +100,8 @@ class ShortcutRemovalDialogViewBrowserTest
     obs_.Reset();
   }
 
+  apps::StubIconLoader shortcut_stub_icon_loader_;
+  apps::StubIconLoader app_stub_icon_loader_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::OnceCallback<void(const apps::ShortcutId&)> shortcut_removed_callback_;
   base::ScopedObservation<apps::ShortcutRegistryCache,
@@ -94,6 +114,9 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
   std::u16string shortcut_name = u"Example";
   apps::ShortcutId shortcut_id =
       CreateWebAppBasedShortcut(app_url, shortcut_name);
+  SetStubIconLoaders(shortcut_id, app_constants::kChromeAppId);
+  EXPECT_EQ(0, NumLoadShortcutIcon());
+  EXPECT_EQ(0, NumLoadBadgeIcon());
 
   EXPECT_FALSE(LastCreatedView());
   proxy()->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown,
@@ -115,11 +138,15 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
   std::u16string expected_title =
       u"Remove \"" + shortcut_name + u" - " + host_app_name + u"\" shortcut?";
   EXPECT_EQ(expected_title, LastCreatedView()->GetWindowTitle());
+
+  EXPECT_EQ(1, NumLoadShortcutIcon());
+  EXPECT_EQ(1, NumLoadBadgeIcon());
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, Accept) {
   apps::ShortcutId shortcut_id =
       CreateWebAppBasedShortcut(GURL("https://example.org/"), u"Example");
+  SetStubIconLoaders(shortcut_id, app_constants::kChromeAppId);
 
   proxy()->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown,
                           nullptr);
@@ -136,6 +163,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, Accept) {
 IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, Cancel) {
   apps::ShortcutId shortcut_id =
       CreateWebAppBasedShortcut(GURL("https://example.org/"), u"Example");
+  SetStubIconLoaders(shortcut_id, app_constants::kChromeAppId);
 
   proxy()->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown,
                           nullptr);
@@ -149,6 +177,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, Cancel) {
 IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUiTwice) {
   apps::ShortcutId shortcut_id_1 =
       CreateWebAppBasedShortcut(GURL("https://example.org/"), u"Example");
+  SetStubIconLoaders(shortcut_id_1, app_constants::kChromeAppId);
+
   proxy()->RemoveShortcut(shortcut_id_1, apps::UninstallSource::kUnknown,
                           nullptr);
 
@@ -158,6 +188,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUiTwice) {
 
   apps::ShortcutId shortcut_id_2 = CreateWebAppBasedShortcut(
       GURL("https://more-example.org/"), u"MoreExample");
+  SetStubIconLoaders(shortcut_id_2, app_constants::kChromeAppId);
   proxy()->RemoveShortcut(shortcut_id_2, apps::UninstallSource::kUnknown,
                           nullptr);
   ASSERT_TRUE(LastCreatedView());

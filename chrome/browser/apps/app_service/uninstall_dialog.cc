@@ -14,12 +14,6 @@
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-constexpr int32_t kUninstallIconSize = 48;
-
-}  // namespace
-
 namespace apps {
 
 UninstallDialog::UninstallDialog(Profile* profile,
@@ -41,7 +35,8 @@ UninstallDialog::UninstallDialog(Profile* profile,
 UninstallDialog::~UninstallDialog() = default;
 
 void UninstallDialog::PrepareToShow(IconKey icon_key,
-                                    apps::IconLoader* icon_loader) {
+                                    apps::IconLoader* icon_loader,
+                                    int32_t icon_size) {
   if (app_type_ == AppType::kCrostini) {
     // Crostini icons might be a big image, and not fit the size, so add the
     // resize icon effect, to resize the image.
@@ -58,7 +53,7 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
 
   // Currently ARC apps only support 48*48 native icon.
   icon_loader->LoadIconFromIconKey(
-      app_id_, icon_key, IconType::kStandard, kUninstallIconSize,
+      app_id_, icon_key, IconType::kStandard, icon_size,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&UninstallDialog::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr()));

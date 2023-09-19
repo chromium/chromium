@@ -308,6 +308,15 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       bool remove,
       ShortcutRemovalDialog* shortcut_removal_dialog);
 
+  // Callback invoked when the icon is loaded for the shortcut removal dialog.
+  void OnLoadIconForShortcutRemovalDialog(
+      const ShortcutId& id,
+      UninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      ShortcutRemovalDialog* shortcut_removal_dialog,
+      IconValuePtr icon_value,
+      IconValuePtr badge_icon_value);
+
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;

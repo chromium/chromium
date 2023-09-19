@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,9 +28,17 @@ ShortcutRemovalDialog::ShortcutRemovalDialog(
 
 ShortcutRemovalDialog::~ShortcutRemovalDialog() = default;
 
-// TODO(crbug.com/1412708): Add icon loading code.
-void ShortcutRemovalDialog::PrepareAndShow() {
-  widget_ = Create(profile_, shortcut_id_, parent_window_,
+void ShortcutRemovalDialog::CreateDialog(gfx::ImageSkia icon,
+                                         gfx::ImageSkia badge_icon) {
+  if (parent_window_ && parent_window_tracker_->WasNativeWindowDestroyed()) {
+    OnDialogClosed(false);
+    return;
+  }
+  // TODO(crbug.com/1412708): Update this when System UI team provide new
+  // interface for the new visual.
+  gfx::ImageSkia icon_with_badge =
+      gfx::ImageSkiaOperations::CreateIconWithBadge(icon, badge_icon);
+  widget_ = Create(profile_, shortcut_id_, icon_with_badge, parent_window_,
                    weak_ptr_factory_.GetWeakPtr());
 }
 

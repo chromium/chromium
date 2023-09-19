@@ -58,6 +58,11 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+constexpr int32_t kAppDialogIconSize = 48;
+constexpr int32_t kAppDialogIconBadgeSize = 24;
+}  // namespace
+
 namespace apps {
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile),
@@ -482,7 +487,8 @@ void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
     return;
   }
 
-  // TODO(crbug.com/1412708): Add icon loading code.
+  // Create the removal dialog object now so we can start tracking the parent
+  // window.
   auto shortcut_removal_dialog_ptr = std::make_unique<ShortcutRemovalDialog>(
       profile_, id, parent_window,
       base::BindOnce(&AppServiceProxyAsh::OnShortcutRemovalDialogClosed,
@@ -490,7 +496,14 @@ void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
   ShortcutRemovalDialog* shortcut_removal_dialog =
       shortcut_removal_dialog_ptr.get();
   shortcut_removal_dialogs_.emplace(id, std::move(shortcut_removal_dialog_ptr));
-  shortcut_removal_dialog->PrepareAndShow();
+
+  LoadShortcutIconWithBadge(
+      id, apps::IconType::kStandard, kAppDialogIconSize,
+      kAppDialogIconBadgeSize,
+      /*allow_placeholder_icon = */ false,
+      base::BindOnce(&AppServiceProxyAsh::OnLoadIconForShortcutRemovalDialog,
+                     weak_ptr_factory_.GetWeakPtr(), id, uninstall_source,
+                     parent_window, shortcut_removal_dialog));
 }
 
 void AppServiceProxyAsh::RemoveShortcutSilently(
@@ -651,7 +664,8 @@ void AppServiceProxyAsh::UninstallImpl(const std::string& app_id,
         std::move(callback));
     uninstall_dialogs_.emplace(update.AppId(), std::move(uninstall_dialog_ptr));
     uninstall_dialog->PrepareToShow(std::move(icon_key.value()),
-                                    this->app_icon_loader());
+                                    this->app_icon_loader(),
+                                    kAppDialogIconSize);
   });
 }
 
@@ -690,6 +704,26 @@ void AppServiceProxyAsh::OnShortcutRemovalDialogClosed(
   auto it = shortcut_removal_dialogs_.find(shortcut_id);
   CHECK(it != shortcut_removal_dialogs_.end());
   shortcut_removal_dialogs_.erase(it);
+}
+
+void AppServiceProxyAsh::OnLoadIconForShortcutRemovalDialog(
+    const ShortcutId& id,
+    UninstallSource uninstall_source,
+    gfx::NativeWindow parent_window,
+    ShortcutRemovalDialog* shortcut_removal_dialog,
+    IconValuePtr icon_value,
+    IconValuePtr badge_icon_value) {
+  if (icon_value && badge_icon_value &&
+      icon_value->icon_type == IconType::kStandard &&
+      badge_icon_value->icon_type == IconType::kStandard) {
+    shortcut_removal_dialog->CreateDialog(icon_value->uncompressed,
+                                          badge_icon_value->uncompressed);
+    return;
+  }
+
+  // If the icon loaded is not valid, call the callback to clean up the
+  // `shortcut_removal_dialogs_` map.
+  shortcut_removal_dialog->OnDialogClosed(false);
 }
 
 void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
@@ -773,7 +807,6 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
                                            apps::LoadIconCallback callback) {
   auto icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
-  constexpr int32_t kIconSize = 48;
   auto icon_type = IconType::kStandard;
 
   // For browser tests, load the app icon, because there is no family link
@@ -787,7 +820,7 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
       return;
     }
     LoadIconFromIconKey(update.AppType(), update.AppId(), icon_key.value(),
-                        icon_type, kIconSize, kAllowPlaceholderIcon,
+                        icon_type, kAppDialogIconSize, kAllowPlaceholderIcon,
                         std::move(callback));
     return;
   }
@@ -795,7 +828,7 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   // Load the family link kite logo icon for the app pause dialog or the app
   // block dialog for the child profile.
   LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
-                       kIconSize, IDR_SUPERVISED_USER_ICON,
+                       kAppDialogIconSize, IDR_SUPERVISED_USER_ICON,
                        kAllowPlaceholderIcon, IconEffects::kNone,
                        std::move(callback));
 }

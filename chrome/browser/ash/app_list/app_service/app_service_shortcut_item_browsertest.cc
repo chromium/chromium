@@ -284,7 +284,17 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
                 .GetVectorIcon()
                 .vector_icon());
 
+  apps::StubIconLoader shortcut_stub_icon_loader;
+  apps::StubIconLoader app_stub_icon_loader;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
+  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+
   menu_model->ActivatedAt(uninstall_command_index.value());
+
   ShortcutRemovalDialogView* last_created_dialog =
       ShortcutRemovalDialogView::GetLastCreatedViewForTesting();
   last_created_dialog->AcceptDialog();

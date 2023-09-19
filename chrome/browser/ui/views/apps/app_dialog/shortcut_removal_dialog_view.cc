@@ -45,10 +45,11 @@ std::u16string GetWindowTitleForShortcut(Profile* profile,
 base::WeakPtr<views::Widget> apps::ShortcutRemovalDialog::Create(
     Profile* profile,
     const apps::ShortcutId& shortcut_id,
+    gfx::ImageSkia icon_with_badge,
     gfx::NativeWindow parent_window,
     base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog) {
-  auto* dialog_view = new ShortcutRemovalDialogView(profile, shortcut_id,
-                                                    shortcut_removal_dialog);
+  auto* dialog_view = new ShortcutRemovalDialogView(
+      profile, shortcut_id, icon_with_badge, shortcut_removal_dialog);
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       dialog_view, parent_window);
   widget->Show();
@@ -58,8 +59,9 @@ base::WeakPtr<views::Widget> apps::ShortcutRemovalDialog::Create(
 ShortcutRemovalDialogView::ShortcutRemovalDialogView(
     Profile* profile,
     const apps::ShortcutId& shortcut_id,
+    gfx::ImageSkia icon_with_badge,
     base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog)
-    : AppDialogView(ui::ImageModel()),
+    : AppDialogView(ui::ImageModel::FromImageSkia(icon_with_badge)),
       profile_(profile),
       shortcut_removal_dialog_(shortcut_removal_dialog) {
   profile_observation_.Observe(profile);
