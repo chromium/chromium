@@ -50,6 +50,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kPrivacyScreenToggle},
     {true, ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_NONE,
      AcceleratorAction::kMicrophoneMuteToggle},
+    {true, ui::VKEY_M, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kMicrophoneMuteToggle},
     {true, ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE,
      AcceleratorAction::kKeyboardBacklightToggle},
     {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE,
