@@ -305,8 +305,7 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
     data_.AddState(ax::mojom::State::kIgnored);
 
 #if BUILDFLAG(IS_WIN)
-  if (features::IsUiaProviderEnabled() &&
-      view()->GetViewAccessibility().needs_ax_tree_manager()) {
+  if (view()->GetViewAccessibility().needs_ax_tree_manager()) {
     view()->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
   }
 #endif  // BUILDFLAG(IS_WIN)

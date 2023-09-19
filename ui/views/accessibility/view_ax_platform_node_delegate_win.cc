@@ -108,7 +108,6 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
 }
 
 void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
-  DCHECK(features::IsUiaProviderEnabled());
   DCHECK(needs_ax_tree_manager());
   if (atomic_view_ax_tree_manager_) {
     return;
