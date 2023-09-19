@@ -888,6 +888,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 Si se inhabilita la política, Limpiador de Chrome no hará análisis periódicos, y se inhabilitará la activación manual.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1736990730683753958">La página del historial de Chrome organizada en grupos no se mostrará en chrome://history/grouped.</translation>
 <translation id="1744340218280697033">No permitir que los padres añadan cuentas supervisadas</translation>
 <translation id="1751429117283165017">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les concedan acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
@@ -1309,6 +1310,7 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 <translation id="208566302163036794">Bloquear las funciones inhabilitadas</translation>
 <translation id="208623333578980446">Permitir los wake locks de pantalla para la gestión de energía</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube a través de un navegador gestionado</translation>
+<translation id="2090712407517297305">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
 
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios podrán elegir si quieren usar esta función.</translation>
@@ -1460,6 +1462,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="2204379573346866896">Minutos transcurridos en la hora actual.</translation>
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
+<translation id="2212011154693551439">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped de forma predeterminada.</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
 <translation id="2213342458177721585">Habilitar el diseño InScript para hindi a nivel de dispositivo.</translation>
 <translation id="2215238871726750562">Si se asigna el valor "Verdadero" a esta política, impedirá que se abra la ventana del navegador al comienzo de la sesión.
@@ -2298,7 +2301,6 @@ Esta política solo se puede establecer como política de usuarios basada en la 
 
       Advertencia: No delegues el control de la versión de <ph name="PRODUCT_OS_NAME" /> a una aplicación de kiosco, ya que podría impedir que el dispositivo reciba actualizaciones de software y correcciones de seguridad importantes. Si se delega el control de la versión de <ph name="PRODUCT_OS_NAME" />, se podría poner en riesgo a los usuarios.</translation>
 <translation id="2989404644164421834">Volver a cargar páginas</translation>
-<translation id="299104951237091027">La página del historial de Chrome organizada en grupos no se mostrará en chrome://history/2.</translation>
 <translation id="299446489108785864">Lista de URLs que especifica a qué URLs se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta a los valores abiertos automáticamente por los usuarios.
 
       Si se establece esta política, los archivos se abrirán automáticamente solo si la URL está incluida en la lista y el tipo de archivo aparece en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si no se cumple alguna de estas condiciones, la política no abrirá automáticamente el archivo descargado.
@@ -2900,6 +2902,16 @@ Esta política está disponible para que los administradores puedan revisar el c
 Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KEY_USAGE_INCOMPATIBLE. Los sitios con este error probablemente no tengan un certificado configurado correctamente. Los paquetes de cifrado ECDHE_RSA modernos emplean la opción para usar la clave "digitalSignature", mientras que los antiguos paquetes de cifrado para descifrar RSA emplean la opción para usar la clave "keyEncipherment". Si no lo tienes claro, los administradores deberían incluir ambas opciones en los certificados RSA destinados a HTTPS.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
+<translation id="3468115890799739909">Esta política controla la visibilidad de la página del historial de Chrome organizada en grupos de páginas.
+
+      Si se habilita esta política, se mostrará la página del historial de Chrome organizada en grupos en chrome://history/grouped.
+
+      Si se inhabilita esta política, no se mostrará la página del historial de Chrome organizada en grupos en chrome://history/grouped.
+
+      Si no se establece esta política, se mostrará la página del historial de Chrome organizada en grupos en chrome://history/grouped de forma predeterminada.
+
+      Ten en cuenta que, si la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> se inhabilita y <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, la página del historial de Chrome organizada en grupos seguirá estando disponible en chrome://history/grouped, pero puede que sea menos relevante para el usuario.
+</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
 <translation id="3480961938508521469">Carga totalmente la batería a velocidad estándar.</translation>
 <translation id="348110646151632565">Habilita la función de accesibilidad Enunciar selección en la pantalla de inicio de sesión.
@@ -3085,7 +3097,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3625900437628963632">Indica si se recordará el valor de la contraseña de Kerberos definido en este elemento de la política. Si no se define o se le asigna el valor true, se recordará la contraseña. Si se le asigna el valor false, no se recordará la contraseña. Se ignorará si el campo de contraseña de esta cuenta no se especifica. Este campo es compatible desde la versión 116 de ChromeOS.</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
-<translation id="3632122147977480546">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/2.</translation>
 <translation id="3634117682099473917">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" />, la cual anulará si se establece. Por el contrario, permite especificar información de identificación.
 
 Si se le asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a <ph name="DOH_MODE_POLICY_NAME" />, esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" /> deberá establecerse y no dejarse vacía.
@@ -4386,7 +4397,6 @@ Si se inhabilita esta política, la promoción de la extensión del proveedor de
       Si se inhabilita esta opción, los usuarios no podrán usar Mi teléfono.
 
       Si no se establece esta política, la opción predeterminada no estará disponible para usuarios gestionados por empresas y sí estará disponible para los no gestionados.</translation>
-<translation id="4774499365794632139">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/2 de forma predeterminada.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página más reciente de resultados del buscador predeterminado en un panel lateral del navegador</translation>
 <translation id="4786784434769279324">Acciones que se ejecutarán cuando el ordenador esté inactivo</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
@@ -6088,16 +6098,6 @@ Consulta https://developer.chrome.com/blog/immutable-document-domain/ para obten
       Si se inhabilita esta política o no se le asigna ningún valor, los usuarios podrán elegir si quieren usar <ph name="CHROME_SYNC_NAME" />.
 
       Nota: No actives esta política si se ha habilitado <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, ya que ambas comparten la misma funcionalidad del cliente. La sincronización alojada por Google se desactivará por completo en este caso.</translation>
-<translation id="6320186400425850182">Esta política controla la visibilidad de la página del historial de Chrome organizada en grupos de páginas.
-
-      Si se habilita esta política, se mostrará la página del historial de Chrome organizada en grupos en chrome://history/2.
-
-      Si se inhabilita esta política, la página del historial de Chrome organizada en grupos no se mostrará en chrome://history/2.
-
-      Si no se establece esta política, se mostrará de forma predeterminada la página del historial de Chrome organizada en grupos en chrome://history/2.
-
-      Ten en cuenta que si la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> se inhabilita, y<ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, la página del historial de Chrome organizada en grupos seguirá estando disponible en chrome://history/2, pero puede que sea menos relevante para el usuario.
-</translation>
 <translation id="6320935916601887506">Se usará el nuevo comportamiento de offsetParent de forma predeterminada.</translation>
 <translation id="6327643515544933974">Configuración de USB web</translation>
 <translation id="6330882599388782338">Permitir a los sitios web acceder a los sensores</translation>

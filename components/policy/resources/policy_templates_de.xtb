@@ -2289,7 +2289,6 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 
       Achtung: Es wird nicht empfohlen, die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version einer Kiosk-App zu überlassen, da das Gerät dann unter Umständen Softwareupdates und wichtige Sicherheitspatches nicht erhält. Wird die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version abgegeben, besteht eventuell ein Risiko für die Nutzer.</translation>
 <translation id="2989404644164421834">Seiten neu laden</translation>
-<translation id="299104951237091027">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist unter chrome://history/2 nicht sichtbar.</translation>
 <translation id="299446489108785864">Eine Liste von URLs, die angibt, auf welche URLs die Richtlinie <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die von Nutzern festgelegt werden.
 
       Wenn diese Richtlinie konfiguriert ist, werden Dateien nur automatisch von ihr geöffnet, wenn die URL Teil dieses Satzes ist und der Dateityp in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> aufgelistet ist. Ist eine dieser Bedingungen nicht erfüllt, wird der Download nicht automatisch von der Richtlinie geöffnet.
@@ -3072,7 +3071,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3625900437628963632">Gibt an, ob das in diesem Richtlinienelement festgelegte Kerberos-Passwort gespeichert wird. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird das Passwort gespeichert. Ist sie auf „false“ gesetzt, wird das Passwort nicht gespeichert. Wird ignoriert, wenn für dieses Konto kein Passwort festgelegt ist. Dieses Feld wird seit ChromeOS-Version 116 unterstützt.</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
-<translation id="3632122147977480546">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist unter chrome://history/2 sichtbar.</translation>
 <translation id="3634117682099473917">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS-over-HTTPS). Wenn du mehrere DoH-Resolver angeben möchtest, trenne die dazugehörigen URI-Vorlagen durch Leerzeichen. Diese Richtlinie ist der Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ sehr ähnlich, die sie überschreibt, wenn sie konfiguriert ist. Im Gegensatz dazu unterstützt sie aber die Angabe von Identitätsinformationen.
 
 Wenn „<ph name="DOH_MODE_POLICY_NAME" />“ auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist, muss entweder diese Richtlinie oder „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ festgelegt werden und darf nicht leer sein.
@@ -4362,7 +4360,6 @@ Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmelde
       Ist diese Einstellung deaktiviert, können Nutzer der Verwendung von Phone Hub nicht zustimmen.
 
       Wenn diese Richtlinie nicht konfiguriert ist, gilt die Standardeinstellung: Durch Unternehmen verwaltete Nutzer können die Funktion nicht verwenden, während sie für nicht verwaltete Nutzer zur Verfügung steht.</translation>
-<translation id="4774499365794632139">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist standardmäßig unter chrome://history/2 sichtbar.</translation>
 <translation id="4783415902268741066">Zulassen, dass die neuesten Ergebnisse der Standardsuchmaschine in der Seitenleiste eines Browsers angezeigt werden</translation>
 <translation id="4786784434769279324">Aktionen, die ausgeführt werden sollen, wenn der Computer inaktiv ist</translation>
 <translation id="4787763197941188108">Überschreibt die standardmäßige Druckseitengröße.
@@ -6034,16 +6031,6 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Nutzer selbst entscheiden, ob sie die <ph name="CHROME_SYNC_NAME" /> verwenden möchten.
 
       Hinweis: Aktiviere diese Richtlinie nicht, wenn „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ aktiviert ist, da diese Funktion über dieselbe clientseitige Funktion verfügt. Die von Google gehostete Synchronisierung ist in diesem Fall vollständig deaktiviert.</translation>
-<translation id="6320186400425850182">Diese Richtlinie legt die Sichtbarkeit der in Seitengruppen eingeteilten Chrome-Verlaufsseite fest.
-
-      Wenn die Richtlinie aktiviert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite unter chrome://history/2 sichtbar.
-
-      Wenn die Richtlinie deaktiviert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite unter chrome://history/2 nicht sichtbar.
-
-      Wenn die Richtlinie nicht konfiguriert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite standardmäßig unter chrome://history/2 sichtbar.
-
-      Hinweis: Wenn die Richtlinie <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite trotzdem unter chrome://history/2 verfügbar, auch wenn sie möglicherweise weniger relevant für den Nutzer ist.
-</translation>
 <translation id="6320935916601887506">Standardmäßig wird das neue „offsetParent“-Verhalten verwendet.</translation>
 <translation id="6327643515544933974">Web USB-Einstellungen</translation>
 <translation id="6330882599388782338">Websites den Zugriff auf Sensoren erlauben</translation>

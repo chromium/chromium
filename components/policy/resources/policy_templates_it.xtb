@@ -881,6 +881,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 Se il criterio viene disattivato, Chrome Software Cleaner non esegue alcuna analisi periodica e l'attivazione manuale è disattivata.
 
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1736990730683753958">La pagina della cronologia di Chrome organizzata in gruppi non sarà visibile all'indirizzo chrome://history/grouped.</translation>
 <translation id="1744340218280697033">Non consentire ai genitori di aggiungere account supervisionati</translation>
 <translation id="1751429117283165017">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che non possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
 
@@ -1301,6 +1302,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>
 <translation id="2089541797660774692">Attiva reporting su cloud tramite browser gestito</translation>
+<translation id="2090712407517297305">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se il criterio viene impostato su Attivato, è consentito il proxy di compressione dei dati. Se viene impostato su Disattivato, il proxy non è consentito.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti possono scegliere di utilizzare la funzionalità.</translation>
@@ -1452,6 +1454,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
+<translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
 <translation id="2213342458177721585">Attiva il layout Hindi Inscript a livello di dispositivo.</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
@@ -2289,7 +2292,6 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 
       Avviso: non delegare il controllo della versione di <ph name="PRODUCT_OS_NAME" /> a un'app kiosk, poiché potrebbe impedire al dispositivo di ricevere gli aggiornamenti del software e correzioni fondamentali per la sicurezza. La delega del controllo della versione di <ph name="PRODUCT_OS_NAME" /> potrebbe esporre gli utenti a dei rischi.</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
-<translation id="299104951237091027">La pagina della cronologia di Chrome organizzata in gruppi non sarà visibile all'indirizzo chrome://history/2.</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicato il criterio <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questo criterio non influisce sui valori di apertura automatica impostati dagli utenti.
 
       Se il criterio viene impostato, i file verranno aperti automaticamente in base al criterio soltanto se l'URL fa parte di questo insieme e il tipo di file è elencato nel criterio <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se una delle condizioni è falsa, i file scaricati non verranno aperti automaticamente in base al criterio.
@@ -2889,6 +2891,16 @@ Questo criterio è disponibile per gli amministratori per visualizzare in antepr
 Le connessioni che non superano il controllo non andranno a buon fine con l'errore ERR_SSL_KEY_USAGE_INCOMPATIBLE. I siti che non superano questo errore hanno probabilmente un certificato configurato in modo errato. Le moderne suite di crittografia ECDHE_RSA utilizzano l'opzione di utilizzo della chiave "digitalSignature", mentre le suite di crittografia di decrittografia precedenti utilizzano l'opzione di utilizzo della chiave "keyEncipherment". In caso di dubbi, gli amministratori devono includere entrambi i certificati RSA destinati a HTTPS.</translation>
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
+<translation id="3468115890799739909">Questo criterio consente di stabilire la visibilità della pagina della cronologia di Chrome organizzata in gruppi di pagine.
+
+      Se il criterio viene attivato, all'indirizzo chrome://history/grouped sarà visibile una pagina della cronologia di Chrome organizzata in gruppi.
+
+      Se il criterio viene disattivato, all'indirizzo chrome://history/grouped non sarà visibile una pagina della cronologia di Chrome organizzata in gruppi.
+
+      Se il criterio non viene configurato, all'indirizzo chrome://history/grouped sarà visibile per impostazione predefinita una pagina della cronologia di Chrome organizzata in gruppi.
+
+      Tieni presente che se il criterio <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> viene disattivato, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene attivato o non viene configurato, all'indirizzo chrome://history/grouped sarà comunque disponibile una pagina della cronologia di Chrome organizzata in gruppi, che però potrebbe essere meno pertinente per l'utente.
+</translation>
 <translation id="3478024346823118645">Cancella dati utente all'uscita</translation>
 <translation id="3480961938508521469">Carica completamente la batteria con la modalità standard.</translation>
 <translation id="348110646151632565">Consente di attivare la funzione di accessibilità Seleziona per ascoltare sulla schermata di accesso.
@@ -3072,7 +3084,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3625900437628963632">Se memorizzare il valore della password Kerberos impostato in questo elemento del criterio. Se non viene configurato o se viene impostato su true, la password viene memorizzata. Se viene impostato su false, la password non viene memorizzata. Viene ignorato se il campo della password non è specificato per questo account. Questo campo è supportato a partire dalla versione 116 di ChromeOS.</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
-<translation id="3632122147977480546">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/2.</translation>
 <translation id="3634117682099473917">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questo criterio è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e lo sostituirà se verrà specificato. Al contrario di quel criterio, supporta la specifica di informazioni sull'identità.
 
 Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questo criterio o il criterio <ph name="DOH_TEMPLATES_POLICY_NAME" />.
@@ -4375,7 +4386,6 @@ Se viene disattivato, all'utente non viene mostrata la promozione dell'estension
       Se viene disattivata, gli utenti non possono attivare Phone Hub.
 
       Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
-<translation id="4774499365794632139">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/2 per impostazione predefinita.</translation>
 <translation id="4783415902268741066">Consenti la visualizzazione della pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale del browser</translation>
 <translation id="4786784434769279324">Azioni da eseguire quando il computer è inattivo</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
@@ -6053,16 +6063,6 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno scegliere se usare o meno <ph name="CHROME_SYNC_NAME" />.
 
       Nota: non attivare questo criterio se il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> è impostato su Attivato perché quest'ultimo ha la stessa funzione lato client. La sincronizzazione ospitata su Google viene disattivata completamente in questo caso.</translation>
-<translation id="6320186400425850182">Questo criterio consente di stabilire la visibilità della pagina della cronologia di Chrome organizzata in gruppi di pagine.
-
-      Se il criterio viene attivato, all'indirizzo chrome://history/2 sarà visibile una pagina della cronologia di Chrome organizzata in gruppi.
-
-      Se il criterio viene disattivato, all'indirizzo chrome://history/2 non sarà visibile una pagina della cronologia di Chrome organizzata in gruppi.
-
-      Se il criterio non viene configurato, all'indirizzo chrome://history/2 sarà visibile per impostazione predefinita una pagina della cronologia di Chrome organizzata in gruppi.
-
-      Tieni presente che se il criterio <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> viene disattivato, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene attivato o non viene configurato, all'indirizzo chrome://history/2 sarà comunque disponibile una pagina della cronologia di Chrome organizzata in gruppi, che però potrebbe essere meno pertinente per l'utente.
-</translation>
 <translation id="6320935916601887506">Per impostazione predefinita verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="6327643515544933974">Impostazioni USB web</translation>
 <translation id="6330882599388782338">Consenti ai siti di accedere ai sensori</translation>

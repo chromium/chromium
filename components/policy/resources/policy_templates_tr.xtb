@@ -888,6 +888,7 @@ Politika tarafından sağlanan tüm gruplar geçerli bir Birinci Taraf Grup olma
 Politika, Devre dışı değerine ayarlanırsa Chrome Temizleme Aracı düzenli tarama yapmaz ve manuel tetikleme devre dışı bırakılır.
 
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
+<translation id="1736990730683753958">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülemez.</translation>
 <translation id="1744340218280697033">Anne veya babaların gözetilen hesap eklemesine izin verme</translation>
 <translation id="1751429117283165017">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere yazma erişimi vermelerini isteyemeyecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
 
@@ -1309,6 +1310,7 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 <translation id="208566302163036794">Devre dışı bırakılan özellikleri engelle</translation>
 <translation id="208623333578980446">Güç yönetimi için ekran uyanık kalma kilitlerine izin ver</translation>
 <translation id="2089541797660774692">Yönetilen tarayıcı bulut raporlamasını etkinleştir</translation>
+<translation id="2090712407517297305">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.</translation>
 <translation id="2090939118981888335">Politika, Etkin değerine ayarlanırsa veri sıkıştırma proxy'sine izin verilir. Politika, Devre Dışı değerine ayarlanırsa proxy'ye izin verilmez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Politika ayarlanmadan bırakılırsa kullanıcılar, özelliği kullanmayı seçebilir.</translation>
@@ -1460,6 +1462,7 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 <translation id="2204379573346866896">İçinde bulunulan saatte geçen dakika sayısı.</translation>
 <translation id="2204753382813641270">Rafın otomatik olarak gizlenmesini kontrol et</translation>
 <translation id="2208976000652006649">POST kullanan arama URL'si için parametreler</translation>
+<translation id="2212011154693551439">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası varsayılan olarak chrome://history/grouped adresinde görülebilir.</translation>
 <translation id="2213059592185933570">Dolaşım profillerinin oluşturulmasını etkinleştir</translation>
 <translation id="2213342458177721585">Hintçe alfabetik düzeni cihaz genelinde etkinleştir.</translation>
 <translation id="2215238871726750562">Politikayı True (Doğru) değerine ayarlamak, tarayıcı penceresinin oturumun başında açılmasını önler.
@@ -2308,7 +2311,6 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 
       Uyarı: Cihazın yazılım güncellemelerini ve kritik güvenlik düzeltmelerini almasını engelleyebileceği için <ph name="PRODUCT_OS_NAME" /> sürümünün kontrol yetkisini bir kiosk uygulamasına vermeyin. <ph name="PRODUCT_OS_NAME" /> sürümünün kontrol yetkisini vermek kullanıcılar için risk oluşturabilir.</translation>
 <translation id="2989404644164421834">Sayfaları Yeniden Yükle</translation>
-<translation id="299104951237091027">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/2 adresinde görülemez.</translation>
 <translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> politikasının hangi URL'lere uygulanacağını belirten URL'lerin listesi. Bu politikanın, kullanıcılar tarafından belirlenen otomatik olarak açık değerler üzerinde hiçbir etkisi yoktur.
 
       Bu politika ayarlanırsa dosyalar yalnızca URL bu kümenin bir parçası olup dosya türü <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> öğesinde listeleniyorsa politikaya göre otomatik olarak açılır. İki koşuldan biri yanlışsa indirilen, politikaya göre otomatik olarak açılmaz.
@@ -2929,6 +2931,16 @@ yapılandırılmış olabilir. Modern ECDHE_RSA şifre paketlerinde
 HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3461279434465463233">Güç durumunu bildir</translation>
+<translation id="3468115890799739909">Bu politika, sayfa grupları halinde düzenlenmiş Chrome geçmişi sayfasının görünürlüğünü kontrol eder.
+
+      Politika, Etkin olarak ayarlanırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.
+
+      Politika, Devre Dışı olarak ayarlanırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/grouped adresinde görülemez.
+
+      Politika ayarlanmadan bırakılırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası varsayılan olarak chrome://history/grouped adresinde görülebilir.
+
+      <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> politikası Devre Dışı olarak ayarlıyken <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> politikası Etkin olarak ayarlanır veya ayarlanmadan bırakılırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/grouped adresinde bulunmaya devam eder ancak kullanıcıyla alaka düzeyi düşük olabilir.
+</translation>
 <translation id="3478024346823118645">Çıkışta kullanıcı verilerini sil</translation>
 <translation id="3480961938508521469">Pili standart bir hızda tam olarak şarj et.</translation>
 <translation id="348110646151632565">Giriş ekranında seç ve dinle erişilebilirlik özelliğini etkinleştirin.
@@ -3114,7 +3126,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3625900437628963632">Bu politika öğesinde ayarlanan Kerberos şifre değerinin hatırlanıp hatırlanmayacağı. Ayarlanmazsa veya doğru değerine ayarlanırsa şifre hatırlanır. Yanlış değerine ayarlanırsa şifre hatırlanmaz. Bu hesap için şifre alanı belirtilmemişse yoksayılır. Bu alan, ChromeOS 116 sürümünden itibaren desteklenir.</translation>
 <translation id="3627678165642179114">Yazım denetimi Web hizmetini etkinleştir veya devre dışı bırak</translation>
 <translation id="3628480121685794414">Tek yönlü yazdırmayı etkinleştir</translation>
-<translation id="3632122147977480546">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/2 adresinde görülebilir.</translation>
 <translation id="3634117682099473917">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonu. Birden fazla DNS-over-HTTPS çözümleyicisi belirlemek için karşılık gelen URI şablonlarını boşlukla ayırın. Bu politika, <ph name="DOH_TEMPLATES_POLICY_NAME" /> politikasına çok benzer ve belirtilmesi halinde onu geçersiz kılar. Buna karşılık, kimlik bilgilerini belirtmeyi destekler.
 
 <ph name="DOH_MODE_POLICY_NAME" /> politikası, <ph name="SECURE_DNS_MODE_SECURE" /> değerine ayarlanırsa bu politika veya <ph name="DOH_TEMPLATES_POLICY_NAME" /> ayarlanmalı ve boş bırakılmamalıdır.
@@ -4419,7 +4430,6 @@ Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzant
       Bu ayar devre dışı bırakılırsa kullanıcıların Telefon Merkezi'ne kaydolmalarına izin verilmez.
 
       Bu politika ayarlanmadan bırakılırsa varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
-<translation id="4774499365794632139">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası varsayılan olarak chrome://history/2 adresinde görülebilir.</translation>
 <translation id="4783415902268741066">En son varsayılan arama motoru sonuç sayfasının, tarayıcı yan panelinde gösterilmesine izin ver</translation>
 <translation id="4786784434769279324">Bilgisayar boşta kaldığında gerçekleştirilecek işlemler</translation>
 <translation id="4787763197941188108">Varsayılan yazdırma sayfa boyutunu geçersiz kılar.
@@ -6115,16 +6125,6 @@ Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-do
       Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcıların <ph name="CHROME_SYNC_NAME" /> kullanma konusunda seçim yapmasına izin verilir.
 
       Not: Bu özellik aynı istemci taraflı işleve sahip olduğundan, <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> Etkinse bu politikayı etkinleştirmeyin. Bu durumda Google tarafından barındırılan senkronizasyon tamamen kapalıdır.</translation>
-<translation id="6320186400425850182">Bu politika, sayfa grupları halinde düzenlenmiş Chrome geçmişi sayfasının görünürlüğünü kontrol eder.
-
-      Politika, Etkin olarak ayarlanırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/2 adresinde görülebilir.
-
-      Politika, Devre Dışı olarak ayarlanırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/2 adresinde görülemez.
-
-      Politika ayarlanmadan bırakılırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası varsayılan olarak chrome://history/2 adresinde görülebilir.
-
-      <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> politikası Devre Dışı olarak ayarlıyken <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> politikası Etkin olarak ayarlanır veya ayarlanmadan bırakılırsa gruplar halinde düzenlenmiş bir Chrome geçmişi sayfası chrome://history/2 adresinde bulunmaya devam eder ancak kullanıcıyla alaka düzeyi düşük olabilir.
-</translation>
 <translation id="6320935916601887506">Varsayılan olarak yeni offsetParent davranışı kullanılacak.</translation>
 <translation id="6327643515544933974">Web USB ayarları</translation>
 <translation id="6330882599388782338">Sitelerin sensörlere erişmesine izin ver</translation>
