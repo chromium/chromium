@@ -62,9 +62,11 @@ TEST(ParsedCookieTest, TestEmpty) {
 }
 
 TEST(ParsedCookieTest, TestSetEmptyNameValue) {
-  ParsedCookie empty("");
+  CookieInclusionStatus status;
+  ParsedCookie empty("", /*block_truncated=*/false, &status);
   EXPECT_FALSE(empty.IsValid());
-  EXPECT_FALSE(empty.SetName(""));
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_NO_COOKIE_CONTENT));
   EXPECT_FALSE(empty.SetValue(""));
   EXPECT_FALSE(empty.IsValid());
 

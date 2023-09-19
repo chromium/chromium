@@ -477,9 +477,8 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   // Ignore cookies with neither name nor value.
   if (name.empty() && value.empty()) {
     if (status_out != nullptr) {
-      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     }
     // TODO(crbug.com/1228815) Note - if the exclusion reasons change to no
     // longer be the same, we'll need to not return right away and evaluate all
@@ -554,9 +553,8 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 
   // Exit early for an empty cookie string.
   if (it == end) {
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
     status_out.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     return;
   }
 

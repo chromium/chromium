@@ -827,6 +827,11 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
     blockedReasons->push_back(
         Network::SetCookieBlockedReasonEnum::UnknownError);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT)) {
+    blockedReasons->push_back(
+        Network::SetCookieBlockedReasonEnum::NoCookieContent);
+  }
 
   return blockedReasons;
 }

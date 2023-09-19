@@ -1,9 +1,9 @@
-Verifies that receiving a set-cookie header with invalid syntax sends a Network.ResponseReceivedExtraInfo event with the blocked cookie.
+Verifies that receiving a set-cookie header with only whitespace sends a Network.ResponseReceivedExtraInfo event with the blocked cookie.
 
-Invalid syntax blocked set-cookies:[
+NoCookieContent blocked set-cookies:[
     [0] : {
         blockedReasons : [
-            [0] : SyntaxError
+            [0] : NoCookieContent
         ]
         cookieLine : 
     }

@@ -5783,6 +5783,8 @@ domain Network
       # character if it appears in the middle of the cookie name, value, an
       # attribute name, or an attribute value.
       DisallowedCharacter
+      # Cookie contains no content or only whitespace.
+      NoCookieContent
 
   # Types of reasons why a cookie may not be sent with a request.
   experimental type CookieBlockedReason extends string

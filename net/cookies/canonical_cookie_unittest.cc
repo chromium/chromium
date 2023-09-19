@@ -4026,7 +4026,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       false /*same_party*/, absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT}));
 
   // Check that value can contain an equal sign, even when no name is present.
   // Note that in newer drafts of RFC6265bis, it is specified that a cookie with
@@ -4362,7 +4362,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       COOKIE_PRIORITY_DEFAULT, true /*same_party*/,
       absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE,
+      {CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT,
+       CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE,
        CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 
   // Check that RFC6265bis name + value string length limits are enforced.
