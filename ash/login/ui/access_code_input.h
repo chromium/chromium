@@ -219,6 +219,9 @@ class FixedLengthCodeInput : public AccessCodeInput {
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
   // Enables/disables entering a PIN. Currently, there is no use-case that uses
   // this with fixed length PINs.
   void SetInputEnabled(bool input_enabled) override;
