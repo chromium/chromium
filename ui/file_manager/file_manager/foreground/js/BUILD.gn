@@ -52,7 +52,6 @@ group("js_modules") {
     ":gear_menu_controller",
     ":guest_os_controller",
     ":holding_space_util",
-    ":last_modified_controller",
     ":launch_param",
     ":list_thumbnail_loader",
     ":main",
@@ -126,7 +125,6 @@ js_type_check("closure_compile_jsmodules") {
     ":gear_menu_controller",
     ":guest_os_controller",
     ":holding_space_util",
-    ":last_modified_controller",
     ":launch_param",
     ":list_thumbnail_loader",
     ":main",
@@ -512,7 +510,6 @@ js_library("file_manager") {
     ":file_type_filters_controller",
     ":folder_shortcuts_data_model",
     ":gear_menu_controller",
-    ":last_modified_controller",
     ":launch_param",
     ":list_thumbnail_loader",
     ":main_window_component",
@@ -788,14 +785,6 @@ js_library("holding_space_util") {
     "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("last_modified_controller") {
-  deps = [
-    ":directory_model",
-    "ui:file_table",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 

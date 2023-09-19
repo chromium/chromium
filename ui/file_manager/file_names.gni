@@ -117,7 +117,6 @@ static_js_files = [
   "file_manager/foreground/js/gear_menu_controller.js",
   "file_manager/foreground/js/guest_os_controller.js",
   "file_manager/foreground/js/holding_space_util.js",
-  "file_manager/foreground/js/last_modified_controller.js",
   "file_manager/foreground/js/launch_param.js",
   "file_manager/foreground/js/list_thumbnail_loader.js",
   "file_manager/foreground/js/main.js",
@@ -315,6 +314,7 @@ ts_files = [
   # Foreground.
   "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/file_tasks.ts",
+  "file_manager/foreground/js/last_modified_controller.ts",
   "file_manager/foreground/js/task_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
 
