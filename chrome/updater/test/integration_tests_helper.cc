@@ -286,6 +286,9 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},
     {"expect_not_registered",
      WithSwitch("app_id", WithSystemScope(Wrap(&ExpectNotRegistered)))},
+    {"expect_app_tag",
+     WithSwitch("tag",
+                WithSwitch("app_id", WithSystemScope(Wrap(&ExpectAppTag))))},
     {"expect_app_version",
      WithSwitch("version", WithSwitch("app_id", WithSystemScope(
                                                     Wrap(&ExpectAppVersion))))},
@@ -330,10 +333,13 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionNotActive)))},
     {"install", WithSystemScope(Wrap(&Install))},
     {"install_updater_and_app",
-     WithSwitch("child_window_text_to_find",
-                WithSwitch("is_silent_install",
-                           WithSwitch("app_id", WithSystemScope(Wrap(
-                                                    &InstallUpdaterAndApp)))))},
+     WithSwitch(
+         "child_window_text_to_find",
+         WithSwitch(
+             "tag",
+             WithSwitch("is_silent_install",
+                        WithSwitch("app_id", WithSystemScope(Wrap(
+                                                 &InstallUpdaterAndApp))))))},
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
     {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},

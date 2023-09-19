@@ -416,12 +416,13 @@ void Install(UpdaterScope scope) {
 void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,
                           const bool is_silent_install,
+                          const std::string& tag,
                           const std::string& child_window_text_to_find) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kInstallSwitch);
-  command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
+  command_line.AppendSwitchASCII(kTagSwitch, tag);
   command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
   if (is_silent_install) {
     ASSERT_TRUE(child_window_text_to_find.empty());
@@ -876,6 +877,14 @@ void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
                          scope, CreateGlobalPrefs(scope)->GetPrefService())
                          ->GetAppIds(),
                      app_id));
+}
+
+void ExpectAppTag(UpdaterScope scope,
+                  const std::string& app_id,
+                  const std::string& tag) {
+  EXPECT_EQ(tag, base::MakeRefCounted<PersistedData>(
+                     scope, CreateGlobalPrefs(scope)->GetPrefService())
+                     ->GetAP(app_id));
 }
 
 void ExpectAppVersion(UpdaterScope scope,

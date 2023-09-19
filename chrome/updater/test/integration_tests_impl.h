@@ -140,6 +140,7 @@ void Install(UpdaterScope scope);
 void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,
                           const bool is_silent_install,
+                          const std::string& tag,
                           const std::string& child_window_text_to_find);
 
 // Expects that the updater is installed on the system and the specified
@@ -252,6 +253,10 @@ void ExpectLogRotated(UpdaterScope scope);
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id);
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id);
+
+void ExpectAppTag(UpdaterScope scope,
+                  const std::string& app_id,
+                  const std::string& tag);
 
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,

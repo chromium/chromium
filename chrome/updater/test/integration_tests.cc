@@ -179,8 +179,9 @@ class IntegrationTest : public ::testing::Test {
 
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
+                            const std::string& tag,
                             const std::string& child_window_text_to_find = {}) {
-    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install,
+    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install, tag,
                                          child_window_text_to_find);
   }
 
@@ -323,6 +324,10 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectNotRegistered(const std::string& app_id) {
     test_commands_->ExpectNotRegistered(app_id);
+  }
+
+  void ExpectAppTag(const std::string& app_id, const std::string& tag) {
+    test_commands_->ExpectAppTag(app_id, tag);
   }
 
   void ExpectAppVersion(const std::string& app_id,
@@ -881,7 +886,6 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
@@ -891,7 +895,7 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
       base::Version({0, 0, 0, 0}), v1));
 
   ASSERT_NO_FATAL_FAILURE(
-      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/true));
+      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/true, "usagestats=1"));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
@@ -900,6 +904,64 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, InstallUpdaterAndTwoApps) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const std::string kAppId2("test2");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&ap=foo&usagestats=1"})));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId2, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId2, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId2, "&ap=foo2&usagestats=1"})));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId2, v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId2, "foo2"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, ChangeTag) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&ap=foo&usagestats=1"})));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({1}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&ap=foo2&usagestats=1"})));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  // TODO(crbug.com/1471724): An overinstall with a new AP should change the AP.
+  // Once this is fixed, the below assertion should be:
+  // ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo2"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, Handoff) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -2060,8 +2122,8 @@ TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
                                /*should_update=*/true, false, "", crx_path),
       });
 
-  ASSERT_NO_FATAL_FAILURE(
-      InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/true));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kMsiAppId, /*is_silent_install=*/true, "usagestats=1"));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
@@ -2191,8 +2253,9 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   if (GetParam().interactive_install) {
-    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
-        kMsiAppId, /*is_silent_install=*/false, GetParam().installer_text));
+    ASSERT_NO_FATAL_FAILURE(
+        InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/false,
+                             "usagestats=1", GetParam().installer_text));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     int64_t crx_file_size = 0;

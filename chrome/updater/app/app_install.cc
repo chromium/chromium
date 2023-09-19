@@ -49,25 +49,46 @@ class SplashScreenImpl : public SplashScreen {
 
 class AppInstallControllerImpl : public AppInstallController {
  public:
-  explicit AppInstallControllerImpl(
-      scoped_refptr<UpdateService> /*update_service*/) {}
+  explicit AppInstallControllerImpl(scoped_refptr<UpdateService> update_service)
+      : update_service_(update_service) {}
   // Override for AppInstallController.
-  void InstallApp(const std::string& /*app_id*/,
+  void InstallApp(const std::string& app_id,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), 0));
+    // TODO(crbug.com/1484292): Factor out common code from app_install_win.cc.
+    RegistrationRequest request;
+    request.app_id = app_id;
+    request.version = base::Version(kNullVersion);
+    absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+    absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+    if (app_args) {
+      request.ap = app_args->ap;
+    }
+    if (tag_args) {
+      request.brand_code = tag_args->brand_code;
+    }
+    update_service_->Install(request, GetDecodedInstallDataFromAppArgs(app_id),
+                             GetInstallDataIndexFromAppArgs(app_id),
+                             UpdateService::Priority::kForeground,
+                             base::DoNothing(),
+                             base::BindOnce([](UpdateService::Result result) {
+                               return static_cast<int>(result);
+                             }).Then(std::move(callback)));
   }
 
   void InstallAppOffline(const std::string& app_id,
-                         const std::string& app_name,
+                         const std::string& /*app_name*/,
                          base::OnceCallback<void(int)> callback) override {
+    // TODO(crbug.com/1484292): Implement this.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
 
  protected:
   ~AppInstallControllerImpl() override = default;
+
+ private:
+  scoped_refptr<UpdateService> update_service_;
 };
 
 }  // namespace

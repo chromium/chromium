@@ -81,10 +81,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void InstallUpdaterAndApp(
       const std::string& app_id,
       const bool is_silent_install,
+      const std::string& tag,
       const std::string& child_window_text_to_find) const override {
     RunCommand("install_updater_and_app",
                {Param("app_id", app_id),
                 Param("is_silent_install", BoolToString(is_silent_install)),
+                Param("tag", tag),
                 Param("child_window_text_to_find", child_window_text_to_find)});
   }
 
@@ -231,6 +233,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExpectNotRegistered(const std::string& app_id) const override {
     RunCommand("expect_not_registered", {Param("app_id", app_id)});
+  }
+
+  void ExpectAppTag(const std::string& app_id,
+                    const std::string& tag) const override {
+    RunCommand("expect_app_tag", {Param("app_id", app_id), Param("tag", tag)});
   }
 
   void ExpectAppVersion(const std::string& app_id,

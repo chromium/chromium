@@ -45,6 +45,7 @@ class IntegrationTestCommands
   virtual void InstallUpdaterAndApp(
       const std::string& app_id,
       const bool is_silent_install,
+      const std::string& tag,
       const std::string& child_window_text_to_find) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
@@ -94,6 +95,8 @@ class IntegrationTestCommands
   virtual void ExpectLogRotated() const = 0;
   virtual void ExpectRegistered(const std::string& app_id) const = 0;
   virtual void ExpectNotRegistered(const std::string& app_id) const = 0;
+  virtual void ExpectAppTag(const std::string& app_id,
+                            const std::string& tag) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
