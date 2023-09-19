@@ -26,7 +26,7 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -101,9 +101,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
 
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(profile);
-  if (scalable_iph) {
+  bool is_scalable_iph_available =
+      ScalableIphFactoryImpl::IsBrowserContextEligible(profile);
+  if (is_scalable_iph_available) {
     source->AddBoolean("HelpAppWelcomeTips",
                        ash::features::AreHelpAppWelcomeTipsEnabled());
     bool first_week_of_profile =

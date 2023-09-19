@@ -66,6 +66,12 @@ void ScalableIphFactoryImpl::BuildInstance() {
   static base::NoDestructor<ScalableIphFactoryImpl> scalable_iph_factory_impl;
 }
 
+bool ScalableIphFactoryImpl::IsBrowserContextEligible(
+    content::BrowserContext* browser_context) {
+  return static_cast<ScalableIphFactoryImpl*>(GetInstance())
+             ->GetBrowserContextToUse(browser_context) != nullptr;
+}
+
 void ScalableIphFactoryImpl::SetDelegateFactoryForTesting(
     DelegateTestingFactory delegate_testing_factory) {
   CHECK(delegate_testing_factory_.is_null())

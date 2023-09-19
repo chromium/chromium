@@ -25,6 +25,9 @@ class ScalableIphFactoryImpl : public ScalableIphFactory {
 
   static void BuildInstance();
 
+  static bool IsBrowserContextEligible(
+      content::BrowserContext* browser_context);
+
   void SetDelegateFactoryForTesting(
       DelegateTestingFactory delegate_testing_factory);
 
