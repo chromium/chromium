@@ -55,13 +55,8 @@ base::Time GetNextMonth(base::Time ts) {
   exploded.hour = exploded.minute = exploded.second = exploded.millisecond = 0;
 
   base::Time new_month_ts;
-  bool success = base::Time::FromUTCExploded(exploded, &new_month_ts);
-
-  if (!success) {
-    return base::Time();
-  }
-
-  return new_month_ts;
+  return base::Time::FromUTCExploded(exploded, &new_month_ts) ? new_month_ts
+                                                              : base::Time();
 }
 
 // Number of months in a year.

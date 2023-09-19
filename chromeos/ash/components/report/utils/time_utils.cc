@@ -116,29 +116,18 @@ absl::optional<base::Time> GetPreviousYear(base::Time ts) {
 
 bool IsSameYearAndMonth(base::Time ts1, base::Time ts2) {
   base::Time::Exploded ts1_exploded;
-  base::Time::Exploded ts2_exploded;
-
   ts1.UTCExplode(&ts1_exploded);
+  base::Time::Exploded ts2_exploded;
   ts2.UTCExplode(&ts2_exploded);
-
-  if ((ts1_exploded.year == ts2_exploded.year) &&
-      (ts1_exploded.month == ts2_exploded.month)) {
-    return true;
-  }
-
-  return false;
+  return (ts1_exploded.year == ts2_exploded.year) &&
+         (ts1_exploded.month == ts2_exploded.month);
 }
 
 std::string FormatTimestampToMidnightGMTString(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d GMT",
-                            exploded.year, exploded.month,
-                            exploded.day_of_month,
-                            /* hour */ 0,
-                            /* minute */ 0,
-                            /* second */ 0,
-                            /* millisecond */ 0);
+  return base::StringPrintf("%04d-%02d-%02d 00:00:00.000 GMT", exploded.year,
+                            exploded.month, exploded.day_of_month);
 }
 
 std::string TimeToYYYYMMDDString(base::Time ts) {

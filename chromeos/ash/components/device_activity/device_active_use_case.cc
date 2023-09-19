@@ -258,13 +258,8 @@ void DeviceActiveUseCase::SetPsmRlweClient(
 std::string DeviceActiveUseCase::FormatPTDateString(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d GMT",
-                            exploded.year, exploded.month,
-                            exploded.day_of_month,
-                            /* hour */ 0,
-                            /* minute */ 0,
-                            /* second */ 0,
-                            /* millisecond */ 0);
+  return base::StringPrintf("%04d-%02d-%02d 00:00:00.000 GMT", exploded.year,
+                            exploded.month, exploded.day_of_month);
 }
 
 absl::optional<psm_rlwe::RlwePlaintextId>

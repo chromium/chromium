@@ -46,13 +46,8 @@ base::Time GetNextMonth(base::Time ts) {
   exploded.hour = exploded.minute = exploded.second = exploded.millisecond = 0;
 
   base::Time new_month_ts;
-  bool success = base::Time::FromUTCExploded(exploded, &new_month_ts);
-
-  if (!success) {
-    return base::Time();
-  }
-
-  return new_month_ts;
+  return base::Time::FromUTCExploded(exploded, &new_month_ts) ? new_month_ts
+                                                              : base::Time();
 }
 
 base::Time GetPreviousMonth(base::Time ts) {
@@ -67,13 +62,8 @@ base::Time GetPreviousMonth(base::Time ts) {
   exploded.hour = exploded.minute = exploded.second = exploded.millisecond = 0;
 
   base::Time new_month_ts;
-  bool success = base::Time::FromUTCExploded(exploded, &new_month_ts);
-
-  if (!success) {
-    return base::Time();
-  }
-
-  return new_month_ts;
+  return base::Time::FromUTCExploded(exploded, &new_month_ts) ? new_month_ts
+                                                              : base::Time();
 }
 
 }  // namespace
@@ -458,17 +448,11 @@ bool ChurnObservationUseCaseImpl::CohortCheckInSuccessfullyUpdatedActiveStatus()
   // Check that the active status object was updated at some point in this
   // month.
   base::Time::Exploded active_status_exploded;
-  base::Time::Exploded cur_ts_exploded;
-
   active_status_ts.UTCExplode(&active_status_exploded);
+  base::Time::Exploded cur_ts_exploded;
   cur_ping_ts.UTCExplode(&cur_ts_exploded);
-
-  if ((active_status_exploded.month == cur_ts_exploded.month) &&
-      (active_status_exploded.year == cur_ts_exploded.year)) {
-    return true;
-  }
-
-  return false;
+  return (active_status_exploded.month == cur_ts_exploded.month) &&
+         (active_status_exploded.year == cur_ts_exploded.year);
 }
 
 void ChurnObservationUseCaseImpl::SetObservationPeriodWindows(base::Time ts) {

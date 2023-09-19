@@ -26,16 +26,12 @@ int GetBitSetAsInt(std::bitset<ChurnActiveStatus::kChurnBitSize> value) {
 
 bool IsFirstActiveInCohort(base::Time first_active_week,
                            base::Time cohort_active_ts) {
-  base::Time::Exploded exploded;
-  first_active_week.UTCExplode(&exploded);
-  int first_active_year = exploded.year;
-  int first_active_month = exploded.month;
-
-  cohort_active_ts.UTCExplode(&exploded);
-  int cohort_year = exploded.year;
-  int cohort_month = exploded.month;
-
-  return first_active_year == cohort_year && first_active_month == cohort_month;
+  base::Time::Exploded first_active_exploded;
+  first_active_week.UTCExplode(&first_active_exploded);
+  base::Time::Exploded cohort_exploded;
+  cohort_active_ts.UTCExplode(&cohort_exploded);
+  return first_active_exploded.year == cohort_exploded.year &&
+         first_active_exploded.month == cohort_exploded.month;
 }
 }  // namespace
 
