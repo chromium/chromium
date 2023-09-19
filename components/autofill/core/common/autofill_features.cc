@@ -279,12 +279,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if Autofill supports merging subset names.
-// TODO(crbug.com/1098943): Remove once launched.
-BASE_FEATURE(kAutofillEnableSupportForMergingSubsetNames,
-             "AutofillEnableSupportForMergingSubsetNames",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether honorific prefix is shown and editable in Autofill Settings
 // on Android, iOS and Desktop.
 // TODO(crbug.com/1141460): Remove once launched.
