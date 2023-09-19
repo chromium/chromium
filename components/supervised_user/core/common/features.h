@@ -34,7 +34,6 @@ BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
 // Experiments to enable proto fetchers
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
-BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);
 
 // Instead of manually implementing the process, use the proto_fetcher.cc's one.
 BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);

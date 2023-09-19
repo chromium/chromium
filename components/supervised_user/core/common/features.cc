@@ -43,10 +43,6 @@ constexpr base::FeatureParam<std::string> kLocalWebApprovalsPreferredButton{
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableCreatePermissionRequestFetcher,
-             "EnableCreatePermissionRequestFetcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers,
              "UseBuiltInRetryingMechanismForListFamilyMembers",
              base::FEATURE_ENABLED_BY_DEFAULT);
