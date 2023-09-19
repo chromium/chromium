@@ -84,6 +84,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE},
       {"keyNotAllowedStatusMessage",
        IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE},
+      {"searchWithFunctionKeyNotAllowedStatusMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE},
       {"warningSearchNotIncluded",
        IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING},
       {"searchNoResults", IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS},

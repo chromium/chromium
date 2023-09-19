@@ -1571,6 +1571,17 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
                           AcceleratorAction::kToggleMirrorMode,
                           top_row_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // Search with Function key is not allowed.
+  const ui::Accelerator search_function_accelerator(ui::VKEY_F1,
+                                                    ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleMirrorMode,
+                          search_function_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSearchWithFunctionKeyNotAllowed,
+            result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {

@@ -39,4 +39,6 @@ enum AcceleratorConfigResult {
   // but it's not necessarily an error. This state warns users of the downsides
   // of using a non-search accelerator.
   kNonSearchAcceleratorWarning = 11,
+  // Error - search + function key is not allowed.
+  kSearchWithFunctionKeyNotAllowed = 12,
 };

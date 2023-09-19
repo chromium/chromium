@@ -385,6 +385,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
+      // Search with function keys are not allowed.
+      // TODO(b/286268215): localize string.
+      case AcceleratorConfigResult.kSearchWithFunctionKeyNotAllowed: {
+        this.statusMessage =
+            this.i18n('searchWithFunctionKeyNotAllowedStatusMessage');
+        this.hasError = true;
+        return;
+      }
       // Conflict with a locked accelerator.
       case AcceleratorConfigResult.kConflict:
       case AcceleratorConfigResult.kActionLocked: {

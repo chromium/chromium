@@ -472,6 +472,16 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
   }
 
+  // Case: A function key accelerator cannot have the meta key modifier.
+  if ((modifiers & ui::EF_COMMAND_DOWN) != 0 &&
+      ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
+            << ". Accelerator has meta key with Function key.";
+    return AcceleratorConfigResult::kSearchWithFunctionKeyNotAllowed;
+  }
+
   // No errors with the accelerator.
   return absl::nullopt;
 }
