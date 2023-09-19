@@ -104,6 +104,7 @@ sync_pb::PasswordSpecificsMetadata CreateSpecificsMetadata(
       password_specifics_data.date_last_used());
   *password_specifics_metadata.mutable_password_issues() =
       password_specifics_data.password_issues();
+  password_specifics_metadata.set_type(password_specifics_data.type());
   return password_specifics_metadata;
 }
 

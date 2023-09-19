@@ -998,6 +998,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsMetadata& proto) {
   VISIT(blacklisted);
   VISIT(date_last_used_windows_epoch_micros);
   VISIT(password_issues);
+  VISIT(type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PowerBookmarkSpecifics& proto) {

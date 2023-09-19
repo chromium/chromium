@@ -305,6 +305,7 @@ sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
     *password_metadata.mutable_password_issues() =
         PasswordIssuesMapToProto(password_form.password_issues);
   }
+  password_metadata.set_type(static_cast<int>(password_form.type));
   return password_metadata;
 }
 
