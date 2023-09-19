@@ -75,7 +75,7 @@ class DefaultConfigurator : public DMClient::Configurator {
   GURL GetDMServerUrl() const override { return server_url_; }
 
   std::string GetAgentParameter() const override {
-    return base::StrCat({"Updater-", kUpdaterVersion});
+    return GetUpdaterUserAgent();
   }
 
   std::string GetPlatformParameter() const override;

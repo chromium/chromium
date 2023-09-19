@@ -26,6 +26,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
 #import "net/base/mac/url_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -343,6 +344,8 @@ void NetworkFetcher::PostRequest(
   urlRequest.HTTPMethod = @"POST";
   urlRequest.HTTPBody = [[NSData alloc] initWithBytes:post_data.c_str()
                                                length:post_data.size()];
+  [urlRequest setValue:base::SysUTF8ToNSString(GetUpdaterUserAgent())
+      forHTTPHeaderField:@"User-Agent"];
   [urlRequest addValue:base::SysUTF8ToNSString(content_type)
       forHTTPHeaderField:@"Content-Type"];
 

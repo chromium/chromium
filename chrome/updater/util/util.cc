@@ -281,6 +281,10 @@ void InitLogging(UpdaterScope updater_scope) {
           << settings.log_file_path;
 }
 
+std::string GetUpdaterUserAgent() {
+  return base::StrCat({PRODUCT_FULLNAME_STRING, " ", kUpdaterVersion});
+}
+
 // This function and the helper functions are copied from net/base/url_util.cc
 // to avoid the dependency on //net.
 GURL AppendQueryParameter(const GURL& url,

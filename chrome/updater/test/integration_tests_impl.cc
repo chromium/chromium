@@ -300,9 +300,10 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
   test_server->ExpectOnce(
       {request::GetPathMatcher(base::StringPrintf(
            R"(%s\?request=%s&apptype=Chrome&)"
-           R"(agent=Updater-%s&platform=.*&deviceid=%s)",
+           R"(agent=%s\+%s&platform=.*&deviceid=%s)",
            test_server->device_management_path().c_str(), request_type.c_str(),
-           kUpdaterVersion, GetDefaultDMStorage()->GetDeviceID().c_str())),
+           PRODUCT_FULLNAME_STRING, kUpdaterVersion,
+           GetDefaultDMStorage()->GetDeviceID().c_str())),
        request::GetHeaderMatcher(
            "Authorization",
            base::StringPrintf("%s token=%s", authorization_type.c_str(),

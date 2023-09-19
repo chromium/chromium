@@ -463,7 +463,7 @@ The updater communicates with update servers using the
 [Omaha Protocol](protocol_3_1.md).
 
 The updater uses platform-native network stacks (WinHTTP on Windows and
-NSURLSession on macOS).
+NSURLSession on macOS) with user-agent `"{PRODUCT_FULLNAME} {UpdaterVersion}"`.
 
 #### Security
 It is not possible to MITM the updater even if the network (including TLS) is
