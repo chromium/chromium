@@ -22,8 +22,6 @@ static const int kVersionNumber = 1;
 
 }  // namespace
 
-using CdmStorageHostOpenError = CdmStorageHost::CdmStorageHostOpenError;
-
 CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
     : path_(path),
       // Use a smaller cache, since access will be fairly infrequent and random.
@@ -35,10 +33,10 @@ CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
                                .page_size = 32768,
                                .cache_size = 8}) {}
 
-CdmStorageHostOpenError CdmStorageDatabase::EnsureOpenForTesting() {
+CdmStorageOpenError CdmStorageDatabase::EnsureOpen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If in use or open successful, returns `CdmStorageHostOpenError::kOk`.
+  // If in use or open successful, returns `CdmStorageOpenError::kOk`.
   return OpenDatabase();
 }
 
@@ -48,7 +46,7 @@ absl::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OpenDatabase() != CdmStorageHostOpenError::kOk) {
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
     return absl::nullopt;
   }
 
@@ -89,7 +87,7 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
                                    const std::vector<uint8_t>& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OpenDatabase() != CdmStorageHostOpenError::kOk) {
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
     return false;
   }
 
@@ -117,7 +115,7 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
                                     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OpenDatabase() != CdmStorageHostOpenError::kOk) {
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
     return false;
   }
 
@@ -146,7 +144,7 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
     const media::CdmType& cdm_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (OpenDatabase() != CdmStorageHostOpenError::kOk) {
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
     return false;
   }
 
@@ -177,10 +175,10 @@ bool CdmStorageDatabase::ClearDatabase() {
   return sql::Database::Delete(path_);
 }
 
-CdmStorageHostOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
+CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.is_open()) {
-    return CdmStorageHostOpenError::kOk;
+    return CdmStorageOpenError::kOk;
   }
 
   bool success = false;
@@ -201,7 +199,7 @@ CdmStorageHostOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
   if (!success) {
     DVLOG(1) << "Failed to open CDM database: " << db_.GetErrorMessage();
-    return CdmStorageHostOpenError::kDatabaseOpenError;
+    return CdmStorageOpenError::kDatabaseOpenError;
   }
 
   sql::MetaTable meta_table;
@@ -210,7 +208,7 @@ CdmStorageHostOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
     // Wipe the database and start over. If we've already wiped the database
     // and are still failing, just return false.
     db_.Raze();
-    return is_retry ? CdmStorageHostOpenError::kDatabaseRazeError
+    return is_retry ? CdmStorageOpenError::kDatabaseRazeError
                     : OpenDatabase(/*is_retry=*/true);
   }
 
@@ -224,7 +222,7 @@ CdmStorageHostOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
     // TODO(crbug.com/1454512) Add UMA to report if incompatible database
     // version occurs.
     db_.Raze();
-    return is_retry ? CdmStorageHostOpenError::kDatabaseRazeError
+    return is_retry ? CdmStorageOpenError::kDatabaseRazeError
                     : OpenDatabase(/*is_retry=*/true);
   }
 
@@ -242,10 +240,10 @@ CdmStorageHostOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
   if (!db_.Execute(kCreateTableSql)) {
     DVLOG(1) << "Failed to execute " << kCreateTableSql;
-    return CdmStorageHostOpenError::kSQLExecutionError;
+    return CdmStorageOpenError::kSQLExecutionError;
   }
 
-  return CdmStorageHostOpenError::kOk;
+  return CdmStorageOpenError::kOk;
 }
 
 void CdmStorageDatabase::OnDatabaseError(int error, sql::Statement* stmt) {

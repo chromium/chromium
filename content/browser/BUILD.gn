@@ -2990,8 +2990,6 @@ source_set("browser") {
       "media/cdm_storage_common.h",
       "media/cdm_storage_database.cc",
       "media/cdm_storage_database.h",
-      "media/cdm_storage_host.cc",
-      "media/cdm_storage_host.h",
       "media/cdm_storage_manager.cc",
       "media/cdm_storage_manager.h",
       "media/media_license_database.cc",

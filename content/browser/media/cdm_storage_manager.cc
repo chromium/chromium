@@ -5,6 +5,7 @@
 #include "content/browser/media/cdm_storage_manager.h"
 
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
 #include "content/browser/media/cdm_storage_common.h"
 #include "media/cdm/cdm_type.h"
@@ -12,49 +13,200 @@
 
 namespace content {
 
-CdmStorageManager::CdmStorageManager(bool in_memory) : in_memory_(in_memory) {}
-CdmStorageManager::~CdmStorageManager() = default;
+namespace {
+
+// Creates a task runner suitable for running SQLite database operations.
+scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
+  // We use a SequencedTaskRunner so that there is a global ordering to a
+  // storage key's directory operations.
+  return base::ThreadPool::CreateSequencedTaskRunner({
+      // Needed for file I/O.
+      base::MayBlock(),
+
+      // Reasonable compromise, given that a few database operations are
+      // blocking, while most operations are not. We should be able to do better
+      // when we get scheduling APIs on the Web Platform.
+      base::TaskPriority::USER_VISIBLE,
+
+      // Needed to allow for clearing site data on shutdown.
+      base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+  });
+}
+
+}  // namespace
+
+CdmStorageManager::CdmStorageManager(const base::FilePath& path)
+    : path_(path), db_(CreateDatabaseTaskRunner(), path_) {}
+
+CdmStorageManager::~CdmStorageManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void CdmStorageManager::Open(const std::string& file_name,
+                             OpenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (file_name.empty()) {
+    DVLOG(1) << "No file specified.";
+    ReportDatabaseOpenError(CdmStorageOpenError::kNoFileSpecified);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  if (!CdmFileImpl::IsValidName(file_name)) {
+    DVLOG(1) << "Invalid name of file.";
+    ReportDatabaseOpenError(CdmStorageOpenError::kInvalidFileName);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  db_.AsyncCall(&CdmStorageDatabase::EnsureOpen)
+      .Then(base::BindOnce(&CdmStorageManager::DidOpenFile,
+                           weak_factory_.GetWeakPtr(),
+                           receivers_.current_context().storage_key,
+                           receivers_.current_context().cdm_type, file_name,
+                           std::move(callback)));
+}
 
 void CdmStorageManager::OpenCdmStorage(
     const CdmStorageBindingContext& binding_context,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTIMPLEMENTED();
+  receivers_.Add(this, std::move(receiver), binding_context);
 }
 
-void CdmStorageManager::ReadFile(const media::CdmType& cdm_type,
-                                 const std::string& file_name,
-                                 CdmStorageHost::ReadFileCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  NOTIMPLEMENTED();
-}
-
-void CdmStorageManager::WriteFile(const media::CdmType& cdm_type,
-                                  const std::string& file_name,
-                                  const std::vector<uint8_t>& data,
-                                  CdmStorageHost::WriteFileCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  NOTIMPLEMENTED();
-}
-
-void CdmStorageManager::DeleteFile(
+void CdmStorageManager::ReadFile(
+    const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
     const std::string& file_name,
-    CdmStorageHost::DeleteFileCallback callback) {
+    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTIMPLEMENTED();
+  db_.AsyncCall(&CdmStorageDatabase::ReadFile)
+      .WithArgs(storage_key, cdm_type, file_name)
+      .Then(std::move(callback));
 }
 
-void CdmStorageManager::OnHostReceiverDisconnect(
-    CdmStorageHost* host,
-    base::PassKey<CdmStorageHost> pass_key) {
+void CdmStorageManager::WriteFile(const blink::StorageKey& storage_key,
+                                  const media::CdmType& cdm_type,
+                                  const std::string& file_name,
+                                  const std::vector<uint8_t>& data,
+                                  base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTIMPLEMENTED();
+  db_.AsyncCall(&CdmStorageDatabase::WriteFile)
+      .WithArgs(storage_key, cdm_type, file_name, data)
+      .Then(base::BindOnce(&CdmStorageManager::DidWriteFile,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
+
+void CdmStorageManager::DeleteFile(const blink::StorageKey& storage_key,
+                                   const media::CdmType& cdm_type,
+                                   const std::string& file_name,
+                                   base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&CdmStorageDatabase::DeleteFile)
+      .WithArgs(storage_key, cdm_type, file_name)
+      .Then(base::BindOnce(&CdmStorageManager::DidDeleteFile,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CdmStorageManager::DeleteDataForStorageKey(
+    const blink::StorageKey& storage_key,
+    const media::CdmType& cdm_type,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&CdmStorageDatabase::DeleteDataForStorageKey)
+      .WithArgs(storage_key, cdm_type)
+      .Then(base::BindOnce(&CdmStorageManager::DidDeleteForStorageKey,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CdmStorageManager::DeleteDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&CdmStorageDatabase::ClearDatabase)
+      .Then(base::BindOnce(&CdmStorageManager::DidDeleteDatabase,
+                           weak_factory_.GetWeakPtr()));
+}
+
+void CdmStorageManager::OnFileReceiverDisconnect(
+    const std::string& name,
+    const media::CdmType& cdm_type,
+    const blink::StorageKey& storage_key,
+    base::PassKey<CdmFileImpl> pass_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto count = cdm_files_.erase(CdmFileIdTwo(name, cdm_type, storage_key));
+  DCHECK_GT(count, 0u);
+}
+
+void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
+                                    const media::CdmType& cdm_type,
+                                    const std::string& file_name,
+                                    OpenCallback callback,
+                                    CdmStorageOpenError error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (error != CdmStorageOpenError::kOk) {
+    ReportDatabaseOpenError(error);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  // Check whether this CDM file is in-use.
+  CdmFileIdTwo id(file_name, cdm_type, storage_key);
+  if (base::Contains(cdm_files_, id)) {
+    std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  // File was opened successfully, so create the binding and return success.
+  mojo::PendingAssociatedRemote<media::mojom::CdmFile> cdm_file;
+
+  cdm_files_.emplace(id, std::make_unique<CdmFileImpl>(
+                             this, storage_key, cdm_type, file_name,
+                             cdm_file.InitWithNewEndpointAndPassReceiver()));
+
+  std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
+}
+
+// TODO(crbug.com/1454512) Add UMA to report errors. Investigate if we can
+// propagate the SQL errors. Temporarily used as a callback for all db
+// operations that aren't read, rename and create different methods for each
+// operation later.
+void CdmStorageManager::DidWriteFile(base::OnceCallback<void(bool)> callback,
+                                     bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(success);
+}
+
+void CdmStorageManager::DidDeleteFile(base::OnceCallback<void(bool)> callback,
+                                      bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(success);
+}
+
+void CdmStorageManager::DidDeleteForStorageKey(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(success);
+}
+
+// TODO(crbug.com/1454512) Add UMA to report errors. Investigate if we can
+// propagate the SQL errors. Investigate adding delete functionality to
+// 'MojoCdmHelper::CloseCdmFileIO' to close database on CdmFileIO closure.
+void CdmStorageManager::DidDeleteDatabase(bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {}
 
 }  // namespace content

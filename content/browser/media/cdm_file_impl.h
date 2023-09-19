@@ -17,9 +17,11 @@
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 class MediaLicenseStorageHost;
+class CdmStorageManager;
 
 // This class implements the media::mojom::CdmFile interface.
 class CdmFileImpl final : public media::mojom::CdmFile {
@@ -33,6 +35,14 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   // routed through `host` which is owned by the storage partition.
   CdmFileImpl(
       MediaLicenseStorageHost* host,
+      const media::CdmType& cdm_type,
+      const std::string& file_name,
+      mojo::PendingAssociatedReceiver<media::mojom::CdmFile> pending_receiver);
+
+  // As Above. This constructor is used by CdmStorageManager.
+  CdmFileImpl(
+      CdmStorageManager* manager,
+      const blink::StorageKey& storage_key,
       const media::CdmType& cdm_type,
       const std::string& file_name,
       mojo::PendingAssociatedReceiver<media::mojom::CdmFile> pending_receiver);
@@ -65,6 +75,7 @@ class CdmFileImpl final : public media::mojom::CdmFile {
 
   const std::string file_name_;
   const media::CdmType cdm_type_;
+  const blink::StorageKey storage_key_;
 
   // Each of these callbacks is only valid while there is an in-progress read
   // or write operation, respectively.
@@ -77,6 +88,10 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   // Backing store which CDM file operations are routed through.
   // Owned by MediaLicenseManager.
   const raw_ptr<MediaLicenseStorageHost> host_ = nullptr;
+
+  // New backing store which CDM file operations are routed through.
+  // CdmStorageManager owns the lifetime of this object and will outlive it.
+  const raw_ptr<CdmStorageManager> cdm_storage_manager_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CdmFileImpl> weak_factory_{this};
