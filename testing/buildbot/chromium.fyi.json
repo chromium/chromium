@@ -48120,6 +48120,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04",
