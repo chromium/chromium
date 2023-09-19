@@ -198,7 +198,8 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
     }
 
     private boolean shouldInterceptBackPress() {
-        return mPresenter != null && mPresenter.getDialogModel() != null;
+        return mPresenter != null && mPresenter.getDialogModel() != null
+                && mTabModalSuspendedToken == TokenHolder.INVALID_TOKEN;
     }
 
     private void handleTabChanged(Tab tab) {
@@ -244,5 +245,6 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         } else if (mTabModalSuspendedToken == TokenHolder.INVALID_TOKEN) {
             mTabModalSuspendedToken = mManager.suspendType(ModalDialogType.TAB);
         }
+        mHandleBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 }
