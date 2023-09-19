@@ -711,9 +711,20 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
   if (!capturing_) {
     return;
   }
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_id_);
   if (message->type == cros::mojom::Camera3MsgType::CAMERA3_MSG_ERROR) {
     auto error = std::move(message->message->get_error());
     uint32_t frame_number = error->frame_number;
+    if (pending_results_.count(frame_number)) {
+      CaptureResult& pending_result = pending_results_[frame_number];
+      if (camera_app_device &&
+          (pending_result.still_capture_callback ||
+           pending_result.portrait_callbacks_map[StreamType::kJpegOutput])) {
+        camera_app_device->OnShutterDone();
+      }
+    }
     uint64_t error_stream_id = error->error_stream_id;
     StreamType stream_type = StreamIdToStreamType(error_stream_id);
     if (stream_type == StreamType::kUnknown) {
@@ -755,9 +766,6 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
     }
     pending_result.timestamp = reference_time - first_frame_shutter_time_;
 
-    auto camera_app_device =
-        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
-            device_id_);
     if (camera_app_device &&
         (pending_result.still_capture_callback ||
          pending_result.portrait_callbacks_map[StreamType::kJpegOutput])) {
