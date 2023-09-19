@@ -49,9 +49,10 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 class SpacingApplier {
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
-                  float spacing,
-                  const NGInlineItem* current_item) {
+                  const NGInlineItem* current_item,
+                  const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
+    const float spacing = NGTextAutoSpace::GetSpacingWidth(style.GetFont());
     const wtf_size_t* offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
@@ -164,14 +165,17 @@ void NGTextAutoSpace::Apply(NGInlineItemsData& data,
       // Empty items may not have `ShapeResult`. Skip it.
       continue;
     }
+    DCHECK(offsets.empty());
     const ComputedStyle* style = item.Style();
     DCHECK(style);
     if (UNLIKELY(style->TextAutospace() != ETextAutospace::kNormal)) {
-      last_type.reset();
+      applier.SetSpacing(offsets, &item, *style);
+      last_type = kOther;
       continue;
     }
     if (UNLIKELY(!style->IsHorizontalWritingMode()) &&
         UNLIKELY(style->GetTextOrientation() == ETextOrientation::kUpright)) {
+      applier.SetSpacing(offsets, &item, *style);
       // Upright non-ideographic characters are `kOther`.
       // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
       last_type = GetPrevType(text, item.EndOffset());
@@ -232,9 +236,7 @@ void NGTextAutoSpace::Apply(NGInlineItemsData& data,
     } while (offset < item.EndOffset());
 
     if (!offsets_out) {
-      DCHECK(item.TextShapeResult());
-      float spacing = GetSpacingWidth(style->GetFont());
-      applier.SetSpacing(offsets, spacing, &item);
+      applier.SetSpacing(offsets, &item, *style);
     } else {
       offsets_out->AppendVector(offsets);
     }

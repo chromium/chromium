@@ -990,8 +990,7 @@ void ShapeResult::ApplyTextAutoSpacing(
         return lhs.offset <= rhs.offset;
       }));
   DCHECK_GT(offsets_with_spacing.front().offset, StartIndex());
-  // TODO(crbug.com/1463890): Disable for now, unit tests hit this.
-  // DCHECK_LE(offsets_with_spacing.back().offset, EndIndex());
+  DCHECK_LE(offsets_with_spacing.back().offset, EndIndex());
 #endif
 
   EnsurePositionData();
@@ -1077,6 +1076,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
     run->width_ += total_space_for_run;
     total_space += total_space_for_run;
   }
+  DCHECK(current_offset == offset_end);  // Check if all offsets are consumed.
   width_ += total_space;
 }
 

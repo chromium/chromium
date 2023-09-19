@@ -117,7 +117,7 @@ struct HtmlData {
     {u"ああ<span>Aああ</span>", {2, 3}},
     {u"ああ 12 ああ", {}},
     {u"あ<span style='text-autospace: no-autospace'>1</span>2", {}},
-    {u"あ<span style='text-autospace: no-autospace'>あ</span>2", {2}},
+    {u"あ<span style='text-autospace: no-autospace'>あ</span>2", {}},
     {u"あAあ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
     {u"あ1あ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
     {u"あ<span style='text-orientation: upright'>1</span>あ",
@@ -126,7 +126,7 @@ struct HtmlData {
 };
 class HtmlTest : public NGTextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
-INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
+INSTANTIATE_TEST_SUITE_P(NGTextAutoSpaceTest,
                          HtmlTest,
                          testing::ValuesIn(g_html_data));
 
