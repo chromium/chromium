@@ -150,17 +150,17 @@ export class VideoResolutionSettings extends BaseSettings {
     input.checked = option.checked;
 
     if (!input.checked) {
-      input.addEventListener('click', (event) => {
+      input.addEventListener('click', async (event) => {
+        event.preventDefault();
         this.focusedDeviceId = deviceId;
         this.menuScrollTop = this.menu.scrollTop;
         if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
-          this.cameraManager.setPrefVideoResolution(
+          await this.cameraManager.setPrefVideoResolution(
               deviceId, assertExists(resolution));
         } else {
-          this.cameraManager.setPrefVideoResolutionLevel(
+          await this.cameraManager.setPrefVideoResolutionLevel(
               deviceId, option.resolutionLevel);
         }
-        event.preventDefault();
       });
     }
     this.menu.appendChild(optionElement);

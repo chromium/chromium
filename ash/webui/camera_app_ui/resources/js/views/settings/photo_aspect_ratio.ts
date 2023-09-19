@@ -88,12 +88,12 @@ export class PhotoAspectRatioSettings extends BaseSettings {
     input.checked = option.checked;
 
     if (!input.checked) {
-      input.addEventListener('click', (event) => {
+      input.addEventListener('click', async (event) => {
+        event.preventDefault();
         this.focusedDeviceId = deviceId;
         this.menuScrollTop = this.menu.scrollTop;
-        this.cameraManager.setPrefPhotoAspectRatioSet(
+        await this.cameraManager.setPrefPhotoAspectRatioSet(
             deviceId, option.aspectRatioSet);
-        event.preventDefault();
       });
     }
     this.menu.appendChild(optionElement);
