@@ -18748,6 +18748,16 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Long article"/>
 </enum>
 
+<enum name="ContentClassificationOpenGraph">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Website"/>
+  <int value="2" label="Music"/>
+  <int value="3" label="Video"/>
+  <int value="4" label="Article"/>
+  <int value="5" label="Book"/>
+  <int value="6" label="Profile"/>
+</enum>
+
 <enum name="ContentEncoding">
   <int value="0" label="ISO_8859_1"/>
   <int value="1" label="ISO_8859_2"/>

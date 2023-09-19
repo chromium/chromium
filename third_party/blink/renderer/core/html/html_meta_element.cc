@@ -610,16 +610,56 @@ void HTMLMetaElement::ProcessHttpEquiv() {
                      InDocumentHead(this), is_sync_parser_, this);
 }
 
+// Open Graph Protocol Content Classification types used for logging.
+enum class ContentClassificationOpenGraph {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  kUnknown = 0,
+  kWebsite = 1,
+  kMusic = 2,
+  kVideo = 3,
+  kArticle = 4,
+  kBook = 5,
+  kProfile = 6,
+  kMaxValue = kProfile
+};
+
+ContentClassificationOpenGraph GetContentClassification(
+    const AtomicString& open_graph_type) {
+  const AtomicString lowercase_type(open_graph_type.LowerASCII());
+  if (lowercase_type.StartsWithIgnoringASCIICase("website")) {
+    return ContentClassificationOpenGraph::kWebsite;
+  } else if (lowercase_type.StartsWithIgnoringASCIICase("music")) {
+    return ContentClassificationOpenGraph::kMusic;
+  } else if (lowercase_type.StartsWithIgnoringASCIICase("video")) {
+    return ContentClassificationOpenGraph::kVideo;
+  } else if (lowercase_type.StartsWithIgnoringASCIICase("article")) {
+    return ContentClassificationOpenGraph::kArticle;
+  } else if (lowercase_type.StartsWithIgnoringASCIICase("book")) {
+    return ContentClassificationOpenGraph::kBook;
+  } else if (lowercase_type.StartsWithIgnoringASCIICase("profile")) {
+    return ContentClassificationOpenGraph::kProfile;
+  }
+  return ContentClassificationOpenGraph::kUnknown;
+}
+
 void HTMLMetaElement::ProcessContent() {
   if (!IsInDocumentTree())
     return;
 
+  const AtomicString& property_value =
+      FastGetAttribute(html_names::kPropertyAttr);
+  const AtomicString& content_value =
+      FastGetAttribute(html_names::kContentAttr);
+
+  if (EqualIgnoringASCIICase(property_value, "og:type")) {
+    UMA_HISTOGRAM_ENUMERATION("Content.Classification.OpenGraph",
+                              GetContentClassification(content_value));
+  }
+
   const AtomicString& name_value = FastGetAttribute(html_names::kNameAttr);
   if (name_value.empty())
     return;
-
-  const AtomicString& content_value =
-      FastGetAttribute(html_names::kContentAttr);
 
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
