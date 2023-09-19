@@ -623,6 +623,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     if (self.headerImageType == PromoStyleImageType::kAvatar) {
       _headerImageView.layer.cornerRadius = kheaderImageSize / 2.;
     }
+    _headerImageView.image = _headerImage;
     _headerImageView.accessibilityLabel = _headerAccessibilityLabel;
     _headerImageView.isAccessibilityElement = _headerAccessibilityLabel != nil;
   }
