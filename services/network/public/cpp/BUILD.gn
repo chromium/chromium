@@ -642,3 +642,11 @@ fuzzer_test("client_hints_fuzzer") {
     "//base:i18n",
   ]
 }
+
+fuzzer_test("variants_header_fuzzer") {
+  sources = [ "variants_header_fuzzer.cc" ]
+  deps = [
+    ":cpp",
+    "//services/network/public/mojom:url_loader_base",
+  ]
+}
