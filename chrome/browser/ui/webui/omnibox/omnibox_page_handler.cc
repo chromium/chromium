@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox.mojom-forward.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
@@ -110,15 +111,160 @@ struct TypeConverter<std::vector<mojom::ACMatchClassificationPtr>,
 };
 
 template <>
-struct TypeConverter<std::vector<mojom::AutocompleteAdditionalInfoPtr>,
+struct TypeConverter<std::vector<mojom::DictionaryEntryPtr>,
+                     AutocompleteMatch::ScoringSignals> {
+  static std::vector<mojom::DictionaryEntryPtr> Convert(
+      const AutocompleteMatch::ScoringSignals input) {
+    std::vector<mojom::DictionaryEntryPtr> array;
+
+    if (input.has_typed_count()) {
+      auto item = mojom::DictionaryEntry::New(
+          "typed count", base::NumberToString(input.typed_count()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_visit_count()) {
+      auto item = mojom::DictionaryEntry::New(
+          "visit count", base::NumberToString(input.visit_count()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_elapsed_time_last_visit_secs()) {
+      auto item = mojom::DictionaryEntry::New(
+          "elapsed time since last visit (s)",
+          base::NumberToString(input.elapsed_time_last_visit_secs()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_shortcut_visit_count()) {
+      auto item = mojom::DictionaryEntry::New(
+          "shortcut visit count",
+          base::NumberToString(input.shortcut_visit_count()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_shortest_shortcut_len()) {
+      auto item = mojom::DictionaryEntry::New(
+          "shortest shortcut length",
+          base::NumberToString(input.shortest_shortcut_len()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_elapsed_time_last_shortcut_visit_sec()) {
+      auto item = mojom::DictionaryEntry::New(
+          "elapsed time since last shortcut visit (s)",
+          base::NumberToString(input.elapsed_time_last_shortcut_visit_sec()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_num_bookmarks_of_url()) {
+      auto item = mojom::DictionaryEntry::New(
+          "num bookmarks of url",
+          base::NumberToString(input.num_bookmarks_of_url()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_first_bookmark_title_match_position()) {
+      auto item = mojom::DictionaryEntry::New(
+          "first bookmark title match position",
+          base::NumberToString(input.first_bookmark_title_match_position()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_bookmark_title_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total bookmark title match length",
+          base::NumberToString(input.total_bookmark_title_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_num_input_terms_matched_by_bookmark_title()) {
+      auto item = mojom::DictionaryEntry::New(
+          "num input terms matched by bookmark title",
+          base::NumberToString(
+              input.num_input_terms_matched_by_bookmark_title()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_first_url_match_position()) {
+      auto item = mojom::DictionaryEntry::New(
+          "first url match position",
+          base::NumberToString(input.first_url_match_position()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_url_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total url match length",
+          base::NumberToString(input.total_url_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_host_match_at_word_boundary()) {
+      auto item = mojom::DictionaryEntry::New(
+          "host match at word boundary",
+          base::NumberToString(input.host_match_at_word_boundary()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_host_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total host match length",
+          base::NumberToString(input.total_host_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_path_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total path match length",
+          base::NumberToString(input.total_path_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_query_or_ref_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total query or ref match length",
+          base::NumberToString(input.total_query_or_ref_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_total_title_match_length()) {
+      auto item = mojom::DictionaryEntry::New(
+          "total title match length",
+          base::NumberToString(input.total_title_match_length()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_has_non_scheme_www_match()) {
+      auto item = mojom::DictionaryEntry::New(
+          "has non-scheme www match",
+          base::NumberToString(input.has_non_scheme_www_match()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_num_input_terms_matched_by_title()) {
+      auto item = mojom::DictionaryEntry::New(
+          "num input terms matched by title",
+          base::NumberToString(input.num_input_terms_matched_by_title()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_num_input_terms_matched_by_url()) {
+      auto item = mojom::DictionaryEntry::New(
+          "num input terms matched by url",
+          base::NumberToString(input.num_input_terms_matched_by_url()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_length_of_url()) {
+      auto item = mojom::DictionaryEntry::New(
+          "length of url", base::NumberToString(input.length_of_url()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_site_engagement()) {
+      auto item = mojom::DictionaryEntry::New(
+          "site engagement", base::NumberToString(input.site_engagement()));
+      array.push_back(std::move(item));
+    }
+    if (input.has_allowed_to_be_default_match()) {
+      auto item = mojom::DictionaryEntry::New(
+          "allowed to be default",
+          base::NumberToString(input.allowed_to_be_default_match()));
+      array.push_back(std::move(item));
+    }
+    return array;
+  }
+};
+
+template <>
+struct TypeConverter<std::vector<mojom::DictionaryEntryPtr>,
                      AutocompleteMatch::AdditionalInfo> {
-  static std::vector<mojom::AutocompleteAdditionalInfoPtr> Convert(
+  static std::vector<mojom::DictionaryEntryPtr> Convert(
       const AutocompleteMatch::AdditionalInfo& input) {
-    std::vector<mojom::AutocompleteAdditionalInfoPtr> array(input.size());
+    std::vector<mojom::DictionaryEntryPtr> array(input.size());
     size_t index = 0;
     for (auto i = input.begin(); i != input.end(); ++i, index++) {
-      mojom::AutocompleteAdditionalInfoPtr item(
-          mojom::AutocompleteAdditionalInfo::New());
+      mojom::DictionaryEntryPtr item(mojom::DictionaryEntry::New());
       item->key = i->first;
       item->value = i->second;
       array[index] = std::move(item);
@@ -184,8 +330,13 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     const auto* pedal = OmniboxPedal::FromAction(input.GetActionAt(0u));
     result->pedal_id =
         pedal == nullptr ? 0 : static_cast<int32_t>(pedal->PedalId());
+    if (input.scoring_signals.has_value()) {
+      result->scoring_signals =
+          mojo::ConvertTo<std::vector<mojom::DictionaryEntryPtr>>(
+              input.scoring_signals.value());
+    }
     result->additional_info =
-        mojo::ConvertTo<std::vector<mojom::AutocompleteAdditionalInfoPtr>>(
+        mojo::ConvertTo<std::vector<mojom::DictionaryEntryPtr>>(
             input.additional_info);
     return result;
   }

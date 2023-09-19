@@ -11,7 +11,7 @@ struct ACMatchClassification {
   int32 style;
 };
 
-struct AutocompleteAdditionalInfo {
+struct DictionaryEntry {
   string key;
   string value;
 };
@@ -44,7 +44,8 @@ struct AutocompleteMatch {
   int32 duplicates;
   bool from_previous;
   int32 pedal_id;
-  array<AutocompleteAdditionalInfo> additional_info;
+  array<DictionaryEntry> scoring_signals;
+  array<DictionaryEntry> additional_info;
 };
 
 struct AutocompleteResultsForProvider {

@@ -1755,8 +1755,10 @@ void AutocompleteController::OnUrlScoringModelDone(
     // score to the match with the highest respective model prediction score.
     if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
       auto match_itr = prediction_and_match_itr_heap.top().second;
-      match_itr->RecordAdditionalInfo("ml_legacy_relevance",
+      match_itr->RecordAdditionalInfo("ml legacy relevance",
                                       match_itr->relevance);
+      match_itr->RecordAdditionalInfo(
+          "ml model output", (prediction_and_match_itr_heap.top().first * 100));
       match_itr->relevance = relevance_heap.top();
     }
     relevance_heap.pop();
