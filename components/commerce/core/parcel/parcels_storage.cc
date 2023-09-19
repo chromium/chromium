@@ -28,45 +28,57 @@ ParcelsStorage::ParcelsStorage(
 
 ParcelsStorage::~ParcelsStorage() = default;
 
-void ParcelsStorage::Init() {
+void ParcelsStorage::Init(OnInitializedCallback callback) {
   DCHECK(!is_initialized_);
   proto_db_->LoadAllEntries(base::BindOnce(&ParcelsStorage::OnAllParcelsLoaded,
-                                           weak_ptr_factory_.GetWeakPtr()));
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           std::move(callback)));
 }
 
-void ParcelsStorage::GetAllParcelStatus(GetParcelStatusCallback callback) {
+std::unique_ptr<std::vector<ParcelStatus>>
+ParcelsStorage::GetAllParcelStatus() {
   DCHECK(is_initialized_);
-  // TODO(qinmin): Call the callback with everything in cache.
+  auto result = std::make_unique<std::vector<ParcelStatus>>();
+  for (auto& kv : parcels_cache_) {
+    result->emplace_back(kv.second);
+  }
+  return result;
 }
 
 void ParcelsStorage::UpdateParcelStatus(
     const std::vector<ParcelStatus>& parcel_status,
     StorageUpdateCallback callback) {
+  DCHECK(is_initialized_);
+  std::vector<std::pair<std::string, ParcelTrackingContent>> content_to_insert;
   for (const auto& status : parcel_status) {
     std::string key = GetDbKeyFromParcelStatus(status.parcel_identifier());
-    if (parcels_cache_.find(key) != parcels_cache_.end()) {
-      // TODO(qinmin): Update the db.
-    } else {
-      // TODO(qinmin): Insert into db.
-    }
+    ParcelTrackingContent content;
+    content.set_key(key);
+    auto* new_status = content.mutable_parcel_status();
+    *new_status = status;
+    content_to_insert.emplace_back(key, content);
     parcels_cache_[key] = status;
   }
+  proto_db_->UpdateEntries(std::move(content_to_insert), std::move(callback));
 }
 
 void ParcelsStorage::DeleteParcelStatus(
     const ParcelIdentifier& parcel_identifier,
     StorageUpdateCallback callback) {
+  DCHECK(is_initialized_);
   std::string key = GetDbKeyFromParcelStatus(parcel_identifier);
   parcels_cache_.erase(key);
   proto_db_->DeleteOneEntry(key, base::BindOnce(std::move(callback)));
 }
 
 void ParcelsStorage::DeleteAllParcelStatus(StorageUpdateCallback callback) {
+  DCHECK(is_initialized_);
   parcels_cache_.clear();
   proto_db_->DeleteAllContent(std::move(callback));
 }
 
-void ParcelsStorage::OnAllParcelsLoaded(bool success,
+void ParcelsStorage::OnAllParcelsLoaded(OnInitializedCallback callback,
+                                        bool success,
                                         ParcelTrackings parcel_trackings) {
   DCHECK(!is_initialized_);
   if (!success) {
@@ -77,6 +89,7 @@ void ParcelsStorage::OnAllParcelsLoaded(bool success,
     auto& parcel_status = kv.second.parcel_status();
     parcels_cache_.emplace(std::move(kv.first), std::move(parcel_status));
   }
+  std::move(callback).Run(success);
 }
 
 }  // namespace commerce

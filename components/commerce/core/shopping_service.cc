@@ -25,6 +25,7 @@
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
+#include "components/commerce/core/parcel/parcels_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -107,6 +108,21 @@ DiscountInfo::DiscountInfo(const DiscountInfo&) = default;
 DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
 DiscountInfo::~DiscountInfo() = default;
 
+ParcelTrackingStatus::ParcelTrackingStatus() = default;
+ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
+    default;
+ParcelTrackingStatus& ParcelTrackingStatus::operator=(
+    const ParcelTrackingStatus&) = default;
+ParcelTrackingStatus::~ParcelTrackingStatus() = default;
+ParcelTrackingStatus::ParcelTrackingStatus(const ParcelStatus& parcel_status) {
+  ParcelTrackingStatus status;
+  status.carrier = parcel_status.parcel_identifier().carrier();
+  status.tracking_id = parcel_status.parcel_identifier().tracking_id();
+  status.tracking_url = GURL(parcel_status.tracking_url());
+  status.estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(parcel_status.estimated_delivery_time_usec()));
+}
+
 ShoppingService::ShoppingService(
     const std::string& country_on_startup,
     const std::string& locale_on_startup,
@@ -185,7 +201,7 @@ ShoppingService::ShoppingService(
     }
 
     if (parcel_tracking_proto_db) {
-      parcel_manager_ = std::make_unique<ParcelManager>(
+      parcels_manager_ = std::make_unique<ParcelsManager>(
           identity_manager, url_loader_factory, parcel_tracking_proto_db,
           account_checker_.get());
     }
@@ -1482,36 +1498,48 @@ void ShoppingService::IsClusterIdTrackedByUser(
 }
 
 void ShoppingService::StartTrackingParcels(
-    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+        parcel_identifiers,
     const std::string& source_page_domain,
-    ParcelManager::GetParcelStatusCallback callback) {
-  if (parcel_manager_) {
-    parcel_manager_->StartTrackingParcels(
+    GetParcelStatusCallback callback) {
+  if (parcels_manager_) {
+    parcels_manager_->StartTrackingParcels(
         parcel_identifiers, source_page_domain, std::move(callback));
+  } else {
+    std::move(callback).Run(
+        false, std::make_unique<std::vector<ParcelTrackingStatus>>());
   }
 }
 
 void ShoppingService::GetParcelStatus(
-    const std::vector<ParcelIdentifier>& parcel_identifiers,
-    ParcelManager::GetParcelStatusCallback callback) {
-  if (parcel_manager_) {
-    parcel_manager_->GetParcelStatus(parcel_identifiers, std::move(callback));
+    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+        parcel_identifiers,
+    GetParcelStatusCallback callback) {
+  if (parcels_manager_) {
+    parcels_manager_->GetParcelStatus(parcel_identifiers, std::move(callback));
+  } else {
+    std::move(callback).Run(
+        false, std::make_unique<std::vector<ParcelTrackingStatus>>());
   }
 }
 
 void ShoppingService::StopTrackingParcel(
     const std::string& tracking_id,
     base::OnceCallback<void(bool)> callback) {
-  if (parcel_manager_) {
-    parcel_manager_->StopTrackingParcel(tracking_id, std::move(callback));
+  if (parcels_manager_) {
+    parcels_manager_->StopTrackingParcel(tracking_id, std::move(callback));
+  } else {
+    std::move(callback).Run(false);
   }
 }
 
 // Called to stop tracking all parcels.
 void ShoppingService::StopTrackingAllParcels(
     base::OnceCallback<void(bool)> callback) {
-  if (parcel_manager_) {
-    parcel_manager_->StopTrackingAllParcels(std::move(callback));
+  if (parcels_manager_) {
+    parcels_manager_->StopTrackingAllParcels(std::move(callback));
+  } else {
+    std::move(callback).Run(false);
   }
 }
 

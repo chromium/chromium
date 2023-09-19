@@ -4,13 +4,18 @@
 
 source_set("parcel") {
   sources = [
+    "parcels_manager.cc",
+    "parcels_manager.h",
     "parcels_server_proxy.cc",
     "parcels_server_proxy.h",
     "parcels_storage.cc",
     "parcels_storage.h",
   ]
   deps = [
+    "//base",
+    "//components/commerce/core:account_checker",
     "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:commerce_types",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
@@ -28,13 +33,17 @@ source_set("parcel") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "parcels_server_proxy_unittest.cc" ]
+  sources = [
+    "parcels_server_proxy_unittest.cc",
+    "parcels_storage_unittest.cc",
+  ]
 
   # Expose all deps for test support.
   public_deps = [
     ":parcel",
     "//base/test:test_support",
     "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
     "//components/endpoint_fetcher:test_support",
     "//components/signin/public/identity_manager:test_support",

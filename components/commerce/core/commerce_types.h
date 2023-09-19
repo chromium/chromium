@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMMERCE_TYPES_H_
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_TYPES_H_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "components/commerce/core/proto/parcel.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -122,6 +127,21 @@ struct ProductInfo {
   bool server_image_available{false};
 };
 
+// Information returned by Parcels API.
+struct ParcelTrackingStatus {
+ public:
+  ParcelTrackingStatus();
+  explicit ParcelTrackingStatus(const ParcelStatus&);
+  ParcelTrackingStatus(const ParcelTrackingStatus&);
+  ParcelTrackingStatus& operator=(const ParcelTrackingStatus&);
+  ~ParcelTrackingStatus();
+
+  ParcelIdentifier::Carrier carrier;
+  std::string tracking_id;
+  GURL tracking_url;
+  base::Time estimated_delivery_time;
+};
+
 // Callbacks and typedefs for various accessors in the shopping service.
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
@@ -135,7 +155,9 @@ using ProductInfoCallback =
                             const absl::optional<const ProductInfo>&)>;
 using IsShoppingPageCallback =
     base::OnceCallback<void(const GURL&, absl::optional<bool>)>;
-
+using GetParcelStatusCallback = base::OnceCallback<
+    void(bool /*success*/, std::unique_ptr<std::vector<ParcelTrackingStatus>>)>;
+using StopParcelTrackingCallback = base::OnceCallback<void(bool /*success*/)>;
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_TYPES_H_

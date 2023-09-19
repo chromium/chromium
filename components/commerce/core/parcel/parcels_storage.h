@@ -15,16 +15,18 @@
 #include "components/session_proto_db/session_proto_storage.h"
 
 namespace commerce {
-using ParcelTrackingContent = parcel_tracking_db::ParcelTrackingContent;
-using GetParcelStatusCallback =
-    base::OnceCallback<void(std::unique_ptr<std::vector<ParcelStatus>>)>;
-using ParcelTrackings =
-    std::vector<SessionProtoStorage<ParcelTrackingContent>::KeyAndValue>;
-using StorageUpdateCallback = base::OnceCallback<void(bool /*success*/)>;
 
 // Class for storing parcel tracking information in db.
 class ParcelsStorage {
  public:
+  using ParcelTrackingContent = parcel_tracking_db::ParcelTrackingContent;
+  using GetParcelStatusCallback =
+      base::OnceCallback<void(std::unique_ptr<std::vector<ParcelStatus>>)>;
+  using ParcelTrackings =
+      std::vector<SessionProtoStorage<ParcelTrackingContent>::KeyAndValue>;
+  using StorageUpdateCallback = base::OnceCallback<void(bool /*success*/)>;
+  using OnInitializedCallback = base::OnceCallback<void(bool /*success*/)>;
+
   explicit ParcelsStorage(
       SessionProtoStorage<ParcelTrackingContent>* parcel_tracking_db);
   ParcelsStorage(const ParcelsStorage&) = delete;
@@ -32,10 +34,10 @@ class ParcelsStorage {
   virtual ~ParcelsStorage();
 
   // Initialize the storage, populate the cache entries.
-  void Init();
+  void Init(OnInitializedCallback callback);
 
   // Gets all parcel status.
-  void GetAllParcelStatus(GetParcelStatusCallback callback);
+  std::unique_ptr<std::vector<ParcelStatus>> GetAllParcelStatus();
 
   // Updates the status for a list of parcels.
   void UpdateParcelStatus(const std::vector<ParcelStatus>& parcel_status,
@@ -49,7 +51,12 @@ class ParcelsStorage {
   void DeleteAllParcelStatus(StorageUpdateCallback callback);
 
  private:
-  void OnAllParcelsLoaded(bool success, ParcelTrackings parcel_trackings);
+  void OnAllParcelsLoaded(OnInitializedCallback callback,
+                          bool success,
+                          ParcelTrackings parcel_trackings);
+
+  void InsertParcelStatus(const ParcelStatus& parcel_status,
+                          StorageUpdateCallback callback);
 
   raw_ptr<SessionProtoStorage<ParcelTrackingContent>> proto_db_;
 

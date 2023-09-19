@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
@@ -23,7 +24,6 @@
 #include "base/uuid.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_types.h"
-#include "components/commerce/core/parcel_manager.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -120,6 +120,7 @@ class ScheduledMetricsManager;
 
 class BookmarkUpdateManager;
 class DiscountsStorage;
+class ParcelsManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -400,15 +401,18 @@ class ShoppingService : public KeyedService,
 
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(
-      const std::vector<ParcelIdentifier>& parcel_identifiers,
+      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+          parcel_identifiers,
       const std::string& source_page_domain,
-      ParcelManager::GetParcelStatusCallback callback);
+      GetParcelStatusCallback callback);
 
   // Gets status for a list of parcels. If the parcel status is outdated, a
   // request will be sent to the server to retrieve the information. Otherwise,
   // recently cached status will be returned in the callback.
-  void GetParcelStatus(const std::vector<ParcelIdentifier>& parcel_identifiers,
-                       ParcelManager::GetParcelStatusCallback callback);
+  void GetParcelStatus(
+      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+          parcel_identifiers,
+      GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
   void StopTrackingParcel(const std::string& tracking_id,
@@ -662,7 +666,7 @@ class ShoppingService : public KeyedService,
   std::unique_ptr<DiscountsStorage> discounts_storage_;
 
   // Object for tracking parcel status.
-  std::unique_ptr<ParcelManager> parcel_manager_;
+  std::unique_ptr<ParcelsManager> parcels_manager_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.
