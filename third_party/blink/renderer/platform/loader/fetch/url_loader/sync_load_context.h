@@ -77,7 +77,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   SyncLoadContext& operator=(const SyncLoadContext&) = delete;
   ~SyncLoadContext() override;
 
-  void FollowRedirect();
+  void FollowRedirect(std::vector<std::string> removed_headers);
   void CancelRedirect();
 
  private:
@@ -96,9 +96,10 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   // ResourceRequestClient implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
-  bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                          network::mojom::URLResponseHeadPtr head,
-                          std::vector<std::string>*) override;
+  void OnReceivedRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr head,
+      FollowRedirectCallback follow_redirect_callback) override;
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       base::TimeTicks response_arrival_at_renderer) override;
@@ -121,6 +122,10 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   // it remains on the stack until |event_| is signaled.
   // Set to null after CompleteRequest() is called.
   SyncLoadResponse* response_;
+
+  // Used when handling a redirect. It is set in OnReceivedRedirect(), and
+  // called when FollowRedirect() is called from the original thread.
+  FollowRedirectCallback follow_redirect_callback_;
 
   // This raw pointer will be set to `this` when receiving redirects on
   // independent thread and set to nullptr in `FollowRedirect()` or

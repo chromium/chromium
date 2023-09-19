@@ -165,10 +165,10 @@ SyncLoadContext::~SyncLoadContext() {}
 
 void SyncLoadContext::OnUploadProgress(uint64_t position, uint64_t size) {}
 
-bool SyncLoadContext::OnReceivedRedirect(
+void SyncLoadContext::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head,
-    std::vector<std::string>* removed_headers) {
+    FollowRedirectCallback follow_redirect_callback) {
   DCHECK(!Completed());
 
   if (has_authorization_header_ &&
@@ -176,32 +176,17 @@ bool SyncLoadContext::OnReceivedRedirect(
     response_->has_authorization_header_between_cross_origin_redirect_ = true;
   }
 
-  // TODO(https://crbug.com/471397, https://crbug.com/1406737): Reconsider
-  // the placement of this code, together with the //net counterpart.
-  if (removed_headers) {
-    // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
-    if (base::FeatureList::IsEnabled(
-            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
-        !url::Origin::Create(response_->url)
-             .IsSameOriginWith(redirect_info.new_url)) {
-      removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
-    }
-    // TODO(yoav): Get the actual PermissionsPolicy here to support selective
-    // removal for sync XHR.
-    FindClientHintsToRemove(nullptr /* permissions_policy */,
-                            redirect_info.new_url, removed_headers);
-  }
-
   response_->url = redirect_info.new_url;
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   *context_for_redirect_ = this;
-  resource_request_sender_->Freeze(LoaderFreezeMode::kStrict);
+
+  follow_redirect_callback_ = std::move(follow_redirect_callback);
   signals_->SignalRedirectOrResponseComplete();
-  return true;
 }
 
-void SyncLoadContext::FollowRedirect() {
+void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers) {
+  CHECK(follow_redirect_callback_);
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();
     return;
@@ -209,8 +194,7 @@ void SyncLoadContext::FollowRedirect() {
 
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
-
-  resource_request_sender_->Freeze(LoaderFreezeMode::kNone);
+  std::move(follow_redirect_callback_).Run(std::move(removed_headers));
 }
 
 void SyncLoadContext::CancelRedirect() {

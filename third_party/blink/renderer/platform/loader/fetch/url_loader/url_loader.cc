@@ -134,9 +134,10 @@ class URLLoader::Context : public ResourceRequestClient {
 
   // ResourceRequestClient overrides:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
-  bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                          network::mojom::URLResponseHeadPtr head,
-                          std::vector<std::string>* removed_headers) override;
+  void OnReceivedRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr head,
+      FollowRedirectCallback follow_redirect_callback) override;
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       base::TimeTicks response_arrival_at_renderer) override;
@@ -346,12 +347,12 @@ void URLLoader::Context::OnUploadProgress(uint64_t position, uint64_t size) {
   }
 }
 
-bool URLLoader::Context::OnReceivedRedirect(
+void URLLoader::Context::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head,
-    std::vector<std::string>* removed_headers) {
+    FollowRedirectCallback follow_redirect_callback) {
   if (!client_) {
-    return false;
+    return;
   }
 
   TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::OnReceivedRedirect",
@@ -362,13 +363,17 @@ bool URLLoader::Context::OnReceivedRedirect(
       url_, *head, has_devtools_request_id_, request_id_);
 
   url_ = KURL(redirect_info.new_url);
-  return client_->WillFollowRedirect(
-      url_, redirect_info.new_site_for_cookies,
-      WebString::FromUTF8(redirect_info.new_referrer),
-      ReferrerUtils::NetToMojoReferrerPolicy(redirect_info.new_referrer_policy),
-      WebString::FromUTF8(redirect_info.new_method), response,
-      has_devtools_request_id_, removed_headers,
-      redirect_info.insecure_scheme_was_upgraded);
+  std::vector<std::string> removed_headers;
+  if (client_->WillFollowRedirect(
+          url_, redirect_info.new_site_for_cookies,
+          WebString::FromUTF8(redirect_info.new_referrer),
+          ReferrerUtils::NetToMojoReferrerPolicy(
+              redirect_info.new_referrer_policy),
+          WebString::FromUTF8(redirect_info.new_method), response,
+          has_devtools_request_id_, &removed_headers,
+          redirect_info.insecure_scheme_was_upgraded)) {
+    std::move(follow_redirect_callback).Run(std::move(removed_headers));
+  }
 }
 
 void URLLoader::Context::OnReceivedResponse(

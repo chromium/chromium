@@ -198,6 +198,13 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
         resource_load_info_notifier_wrapper;
   };
 
+  // Called as a callback for ResourceRequestClient::OnReceivedRedirect().
+  void OnFollowRedirectCallback(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      std::vector<std::string> removed_headers);
+
   // Follows redirect, if any, for the given request.
   void FollowPendingRedirect(PendingRequestInfo* request_info);
 

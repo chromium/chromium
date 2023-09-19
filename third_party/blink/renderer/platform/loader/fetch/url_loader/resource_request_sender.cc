@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -185,20 +186,38 @@ void ResourceRequestSender::SendSync(
           std::move(download_to_blob_registry), cors_exempt_header_list,
           std::move(resource_load_info_notifier_wrapper)));
 
-  // redirect_or_response_event will signal when each redirect completes, and
+  // `redirect_or_response_event` will signal when each redirect completes, and
   // when the final response is complete.
   redirect_or_response_event.Wait();
 
   while (context_for_redirect) {
     DCHECK(response->redirect_info);
-    bool follow_redirect = client->OnReceivedRedirect(
+
+    using RefCountedOptionalStringVector =
+        base::RefCountedData<absl::optional<std::vector<std::string>>>;
+    const scoped_refptr<RefCountedOptionalStringVector> removed_headers =
+        base::MakeRefCounted<RefCountedOptionalStringVector>();
+    client->OnReceivedRedirect(
         *response->redirect_info, response->head.Clone(),
-        nullptr /* removed_headers */);
+        /*follow_redirect_callback=*/
+        WTF::BindOnce(
+            [](scoped_refptr<RefCountedOptionalStringVector>
+                   removed_headers_out,
+               std::vector<std::string> removed_headers) {
+              removed_headers_out->data = std::move(removed_headers);
+            },
+            removed_headers));
+    // `follow_redirect_callback` can't be asynchronously called for synchronous
+    // requests because the current thread will be blocked by
+    // `redirect_or_response_event.Wait()` call. So we check `HasOneRef()` here
+    // to ensure that `follow_redirect_callback` is not kept alive.
+    CHECK(removed_headers->HasOneRef());
     redirect_or_response_event.Reset();
-    if (follow_redirect) {
+    if (removed_headers->data.has_value()) {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&SyncLoadContext::FollowRedirect,
-                                    base::Unretained(context_for_redirect)));
+                                    base::Unretained(context_for_redirect),
+                                    std::move(*removed_headers->data)));
     } else {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&SyncLoadContext::CancelRedirect,
@@ -463,31 +482,38 @@ void ResourceRequestSender::OnReceivedRedirect(
         "Blink.ResourceRequest.RedirectDelay",
         request_info_->local_response_start - remote_response_start);
   }
-  std::vector<std::string> removed_headers;
-  if (request_info_->client->OnReceivedRedirect(
-          redirect_info, response_head.Clone(), &removed_headers)) {
-    // Double-check if the request is still around. The call above could
-    // potentially remove it.
-    if (!request_info_) {
-      return;
-    }
-    // TODO(yoav): If request_info doesn't change above, we could avoid this
-    // copy.
-    WebVector<WebString> vector(removed_headers.size());
-    base::ranges::transform(removed_headers, vector.begin(),
-                            &WebString::FromASCII);
-    request_info_->removed_headers = vector;
-    request_info_->response_url = KURL(redirect_info.new_url);
-    request_info_->has_pending_redirect = true;
-    request_info_->resource_load_info_notifier_wrapper
-        ->NotifyResourceRedirectReceived(redirect_info,
-                                         std::move(response_head));
 
-    if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
-      FollowPendingRedirect(request_info_.get());
-    }
-  } else {
-    Cancel(std::move(task_runner));
+  auto callback =
+      WTF::BindOnce(&ResourceRequestSender::OnFollowRedirectCallback,
+                    weak_factory_.GetWeakPtr(), redirect_info,
+                    response_head.Clone(), std::move(task_runner));
+  request_info_->client->OnReceivedRedirect(
+      redirect_info, std::move(response_head), std::move(callback));
+}
+
+void ResourceRequestSender::OnFollowRedirectCallback(
+    const net::RedirectInfo& redirect_info,
+    network::mojom::URLResponseHeadPtr response_head,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    std::vector<std::string> removed_headers) {
+  // DeletePendingRequest() may have cleared request_info_.
+  if (!request_info_) {
+    return;
+  }
+
+  // TODO(yoav): If request_info doesn't change above, we could avoid this
+  // copy.
+  WebVector<WebString> vector(removed_headers.size());
+  base::ranges::transform(removed_headers, vector.begin(),
+                          &WebString::FromASCII);
+  request_info_->removed_headers = vector;
+  request_info_->response_url = KURL(redirect_info.new_url);
+  request_info_->has_pending_redirect = true;
+  request_info_->resource_load_info_notifier_wrapper
+      ->NotifyResourceRedirectReceived(redirect_info, std::move(response_head));
+
+  if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
+    FollowPendingRedirect(request_info_.get());
   }
 }
 
