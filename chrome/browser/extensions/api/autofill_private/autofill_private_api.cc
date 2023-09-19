@@ -108,13 +108,6 @@ autofill::AutofillProfile CreateNewAutofillProfile(
       personal_data->IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
           : autofill::AutofillProfile::Source::kLocalOrSyncable;
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::test::
-              kAutofillCreateAccountProfilesFromSettings)) {
-    // Note: overriding address profile source only if test feature is enabled.
-    source = autofill::AutofillProfile::Source::kAccount;
-  }
   if (country_code && !personal_data->IsCountryEligibleForAccountStorage(
                           country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
