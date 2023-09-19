@@ -8,6 +8,12 @@ import("//ui/webui/webui_features.gni")
 
 assert(is_chromeos_ash)
 
+declare_args() {
+  # Whether or not the target board supports the time of day feature. Set in
+  # the chromeos-chrome ebuild file.
+  is_time_of_day_supported = true
+}
+
 build_webui("build") {
   grd_prefix = "ash_personalization_app"
 
@@ -183,9 +189,7 @@ build_webui("build") {
   # Time of day assets cannot be made public until after the feature is
   # released. Thus, they are currently hosted in CIPD and downloaded to
   # this directory only if an internal chrome-branded checkout is being used.
-  # TODO(b/275379819): Create a custom GN arg like "tod_screensaver_enabled" and set it based
-  # on "feature_management" use flag in chromeos-chrome.ebuild.
-  if (is_chrome_branded) {
+  if (is_chrome_branded && is_time_of_day_supported) {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
       "time_of_day/thumbnails/new_mexico.jpg",
