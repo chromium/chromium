@@ -381,6 +381,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
                                 const ExtraParams& extra) const = 0;
+  virtual int GetPaintedScrollbarTrackInset() const;
 
   virtual float GetBorderRadiusForPart(Part part,
                                        float width,

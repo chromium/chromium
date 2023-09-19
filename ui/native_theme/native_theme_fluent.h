@@ -59,6 +59,7 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
+  int GetPaintedScrollbarTrackInset() const override;
 
  private:
   friend class NativeThemeFluentTest;

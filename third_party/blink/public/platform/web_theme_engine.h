@@ -271,6 +271,9 @@ class WebThemeEngine {
     // NativeTheme so these fields are unused in non-Android WebThemeEngines.
   }
 
+  virtual bool IsFluentOverlayScrollbarEnabled() const { return false; }
+  virtual int GetPaintedScrollbarTrackInset() const { return 0; }
+
   // Paint the given the given theme part.
   virtual void Paint(
       cc::PaintCanvas*,

@@ -61,6 +61,11 @@ constexpr char kFluentScrollbarDownArrow[] = "\uEDDC";
 constexpr char kFluentScrollbarLeftArrow[] = "\uEDD9";
 constexpr char kFluentScrollbarRightArrow[] = "\uEDDA";
 
+// Track and button inset to be applied at the time of painting overlay
+// scrollbars. This will yield a 1dp border around the track that is
+// transparent yet interactive.
+constexpr int kFluentPaintedScrollbarTrackInset = 1;
+
 }  // namespace ui
 
 #endif  // UI_NATIVE_THEME_NATIVE_THEME_CONSTANTS_FLUENT_H_

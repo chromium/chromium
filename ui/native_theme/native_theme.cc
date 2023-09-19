@@ -349,4 +349,7 @@ NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {
   return ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
 }
 
+int NativeTheme::GetPaintedScrollbarTrackInset() const {
+  return 0;
+}
 }  // namespace ui

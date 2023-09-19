@@ -139,11 +139,13 @@ inline float Proportion(EScrollbarWidth scrollbar_width) {
 }  // namespace
 
 ScrollbarTheme& ScrollbarTheme::NativeTheme() {
-  if (OverlayScrollbarsEnabled())
+  if (OverlayScrollbarsEnabled()) {
     return ScrollbarThemeOverlay::GetInstance();
+  }
 
-  if (FluentScrollbarsEnabled())
+  if (FluentScrollbarsEnabled()) {
     return ScrollbarThemeFluent::GetInstance();
+  }
 
   DEFINE_STATIC_LOCAL(ScrollbarThemeAura, theme, ());
   return theme;

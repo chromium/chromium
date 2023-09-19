@@ -51,6 +51,8 @@ class WebThemeEngineDefault : public WebThemeEngine {
   bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
                             const ui::RendererColorMap& dark_colors) override;
   void EmulateForcedColors(bool is_dark_theme, bool is_web_test) override;
+  bool IsFluentOverlayScrollbarEnabled() const override;
+  int GetPaintedScrollbarTrackInset() const override;
 
  protected:
   const ui::ColorProvider* GetColorProviderForPainting(

@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme_fluent.h"
 
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/native_theme/native_theme_constants_fluent.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace ui {
 
@@ -338,9 +340,11 @@ const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
     case Part::kScrollbarRightArrow:
       return kFluentScrollbarRightArrow;
     default:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 }
 
+int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
+  return kFluentPaintedScrollbarTrackInset;
+}
 }  // namespace ui

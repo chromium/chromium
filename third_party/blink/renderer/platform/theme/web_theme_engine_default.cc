@@ -14,6 +14,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {
@@ -276,6 +277,14 @@ gfx::Size WebThemeEngineDefault::NinePatchCanvasSize(Part part) const {
 gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetNinePatchAperture(
       NativeThemePart(part));
+}
+
+bool WebThemeEngineDefault::IsFluentOverlayScrollbarEnabled() const {
+  return ui::IsFluentOverlayScrollbarEnabled();
+}
+
+int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
+  return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
 }
 
 absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
