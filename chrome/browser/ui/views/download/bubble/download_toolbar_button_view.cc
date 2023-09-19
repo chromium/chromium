@@ -73,6 +73,10 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 namespace {
 
 using offline_items_collection::ContentId;
@@ -327,6 +331,20 @@ void DownloadToolbarButtonView::UpdateIconProgress(const ProgressInfo& info) {
 }
 
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
+#if BUILDFLAG(IS_MAC)
+  if (fullscreen_utils::IsInContentFullscreen(browser_)) {
+    return true;
+  }
+#endif
+
+  // If immersive fullscreen, check if top chrome is visible.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (browser_view && browser_view->GetLocationBarView() &&
+      browser_view->IsImmersiveModeEnabled()) {
+    return !browser_view->immersive_mode_controller()->IsRevealed();
+  }
+
+  // Handle the remaining fullscreen case.
   return browser_->window() && browser_->window()->IsFullscreen() &&
          !browser_->window()->IsToolbarVisible();
 }

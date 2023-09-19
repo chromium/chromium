@@ -30,6 +30,10 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 namespace {
 
 using DownloadIconActive = DownloadDisplay::IconActive;
@@ -118,6 +122,18 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
     will_show_details = browser_view && browser_view->IsImmersiveModeEnabled();
   }
+
+  // At this point, we are possibly in fullscreen. If we're in immersive
+  // fullscreen on macOS, it's OK to show the details bubble because the
+  // toolbar is either visible or it can be made visible. However, if we're
+  // in content/HTML fullscreen, the toolbar is not visible and we should not
+  // show the bubble. So, check our fullscreen state here and avoid showing
+  // the bubble if we're in content fullscreen.
+#if BUILDFLAG(IS_MAC)
+  will_show_details =
+      will_show_details && !fullscreen_utils::IsInContentFullscreen(browser_);
+#endif
+
   if (will_show_details) {
     display_->ShowDetails();
   }
