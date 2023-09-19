@@ -3379,6 +3379,13 @@
       },
     },
   },
+  'lacros_all_tast_tests amd64-generic': {
+    'modifications': {
+      'lacros-amd64-generic-rel': {
+        'ci_only': True,
+      }
+    }
+  },
   'lacros_chrome_browsertests_run_in_series': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
