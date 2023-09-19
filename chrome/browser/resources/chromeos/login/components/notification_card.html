@@ -31,15 +31,17 @@ found in the LICENSE file.
   }
 
   :host iron-icon {
-    color: var(--cros-icon-color-warning);
+    color: var(--cros-sys-warning);
     height: 28px;
     width: 28px;
   }
 
   #text-container {
-    /* TODO(https://crbug.com/1320715) Revise the color */
-    color: var(--cros-text-color-primary);
-    line-height: 130%;
+    color: var(--oobe-text-color);
+    font-family: var(--oobe-default-font-family);
+    font-size: var(--oobe-default-font-size);
+    font-weight: var(--oobe-default-font-weight);
+    line-height: var(--oobe-default-line-height);
     max-width: 240px;
     text-align: center;
   }

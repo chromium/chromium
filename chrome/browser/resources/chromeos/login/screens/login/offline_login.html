@@ -45,8 +45,11 @@ found in the LICENSE file.
   }
 
   #forgotPasswordDlg::part(dialog) {
-    color: var(--primary-text-color);
-    font-size: 15px;
+    color: var(--oobe-text-color);
+    font-family: var(--oobe-default-font-family);
+    font-size: var(--oobe-default-font-size);
+    font-weight: var(--oobe-default-font-weight);
+    line-height: var(--oobe-default-line-height);
     width: 384px;
   }
 
@@ -184,6 +187,14 @@ found in the LICENSE file.
   /** During animation all sections should be visible. */
   oobe-content-dialog[animation-in-progress] .section {
     display: block;
+  }
+
+  #forgotPasswordDlg cr-button.action-button {
+    border-radius: var(--oobe-button-radius);
+    font-family: var(--oobe-button-font-family);
+    font-size: var(--oobe-button-font-size);
+    font-weight: var(--oobe-button-font-weight);
+    line-height: var(--oobe-button-line-height);
   }
 </style>
 <oobe-content-dialog role="dialog" selected$="[[activeSection]]"

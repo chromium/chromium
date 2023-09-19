@@ -24,6 +24,7 @@
  *
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import './common_styles/oobe_common_styles.css.js';
 import './gaia_button.js';
 
