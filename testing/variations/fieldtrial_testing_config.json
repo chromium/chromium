@@ -195,24 +195,6 @@
             ]
         }
     ],
-    "AndroidAppIntegration": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "content_ttl_hours": "168"
-                    },
-                    "enable_features": [
-                        "AndroidAppIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAutofillFormSubmissionCheckById": [
         {
             "platforms": [
