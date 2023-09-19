@@ -27,17 +27,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getExtensionDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_dialog_test = {
-  suiteName: 'DestinationDialogTest',
-  TestNames: {
-    PrinterList: 'PrinterList',
-    PrinterListPreloaded: 'PrinterListPreloaded',
-  },
-};
-
-Object.assign(window, {destination_dialog_test: destination_dialog_test});
-
-suite(destination_dialog_test.suiteName, function() {
+suite('DestinationDialogTest', function() {
   // <if expr="is_chromeos">
   let dialog: PrintPreviewDestinationDialogCrosElement;
   // </if>
@@ -121,7 +111,7 @@ suite(destination_dialog_test.suiteName, function() {
   }
 
   // Test that destinations are correctly displayed in the lists.
-  test(destination_dialog_test.TestNames.PrinterList, async () => {
+  test('PrinterList', async () => {
     // Native printers are fetched at startup, since the recent printer is set
     // as native.
     let whenPrinterListReady = nativeLayer.waitForGetPrinters(1);
@@ -143,7 +133,7 @@ suite(destination_dialog_test.suiteName, function() {
   // printers have been preloaded before the dialog is opened. Regression test
   // for https://crbug.com/1330678.
   test(
-      destination_dialog_test.TestNames.PrinterListPreloaded, async () => {
+      'PrinterListPreloaded', async () => {
         // All printers are fetched at startup since both native and extension
         // printers are recent.
         const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);

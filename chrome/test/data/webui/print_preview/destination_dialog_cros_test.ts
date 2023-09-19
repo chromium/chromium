@@ -15,30 +15,7 @@ import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cr
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_dialog_cros_test = {
-  suiteName: 'DestinationDialogCrosTest',
-  TestNames: {
-    ShowProvisionalDialog: 'ShowProvisionalDialog',
-    PrintServersChanged: 'PrintServersChanged',
-    PrintServerSelected: 'PrintServerSelected',
-    PrinterSetupAssistanceHasDestinations:
-        'PrinterSetupAssistanceHasDestinations',
-    PrinterSetupAssistanceHasNoDestinations:
-        'PrinterSetupAssistanceHasNoDestinations',
-    ManagePrintersMetrics_HasDestinations:
-        'ManagePrintersMetrics_HasDestinations',
-    ManagePrintersMetrics_HasNoDestinations:
-        'ManagePrintersMetrics_HasNoDestinations',
-    PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse:
-        'PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse',
-    CorrectlyDisplaysAndHidesLoadingUI: 'DisplayLoadingIcon',
-  },
-};
-
-Object.assign(
-    window, {destination_dialog_cros_test: destination_dialog_cros_test});
-
-suite(destination_dialog_cros_test.suiteName, function() {
+suite('DestinationDialogCrosTest', function() {
   let dialog: PrintPreviewDestinationDialogCrosElement;
 
   let destinationStore: DestinationStore;
@@ -148,8 +125,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // destinations dialog, and that the escape key closes only the provisional
   // dialog when it is open, not the destinations dialog.
   test(
-      destination_dialog_cros_test.TestNames.ShowProvisionalDialog,
-      async () => {
+      'ShowProvisionalDialog', async () => {
         const provisionalDestination = {
           extensionId: 'ABC123',
           extensionName: 'ABC Printing',
@@ -197,7 +173,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Test that checks that print server searchable input and its selections are
   // updated according to the PRINT_SERVERS_CHANGED event.
   test(
-      destination_dialog_cros_test.TestNames.PrintServersChanged, async () => {
+      'PrintServersChanged', async () => {
         await finishSetup();
 
         const printServers = [
@@ -227,7 +203,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Tests that choosePrintServers is called when the print server searchable
   // input value is changed.
   test(
-      destination_dialog_cros_test.TestNames.PrintServerSelected, async () => {
+      'PrintServerSelected', async () => {
         await finishSetup();
         const printServers = [
           {id: 'user-print-server-1', name: 'Print Server 1'},
@@ -258,9 +234,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Test that the correct elements are displayed when the printer setup
   // assistance flag is on and destination store has destinations.
   test(
-      destination_dialog_cros_test.TestNames
-          .PrinterSetupAssistanceHasDestinations,
-      async () => {
+      'PrinterSetupAssistanceHasDestinations', async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
@@ -294,9 +268,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Test that the correct elements are displayed when the printer setup
   // assistance flag is on and destination store has no destinations.
   test(
-      destination_dialog_cros_test.TestNames
-          .PrinterSetupAssistanceHasNoDestinations,
-      async () => {
+      'PrinterSetupAssistanceHasNoDestinations', async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
@@ -336,9 +308,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // with bucket `DESTINATION_DIALOG_CROS_HAS_PRINTERS` when flag is on and
   // destination store has destinations.
   test(
-      destination_dialog_cros_test.TestNames
-          .ManagePrintersMetrics_HasDestinations,
-      async () => {
+      'ManagePrintersMetrics_HasDestinations', async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
@@ -361,9 +331,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // with bucket `DESTINATION_DIALOG_CROS_NO_PRINTERS` when flag is on and
   // destination store has no destinations.
   test(
-      destination_dialog_cros_test.TestNames
-          .ManagePrintersMetrics_HasNoDestinations,
-      async () => {
+      'ManagePrintersMetrics_HasNoDestinations', async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
@@ -391,8 +359,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // getShowManagePrinters return false. Simulates opening print preview from
   // a UI which cannot launch settings (ex. OS Settings app).
   test(
-      destination_dialog_cros_test.TestNames
-          .PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse,
+      'PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse',
       async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
@@ -433,8 +400,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Test loading icon rendered while destinations are loading and for a minimum
   // of 2 seconds before destination list and search box are visible.
   test(
-      destination_dialog_cros_test.TestNames.CorrectlyDisplaysAndHidesLoadingUI,
-      async () => {
+      'CorrectlyDisplaysAndHidesLoadingUI', async () => {
         // Set flag enabled.
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,

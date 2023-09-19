@@ -578,3 +578,213 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, SaveToDriveDisabled) {
   RunTestCase("SaveToDriveDisabled");
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewPrinterSetupInfoCrosTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/printer_setup_info_cros_test.js",
+        base::StringPrintf("runMochaTest('PrinterSetupInfoTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest, ElementDisplays) {
+  RunTestCase("ElementDisplays");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest, ButtonLocalized) {
+  RunTestCase("ButtonLocalized");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       ManagePrintersButton) {
+  RunTestCase("ManagePrintersButton");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       MessageMatchesMessageType) {
+  RunTestCase("MessageMatchesMessageType");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       ManagePrintersButtonMetrics) {
+  RunTestCase("ManagePrintersButtonMetrics");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       DoNotShowManagePrinters) {
+  RunTestCase("DoNotShowManagePrinters");
+}
+
+class PrintPreviewPrintServerStoreTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/print_server_store_test.js",
+        base::StringPrintf("runMochaTest('PrintServerStoreTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintServerStoreTest, ChoosePrintServers) {
+  RunTestCase("ChoosePrintServers");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintServerStoreTest, PrintServersChanged) {
+  RunTestCase("PrintServersChanged");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintServerStoreTest,
+                       GetPrintServersConfig) {
+  RunTestCase("GetPrintServersConfig");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintServerStoreTest,
+                       ServerPrintersLoading) {
+  RunTestCase("ServerPrintersLoading");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+class PrintPreviewDestinationDialogTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_dialog_test.js",
+        base::StringPrintf("runMochaTest('DestinationDialogTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogTest, PrinterList) {
+  RunTestCase("PrinterList");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogTest,
+                       PrinterListPreloaded) {
+  RunTestCase("PrinterListPreloaded");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewDestinationDialogCrosTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_dialog_cros_test.js",
+        base::StringPrintf("runMochaTest('DestinationDialogCrosTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       ShowProvisionalDialog) {
+  RunTestCase("ShowProvisionalDialog");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       PrintServersChanged) {
+  RunTestCase("PrintServersChanged");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       PrintServerSelected) {
+  RunTestCase("PrintServerSelected");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       PrinterSetupAssistanceHasDestinations) {
+  RunTestCase("PrinterSetupAssistanceHasDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       PrinterSetupAssistanceHasNoDestinations) {
+  RunTestCase("PrinterSetupAssistanceHasNoDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       ManagePrintersMetrics_HasDestinations) {
+  RunTestCase("ManagePrintersMetrics_HasDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       ManagePrintersMetrics_HasNoDestinations) {
+  RunTestCase("ManagePrintersMetrics_HasNoDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       ElementsDisplayedWithShowManagePrintersFalse) {
+  RunTestCase("PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       CorrectlyDisplaysAndHidesLoadingUI) {
+  RunTestCase("CorrectlyDisplaysAndHidesLoadingUI");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+class PrintPreviewAdvancedDialogTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/advanced_dialog_test.js",
+        base::StringPrintf("runMochaTest('AdvancedDialogTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest,
+                       AdvancedSettings1Option) {
+  RunTestCase("AdvancedSettings1Option");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest,
+                       AdvancedSettings2Options) {
+  RunTestCase("AdvancedSettings2Options");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest, AdvancedSettingsApply) {
+  RunTestCase("AdvancedSettingsApply");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest,
+                       AdvancedSettingsApplyWithEnter) {
+  RunTestCase("AdvancedSettingsApplyWithEnter");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest, AdvancedSettingsClose) {
+  RunTestCase("AdvancedSettingsClose");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedDialogTest, AdvancedSettingsFilter) {
+  RunTestCase("AdvancedSettingsFilter");
+}
+
+class PrintPreviewPreviewAreaTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/preview_area_test.js",
+        base::StringPrintf("runMochaTest('PreviewAreaTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, StateChanges) {
+  RunTestCase("StateChanges");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest,
+                       StateChangesPrinterSetupCros) {
+  RunTestCase("StateChangesPrinterSetupCros");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ManagePrinterMetricsCros) {
+  RunTestCase("ManagePrinterMetricsCros");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ViewportSizeChanges) {
+  RunTestCase("ViewportSizeChanges");
+}

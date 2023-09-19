@@ -21,23 +21,7 @@ import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
-const preview_area_test = {
-  suiteName: 'PreviewAreaTest',
-  TestNames: {
-    StateChanges: 'state changes',
-    // <if expr="is_chromeos">
-    StateChangesPrinterSetupCros:
-        'state changes with printer setup flag enabled',
-    ManagePrinterMetricsCros:
-        'manage printer metrics triggered with printer setup flag enabled',
-    // </if>
-    ViewportSizeChanges: 'viewport size changes',
-  },
-};
-
-Object.assign(window, {preview_area_test: preview_area_test});
-
-suite(preview_area_test.suiteName, function() {
+suite('PreviewAreaTest', function() {
   let previewArea: PrintPreviewPreviewAreaElement;
 
   let nativeLayer: NativeLayerStub;
@@ -86,7 +70,7 @@ suite(preview_area_test.suiteName, function() {
   }
 
   /** Validate some preview area state transitions work as expected. */
-  test(preview_area_test.TestNames.StateChanges, function() {
+  test('StateChanges', function() {
     // <if expr="is_chromeos">
     // TODO(b/289091283): Update to only run test for "not is_chromeos" as part
     // of flag clean up. For ChromeOS, the error state change on
@@ -143,7 +127,7 @@ suite(preview_area_test.suiteName, function() {
    * Validate some preview area state transitions work as expected on CrOS with
    * Printer Setup Assistance flag enabled.
    */
-  test(preview_area_test.TestNames.StateChangesPrinterSetupCros, function() {
+  test('StateChangesPrinterSetupCros', function() {
     previewArea.remove();
     loadTimeData.overrideValues({
       isPrintPreviewSetupAssistanceEnabled: true,
@@ -194,7 +178,7 @@ suite(preview_area_test.suiteName, function() {
 
   // Verify correct metric is triggered when launch printer settings button
   // is pressed from preview-area error state.
-  test(preview_area_test.TestNames.ManagePrinterMetricsCros, function() {
+  test('ManagePrinterMetricsCros', function() {
     previewArea.remove();
     loadTimeData.overrideValues({
       isPrintPreviewSetupAssistanceEnabled: true,
@@ -244,7 +228,7 @@ suite(preview_area_test.suiteName, function() {
   // </if>
 
   /** Validate preview area sets tabindex correctly based on viewport size. */
-  test(preview_area_test.TestNames.ViewportSizeChanges, function() {
+  test('ViewportSizeChanges', function() {
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;

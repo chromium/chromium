@@ -9,19 +9,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 
-const print_server_store_test = {
-  suiteName: 'PrintServerStoreTest',
-  TestNames: {
-    PrintServersChanged: 'print servers changed',
-    GetPrintServersConfig: 'get print servers config',
-    ServerPrintersLoading: 'server printers loading',
-    ChoosePrintServers: 'choose print servers',
-  },
-};
-
-Object.assign(window, {print_server_store_test: print_server_store_test});
-
-suite(print_server_store_test.suiteName, function() {
+suite('PrintServerStoreTest', function() {
   let printServerStore: PrintServerStore;
 
   let nativeLayerCros: NativeLayerCrosStub;
@@ -45,7 +33,7 @@ suite(print_server_store_test.suiteName, function() {
   // Tests that print servers with the selected name are selected by ID is the
   // native layer choosePrintServers is called.
   test(
-      print_server_store_test.TestNames.ChoosePrintServers, async () => {
+      'ChoosePrintServers', async () => {
         const printServers = [
           {id: 'user-server1', name: 'Print Server 1'},
           {id: 'device-server2', name: 'Print Server 2'},
@@ -70,7 +58,7 @@ suite(print_server_store_test.suiteName, function() {
   // Tests that print servers and fetching mode are updated when
   // PRINT_SERVERS_CHANGED occurs.
   test(
-      print_server_store_test.TestNames.PrintServersChanged, async () => {
+      'PrintServersChanged', async () => {
         const printServers = [
           {id: 'server1', name: 'Print Server 1'},
           {id: 'server2', name: 'Print Server 2'},
@@ -96,7 +84,7 @@ suite(print_server_store_test.suiteName, function() {
   // getPrintServersConfig is called and an update to the print servers config
   // occurs.
   test(
-      print_server_store_test.TestNames.GetPrintServersConfig, async () => {
+      'GetPrintServersConfig', async () => {
         const printServers = [
           {id: 'server1', name: 'Print Server 1'},
           {id: 'server2', name: 'Print Server 2'},
@@ -120,7 +108,7 @@ suite(print_server_store_test.suiteName, function() {
 
   // Tests that an event is dispatched are updated when SERVER_PRINTERS_LOADING
   // is called.
-  test(print_server_store_test.TestNames.ServerPrintersLoading, async () => {
+  test('ServerPrintersLoading', async () => {
     const whenServerPrintersLoadedEvent = eventToPromise(
         PrintServerStoreEventType.SERVER_PRINTERS_LOADING, printServerStore);
 
