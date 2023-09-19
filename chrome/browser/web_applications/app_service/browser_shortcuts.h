@@ -20,6 +20,10 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ash only");
 
 class Profile;
 
+namespace ui {
+enum ResourceScaleFactor : int;
+}
+
 namespace web_app {
 
 class WebAppProvider;
@@ -58,6 +62,10 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   void RemoveShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
                       apps::UninstallSource uninstall_source) override;
+  void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
+                                 int32_t size_in_dip,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 apps::LoadIconCallback callback) override;
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
@@ -70,6 +78,8 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   const raw_ptr<Profile> profile_;
 
   const raw_ptr<WebAppProvider> provider_;
+
+  raw_ptr<apps::AppServiceProxy> proxy_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

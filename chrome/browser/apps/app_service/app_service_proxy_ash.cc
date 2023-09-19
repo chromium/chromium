@@ -549,6 +549,11 @@ apps::IconLoader* AppServiceProxyAsh::OverrideShortcutInnerIconLoaderForTesting(
   return old;
 }
 
+ShortcutPublisher* AppServiceProxyAsh::GetShortcutPublisherForTesting(
+    AppType app_type) {
+  return GetShortcutPublisher(app_type);
+}
+
 AppServiceProxyAsh::ShortcutInnerIconLoader::ShortcutInnerIconLoader(
     AppServiceProxyAsh* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}

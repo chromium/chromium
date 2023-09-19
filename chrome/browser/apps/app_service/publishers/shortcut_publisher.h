@@ -9,8 +9,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ui {
+enum ResourceScaleFactor : int;
+}
 
 namespace apps {
 
@@ -46,6 +51,14 @@ class ShortcutPublisher {
   virtual void RemoveShortcut(const std::string& host_app_id,
                               const std::string& local_shortcut_id,
                               UninstallSource uninstall_source) = 0;
+
+  // Requests a compressed shortcut icon data (not including the badge) for
+  // shortcut identified by `shortcut_id`. The icon is identified by
+  // `size_in_dip` and `scale_factor`. Calls `callback` with the result.
+  virtual void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
+                                         int32_t size_in_dip,
+                                         ui::ResourceScaleFactor scale_factor,
+                                         LoadIconCallback callback);
 
  protected:
   // Publish one `delta` to AppServiceProxy. Should be called whenever the

@@ -226,6 +226,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::IconLoader* OverrideShortcutInnerIconLoaderForTesting(
       apps::IconLoader* icon_loader);
 
+  ShortcutPublisher* GetShortcutPublisherForTesting(AppType app_type);
+
  private:
   // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
   // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which

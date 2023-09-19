@@ -4,9 +4,12 @@
 
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace apps {
 
@@ -28,6 +31,14 @@ void ShortcutPublisher::PublishShortcut(ShortcutPtr delta) {
 void ShortcutPublisher::ShortcutRemoved(const ShortcutId& id) {
   CHECK(proxy_->ShortcutRegistryCache());
   proxy_->ShortcutRegistryCache()->RemoveShortcut(id);
+}
+
+void ShortcutPublisher::GetCompressedShortcutIcon(
+    const apps::ShortcutId& shortcut_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    LoadIconCallback callback) {
+  std::move(callback).Run(std::make_unique<IconValue>());
 }
 
 }  // namespace apps

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
@@ -52,6 +53,15 @@ class FakeShortcutPublisher : public ShortcutPublisher {
                       UninstallSource uninstall_source) override {
     ShortcutPublisher::ShortcutRemoved(
         apps::GenerateShortcutId(host_app_id, local_shortcut_id));
+  }
+
+  void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
+                                 int32_t size_in_dip,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 LoadIconCallback callback) override {
+    apps::IconValuePtr icon = std::make_unique<IconValue>();
+    icon->compressed = {1, 2, 3};
+    std::move(callback).Run(std::move(icon));
   }
 
   void ClearPreviousLaunch() {
@@ -291,6 +301,26 @@ TEST_F(ShortcutPublisherTest, RemoveShortcut_CallsCorrectPublisher) {
                                   uninstall_source);
   EXPECT_FALSE(cache->HasShortcut(initial_web_app_shortcuts[0]->shortcut_id));
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
+}
+
+TEST_F(ShortcutPublisherTest, GetCompressedIcon) {
+  ShortcutPtr shortcut_1 = std::make_unique<Shortcut>("app_id_1", "local_id_1");
+  shortcut_1->name = "name1";
+
+  Shortcuts initial_chrome_shortcuts;
+  initial_chrome_shortcuts.push_back(std::move(shortcut_1));
+
+  FakeShortcutPublisher fake_chrome_app_publisher(proxy(), AppType::kChromeApp,
+                                                  initial_chrome_shortcuts);
+
+  base::test::TestFuture<apps::IconValuePtr> result;
+  fake_chrome_app_publisher.GetCompressedShortcutIcon(
+      initial_chrome_shortcuts[0]->shortcut_id, 1000,
+      ui::ResourceScaleFactor::k100Percent, result.GetCallback());
+  apps::IconValuePtr icon = result.Take();
+
+  std::vector<uint8_t> expected_icon = {1, 2, 3};
+  ASSERT_EQ(expected_icon, icon->compressed);
 }
 
 }  // namespace apps

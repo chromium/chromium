@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -22,7 +23,9 @@
 #include "chrome/common/chrome_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 
 namespace {
 
@@ -39,6 +42,7 @@ BrowserShortcuts::BrowserShortcuts(apps::AppServiceProxy* proxy)
     : apps::ShortcutPublisher(proxy),
       profile_(proxy->profile()),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)) {
+  proxy_ = proxy;
   Initialize();
 }
 
@@ -138,6 +142,17 @@ void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
   provider_->scheduler().UninstallWebApp(
       web_app->app_id(), webapp_uninstall_source, base::DoNothing());
+}
+
+void BrowserShortcuts::GetCompressedShortcutIcon(
+    const apps::ShortcutId& shortcut_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  std::string local_id =
+      proxy_->ShortcutRegistryCache()->GetShortcutLocalId(shortcut_id);
+  apps::GetWebAppCompressedIconData(profile_, local_id, size_in_dip,
+                                    scale_factor, std::move(callback));
 }
 
 void BrowserShortcuts::OnWebAppInstalled(const AppId& app_id) {
