@@ -161,23 +161,12 @@ class CORE_EXPORT MouseEventManager final
         const MouseEventBoundaryEventDispatcher&) = delete;
 
    protected:
-    void DispatchOut(EventTarget*, EventTarget* related_target) override;
-    void DispatchOver(EventTarget*, EventTarget* related_target) override;
-    void DispatchLeave(EventTarget*,
-                       EventTarget* related_target,
-                       bool check_for_listener) override;
-    void DispatchEnter(EventTarget*,
-                       EventTarget* related_target,
-                       bool check_for_listener) override;
-    AtomicString GetLeaveEvent() override;
-    AtomicString GetEnterEvent() override;
-
-   private:
     void Dispatch(EventTarget*,
                   EventTarget* related_target,
                   const AtomicString&,
-                  const WebMouseEvent&,
-                  bool check_for_listener);
+                  bool check_for_listener) override;
+
+   private:
     MouseEventManager* mouse_event_manager_;
     const WebMouseEvent* web_mouse_event_;
   };

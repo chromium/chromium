@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_BOUNDARY_EVENT_DISPATCHER_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -16,23 +17,30 @@ class BoundaryEventDispatcher {
   STACK_ALLOCATED();
 
  public:
-  BoundaryEventDispatcher() = default;
+  BoundaryEventDispatcher(AtomicString over_event,
+                          AtomicString out_event,
+                          AtomicString enter_event,
+                          AtomicString leave_event)
+      : over_event_(over_event),
+        out_event_(out_event),
+        enter_event_(enter_event),
+        leave_event_(leave_event) {}
   virtual ~BoundaryEventDispatcher() = default;
 
   void SendBoundaryEvents(EventTarget* exited_target,
                           EventTarget* entered_target);
 
  protected:
-  virtual void DispatchOut(EventTarget*, EventTarget* related_target) = 0;
-  virtual void DispatchOver(EventTarget*, EventTarget* related_target) = 0;
-  virtual void DispatchLeave(EventTarget*,
-                             EventTarget* related_target,
-                             bool check_for_listener) = 0;
-  virtual void DispatchEnter(EventTarget*,
-                             EventTarget* related_target,
-                             bool check_for_listener) = 0;
-  virtual AtomicString GetLeaveEvent() = 0;
-  virtual AtomicString GetEnterEvent() = 0;
+  virtual void Dispatch(EventTarget*,
+                        EventTarget* related_target,
+                        const AtomicString&,
+                        bool check_for_listener) = 0;
+
+ private:
+  AtomicString over_event_;
+  AtomicString out_event_;
+  AtomicString enter_event_;
+  AtomicString leave_event_;
 };
 
 }  // namespace blink

@@ -133,46 +133,12 @@ PointerEventManager::PointerEventBoundaryEventDispatcher::
     PointerEventBoundaryEventDispatcher(
         PointerEventManager* pointer_event_manager,
         PointerEvent* pointer_event)
-    : pointer_event_manager_(pointer_event_manager),
+    : BoundaryEventDispatcher(event_type_names::kPointerover,
+                              event_type_names::kPointerout,
+                              event_type_names::kPointerenter,
+                              event_type_names::kPointerleave),
+      pointer_event_manager_(pointer_event_manager),
       pointer_event_(pointer_event) {}
-
-void PointerEventManager::PointerEventBoundaryEventDispatcher::DispatchOut(
-    EventTarget* target,
-    EventTarget* related_target) {
-  Dispatch(target, related_target, event_type_names::kPointerout, false);
-}
-
-void PointerEventManager::PointerEventBoundaryEventDispatcher::DispatchOver(
-    EventTarget* target,
-    EventTarget* related_target) {
-  Dispatch(target, related_target, event_type_names::kPointerover, false);
-}
-
-void PointerEventManager::PointerEventBoundaryEventDispatcher::DispatchLeave(
-    EventTarget* target,
-    EventTarget* related_target,
-    bool check_for_listener) {
-  Dispatch(target, related_target, event_type_names::kPointerleave,
-           check_for_listener);
-}
-
-void PointerEventManager::PointerEventBoundaryEventDispatcher::DispatchEnter(
-    EventTarget* target,
-    EventTarget* related_target,
-    bool check_for_listener) {
-  Dispatch(target, related_target, event_type_names::kPointerenter,
-           check_for_listener);
-}
-
-AtomicString
-PointerEventManager::PointerEventBoundaryEventDispatcher::GetLeaveEvent() {
-  return event_type_names::kPointerleave;
-}
-
-AtomicString
-PointerEventManager::PointerEventBoundaryEventDispatcher::GetEnterEvent() {
-  return event_type_names::kPointerenter;
-}
 
 void PointerEventManager::PointerEventBoundaryEventDispatcher::Dispatch(
     EventTarget* target,

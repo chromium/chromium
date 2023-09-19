@@ -167,20 +167,19 @@ void MouseEventManager::Trace(Visitor* visitor) const {
 MouseEventManager::MouseEventBoundaryEventDispatcher::
     MouseEventBoundaryEventDispatcher(MouseEventManager* mouse_event_manager,
                                       const WebMouseEvent* web_mouse_event)
-    : mouse_event_manager_(mouse_event_manager),
+    : BoundaryEventDispatcher(event_type_names::kMouseover,
+                              event_type_names::kMouseout,
+                              event_type_names::kMouseenter,
+                              event_type_names::kMouseleave),
+      mouse_event_manager_(mouse_event_manager),
       web_mouse_event_(web_mouse_event) {}
 
-void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOut(
+void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
     EventTarget* target,
-    EventTarget* related_target) {
-  Dispatch(target, related_target, event_type_names::kMouseout,
-           *web_mouse_event_, false);
-}
-
-void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOver(
-    EventTarget* target,
-    EventTarget* related_target) {
-  if (target) {
+    EventTarget* related_target,
+    const AtomicString& type,
+    bool check_for_listener) {
+  if (target && type == event_type_names::kMouseover) {
     HTMLImageElement* image_element =
         DynamicTo<HTMLImageElement>(target->ToNode());
     if (image_element && image_element->IsLCPElement()) {
@@ -189,43 +188,7 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOver(
       paint_timing.SetLCPMouseoverDispatched();
     }
   }
-  Dispatch(target, related_target, event_type_names::kMouseover,
-           *web_mouse_event_, false);
-}
-
-void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchLeave(
-    EventTarget* target,
-    EventTarget* related_target,
-    bool check_for_listener) {
-  Dispatch(target, related_target, event_type_names::kMouseleave,
-           *web_mouse_event_, check_for_listener);
-}
-
-void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchEnter(
-    EventTarget* target,
-    EventTarget* related_target,
-    bool check_for_listener) {
-  Dispatch(target, related_target, event_type_names::kMouseenter,
-           *web_mouse_event_, check_for_listener);
-}
-
-AtomicString
-MouseEventManager::MouseEventBoundaryEventDispatcher::GetLeaveEvent() {
-  return event_type_names::kMouseleave;
-}
-
-AtomicString
-MouseEventManager::MouseEventBoundaryEventDispatcher::GetEnterEvent() {
-  return event_type_names::kMouseenter;
-}
-
-void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
-    EventTarget* target,
-    EventTarget* related_target,
-    const AtomicString& type,
-    const WebMouseEvent& web_mouse_event,
-    bool check_for_listener) {
-  mouse_event_manager_->DispatchMouseEvent(target, type, web_mouse_event,
+  mouse_event_manager_->DispatchMouseEvent(target, type, *web_mouse_event_,
                                            nullptr, related_target,
                                            check_for_listener);
 }

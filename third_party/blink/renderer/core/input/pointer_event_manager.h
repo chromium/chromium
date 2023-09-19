@@ -132,22 +132,12 @@ class CORE_EXPORT PointerEventManager final
         const PointerEventBoundaryEventDispatcher&) = delete;
 
    protected:
-    void DispatchOut(EventTarget*, EventTarget* related_target) override;
-    void DispatchOver(EventTarget*, EventTarget* related_target) override;
-    void DispatchLeave(EventTarget*,
-                       EventTarget* related_target,
-                       bool check_for_listener) override;
-    void DispatchEnter(EventTarget*,
-                       EventTarget* related_target,
-                       bool check_for_listener) override;
-    AtomicString GetLeaveEvent() override;
-    AtomicString GetEnterEvent() override;
-
-   private:
     void Dispatch(EventTarget*,
                   EventTarget* related_target,
                   const AtomicString&,
-                  bool check_for_listener);
+                  bool check_for_listener) override;
+
+   private:
     PointerEventManager* pointer_event_manager_;
     PointerEvent* pointer_event_;
   };
