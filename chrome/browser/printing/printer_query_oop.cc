@@ -30,7 +30,7 @@ std::unique_ptr<PrintJobWorker> PrinterQueryOop::TransferContextToNewWorker(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/1414968)  Do extra setup on the worker as needed for
   // supporting OOP system print dialogs.
-  return CreatePrintJobWorker(print_job);
+  return CreatePrintJobWorkerOop(print_job);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -357,7 +357,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
 }
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
-std::unique_ptr<PrintJobWorkerOop> PrinterQueryOop::CreatePrintJobWorker(
+std::unique_ptr<PrintJobWorkerOop> PrinterQueryOop::CreatePrintJobWorkerOop(
     PrintJob* print_job) {
   return std::make_unique<PrintJobWorkerOop>(
       std::move(printing_context_delegate_), std::move(printing_context_),

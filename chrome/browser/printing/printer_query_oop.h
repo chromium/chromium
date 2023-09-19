@@ -86,7 +86,7 @@ class PrinterQueryOop : public PrinterQuery {
 #endif
 
   // Used by `TransferContextToNewWorker()`.  Virtual to support testing.
-  virtual std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorker(
+  virtual std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorkerOop(
       PrintJob* print_job);
 
   const absl::optional<PrintBackendServiceManager::ClientId>&

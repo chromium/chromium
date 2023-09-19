@@ -344,7 +344,7 @@ class TestPrinterQueryOop : public PrinterQueryOop {
     callbacks_->did_update_print_settings_callback.Run(result);
   }
 
-  std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorker(
+  std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorkerOop(
       PrintJob* print_job) override {
     return std::make_unique<TestPrintJobWorkerOop>(
         std::move(printing_context_delegate_), std::move(printing_context_),
