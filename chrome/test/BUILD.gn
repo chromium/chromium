@@ -7110,6 +7110,7 @@ test("unit_tests") {
       "../browser/android/signin/signin_manager_android_unittest.cc",
       "../browser/android/signin/web_signin_bridge_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
+      "../browser/android/webapk/webapk_database_unittest.cc",
       "../browser/android/webapk/webapk_helpers_unittest.cc",
       "../browser/android/webapk/webapk_installer_unittest.cc",
       "../browser/android/webapk/webapk_sync_bridge_unittest.cc",

@@ -6,8 +6,6 @@ import("//chrome/android/webapk/shell_apk/request_update_for_version.gni")
 
 source_set("webapk_sources") {
   sources = [
-    "webapk_database.cc",
-    "webapk_database.h",
     "webapk_features.cc",
     "webapk_features.h",
     "webapk_handler_delegate.cc",
@@ -23,8 +21,6 @@ source_set("webapk_sources") {
     "webapk_registrar.h",
     "webapk_registry_update.cc",
     "webapk_registry_update.h",
-    "webapk_sync_bridge.cc",
-    "webapk_sync_bridge.h",
     "webapk_ukm_recorder.cc",
     "webapk_ukm_recorder.h",
     "webapk_update_data_fetcher.cc",
