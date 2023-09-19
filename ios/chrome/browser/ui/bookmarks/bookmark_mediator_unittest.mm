@@ -16,6 +16,7 @@
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -26,9 +27,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -40,16 +38,6 @@
                                          title:(NSString*)folderTitle
                                          count:(int)count;
 @end
-
-class FakeSyncSetupService : public SyncSetupService {
- public:
-  FakeSyncSetupService(syncer::SyncService* sync_service)
-      : SyncSetupService(sync_service) {}
-
-  bool IsDataTypePreferred(syncer::UserSelectableType datatype) const override {
-    return true;
-  }
-};
 
 namespace {
 
@@ -76,9 +64,6 @@ class BookmarkMediatorUnitTest
     BookmarkIOSUnitTestSupport::SetUp();
     authentication_service_ = AuthenticationServiceFactory::GetForBrowserState(
         chrome_browser_state_.get());
-    sync_service_ =
-        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
-    sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
         initWithWithLocalOrSyncableBookmarkModel:
@@ -87,8 +72,7 @@ class BookmarkMediatorUnitTest
                                            prefs:chrome_browser_state_
                                                      ->GetPrefs()
                            authenticationService:authentication_service_
-                                     syncService:sync_service_
-                                syncSetupService:sync_setup_service_.get()];
+                                     syncService:&sync_service_];
   }
 
   // Number of bookmark saved.
@@ -165,8 +149,7 @@ class BookmarkMediatorUnitTest
   BookmarkMediator* mediator_;
   ChromeAccountManagerService* account_manager_service_;
   AuthenticationService* authentication_service_;
-  std::unique_ptr<FakeSyncSetupService> sync_setup_service_;
-  syncer::SyncService* sync_service_;
+  syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scope_;
   base::HistogramTester histogram_tester_;
 };
