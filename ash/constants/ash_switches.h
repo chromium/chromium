@@ -132,6 +132,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableGaiaServices[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableHIDDetectionOnOOBEForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSkipMultideviceScreenForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableLacrosKeepAliveForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableLoginLacrosOpening[];
@@ -396,6 +398,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabletFormFactor();
 
 // Returns true if GAIA services has been disabled.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaServicesDisabled();
+
+// Returns true if we should skip MultideviceSetup screen.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ShouldMultideviceScreenBeSkippedForTesting();
 
 // Returns true if |kDisableArcCpuRestriction| is true.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcCpuRestrictionDisabled();

@@ -402,6 +402,9 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
+// Skip multidevice setup screen during tast tests.
+const char kSkipMultideviceScreenForTesting[] = "skip-multidevice-screen";
+
 // Disables the Lacros keep alive for testing.
 const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
 
@@ -1131,6 +1134,11 @@ bool IsAshDebugBrowserEnabled() {
 bool IsTabletFormFactor() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableTabletFormFactor);
+}
+
+bool ShouldMultideviceScreenBeSkippedForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSkipMultideviceScreenForTesting);
 }
 
 bool IsGaiaServicesDisabled() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -78,6 +79,11 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
 }
 
 bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
+  // Skip multidevice setup screen during oobe.SmokeEndToEnd test.
+  if (switches::ShouldMultideviceScreenBeSkippedForTesting()) {
+    return true;
+  }
+
   // Only attempt the setup flow for non-guest users.
   if (context.skip_post_login_screens_for_tests ||
       chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
