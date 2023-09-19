@@ -70,6 +70,16 @@
   return self;
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  // The Lens button needs to be updated when the device goes from light to dark
+  // mode or vice versa.
+  UIButton* lensButton = _delegate.lensButton;
+  if (lensButton) {
+    UpdateLensButtonAppearance(lensButton);
+  }
+}
+
 - (void)addSubviews {
   if (!self.subviews.count)
     return;

@@ -25,6 +25,7 @@
 @synthesize browserCoordinatorCommandsHandler =
     _browserCoordinatorCommandsHandler;
 @synthesize layoutGuideCenter = _layoutGuideCenter;
+@synthesize lensButton = _lensButton;
 @synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
 
