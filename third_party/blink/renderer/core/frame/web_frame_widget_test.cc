@@ -565,10 +565,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampValid) {
   EXPECT_THAT(histograms.GetAllSamples(
                   "PageLoad.Internal.Renderer.PresentationTime.Valid"),
               testing::ElementsAre(base::Bucket(true, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampInvalid) {
@@ -579,10 +575,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampInvalid) {
   EXPECT_THAT(histograms.GetAllSamples(
                   "PageLoad.Internal.Renderer.PresentationTime.Valid"),
               testing::ElementsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::IsEmpty());
 }
 
 TEST_F(NotifySwapTimesWebFrameWidgetTest,
@@ -594,10 +586,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
   EXPECT_THAT(histograms.GetAllSamples(
                   "PageLoad.Internal.Renderer.PresentationTime.Valid"),
               testing::ElementsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::IsEmpty());
 }
 
 // Verifies that the presentation callback is called after the first successful
@@ -693,12 +681,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   EXPECT_THAT(histograms.GetAllSamples(
                   "PageLoad.Internal.Renderer.PresentationTime.Valid"),
               testing::ElementsAre(base::Bucket(true, 1)));
-  const auto expected_sample = static_cast<base::HistogramBase::Sample>(
-      (swap_to_failed + failed_to_successful).InMilliseconds());
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::ElementsAre(base::Bucket(expected_sample, 1)));
 }
 
 // Tests that the presentation callback is only triggered if there’s
@@ -759,12 +741,9 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
 
   // Wait for the presentation callback to be called.
   presentation_run_loop.Run();
-  const auto expected_sample = static_cast<base::HistogramBase::Sample>(
-      delta_from_swap_time.InMilliseconds());
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::ElementsAre(base::Bucket(expected_sample, 1)));
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
+              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 // Tests that the value of VisualProperties::is_pinch_gesture_active is

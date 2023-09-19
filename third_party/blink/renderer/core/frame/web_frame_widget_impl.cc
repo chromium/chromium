@@ -3324,12 +3324,6 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         !presentation_time.is_null() && (presentation_time > swap_time);
     UMA_HISTOGRAM_BOOLEAN("PageLoad.Internal.Renderer.PresentationTime.Valid",
                           presentation_time_is_valid);
-    if (presentation_time_is_valid) {
-      // This measures from 1ms to 10seconds.
-      UMA_HISTOGRAM_TIMES(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime",
-          presentation_time - swap_time);
-    }
     ReportTime(std::move(presentation_time_callback),
                presentation_time_is_valid ? presentation_time : swap_time);
   }
