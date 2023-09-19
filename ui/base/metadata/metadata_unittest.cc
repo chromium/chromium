@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace UM = ui::metadata;
@@ -110,6 +111,9 @@ class ClassPropertyMetaDataTestClass : public MetadataTestBaseClass {
 
   METADATA_HEADER(ClassPropertyMetaDataTestClass);
 };
+
+// Test view which doesn't have metadata attached.
+struct MetadataTestClassNoMetadata : public MetadataTestBaseClass {};
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, -1)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey1, nullptr)
@@ -257,4 +261,14 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
                  {"kInsetsKey2", u"(assigned)"}};
 
   verify();
+}
+
+TEST_F(MetadataTest, TestHasMetaData) {
+  EXPECT_FALSE(UM::kHasClassMetadata<MetadataTestClassNoMetadata>);
+  EXPECT_TRUE(UM::kHasClassMetadata<ClassPropertyMetaDataTestClass>);
+  EXPECT_TRUE(UM::kHasClassMetadata<ClassPropertyMetaDataTestClass*>);
+  EXPECT_TRUE(UM::kHasClassMetadata<ClassPropertyMetaDataTestClass&>);
+  EXPECT_TRUE(UM::kHasClassMetadata<const ClassPropertyMetaDataTestClass>);
+  EXPECT_TRUE(UM::kHasClassMetadata<const ClassPropertyMetaDataTestClass*>);
+  EXPECT_TRUE(UM::kHasClassMetadata<const ClassPropertyMetaDataTestClass&>);
 }

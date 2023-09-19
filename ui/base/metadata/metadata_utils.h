@@ -11,16 +11,30 @@
 
 namespace ui::metadata {
 
+template <typename T, typename = void>
+static constexpr bool kHasClassMetadata = false;
+template <typename T>
+static constexpr bool kHasClassMetadata<
+    T,
+    std::void_t<
+        typename std::remove_cvref_t<std::remove_pointer_t<T>>::kMetadataTag>> =
+    std::is_same_v<
+        typename std::remove_cvref_t<std::remove_pointer_t<T>>::kMetadataTag,
+        typename std::remove_cvref_t<std::remove_pointer_t<T>>>;
+
 template <typename V, typename B>
 bool IsClass(const B* instance) {
   if (!instance) {
     return false;
   }
+  static_assert(kHasClassMetadata<V>,
+                "Template param V doesn't implement metadata. Make sure class "
+                "publicly calls METADATA_HEADER in the declaration.");
   static_assert(std::is_base_of_v<B, V>,
                 "Only classes derived from template param B allowed");
-  const ui::metadata::ClassMetaData* child = instance->GetClassMetaData();
-  for (const ui::metadata::ClassMetaData* parent = V::MetaData();
-       child && child != parent; child = child->parent_class_meta_data())
+  const ClassMetaData* child = instance->GetClassMetaData();
+  for (const ClassMetaData* parent = V::MetaData(); child && child != parent;
+       child = child->parent_class_meta_data())
     ;
   return !!child;
 }
