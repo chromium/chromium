@@ -62,4 +62,8 @@ void CastToCastingUnsafeExclusion() {
   // Casts that |isInLocationListedInFilterFile(...)| should be excluded.
 #line 1 "../../internal/fake_loc/bad_raw_ptr_cast_implicit_exclusion.cpp"
   (void)reinterpret_cast<RawPtrWrapper*>(p);
+
+  // Casts in allowlisted paths should be excluded.
+#line 1 "../../ppapi/fake_loc/bad_raw_ptr_cast_implicit_exclusion.cpp"
+  (void)reinterpret_cast<RawPtrWrapper*>(p);
 }

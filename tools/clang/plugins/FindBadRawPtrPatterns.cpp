@@ -247,30 +247,37 @@ void FindBadRawPtrPatterns(Options options,
   MatchFinder match_finder;
 
   std::vector<std::string> paths_to_exclude_lines;
-  std::vector<std::string> separate_repository_paths;
+  std::vector<std::string> check_bad_raw_ptr_cast_exclude_paths;
   for (auto* const line : kRawPtrManualPathsToIgnore) {
     paths_to_exclude_lines.push_back(line);
   }
   for (auto* const line : kSeparateRepositoryPaths) {
     paths_to_exclude_lines.push_back(line);
-    separate_repository_paths.push_back(line);
+    check_bad_raw_ptr_cast_exclude_paths.push_back(line);
   }
   paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
                                 options.raw_ptr_paths_to_exclude_lines.begin(),
                                 options.raw_ptr_paths_to_exclude_lines.end());
+  check_bad_raw_ptr_cast_exclude_paths.insert(
+      check_bad_raw_ptr_cast_exclude_paths.end(),
+      options.check_bad_raw_ptr_cast_exclude_paths.begin(),
+      options.check_bad_raw_ptr_cast_exclude_paths.end());
 
   FilterFile exclude_fields(options.exclude_fields_file, "exclude-fields");
   FilterFile exclude_lines(paths_to_exclude_lines);
-  FilterFile exclude_separate_repositories(separate_repository_paths);
-  FilterFile check_bad_raw_ptr_cast_exclude_funcs(
-      options.check_bad_raw_ptr_cast_exclude_funcs);
+
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
       &stack_allocated_predicate};
 
-  BadCastMatcher bad_cast_matcher(compiler, exclude_separate_repositories,
-                                  check_bad_raw_ptr_cast_exclude_funcs);
+  FilterFile filter_check_bad_raw_ptr_cast_exclude_paths(
+      check_bad_raw_ptr_cast_exclude_paths);
+  FilterFile filter_check_bad_raw_ptr_cast_exclude_funcs(
+      options.check_bad_raw_ptr_cast_exclude_funcs);
+  BadCastMatcher bad_cast_matcher(compiler,
+                                  filter_check_bad_raw_ptr_cast_exclude_paths,
+                                  filter_check_bad_raw_ptr_cast_exclude_funcs);
   if (options.check_bad_raw_ptr_cast) {
     bad_cast_matcher.Register(match_finder);
   }

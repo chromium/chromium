@@ -22,8 +22,13 @@ namespace {
 const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
 
 // Name of a cmdline parameter that can be used to add a regular expressions
-// that matches paths that should be excluded from the raw_ptr checks.
+// that matches paths that should be excluded from the raw pointer usage checks.
 const char kRawPtrExcludePathArgPrefix[] = "raw-ptr-exclude-path=";
+
+// Name of a cmdline parameter that can be used to add a regular expressions
+// that matches paths that should be excluded from the bad raw_ptr casts checks.
+const char kBadRawPtrCastExcludePathArgPrefix[] =
+    "check-bad-raw-ptr-cast-exclude-path=";
 
 // Name of a cmdline parameter that can be used to add a regular expressions
 // that matches function names that should be excluded from the bad raw_ptr cast
@@ -75,6 +80,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg.startswith(kCheckBadRawPtrCastExcludeFuncArgPrefix)) {
       options_.check_bad_raw_ptr_cast_exclude_funcs.push_back(
           arg.substr(strlen(kCheckBadRawPtrCastExcludeFuncArgPrefix)).str());
+    } else if (arg.startswith(kBadRawPtrCastExcludePathArgPrefix)) {
+      options_.check_bad_raw_ptr_cast_exclude_paths.push_back(
+          arg.substr(strlen(kBadRawPtrCastExcludePathArgPrefix)).str());
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
