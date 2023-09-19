@@ -176,6 +176,10 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
 
 // Android Chrome goes to the background. Called from the gpu io thread.
 void GpuWatchdogThread::OnBackgrounded() {
+  // Report progress first in case the Watchdog timeout task in the watchdog
+  // thread is not invalidated soon enough.
+  InProgress();
+
   {
     base::AutoLock lock(skip_lock_);
     skip_for_backgrounded_ = true;
@@ -231,6 +235,13 @@ void GpuWatchdogThread::OnGpuProcessTearDown() {
 // Called from the watched gpu thread.
 void GpuWatchdogThread::PauseWatchdog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
+  // Report progress first in case the Watchdog timeout task in the watchdog
+  // thread is not invalidated soon enough.
+  InProgress();
+
+  // From the crash report, |skip_for_pause_| along is not enough to prevent
+  // GpuWatchdog kill after pause. If InProgress() along can prevent GpuWatchdog
+  // kill, we might not need |skip_for_pause_|.
   {
     base::AutoLock lock(skip_lock_);
     skip_for_pause_ = true;
@@ -324,7 +335,6 @@ void GpuWatchdogThread::WillProcessTask(const base::PendingTask& pending_task,
 
 void GpuWatchdogThread::DidProcessTask(const base::PendingTask& pending_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
-
   // Keep the watchdog armed during tear down.
   if (in_gpu_process_teardown_)
     InProgress();
@@ -335,6 +345,7 @@ void GpuWatchdogThread::DidProcessTask(const base::PendingTask& pending_task) {
 // Power Suspends. Running on the watchdog thread.
 void GpuWatchdogThread::OnSuspend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  InProgress();
   StopWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
@@ -475,13 +486,9 @@ void GpuWatchdogThread::Disarm() {
 }
 
 void GpuWatchdogThread::InProgress() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
-
   // Increment by 2. This is equivalent to Disarm() + Arm().
+  // If Watchdog is already disarmed, it stays in the same disarmed status.
   base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 2);
-
-  // Now it's an odd number.
-  DCHECK(IsArmed());
 }
 
 bool GpuWatchdogThread::IsArmed() {
@@ -499,13 +506,6 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   DCHECK(!is_backgrounded_);
   DCHECK(!in_power_suspension_);
   DCHECK(!is_paused_);
-
-  {
-    base::AutoLock lock(skip_lock_);
-    if (skip_for_pause_ || skip_for_backgrounded_) {
-      return;
-    }
-  }
 
   // If this metric is added too early (eg. watchdog creation time), it cannot
   // be persistent. The histogram data will be lost after crash or browser exit.
@@ -537,6 +537,14 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
       WatchedThreadNeedsMoreThreadTime(no_gpu_hang);
   no_gpu_hang = no_gpu_hang || watched_thread_needs_more_time ||
                 ContinueOnNonHostX11ServerTty();
+
+  // Keep holding the lock until the end of this function so
+  // DeliberatelyTerminateToRecoverFromHang() has the correct crash signature
+  // if the kill is triggered before paused or backgrounded.
+  base::AutoLock lock(skip_lock_);
+  if (skip_for_pause_ || skip_for_backgrounded_) {
+    no_gpu_hang = true;
+  }
 
   // No gpu hang. Continue with another OnWatchdogTimeout task.
   if (no_gpu_hang) {
@@ -693,6 +701,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   base::debug::Alias(&in_power_suspension_);
   base::debug::Alias(&in_gpu_process_teardown_);
   base::debug::Alias(&is_backgrounded_);
+  base::debug::Alias(&skip_for_pause_);
   base::debug::Alias(&last_on_watchdog_timeout_timeticks_);
   base::TimeDelta timeticks_elapses =
       function_begin_timeticks - last_on_watchdog_timeout_timeticks_;
@@ -762,7 +771,9 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
     crash_keys::list_of_hung_threads.Clear();
     crash_keys::gpu_watchdog_crashed_in_gpu_init.Clear();
     crash_keys::gpu_watchdog_kill_after_power_resume.Clear();
+    crash_keys::num_of_processors.Clear();
     crash_keys::gpu_thread.Clear();
+    report_only_crash_key.Clear();
 
     GpuWatchdogTimeoutHistogram(
         GpuWatchdogTimeoutEvent::kNoKillForGpuProgressDuringCrashDumping);
