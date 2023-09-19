@@ -17,6 +17,20 @@ this directory only contains the following artifacts from the NDK:
 
 This allows us to use tracing and gdb support, while limiting our dependencies.
 
+How to upgrade NDK:
+1. Assign `_URL` variable in `3pp/fetch.py` to point to the new file. Edit
+   `README.chromium` and `3pp/install.sh` as needed. Commit.
+2. The builder for CIPD packagers
+https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
+   should run (trigger if needed) with the commit. Wait for it to finish.
+3. The `fetch.py` change leads to version code change, which triggers update in
+   "latest" entry for the page:
+https://chrome-infra-packages.appspot.com/p/chromium/third_party/android_toolchain/android_toolchain
+4. Copy the full hash from the above. Open `/DEPS`, under the
+   `src/third_party/android_toolchain/ndk` entry, update `packages` ->
+   `version` value with the full hash. Commit.
+5. `gclient sync` on updated Chromium repo will pull in the updated NDK.
+
 Local Modifications:
 * Removed files in the sysroot that conflict with other files when unzipped on
   case-insensitive filesystems (e.g. usr/include/netfilter/xt_CONNMARK.h).

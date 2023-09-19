@@ -4,13 +4,8 @@
 
 create {
   source {
-    url {
-      download_url: "https://ci.android.com/builds/submitted/10625055/linux/latest/raw/android-ndk-10625055-linux-x86_64.zip"
-      version: "10625055"
-      extension: ".zip"
-    }
+    script { name: "fetch.py" }
     unpack_archive: true
-    patch_version: "cr1"
   }
 
   # This will execute the `install.sh` script in 3pp dir after the source CIPD

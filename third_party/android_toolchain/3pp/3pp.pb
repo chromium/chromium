@@ -4,13 +4,8 @@
 
 create {
   source {
-    url {
-      download_url: "https://dl.google.com/android/repository/android-ndk-r25c-linux.zip"
-      version: "r25c"
-      extension: ".zip"
-    }
+    script { name: "fetch.py" }
     unpack_archive: true
-    patch_version: "cr3"
   }
 
   # This will execute the `install.sh` script in 3pp dir after the source CIPD
