@@ -226,6 +226,10 @@ BASE_DECLARE_FEATURE(kPageTimelineMonitor);
 // PageTimelineMonitor::CollectSlice()
 extern const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime;
 
+// Whether to use the resource_attribution::CPUMeasurementMonitor for logging
+// UKM.
+extern const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor;
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

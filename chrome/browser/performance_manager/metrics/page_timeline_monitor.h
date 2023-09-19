@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
 
 namespace performance_manager::metrics {
 
@@ -165,7 +166,8 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   bool battery_saver_enabled_ = false;
 
-  // Helper to take CPU measurements for the UKM.
+  // Helpers to take CPU measurements for the UKM.
+  resource_attribution::CPUMeasurementMonitor cpu_measurement_monitor_;
   PageTimelineCPUMonitor cpu_monitor_;
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.

@@ -22,6 +22,8 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -107,36 +109,79 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
 }
 
 void PageTimelineMonitor::CollectPageResourceUsage() {
-  const PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map =
-      cpu_monitor_.UpdateCPUMeasurements();
+  if (performance_manager::features::kUseResourceAttributionCPUMonitor.Get()) {
+    const std::map<resource_attribution::ResourceContext,
+                   resource_attribution::CPUTimeResult>
+        cpu_usage_map = cpu_measurement_monitor_.UpdateAndGetCPUMeasurements();
 
-  // Calculate the overall CPU usage.
-  double total_cpu_usage = 0;
-  std::vector<std::pair<const PageNode*, double>> page_cpu_usage;
-  page_cpu_usage.reserve(page_node_info_map_.size());
-  for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
-    const PageNode* page_node = tab_handle->page_node();
-    CheckPageState(page_node, *info_ptr);
-    double cpu_usage =
-        PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
-    page_cpu_usage.emplace_back(page_node, cpu_usage);
-    total_cpu_usage += cpu_usage;
-  }
+    auto get_cpu_usage = [&cpu_usage_map](const PageNode* page_node) -> double {
+      // CPUMeasurementMonitor collects results for all pages, but any with no
+      // CPU use won't appear in the map.
+      const auto it = cpu_usage_map.find(page_node->GetResourceContext());
+      if (it == cpu_usage_map.end()) {
+        return 0;
+      }
+      const resource_attribution::CPUTimeResult& result = it->second;
+      return result.cumulative_cpu /
+             (result.metadata.measurement_time - result.start_time);
+    };
+    // Calculate the overall CPU usage.
+    double total_cpu_usage = 0;
+    for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
+      const PageNode* page_node = tab_handle->page_node();
+      CheckPageState(page_node, *info_ptr);
+      total_cpu_usage += get_cpu_usage(page_node);
+    }
 
-  const auto now = base::TimeTicks::Now();
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
-    const ukm::SourceId source_id = page_node->GetUkmSourceID();
-    ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
-        .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
-        .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
-        .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
-        .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage)
-        .SetBackgroundState(
-            static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
-                page_node, now - time_of_last_resource_usage_)))
-        .Record(ukm::UkmRecorder::Get());
+    const auto now = base::TimeTicks::Now();
+    for (const auto& [tab_handle, _] : page_node_info_map_) {
+      const PageNode* page_node = tab_handle->page_node();
+      const ukm::SourceId source_id = page_node->GetUkmSourceID();
+      ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
+          .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
+          .SetPrivateFootprintEstimate(
+              page_node->EstimatePrivateFootprintSize())
+          .SetRecentCPUUsage(kCPUUsageFactor * get_cpu_usage(page_node))
+          .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage)
+          .SetBackgroundState(
+              static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
+                  page_node, now - time_of_last_resource_usage_)))
+          .Record(ukm::UkmRecorder::Get());
+    }
+    time_of_last_resource_usage_ = now;
+  } else {
+    const PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map =
+        cpu_monitor_.UpdateCPUMeasurements();
+
+    // Calculate the overall CPU usage.
+    double total_cpu_usage = 0;
+    std::vector<std::pair<const PageNode*, double>> page_cpu_usage;
+    page_cpu_usage.reserve(page_node_info_map_.size());
+    for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
+      const PageNode* page_node = tab_handle->page_node();
+      CheckPageState(page_node, *info_ptr);
+      double cpu_usage = PageTimelineCPUMonitor::EstimatePageCPUUsage(
+          page_node, cpu_usage_map);
+      page_cpu_usage.emplace_back(page_node, cpu_usage);
+      total_cpu_usage += cpu_usage;
+    }
+
+    const auto now = base::TimeTicks::Now();
+    for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+      const ukm::SourceId source_id = page_node->GetUkmSourceID();
+      ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
+          .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
+          .SetPrivateFootprintEstimate(
+              page_node->EstimatePrivateFootprintSize())
+          .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
+          .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage)
+          .SetBackgroundState(
+              static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
+                  page_node, now - time_of_last_resource_usage_)))
+          .Record(ukm::UkmRecorder::Get());
+    }
+    time_of_last_resource_usage_ = now;
   }
-  time_of_last_resource_usage_ = now;
 }
 
 void PageTimelineMonitor::CollectSlice() {
@@ -262,11 +307,20 @@ void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
   graph_->AddPageNodeObserver(this);
   graph_->RegisterObject(this);
   graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
-  cpu_monitor_.StartMonitoring(graph_);
+
+  if (performance_manager::features::kUseResourceAttributionCPUMonitor.Get()) {
+    cpu_measurement_monitor_.StartMonitoring(graph_);
+  } else {
+    cpu_monitor_.StartMonitoring(graph_);
+  }
 }
 
 void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
-  cpu_monitor_.StopMonitoring(graph_);
+  if (performance_manager::features::kUseResourceAttributionCPUMonitor.Get()) {
+    cpu_measurement_monitor_.StopMonitoring();
+  } else {
+    cpu_monitor_.StopMonitoring(graph_);
+  }
 
   // GraphOwned object destruction order is undefined, so only remove ourselves
   // as observers if the decorator still exists.

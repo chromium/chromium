@@ -166,4 +166,7 @@ BASE_FEATURE(kPageTimelineMonitor,
 const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime{
     &kPageTimelineMonitor, "time_between_collect_slice", base::Minutes(5)};
 
+const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor{
+    &kPageTimelineMonitor, "use_resource_attribution_cpu_monitor", false};
+
 }  // namespace performance_manager::features
