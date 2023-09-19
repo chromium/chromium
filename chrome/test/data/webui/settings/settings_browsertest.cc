@@ -566,6 +566,11 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
           "runMochaSuite('PreloadingSubpageMovedToPerformanceSettings')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, Settings3pcdOptions) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('Settings3pcdOptions')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 using SettingsLanguagePageTest = SettingsBrowserTest;
 

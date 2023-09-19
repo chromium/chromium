@@ -804,3 +804,62 @@ suite('PreloadingSubpageMovedToPerformanceSettings', function() {
     assertFalse(isChildVisible(page, '#preloadingLinkRow'));
   });
 });
+
+suite('Settings3pcdOptions', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  function expandAdvance(): SettingsCollapseRadioButtonElement {
+    return page.shadowRoot!.querySelector('#advanced')!;
+  }
+
+  test('TrackingProtectionPageDescriptionIsShown', function() {
+    assertTrue(isChildVisible(page, '#explanationText'));
+  });
+
+  test('AdvanceLabelIsVisisble', function() {
+    assertTrue(isChildVisible(page, '#labelWrapper'));
+  });
+
+  test('CheckVisibility', function() {
+    // Site Exception header
+    assertFalse(isChildVisible(page, '#exceptionHeader'));
+    assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
+    assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
+
+    // Advance toggles
+    assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertFalse(isChildVisible(page, '#doNotTrack'));
+    expandAdvance().click();
+    assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertTrue(isChildVisible(page, '#doNotTrack'));
+  });
+
+  test('Toggle3PCDPref', function() {
+    page.set(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
+    expandAdvance().click();
+    const blockThirdPartyCookiesToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#blockThirdPartyToggle')!;
+    assertTrue(!!blockThirdPartyCookiesToggle);
+    blockThirdPartyCookiesToggle.click();
+    assertEquals(
+        page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
+        true);
+  });
+});
