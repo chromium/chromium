@@ -266,11 +266,18 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
         PowerStatus::Get()->GetRoundedBatteryPercent() <=
         GetPowerNotificationController()->GetLowPowerPercentage();
 
-    // Only update the user_opt_status_ when we are at or below the threshold.
-    // This way, auto-enable kicks in from threshold+1% -> threshold% even if
-    // the user has BSM disabled (either manually or via restored local pref)
-    // beforehand.
-    if (reason == UpdateReason::kSettings && crossed_threshold) {
+    // For auto-enabled, only update the user_opt_status_ when we are at or
+    // below the threshold.This way, auto-enable kicks in from threshold+1% ->
+    // threshold% even if the user has BSM disabled (either manually or via
+    // restored local pref) beforehand.
+    // If we are in the opt-in branch, we should capture user intent at any
+    // threshold.
+    const bool should_capture_user_intent =
+        (crossed_threshold ||
+         features::kBatterySaverNotificationBehavior.Get() ==
+             features::kBSMOptIn);
+
+    if (reason == UpdateReason::kSettings && should_capture_user_intent) {
       // Whether user_opt_status_ is true or false when active is true or false
       // depends on the experiment arm we are in.
       SetUserOptStatus(features::kBatterySaverNotificationBehavior.Get() ==

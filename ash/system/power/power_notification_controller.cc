@@ -297,12 +297,6 @@ PowerNotificationController::HandleBatterySaverNotifications() {
           }
         }
 
-        // If the user manually turned on battery saver mode before we got to
-        // the threshold, then set the user's intention as wanting it enabled.
-        if (was_active) {
-          SetUserOptStatus(true);
-        }
-
         // Send Opt-In Notification at
         // `battery_saver_activation_charge_percent_` battery percentage or
         // update the notification state if we're on USB power.
