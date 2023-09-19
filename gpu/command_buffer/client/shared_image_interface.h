@@ -64,6 +64,9 @@ class GPU_EXPORT SharedImageInterface {
     // Returns BufferFormat.
     gfx::BufferFormat Format();
 
+    // Returns whether the underlying resource is shared memory.
+    bool IsSharedMemory();
+
    private:
     friend class ClientSharedImageInterface;
 

@@ -87,6 +87,11 @@ gfx::BufferFormat SharedImageInterface::ScopedMapping::Format() {
   return buffer_->GetFormat();
 }
 
+bool SharedImageInterface::ScopedMapping::IsSharedMemory() {
+  CHECK(buffer_);
+  return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+}
+
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return 0u;
 }
