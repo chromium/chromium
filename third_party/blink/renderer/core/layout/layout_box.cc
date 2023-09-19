@@ -1061,6 +1061,7 @@ LayoutUnit LayoutBox::ClientHeightFrom(LayoutUnit height) const {
 
 int LayoutBox::PixelSnappedClientWidth() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
   LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
                         ? PhysicalLocation().left
                         : Location().X();
@@ -1070,6 +1071,7 @@ int LayoutBox::PixelSnappedClientWidth() const {
 DISABLE_CFI_PERF
 int LayoutBox::PixelSnappedClientHeight() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
   LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
                        ? PhysicalLocation().top
                        : Location().Y();
@@ -1156,6 +1158,7 @@ LayoutUnit LayoutBox::ScrollHeight() const {
 
 int LayoutBox::PixelSnappedScrollWidth() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
   LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
                         ? PhysicalLocation().left
                         : Location().X();
@@ -1164,6 +1167,7 @@ int LayoutBox::PixelSnappedScrollWidth() const {
 
 int LayoutBox::PixelSnappedScrollHeight() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
   LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
                        ? PhysicalLocation().top
                        : Location().Y();

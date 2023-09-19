@@ -1011,11 +1011,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool HasScrollableOverflowX() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
+      return ScrollsOverflowX() && ScrollWidth() != ClientWidth();
+    }
     return ScrollsOverflowX() &&
            PixelSnappedScrollWidth() != PixelSnappedClientWidth();
   }
   bool HasScrollableOverflowY() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
+      return ScrollsOverflowY() && ScrollHeight() != ClientHeight();
+    }
     return ScrollsOverflowY() &&
            PixelSnappedScrollHeight() != PixelSnappedClientHeight();
   }

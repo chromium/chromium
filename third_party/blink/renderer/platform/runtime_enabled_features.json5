@@ -2169,6 +2169,10 @@
       status: "stable",
     },
     {
+      name: "LayoutNewOverflowLogic",
+      status: "stable",
+    },
+    {
       name: "LayoutNewSnapLogic",
       status: "stable",
     },

@@ -482,15 +482,14 @@ static void Write(WTF::TextStream& ts,
       ts << " scrollX " << scroll_position.x();
     if (scroll_position.y())
       ts << " scrollY " << scroll_position.y();
-    if (layer.GetLayoutBox() &&
-        layer.GetLayoutBox()->PixelSnappedClientWidth() !=
-            layer.GetLayoutBox()->PixelSnappedScrollWidth())
-      ts << " scrollWidth " << layer.GetLayoutBox()->PixelSnappedScrollWidth();
-    if (layer.GetLayoutBox() &&
-        layer.GetLayoutBox()->PixelSnappedClientHeight() !=
-            layer.GetLayoutBox()->PixelSnappedScrollHeight())
-      ts << " scrollHeight "
-         << layer.GetLayoutBox()->PixelSnappedScrollHeight();
+    if (layer.GetLayoutBox() && layer.GetLayoutBox()->ClientWidth() !=
+                                    layer.GetLayoutBox()->ScrollWidth()) {
+      ts << " scrollWidth " << layer.GetLayoutBox()->ScrollWidth();
+    }
+    if (layer.GetLayoutBox() && layer.GetLayoutBox()->ClientHeight() !=
+                                    layer.GetLayoutBox()->ScrollHeight()) {
+      ts << " scrollHeight " << layer.GetLayoutBox()->ScrollHeight();
+    }
   }
 
   if (paint_phase == kLayerPaintPhaseBackground)
