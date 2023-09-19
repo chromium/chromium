@@ -69,8 +69,10 @@ void V8ContextNativeHandler::GetModuleSystem(
   CHECK(args[0]->IsObject());
   ScriptContext* context = ScriptContextSet::GetContextByObject(
       v8::Local<v8::Object>::Cast(args[0]));
-  if (context && blink::WebFrame::ScriptCanAccess(context->web_frame()))
+  if (context && blink::WebFrame::ScriptCanAccess(args.GetIsolate(),
+                                                  context->web_frame())) {
     args.GetReturnValue().Set(context->module_system()->NewInstance());
+  }
 }
 
 }  // namespace extensions

@@ -484,7 +484,8 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     absl::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
     if (background_page &&
         background_page != script_context->GetRenderFrame() &&
-        blink::WebFrame::ScriptCanAccess(background_page->GetWebFrame())) {
+        blink::WebFrame::ScriptCanAccess(isolate,
+                                         background_page->GetWebFrame())) {
       ScriptContext* background_page_script_context =
           GetScriptContextFromV8Context(
               background_page->GetWebFrame()->MainWorldScriptContext());

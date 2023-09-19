@@ -180,8 +180,9 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
     if (!web_frame->IsOutermostMainFrame())
       continue;
 
-    if (!blink::WebFrame::ScriptCanAccess(web_frame))
+    if (!blink::WebFrame::ScriptCanAccess(context->GetIsolate(), web_frame)) {
       continue;
+    }
 
     v8::Local<v8::Context> frame_context = web_frame->MainWorldScriptContext();
     if (!frame_context.IsEmpty()) {
@@ -217,16 +218,13 @@ v8::Local<v8::Value> ExtensionFrameHelper::GetV8BackgroundPageMainFrame(
     v8::Isolate* isolate,
     const std::string& extension_id) {
   content::RenderFrame* main_frame = GetBackgroundPageFrame(extension_id);
-
-  v8::Local<v8::Value> background_page;
   blink::WebLocalFrame* web_frame =
       main_frame ? main_frame->GetWebFrame() : nullptr;
-  if (web_frame && blink::WebFrame::ScriptCanAccess(web_frame))
-    background_page = web_frame->MainWorldScriptContext()->Global();
-  else
-    background_page = v8::Undefined(isolate);
-
-  return background_page;
+  if (web_frame && blink::WebFrame::ScriptCanAccess(isolate, web_frame)) {
+    return web_frame->MainWorldScriptContext()->Global();
+  } else {
+    return v8::Undefined(isolate);
+  }
 }
 
 // static

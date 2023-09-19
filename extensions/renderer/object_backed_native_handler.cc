@@ -217,7 +217,8 @@ bool ObjectBackedNativeHandler::ContextCanAccessObject(
   if (!other_script_context || !other_script_context->web_frame())
     return allow_null_context;
 
-  return blink::WebFrame::ScriptCanAccess(other_script_context->web_frame());
+  return blink::WebFrame::ScriptCanAccess(other_script_context->isolate(),
+                                          other_script_context->web_frame());
 }
 
 bool ObjectBackedNativeHandler::SetPrivate(v8::Local<v8::Object> obj,

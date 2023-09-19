@@ -158,7 +158,7 @@ class BLINK_EXPORT WebFrame {
 
   // Returns true if the WebFrame currently executing JavaScript has access
   // to the given WebFrame, or false otherwise.
-  static bool ScriptCanAccess(WebFrame*);
+  static bool ScriptCanAccess(v8::Isolate* isolate, WebFrame*);
 
   // Navigation ----------------------------------------------------------
 
