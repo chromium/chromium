@@ -163,6 +163,13 @@ BASE_FEATURE(kCompositeBGColorAnimation,
              "CompositeBGColorAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Gate access to cookie deprecation API which allows developers to opt in
+// server side testing without cookies.
+// (See https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing)
+BASE_FEATURE(kCookieDeprecationFacilitatedTesting,
+             "CookieDeprecationFacilitatedTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",

@@ -1453,7 +1453,7 @@ void StoragePartitionImpl::Initialize(
 
   // Must be initialized before the `url_loader_factory_getter_`.
   if (base::FeatureList::IsEnabled(
-          net::features::kCookieDeprecationFacilitatedTestingLabels)) {
+          features::kCookieDeprecationFacilitatedTesting)) {
     cookie_deprecation_label_manager_ =
         std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }

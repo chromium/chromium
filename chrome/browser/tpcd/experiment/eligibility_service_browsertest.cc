@@ -20,8 +20,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -35,12 +35,9 @@ namespace tpcd::experiment {
 class EligiblityServiceBrowserTest : public InProcessBrowserTest {
  public:
   EligiblityServiceBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{net::features::kCookieDeprecationFacilitatedTestingLabels,
-          {{"label", "label_test"}}},
-         {k3PCDModeBExperiment, {}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{"label", "label_test"}});
   }
 
   ~EligiblityServiceBrowserTest() override = default;

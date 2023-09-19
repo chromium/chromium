@@ -1143,7 +1143,7 @@ void PopulateBinderMapWithContext(
         &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
   }
   if (base::FeatureList::IsEnabled(
-          net::features::kCookieDeprecationFacilitatedTestingLabels)) {
+          features::kCookieDeprecationFacilitatedTesting)) {
     map->Add<blink::mojom::CookieDeprecationLabelDocumentService>(
         base::BindRepeating(
             &CookieDeprecationLabelDocumentService::CreateMojoService));

@@ -5,7 +5,7 @@
 [
     Exposed=Window,
     SecureContext,
-    RuntimeEnabled=CookieDeprecationFacilitatedTestingLabels
+    RuntimeEnabled=CookieDeprecationFacilitatedTesting
 ] interface CookieDeprecationLabel {
     [CallWith=ScriptState] Promise<DOMString> getValue();
 };

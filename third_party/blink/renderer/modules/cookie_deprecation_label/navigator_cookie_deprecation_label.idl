@@ -6,5 +6,5 @@
     Exposed=Window,
     ImplementedAs=CookieDeprecationLabel
 ] partial interface Navigator {
-    [SecureContext, SameObject, RuntimeEnabled=CookieDeprecationFacilitatedTestingLabels] readonly attribute CookieDeprecationLabel cookieDeprecationLabel;
+    [SecureContext, SameObject, RuntimeEnabled=CookieDeprecationFacilitatedTesting] readonly attribute CookieDeprecationLabel cookieDeprecationLabel;
 };

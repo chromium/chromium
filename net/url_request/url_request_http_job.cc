@@ -34,7 +34,6 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
@@ -769,8 +768,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
       size_t n_partitioned_cookies = 0;
       bool may_set_sec_cookie_deprecation_header =
-          base::FeatureList::IsEnabled(
-              net::features::kCookieDeprecationFacilitatedTestingLabels) &&
           request_->context()->cookie_deprecation_label().has_value();
 
       // TODO(crbug.com/1031664): Reduce the number of times the cookie list

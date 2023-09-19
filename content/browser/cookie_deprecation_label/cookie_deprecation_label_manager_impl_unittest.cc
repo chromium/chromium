@@ -6,11 +6,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
-#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +21,7 @@ class CookieDeprecationLabelManagerImplTest : public testing::Test {
  public:
   CookieDeprecationLabelManagerImplTest() : label_manager_(&browser_context_) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kCookieDeprecationFacilitatedTestingLabels,
+        features::kCookieDeprecationFacilitatedTesting,
         {{"label", "label_test"}});
   }
 

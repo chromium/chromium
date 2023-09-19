@@ -7,16 +7,17 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
-#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace tpcd::experiment {
 
 EligibilityService::EligibilityService(Profile* profile)
     : profile_(profile), pref_service_(profile->GetPrefs()) {
-  DCHECK(base::FeatureList::IsEnabled(k3PCDModeBExperiment));
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kCookieDeprecationFacilitatedTesting));
   DCHECK(pref_service_);
 }
 

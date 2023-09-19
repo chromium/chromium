@@ -2472,7 +2472,7 @@
       "external/wpt/cookie-deprecation-label"
     ],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=CookieDeprecationFacilitatedTestingLabels:label/label_test",
+    "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 31, 2023"
   },

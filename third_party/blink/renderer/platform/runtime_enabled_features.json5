@@ -752,7 +752,7 @@
       base_feature: "none",
     },
     {
-      name: "CookieDeprecationFacilitatedTestingLabels",
+      name: "CookieDeprecationFacilitatedTesting",
       base_feature: "none",
     },
     {
