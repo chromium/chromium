@@ -515,7 +515,7 @@ export class PowerBookmarksService {
         await PageImageServiceBrowserProxy.getInstance()
             .handler.getPageImageUrl(
                 PageImageServiceClientId.Bookmarks, url,
-                {suggestImages: true, optimizationGuideImages: true});
+                {suggestImages: false, optimizationGuideImages: true});
     this.activeImageServiceRequestCount_--;
 
     if (result) {
