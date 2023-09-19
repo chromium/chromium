@@ -133,13 +133,8 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillKeyboardAccessoryAcceptanceDelayThreshold)) {
     controller_->AcceptSuggestion(list_index, base::TimeTicks::Now());
-  } else {
-    controller_->AcceptSuggestionWithoutThreshold(list_index);
   }
-}
 
 void AutofillKeyboardAccessoryView::DeletionRequested(
     JNIEnv* env,

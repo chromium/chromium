@@ -184,7 +184,6 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
 
   // Making protected functions public for testing
   using AutofillPopupControllerImpl::AcceptSuggestion;
-  using AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold;
   using AutofillPopupControllerImpl::element_bounds;
   using AutofillPopupControllerImpl::FireControlsChangedEvent;
   using AutofillPopupControllerImpl::GetLineCount;
@@ -640,9 +639,8 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  popup_controller()
-      .AcceptSuggestion(                             /*index=*/
-                        1, base::TimeTicks::Now());  // Out of bounds!
+  popup_controller().AcceptSuggestion(
+      /*index=*/1, base::TimeTicks::Now());  // Out of bounds!
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
@@ -661,17 +659,6 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
-}
-
-TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionWithoutThreshold) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions({PopupItemId::kAddressEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
-  popup_controller().AcceptSuggestionWithoutThreshold(0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 0);
 }
 
 TEST_F(AutofillPopupControllerUnitTest,
@@ -731,7 +718,8 @@ TEST_F(AutofillPopupControllerUnitTest,
               Run(_, _,
                   password_manager::metrics_util::
                       PasswordMigrationWarningTriggers::kKeyboardAcessoryBar));
-  popup_controller().AcceptSuggestionWithoutThreshold(0);
+  popup_controller().AcceptSuggestion(
+      0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
 TEST_F(AutofillPopupControllerUnitTest,
@@ -744,7 +732,8 @@ TEST_F(AutofillPopupControllerUnitTest,
   // Calls are accepted immediately.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(show_pwd_migration_warning_callback_, Run);
-  popup_controller().AcceptSuggestionWithoutThreshold(0);
+  popup_controller().AcceptSuggestion(
+      0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
 TEST_F(AutofillPopupControllerUnitTest,
@@ -758,7 +747,8 @@ TEST_F(AutofillPopupControllerUnitTest,
   // Calls are accepted immediately.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(show_pwd_migration_warning_callback_, Run).Times(0);
-  popup_controller().AcceptSuggestionWithoutThreshold(0);
+  popup_controller().AcceptSuggestion(
+      0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
@@ -770,7 +760,8 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
   // Calls are accepted immediately.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(show_pwd_migration_warning_callback_, Run).Times(0);
-  popup_controller().AcceptSuggestionWithoutThreshold(0);
+  popup_controller().AcceptSuggestion(
+      0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 #endif
 

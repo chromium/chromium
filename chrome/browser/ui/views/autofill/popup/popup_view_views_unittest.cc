@@ -269,7 +269,6 @@ class PopupViewViewsTestWithClickablePopupItemId
 TEST_F(PopupViewViewsTest, ShowHideTest) {
   CreateAndShowView({PopupItemId::kAutocompleteEntry});
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   view().Hide();
 }
 
@@ -422,7 +421,6 @@ TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   CreateAndShowView();
 
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
 
   gfx::Point inside_point(GetRowViewAt(0).x() + 1, GetRowViewAt(0).y() + 1);
   ui::MouseEvent click_mouse_event(
@@ -639,7 +637,6 @@ class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
 TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
   SelectFirstSuggestion();
   EXPECT_CALL(controller(), AcceptSuggestion(0, _));
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_RETURN);
 }
 
@@ -647,7 +644,6 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
 TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
   SelectFirstSuggestion();
   EXPECT_CALL(controller(), AcceptSuggestion(0, _));
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
@@ -656,7 +652,6 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
 TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
   SelectFirstSuggestion();
   EXPECT_CALL(controller(), AcceptSuggestion(0, _)).Times(0);
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);
 }
@@ -676,7 +671,6 @@ TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
   // Because the selected line is PopupItemId::kAutofillOptions, we expect that
   // the tab key does not trigger anything.
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
 }
 

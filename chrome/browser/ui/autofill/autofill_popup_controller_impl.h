@@ -166,7 +166,6 @@ class AutofillPopupControllerImpl
   void OnSuggestionsChanged() override;
   void SelectSuggestion(absl::optional<size_t> index) override;
   void AcceptSuggestion(int index, base::TimeTicks event_time) override;
-  void AcceptSuggestionWithoutThreshold(int index) override;
   bool RemoveSuggestion(int list_index) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;

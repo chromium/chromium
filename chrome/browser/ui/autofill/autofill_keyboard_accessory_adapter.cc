@@ -137,13 +137,6 @@ void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
   }
 }
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(
-    int index) {
-  if (controller_) {
-    controller_->AcceptSuggestionWithoutThreshold(OffsetIndexFor(index));
-  }
-}
-
 int AutofillKeyboardAccessoryAdapter::GetLineCount() const {
   return controller_ ? controller_->GetLineCount() : 0;
 }

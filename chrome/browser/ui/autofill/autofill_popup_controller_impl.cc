@@ -372,10 +372,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
     return;
   }
 
-  AcceptSuggestionWithoutThreshold(index);
-}
-
-void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
   if (static_cast<size_t>(index) >= suggestions_.size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.

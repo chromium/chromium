@@ -34,11 +34,6 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // (crbug.com/1279268).
   virtual void AcceptSuggestion(int index, base::TimeTicks event_time) = 0;
 
-  // Accepts the suggestion at `index` without requiring a minimum show
-  // threshold. This should only be used in cases in which user intent is
-  // certain (e.g. the keyboard accessory).
-  virtual void AcceptSuggestionWithoutThreshold(int index) = 0;
-
   // Removes the suggestion at the given index.
   virtual bool RemoveSuggestion(int index) = 0;
 
