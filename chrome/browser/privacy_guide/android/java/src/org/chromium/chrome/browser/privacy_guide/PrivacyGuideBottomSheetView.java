@@ -17,11 +17,20 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     private final Runnable mCloseBottomSheetCallback;
     private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final float mHalfHeight;
+    private final float mFullHeight;
 
     PrivacyGuideBottomSheetView(View contentView, Runnable closeBottomSheetCallback) {
+        this(contentView, closeBottomSheetCallback, HeightMode.DEFAULT, HeightMode.WRAP_CONTENT);
+    }
+
+    PrivacyGuideBottomSheetView(View contentView, Runnable closeBottomSheetCallback,
+            float halfHeight, float fullHeight) {
         mContentView = contentView;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
         mBackPressStateChangedSupplier.set(true);
+        mHalfHeight = halfHeight;
+        mFullHeight = fullHeight;
     }
 
     @Override
@@ -54,8 +63,13 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     }
 
     @Override
+    public float getHalfHeightRatio() {
+        return mHalfHeight;
+    }
+
+    @Override
     public float getFullHeightRatio() {
-        return BottomSheetContent.HeightMode.WRAP_CONTENT;
+        return mFullHeight;
     }
 
     @Override
