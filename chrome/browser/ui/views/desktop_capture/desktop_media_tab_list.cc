@@ -193,6 +193,7 @@ std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
       features::IsChromeRefresh2023()) {
     auto scroll_view = std::make_unique<views::ScrollView>(
         views::ScrollView::ScrollWithLayers::kEnabled);
+    scroll_view->SetDrawOverflowIndicator(false);
     scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
     scroll_view->SetContents(std::move(table));
     scroll_view->SetBorder(nullptr);
