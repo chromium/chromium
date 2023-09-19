@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/environment.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,7 +14,6 @@
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace {
@@ -634,15 +632,8 @@ void InputMethodAuraLinux::OnPreeditUpdate(
       return;
     }
   }
-  {
-    bool set_composition_text_called = false;
-    if (base::FeatureList::IsEnabled(
-            features::kRedundantImeCompositionClearing)) {
-      set_composition_text_called = UpdateCompositionIfTextSelected();
-    }
-    if (!set_composition_text_called) {
-      UpdateCompositionIfChanged(last_commit_result_ == CommitResult::kSuccess);
-    }
+  if (!UpdateCompositionIfTextSelected()) {
+    UpdateCompositionIfChanged(last_commit_result_ == CommitResult::kSuccess);
   }
   last_commit_result_.reset();
 }

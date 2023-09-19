@@ -135,12 +135,6 @@ bool AreF11AndF12ShortcutsEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kRedundantImeCompositionClearing,
-             "RedundantImeCompositionClearing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 BASE_FEATURE(kInputMethodSettingsUiUpdate,
