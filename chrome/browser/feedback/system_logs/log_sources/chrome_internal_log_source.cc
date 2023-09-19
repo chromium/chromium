@@ -62,10 +62,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "ui/base/win/hidden_window.h"
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/google/google_update_win.h"
 #endif
-#include "ui/base/win/hidden_window.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)

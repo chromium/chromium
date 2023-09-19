@@ -27,9 +27,9 @@ absl::optional<base::Time> ConvertCourseWorkItemDue(
     return absl::nullopt;
   }
 
-  const auto exploded_due = base::Time::Exploded{.year = raw_due->year,
-                                                 .month = raw_due->month,
-                                                 .day_of_month = raw_due->day};
+  const base::Time::Exploded exploded_due = {.year = raw_due->year,
+                                             .month = raw_due->month,
+                                             .day_of_month = raw_due->day};
   base::Time due;
   if (!base::Time::FromUTCExploded(exploded_due, &due)) {
     return absl::nullopt;

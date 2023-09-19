@@ -743,14 +743,11 @@ void SystemTrayClientImpl::ShowCalendarEvent(
     official_url = event_url->ReplaceComponents(replacements);
   } else {
     // No event URL provided, so fall back on opening calendar with `date`.
-    std::string calendar_url_str = kOfficialCalendarUrlPrefix;
     base::Time::Exploded date_exp;
     date.UTCExplode(&date_exp);
-    std::string date_url =
-        base::StringPrintf("r/week/%d/%d/%d", date_exp.year, date_exp.month,
-                           date_exp.day_of_month);
-    calendar_url_str.append(date_url);
-    official_url = GURL(calendar_url_str);
+    official_url = GURL(base::StringPrintf(
+        "%sr/week/%d/%d/%d", kOfficialCalendarUrlPrefix, date_exp.year,
+        date_exp.month, date_exp.day_of_month));
   }
 
   // Return the URL we actually opened.

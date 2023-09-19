@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -229,25 +230,18 @@ base::FilePath WebRtcLocalEventLogManager::GetFilePath(
     const PeerConnectionKey& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
 
-  base::Time::Exploded now;
-  if (clock_for_testing_) {
-    clock_for_testing_->Now().LocalExplode(&now);
-  } else {
-    base::Time::Now().LocalExplode(&now);
-  }
-
   // [user_defined]_[date]_[time]_[render_process_id]_[lid].[extension]
-  char stamp[100];
-  int written =
-      base::snprintf(stamp, std::size(stamp), "%04d%02d%02d_%02d%02d_%d_%d",
-                     now.year, now.month, now.day_of_month, now.hour,
-                     now.minute, key.render_process_id, key.lid);
-  CHECK_GT(written, 0);
-  CHECK_LT(static_cast<size_t>(written), std::size(stamp));
-
+  const base::Time now =
+      clock_for_testing_ ? clock_for_testing_->Now() : base::Time::Now();
+  base::Time::Exploded exploded;
+  now.LocalExplode(&exploded);
+  const std::string timestamp =
+      base::StringPrintf("%04d%02d%02d_%02d%02d", exploded.year, exploded.month,
+                         exploded.day_of_month, exploded.hour, exploded.minute);
   return base_path.InsertBeforeExtension(FILE_PATH_LITERAL("_"))
       .AddExtension(log_file_writer_factory_.Extension())
-      .InsertBeforeExtensionASCII(base::StringPiece(stamp));
+      .InsertBeforeExtensionASCII(base::StringPrintf(
+          "%s_%d_%d", timestamp.c_str(), key.render_process_id, key.lid));
 }
 
 }  // namespace webrtc_event_logging
