@@ -137,7 +137,7 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
   SaveStatusRequest save_request;
 
   // Store 1-day-active data.
-  if (one_day_ts != base::Time() || one_day_ts != base::Time::UnixEpoch()) {
+  if (one_day_ts != base::Time() && one_day_ts != base::Time::UnixEpoch()) {
     ActiveStatus one_day_status;
     one_day_status.set_use_case(PrivateComputingUseCase::CROS_FRESNEL_DAILY);
     one_day_status.set_last_ping_date(
@@ -147,7 +147,7 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
   }
 
   // Store 28-day-active data.
-  if (twenty_eight_day_ts != base::Time() ||
+  if (twenty_eight_day_ts != base::Time() &&
       twenty_eight_day_ts != base::Time::UnixEpoch()) {
     ActiveStatus twenty_eight_day_status;
     twenty_eight_day_status.set_use_case(
@@ -159,7 +159,7 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
   }
 
   // Store Churn data.
-  if (cohort_ts != base::Time() || cohort_ts != base::Time::UnixEpoch()) {
+  if (cohort_ts != base::Time() && cohort_ts != base::Time::UnixEpoch()) {
     ActiveStatus cohort_status;
     cohort_status.set_use_case(
         PrivateComputingUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT);
