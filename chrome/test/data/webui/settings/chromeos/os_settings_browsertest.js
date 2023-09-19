@@ -851,6 +851,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
+ ['OsSettingsMain', 'os_settings_main/os_settings_main_test.js'],
  [
    'OsSettingsMenu',
    'os_settings_menu/os_settings_menu_test.js',
@@ -896,7 +897,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsSettingsUiUserActionRecorder',
    'os_settings_ui/user_action_recorder_test.js'
  ],
- ['OsSettingsMain', 'os_settings_main_test.js'],
  [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
