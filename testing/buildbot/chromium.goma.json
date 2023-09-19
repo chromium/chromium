@@ -20,6 +20,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -34,6 +35,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -55,6 +57,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -69,6 +72,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -90,6 +94,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -104,6 +109,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -125,6 +131,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -139,6 +146,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -160,6 +168,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -175,6 +184,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -197,6 +207,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -212,6 +223,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -234,6 +246,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -249,6 +262,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -271,6 +285,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -286,6 +301,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {

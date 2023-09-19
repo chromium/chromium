@@ -23,6 +23,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "trichrome_chrome_bundle_smoke_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -215,6 +216,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_sample_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -272,6 +274,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_smoketests_missing_native_library_instrumentation_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -329,6 +332,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_smoketests_platform_only_instrumentation_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -386,6 +390,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_test_instrumentation_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -443,6 +448,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_tests_android",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -500,6 +506,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "cronet_unittests_android",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -557,6 +564,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "net_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -657,6 +665,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "android_webview_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -714,6 +723,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "system_webview_shell_layout_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -771,6 +781,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "webview_cts_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -903,6 +914,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "webview_instrumentation_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1021,6 +1033,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "webview_ui_test_app_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1141,6 +1154,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "webview_trichrome_64_cts_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

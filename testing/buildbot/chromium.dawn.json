@@ -20,6 +20,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "dawn_end2end_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -70,6 +71,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "dawn_end2end_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -105,6 +107,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -113,6 +116,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -127,7 +131,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -136,7 +139,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -181,6 +184,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -189,6 +193,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -203,7 +208,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -212,7 +216,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -305,6 +309,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -658,6 +663,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -666,6 +672,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -680,7 +687,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -689,7 +695,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -782,6 +788,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1133,6 +1140,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -1141,6 +1149,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1155,7 +1164,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -1164,7 +1172,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1257,6 +1265,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1610,6 +1619,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -1618,6 +1628,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1632,7 +1643,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -1641,7 +1651,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1734,6 +1744,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2087,6 +2098,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2094,6 +2106,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2111,7 +2124,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2119,7 +2131,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2220,6 +2232,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2602,6 +2615,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2609,6 +2623,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2624,7 +2639,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2632,7 +2646,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2725,6 +2739,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3119,6 +3134,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3126,6 +3142,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3142,7 +3159,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3150,7 +3166,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3247,6 +3263,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3616,6 +3633,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3623,6 +3641,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3640,7 +3659,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3648,7 +3666,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -3749,6 +3767,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4131,6 +4150,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4138,6 +4158,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4153,7 +4174,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4161,7 +4181,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4254,6 +4274,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4613,6 +4634,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4620,6 +4642,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4635,7 +4658,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4643,7 +4665,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4712,6 +4734,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4959,6 +4982,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4966,6 +4990,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -4981,7 +5006,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -4989,7 +5013,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5058,6 +5082,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5307,6 +5332,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -5314,6 +5340,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5329,7 +5356,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -5337,7 +5363,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5430,6 +5456,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5678,6 +5705,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -5685,6 +5713,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5700,7 +5729,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -5708,7 +5736,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -5801,6 +5829,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6193,6 +6222,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -6200,6 +6230,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6215,7 +6246,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -6223,7 +6253,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6316,6 +6346,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6564,6 +6595,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -6571,6 +6603,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6586,7 +6619,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -6594,7 +6626,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -6687,6 +6719,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7047,6 +7080,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7054,6 +7088,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7069,7 +7104,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7077,7 +7111,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7170,6 +7204,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7450,6 +7485,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7457,6 +7493,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7472,7 +7509,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7480,7 +7516,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7573,6 +7609,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7961,6 +7998,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7968,6 +8006,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -7983,7 +8022,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -7991,7 +8029,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -8084,6 +8122,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -8364,6 +8403,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -8371,6 +8411,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -8386,7 +8427,6 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -8394,7 +8434,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "dawn_end2end_skip_validation_tests",
+        "name": "dawn_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -8487,6 +8527,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gl_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
