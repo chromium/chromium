@@ -31,11 +31,18 @@ bool IsIgnorableCharacter(char16_t c) {
 }
 
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
-    : page_(page), char_index_(char_index), char_count_(char_count) {
+    : page_unload_preventer_(page),
+      page_(page),
+      char_index_(char_index),
+      char_count_(char_count) {
   DCHECK(page_);
+  // Ensure page load, while `page_unload_preventer_` prevents page unload.
+  // This prevents GetScreenRects() from triggering page loads, which can have
+  // surprising side effects, considering GetScreenRects() is const.
+  [[maybe_unused]] FPDF_TEXTPAGE text_page = page_->GetTextPage();
 #if DCHECK_IS_ON()
   AdjustForBackwardsRange(char_index, char_count);
-  DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
+  DCHECK_LE(char_count, FPDFText_CountChars(text_page));
 #endif
 }
 
