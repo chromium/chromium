@@ -427,7 +427,7 @@ class SaveCardInfobarEGTestHelper
 + (NSString*)saveMaskedCreditCard {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
-  autofill::CreditCard card = autofill::test::GetMaskedServerCard();
+  autofill::CreditCard card = autofill::test::GetMaskedServerCardWithCvc();
   DCHECK(card.record_type() != autofill::CreditCard::RecordType::kLocalCard);
 
   personalDataManager->AddServerCreditCardForTest(
@@ -470,6 +470,17 @@ class SaveCardInfobarEGTestHelper
 + (void)setPaymentsRiskData:(NSString*)riskData {
   return autofill::SaveCardInfobarEGTestHelper::SharedInstance()
       ->SetPaymentsRiskData(base::SysNSStringToUTF8(riskData));
+}
+
++ (void)considerCreditCardFormSecureForTesting {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state);
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
+      ->GetAutofillManager()
+      .SetConsiderFormAsSecureForTesting(true);
 }
 
 + (NSString*)paymentsRiskData {

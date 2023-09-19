@@ -347,6 +347,11 @@ class BrowserAutofillManager : public AutofillManager,
     return *autocomplete_unrecognized_fallback_logger_;
   }
 
+  // Sets the value of `consider_form_as_secure_for_testing_`. We want to
+  // set this to true for test purposes only.
+  void SetConsiderFormAsSecureForTesting(
+      absl::optional<bool> consider_form_as_secure_for_testing);
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too
@@ -767,6 +772,9 @@ class BrowserAutofillManager : public AutofillManager,
   bool has_observed_one_time_code_field_ = false;
   // Is there a field with phone number collection observed?
   bool has_observed_phone_number_field_ = false;
+  // If this is true, we consider the form to be secure. (Only use this for
+  // testing purposes).
+  absl::optional<bool> consider_form_as_secure_for_testing_;
 
   // When the user first interacted with a potentially fillable form on this
   // page.

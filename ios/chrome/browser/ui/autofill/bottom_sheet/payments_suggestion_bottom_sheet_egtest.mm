@@ -29,6 +29,9 @@ namespace {
 
 const char kCreditCardUrl[] = "/credit_card.html";
 const char kFormCardName[] = "CCName";
+const char kFormCardNumber[] = "CCNo";
+const char kFormCardExpirationMonth[] = "CCExpiresMonth";
+const char kFormCardExpirationYear[] = "CCExpiresYear";
 
 using base::test::ios::kWaitForActionTimeout;
 
@@ -125,6 +128,48 @@ id<GREYMatcher> ExpirationDateLabel() {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUrl)];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+
+  // Localhost is not considered secure, therefore form security needs to be
+  // overridden for the tests to work. This will allow us to fill the textfields
+  // on the web page.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+}
+
+// Verify credit card infos are filled.
+- (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  // Credit card name.
+  NSString* name = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardName, name];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card number.
+  NSString* number = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NUMBER, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardNumber, number];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration month.
+  NSString* expMonth = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardExpirationMonth, expMonth];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration year.
+  NSString* expYear = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardExpirationYear, expYear];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 #pragma mark - Tests
@@ -141,7 +186,18 @@ id<GREYMatcher> ExpirationDateLabel() {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
 
+  // Verify that the credit card is visible to the user.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure the user is seeing 1 card on the bottom sheet.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
 
 // Tests that the Payments Bottom Sheet updates its contents when a new credit
@@ -167,11 +223,30 @@ id<GREYMatcher> ExpirationDateLabel() {
   id<GREYMatcher> localCreditCardEntry = grey_text(_lastDigits);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:localCreditCardEntry];
 
+  // Make sure the user is seeing 2 cards on the bottom sheet.
+  GREYAssertEqual(2, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
   // Select and use the new credit card.
   [[EarlGrey selectElementWithMatcher:serverCreditCardEntry]
       performAction:grey_tap()];
 
+  // Verify that the accessory view (checkmark) is visible.
+  id<GREYMatcher> accessoryView = grey_allOf(
+      grey_kindOfClassName(@"UIImageView"),
+      grey_ancestor(grey_kindOfClassName(@"_UITableCellAccessoryButton")),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:accessoryView]
+      assertWithMatcher:grey_notNil()];
+
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // Verify the CVC requester is visible.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Confirm Card")]
+      assertWithMatcher:grey_notNil()];
+
+  // TODO(crbug.com/845472): Figure out a way to enter CVC and get the unlocked
+  // card result.
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
@@ -383,6 +458,24 @@ id<GREYMatcher> ExpirationDateLabel() {
   // Make sure the bottom sheet isn't there.
   [[EarlGrey selectElementWithMatcher:continueButton]
       assertWithMatcher:grey_nil()];
+}
+
+// Verify that tapping outside the Payments Bottom Sheet opens the keyboard.
+- (void)testTapOutsideThePaymentsBottomSheetShowsKeyboard {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Dismiss the bottom sheet by tapping outside.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
+
+  WaitForKeyboardToAppear();
 }
 
 @end

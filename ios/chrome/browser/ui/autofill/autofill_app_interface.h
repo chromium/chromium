@@ -97,6 +97,11 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Sets the risk data for payments.
 + (void)setPaymentsRiskData:(NSString*)riskData;
 
+// Make it that we consider the credit card form to be a secure in the current
+// context. This will allow us to fill the textfields on the web page. We only
+// want to use this for tests.
++ (void)considerCreditCardFormSecureForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_APP_INTERFACE_H_

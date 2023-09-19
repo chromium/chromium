@@ -1101,6 +1101,12 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
+  // Check if testing override applies.
+  if (consider_form_as_secure_for_testing_.has_value() &&
+      consider_form_as_secure_for_testing_.value()) {
+    return false;
+  }
+
   return IsFormOrClientNonSecure(client(), form);
 }
 
@@ -2760,6 +2766,11 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
     return nullptr;
 
   return autofill_field;
+}
+
+void BrowserAutofillManager::SetConsiderFormAsSecureForTesting(
+    absl::optional<bool> consider_form_as_secure_for_testing) {
+  consider_form_as_secure_for_testing_ = consider_form_as_secure_for_testing;
 }
 
 bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
