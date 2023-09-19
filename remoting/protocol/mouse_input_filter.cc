@@ -20,8 +20,22 @@ MouseInputFilter::MouseInputFilter(InputStub* input_stub)
 MouseInputFilter::~MouseInputFilter() = default;
 
 void MouseInputFilter::InjectMouseEvent(const MouseEvent& event) {
-  if (input_bounds_.is_zero() || output_bounds_.is_zero()) {
+  if (input_bounds_.is_zero()) {
+    HOST_LOG << "Dropping mouse event because input bounds are unset";
     return;
+  }
+  if (output_bounds_.is_zero()) {
+    HOST_LOG << "Dropping mouse event because output bounds are unset";
+    return;
+  }
+
+  if (event.has_x() && event.x() > input_bounds_.x() && event.has_y() &&
+      event.y() > input_bounds_.y()) {
+    // Mouse events are scaled by the client to what it believes the desktop
+    // size to be, so receiving an event outside this rect should be rare.
+    HOST_LOG << "Mouse event (" << event.x() << "," << event.y()
+             << ") is outside input rect " << input_bounds_.x() << "x"
+             << input_bounds_.y();
   }
 
   // We scale based on the max input and output coordinates (which are equal

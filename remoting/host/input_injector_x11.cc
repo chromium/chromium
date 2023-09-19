@@ -388,6 +388,10 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
           .rootY = static_cast<int16_t>(latest_mouse_position_.y()),
       });
     }
+  } else {
+    // The client includes either relative or absolute coordinates for all mouse
+    // events, so this log should be rare.
+    HOST_LOG << "Received mouse event with no relative or absolute coordinates";
   }
 
   if (event.has_button() && event.has_button_down()) {
