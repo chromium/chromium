@@ -39,13 +39,6 @@ constexpr size_t kLargeIconSizeInDip = 20;
 constexpr size_t kMaxIconSizeInPx = 200;
 constexpr char kPngDataUrlPrefix[] = "data:image/png;base64,";
 
-ui::ResourceScaleFactor GetSupportedResourceScaleFactor() {
-  std::vector<ui::ResourceScaleFactor> scale_factors =
-      ui::GetSupportedResourceScaleFactors();
-  DCHECK(!scale_factors.empty());
-  return scale_factors.back();
-}
-
 // Returns an instance for calling RequestActivityIcons().
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Ash requests icons to ArcServiceManager.
@@ -261,7 +254,7 @@ bool ActivityIconLoader::ActivityName::operator<(
 }
 
 ActivityIconLoader::ActivityIconLoader()
-    : scale_factor_(GetSupportedResourceScaleFactor()) {}
+    : scale_factor_(ui::GetMaxSupportedResourceScaleFactor()) {}
 
 ActivityIconLoader::~ActivityIconLoader() = default;
 

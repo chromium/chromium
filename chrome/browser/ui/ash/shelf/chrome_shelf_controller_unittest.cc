@@ -259,7 +259,7 @@ bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
 
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     if (!image.HasRepresentation(scale))
       return false;
@@ -5272,7 +5272,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
   base::RunLoop().RunUntilIdle();
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     // Force the icon to be loaded.
     shelf_controller_->GetItem(shelf_id)->image.GetRepresentation(
         ui::GetScaleForResourceScaleFactor(scale_factor));

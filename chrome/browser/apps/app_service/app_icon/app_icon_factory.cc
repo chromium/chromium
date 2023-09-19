@@ -444,8 +444,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
   gfx::ImageSkia image_skia;
   auto it = icon_bitmaps.begin();
 
-  for (ui::ResourceScaleFactor scale_factor :
-       ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
 
     SquareSizePx icon_size_in_px =

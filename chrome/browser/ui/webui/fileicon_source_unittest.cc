@@ -113,11 +113,8 @@ MATCHER(CallbackIsNull, "") {
 }  // namespace
 
 TEST_F(FileIconSourceTest, FileIconSource_Parse) {
-  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::k100Percent);
-  supported_scale_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_scale_factors);
+      {ui::k100Percent, ui::k200Percent});
 
   for (unsigned i = 0; i < std::size(kBasicExpectations); i++) {
     auto source = std::make_unique<TestFileIconSource>();

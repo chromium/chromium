@@ -108,7 +108,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
                                       gfx::ImageSkia& image_skia) {
     gfx::ImageSkia foreground_image_skia;
     gfx::ImageSkia background_image_skia;
-    for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       auto raw_icon_data = GenerateRawArcAppIcon(app_id, scale_factor);
       ASSERT_TRUE(raw_icon_data);
       ASSERT_TRUE(raw_icon_data->foreground_icon_png_data.has_value());
@@ -270,7 +270,7 @@ TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataFromArcDiskCache) {
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       observation(this);
   observation.Observe(arc_test()->arc_app_list_prefs());
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     base::RunLoop run_loop;
     AwaitIconUpdate(app_id, run_loop.QuitClosure());
     arc_test()->arc_app_list_prefs()->MaybeRequestIcon(

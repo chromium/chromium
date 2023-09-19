@@ -75,7 +75,7 @@ base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
 bool IsAdaptiveIcon(const base::FilePath& base_path,
                     const std::string& app_id,
                     int32_t size_in_dip) {
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px = apps_util::ConvertDipToPxForScale(
         size_in_dip, ui::GetScaleForResourceScaleFactor(scale_factor));
 
@@ -168,7 +168,7 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
     const std::string& app_id,
     int32_t size_in_dip) {
   std::map<ui::ResourceScaleFactor, IconValuePtr> result;
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px = apps_util::ConvertDipToPxForScale(
         size_in_dip, ui::GetScaleForResourceScaleFactor(scale_factor));
 

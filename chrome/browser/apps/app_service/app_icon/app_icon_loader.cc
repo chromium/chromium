@@ -232,7 +232,7 @@ absl::optional<IconPurpose> GetIconPurpose(
   TRACE_EVENT0("ui", "GetIconPurpose");
   // Get the max supported pixel size.
   int max_icon_size_in_px = 0;
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     const gfx::Size icon_size_in_px = gfx::ScaleToFlooredSize(
         gfx::Size(size_hint_in_dip, size_hint_in_dip),
         ui::GetScaleForResourceScaleFactor(scale_factor));
@@ -516,7 +516,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
       // resize the icon size, and then re-encode the image if the compressed
       // icon is requested.
       std::vector<int> icon_pixel_sizes;
-      for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+      for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
         auto size_and_purpose = icon_manager.FindIconMatchBigger(
             web_app_id, {*icon_purpose_to_read},
             apps_util::ConvertDipToPxForScale(
@@ -1106,7 +1106,7 @@ void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
 
   gfx::ImageSkia image_skia;
   auto it = icon_bitmaps.begin();
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     int icon_size_in_px =
         apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale);

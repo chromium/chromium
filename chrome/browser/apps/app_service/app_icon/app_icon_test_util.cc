@@ -22,7 +22,7 @@
 namespace apps {
 
 void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     // Force the icon to be loaded.
     output_image_skia.GetRepresentation(
         ui::GetScaleForResourceScaleFactor(scale_factor));
@@ -54,7 +54,7 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(src.HasRepresentation(scale));
     ASSERT_TRUE(dst.HasRepresentation(scale));
@@ -81,7 +81,7 @@ SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color) {
 
 gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
   gfx::ImageSkia image;
-  for (auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px =
         gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
             .width();

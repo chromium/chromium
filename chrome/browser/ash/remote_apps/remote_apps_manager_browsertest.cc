@@ -106,7 +106,7 @@ gfx::ImageSkia CreateTestIcon(int size, SkColor color) {
   gfx::ImageSkia image_skia;
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
-  for (auto& scale : scale_factors) {
+  for (const auto scale : scale_factors) {
     image_skia.AddRepresentation(
         gfx::ImageSkiaRep(bitmap, ui::GetScaleForResourceScaleFactor(scale)));
   }

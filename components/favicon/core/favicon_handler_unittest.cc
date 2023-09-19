@@ -498,15 +498,6 @@ class FaviconHandlerTest : public testing::Test {
     delegate_.fake_image_downloader().Add(kIconURL12x12, IntVector{12});
     delegate_.fake_image_downloader().Add(kIconURL16x16, IntVector{16});
     delegate_.fake_image_downloader().Add(kIconURL64x64, IntVector{64});
-
-    // The score computed by SelectFaviconFrames() is dependent on the supported
-    // scale factors of the platform. It is used for determining the goodness of
-    // a downloaded bitmap in FaviconHandler::OnDidDownloadFavicon().
-    // Force the values of the scale factors so that the tests produce the same
-    // results on all platforms.
-    scoped_set_supported_scale_factors_.reset(
-        new ui::test::ScopedSetSupportedResourceScaleFactors(
-            {ui::k100Percent}));
   }
 
   bool VerifyAndClearExpectations() {
@@ -547,11 +538,19 @@ class FaviconHandlerTest : public testing::Test {
                                     candidates, manifest_url);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>
-      scoped_set_supported_scale_factors_;
   testing::NiceMock<MockFaviconServiceWithFake> favicon_service_;
   testing::NiceMock<MockDelegate> delegate_;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  // The score computed by SelectFaviconFrames() is dependent on the supported
+  // scale factors of the platform. It is used for determining the goodness of
+  // a downloaded bitmap in `FaviconHandler::OnDidDownloadFavicon()`.
+  // Force the values of the scale factors so that the tests produce the same
+  // results on all platforms.
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent}};
 };
 
 TEST_F(FaviconHandlerTest, GetFaviconFromHistory) {
@@ -1366,14 +1365,7 @@ TEST_F(FaviconHandlerTest,
 // SelectFaviconFramesTest.*.
 class FaviconHandlerMultipleFaviconsTest : public FaviconHandlerTest {
  protected:
-  FaviconHandlerMultipleFaviconsTest() {
-    // Set the supported scale factors to 1x and 2x. This affects the behavior
-    // of SelectFaviconFrames().
-    scoped_set_supported_scale_factors_.reset();  // Need to delete first.
-    scoped_set_supported_scale_factors_.reset(
-        new ui::test::ScopedSetSupportedResourceScaleFactors(
-            {ui::k100Percent, ui::k200Percent}));
-  }
+  FaviconHandlerMultipleFaviconsTest() = default;
 
   // Simulates requesting a favicon for |page_url| given:
   // - We have not previously cached anything in history for |page_url| or for
@@ -1405,6 +1397,15 @@ class FaviconHandlerMultipleFaviconsTest : public FaviconHandlerTest {
                              candidate_icons);
     return chosen_icon_size;
   }
+
+ private:
+  // Set the supported scale factors to 1x and 2x. This affects the behavior
+  // of `SelectFaviconFrames()`.
+  // `FaviconHandlerTest::scoped_set_supported_scale_factors_` cannot be used
+  // since `ui::test::ScopedSetSupportedResourceScaleFactors` uses a global
+  // variable to store the original supported resource scale factors.
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent, ui::k200Percent}};
 };
 
 // Tests that running FaviconHandler

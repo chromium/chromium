@@ -23,11 +23,8 @@ TEST(ImageSkiaOperationsTest, ResizeFailure) {
 #if BUILDFLAG(IS_IOS)
   // Ensure we have supported scale factors. iOS may not support k100Percent
   // like other platforms, so we force support for 100 and 200 percent here.
-  std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::k100Percent);
-  supported_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {ui::k100Percent, ui::k200Percent});
 #endif  // BUILDFLAG(IS_IOS)
 
   ImageSkia image(ImageSkiaRep(gfx::Size(10, 10), 1.f));

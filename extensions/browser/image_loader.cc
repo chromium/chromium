@@ -239,8 +239,9 @@ void ImageLoader::LoadImageAtEveryScaleFactorAsync(
   std::vector<ImageRepresentation> info_list;
 
   std::set<float> scales;
-  for (auto scale : ui::GetSupportedResourceScaleFactors())
+  for (const auto scale : ui::GetSupportedResourceScaleFactors()) {
     scales.insert(ui::GetScaleForResourceScaleFactor(scale));
+  }
 
   // There may not be a screen in unit tests.
   auto* screen = display::Screen::GetScreen();
@@ -249,7 +250,7 @@ void ImageLoader::LoadImageAtEveryScaleFactorAsync(
       scales.insert(display.device_scale_factor());
   }
 
-  for (auto scale : scales) {
+  for (const auto scale : scales) {
     const gfx::Size px_size = gfx::ScaleToFlooredSize(dip_size, scale);
     ExtensionResource image = IconsInfo::GetIconResource(
         extension, px_size.width(), ExtensionIconSet::MATCH_BIGGER);

@@ -1705,7 +1705,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
     if (arc::IsArcForceCacheAppIcon() && app_id != arc::kPlayStoreAppId) {
       // Request full set of app icons.
       VLOG(1) << "Requested full set of app icons " << app_id;
-      for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+      for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
         for (int dip_size : default_app_icon_dip_sizes) {
           MaybeRequestIcon(app_id,
                            ArcAppIconDescriptor(dip_size, scale_factor));

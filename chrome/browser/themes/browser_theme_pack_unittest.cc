@@ -117,9 +117,6 @@ class BrowserThemePackTest : public ::testing::Test {
   }
 
  private:
-  using ScopedSetSupportedScaleFactors =
-      std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>;
-
   // Transformation for link underline colors.
   static SkColor BuildThirdOpacity(SkColor color_link);
 
@@ -131,7 +128,8 @@ class BrowserThemePackTest : public ::testing::Test {
                                         int tint,
                                         bool otr);
 
-  ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent, ui::k200Percent}};
 
   base::ScopedTempDir dir_;
   content::BrowserTaskEnvironment task_environment_;
@@ -140,12 +138,6 @@ class BrowserThemePackTest : public ::testing::Test {
 
 BrowserThemePackTest::BrowserThemePackTest()
     : theme_pack_(new BrowserThemePack(ThemeType::kExtension)) {
-  std::vector<ui::ResourceScaleFactor> scale_factors;
-  scale_factors.push_back(ui::k100Percent);
-  scale_factors.push_back(ui::k200Percent);
-  scoped_set_supported_scale_factors_ =
-      std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
-          scale_factors);
   theme_pack_->InitEmptyPack();
 }
 

@@ -642,8 +642,7 @@ gfx::ImageSkia ConvertUiScaleFactorsBitmapsToImageSkia(
                "web_app_icon_manager::ConvertUiScaleFactorsBitmapsToImageSkia");
   gfx::ImageSkia image_skia;
   auto it = icon_bitmaps.begin();
-  for (ui::ResourceScaleFactor scale_factor :
-       ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     SquareSizePx icon_size_in_px =
         gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip), icon_scale)
@@ -1332,8 +1331,7 @@ void WebAppIconManager::ReadUiScaleFactorsIcons(
     ReadImageSkiaCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadUiScaleFactorsIcons");
   SortedSizesPx ui_scale_factors_px_sizes;
-  for (ui::ResourceScaleFactor scale_factor :
-       ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     auto size_and_purpose = FindIconMatchBigger(
         app_id, {purpose},
         gfx::ScaleToFlooredSize(

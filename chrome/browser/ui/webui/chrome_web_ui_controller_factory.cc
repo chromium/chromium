@@ -939,11 +939,11 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
   // Use ui::GetSupportedResourceScaleFactors instead of
   // favicon_base::GetFaviconScales() because chrome favicons comes from
   // resources.
-  std::vector<ui::ResourceScaleFactor> resource_scale_factors =
+  const std::vector<ui::ResourceScaleFactor>& resource_scale_factors =
       ui::GetSupportedResourceScaleFactors();
 
   std::vector<gfx::Size> candidate_sizes;
-  for (auto scale_factor : resource_scale_factors) {
+  for (const auto scale_factor : resource_scale_factors) {
     float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     // Assume that GetFaviconResourceBytes() returns favicons which are
     // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP.

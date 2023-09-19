@@ -149,11 +149,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
       process_host_factory.CreateRenderProcessHost(&browser_context, nullptr);
   scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
       SiteInstanceGroup::CreateForTesting(&browser_context, process_host));
-  // Populates |g_supported_scale_factors|.
-  std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::k100Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {ui::k100Percent});
 
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();

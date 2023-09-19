@@ -46,7 +46,7 @@ class AppIconDecoderTest : public testing::Test {
                                   int size_dp,
                                   StoredIconType type,
                                   SkColor color) {
-    for (auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       int icon_size_in_px =
           gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
               .width();

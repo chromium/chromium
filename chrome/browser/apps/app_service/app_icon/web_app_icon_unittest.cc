@@ -590,7 +590,7 @@ TEST_F(WebAppIconFactoryTest,
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
     EXPECT_EQ(

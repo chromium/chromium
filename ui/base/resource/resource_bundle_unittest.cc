@@ -558,11 +558,8 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 #if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(2.0);
 #endif
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent});
   base::FilePath data_1x_path = dir_path().AppendASCII("sample_1x.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -615,11 +612,8 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 // Test that GetImageNamed() behaves properly for images which GRIT has
 // annotated as having fallen back to 1x.
 TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent});
   base::FilePath data_path = dir_path().AppendASCII("sample.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -650,15 +644,10 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
 }
 
 TEST_F(ResourceBundleImageTest, FallbackToNone) {
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
-  supported_factors.push_back(k300Percent);
-
   // Presents a consistent set of supported scale factors for all platforms.
   // iOS does not include k100Percent, which breaks the test below.
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent, k300Percent});
 
   base::FilePath data_default_path = dir_path().AppendASCII("sample.pak");
 

@@ -910,9 +910,6 @@ void BrowserThemePack::BuildFromWebAppColors(SkColor theme_color,
 BrowserThemePack::BrowserThemePack(ThemeType theme_type)
     : CustomThemeSupplier(theme_type) {
   scale_factors_ = ui::GetSupportedResourceScaleFactors();
-  // On Windows HiDPI k100Percent may not be supported by default.
-  if (!base::Contains(scale_factors_, ui::k100Percent))
-    scale_factors_.push_back(ui::k100Percent);
 }
 
 bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {

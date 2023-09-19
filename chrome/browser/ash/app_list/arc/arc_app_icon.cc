@@ -274,7 +274,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
       background_image_skia_ = gfx::ImageSkia(
           std::make_unique<Source>(nullptr, resource_size_in_dip),
           resource_size);
-      for (const auto& scale_factor : scale_factors) {
+      for (const auto scale_factor : scale_factors) {
         foreground_incomplete_scale_factors_.insert(
             {scale_factor, base::Time::Now()});
         background_incomplete_scale_factors_.insert(
@@ -293,7 +293,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
       // |incomplete_scale_factors_|.
       [[fallthrough]];
     case IconType::kCompressed:
-      for (const auto& scale_factor : scale_factors) {
+      for (const auto scale_factor : scale_factors) {
         incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
         if (icon_type != IconType::kAdaptive)
           is_adaptive_icons_.insert({scale_factor, false});

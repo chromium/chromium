@@ -489,12 +489,11 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
 void ResourceBundle::LoadTestResources(const base::FilePath& path,
                                        const base::FilePath& locale_path) {
   is_test_resources_ = true;
-  DCHECK(!ui::GetSupportedResourceScaleFactors().empty());
   // Use the given resource pak for both common and localized resources.
 
   if (!path.empty()) {
-    const ResourceScaleFactor scale_factor(
-        ui::GetSupportedResourceScaleFactors()[0]);
+    const ResourceScaleFactor scale_factor =
+        ui::GetSupportedResourceScaleFactors()[0];
     auto data_pack = std::make_unique<DataPack>(scale_factor);
     CHECK(data_pack->LoadFromPath(path));
     AddResourceHandle(std::move(data_pack));

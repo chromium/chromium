@@ -107,12 +107,12 @@ void AppIconWriter::InstallIcon(AppPublisher* publisher,
   // icon with both the foreground and the background icon files. Since we don't
   // know whether the icon is an adaptive icon, we always get the raw icon data
   // for all scale factors.
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     it->second.scale_factors.insert(scale_factor);
     scale_factors.insert(scale_factor);
   }
 
-  for (auto scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     auto pending_results_it = pending_results_.find(key);
     if (pending_results_it == pending_results_.end()) {
       // If the getting icon request has been removed (e.g. the compressed

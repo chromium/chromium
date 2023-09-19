@@ -171,7 +171,7 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(src.HasRepresentation(scale));
     ASSERT_TRUE(dst.HasRepresentation(scale));
@@ -350,7 +350,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     apps::ScaleToSize scale_to_size_in_px;
     int size_in_dip =
         ash::SharedAppListConfig::instance().default_grid_icon_dimension();
-    for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       int size_in_px = gfx::ScaleToFlooredSize(
                            gfx::Size(size_in_dip, size_in_dip),
                            ui::GetScaleForResourceScaleFactor(scale_factor))
@@ -380,7 +380,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
         size_in_dip, extensions::ChromeAppIcon::ResizeFunction(),
         true /* app_launchable */, true /* from_bookmark */,
         extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
-    for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       // Force the icon to be loaded.
       output_image_skia.GetRepresentation(
           ui::GetScaleForResourceScaleFactor(scale_factor));

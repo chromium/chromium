@@ -105,8 +105,7 @@ bool HasBackgroundColor(
 class LargeIconServiceTest : public testing::Test {
  public:
   LargeIconServiceTest()
-      : scoped_set_supported_scale_factors_({ui::k200Percent}),
-        mock_image_fetcher_(new NiceMock<MockImageFetcher>()),
+      : mock_image_fetcher_(new NiceMock<MockImageFetcher>()),
         large_icon_service_(&mock_favicon_service_,
                             base::WrapUnique(mock_image_fetcher_.get()),
                             /*desired_size_in_dip_for_server_requests=*/24,
@@ -122,7 +121,7 @@ class LargeIconServiceTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ui::test::ScopedSetSupportedResourceScaleFactors
-      scoped_set_supported_scale_factors_;
+      scoped_set_supported_scale_factors_{{ui::k200Percent}};
   raw_ptr<NiceMock<MockImageFetcher>, DanglingUntriaged> mock_image_fetcher_;
   testing::NiceMock<MockFaviconService> mock_favicon_service_;
   LargeIconServiceImpl large_icon_service_;

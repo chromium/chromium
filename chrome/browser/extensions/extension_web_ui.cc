@@ -604,9 +604,7 @@ void ExtensionWebUI::GetFaviconForURL(
     gfx::ImageSkia placeholder_skia(placeholder_image.AsImageSkia());
     // Ensure the ImageSkia has representation at all scales we would use for
     // favicons.
-    std::vector<ui::ResourceScaleFactor> scale_factors =
-        ui::GetSupportedResourceScaleFactors();
-    for (const auto& scale_factor : scale_factors) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       placeholder_skia.GetRepresentation(
           ui::GetScaleForResourceScaleFactor(scale_factor));
     }

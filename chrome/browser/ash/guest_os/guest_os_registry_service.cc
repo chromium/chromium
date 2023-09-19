@@ -1037,8 +1037,7 @@ void GuestOsRegistryService::UpdateApplicationList(
   // due to the container being offline.
   for (auto retry_iter = retry_icon_requests_.begin();
        retry_iter != retry_icon_requests_.end(); ++retry_iter) {
-    for (ui::ResourceScaleFactor scale_factor :
-         ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       if (retry_iter->second & (1 << scale_factor)) {
         RequestContainerAppIcon(retry_iter->first, scale_factor);
       }

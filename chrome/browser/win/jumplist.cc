@@ -135,9 +135,7 @@ bool CreateIconFile(const gfx::ImageSkia& image_skia,
   // save it as the temporary file.
   gfx::ImageFamily image_family;
   if (!image_skia.isNull()) {
-    const std::vector<ui::ResourceScaleFactor> supported_scales =
-        ui::GetSupportedResourceScaleFactors();
-    for (const auto scale : supported_scales) {
+    for (const auto scale : ui::GetSupportedResourceScaleFactors()) {
       gfx::ImageSkiaRep image_skia_rep = image_skia.GetRepresentation(
           ui::GetScaleForResourceScaleFactor(scale));
       if (!image_skia_rep.is_null()) {

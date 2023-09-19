@@ -140,11 +140,8 @@ class ExtensionIconImageTest : public ExtensionsTest,
 }  // namespace
 
 TEST_F(ExtensionIconImageTest, Basic) {
-  std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::k100Percent);
-  supported_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {ui::k100Percent, ui::k200Percent});
   scoped_refptr<Extension> extension(CreateExtension(
       "extension_icon_image", ManifestLocation::kInvalidLocation));
   ASSERT_TRUE(extension.get() != nullptr);
@@ -215,11 +212,8 @@ TEST_F(ExtensionIconImageTest, Basic) {
 // There is no resource with either exact or bigger size, but there is a smaller
 // resource.
 TEST_F(ExtensionIconImageTest, FallbackToSmallerWhenNoBigger) {
-  std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::k100Percent);
-  supported_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {ui::k100Percent, ui::k200Percent});
   scoped_refptr<Extension> extension(CreateExtension(
       "extension_icon_image", ManifestLocation::kInvalidLocation));
   ASSERT_TRUE(extension.get() != nullptr);

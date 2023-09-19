@@ -41,11 +41,11 @@ void GetFaviconBitmapForNativeURL(
 
   // Use ui::GetSupportedResourceScaleFactors() because native URL favicon comes
   // from resources.
-  std::vector<ui::ResourceScaleFactor> scale_factors =
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
 
   std::vector<gfx::Size> candidate_sizes;
-  for (ui::ResourceScaleFactor scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     int candidate_size = static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
     candidate_sizes.push_back(gfx::Size(candidate_size, candidate_size));
