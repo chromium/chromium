@@ -14,10 +14,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::AtLeast;
+using ::testing::Bool;
 using testing::Mock;
 using testing::NiceMock;
-using testing::_;
 
 namespace cc {
 namespace {
@@ -57,11 +58,12 @@ class MockScrollbarAnimationControllerClient
   bool is_fluent_;
 };
 
-class ScrollbarAnimationControllerAuraOverlayTest
+class ScrollbarAnimationControllerOverlayTest
     : public LayerTreeImplTestBase,
-      public testing::Test {
+      public testing::Test,
+      public testing::WithParamInterface<bool> {
  public:
-  explicit ScrollbarAnimationControllerAuraOverlayTest(bool is_fluent = false)
+  explicit ScrollbarAnimationControllerOverlayTest(bool is_fluent = GetParam())
       : client_(host_impl(), is_fluent) {}
 
   void ExpectScrollbarsOpacity(float opacity) {
@@ -162,19 +164,24 @@ class ScrollbarAnimationControllerAuraOverlayTest
   NiceMock<MockScrollbarAnimationControllerClient> client_;
 };
 
+class ScrollbarAnimationControllerAuraOverlayTest
+    : public ScrollbarAnimationControllerOverlayTest {
+ public:
+  ScrollbarAnimationControllerAuraOverlayTest()
+      : ScrollbarAnimationControllerOverlayTest(/*is_fluent=*/false) {}
+};
+
 // TODO(https://crbug.com/1479200): Implement unit tests for fluent overlay
-// scrollbars tickmarks when they are implemented. Also, investigate if there
-// are tests that work for both fluent and non fluent aura overlay scrollbars
-// that can be reused.
+// scrollbars tickmarks when they are implemented.
 class ScrollbarAnimationControllerFluentOverlayTest
-    : public ScrollbarAnimationControllerAuraOverlayTest {
+    : public ScrollbarAnimationControllerOverlayTest {
  public:
   ScrollbarAnimationControllerFluentOverlayTest()
-      : ScrollbarAnimationControllerAuraOverlayTest(/* is_fluent */ true) {}
+      : ScrollbarAnimationControllerOverlayTest(/*is_fluent=*/true) {}
 };
 
 // Check initialization of scrollbar. Should start off invisible and thin.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, Idle) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, Idle) {
   ExpectScrollbarsOpacity(0);
   EXPECT_TRUE(scrollbar_controller_->ScrollbarsHidden());
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
@@ -184,7 +191,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, Idle) {
 }
 
 // Check that scrollbar appears again when the layer becomes scrollable.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, AppearOnResize) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, AppearOnResize) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -209,7 +216,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, AppearOnResize) {
 }
 
 // Check that scrollbar disappears when the layer becomes non-scrollable.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, HideOnResize) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, HideOnResize) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -238,7 +245,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, HideOnResize) {
 }
 
 // Scroll content. Confirm the scrollbar appears and fades out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicAppearAndFadeOut) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, BasicAppearAndFadeOut) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -272,7 +279,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, BasicAppearAndFadeOut) {
 }
 
 // Confirm the scrollbar appears by WillUpdateScroll and fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
+TEST_P(ScrollbarAnimationControllerOverlayTest,
        BasicAppearByWillUpdateScrollThenFadeOut) {
   base::TimeTicks time;
   time += base::Seconds(1);
@@ -401,7 +408,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveNearAndDontFadeOut) {
 
 // Scroll content. Move the mouse over the scrollbar and confirm it becomes
 // thick. Ensure it remains visible as long as the mouse is over the scrollbar.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveOverAndDontFadeOut) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, MoveOverAndDontFadeOut) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -440,7 +447,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MoveOverAndDontFadeOut) {
 
 // Make sure a scrollbar captured before the thickening animation doesn't try
 // to fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
+TEST_P(ScrollbarAnimationControllerOverlayTest,
        DontFadeWhileCapturedBeforeThick) {
   base::TimeTicks time;
   time += base::Seconds(1);
@@ -466,8 +473,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 }
 
 // Make sure a scrollbar captured then move mouse away doesn't try to fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
-       DontFadeWhileCapturedThenAway) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, DontFadeWhileCapturedThenAway) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -501,7 +507,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 
 // Make sure a scrollbar captured after a thickening animation doesn't try to
 // fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeWhileCaptured) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, DontFadeWhileCaptured) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -535,9 +541,9 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeWhileCaptured) {
               client_.start_fade().IsCancelled());
 }
 
-// Make sure releasing a captured scrollbar when the mouse isn't near it, causes
+// Make sure releasing a captured scrollbar when the mouse isn't near it causes
 // the scrollbar to fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAfterReleasedFar) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, FadeAfterReleasedFar) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -574,10 +580,12 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAfterReleasedFar) {
   time += kThinningDuration;
   scrollbar_controller_->Animate(time);
   ExpectScrollbarsOpacity(1);
-  EXPECT_FLOAT_EQ(kIdleThicknessScale,
-                  v_scrollbar_layer_->thumb_thickness_scale_factor());
-  EXPECT_FLOAT_EQ(kIdleThicknessScale,
-                  h_scrollbar_layer_->thumb_thickness_scale_factor());
+  if (!client_.IsFluentOverlayScrollbar()) {
+    EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                    v_scrollbar_layer_->thumb_thickness_scale_factor());
+    EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                    h_scrollbar_layer_->thumb_thickness_scale_factor());
+  }
 
   // The thickness animation is complete, a fade out must be queued.
   EXPECT_FALSE(client_.start_fade().is_null());
@@ -586,7 +594,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAfterReleasedFar) {
 
 // Make sure releasing a captured scrollbar when the mouse is near/over it,
 // doesn't cause the scrollbar to fade out.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeAfterReleasedNear) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, DontFadeAfterReleasedNear) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -622,8 +630,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, DontFadeAfterReleasedNear) {
 
 // Make sure moving near a scrollbar while it's fading out causes it to reset
 // the opacity and thicken.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
-       MoveNearScrollbarWhileFading) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, MoveNearScrollbarWhileFading) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -767,8 +774,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, ScrollWithMouseNear) {
 }
 
 // Tests that main thread scroll updates immediately queue a fade out animation
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
-       MainThreadScrollQueuesFade) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, MainThreadScrollQueuesFade) {
   ASSERT_TRUE(client_.start_fade().is_null());
 
   // A ScrollUpdate indicates a main thread scroll update so we should schedule
@@ -779,7 +785,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 }
 
 // Tests that the fade effect is animated.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAnimated) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, FadeAnimated) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -808,7 +814,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, FadeAnimated) {
 }
 
 // Tests that the controller tells the client when the scrollbars hide/show.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, NotifyChangedVisibility) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, NotifyChangedVisibility) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -973,9 +979,10 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseNearBoth) {
   EXPECT_FLOAT_EQ(1, h_scrollbar_layer_->thumb_thickness_scale_factor());
 }
 
-// Move mouse from one to the other scrollbar before animation is finished, then
-// away before animation finished.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
+// Move mouse on top of the vertical scrollbar, then to the horizontal scrollbar
+// before the fade out animation is finished. Then, move the pointer away from
+// both scrollbars before animation the animation is finished.
+TEST_P(ScrollbarAnimationControllerOverlayTest,
        MouseNearOtherBeforeAnimationFinished) {
   base::TimeTicks time;
   time += base::Seconds(1);
@@ -983,9 +990,10 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
 
-  // Near vertical scrollbar.
-  scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(-1, 0));
+  // Over vertical scrollbar.
+  scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(0, 0));
   scrollbar_controller_->Animate(time);
+
   ExpectScrollbarsOpacity(1);
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   v_scrollbar_layer_->thumb_thickness_scale_factor());
@@ -1001,12 +1009,12 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   h_scrollbar_layer_->thumb_thickness_scale_factor());
 
-  // Away vertical scrollbar and near horizontal scrollbar.
+  // Away from vertical scrollbar and over horizontal scrollbar.
   scrollbar_controller_->DidMouseMove(gfx::PointF(0, 0));
-  scrollbar_controller_->DidMouseMove(NearHorizontalScrollbarBegin(0, -1));
+  scrollbar_controller_->DidMouseMove(NearHorizontalScrollbarBegin(0, 0));
   scrollbar_controller_->Animate(time);
 
-  // Vertical scrollbar animate to thin. horizontal scrollbar animate to
+  // Vertical scrollbar animates to thin. Horizontal scrollbar animates to
   // thickened.
   time += kThinningDuration;
   scrollbar_controller_->Animate(time);
@@ -1015,11 +1023,11 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
                   v_scrollbar_layer_->thumb_thickness_scale_factor());
   EXPECT_FLOAT_EQ(1, h_scrollbar_layer_->thumb_thickness_scale_factor());
 
-  // Away horizontal scrollbar.
+  // Away from horizontal scrollbar.
   scrollbar_controller_->DidMouseMove(gfx::PointF(0, 0));
   scrollbar_controller_->Animate(time);
 
-  // Horizontal scrollbar animate to thin.
+  // Horizontal scrollbar animates to thin.
   time += kThinningDuration;
   scrollbar_controller_->Animate(time);
   ExpectScrollbarsOpacity(1);
@@ -1028,19 +1036,19 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   h_scrollbar_layer_->thumb_thickness_scale_factor());
 
-  // An fade out animation should have been enqueued.
+  // A fade out animation should have been enqueued.
   EXPECT_FALSE(client_.start_fade().is_null());
   EXPECT_EQ(kFadeDelay, client_.delay());
 }
 
 // Ensure we have a delay fadeout animation after mouse leave without a mouse
 // move.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, MouseLeaveFadeOut) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, MouseLeaveFadeOut) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
   // Move mouse near scrollbar.
-  scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(-1, 0));
+  scrollbar_controller_->DidMouseMove(NearVerticalScrollbarBegin(0, 0));
 
   // Scroll to make the scrollbars visible.
   scrollbar_controller_->DidScrollUpdate();
@@ -1100,7 +1108,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
   scrollbar_controller_->DidMouseMove(
       NearVerticalScrollbarBegin(-mouse_move_distance_to_trigger_fade_in_, 0));
 
-  // An fade in animation should have been enqueued.
+  // A fade in animation should have been enqueued.
   EXPECT_FALSE(client_.start_fade().is_null());
   EXPECT_FALSE(client_.start_fade().IsCancelled());
   EXPECT_EQ(kFadeDelay, client_.delay());
@@ -1267,7 +1275,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
 
 // Ensure Aura Overlay Scrollbars shows and did not fade out when tickmarks show
 // and fade out when tickmarks hide.
-TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmarksShowHide) {
+TEST_P(ScrollbarAnimationControllerOverlayTest, TickmarksShowHide) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -1885,6 +1893,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   EXPECT_FLOAT_EQ(1, scrollbar_layer_->Opacity());
 }
 
+INSTANTIATE_TEST_SUITE_P(All, ScrollbarAnimationControllerOverlayTest, Bool());
 }  // namespace
 
 }  // namespace cc

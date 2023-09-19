@@ -299,23 +299,13 @@ void ScrollbarAnimationController::DidMouseMove(
     return;
   }
 
-  if (client_->IsFluentOverlayScrollbar()) {
-    if (!ScrollbarsHidden()) {
-      // Fluent scrollbars will remain being shown as long as you are
-      // moving your mouse, will transition into full mode when you mouse over
-      // them and will hide after being released from capture.
-      PostDelayedAnimation(MouseIsNearAnyScrollbar()
-                               ? AnimationChange::kFadeIn
-                               : AnimationChange::kFadeOut);
-    }
-    return;
-  }
-
   if (ScrollbarsHidden()) {
     // Do not fade in scrollbar when user interacting with the content below
-    // scrollbar.
-    if (is_mouse_down_)
+    // scrollbar. Fluent scrollbars never leave invisibility due to pointer
+    // moves.
+    if (is_mouse_down_ || client_->IsFluentOverlayScrollbar()) {
       return;
+    }
     need_trigger_scrollbar_fade_in_ = MouseIsNearAnyScrollbar();
     if (need_trigger_scrollbar_fade_in_before !=
         need_trigger_scrollbar_fade_in_) {
@@ -329,7 +319,7 @@ void ScrollbarAnimationController::DidMouseMove(
     if (MouseIsNearAnyScrollbar()) {
       Show();
       StopAnimation();
-    } else if (!is_animating_) {
+    } else if (!is_animating_ || client_->IsFluentOverlayScrollbar()) {
       PostDelayedAnimation(AnimationChange::kFadeOut);
     }
   }
