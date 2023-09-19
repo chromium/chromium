@@ -46,6 +46,7 @@ class FfxEmulator(AbstractContextManager):
         else:
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
+        self._device_spec = args.device_spec
 
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
@@ -73,6 +74,8 @@ class FfxEmulator(AbstractContextManager):
             emu_command.extend(['--net', 'user'])
         if self._everlasting():
             emu_command.extend(['--reuse-with-check'])
+        if self._device_spec:
+            emu_command.extend(['--device', self._device_spec])
 
         # TODO(https://fxbug.dev/99321): remove when ffx has native support
         # for starting emulator on arm64 host.
