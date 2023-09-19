@@ -30,7 +30,7 @@ class FakeWebApkDatabaseFactory : public AbstractWebApkDatabaseFactory {
 
   Registry ReadRegistry();
 
-  void WriteProtos(const std::vector<std::unique_ptr<WebApkProto>>& protos);
+  void WriteProtos(const std::vector<const WebApkProto*>& protos);
   void WriteRegistry(const Registry& registry);
 
  private:

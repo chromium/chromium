@@ -58,13 +58,13 @@ Registry FakeWebApkDatabaseFactory::ReadRegistry() {
 }
 
 void FakeWebApkDatabaseFactory::WriteProtos(
-    const std::vector<std::unique_ptr<WebApkProto>>& protos) {
+    const std::vector<const WebApkProto*>& protos) {
   base::RunLoop run_loop;
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       GetStore()->CreateWriteBatch();
 
-  for (const std::unique_ptr<WebApkProto>& proto : protos) {
+  for (const WebApkProto* proto : protos) {
     GURL manifest_id(proto->sync_data().manifest_id());
     DCHECK(!manifest_id.is_empty());
     DCHECK(manifest_id.is_valid());
@@ -85,10 +85,10 @@ void FakeWebApkDatabaseFactory::WriteProtos(
 }
 
 void FakeWebApkDatabaseFactory::WriteRegistry(const Registry& registry) {
-  std::vector<std::unique_ptr<WebApkProto>> protos;
+  std::vector<const WebApkProto*> protos;
   for (const Registry::value_type& kv : registry) {
-    auto webapk = std::unique_ptr<WebApkProto>(kv.second.get());
-    protos.push_back(std::move(webapk));
+    const WebApkProto* webapk = kv.second.get();
+    protos.push_back(webapk);
   }
 
   WriteProtos(protos);

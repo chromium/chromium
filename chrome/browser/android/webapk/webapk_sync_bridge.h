@@ -11,20 +11,18 @@
 #include "chrome/browser/android/webapk/webapk_database.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-
-namespace base {}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
+struct EntityData;
 class MetadataChangeList;
 class ModelError;
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
-namespace syncer {
-struct EntityData;
-}
-
 namespace webapk {
+
+class AbstractWebApkDatabaseFactory;
 
 // A unified sync and storage controller.
 //
@@ -39,9 +37,12 @@ namespace webapk {
 // ModelTypeChangeProcessor and WebApkDatabase (the storage).
 class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
-  WebApkSyncBridge();
+  WebApkSyncBridge(AbstractWebApkDatabaseFactory* database_factory,
+                   base::OnceClosure on_initialized);
   // Tests may inject mocks using this ctor.
-  explicit WebApkSyncBridge(
+  WebApkSyncBridge(
+      AbstractWebApkDatabaseFactory* database_factory,
+      base::OnceClosure on_initialized,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   WebApkSyncBridge(const WebApkSyncBridge&) = delete;
   WebApkSyncBridge& operator=(const WebApkSyncBridge&) = delete;
@@ -62,7 +63,13 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
  private:
+  void OnDatabaseOpened(base::OnceClosure callback,
+                        Registry registry,
+                        std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void ReportErrorToChangeProcessor(const syncer::ModelError& error);
+
   std::unique_ptr<WebApkDatabase> database_;
+  Registry registry_;
 
   base::WeakPtrFactory<WebApkSyncBridge> weak_ptr_factory_{this};
 };
