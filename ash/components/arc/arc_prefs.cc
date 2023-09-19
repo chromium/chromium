@@ -29,6 +29,9 @@ const char kAlwaysOnVpnPackage[] = "arc.vpn.always_on.vpn_package";
 // is still used.
 const char kArcActiveDirectoryPlayUserId[] =
     "arc.active_directory_play_user_id";
+// Stores whether ARC app is requested in the session. Used for UMA.
+// -1 indicates no data. 0 or greaters are the number of app launch requests.
+const char kArcAppRequestedInSession[] = "arc.app_requested_in_session";
 // A preference to keep list of Android apps and their state.
 const char kArcApps[] = "arc.apps";
 // A preference to store backup and restore state for Android apps.
