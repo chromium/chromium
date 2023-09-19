@@ -647,6 +647,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.DroppedPagesWithZeroesPercent" units="%"
+    expires_after="2024-06-08">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The percentage of pages that were dropped by the kernel from the hibernate
+    image because their content was all zeroes. Recorded after a successful
+    suspend to hibernate.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.Event" enum="CrosHibernateCycleEvent"
     expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
