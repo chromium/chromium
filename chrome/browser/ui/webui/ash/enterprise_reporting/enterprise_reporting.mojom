@@ -1,0 +1,56 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module enterprise_reporting.mojom;
+
+// ErpHistoryData represents chunk of ERP history.
+struct ErpHistoryData {
+  array<ErpHistoryEvent> events;
+};
+
+// ErpHistoryEvent represents the various events the ERP can record.
+struct ErpHistoryEvent {
+  // Name of the call.
+  string call;
+  // Parameters passed to the call.
+  array<ErpHistoryEventParameter> parameters;
+  // Status of the call returned.
+  string status;
+  // Timestamp of when the call was made.
+  int64 time;
+};
+
+// HistoryEventParameter represents one parameter from a dbus call from missive.
+struct ErpHistoryEventParameter {
+  // Name of the parameter.
+  string name;
+  // The value provided for the parameter.
+  string value;
+};
+
+// This interface can be used to update information displayed on the reporting
+// page.
+interface PageHandlerFactory {
+  // Creates a page handler to update and respond to requests.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://enterprise-reporting (Renderer -> Browser)
+interface PageHandler {
+  // Records debug state.
+  RecordDebugState(bool state);
+
+  // Reads debug state.
+  GetDebugState() => (bool state);
+
+  // Reads collected history.
+  GetErpHistoryData() => (ErpHistoryData history_data);
+};
+
+// Called from C++ side of chrome://enterprise-reporting. (Browser -> Renderer)
+interface Page {
+  // Provide the reporting page with new DBus call history.
+  SetErpHistoryData(ErpHistoryData history_data);
+};
