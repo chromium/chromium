@@ -3457,7 +3457,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("button-with-listbox-popup.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DeleteSelectionCrash) {
+// TODO(https://crbug.com/1483778): Re-enable once the test is no longer flaky.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_DeleteSelectionCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("delete-selection-crash.html"));
 }
 
