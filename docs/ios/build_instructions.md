@@ -305,6 +305,26 @@ $ out/Debug-iphonesimulator/iossim \
     out/Debug-iphonesimulator/ios_chrome_ui_egtests.app/PlugIns/ios_chrome_ui_egtests_module.xctest
 ```
 
+### Running Web Tests on Blink for iOS
+
+The current Blink for iOS only supports running Web Tests on the simulator
+environment now. Before you run the web tests, you need to build the blink_tests
+target to get content_shell and all of the other needed binaries for the
+simulator test environment.
+
+```shell
+$ autoninja -C out/Debug-iphonesimulator blink_tests
+```
+
+When the blink_tests target is complete you can then run the test runner script
+(third_party/blink/tools/run_web_tests.py) as below. See [Web Tests](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md) document
+for more information.
+
+```shell
+$ third_party/blink/tools/run_web_tests.py -t Debug-iphonesimulator \
+    --platform ios
+```
+
 ### Running on specific simulator
 
 By default, `iossim` will pick an arbitrary simulator to run the tests. If
