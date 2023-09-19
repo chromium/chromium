@@ -8,7 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
@@ -77,7 +77,7 @@ class SctpTransportProxy : public webrtc::SctpTransportObserverInterface {
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
   const rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport_;
-  CrossThreadPersistent<Delegate> delegate_;
+  UnwrappingCrossThreadHandle<Delegate> delegate_;
 };
 
 }  // namespace blink
