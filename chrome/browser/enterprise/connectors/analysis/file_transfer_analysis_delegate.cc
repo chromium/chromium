@@ -365,31 +365,44 @@ void FileTransferAnalysisDelegate::BypassWarnings(
     warning_is_bypassed_ = true;
   }
 }
+
 void FileTransferAnalysisDelegate::Cancel(bool warning) {
   // TODO(crbug.com/1340313)
 }
-absl::optional<std::u16string> FileTransferAnalysisDelegate::GetCustomMessage()
-    const {
-  // TODO(b/293556628): Adapt for custom messaging.
-  return absl::nullopt;
+
+absl::optional<std::u16string> FileTransferAnalysisDelegate::GetCustomMessage(
+    const std::string& tag) const {
+  auto it = settings_.tags.find(tag);
+  if (it == settings_.tags.end()) {
+    return absl::nullopt;
+  }
+  const std::u16string& message = it->second.custom_message.message;
+  if (message.empty()) {
+    return absl::nullopt;
+  }
+  return message;
 }
-absl::optional<GURL> FileTransferAnalysisDelegate::GetCustomLearnMoreUrl()
-    const {
-  // TODO(b/293556628): Adapt for custom messaging.
-  return absl::nullopt;
+
+absl::optional<GURL> FileTransferAnalysisDelegate::GetCustomLearnMoreUrl(
+    const std::string& tag) const {
+  auto it = settings_.tags.find(tag);
+  if (it == settings_.tags.end()) {
+    return absl::nullopt;
+  }
+  const GURL& learn_more_url = it->second.custom_message.learn_more_url;
+  if (!learn_more_url.is_valid()) {
+    return absl::nullopt;
+  }
+  return learn_more_url;
 }
-bool FileTransferAnalysisDelegate::BypassRequiresJustification() const {
-  // TODO(b/293556628): Adapt for custom messaging.
-  return false;
-}
-std::u16string FileTransferAnalysisDelegate::GetBypassJustificationLabel()
-    const {
-  // TODO(b/293556628): Adapt for custom messaging.
-  return u"";
-}
-absl::optional<std::u16string>
-FileTransferAnalysisDelegate::OverrideCancelButtonText() const {
-  return absl::nullopt;
+
+bool FileTransferAnalysisDelegate::BypassRequiresJustification(
+    const std::string& tag) const {
+  auto it = settings_.tags.find(tag);
+  if (it == settings_.tags.end()) {
+    return false;
+  }
+  return it->second.requires_justification;
 }
 
 FilesRequestHandler*

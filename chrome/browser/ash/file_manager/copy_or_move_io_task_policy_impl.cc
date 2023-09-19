@@ -405,12 +405,14 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
     return false;
   }
 
-  // The values of custom warning message, custom learn more URL and whether a
-  // bypass justification is required are consistent across all valid
-  // `file_transfer_analysis_delegates_`, so we just retrieve these values from
-  // the first valid delegate. There are as many delegates as the number of
-  // sources. A delegate in `file_transfer_analysis_delegates_` is valid if for
-  // the source-destination-pair scanning is enabled, nullptr otherwise.
+  // Currently, the custom warning message, the custom learn more URL, and the
+  // bypass justification flag values are only relevant for warning scenarios.
+  // Moreover, these values are consistent across all valid
+  // `file_transfer_analysis_delegates_` having warned results, so we just
+  // retrieve these values from the first of such delegates. There are as many
+  // delegates as the number of sources. A delegate in
+  // `file_transfer_analysis_delegates_` is valid if for the
+  // source-destination-pair scanning is enabled, nullptr otherwise.
   auto delegate_it = base::ranges::find_if(
       file_transfer_analysis_delegates_,
       [](const std::unique_ptr<
@@ -421,10 +423,15 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
   policy::FilesPolicyWarnSettings warn_settings;
   if (delegate_it != file_transfer_analysis_delegates_.end()) {
     auto* valid_delegate = delegate_it->get();
+    // Warning mode is only available for the "dlp" tag, since "malware" results
+    // are always blocked.
     warn_settings.bypass_requires_justification =
-        valid_delegate->BypassRequiresJustification();
-    warn_settings.warning_message = valid_delegate->GetCustomMessage();
-    warn_settings.learn_more_url = valid_delegate->GetCustomLearnMoreUrl();
+        valid_delegate->BypassRequiresJustification(
+            enterprise_connectors::kDlpTag);
+    warn_settings.warning_message =
+        valid_delegate->GetCustomMessage(enterprise_connectors::kDlpTag);
+    warn_settings.learn_more_url =
+        valid_delegate->GetCustomLearnMoreUrl(enterprise_connectors::kDlpTag);
   }
 
   fpnm->ShowConnectorsWarning(

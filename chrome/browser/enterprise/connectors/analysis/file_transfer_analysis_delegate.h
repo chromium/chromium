@@ -44,7 +44,7 @@ class FilesRequestHandler;
 // If `source_url` is a directory, all files contained within the directory or
 // any descended directory will be scanned. If `source_url` is a file only that
 // file will be scanned.
-class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
+class FileTransferAnalysisDelegate {
  public:
   using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
       std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
@@ -93,7 +93,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
     std::string tag_;
   };
 
-  ~FileTransferAnalysisDelegate() override;
+  virtual ~FileTransferAnalysisDelegate();
 
   // Create the FileTransferAnalysisDelegate. This function uses the factory if
   // it is set via `SetFactorForTesting()`.
@@ -133,15 +133,22 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Calling this function is only allowed after the scan is complete!
   virtual std::vector<storage::FileSystemURL> GetWarnedFiles() const;
 
-  // ContentAnalysisDelegateBase:
-  void BypassWarnings(
-      absl::optional<std::u16string> user_justification) override;
-  void Cancel(bool warning) override;
-  absl::optional<std::u16string> GetCustomMessage() const override;
-  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
-  bool BypassRequiresJustification() const override;
-  std::u16string GetBypassJustificationLabel() const override;
-  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+  // Called when the user cancels a transfer.
+  void Cancel(bool warning);
+
+  // Called when the user byapass a warning.
+  void BypassWarnings(absl::optional<std::u16string> user_justification);
+
+  // Returns the custom message specified by the admin for the given tag, or
+  // absl::nullopt if there isn't any.
+  absl::optional<std::u16string> GetCustomMessage(const std::string& tag) const;
+
+  // Returns the custom "learn more" URL specified by the admin for the given
+  // tag, or absl::nullopt if there isn't any.
+  absl::optional<GURL> GetCustomLearnMoreUrl(const std::string& tag) const;
+
+  // Returns whether a user justification is required for the given tag.
+  bool BypassRequiresJustification(const std::string& tag) const;
 
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
