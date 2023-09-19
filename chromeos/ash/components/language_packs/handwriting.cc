@@ -114,7 +114,7 @@ base::flat_set<std::string> FilterHandwritingDlcsWithContent(
   return dlc_ids;
 }
 
-base::flat_set<std::string> GetDlcIdsFromEnabledInputMethods(
+base::flat_set<std::string> GetHandwritingLocalesFromEnabledInputMethods(
     InputMethodManager* const input_method_manager) {
   const std::vector<std::string>& input_method_ids =
       input_method_manager->GetActiveIMEState()->GetEnabledInputMethodIds();
@@ -124,11 +124,7 @@ base::flat_set<std::string> GetDlcIdsFromEnabledInputMethods(
       base::BindRepeating(MapInputMethodIdToHandwritingLocale,
                           input_method_manager->GetInputMethodUtil()));
 
-  const base::flat_set<std::string> dlc_ids = MapThenFilterStrings(
-      {target_hwr_locales.begin(), target_hwr_locales.end()},
-      base::BindRepeating(GetDlcIdForLanguagePack, kHandwritingFeatureId));
-
-  return dlc_ids;
+  return target_hwr_locales;
 }
 
 }  // namespace ash::language_packs

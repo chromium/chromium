@@ -77,9 +77,9 @@ bool IsHandwritingDlc(std::string_view dlc_id);
 base::flat_set<std::string> FilterHandwritingDlcsWithContent(
     const dlcservice::DlcsWithContent& dlcs_with_content);
 
-// Returns the list of DLC IDs that correspond to the input methods that are
-// currently enabled.
-base::flat_set<std::string> GetDlcIdsFromEnabledInputMethods(
+// Returns the list of handwriting locales that correspond to the input methods
+// that are currently enabled.
+base::flat_set<std::string> GetHandwritingLocalesFromEnabledInputMethods(
     input_method::InputMethodManager* input_method_manager);
 
 }  // namespace ash::language_packs
