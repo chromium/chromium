@@ -25,6 +25,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/traced_value.h"
@@ -647,15 +648,13 @@ void ShellSurfaceBase::SetPip() {
 }
 
 void ShellSurfaceBase::UnsetPip() {
-  if (!widget_) {
-    pending_pip_ = false;
-    return;
-  }
-
-  // Set all the necessary window properties and window state.
-  auto* window = widget_->GetNativeWindow();
-  window->SetProperty(ash::kWindowPipTypeKey, false);
-  window->SetProperty(aura::client::kZOrderingKey, ui::ZOrderLevel::kNormal);
+  // Ash does not implement restoring the pip state. Additionally it does not
+  // make sense for browser pip window to unset pip since the browser(lacros)
+  // creates a separate window for a pip and once pip is not needed,
+  // the window is destroyed rather than restoring it to some other state.
+  // However, ClientControlledShellSurface(Arc++), has a concept of restoring
+  // from pip state and implements UnsetPip.
+  NOTIMPLEMENTED();
 }
 
 void ShellSurfaceBase::SetFloatToLocation(
