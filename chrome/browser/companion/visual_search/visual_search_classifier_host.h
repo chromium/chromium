@@ -18,10 +18,23 @@
 
 namespace companion::visual_search {
 
+// Data container includes image (as base64 string) and alt-text.
+struct VisualSuggestionsResult {
+  // Base64 representation of image with jpeg encoding.
+  std::string base64_img;
+
+  // Alt text for image, needed for accessibility.
+  std::string alt_text;
+
+  ~VisualSuggestionsResult() = default;
+};
+
+using VisualSuggestionsResults = std::vector<VisualSuggestionsResult>;
+
 using ClassificationStats = mojom::ClassificationStatsPtr;
 
 // Used to store the last GURL/result pair that was classified.
-using VisualSearchResultPair = std::pair<GURL, std::vector<std::string>>;
+using VisualSearchResultPair = std::pair<GURL, VisualSuggestionsResults>;
 
 // Used to record classification initialization success or one of the various
 // causes for initialization failure.
@@ -72,7 +85,7 @@ enum class InitStatus {
 class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
  public:
   using ResultCallback =
-      base::OnceCallback<void(const std::vector<std::string>,
+      base::OnceCallback<void(const VisualSuggestionsResults results,
                               const VisualSuggestionsMetrics metrics)>;
 
   explicit VisualSearchClassifierHost(
@@ -105,7 +118,7 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // Returns the |VisualSearchResult| for a given url, currently we only cache
   // the current url that we are processing.
-  absl::optional<VisualSearchResultPair> GetVisualResult(const GURL& url);
+  absl::optional<VisualSuggestionsResults> GetVisualResult(const GURL& url);
 
  private:
   // This method performs the actual mojom IPC to start classifier agent after

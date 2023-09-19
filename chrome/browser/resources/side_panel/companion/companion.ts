@@ -71,6 +71,9 @@ enum ParamType {
   // Arguments for sending Visual Search results from browser to iframe.
   VISUAL_SEARCH_PARAMS = 'visualSearchParams',
 
+  // Arguments for sending Visual Search alt text from browser to iframe.
+  VISUAL_SEARCH_IMAGE_ALT_TEXTS = 'visualSearchImageAltTexts',
+
   // Arguments for sending companion loading state from iframe to browser.
   COMPANION_LOADING_STATE = 'companionLoadingState',
 }
@@ -180,10 +183,12 @@ function initialize() {
   companionProxy.callbackRouter.onDeviceVisualClassificationResult.addListener(
       (results: VisualSearchResult[]) => {
         const dataUris = results.map(result => result.dataUri);
+        const altTexts = results.map(result => result.altText);
         const message = {
           [ParamType.METHOD_TYPE]:
               MethodType.kOnDeviceVisualClassificationResult,
           [ParamType.VISUAL_SEARCH_PARAMS]: dataUris,
+          [ParamType.VISUAL_SEARCH_IMAGE_ALT_TEXTS]: altTexts,
         };
 
         const companionOrigin =

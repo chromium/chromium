@@ -121,11 +121,15 @@ DOMImageList FindImagesOnPage(content::RenderFrame* render_frame) {
 
   int image_counter = 0;
   for (auto& element : image_elements) {
+    std::string alt_text;
+    if (element.HasAttribute("alt")) {
+      alt_text = element.GetAttribute("alt").Utf8();
+    }
     ImageId id = base::NumberToString(image_counter++);
     images[id] = {
         VisualClassificationAndEligibility::ExtractFeaturesForEligibility(
             id, element),
-        element.ImageContents()};
+        element.ImageContents(), alt_text};
   }
 
   return images;
@@ -159,8 +163,8 @@ ClassificationResultsAndStats ClassifyImagesOnBackground(
   results.second->results_count = metrics.result_count;
 
   int result_counter = 0;
-  for (const auto& result : classifier_results) {
-    results.first.emplace_back(images[result].image_contents);
+  for (const auto& image_id : classifier_results) {
+    results.first.emplace_back(images[image_id]);
     if (++result_counter >= kMaxNumberResults) {
       break;
     }
@@ -267,8 +271,9 @@ void VisualSearchClassifierAgent::OnClassificationDone(
   is_classifying_ = false;
   is_retrying_ = false;
   std::vector<mojom::VisualSearchSuggestionPtr> final_results;
-  for (const auto& result : results.first) {
-    final_results.emplace_back(mojom::VisualSearchSuggestion::New(result));
+  for (auto& result : results.first) {
+    final_results.emplace_back(mojom::VisualSearchSuggestion::New(
+        result.image_contents, result.alt_text));
   }
 
   mojom::ClassificationStatsPtr stats;

@@ -81,26 +81,28 @@ void VisualSearchClassifierHost::HandleClassification(
     mojom::ClassificationStatsPtr classification_stats) {
   base::UmaHistogramCounts100("Companion.VisualQuery.ClassificationResultsSize",
                               results.size());
-  std::vector<std::string> data_uris;
-  data_uris.reserve(results.size());
+  VisualSuggestionsResults converted_results;
+  converted_results.reserve(results.size());
 
   // converts list of SkBitmaps to data uris used as img.src for browser.
   for (const auto& result : results) {
     auto data_uri = Base64EncodeBitmap(result->image);
     if (data_uri) {
-      data_uris.emplace_back(data_uri.value());
+      VisualSuggestionsResult converted = {data_uri.value(), result->alt_text};
+      converted_results.emplace_back(std::move(converted));
     }
   }
 
-  // We store the result part of the pair.
-  current_result_->second = data_uris;
+  // We cache a copy of the result for the current URL to avoid reprocessing.
+  current_result_->second = converted_results;
   waiting_for_result_ = false;
 
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
                           !result_callback_.is_null());
   if (!result_callback_.is_null()) {
     std::move(result_callback_)
-        .Run(std::move(data_uris), GenerateMetrics(classification_stats));
+        .Run(std::move(converted_results),
+             GenerateMetrics(classification_stats));
   }
   // Log latency from the time the companion page handler called
   // StartClassification to now, after the classification results have been
@@ -207,12 +209,12 @@ void VisualSearchClassifierHost::CancelClassification(const GURL& visible_url) {
   RecordStatusChange(InitStatus::kQueryCancelled);
 }
 
-absl::optional<VisualSearchResultPair>
+absl::optional<VisualSuggestionsResults>
 VisualSearchClassifierHost::GetVisualResult(const GURL& url) {
   // We only send back results if we have received result from the renderer.
   if (!waiting_for_result_ && current_result_ &&
       url.GetContent() == current_result_->first.GetContent()) {
-    return current_result_;
+    return absl::make_optional(current_result_->second);
   }
   return absl::nullopt;
 }

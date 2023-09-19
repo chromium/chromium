@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -39,6 +40,14 @@ struct SingleImageGeometryFeatures {
   // Used for filtering of overlapping images using the z index.
   absl::optional<int> z_index;
   ~SingleImageGeometryFeatures() = default;
+};
+
+// Stores image features, bytes, and alt-text.
+struct SingleImageFeaturesAndBytes {
+  SingleImageGeometryFeatures features;
+  SkBitmap image_contents;
+  std::string alt_text;
+  ~SingleImageFeaturesAndBytes() = default;
 };
 
 // This class is used to determine which images are eligible to be surfaced in
