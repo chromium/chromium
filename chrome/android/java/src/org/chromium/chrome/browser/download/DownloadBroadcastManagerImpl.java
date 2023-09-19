@@ -32,7 +32,6 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -312,11 +311,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * @return delegate for interactions with the entry
      */
     static DownloadServiceDelegate getServiceDelegate(ContentId id) {
-        if (LegacyHelpers.isLegacyDownload(id)
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return DownloadManagerService.getDownloadManagerService();
-        }
         return OfflineContentAggregatorNotificationBridgeUiFactory.instance();
     }
 
