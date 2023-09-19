@@ -23,10 +23,10 @@ uintptr_t GetStackEnd();
 // Record a stack trace with up to |count| frames into |trace|. Returns the
 // number of frames read.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-size_t CollectStackTrace(void** trace, size_t count);
+size_t CollectStackTrace(const void** trace, size_t count);
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void PrintStackTrace(void** trace, size_t count);
+void PrintStackTrace(const void** trace, size_t count);
 
 #if BUILDFLAG(IS_POSIX)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)

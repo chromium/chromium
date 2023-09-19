@@ -116,7 +116,7 @@ LogMessage::~LogMessage() {
   // attached.
   if (severity_ == LOGGING_FATAL) {
     constexpr size_t kMaxTracesOfLoggingFatal = 32u;
-    void* traces[kMaxTracesOfLoggingFatal];
+    const void* traces[kMaxTracesOfLoggingFatal];
     size_t num_traces =
         base::debug::CollectStackTrace(traces, kMaxTracesOfLoggingFatal);
     base::debug::PrintStackTrace(traces, num_traces);

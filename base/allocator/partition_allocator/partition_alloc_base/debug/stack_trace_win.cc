@@ -16,7 +16,7 @@ namespace partition_alloc::internal::base::debug {
 
 namespace {
 
-void PrintStackTraceInternal(void** trace, size_t count) {
+void PrintStackTraceInternal(const void** trace, size_t count) {
   HANDLE process_handle = OpenProcess(
       PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcId());
   if (!process_handle) {
@@ -92,12 +92,12 @@ void PrintStackTraceInternal(void** trace, size_t count) {
 
 }  // namespace
 
-PA_NOINLINE size_t CollectStackTrace(void** trace, size_t count) {
+PA_NOINLINE size_t CollectStackTrace(const void** trace, size_t count) {
   // When walking our own stack, use CaptureStackBackTrace().
-  return CaptureStackBackTrace(0, count, trace, NULL);
+  return CaptureStackBackTrace(0, count, const_cast<void**>(trace), NULL);
 }
 
-void PrintStackTrace(void** trace, size_t count) {
+void PrintStackTrace(const void** trace, size_t count) {
   PrintStackTraceInternal(trace, count);
 }
 

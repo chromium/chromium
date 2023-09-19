@@ -9,7 +9,7 @@
 
 namespace partition_alloc::internal::base::debug {
 
-size_t CollectStackTrace(void** trace, size_t count) {
+size_t CollectStackTrace(const void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -17,8 +17,7 @@ size_t CollectStackTrace(void** trace, size_t count) {
   // Regarding Linux and Android, backtrace API internally invokes malloc().
   // So the API is not available inside memory allocation. Instead try tracing
   // using frame pointers.
-  return base::debug::TraceStackFramePointers(const_cast<const void**>(trace),
-                                              count, 0);
+  return base::debug::TraceStackFramePointers(trace, count, 0);
 #else
   // Not able to obtain stack traces.
   return 0;

@@ -19,7 +19,7 @@
 
 namespace partition_alloc::internal::base::debug {
 
-size_t CollectStackTrace(void** trace, size_t count) {
+size_t CollectStackTrace(const void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -28,7 +28,7 @@ size_t CollectStackTrace(void** trace, size_t count) {
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
   return base::saturated_cast<size_t>(
-      backtrace(trace, base::saturated_cast<int>(count)));
+      backtrace(const_cast<void**>(trace), base::saturated_cast<int>(count)));
 #else
   // Not able to obtain stack traces.
   return 0;

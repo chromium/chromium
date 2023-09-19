@@ -274,7 +274,7 @@ void UpdateBaseAddress(unsigned permissions,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void PrintStackTraceInternal(void* const* trace, size_t count) {
+void PrintStackTraceInternal(const void** trace, size_t count) {
   int fd = PA_HANDLE_EINTR(open("/proc/self/maps", O_RDONLY));
   if (fd == -1) {
     PA_RAW_LOG(ERROR, "Failed to open /proc/self/maps\n");
@@ -362,7 +362,7 @@ void PrintStackTraceInternal(void* const* trace, size_t count) {
 #if BUILDFLAG(IS_APPLE)
 // Since /proc/self/maps is not available, use dladdr() to obtain module
 // names and offsets inside the modules from the given addresses.
-void PrintStackTraceInternal(void* const* trace, size_t size) {
+void PrintStackTraceInternal(const void* const* trace, size_t size) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -392,7 +392,7 @@ void PrintStackTraceInternal(void* const* trace, size_t size) {
 
 }  // namespace
 
-void PrintStackTrace(void** trace, size_t count) {
+void PrintStackTrace(const void** trace, size_t count) {
   PrintStackTraceInternal(trace, count);
 }
 
