@@ -60,6 +60,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <sys/prctl.h>
+
 #include "base/debug/proc_maps_linux.h"
 #endif
 
@@ -762,13 +764,51 @@ class SandboxSymbolizeHelper {
     return -1;
   }
 
+  // This class is copied from
+  // third_party/crashpad/crashpad/util/linux/scoped_pr_set_dumpable.h.
+  // It aims at ensuring the process is dumpable before opening /proc/self/mem.
+  // If the process is already dumpable, this class doesn't do anything.
+  class ScopedPrSetDumpable {
+   public:
+    // Uses `PR_SET_DUMPABLE` to make the current process dumpable.
+    //
+    // Restores the dumpable flag to its original value on destruction. If the
+    // original value couldn't be determined, the destructor attempts to
+    // restore the flag to 0 (non-dumpable).
+    explicit ScopedPrSetDumpable() {
+      int result = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);
+      was_dumpable_ = result > 0;
+
+      if (!was_dumpable_) {
+        std::ignore = prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+      }
+    }
+
+    ScopedPrSetDumpable(const ScopedPrSetDumpable&) = delete;
+    ScopedPrSetDumpable& operator=(const ScopedPrSetDumpable&) = delete;
+
+    ~ScopedPrSetDumpable() {
+      if (!was_dumpable_) {
+        std::ignore = prctl(PR_SET_DUMPABLE, 0, 0, 0, 0);
+      }
+    }
+
+   private:
+    bool was_dumpable_;
+  };
+
   // Set the base address for each memory region by reading ELF headers in
   // process memory.
   void SetBaseAddressesForMemoryRegions() {
-    base::ScopedFD mem_fd(
-        HANDLE_EINTR(open("/proc/self/mem", O_RDONLY | O_CLOEXEC)));
-    if (!mem_fd.is_valid())
-      return;
+    base::ScopedFD mem_fd;
+    {
+      ScopedPrSetDumpable s;
+      mem_fd = base::ScopedFD(
+          HANDLE_EINTR(open("/proc/self/mem", O_RDONLY | O_CLOEXEC)));
+      if (!mem_fd.is_valid()) {
+        return;
+      }
+    }
 
     auto safe_memcpy = [&mem_fd](void* dst, uintptr_t src, size_t size) {
       return HANDLE_EINTR(pread(mem_fd.get(), dst, size,
