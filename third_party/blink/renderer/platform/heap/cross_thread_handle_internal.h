@@ -71,7 +71,7 @@ class BasicCrossThreadHandle {
   }
 
   // Clears the stored object.
-  void ClearHandle() { ref_.Clear(); }
+  void Clear() { ref_.Clear(); }
 
  private:
   template <typename U, typename V>
@@ -111,7 +111,7 @@ class BasicUnwrappingCrossThreadHandle final
   using Base::GetOnCreationThread;
 
   // Re-expose the clear method for the underlying object.
-  using Base::ClearHandle;
+  using Base::Clear;
 
   // Returns whether a value is set.  May only be accessed on the thread the
   // original CrossThreadHandle object was created.
