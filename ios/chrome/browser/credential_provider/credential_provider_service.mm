@@ -247,12 +247,14 @@ void CredentialProviderService::AddCredentials(
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
 
   for (const auto& form : forms) {
-    NSString* favicon_key = GetFaviconFileKey(form->url);
-    // Fetch the favicon and save it to the storage.
-    FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
-                             should_skip_max_verification,
-                             fallback_to_google_server);
-
+    NSString* favicon_key;
+    if (form->url.is_valid()) {
+      favicon_key = GetFaviconFileKey(form->url);
+      // Fetch the favicon and save it to the storage.
+      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
+                               should_skip_max_verification,
+                               fallback_to_google_server);
+    }
     ArchivableCredential* credential =
         [[ArchivableCredential alloc] initWithPasswordForm:*form
                                                    favicon:favicon_key];
