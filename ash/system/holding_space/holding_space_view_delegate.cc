@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/mime_util.h"
@@ -621,7 +622,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   struct MenuItemModel {
     const HoldingSpaceCommandId command_id;
     const int label_id;
-    const gfx::VectorIcon& icon;
+    const raw_ref<const gfx::VectorIcon> icon;
   };
 
   using MenuSectionModel = std::vector<MenuItemModel>;
@@ -634,7 +635,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = in_progress_command.command_id,
                         .label_id = in_progress_command.label_id,
-                        .icon = *in_progress_command.icon});
+                        .icon = raw_ref(*in_progress_command.icon)});
     }
   }
 
@@ -648,7 +649,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     menu_sections.back().emplace_back(MenuItemModel{
         .command_id = HoldingSpaceCommandId::kShowInFolder,
         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER,
-        .icon = kFolderIcon});
+        .icon = raw_ref(kFolderIcon)});
 
     std::string mime_type;
     const bool is_image =
@@ -663,7 +664,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
           .command_id = HoldingSpaceCommandId::kCopyImageToClipboard,
           .label_id =
               IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD,
-          .icon = kCopyIcon});
+          .icon = raw_ref(kCopyIcon)});
     }
   }
 
@@ -672,12 +673,12 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kPinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN,
-                        .icon = views::kPinIcon});
+                        .icon = raw_ref(views::kPinIcon)});
     } else {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kUnpinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN,
-                        .icon = views::kUnpinIcon});
+                        .icon = raw_ref(views::kUnpinIcon)});
     }
   }
 
@@ -685,7 +686,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     menu_sections.back().emplace_back(
         MenuItemModel{.command_id = HoldingSpaceCommandId::kRemoveItem,
                       .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE,
-                      .icon = kCancelCircleOutlineIcon});
+                      .icon = raw_ref(kCancelCircleOutlineIcon)});
   }
 
   // Add modeled `menu_sections` to the `context_menu_model_`.
@@ -704,7 +705,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       context_menu_model_->AddItemWithIcon(
           static_cast<int>(menu_item.command_id),
           l10n_util::GetStringUTF16(menu_item.label_id),
-          ui::ImageModel::FromVectorIcon(menu_item.icon,
+          ui::ImageModel::FromVectorIcon(*menu_item.icon,
                                          ui::kColorAshSystemUIMenuIcon,
                                          kHoldingSpaceIconSize));
     }

@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -1011,7 +1012,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
 
   struct TransformTestcase {
     Transform transform;
-    const SkRect& expected_rect;
+    const raw_ref<const SkRect> expected_rect;
 
     constexpr TransformTestcase(Transform transform_in,
                                 const SkRect& expected_rect_in)
@@ -1031,7 +1032,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(tc.expected_rect), false);
+        gfx::SkRectToRectF(*tc.expected_rect), false);
   }
 
   surface->SetViewport(gfx::SizeF(128, 64));
@@ -1039,7 +1040,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(tc.expected_rect), true);
+        gfx::SkRectToRectF(*tc.expected_rect), true);
   }
 }
 
