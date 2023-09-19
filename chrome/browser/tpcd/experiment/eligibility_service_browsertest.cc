@@ -102,12 +102,12 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
       PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   auto privacy_sandbox_delegate = std::make_unique<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-  EXPECT_CALL(*privacy_sandbox_delegate, IsPrivacySandboxRestricted)
+  EXPECT_CALL(*privacy_sandbox_delegate, IsCookieDeprecationExperimentEligible)
       .Times(4)
-      .WillOnce(testing::Return(true))
-      .WillOnce(testing::Return(true))
       .WillOnce(testing::Return(false))
-      .WillOnce(testing::Return(false));
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(true));
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
 

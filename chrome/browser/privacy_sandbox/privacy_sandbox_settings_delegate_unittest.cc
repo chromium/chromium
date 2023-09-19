@@ -3,17 +3,37 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_delegate.h"
+
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/webapps/webapp_registry.h"
+#endif
 
 namespace {
 
@@ -233,3 +253,189 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
   EXPECT_FALSE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
 }
+
+namespace {
+
+const base::Time kCurrentTime = base::Time::Now();
+const base::Time kValidInstallDate = kCurrentTime - base::Days(31);
+
+#if BUILDFLAG(IS_ANDROID)
+class MockWebappRegistry : public WebappRegistry {
+ public:
+  // WebappRegistry:
+  MOCK_METHOD(std::vector<std::string>,
+              GetOriginsWithInstalledApp,
+              (),
+              (override));
+};
+#endif
+
+struct CookieDeprecationExperimentEligibilityTestCase {
+  absl::optional<bool> is_subject_to_enterprise_policies;
+  content_settings::CookieControlsMode cookie_controls_mode_pref =
+      content_settings::CookieControlsMode::kOff;
+  ContentSetting cookie_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
+  bool privacy_sandbox_eea_notice_acknowledged_pref = false;
+  bool privacy_sandbox_row_notice_acknowledged_pref = false;
+  absl::optional<bool> cookie_deprecation_eligible_pref;
+  absl::optional<base::Time> install_date = kValidInstallDate;
+#if BUILDFLAG(IS_ANDROID)
+  std::vector<std::string> origins_with_installed_app;
+#endif
+  bool expected_eligible;
+  bool expected_currently_eligible;
+};
+
+const CookieDeprecationExperimentEligibilityTestCase
+    kCookieDeprecationExperimentEligibilityTestCases[] = {
+        {
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+        },
+        {
+            .privacy_sandbox_row_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+        },
+        {
+            .cookie_controls_mode_pref =
+                content_settings::CookieControlsMode::kBlockThirdParty,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .cookie_content_setting = ContentSetting::CONTENT_SETTING_BLOCK,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .install_date = absl::nullopt,
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .install_date = kCurrentTime - base::Days(29),
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .cookie_deprecation_eligible_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = false,
+        },
+        {
+            .is_subject_to_enterprise_policies = true,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+        {
+            .is_subject_to_enterprise_policies = false,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+        },
+#if BUILDFLAG(IS_ANDROID)
+        {
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .origins_with_installed_app =
+                std::vector<std::string>({"https://a.test"}),
+            .expected_eligible = false,
+            .expected_currently_eligible = false,
+        },
+#endif
+};
+
+class CookieDeprecationExperimentEligibilityTest
+    : public PrivacySandboxSettingsDelegateTest,
+      public ::testing::WithParamInterface<
+          CookieDeprecationExperimentEligibilityTestCase> {
+ public:
+  CookieDeprecationExperimentEligibilityTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_ANDROID)
+    auto webapp_registry = std::make_unique<MockWebappRegistry>();
+    webapp_registry_ = webapp_registry.get();
+    delegate()->OverrideWebappRegistryForTesting(std::move(webapp_registry));
+#endif
+  }
+
+ protected:
+  content_settings::CookieSettings* cookie_settings() {
+    return CookieSettingsFactory::GetForProfile(profile()).get();
+  }
+
+  void SetSubjectToEnterprisePoliciesCapability(const std::string& account,
+                                                bool enabled) {
+    auto account_info = identity_test_env()
+                            ->identity_manager()
+                            ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_is_subject_to_enterprise_policies(enabled);
+    signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                        account_info);
+  }
+
+  ScopedTestingLocalState local_state_;
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<MockWebappRegistry> webapp_registry_;
+#endif
+};
+
+}  // namespace
+
+TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
+  const CookieDeprecationExperimentEligibilityTestCase& test_case = GetParam();
+
+  if (test_case.is_subject_to_enterprise_policies.has_value()) {
+    // Sign the user in.
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
+    SetSubjectToEnterprisePoliciesCapability(
+        kTestEmail, *test_case.is_subject_to_enterprise_policies);
+  }
+
+  prefs()->SetInteger(prefs::kCookieControlsMode,
+                      static_cast<int>(test_case.cookie_controls_mode_pref));
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
+                      test_case.privacy_sandbox_row_notice_acknowledged_pref);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
+                      test_case.privacy_sandbox_eea_notice_acknowledged_pref);
+
+  cookie_settings()->SetDefaultCookieSetting(test_case.cookie_content_setting);
+
+  if (test_case.install_date.has_value()) {
+    local_state_.Get()->SetInt64(metrics::prefs::kInstallDate,
+                                 test_case.install_date->ToTimeT());
+  }
+
+  if (test_case.cookie_deprecation_eligible_pref.has_value()) {
+    prefs()->SetBoolean(
+        prefs::kPrivacySandboxCookieDeprecationExperimentEligible,
+        *test_case.cookie_deprecation_eligible_pref);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  ON_CALL(*webapp_registry_, GetOriginsWithInstalledApp)
+      .WillByDefault(testing::Return(test_case.origins_with_installed_app));
+#endif
+
+  EXPECT_EQ(delegate()->IsCookieDeprecationExperimentCurrentlyEligible(),
+            test_case.expected_currently_eligible);
+  EXPECT_EQ(delegate()->IsCookieDeprecationExperimentEligible(),
+            test_case.expected_eligible);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CookieDeprecationExperimentEligibility,
+    CookieDeprecationExperimentEligibilityTest,
+    ::testing::ValuesIn(kCookieDeprecationExperimentEligibilityTestCases));

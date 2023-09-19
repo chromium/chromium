@@ -858,9 +858,13 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   return status;
 }
 
+bool PrivacySandboxSettingsImpl::
+    IsCookieDeprecationExperimentCurrentlyEligible() const {
+  return delegate_->IsCookieDeprecationExperimentCurrentlyEligible();
+}
+
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {
-  return !IsPrivacySandboxRestricted() &&
-         !cookie_settings_->ShouldBlockThirdPartyCookies();
+  return delegate_->IsCookieDeprecationExperimentEligible();
 }
 
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
@@ -870,13 +874,8 @@ bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsAllowed(
-        GetSiteAccessAllowedStatus(top_frame_origin, context_origin.GetURL()));
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           context_origin.GetURL());
+  return IsAllowed(
+      GetSiteAccessAllowedStatus(top_frame_origin, context_origin.GetURL()));
 }
 
 void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {

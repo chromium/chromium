@@ -84,6 +84,16 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the profile is subject to being given notice of restrictions to
     // the standard set of Privacy Sandbox APIs.
     virtual bool IsSubjectToM1NoticeRestricted() const = 0;
+
+    // Whether the profile is eligible for 3PCD experiment. The eligibility
+    // applies for both mode A and mode B experiments.
+    virtual bool IsCookieDeprecationExperimentEligible() const = 0;
+
+    // Whether the profile is currently eligible for 3PCD experiment. The
+    // eligibility applies for both mode A and mode B experiments. Unlike
+    // `IsCookieDeprecationExperimentEligible` this method returns the real time
+    // eligibility.
+    virtual bool IsCookieDeprecationExperimentCurrentlyEligible() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -222,9 +232,13 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
 
-  // Determines whether cookie deprecation label is allowable. This consults the
-  // delegate to check whether the sandbox is restricted, as well as the cookie
-  // settings to check whether third party cookies is blocked. If true, the more
+  // Returns whether the profile is currently eligible for 3PCD experiments.
+  // This consults the delegate for the real time eligibility of the profile.
+  // The eligibility applies for both mode A and mode B experiments.
+  virtual bool IsCookieDeprecationExperimentCurrentlyEligible() const = 0;
+
+  // Determines whether cookie deprecation label is allowable. This consults
+  // whether the profile is eligible for 3PCD experiments. If true, the more
   // specific function, IsCookieDeprecationLabelAllowed(), should be consulted
   // for the relevant context.
   virtual bool IsCookieDeprecationLabelAllowed() const = 0;

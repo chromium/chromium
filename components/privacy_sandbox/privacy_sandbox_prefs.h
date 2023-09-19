@@ -181,6 +181,11 @@ inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
 inline constexpr char kPrivacySandboxAntiAbuseInitialized[] =
     "privacy_sandbox.anti_abuse_initialized";
 
+// Boolean that indicates whether the profile is eligible for cookie deprecation
+// experiments.
+inline constexpr char kPrivacySandboxCookieDeprecationExperimentEligible[] =
+    "privacy_sandbox.cookie_deprecation_experiment_eligible";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

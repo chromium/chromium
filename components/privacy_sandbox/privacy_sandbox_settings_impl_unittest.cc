@@ -206,6 +206,11 @@ class PrivacySandboxSettingsTest : public testing::Test {
     mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/false);
     mock_delegate()->SetUpHasAppropriateTopicsConsentResponse(
         /*has_appropriate_consent=*/true);
+    mock_delegate()->SetUpIsCookieDeprecationExperimentEligibleResponse(
+        /*eligible=*/true);
+    mock_delegate()
+        ->SetUpIsCookieDeprecationExperimentCurrentlyEligibleResponse(
+            /*eligible=*/true);
   }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
@@ -694,7 +699,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       privacy_sandbox_settings()->IsCookieDeprecationLabelAllowedForContext(
           url::Origin::Create(GURL("https://test.com")),
           url::Origin::Create(GURL("https://embedded.com"))));
@@ -787,7 +792,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       privacy_sandbox_settings()->IsCookieDeprecationLabelAllowedForContext(
           url::Origin::Create(GURL("https://test.com")),
           url::Origin::Create(GURL("https://embedded.com"))));
@@ -1173,44 +1178,33 @@ TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
 }
 
+TEST_F(PrivacySandboxSettingsTest,
+       IsCookieDeprecationExperimentCurrentlyEligible) {
+  EXPECT_CALL(*mock_delegate(),
+              IsCookieDeprecationExperimentCurrentlyEligible())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(privacy_sandbox_settings()
+                   ->IsCookieDeprecationExperimentCurrentlyEligible());
+
+  EXPECT_CALL(*mock_delegate(),
+              IsCookieDeprecationExperimentCurrentlyEligible())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(privacy_sandbox_settings()
+                  ->IsCookieDeprecationExperimentCurrentlyEligible());
+}
+
 TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/false,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
-      .Times(1)
-      .WillOnce(testing::Return(true));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
-
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
+  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationExperimentEligible())
       .Times(1)
       .WillOnce(testing::Return(false));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
+
+  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationExperimentEligible())
+      .Times(1)
+      .WillOnce(testing::Return(true));
   EXPECT_TRUE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
-
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/true,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
-      .Times(1)
-      .WillOnce(testing::Return(true));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
-
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
-      .Times(1)
-      .WillOnce(testing::Return(false));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
 }
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
@@ -1831,8 +1825,7 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
-               kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext},
+               kIsPrivateAggregationDebugModeAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,

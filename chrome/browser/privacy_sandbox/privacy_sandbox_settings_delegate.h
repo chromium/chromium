@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_DELEGATE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_DELEGATE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 class Profile;
+
+#if BUILDFLAG(IS_ANDROID)
+class WebappRegistry;
+#endif
 
 class PrivacySandboxSettingsDelegate
     : public privacy_sandbox::PrivacySandboxSettings::Delegate {
@@ -22,10 +30,22 @@ class PrivacySandboxSettingsDelegate
   bool IsIncognitoProfile() const override;
   bool HasAppropriateTopicsConsent() const override;
   bool IsSubjectToM1NoticeRestricted() const override;
+  bool IsCookieDeprecationExperimentEligible() const override;
+  bool IsCookieDeprecationExperimentCurrentlyEligible() const override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void OverrideWebappRegistryForTesting(
+      std::unique_ptr<WebappRegistry> webapp_registry);
+#endif
 
  private:
   bool PrivacySandboxRestrictedNoticeRequired() const;
+  bool IsSubjectToEnterprisePolicies() const;
   raw_ptr<Profile> profile_;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<WebappRegistry> webapp_registry_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_DELEGATE_H_

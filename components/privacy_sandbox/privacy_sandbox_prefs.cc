@@ -72,6 +72,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
   registry->RegisterBooleanPref(prefs::kPrivacySandboxAntiAbuseInitialized,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxCookieDeprecationExperimentEligible, false);
 
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);
