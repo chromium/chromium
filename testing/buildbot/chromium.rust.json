@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -31,6 +32,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -48,6 +50,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -65,6 +68,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -82,6 +86,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -143,6 +148,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -163,6 +169,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -180,6 +187,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -197,6 +205,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -214,6 +223,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -275,6 +285,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -295,6 +306,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -312,6 +324,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -329,6 +342,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -346,6 +360,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -409,6 +424,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -426,6 +442,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -440,6 +457,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -454,6 +472,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -468,6 +487,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -540,6 +560,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -557,6 +578,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -571,6 +593,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -585,6 +608,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -599,6 +623,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -671,6 +696,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -689,6 +715,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -704,6 +731,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -719,6 +747,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -734,6 +763,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -810,6 +840,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -828,6 +859,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -843,6 +875,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -858,6 +891,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -873,6 +907,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -949,6 +984,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -967,6 +1003,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -982,6 +1019,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -997,6 +1035,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1012,6 +1051,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {

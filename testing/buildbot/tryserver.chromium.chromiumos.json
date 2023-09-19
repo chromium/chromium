@@ -9,9 +9,9 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R116-15506.0.0",
+        "cros_img": "volteer-public/R115-15474.21.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_BETA",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -24,7 +24,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "VOLTEER_PUBLIC_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_BETA"
       },
       {
         "bucket": "chromiumos-image-archive",
@@ -49,9 +49,9 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R115-15474.21.0",
+        "cros_img": "volteer-public/R116-15506.0.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_BETA",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -64,7 +64,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "VOLTEER_PUBLIC_BETA"
+        "variant_id": "VOLTEER_PUBLIC_LKGM"
       },
       {
         "bucket": "chromiumos-image-archive",

@@ -91,6 +91,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -115,6 +116,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -139,6 +141,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -163,6 +166,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -187,6 +191,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -211,6 +216,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -236,6 +242,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -260,6 +267,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -284,6 +292,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -308,6 +317,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -333,6 +343,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -357,6 +368,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -381,6 +393,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -405,6 +418,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -433,6 +447,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -457,6 +472,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -481,6 +497,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -505,6 +522,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -529,6 +547,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -553,6 +572,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -578,6 +598,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -602,6 +623,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -626,6 +648,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -650,6 +673,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -675,6 +699,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -699,6 +724,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -723,6 +749,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -747,6 +774,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -775,6 +803,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -799,6 +828,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -823,6 +853,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -847,6 +878,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -871,6 +903,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -895,6 +928,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -920,6 +954,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -944,6 +979,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -968,6 +1004,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -992,6 +1029,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1017,6 +1055,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1041,6 +1080,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1065,6 +1105,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1089,6 +1130,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1194,6 +1236,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1217,6 +1260,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1240,6 +1284,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1263,6 +1308,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1286,6 +1332,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1309,6 +1356,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1333,6 +1381,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1356,6 +1405,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1379,6 +1429,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1402,6 +1453,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1426,6 +1478,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1449,6 +1502,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1472,6 +1526,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1495,6 +1550,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1522,6 +1578,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1545,6 +1602,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1568,6 +1626,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1591,6 +1650,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1614,6 +1674,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1637,6 +1698,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1661,6 +1723,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1684,6 +1747,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1707,6 +1771,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1730,6 +1795,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1754,6 +1820,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1777,6 +1844,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1800,6 +1868,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1823,6 +1892,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1850,6 +1920,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1873,6 +1944,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1896,6 +1968,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1919,6 +1992,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1942,6 +2016,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1965,6 +2040,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -1989,6 +2065,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2012,6 +2089,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2035,6 +2113,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2058,6 +2137,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2082,6 +2162,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2105,6 +2186,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2128,6 +2210,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2151,6 +2234,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2178,6 +2262,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_egl_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2201,6 +2286,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2224,6 +2310,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2247,6 +2334,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2270,6 +2358,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2293,6 +2382,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2317,6 +2407,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2340,6 +2431,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2363,6 +2455,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2386,6 +2479,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2410,6 +2504,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2433,6 +2528,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2456,6 +2552,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
@@ -2479,6 +2576,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "angle_end2end_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {

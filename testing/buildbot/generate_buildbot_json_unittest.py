@@ -1726,14 +1726,6 @@ GN_ISOLATE_MAP_USING_IMPLICIT_NAME="""\
 """
 
 class UnitTest(TestCase):
-  def test_base_generator(self):
-    # Only needed for complete code coverage.
-    self.assertRaises(NotImplementedError,
-                      generate_buildbot_json.BaseGenerator(None).generate,
-                      None, None, None, None)
-    self.assertRaises(NotImplementedError,
-                      generate_buildbot_json.BaseGenerator(None).sort,
-                      None)
 
   def test_dimension_sets_causes_error(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
@@ -3125,190 +3117,190 @@ TEST_SUITE_WITH_PARAMS = """\
 }
 """
 TEST_QUERY_BOTS_OUTPUT = {
-  "Fake Android M Tester": {
-    "gtest_tests": [
-      {
-        "test": "foo_test",
-      }
-    ]
-  },
-  "Fake Android L Tester": {
-    "gtest_tests": [
-      {
-        "test": "foo_test",
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "LMY41U",
-            "device_os_type": "user",
-            "device_type": "hammerhead",
-            'os': 'Android'
-          },
-          "can_use_on_swarming_builders": True
-        }
-      }
-    ]
-  },
-  "Fake Android K Tester": {
-    "additional_compile_targets": ["bar_test"],
-    "gtest_tests": [
-      {
-        "test": "foo_test",
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "KTU84P",
-            "device_os_type": "userdebug",
-            "device_type": "hammerhead",
-            "os": "Android",
-          },
-          "can_use_on_swarming_builders": True,
-          "output_links": [
-            {
-              "link": ["https://luci-logdog.appspot.com/v/?s",
-              "=android%2Fswarming%2Flogcats%2F",
-              "${TASK_ID}%2F%2B%2Funified_logcats"],
-              "name": "shard #${SHARD_INDEX} logcats"
+    "Fake Android M Tester": {
+        "gtest_tests": [{
+            "name": "foo_test",
+            "test": "foo_test",
+        }]
+    },
+    "Fake Android L Tester": {
+        "gtest_tests": [{
+            "name":
+            "foo_test",
+            "test":
+            "foo_test",
+            "args": [
+                "--gs-results-bucket=chromium-result-details",
+                "--recover-devices"
+            ],
+            "merge": {
+                "script": "//testing/merge_scripts/standard_gtest_merge.py"
+            },
+            "swarming": {
+                "dimensions": {
+                    "device_os": "LMY41U",
+                    "device_os_type": "user",
+                    "device_type": "hammerhead",
+                    'os': 'Android'
+                },
+                "can_use_on_swarming_builders": True
             }
-          ]
-        }
-      }
-    ]
-  },
-  "Android Builder": {
-    "additional_compile_targets": ["bar_test"]
-  }
+        }]
+    },
+    "Fake Android K Tester": {
+        "additional_compile_targets": ["bar_test"],
+        "gtest_tests": [{
+            "name":
+            "foo_test",
+            "test":
+            "foo_test",
+            "args": [
+                "--gs-results-bucket=chromium-result-details",
+                "--recover-devices"
+            ],
+            "merge": {
+                "script": "//testing/merge_scripts/standard_gtest_merge.py"
+            },
+            "swarming": {
+                "dimensions": {
+                    "device_os": "KTU84P",
+                    "device_os_type": "userdebug",
+                    "device_type": "hammerhead",
+                    "os": "Android",
+                },
+                "can_use_on_swarming_builders":
+                True,
+                "output_links": [{
+                    "link": [
+                        "https://luci-logdog.appspot.com/v/?s",
+                        "=android%2Fswarming%2Flogcats%2F",
+                        "${TASK_ID}%2F%2B%2Funified_logcats"
+                    ],
+                    "name":
+                    "shard #${SHARD_INDEX} logcats"
+                }]
+            }
+        }]
+    },
+    "Android Builder": {
+        "additional_compile_targets": ["bar_test"]
+    }
 }
 TEST_QUERY_BOTS_TESTS_OUTPUT = {
-  "Fake Android M Tester": [
-    {
-      "test": "foo_test",
-    }
-  ],
-  "Fake Android L Tester": [
-    {
-      "test": "foo_test",
-      "args": [
-        "--gs-results-bucket=chromium-result-details",
-        "--recover-devices"
-      ],
-      "merge": {
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
-      },
-      "swarming": {
-        "dimensions": {
-          "device_os": "LMY41U",
-          "device_os_type": "user",
-          "device_type": "hammerhead",
-          "os": "Android"
+    "Fake Android M Tester": [{
+        "name": "foo_test",
+        "test": "foo_test",
+    }],
+    "Fake Android L Tester": [{
+        "name":
+        "foo_test",
+        "test":
+        "foo_test",
+        "args":
+        ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
+        "merge": {
+            "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "can_use_on_swarming_builders": True
-      }
-    }
-  ],
-  "Android Builder": [],
-  "Fake Android K Tester": [
-    {
-      "test": "foo_test",
-      "args": [
-        "--gs-results-bucket=chromium-result-details",
-        "--recover-devices"
-      ],
-      "merge": {
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
-      },
-      "swarming": {
-        "dimensions": {
-          "device_os": "KTU84P",
-          "device_os_type": "userdebug",
-          "device_type": "hammerhead",
-          "os": "Android"
+        "swarming": {
+            "dimensions": {
+                "device_os": "LMY41U",
+                "device_os_type": "user",
+                "device_type": "hammerhead",
+                "os": "Android"
+            },
+            "can_use_on_swarming_builders": True
+        }
+    }],
+    "Android Builder": [],
+    "Fake Android K Tester": [{
+        "name":
+        "foo_test",
+        "test":
+        "foo_test",
+        "args":
+        ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
+        "merge": {
+            "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "can_use_on_swarming_builders": True,
-        "output_links": [
-          {
-            "link": [
-              "https://luci-logdog.appspot.com/v/?s",
-              "=android%2Fswarming%2Flogcats%2F",
-              "${TASK_ID}%2F%2B%2Funified_logcats"
-            ],
-            "name": "shard #${SHARD_INDEX} logcats"
-          }
-        ]
-      }
-    }
-  ]
+        "swarming": {
+            "dimensions": {
+                "device_os": "KTU84P",
+                "device_os_type": "userdebug",
+                "device_type": "hammerhead",
+                "os": "Android"
+            },
+            "can_use_on_swarming_builders":
+            True,
+            "output_links": [{
+                "link": [
+                    "https://luci-logdog.appspot.com/v/?s",
+                    "=android%2Fswarming%2Flogcats%2F",
+                    "${TASK_ID}%2F%2B%2Funified_logcats"
+                ],
+                "name":
+                "shard #${SHARD_INDEX} logcats"
+            }]
+        }
+    }]
 }
 
 TEST_QUERY_BOT_OUTPUT = {
-  "additional_compile_targets": ["bar_test"],
-  "gtest_tests": [
-    {
-      "test": "foo_test",
-      "args": [
-        "--gs-results-bucket=chromium-result-details",
-        "--recover-devices"
-      ],
-      "merge": {
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
-      },
-      "swarming": {
-        "dimensions": {
-          "device_os": "KTU84P",
-          "device_os_type": "userdebug",
-          "device_type": "hammerhead",
-          "os": "Android"
+    "additional_compile_targets": ["bar_test"],
+    "gtest_tests": [{
+        "name":
+        "foo_test",
+        "test":
+        "foo_test",
+        "args":
+        ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
+        "merge": {
+            "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "can_use_on_swarming_builders": True,
-        "output_links": [
-          {
-            "link": ["https://luci-logdog.appspot.com/v/?s",
-            "=android%2Fswarming%2Flogcats%2F",
-            "${TASK_ID}%2F%2B%2Funified_logcats"
-          ],
-          "name": "shard #${SHARD_INDEX} logcats"
-          }
-        ]
-      }
-    }
-  ]
+        "swarming": {
+            "dimensions": {
+                "device_os": "KTU84P",
+                "device_os_type": "userdebug",
+                "device_type": "hammerhead",
+                "os": "Android"
+            },
+            "can_use_on_swarming_builders":
+            True,
+            "output_links": [{
+                "link": [
+                    "https://luci-logdog.appspot.com/v/?s",
+                    "=android%2Fswarming%2Flogcats%2F",
+                    "${TASK_ID}%2F%2B%2Funified_logcats"
+                ],
+                "name":
+                "shard #${SHARD_INDEX} logcats"
+            }]
+        }
+    }]
 }
-TEST_QUERY_BOT_TESTS_OUTPUT = [
-  {
-    "test": "foo_test",
-    "args": [
-      "--gs-results-bucket=chromium-result-details",
-      "--recover-devices"
-    ],
+TEST_QUERY_BOT_TESTS_OUTPUT = [{
+    "name":
+    "foo_test",
+    "test":
+    "foo_test",
+    "args":
+    ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
     "merge": {
-      "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        "script": "//testing/merge_scripts/standard_gtest_merge.py"
     },
     "swarming": {
-      "dimensions": {
-        "device_os": "LMY41U",
-        "device_os_type": "user",
-        "device_type": "hammerhead",
-        "os": "Android"
-      },
-      "can_use_on_swarming_builders": True
+        "dimensions": {
+            "device_os": "LMY41U",
+            "device_os_type": "user",
+            "device_type": "hammerhead",
+            "os": "Android"
+        },
+        "can_use_on_swarming_builders": True
     }
-  }
-]
+}]
 
 TEST_QUERY_TESTS_OUTPUT = {
     "bar_test": {
+        'name': 'bar_test',
         'swarming': {
             'dimensions': {
                 'os': 'Linux'
@@ -3316,6 +3308,7 @@ TEST_QUERY_TESTS_OUTPUT = {
         }
     },
     "foo_test": {
+        'name': 'foo_test',
         'swarming': {
             'dimensions': {
                 'os': 'Linux'
@@ -3334,7 +3327,14 @@ TEST_QUERY_TESTS_PARAMS_OUTPUT = ['bar_test_test']
 
 TEST_QUERY_TESTS_PARAMS_FALSE_OUTPUT = ['bar_test']
 
-TEST_QUERY_TEST_OUTPUT = {'swarming': {'dimensions': {'os': 'Linux'}}}
+TEST_QUERY_TEST_OUTPUT = {
+    'name': 'foo_test',
+    'swarming': {
+        'dimensions': {
+            'os': 'Linux',
+        },
+    },
+}
 
 TEST_QUERY_TEST_BOTS_OUTPUT = [
     "Fake Android K Tester",
