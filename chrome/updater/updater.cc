@@ -129,8 +129,18 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 #endif
 
   InitializeThreadPool("updater");
-  const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
+  const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
+    // For the updater, it is important to join all threads before `UpdaterMain`
+    // exits, otherwise the behavior of the program is undefined. The threads
+    // in the pool can still run after shutdown to handle CONTINUE_ON_SHUTDOWN
+    // tasks, for example. In Chrome, the thread pool is leaked for this reason
+    // and there is no way to join its threads in production code. The updater
+    // has no such requirements (crbug.com/1484776).
+    base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
+    thread_pool->Shutdown();
+    thread_pool->JoinForTesting();  // IN-TEST
+    base::ThreadPoolInstance::Set(nullptr);
+  }));
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
   // and reports the crash.
