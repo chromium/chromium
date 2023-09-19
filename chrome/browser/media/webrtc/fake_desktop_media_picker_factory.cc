@@ -14,7 +14,8 @@
 
 FakeDesktopMediaPicker::FakeDesktopMediaPicker(
     FakeDesktopMediaPickerFactory::TestFlags* expectation)
-    : expectation_(expectation) {
+    : expectation_(expectation),
+      picker_params_(Params::RequestSource::kUnknown) {
   expectation_->picker_created = true;
 }
 FakeDesktopMediaPicker::~FakeDesktopMediaPicker() {

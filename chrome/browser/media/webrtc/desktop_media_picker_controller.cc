@@ -30,7 +30,12 @@
 #include "desktop_media_picker.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 DesktopMediaPickerController::DesktopMediaPickerController(
     DesktopMediaPickerFactory* picker_factory)
@@ -78,6 +83,25 @@ void DesktopMediaPickerController::WebContentsDestroyed() {
   OnPickerDialogResults(std::string(), content::DesktopMediaID());
 }
 
+// static
+bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+    Params::RequestSource request_sourcce) {
+#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+  return true;
+#elif BUILDFLAG(IS_MAC)
+  // Only supported on macOS 13.0+.
+  if (base::mac::MacOSVersion() < 13'00'00) {
+    return false;
+  } else if (request_sourcce == Params::RequestSource::kCast) {
+    return base::FeatureList::IsEnabled(media::kMacLoopbackAudioForCast);
+  } else {
+    return base::FeatureList::IsEnabled(media::kMacLoopbackAudioForScreenShare);
+  }
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+}
+
 void DesktopMediaPickerController::OnInitialMediaListFound() {
   DCHECK(params_.select_only_screen);
   DCHECK(source_lists_.size() == 1);
@@ -85,15 +109,11 @@ void DesktopMediaPickerController::OnInitialMediaListFound() {
   if (source_list->GetSourceCount() == 1) {
     // With only one possible source, the picker dialog is being bypassed. Apply
     // the default value of the "audio checkbox" here for desktop screen share.
-    // Only two platform configurations support desktop audio capture (i.e.,
-    // system-wide audio loopback) at this time.
     content::DesktopMediaID media_id = source_list->GetSource(0).id;
     DCHECK_EQ(media_id.type, content::DesktopMediaID::TYPE_SCREEN);
-#if defined(USE_CRAS) || BUILDFLAG(IS_WIN)
-    media_id.audio_share = params_.request_audio;
-#else
-    media_id.audio_share = false;
-#endif
+    media_id.audio_share =
+        params_.request_audio &&
+        IsSystemAudioCaptureSupported(params_.request_source);
     OnPickerDialogResults({}, media_id);
     return;
   }

@@ -5186,6 +5186,16 @@ const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";
 
+const char kMacLoopbackAudioForCastName[] =
+    "Mac System Audio Loopback for Cast";
+const char kMacLoopbackAudioForCastDescription[] =
+    "Enable system audio mirroring when casting a screen on macOS 13.0+.";
+
+const char kMacLoopbackAudioForScreenShareName[] =
+    "Mac System Audio Loopback for Screen Sharing";
+const char kMacLoopbackAudioForScreenShareDescription[] =
+    "Enable system audio sharing when screen sharing on macOS 13.0+.";
+
 const char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";
 const char kMacPWAsNotificationAttributionDescription[] =

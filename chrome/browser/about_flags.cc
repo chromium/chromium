@@ -5091,6 +5091,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
      flag_descriptions::kMacSyscallSandboxDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kMacSyscallSandbox)},
+
+    {"mac-loopback-audio-for-cast",
+     flag_descriptions::kMacLoopbackAudioForCastName,
+     flag_descriptions::kMacLoopbackAudioForCastDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kMacLoopbackAudioForCast)},
+
+    {"mac-loopback-audio-for-screen-share",
+     flag_descriptions::kMacLoopbackAudioForScreenShareName,
+     flag_descriptions::kMacLoopbackAudioForScreenShareDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kMacLoopbackAudioForScreenShare)},
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     {"web-share", flag_descriptions::kWebShareName,

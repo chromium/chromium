@@ -40,7 +40,7 @@ void DesktopMediaPickerViewsTestApi::FocusSourceAtIndex(size_t index,
 
 bool DesktopMediaPickerViewsTestApi::AudioSupported(
     DesktopMediaList::Type type) const {
-  return DesktopMediaPickerDialogView::AudioSupported(type);
+  return picker_->dialog_->AudioSupported(type);
 }
 
 void DesktopMediaPickerViewsTestApi::FocusAudioShareControl() {

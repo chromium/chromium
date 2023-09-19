@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
@@ -187,7 +188,8 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
                                          "DesktopMediaPickerDialogView");
 
     const std::u16string kAppName = u"foo";
-    DesktopMediaPicker::Params picker_params;
+    DesktopMediaPicker::Params picker_params{
+        DesktopMediaPicker::Params::RequestSource::kUnknown};
     picker_params.context = test_helper_.GetContext();
     picker_params.app_name = kAppName;
     picker_params.target_name = kAppName;
@@ -402,7 +404,8 @@ TEST_P(DesktopMediaPickerViewsTest, CurrentTabAndAnyTabShareAudioState) {
 // when GetAudioShareCheckbox() returns false.
 TEST_P(DesktopMediaPickerViewsTest, AudioCheckboxVisibility) {
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
-  EXPECT_EQ(DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform,
+  EXPECT_EQ(DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+                DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia),
             test_api_.HasAudioShareControl());
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
@@ -619,7 +622,8 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
   // System audio checkbox shown to the user iff the platform supports it.
-  EXPECT_EQ(DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform,
+  EXPECT_EQ(DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+                DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia),
             test_api_.HasAudioShareControl());
 }
 

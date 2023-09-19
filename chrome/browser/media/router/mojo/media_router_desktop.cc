@@ -74,7 +74,8 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   DCHECK(web_contents);
 #endif
 
-  DesktopMediaPickerController::Params params;
+  DesktopMediaPickerController::Params params(
+      DesktopMediaPickerController::Params::RequestSource::kCast);
   // Value of `web_contents` comes from the UI, and typically corresponds to
   // the active tab.
   params.web_contents = web_contents;

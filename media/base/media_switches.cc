@@ -365,6 +365,20 @@ BASE_FEATURE(kResumeBackgroundVideo,
 #endif
 );
 
+#if BUILDFLAG(IS_MAC)
+// Enables system audio mirroring using ScreenCaptureKit when casting the
+// screen on macOS 13.0+.
+BASE_FEATURE(kMacLoopbackAudioForCast,
+             "MacLoopbackAudioForCast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables system audio sharing using ScreenCaptureKit when screen sharing on
+// macOS 13.0+.
+BASE_FEATURE(kMacLoopbackAudioForScreenShare,
+             "MacLoopbackAudioForScreenShare",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, MediaCapabilities will check with GPU Video Accelerator
 // Factories to determine isPowerEfficient = true/false.
 BASE_FEATURE(kMediaCapabilitiesQueryGpuFactories,

@@ -91,7 +91,8 @@ class DesktopMediaPickerControllerTest : public testing::Test {
   }
 
  protected:
-  DesktopMediaPickerController::Params picker_params_;
+  DesktopMediaPickerController::Params picker_params_{
+      DesktopMediaPickerController::Params::RequestSource::kUnknown};
   base::MockCallback<DesktopMediaPickerController::DoneCallback> done_;
   std::vector<DesktopMediaList::Type> source_types_{
       DesktopMediaList::Type::kScreen};

@@ -150,7 +150,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
       &DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults,
       this, origin, render_frame_host->GetGlobalId());
-  DesktopMediaPickerController::Params picker_params;
+  DesktopMediaPickerController::Params picker_params(
+      DesktopMediaPickerController::Params::RequestSource::kExtension);
   picker_params.web_contents = web_contents;
   picker_params.context = parent_window;
   picker_params.parent = parent_window;

@@ -3008,6 +3008,12 @@ extern const char kEnableUniversalLinksDescription[];
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
+extern const char kMacLoopbackAudioForCastName[];
+extern const char kMacLoopbackAudioForCastDescription[];
+
+extern const char kMacLoopbackAudioForScreenShareName[];
+extern const char kMacLoopbackAudioForScreenShareDescription[];
+
 extern const char kMacPWAsNotificationAttributionName[];
 extern const char kMacPWAsNotificationAttributionDescription[];
 

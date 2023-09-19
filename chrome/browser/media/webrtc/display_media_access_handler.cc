@@ -343,7 +343,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnDisplaySurfaceSelected,
                      base::Unretained(this), web_contents->GetWeakPtr());
-  DesktopMediaPicker::Params picker_params;
+  DesktopMediaPicker::Params picker_params(
+      DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia);
   picker_params.web_contents = web_contents;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
@@ -361,7 +362,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_params.preferred_display_surface =
       pending_request.request.preferred_display_surface;
-  picker_params.is_get_display_media_call = true;
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }

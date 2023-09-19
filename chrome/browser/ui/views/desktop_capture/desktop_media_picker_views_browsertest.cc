@@ -52,7 +52,8 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     for (const auto& source : sources)
       source_lists.push_back(static_cast<FakeDesktopMediaList*>(source.get()));
 
-    DesktopMediaPicker::Params picker_params;
+    DesktopMediaPicker::Params picker_params{
+        DesktopMediaPicker::Params::RequestSource::kUnknown};
     picker_params.web_contents = web_contents;
     picker_params.context = native_window;
     picker_params.app_name = u"app_name";

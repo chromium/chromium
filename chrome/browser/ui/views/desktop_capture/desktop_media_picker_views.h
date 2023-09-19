@@ -105,7 +105,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
     raw_ptr<DesktopMediaPaneView> pane = nullptr;
   };
 
-  static bool AudioSupported(DesktopMediaList::Type type);
+  bool AudioSupported(DesktopMediaList::Type type);
 
   void ConfigureUIForNewPane(int index);
   void StoreAudioCheckboxState();
@@ -156,7 +156,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
-  const bool is_get_display_media_call_;
+  const DesktopMediaPicker::Params::RequestSource request_source_;
   const std::u16string app_name_;
   const bool audio_requested_;
   const bool suppress_local_audio_playback_;  // Effective only if audio shared.
@@ -189,12 +189,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 // DesktopMediaPicker.
 class DesktopMediaPickerViews : public DesktopMediaPicker {
  public:
-#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
-  static constexpr bool kScreenAudioShareSupportedOnPlatform = true;
-#else
-  static constexpr bool kScreenAudioShareSupportedOnPlatform = false;
-#endif
-
   DesktopMediaPickerViews();
   DesktopMediaPickerViews(const DesktopMediaPickerViews&) = delete;
   DesktopMediaPickerViews& operator=(const DesktopMediaPickerViews&) = delete;
@@ -216,7 +210,7 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
 
   DoneCallback callback_;
 
-  bool is_get_display_media_call_ = false;
+  Params::RequestSource request_source_;
 
   // The |dialog_| is owned by the corresponding views::Widget instance.
   // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed

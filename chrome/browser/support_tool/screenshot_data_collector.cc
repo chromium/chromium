@@ -155,7 +155,9 @@ void ScreenshotDataCollector::CollectDataAndDetectPII(
   DesktopMediaPickerController::DoneCallback callback =
       base::BindOnce(&ScreenshotDataCollector::OnSourceSelected,
                      weak_ptr_factory_.GetWeakPtr());
-  DesktopMediaPickerController::Params picker_params;
+  DesktopMediaPickerController::Params picker_params(
+      DesktopMediaPickerController::Params::RequestSource::
+          kScreenshotDataCollector);
   picker_params.web_contents = web_contents;
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
