@@ -212,6 +212,7 @@ public class TabImpl implements Tab {
     private boolean mIsWebContentObscured;
     private long mTimestampMillis;
     private int mParentId = INVALID_TAB_ID;
+    private int mRootId;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -230,6 +231,7 @@ public class TabImpl implements Tab {
         mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
+        mRootId = mId;
 
         // Override the configuration for night mode to always stay in light mode until all UIs in
         // Tab are inflated from activity context instead of application context. This is to
@@ -997,8 +999,7 @@ public class TabImpl implements Tab {
         CriticalPersistedTabData.from(this).setTitle(
                 state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
-        CriticalPersistedTabData.from(this).setRootId(
-                state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
+        setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
         CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
     }
 
@@ -1661,6 +1662,20 @@ public class TabImpl implements Tab {
     @Override
     public int getParentId() {
         return mParentId;
+    }
+
+    @Override
+    public int getRootId() {
+        return mRootId;
+    }
+
+    @Override
+    public void setRootId(int rootId) {
+        if (mRootId == rootId || isDestroyed()) return;
+        mRootId = rootId;
+        for (TabObserver observer : mObservers) {
+            observer.onRootIdChanged(this, rootId);
+        }
     }
 
     /**

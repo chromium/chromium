@@ -9,8 +9,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +16,7 @@ import java.util.List;
 /**
  * Observer of tab changes for all tabs owned by a {@link TabModelSelector}.
  */
-public class TabModelSelectorTabObserver
-        extends EmptyTabObserver implements CriticalPersistedTabDataObserver {
+public class TabModelSelectorTabObserver extends EmptyTabObserver {
     private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private boolean mShouldDeferTabRegisterNotifications;
     private List<Tab> mDeferredTabs = new ArrayList<>();
@@ -64,7 +61,6 @@ public class TabModelSelectorTabObserver
             public void onTabRegistered(Tab tab) {
                 if (tab.isDestroyed()) return;
                 tab.addObserver(TabModelSelectorTabObserver.this);
-                CriticalPersistedTabData.from(tab).addObserver(TabModelSelectorTabObserver.this);
                 if (mShouldDeferTabRegisterNotifications) {
                     mDeferredTabs.add(tab);
                 } else {
@@ -97,7 +93,6 @@ public class TabModelSelectorTabObserver
                 // If the tab as been destroyed we cannot access PersistedTabData.
                 if (tab.isDestroyed()) return;
                 tab.removeObserver(TabModelSelectorTabObserver.this);
-                CriticalPersistedTabData.from(tab).removeObserver(TabModelSelectorTabObserver.this);
             }
         };
     }

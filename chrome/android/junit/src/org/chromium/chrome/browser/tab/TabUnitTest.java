@@ -33,8 +33,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -73,10 +71,6 @@ public class TabUnitTest {
     @Mock
     private Activity mActivity;
     @Mock
-    private CriticalPersistedTabData mCriticalPersistedTabData;
-    @Mock
-    private CriticalPersistedTabDataObserver mCriticalPersistedTabDataObserver;
-    @Mock
     private NativePage mNativePage;
     @Mock
     private TabDelegateFactory mDelegateFactory;
@@ -110,7 +104,6 @@ public class TabUnitTest {
             }
         };
         mTab.addObserver(mObserver);
-        CriticalPersistedTabData.from(mTab).addObserver(mCriticalPersistedTabDataObserver);
     }
 
     @Test
@@ -119,13 +112,13 @@ public class TabUnitTest {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
                 equalTo(TabStateAttributes.DirtinessState.CLEAN));
-        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
+        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
 
-        CriticalPersistedTabData.from(mTab).setRootId(TAB2_ID);
+        mTab.setRootId(TAB2_ID);
 
-        verify(mCriticalPersistedTabDataObserver).onRootIdChanged(mTab, TAB2_ID);
+        verify(mObserver).onRootIdChanged(mTab, TAB2_ID);
 
-        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB2_ID));
+        assertThat(mTab.getRootId(), equalTo(TAB2_ID));
         assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
                 equalTo(TabStateAttributes.DirtinessState.DIRTY));
     }
@@ -136,14 +129,13 @@ public class TabUnitTest {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
                 equalTo(TabStateAttributes.DirtinessState.CLEAN));
-        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
+        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
         TabStateAttributes.from(mTab).clearTabStateDirtiness();
 
-        CriticalPersistedTabData.from(mTab).setRootId(TAB1_ID);
+        mTab.setRootId(TAB1_ID);
 
-        verify(mCriticalPersistedTabDataObserver, never())
-                .onRootIdChanged(any(Tab.class), anyInt());
-        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
+        verify(mObserver, never()).onRootIdChanged(any(Tab.class), anyInt());
+        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
         assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
                 equalTo(TabStateAttributes.DirtinessState.CLEAN));
     }

@@ -272,7 +272,7 @@ public class PseudoTabUnitTest {
     @Test
     public void getRootId_real() {
         int rootId = 1337;
-        doReturn(rootId).when(mCriticalPersistedTabData).getRootId();
+        doReturn(rootId).when(mTab1).getRootId();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
         Assert.assertEquals(Tab.INVALID_TAB_ID, tab.getRootId());

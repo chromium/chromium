@@ -186,7 +186,6 @@ public class CriticalPersistedTabDataTest {
         });
         semaphore.acquire();
         Assert.assertNotNull(mCriticalPersistedTabData);
-        assertEquals(mCriticalPersistedTabData.getRootId(), ROOT_ID);
         assertEquals(mCriticalPersistedTabData.getContentStateVersion(), CONTENT_STATE_VERSION);
         assertEquals(mCriticalPersistedTabData.getOpenerAppId(), OPENER_APP_ID);
         assertEquals(mCriticalPersistedTabData.getThemeColor(), THEME_COLOR);
@@ -320,7 +319,6 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData deserialized =
                 new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertNotNull(deserialized);
-        assertEquals(ROOT_ID, deserialized.getRootId());
         assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
         assertEquals(THEME_COLOR, deserialized.getThemeColor());
@@ -449,31 +447,6 @@ public class CriticalPersistedTabDataTest {
             spyCriticalPersistedTabData.setTitle(null);
             Assert.assertNull(spyCriticalPersistedTabData.getTitle());
             verify(spyCriticalPersistedTabData, times(0)).save();
-        }
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testRootIdSavedWhenNecessary() {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            CriticalPersistedTabData spyCriticalPersistedTabData =
-                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
-            spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
-            assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
-            assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setRootId(ROOT_ID_B);
-            assertEquals(ROOT_ID_B, spyCriticalPersistedTabData.getRootId());
-            verify(spyCriticalPersistedTabData, times(2)).save();
-
-            spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
-            assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
-            verify(spyCriticalPersistedTabData, times(3)).save();
         }
     }
 
@@ -742,25 +715,6 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     @UiThreadTest
-    public void testSetRootIdUninitializedTab() {
-        Tab uninitializedTab = new MockTab(1, false);
-        Assert.assertFalse(uninitializedTab.isInitialized());
-        CriticalPersistedTabData criticalPersistedTabData =
-                new CriticalPersistedTabData(uninitializedTab);
-        uninitializedTab.getUserDataHost().setUserData(
-                CriticalPersistedTabData.class, criticalPersistedTabData);
-        TabStateAttributes.createForTab(uninitializedTab, TabCreationState.FROZEN_ON_RESTORE);
-        TabStateAttributes.from(uninitializedTab).clearTabStateDirtiness();
-        assertEquals(TabStateAttributes.DirtinessState.CLEAN,
-                TabStateAttributes.from(uninitializedTab).getDirtinessState());
-        criticalPersistedTabData.setRootId(ROOT_ID_A);
-        assertEquals(TabStateAttributes.DirtinessState.CLEAN,
-                TabStateAttributes.from(uninitializedTab).getDirtinessState());
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
     public void testSetRootIdInitializedTab() {
         MockTab initializedTab = new MockTab(1, false);
         initializedTab.setIsInitialized(true);
@@ -773,7 +727,7 @@ public class CriticalPersistedTabDataTest {
         TabStateAttributes.from(initializedTab).clearTabStateDirtiness();
         assertEquals(TabStateAttributes.DirtinessState.CLEAN,
                 TabStateAttributes.from(initializedTab).getDirtinessState());
-        criticalPersistedTabData.setRootId(ROOT_ID_A);
+        initializedTab.setRootId(ROOT_ID_A);
         Assert.assertNotEquals(TabStateAttributes.DirtinessState.CLEAN,
                 TabStateAttributes.from(initializedTab).getDirtinessState());
     }
@@ -807,7 +761,6 @@ public class CriticalPersistedTabDataTest {
         assertTrue(CriticalPersistedTabData.from(tab).deserialize(byteBuffer));
 
         CriticalPersistedTabData deserialized = CriticalPersistedTabData.from(tab);
-        assertEquals(ROOT_ID, deserialized.getRootId());
         assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
         assertEquals(THEME_COLOR, deserialized.getThemeColor());

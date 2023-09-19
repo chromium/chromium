@@ -40,7 +40,7 @@ public class TabStateExtractor {
         tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()
                 ? tab.getThemeColor()
                 : TabState.UNSPECIFIED_THEME_COLOR;
-        tabState.rootId = CriticalPersistedTabData.from(tab).getRootId();
+        tabState.rootId = tab.getRootId();
         tabState.userAgent = CriticalPersistedTabData.from(tab).getUserAgent();
         tabState.lastNavigationCommittedTimestampMillis =
                 CriticalPersistedTabData.from(tab).getLastNavigationCommittedTimestampMillis();

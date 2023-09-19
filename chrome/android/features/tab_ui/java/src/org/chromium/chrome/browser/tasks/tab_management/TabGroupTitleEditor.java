@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
@@ -33,7 +32,7 @@ public abstract class TabGroupTitleEditor {
         mTabModelObserver = new TabModelObserver() {
             @Override
             public void tabClosureCommitted(Tab tab) {
-                int tabRootId = CriticalPersistedTabData.from(tab).getRootId();
+                int tabRootId = tab.getRootId();
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
                                 .getCurrentTabModelFilter();
@@ -80,7 +79,7 @@ public abstract class TabGroupTitleEditor {
             }
 
             private int getRootId(Tab tab) {
-                return CriticalPersistedTabData.from(tab).getRootId();
+                return tab.getRootId();
             }
         };
 

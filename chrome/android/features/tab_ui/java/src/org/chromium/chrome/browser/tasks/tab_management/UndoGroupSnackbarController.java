@@ -12,7 +12,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -176,8 +175,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         // the group title for that rootID on undo since the destination group never had a group
         // title to begin with, and the merging tabs still have the original group title stored.
         if (data.get(0).destinationGroupTitle == null) {
-            TabGroupTitleUtils.deleteTabGroupTitle(
-                    CriticalPersistedTabData.from(data.get(0).tab).getRootId());
+            TabGroupTitleUtils.deleteTabGroupTitle(data.get(0).tab.getRootId());
         }
 
         for (int i = data.size() - 1; i >= 0; i--) {

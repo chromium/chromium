@@ -105,7 +105,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -1878,8 +1877,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabGroupTitleUtils.storeTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(0)).getRootId(), "Foo");
+            TabGroupTitleUtils.storeTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo");
         });
         verifyTabSwitcherCardCount(cta, 2);
         assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
@@ -1898,10 +1896,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals("Foo",
-                    TabGroupTitleUtils.getTabGroupTitle(
-                            CriticalPersistedTabData.from(normalTabModel.getTabAt(1)).getRootId()));
-            assertNull(TabGroupTitleUtils.getTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(2)).getRootId()));
+                    TabGroupTitleUtils.getTabGroupTitle(normalTabModel.getTabAt(1).getRootId()));
+            assertNull(TabGroupTitleUtils.getTabGroupTitle(normalTabModel.getTabAt(2).getRootId()));
         });
     }
 
@@ -1932,10 +1928,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         createTabGroup(cta, false, tabGroup2);
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabGroupTitleUtils.storeTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(3)).getRootId(), "Foo");
-            TabGroupTitleUtils.storeTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(1)).getRootId(), "Bar");
+            TabGroupTitleUtils.storeTabGroupTitle(normalTabModel.getTabAt(3).getRootId(), "Foo");
+            TabGroupTitleUtils.storeTabGroupTitle(normalTabModel.getTabAt(1).getRootId(), "Bar");
         });
         assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
                            instanceof UndoGroupSnackbarController);
@@ -1955,11 +1949,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals("Foo",
-                    TabGroupTitleUtils.getTabGroupTitle(
-                            CriticalPersistedTabData.from(normalTabModel.getTabAt(4)).getRootId()));
+                    TabGroupTitleUtils.getTabGroupTitle(normalTabModel.getTabAt(4).getRootId()));
             assertEquals("Bar",
-                    TabGroupTitleUtils.getTabGroupTitle(
-                            CriticalPersistedTabData.from(normalTabModel.getTabAt(0)).getRootId()));
+                    TabGroupTitleUtils.getTabGroupTitle(normalTabModel.getTabAt(0).getRootId()));
         });
     }
 
@@ -1980,8 +1972,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabGroupTitleUtils.storeTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(0)).getRootId(), "Foo");
+            TabGroupTitleUtils.storeTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo");
         });
         verifyTabSwitcherCardCount(cta, 2);
         assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
@@ -1996,8 +1987,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // Check that the old group title was deleted when the group merge is committed.
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertNull(TabGroupTitleUtils.getTabGroupTitle(
-                    CriticalPersistedTabData.from(normalTabModel.getTabAt(1)).getRootId()));
+            assertNull(TabGroupTitleUtils.getTabGroupTitle(normalTabModel.getTabAt(1).getRootId()));
         });
     }
 

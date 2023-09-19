@@ -14,7 +14,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -48,8 +47,6 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Tab mTab;
-    private final CriticalPersistedTabData mTabData;
-    private final CriticalPersistedTabDataObserver mTabDataObserver;
 
     /** Whether or not the TabState has changed. */
     private @DirtinessState int mDirtinessState = DirtinessState.CLEAN;
@@ -159,16 +156,13 @@ public class TabStateAttributes extends TabWebContentsUserData {
                 if (window == null) return;
                 updateIsDirty(DirtinessState.UNTIDY);
             }
-        });
-        mTabDataObserver = new CriticalPersistedTabDataObserver() {
+
             @Override
             public void onRootIdChanged(Tab tab, int newRootId) {
                 if (!tab.isInitialized()) return;
                 updateIsDirty(DirtinessState.DIRTY);
             }
-        };
-        mTabData = CriticalPersistedTabData.from(mTab);
-        mTabData.addObserver(mTabDataObserver);
+        });
     }
 
     @Override
@@ -192,11 +186,6 @@ public class TabStateAttributes extends TabWebContentsUserData {
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
         }
-    }
-
-    @Override
-    protected void destroyInternal() {
-        mTabData.removeObserver(mTabDataObserver);
     }
 
     /**

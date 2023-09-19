@@ -385,7 +385,7 @@ public class TabStateAttributesTest {
         Assert.assertEquals(TabStateAttributes.DirtinessState.CLEAN,
                 TabStateAttributes.from(mTab).getDirtinessState());
 
-        CriticalPersistedTabData.from(mTab).setRootId(12);
+        mTab.setRootId(12);
         Assert.assertEquals(TabStateAttributes.DirtinessState.DIRTY,
                 TabStateAttributes.from(mTab).getDirtinessState());
         Mockito.verify(mAttributesObserver)

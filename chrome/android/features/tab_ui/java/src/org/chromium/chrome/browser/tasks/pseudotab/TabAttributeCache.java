@@ -81,7 +81,7 @@ public class TabAttributeCache {
             @Override
             public void onRootIdChanged(Tab tab, int newRootId) {
                 if (tab.isIncognito()) return;
-                assert newRootId == CriticalPersistedTabData.from(tab).getRootId();
+                assert newRootId == tab.getRootId();
                 cacheRootId(tab.getId(), newRootId);
             }
 
@@ -133,8 +133,7 @@ public class TabAttributeCache {
                     int id = tab.getId();
                     editor.putString(getUrlKey(id), tab.getUrl().serialize());
                     editor.putString(getTitleKey(id), tab.getTitle());
-                    CriticalPersistedTabData tabData = CriticalPersistedTabData.from(tab);
-                    editor.putInt(getRootIdKey(id), tabData.getRootId());
+                    editor.putInt(getRootIdKey(id), tab.getRootId());
                     editor.putLong(getTimestampMillisKey(id), tab.getTimestampMillis());
                 }
                 editor.apply();

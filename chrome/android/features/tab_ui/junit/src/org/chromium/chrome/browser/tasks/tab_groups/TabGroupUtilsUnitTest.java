@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -20,11 +19,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -115,12 +112,7 @@ public class TabGroupUtilsUnitTest {
     private void createTabGroup(List<Tab> tabs, int rootId) {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
-            CriticalPersistedTabData criticalPersistedTabData =
-                    mock(CriticalPersistedTabData.class);
-            UserDataHost userDataHost = new UserDataHost();
-            userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-            doReturn(userDataHost).when(tab).getUserDataHost();
-            doReturn(rootId).when(criticalPersistedTabData).getRootId();
+            when(tab.getRootId()).thenReturn(rootId);
         }
     }
 }

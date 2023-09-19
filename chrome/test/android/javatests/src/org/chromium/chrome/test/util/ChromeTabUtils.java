@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -724,7 +723,7 @@ public class ChromeTabUtils {
      */
     public static int getRootId(Tab tab) {
         Assert.assertTrue(ThreadUtils.runningOnUiThread());
-        return CriticalPersistedTabData.from(tab).getRootId();
+        return tab.getRootId();
     }
 
     /**

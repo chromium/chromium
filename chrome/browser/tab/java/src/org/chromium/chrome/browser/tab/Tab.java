@@ -301,4 +301,14 @@ public interface Tab extends TabLifecycle {
      * @return parent identifier for the {@link Tab}
      */
     int getParentId();
+
+    /**
+     * @return root identifier for the {@link Tab}
+     */
+    int getRootId();
+
+    /**
+     * Set the root identifier for the {@link Tab}
+     */
+    void setRootId(int rootId);
 }

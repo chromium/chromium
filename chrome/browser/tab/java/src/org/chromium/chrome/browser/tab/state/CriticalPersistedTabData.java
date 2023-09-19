@@ -14,7 +14,6 @@ import com.google.flatbuffers.FlatBufferBuilder;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
@@ -102,7 +101,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * URL of the page currently loading. Used as a fall-back in case tab restore fails.
      */
     private GURL mUrl;
-    private int mRootId;
 
     private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
     /**
@@ -122,8 +120,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
 
-    private ObserverList<CriticalPersistedTabDataObserver> mObservers =
-            new ObserverList<CriticalPersistedTabDataObserver>();
     private boolean mShouldSaveForTesting;
     /** Tab level Request Desktop Site setting. */
     private @TabUserAgent int mUserAgent;
@@ -156,7 +152,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         this(tab);
         mUrl = url == null || url.isEmpty() ? GURL.emptyGURL() : new GURL(url);
         mTitle = title;
-        mRootId = rootId;
         mWebContentsState = webContentsState;
         mContentStateVersion = contentStateVersion;
         mOpenerAppId = openerAppId;
@@ -283,7 +278,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             CriticalPersistedTabDataFlatBuffer deserialized =
                     CriticalPersistedTabDataFlatBuffer.getRootAsCriticalPersistedTabDataFlatBuffer(
                             bytes);
-            mRootId = deserialized.rootId();
             mLastNavigationCommittedTimestampMillis =
                     deserialized.lastNavigationCommittedTimestampMillis();
             ByteBuffer webContentsState = deserialized.webContentsStateBytesAsByteBuffer();
@@ -502,7 +496,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return new Serializer<ByteBuffer>() {
             private ByteBuffer mByteBufferSnapshot;
             private String mOpenerAppIdSnapshot;
-            private int mRootIdSnapshot;
             private int mWebContentsStateVersionSnapshot;
             private int mThemeColorSnapshot;
             private int mLaunchTypeSnapshot;
@@ -536,7 +529,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     // so there are no negative consequences to setting timestampMillis to a
                     // placeholder value.
                     CriticalPersistedTabDataFlatBuffer.addParentId(fbb, Tab.INVALID_TAB_ID);
-                    CriticalPersistedTabDataFlatBuffer.addRootId(fbb, mRootIdSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addRootId(fbb, Tab.INVALID_TAB_ID);
                     CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, INVALID_TIMESTAMP);
                     CriticalPersistedTabDataFlatBuffer.addWebContentsStateBytes(fbb, wcs);
                     CriticalPersistedTabDataFlatBuffer.addContentStateVersion(
@@ -569,7 +562,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     mByteBufferSnapshot =
                             webContentsState == null ? null : webContentsState.buffer();
                     mOpenerAppIdSnapshot = mOpenerAppId;
-                    mRootIdSnapshot = mRootId;
                     mWebContentsStateVersionSnapshot = mContentStateVersion;
                     mThemeColorSnapshot = mThemeColor;
                     mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
@@ -630,11 +622,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
 
-    @Override
-    public void destroy() {
-        mObservers.clear();
-    }
-
     /**
      * @return title of the {@link Tab}
      */
@@ -676,27 +663,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
     public int getTabId() {
         return mTab.getId();
     }
-
-    /**
-     * @return root identifier for the {@link Tab}
-     */
-    public int getRootId() {
-        return mRootId;
-    }
-
-    /**
-     * Set root id
-     */
-    public void setRootId(int rootId) {
-        if (mRootId == rootId || mTab.isDestroyed()) return;
-        // TODO(crbug.com/1059640) add in setters for all mutable fields
-        mRootId = rootId;
-        for (CriticalPersistedTabDataObserver observer : mObservers) {
-            observer.onRootIdChanged(mTab, rootId);
-        }
-        save();
-    }
-
 
     /**
      * @return timestamp in milliseconds when the tab was last interacted.
@@ -790,22 +756,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         mUserAgent = userAgent;
         save();
-    }
-
-    /**
-     * Add a {@link CriticalPersistedTabDataObserver}
-     * @param criticalPersistedTabDataObserver the observer
-     */
-    public void addObserver(CriticalPersistedTabDataObserver criticalPersistedTabDataObserver) {
-        mObservers.addObserver(criticalPersistedTabDataObserver);
-    }
-
-    /**
-     * Remove a {@link CriticalPersistedTabDataObserver}
-     * @param criticalPersistedTabDataObserver the observer
-     */
-    public void removeObserver(CriticalPersistedTabDataObserver criticalPersistedTabDataObserver) {
-        mObservers.removeObserver(criticalPersistedTabDataObserver);
     }
 
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {

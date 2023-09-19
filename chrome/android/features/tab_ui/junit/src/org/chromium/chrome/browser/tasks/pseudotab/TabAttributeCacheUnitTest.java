@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -80,10 +79,6 @@ public class TabAttributeCacheUnitTest {
     TabModelFilter mTabModelFilter;
     @Mock
     TabModel mTabModel;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData1;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData2;
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor
@@ -102,8 +97,8 @@ public class TabAttributeCacheUnitTest {
         MockitoAnnotations.initMocks(this);
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
 
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, mCriticalPersistedTabData1);
-        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, mCriticalPersistedTabData2);
+        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID);
+        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID);
 
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
@@ -187,7 +182,7 @@ public class TabAttributeCacheUnitTest {
     @Test
     public void updateRootId() {
         int rootId = 1337;
-        doReturn(rootId).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId).when(mTab1).getRootId();
 
         Assert.assertNotEquals(rootId, TabAttributeCache.getRootId(TAB1_ID));
 
@@ -202,7 +197,7 @@ public class TabAttributeCacheUnitTest {
     @Test
     public void updateRootId_incognito() {
         int rootId = 1337;
-        doReturn(rootId).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId).when(mTab1).getRootId();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onRootIdChanged(mTab1, rootId);
@@ -366,7 +361,7 @@ public class TabAttributeCacheUnitTest {
         String title1 = "title 1";
         doReturn(title1).when(mTab1).getTitle();
         int rootId1 = 1337;
-        doReturn(rootId1).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId1).when(mTab1).getRootId();
         long timestamp1 = 123456;
         doReturn(timestamp1).when(mTab1).getTimestampMillis();
 
@@ -375,7 +370,7 @@ public class TabAttributeCacheUnitTest {
         String title2 = "title 2";
         doReturn(title2).when(mTab2).getTitle();
         int rootId2 = 42;
-        doReturn(rootId2).when(mCriticalPersistedTabData2).getRootId();
+        doReturn(rootId2).when(mTab2).getRootId();
 
         String searchTerm = "chromium";
         LastSearchTermProvider lastSearchTermProvider = mock(LastSearchTermProvider.class);

@@ -57,7 +57,7 @@ public class QuickDeleteTabsFilterTest {
         for (int id = 0; id < countOfTabs; id++) {
             MockTab mockTab = new MockTab(id, /*incognito=*/false);
             CriticalPersistedTabData mockTabData = new CriticalPersistedTabData(mockTab);
-            mockTabData.setRootId(id);
+            mockTab.setRootId(id);
             mockTab.getUserDataHost().setUserData(CriticalPersistedTabData.class, mockTabData);
             mMockTabList.add(mockTab);
         }

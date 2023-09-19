@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
@@ -58,7 +57,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             // rely on the underlying root ID in the tab's persisted data which is used to restore
             // groups across an pending closure cancellation (undo). The root ID is the group ID
             // unless the tab is ungrouped in which case the root ID is the tab's ID.
-            int groupId = CriticalPersistedTabData.from(tab).getRootId();
+            int groupId = tab.getRootId();
             if (idToGroup.containsKey(groupId)) {
                 idToGroup.get(groupId).getTabs().add(tab);
                 continue;

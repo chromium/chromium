@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -198,7 +197,7 @@ public class PseudoTab {
      */
     public int getRootId() {
         if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
-            return CriticalPersistedTabData.from(mTab.get()).getRootId();
+            return mTab.get().getRootId();
         }
         assert mTabId != null;
         return TabAttributeCache.getRootId(mTabId);

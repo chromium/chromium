@@ -357,4 +357,11 @@ public interface TabObserver {
      * @param timestampMillis new value of the timestamp
      */
     default void onTimestampChanged(Tab tab, long timestampMillis) {}
+
+    /**
+     * Broadcast that root identifier on a {@link Tab} has changed
+     * @param tab {@link Tab} root identifier has changed on
+     * @param newRootId new value of new root id
+     */
+    default void onRootIdChanged(Tab tab, int newRootId) {}
 }

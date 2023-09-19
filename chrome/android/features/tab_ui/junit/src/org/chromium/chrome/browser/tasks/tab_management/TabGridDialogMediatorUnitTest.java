@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -544,8 +543,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
-        assertThat(mTabGroupTitleEditor.getTabGroupTitle(
-                           CriticalPersistedTabData.from(mTab1).getRootId()),
+        assertThat(mTabGroupTitleEditor.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
         mTabModelObserverCaptor.getValue().willCloseTab(newTab, false, true);
 
@@ -1202,8 +1200,7 @@ public class TabGridDialogMediatorUnitTest {
     private void createTabGroup(List<Tab> tabs, int rootId) {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
-            CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.from(tab);
-            doReturn(rootId).when(criticalPersistedTabData).getRootId();
+            when(tab.getRootId()).thenReturn(rootId);
         }
     }
 }

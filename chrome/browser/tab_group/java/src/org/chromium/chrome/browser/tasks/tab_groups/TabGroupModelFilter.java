@@ -19,7 +19,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -973,7 +972,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     private static void setRootId(Tab tab, int id) {
-        CriticalPersistedTabData.from(tab).setRootId(id);
+        tab.setRootId(id);
     }
 
     /**
@@ -982,7 +981,7 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @return The root id for the given tab. The root id is shared for tabs in the same group.
      */
     public int getRootId(Tab tab) {
-        return CriticalPersistedTabData.from(tab).getRootId();
+        return tab.getRootId();
     }
 
     private boolean isMoveTabOutOfGroup(Tab movedTab) {
