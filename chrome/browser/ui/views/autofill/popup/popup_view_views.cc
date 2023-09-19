@@ -256,14 +256,6 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index,
 
 bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
-  // Use the cell with open sub-popup as the selected one when the sub-popup
-  // has not handled the event, it allows to continue working with the parent
-  // (moving selection left/right/up/down) from the row with a sub-pop, which
-  // makes most sense from the UX perspective.
-  if (!GetSelectedCell() && open_sub_popup_cell_) {
-    SetSelectedCell(open_sub_popup_cell_, PopupCellSelectionSource::kKeyboard);
-  }
-
   // If the row can handle the event itself (e.g. switching between cells in the
   // same row), we let it.
   if (absl::optional<CellIndex> selected_cell = GetSelectedCell()) {
@@ -277,6 +269,18 @@ bool PopupViewViews::HandleKeyPressEvent(
   const bool kHasNonShiftModifier =
       (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers &
        ~blink::WebInputEvent::kShiftKey);
+
+  // Selects the content cell of the row with currently open sup-popup if any,
+  // which closes the sub-popup and looks like going one menu level back.
+  auto select_sub_popup_content_cell = [&]() {
+    if (open_sub_popup_cell_) {
+      SetSelectedCell(CellIndex{open_sub_popup_cell_->first,
+                                PopupRowView::CellType::kContent},
+                      PopupCellSelectionSource::kKeyboard);
+      return true;
+    }
+    return false;
+  };
 
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
@@ -293,10 +297,16 @@ bool PopupViewViews::HandleKeyPressEvent(
       if (base::i18n::IsRTL()) {
         return SelectNextHorizontalCell();
       } else {
+        if (select_sub_popup_content_cell()) {
+          return true;
+        }
         return SelectPreviousHorizontalCell();
       }
     case ui::VKEY_RIGHT:
       if (base::i18n::IsRTL()) {
+        if (select_sub_popup_content_cell()) {
+          return true;
+        }
         return SelectPreviousHorizontalCell();
       } else {
         return SelectNextHorizontalCell();
@@ -314,11 +324,7 @@ bool PopupViewViews::HandleKeyPressEvent(
     case ui::VKEY_DELETE:
       return kHasShiftModifier && RemoveSelectedCell();
     case ui::VKEY_ESCAPE:
-      if (open_sub_popup_cell_) {
-        // Close the sub-popup by selecting the content cell of the same row.
-        SetSelectedCell(CellIndex{open_sub_popup_cell_->first,
-                                  PopupRowView::CellType::kContent},
-                        PopupCellSelectionSource::kKeyboard);
+      if (select_sub_popup_content_cell()) {
         return true;
       }
       // If this is the root popup view and there was no sub-popup open (find
