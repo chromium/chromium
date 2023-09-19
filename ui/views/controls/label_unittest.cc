@@ -1164,18 +1164,6 @@ TEST_F(LabelTest, CanForceDirectionality) {
                            gfx::DirectionalityMode::DIRECTIONALITY_FORCE_RTL);
   EXPECT_EQ(base::i18n::TextDirection::RIGHT_TO_LEFT,
             ltr_text_force_rtl.GetTextDirectionForTesting());
-
-  SetRTL(true);
-  Label ltr_use_ui(u"0123456", 0, style::STYLE_PRIMARY,
-                   gfx::DirectionalityMode::DIRECTIONALITY_FROM_UI);
-  EXPECT_EQ(base::i18n::TextDirection::RIGHT_TO_LEFT,
-            ltr_use_ui.GetTextDirectionForTesting());
-
-  SetRTL(false);
-  Label rtl_use_ui(ToRTL("0123456"), 0, style::STYLE_PRIMARY,
-                   gfx::DirectionalityMode::DIRECTIONALITY_FROM_UI);
-  EXPECT_EQ(base::i18n::TextDirection::LEFT_TO_RIGHT,
-            rtl_use_ui.GetTextDirectionForTesting());
 }
 
 TEST_F(LabelTest, DefaultDirectionalityIsFromText) {

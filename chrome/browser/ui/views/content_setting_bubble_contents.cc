@@ -314,8 +314,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
                                             int style) {
       if (!string.empty()) {
         auto label = std::make_unique<views::Label>(
-            string, views::style::CONTEXT_LABEL, style,
-            gfx::DirectionalityMode::DIRECTIONALITY_FROM_UI);
+            string, views::style::CONTEXT_LABEL, style);
         label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
         label->SetAllowCharacterBreak(true);
         item_contents->AddChildView(std::move(label));

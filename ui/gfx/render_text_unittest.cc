@@ -3458,8 +3458,6 @@ TEST_F(RenderTextTest, GetDisplayTextDirection) {
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
     SetRTL(!base::i18n::IsRTL());
-    const base::i18n::TextDirection ui_direction = base::i18n::IsRTL() ?
-        base::i18n::RIGHT_TO_LEFT : base::i18n::LEFT_TO_RIGHT;
 
     // Ensure that directionality modes yield the correct text directions.
     for (size_t j = 0; j < std::size(cases); j++) {
@@ -3467,8 +3465,6 @@ TEST_F(RenderTextTest, GetDisplayTextDirection) {
       render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_TEXT);
       EXPECT_EQ(render_text->GetDisplayTextDirection(),
                 cases[j].text_direction);
-      render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_UI);
-      EXPECT_EQ(render_text->GetDisplayTextDirection(), ui_direction);
       render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_LTR);
       EXPECT_EQ(render_text->GetDisplayTextDirection(),
                 base::i18n::LEFT_TO_RIGHT);
@@ -8597,7 +8593,6 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
   RenderText* render_text = GetRenderText();
   render_text->SetFontList(font_list);
   render_text->SetHorizontalAlignment(ALIGN_RIGHT);
-  render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_UI);
   render_text->SetText(u"t:");
   render_text->SetDisplayRect(field);
   render_text->SetCursorEnabled(true);

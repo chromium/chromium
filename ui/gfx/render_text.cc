@@ -1888,9 +1888,6 @@ base::i18n::TextDirection RenderText::GetTextDirectionForGivenText(
       // Derive the direction from the display text, which differs from text()
       // in the case of obscured (password) textfields.
       return base::i18n::GetFirstStrongCharacterDirection(text);
-    case DIRECTIONALITY_FROM_UI:
-      return base::i18n::IsRTL() ? base::i18n::RIGHT_TO_LEFT
-                                 : base::i18n::LEFT_TO_RIGHT;
     case DIRECTIONALITY_FORCE_LTR:
       return base::i18n::LEFT_TO_RIGHT;
     case DIRECTIONALITY_FORCE_RTL:
