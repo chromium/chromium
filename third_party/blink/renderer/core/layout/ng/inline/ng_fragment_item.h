@@ -636,6 +636,15 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGFragmentItem&);
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFragmentItem)
+namespace WTF {
+template <>
+struct VectorTraits<blink::NGFragmentItem>
+    : VectorTraitsBase<blink::NGFragmentItem> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  // NGFragmentItem(NGFragmentItem&&) is save to be replaced with memcpy. This
+  // will enable Oilpan compaction as well.
+  static constexpr bool kCanMoveWithMemcpy = true;
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_

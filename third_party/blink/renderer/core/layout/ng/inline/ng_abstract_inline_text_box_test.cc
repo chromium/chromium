@@ -174,4 +174,30 @@ TEST_F(NGAbstractInlineTextBoxTest, CharacterWidths) {
   EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
 }
 
+TEST_F(NGAbstractInlineTextBoxTest, HeapCompactionNoCrash) {
+  // Regression test: https://crbug.com/1360006
+
+  using TestVector = HeapVector<Member<LinkedObject>>;
+  Persistent<TestVector> vector(MakeGarbageCollected<TestVector>(100));
+  SetBodyInnerHTML(R"HTML(<div id="div">012 345</div>)HTML");
+
+  const Element& div = *GetDocument().getElementById(AtomicString("div"));
+  auto* inline_text_box = To<LayoutText>(div.firstChild()->GetLayoutObject())
+                              ->FirstAbstractInlineTextBox();
+  const auto* items = div.GetLayoutBox()->GetPhysicalFragment(0)->Items();
+
+  const auto* vector_buffer_before_gc = items->Items().data();
+  vector.Clear();
+  CompactionTestDriver compaction_driver(ThreadState::Current());
+  compaction_driver.ForceCompactionForNextGC();
+  TestSupportingGC::PreciselyCollectGarbage();
+  // We assume the above code caused heap compaction, and moved the buffer
+  // of HeapVector<NGFragmentItem>.
+  ASSERT_NE(vector_buffer_before_gc, items->Items().data());
+
+  // LocalBounds() calls GetCursor(), which crashed in this scenario.
+  inline_text_box->LocalBounds();
+  // Pass if no crashes.
+}
+
 }  // namespace blink
