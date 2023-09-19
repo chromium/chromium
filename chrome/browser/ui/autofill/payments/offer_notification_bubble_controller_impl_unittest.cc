@@ -85,7 +85,9 @@ class OfferNotificationBubbleControllerImplTest
   void ShowBubble(const AutofillOfferData* offer,
                   bool expand_notification_icon = false) {
     controller()->ShowOfferNotificationIfApplicable(
-        offer, &card_, {.expand_notification_icon = expand_notification_icon});
+        offer, &card_,
+        {.expand_notification_icon = expand_notification_icon,
+         .show_notification_automatically = true});
   }
 
   void CloseBubble(PaymentsBubbleClosedReason closed_reason =

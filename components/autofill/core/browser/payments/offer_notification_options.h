@@ -11,10 +11,16 @@ namespace autofill {
 // should show.
 struct OfferNotificationOptions {
   // Indicates whether this notification has been shown since profile start-up.
+  // This is only used in Android.
+  // TODO(crbug.com/1483010): Revisit if we can consolidate
+  // notification_has_been_shown and show_notification_automatically.
   bool notification_has_been_shown = false;
   // Indicates whether the notification will automatically expand upon being
   // shown.
   bool expand_notification_icon = false;
+  // Indicates whether the notification bubble should be shown automatically
+  // when the user navigates to the qualified page.
+  bool show_notification_automatically = false;
 };
 
 }  // namespace autofill

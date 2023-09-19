@@ -210,11 +210,11 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 
   is_user_gesture_ = false;
 
-  bool should_show_icon_only = options.notification_has_been_shown;
-  if (should_show_icon_only)
-    HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
-  else
+  if (options.show_notification_automatically) {
     Show();
+  } else {
+    HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
+  }
 }
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {

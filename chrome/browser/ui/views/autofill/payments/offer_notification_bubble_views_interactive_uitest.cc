@@ -746,9 +746,11 @@ IN_PROC_BROWSER_TEST_P(
   const std::string domain_url = "www.merchantsite1.com";
   const GURL with_offer_url = GetUrl(domain_url, "/product1");
   const GURL without_offer_url = GetUrl(domain_url, "/product2");
+  const GURL with_merchant_wide_offer_url = GetUrl(domain_url, "/product3");
   const std::string detail = "Discount description detail";
   const std::string discount_code = "freelisting-discount-code";
-  const int64_t discount_id = 123;
+  const int64_t non_merchant_wide_discount_id = 123;
+  const int64_t merchant_wide_discount_id = 456;
   const double expiry_time_sec =
       (AutofillClock::Now() + base::Days(2)).ToDoubleT();
 
@@ -756,22 +758,24 @@ IN_PROC_BROWSER_TEST_P(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
           browser()->profile()));
   mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
-  // Expect to call this once on every navigation, this test is navigated 3
+  // Expect to call this once on every navigation, this test is navigated 4
   // times.
   EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(3);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(3);
+      .Times(4);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(4);
 
   NavigateToAndWaitForForm(GetUrl(domain_url, "/"));
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 
-  // Simulate FreeListingOffer for a product page on the `domain_url`.
+  // Simulate non-merchant-wide FreeListingOffer for a product page on the
+  // `with_offer_url`.
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
       {{with_offer_url,
         {commerce::CreateValidDiscountInfo(
             detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*value_in_text=*/"$10 off", discount_code,
+            non_merchant_wide_discount_id,
             /*is_merchant_wide=*/false, expiry_time_sec)}}});
 
   NavigateToAndWaitForForm(with_offer_url);
@@ -795,6 +799,20 @@ IN_PROC_BROWSER_TEST_P(
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls({});
   NavigateToAndWaitForForm(without_offer_url);
   EXPECT_FALSE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+
+  // Simulate merchant-wide FreeListingOffer for a product page on the
+  // `with_merchant_wide_offer_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_merchant_wide_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code,
+            merchant_wide_discount_id,
+            /*is_merchant_wide=*/true, expiry_time_sec)}}});
+
+  NavigateToAndWaitForForm(with_merchant_wide_offer_url);
+  EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
@@ -874,9 +892,14 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
     ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster) {
-  const std::string domain_url = "www.merchantsite1.com";
-  const GURL with_offer_url = GetUrl(
-      domain_url, "/first?utm_source=chrome-history-cluster-with-discount");
+  const std::string non_merchant_wide_domain_url = "www.merchantsite1.com";
+  const std::string merchant_wide_domain_url = "www.merchantsite2.com";
+  const GURL with_non_merchant_wide_offer_url =
+      GetUrl(non_merchant_wide_domain_url,
+             "/first?utm_source=chrome-history-cluster-with-discount");
+  const GURL with_merchant_wide_offer_url =
+      GetUrl(merchant_wide_domain_url,
+             "/first?utm_source=chrome-history-cluster-with-discount");
   const std::string detail = "Discount description detail";
   const std::string discount_code = "freelisting-discount-code";
   const int64_t discount_id = 123;
@@ -887,22 +910,26 @@ IN_PROC_BROWSER_TEST_P(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
           browser()->profile()));
   mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
-  // Simulate FreeListingOffer for a product page on the `domain_url`.
+  // Simulate FreeListingOffer for a product page on the
+  // `non_merchant_wide_domain_url`.
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
-      {{with_offer_url,
+      {{with_non_merchant_wide_offer_url,
         {commerce::CreateValidDiscountInfo(
             detail, /*terms_and_conditions=*/"",
             /*value_in_text=*/"$10 off", discount_code, discount_id,
             /*is_merchant_wide=*/false, expiry_time_sec)}}});
 
-  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls);
+  // Expect to call this once on every navigation, this test is navigated 2
+  // times.
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
+      .Times(2);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(2);
 
   SetUpGPayPromoCodeOfferDataWithDomains(
       {GetUrl("www.merchantsite1.com", "/"),
        GetUrl("www.merchantsite2.com", "/")});
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm(with_offer_url);
+  NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -924,6 +951,19 @@ IN_PROC_BROWSER_TEST_P(
   auto promo_code_styled_label =
       GetOfferNotificationBubbleViews()->promo_code_label_;
   EXPECT_FALSE(promo_code_styled_label);
+
+  // Simulate merchant-wide FreeListingOffer for a product page on the
+  // `merchant_wide_domain_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_merchant_wide_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*is_merchant_wide=*/true, expiry_time_sec)}}});
+
+  NavigateToAndWaitForForm(with_merchant_wide_offer_url);
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
 }  // namespace autofill

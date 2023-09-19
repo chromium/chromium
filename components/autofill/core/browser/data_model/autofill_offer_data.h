@@ -60,7 +60,8 @@ class AutofillOfferData {
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
-      const std::string& promo_code);
+      const std::string& promo_code,
+      bool is_merchant_wide = false);
   // Returns an AutofillOfferData for a GPay promo code offer.
   static AutofillOfferData GPayPromoCodeOffer(
       int64_t offer_id,
@@ -70,6 +71,8 @@ class AutofillOfferData {
       const DisplayStrings& display_strings,
       const std::string& promo_code);
 
+  // TODO(crbug.com/1483969): Refactor this class to ensure the correct access
+  // specifiers and move constructors and move assignment constructors.
   AutofillOfferData();
   ~AutofillOfferData();
   AutofillOfferData(const AutofillOfferData&);
@@ -99,6 +102,9 @@ class AutofillOfferData {
   // Returns true if the current offer is 1) not expired and 2) contains the
   // given |origin| in the list of |merchant_origins|.
   bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
+
+  // Returns true if the current offer is a site wide offer.
+  bool IsMerchantWideOffer() const;
 
   OfferType GetOfferType() const { return offer_type_; }
   int64_t GetOfferId() const { return offer_id_; }
@@ -153,7 +159,8 @@ class AutofillOfferData {
                     const std::vector<GURL>& merchant_origins,
                     const GURL& offer_details_url,
                     const DisplayStrings& display_strings,
-                    const std::string& promo_code);
+                    const std::string& promo_code,
+                    bool is_merchant_wide = false);
 
   // The specific type of offer, which informs decisions made by other classes,
   // such as UI rendering or metrics.
@@ -191,6 +198,10 @@ class AutofillOfferData {
 
   // A promo/gift/coupon code that can be applied at checkout with the merchant.
   std::string promo_code_;
+
+  // This only applies to free-listing offers, and it indicates whether the
+  // offer is a site-wide promo, e.g. 15% off on everything.
+  bool is_merchant_wide_offer_ = false;
 };
 
 }  // namespace autofill
