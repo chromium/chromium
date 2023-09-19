@@ -28,6 +28,11 @@ const char kTestURL[] = "about:blank";
 
 class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
  public:
+  PriceInsightsIconViewBrowserTest() {
+    test_features_.InitWithFeatures(
+        {commerce::kPriceInsights, commerce::kCommerceAllowChipExpansion}, {});
+  }
+
   // UiBrowserTest:
   void PreShow() override {
     MockShoppingListUiTabHelper::CreateForWebContents(
@@ -86,7 +91,7 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
+  base::test::ScopedFeatureList test_features_;
 
   BrowserView* GetBrowserView() {
     return BrowserView::GetBrowserViewForBrowser(browser());

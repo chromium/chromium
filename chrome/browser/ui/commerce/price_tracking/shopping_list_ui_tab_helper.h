@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -98,10 +97,6 @@ class ShoppingListUiTabHelper
   // be made.
   virtual const absl::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
 
-  // Gets the ID of the omnibox page action icon that should expand for the tab
-  // this helper is for. If no icon should expand, absl::nullopt is returned.
-  virtual absl::optional<PageActionIconType> GetPageActionToExpand();
-
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
                           ShoppingService* shopping_service,
@@ -175,9 +170,6 @@ class ShoppingListUiTabHelper
 
   // The cluster ID for the current page, if applicable.
   absl::optional<uint64_t> cluster_id_for_page_;
-
-  // The product info available for the current page if available.
-  absl::optional<ProductInfo> product_info_for_page_;
 
   // A flag indicating whether the initial navigation has committed for the web
   // contents. This is used to ensure product info is fetched when a tab is
