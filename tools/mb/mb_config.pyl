@@ -505,6 +505,16 @@
       'linux-wpt-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols_reclient',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
+      # Keep in sync with mac-rel
+      'mac-build-perf': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
+      'mac-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
+      'mac-build-perf-siso': {
+        'builtin': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso',
+        'reproxy': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
+      },
       'mac-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
@@ -2925,6 +2935,14 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
       'enable_backup_ref_ptr_feature_flag', 'x64',
+    ],
+
+    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'enable_dangling_raw_ptr_feature_flag',
+      'enable_backup_ref_ptr_feature_flag', 'x64',
+      'no_reclient', 'siso',
     ],
 
     # Keep in sync with

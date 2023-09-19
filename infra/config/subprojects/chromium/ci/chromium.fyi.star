@@ -1633,6 +1633,94 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
 )
 
+build_perf_builder(
+    name = "mac-build-perf",
+    description_html = """\
+This builder measures Mac build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "mac",
+    ),
+)
+
+build_perf_builder(
+    name = "mac-build-perf-siso",
+    description_html = """\
+This builder measures Mac build performance with Siso.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "macss",
+    ),
+)
+
+build_perf_builder(
+    name = "mac-build-perf-developer",
+    description_html = """\
+This builder measures build performance for Mac developer builds, by simulating developer build scenarios on a bot.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "macdev",
+    ),
+    reclient_instance = reclient.instance.DEVELOPER,
+    reclient_jobs = 800,
+    shadow_reclient_instance = None,
+    siso_configs = [],  # disable builder mode.
+    use_clang_coverage = None,
+)
+
 ci.builder(
     name = "Linux Builder (reclient compare)",
     builder_spec = builder_config.copy_from(
