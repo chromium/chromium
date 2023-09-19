@@ -190,11 +190,12 @@ void AndroidAutofillManager::OnServerRequestError(
 }
 
 void AndroidAutofillManager::Reset() {
-  AutofillManager::Reset();
-  forms_with_server_predictions_.clear();
+  // Inform the provider before resetting state in case it needs to access it.
   if (auto* provider = GetAutofillProvider()) {
     provider->Reset(this);
   }
+  AutofillManager::Reset();
+  forms_with_server_predictions_.clear();
   StartNewLoggingSession();
 }
 

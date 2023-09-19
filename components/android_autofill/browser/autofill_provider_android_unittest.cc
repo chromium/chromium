@@ -371,9 +371,7 @@ TEST_F(AutofillProviderAndroidTest, OnFormSubmittedWithKnownSuccess) {
 // Tests that a form submission of an ongoing Autofill session is propagated to
 // Java when the `AutofillManager` of the tab is reset, even if the form
 // submission was not known to be a success.
-// TODO(crbug.com/1483990): Enable the test once submission signals are sent
-// on reset again.
-TEST_F(AutofillProviderAndroidTest, DISABLED_FormSubmissionHappensOnReset) {
+TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -383,7 +381,7 @@ TEST_F(AutofillProviderAndroidTest, DISABLED_FormSubmissionHappensOnReset) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager().SimulateOnFormSubmitted(
-      form, /*known_success=*/true,
+      form, /*known_success=*/false,
       mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
