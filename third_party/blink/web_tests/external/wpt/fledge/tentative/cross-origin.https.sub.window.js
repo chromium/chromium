@@ -5,7 +5,8 @@
 // META: timeout=long
 // META: variant=?1-4
 // META: variant=?5-8
-// META: variant=?9-last
+// META: variant=?9-12
+// META: variant=?13-last
 
 "use strict;"
 
@@ -17,13 +18,15 @@ const OTHER_ORIGIN2 = 'https://{{hosts[alt][]}}:{{ports[https][1]}}';
 // context "script" is run in, so can be used to pass objects that
 // "script" references that can't be serialized to a string, like
 // fencedFrameConfigs.
-function runInIframe(test, iframe, script, param) {
+async function runInIframe(test, iframe, script, param) {
   const messageUuid = generateUuid(test);
+  let receivedResponse = {};
 
-  return new Promise(function(resolve, reject) {
+  let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
       if (event.data.messageUuid != messageUuid)
         return;
+      receivedResponse = event.data;
       if (event.data.result === 'success') {
         resolve();
       } else {
@@ -34,6 +37,8 @@ function runInIframe(test, iframe, script, param) {
     iframe.contentWindow.postMessage(
         {messageUuid: messageUuid, script: script, param: param}, '*');
   });
+  await promise;
+  return receivedResponse.returnValue;
 }
 
 // Creates an iframe and navigates to a URL on "origin", and waits for the URL
@@ -137,7 +142,7 @@ subsetTest(promise_test, async test => {
                      } catch (e) {
                        assert_true(e instanceof DOMException, "DOMException thrown");
                        assert_equals(e.name, "NotAllowedError", "NotAllowedError DOMException thrown");
-                       return "success";
+                       return {result: "success"};
                      }
                      return "exception unexpectedly not thrown";`);
 
@@ -229,7 +234,7 @@ subsetTest(promise_test, async test => {
        } catch (e) {
          assert_true(e instanceof DOMException, "DOMException thrown");
          assert_equals(e.name, "NotAllowedError", "NotAllowedError DOMException thrown");
-         return "success";
+         return {result: "success"};
        }
        throw "Attempting to run auction unexpectedly did not throw"`);
 }, 'Run auction in cross-origin iframe with run-ad-auction permission denied.');
@@ -286,3 +291,57 @@ subsetTest(promise_test, async test => {
        await waitForObservedRequests(
          "${uuid}", [createBidderReportURL("${uuid}"), createSellerReportURL("${uuid}")])`);
 }, 'Run auction in cross-origin iframe and open winning ad in nested fenced frame.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  // Run an auction in an cross-origin iframe, and get the resulting FencedFrameConfig.
+  let iframe = await createIframe(
+      test, OTHER_ORIGIN1, "join-ad-interest-group; run-ad-auction");
+  let config = await runInIframe(
+      test, iframe,
+      `await joinInterestGroup(test_instance, "${uuid}");
+       let config = await runBasicFledgeTestExpectingWinner(test_instance, "${uuid}");
+       return {result: "success", returnValue: config};`);
+  assert_true(config != null, "Value not returned from auction in iframe");
+  assert_true(config instanceof FencedFrameConfig,
+    `Wrong value type returned from auction: ${config.constructor.type}`);
+
+  // Loading the winning ad in a fenced frame that's a child of the main frame should
+  // succeed.
+  await createAndNavigateFencedFrame(test, config);
+  await waitForObservedRequests(
+      uuid,
+      [ createBidderReportURL(uuid, '1', OTHER_ORIGIN1),
+        createSellerReportURL(uuid, '1', OTHER_ORIGIN1)]);
+}, 'Run auction in cross-origin iframe and open winning ad in a fenced frame child of the main frame.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  // Run an auction in an cross-origin iframe, and get the resulting FencedFrameConfig.
+  let iframe = await createIframe(
+      test, OTHER_ORIGIN1, "join-ad-interest-group; run-ad-auction");
+  let config = await runInIframe(
+      test, iframe,
+      `await joinInterestGroup(test_instance, "${uuid}");
+       let config = await runBasicFledgeTestExpectingWinner(test_instance, "${uuid}");
+       return {result: "success", returnValue: config};`);
+  assert_true(config != null, "Value not returned from auction in iframe");
+  assert_true(config instanceof FencedFrameConfig,
+    `Wrong value type returned from auction: ${config.constructor.type}`);
+
+  // Try to navigate a fenced frame to the winning ad in a cross-origin iframe
+  // with no fledge-related permissions. The iframe is a different origin from the
+  // first cross-origin iframe.
+  let iframe2 = await createIframe(
+    test, OTHER_ORIGIN2, "join-ad-interest-group 'none'; run-ad-auction 'none'");
+  await runInIframe(
+      test, iframe2,
+      `await createAndNavigateFencedFrame(test_instance, param);`,
+      /*param=*/config);
+  await waitForObservedRequests(
+      uuid,
+      [ createBidderReportURL(uuid, '1', OTHER_ORIGIN1),
+        createSellerReportURL(uuid, '1', OTHER_ORIGIN1)]);
+}, 'Run auction in cross-origin iframe and open winning ad in a fenced frame child of another cross-origin iframe.');
