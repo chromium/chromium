@@ -16813,8 +16813,11 @@
                         "ConsistencyNewAccountInterface",
                         "FeedBottomSyncStringRemoval",
                         "ReplaceSyncPromosWithSignInPromos",
+                        "SyncEnableBatchUploadLocalData",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
-                        "SyncEnableContactInfoDataTypeInTransportMode"
+                        "SyncEnableContactInfoDataTypeInTransportMode",
+                        "SyncEnableWalletMetadataInTransportMode",
+                        "SyncEnableWalletOfferInTransportMode"
                     ]
                 }
             ]
