@@ -1106,22 +1106,18 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   auto snapshot_matrix_in_layout_space =
       ComputeViewportTransform(layout_object);
 
-  if (document_->GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    // The SnapshotViewportRect offset below takes points from the fixed
-    // viewport into the snapshot viewport. However, the transform is
-    // currently into absolute coordinates; when the scrollbar appears on the
-    // left, the fixed viewport origin is actually at (15, 0) in absolute
-    // coordinates (assuming 15px scrollbars). Therefore we must first shift
-    // by the scrollbar width so we're in fixed viewport coordinates.
-    ScrollableArea& viewport = *document_->View()->LayoutViewport();
-    snapshot_matrix_in_layout_space.PostTranslate(
-        -viewport.VerticalScrollbarWidth(), 0);
-  }
+  // The FixedToSnapshot offset below takes points from the fixed
+  // viewport into the snapshot viewport. However, the transform is
+  // currently into frame coordinates; when a scrollbar (or gutter) appears on
+  // the left, the fixed viewport origin is actually at (15, 0) in frame
+  // coordinates (assuming 15px scrollbars). Therefore we must first shift
+  // by the scrollbar width so we're in fixed viewport coordinates.
+  gfx::Vector2d fixed_to_frame =
+      -document_->GetLayoutView()->OriginAdjustmentForScrollbars();
+  snapshot_matrix_in_layout_space.PostTranslate(fixed_to_frame);
 
   gfx::Vector2d snapshot_to_fixed_offset = -GetFixedToSnapshotRootOffset();
-  snapshot_matrix_in_layout_space.PostTranslate(snapshot_to_fixed_offset.x(),
-                                                snapshot_to_fixed_offset.y());
+  snapshot_matrix_in_layout_space.PostTranslate(snapshot_to_fixed_offset);
 
   auto snapshot_matrix_in_css_space = snapshot_matrix_in_layout_space;
   snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
@@ -1383,19 +1379,18 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
                   ->GetVirtualKeyboardResizeHeight();
   }
 
+  NGPhysicalBoxStrut scrollbar_strut =
+      document.GetLayoutView()->ComputeScrollbars();
   // A left-side scrollbar (i.e. in an RTL writing-mode) should overlay the
   // snapshot viewport as well. This cannot currently happen in Chrome but it
   // can in other browsers. Handle this case in the event
   // https://crbug.com/249860 is ever fixed.
-  LocalFrameView& view = *document.View();
-  if (document.GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    left += view.LayoutViewport()->VerticalScrollbarWidth();
-  } else {
-    right += view.LayoutViewport()->VerticalScrollbarWidth();
-  }
-
-  bottom += view.LayoutViewport()->HorizontalScrollbarHeight();
+  // This includes outsets for scrollbar-gutter; both sides could include
+  // scrollbar space simultaneously.
+  left += scrollbar_strut.left.ToInt();
+  right += scrollbar_strut.right.ToInt();
+  bottom += scrollbar_strut.bottom.ToInt();
+  top += scrollbar_strut.top.ToInt();
 
   gfx::Outsets outsets;
   outsets.set_top(top);
@@ -1408,16 +1403,14 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 
 gfx::Rect ViewTransitionStyleTracker::GetSnapshotRootInFixedViewport() const {
   DCHECK(document_->GetLayoutView());
-  DCHECK(document_->View());
-  DCHECK(document_->GetFrame());
 
-  LocalFrameView& view = *document_->View();
+  LayoutView& layout_view = *document_->GetLayoutView();
 
-  // Start with the FrameView size, i.e. the position: fixed viewport, and
-  // expand the viewport by any insetting UI such as the mobile URL bar,
-  // virtual-keyboard, scrollbars, etc.
-  gfx::Rect snapshot_viewport_rect(
-      view.LayoutViewport()->ExcludeScrollbars(view.Size()));
+  // Start with the position: fixed viewport and expand it by any
+  // insetting UI such as the mobile URL bar, virtual-keyboard, scrollbars,
+  // etc.
+  gfx::Rect snapshot_viewport_rect(layout_view.ClientWidth().ToInt(),
+                                   layout_view.ClientHeight().ToInt());
   snapshot_viewport_rect.Outset(GetFixedToSnapshotViewportOutsets(*document_));
 
   return snapshot_viewport_rect;
@@ -1436,18 +1429,16 @@ gfx::Vector2d ViewTransitionStyleTracker::GetFrameToSnapshotRootOffset() const {
   DCHECK(document_->View());
 
   gfx::Outsets outsets = GetFixedToSnapshotViewportOutsets(*document_);
-  int left = outsets.left();
-  int top = outsets.top();
+  gfx::Vector2d fixed_to_snapshot(-outsets.left(), -outsets.top());
 
-  // Left-side vertical scrollbars are placed within the frame but offset the
-  // fixed viewport so remove its width from the fixed-to-snapshot offset to
-  // get the frame-to-snapshot offset.
-  if (document_->GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    left -= document_->View()->LayoutViewport()->VerticalScrollbarWidth();
-  }
+  // A scrollbar (or gutter) on the left or top is placed within the frame but
+  // offsets the fixed viewport so remove its size from the fixed-to-snapshot
+  // offset to get the frame-to-snapshot offset.
+  gfx::Vector2d frame_to_snapshot =
+      fixed_to_snapshot +
+      document_->GetLayoutView()->OriginAdjustmentForScrollbars();
 
-  return gfx::Vector2d(-left, -top);
+  return frame_to_snapshot;
 }
 
 ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
