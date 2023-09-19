@@ -1,14 +1,12 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/app_list_bubble_event_filter.h"
+#include "ash/bubble/bubble_event_filter.h"
 
 #include <memory>
 
-#include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/memory/raw_ptr.h"
@@ -16,17 +14,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-namespace {
 
 // Parameterized by mouse events vs. touch events.
-class AppListBubbleEventFilterTest : public AshTestBase,
-                                     public testing::WithParamInterface<bool> {
+class BubbleEventFilterTest : public AshTestBase,
+                              public testing::WithParamInterface<bool> {
  public:
-  AppListBubbleEventFilterTest() = default;
-  AppListBubbleEventFilterTest(const AppListBubbleEventFilterTest&) = delete;
-  AppListBubbleEventFilterTest& operator=(const AppListBubbleEventFilterTest&) =
-      delete;
-  ~AppListBubbleEventFilterTest() override = default;
+  BubbleEventFilterTest() = default;
+  BubbleEventFilterTest(const BubbleEventFilterTest&) = delete;
+  BubbleEventFilterTest& operator=(const BubbleEventFilterTest&) = delete;
+  ~BubbleEventFilterTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -62,22 +58,41 @@ class AppListBubbleEventFilterTest : public AshTestBase,
   raw_ptr<views::View, ExperimentalAsh> view_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(MouseOrTouch,
-                         AppListBubbleEventFilterTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(MouseOrTouch, BubbleEventFilterTest, testing::Bool());
 
-TEST_P(AppListBubbleEventFilterTest, ClickOnStatusAreaDoesNotRunCallback) {
+TEST_P(BubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
   int callback_count = 0;
   auto callback = base::BindLambdaForTesting([&]() { ++callback_count; });
-  AppListBubbleEventFilter filter(widget_.get(), view_, callback);
+  BubbleEventFilter filter(widget_.get(), view_, callback);
 
-  // Click on the status area widget should not trigger the callback.
-  auto* status_area =
-      Shell::Get()->GetPrimaryRootWindowController()->GetStatusAreaWidget();
-  ClickOrTapAt(status_area->GetWindowBoundsInScreen().CenterPoint());
+  // Click outside the widget.
+  gfx::Point point_outside_widget = widget_->GetWindowBoundsInScreen().origin();
+  point_outside_widget.Offset(-1, -1);
+  ClickOrTapAt(point_outside_widget);
 
-  EXPECT_EQ(callback_count, 0);
+  EXPECT_EQ(callback_count, 1);
 }
 
-}  // namespace
+TEST_P(BubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
+  bool callback_ran = false;
+  auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
+  BubbleEventFilter filter(widget_.get(), view_, callback);
+
+  // Click inside the widget.
+  ClickOrTapAt(widget_->GetWindowBoundsInScreen().CenterPoint());
+
+  EXPECT_FALSE(callback_ran);
+}
+
+TEST_P(BubbleEventFilterTest, ClickInsideViewDoesNotRunCallback) {
+  bool callback_ran = false;
+  auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
+  BubbleEventFilter filter(widget_.get(), view_, callback);
+
+  // Click inside the view.
+  ClickOrTapAt(view_->GetBoundsInScreen().CenterPoint());
+
+  EXPECT_FALSE(callback_ran);
+}
+
 }  // namespace ash

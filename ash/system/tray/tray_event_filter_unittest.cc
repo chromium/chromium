@@ -289,6 +289,10 @@ TEST_P(TrayEventFilterTest, ClickOnMenuContainer) {
   EXPECT_FALSE(test_tray_background_view()->clicked_outside_bubble_called());
 }
 
+// Tests that clicking on notification popup when bubble is open will not result
+// in the bubble closes. The logic for this is handled in
+// `bubble_utils::ShouldCloseBubbleForEvent()` where we ignore events happen
+// inside a `kShellWindowId_SettingBubbleContainer`.
 TEST_P(TrayEventFilterTest, ClickOnPopupWhenBubbleOpen) {
   // Update display so that the screen is height enough and expand/collapse
   // notification is allowed on top of the tray bubble.
