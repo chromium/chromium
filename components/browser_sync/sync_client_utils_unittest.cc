@@ -619,6 +619,178 @@ TEST_F(LocalDataMigrationHelperTest,
   EXPECT_TRUE(local_password_store_->IsEmpty());
 }
 
+TEST_F(LocalDataMigrationHelperTest,
+       ShouldUploadConflictingPasswordIfMoreRecentlyUpdated) {
+  // Add test password to local store, with last updated time set to (time for
+  // epoch in Linux + 1 second).
+  auto local_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kProfileStore);
+  local_form.password_value = u"local_value";
+  local_form.date_password_modified =
+      base::Time::UnixEpoch() + base::Seconds(1);
+  local_password_store_->AddLogin(local_form);
+
+  // Add same credential with a different password to the account store, with
+  // last updated time set to time for epoch in Unix.
+  auto account_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kAccountStore);
+  account_form.password_value = u"account_value";
+  account_form.date_password_modified = base::Time::UnixEpoch();
+  account_password_store_->AddLogin(account_form);
+
+  RunAllPendingTasks();
+
+  ASSERT_EQ(local_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  ASSERT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{account_form.signon_realm, {account_form}}}));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+
+  RunAllPendingTasks();
+
+  // Since local password has a more recent last modified date, it is moved to
+  // the account store.
+  local_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  EXPECT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  // Local password store is now empty.
+  EXPECT_TRUE(local_password_store_->IsEmpty());
+}
+
+TEST_F(LocalDataMigrationHelperTest,
+       ShouldNotUploadConflictingPasswordIfLessRecentlyUpdated) {
+  // Add test password to local store, with last updated time set to time for
+  // epoch in Unix.
+  auto local_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kProfileStore);
+  local_form.password_value = u"local_value";
+  local_form.date_password_modified = base::Time::UnixEpoch();
+  local_password_store_->AddLogin(local_form);
+
+  // Add same credential with a different password to the account store, with
+  // last updated time set to (time for epoch in Unix + 1 second).
+  auto account_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kAccountStore);
+  account_form.password_value = u"account_value";
+  account_form.date_password_modified =
+      base::Time::UnixEpoch() + base::Seconds(1);
+  account_password_store_->AddLogin(account_form);
+
+  RunAllPendingTasks();
+
+  ASSERT_EQ(local_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  ASSERT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{account_form.signon_realm, {account_form}}}));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+
+  RunAllPendingTasks();
+
+  // Since account password has a more recent last modified date, it wins over
+  // the local password.
+  EXPECT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {account_form}}}));
+  // Local password is removed from the local store.
+  EXPECT_TRUE(local_password_store_->IsEmpty());
+}
+
+TEST_F(LocalDataMigrationHelperTest,
+       ShouldUploadConflictingPasswordIfMoreRecentlyCreated) {
+  // Add test password to local store, with creation time set to (time for
+  // epoch in Unix + 1 second).
+  auto local_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kProfileStore);
+  local_form.password_value = u"local_value";
+  local_form.date_created = base::Time::UnixEpoch() + base::Seconds(1);
+  local_password_store_->AddLogin(local_form);
+
+  // Add same credential with a different password to the account store, with
+  // creation time set to time for epoch in Unix.
+  auto account_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kAccountStore);
+  account_form.password_value = u"account_value";
+  account_form.date_created = base::Time::UnixEpoch();
+  account_password_store_->AddLogin(account_form);
+
+  RunAllPendingTasks();
+
+  ASSERT_EQ(local_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  ASSERT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{account_form.signon_realm, {account_form}}}));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+
+  RunAllPendingTasks();
+
+  // Since local password has a more recent creation time, it is moved to the
+  // account store.
+  local_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  EXPECT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  // Local password store is now empty.
+  EXPECT_TRUE(local_password_store_->IsEmpty());
+}
+
+TEST_F(LocalDataMigrationHelperTest,
+       ShouldNotUploadConflictingPasswordIfLessRecentlyCreated) {
+  // Add test password to local store, with creation time set to time for epoch
+  // in Unix.
+  auto local_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kProfileStore);
+  local_form.password_value = u"local_value";
+  local_form.date_created = base::Time::UnixEpoch();
+  local_password_store_->AddLogin(local_form);
+
+  // Add same credential with a different password to the account store, with
+  // creation time set to (time for epoch in Unix + 1 second).
+  auto account_form =
+      CreateTestPassword("https://www.amazon.de",
+                         password_manager::PasswordForm::Store::kAccountStore);
+  account_form.password_value = u"account_value";
+  account_form.date_created = base::Time::UnixEpoch() + base::Seconds(1);
+  account_password_store_->AddLogin(account_form);
+
+  RunAllPendingTasks();
+
+  ASSERT_EQ(local_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {local_form}}}));
+  ASSERT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{account_form.signon_realm, {account_form}}}));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+
+  RunAllPendingTasks();
+
+  // Since account password has a more recent creation time, it wins over the
+  // local password.
+  EXPECT_EQ(account_password_store_->stored_passwords(),
+            password_manager::TestPasswordStore::PasswordMap(
+                {{local_form.signon_realm, {account_form}}}));
+  // Local password is removed from the local store.
+  EXPECT_TRUE(local_password_store_->IsEmpty());
+}
+
 TEST_F(LocalDataMigrationHelperTest, ShouldMoveBookmarksToAccountStore) {
   // -------- The local model --------
   // bookmark_bar
