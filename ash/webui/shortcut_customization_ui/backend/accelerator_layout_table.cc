@@ -415,8 +415,8 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientCaretBrowsing,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_F7, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kBrowserAutoComplete,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_RETURN, ui::EF_CONTROL_DOWN)})},
