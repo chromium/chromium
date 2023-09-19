@@ -585,9 +585,6 @@ as required builders.
 * [android-12-x64-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-dual-coverage-exp-rel""))
   * Experiment percentage: 3.0
 
-* [android-12-x64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-siso-rel""))
-  * Experiment percentage: 10.0
-
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
   * Experiment percentage: 20.0
 

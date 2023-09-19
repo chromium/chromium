@@ -105,30 +105,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-try_.orchestrator_builder(
-    name = "android-12-x64-siso-rel",
-    description_html = """\
-This builder shadows android-12-x64-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating android-12-x64-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/android-12-x64-rel"),
-    compilator = "android-12-x64-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(
-        # Decreasing the experiment percentage while enabling tests to reduce
-        # extra workloads on the test pool.
-        experiment_percentage = 10,
-    ),
-    use_java_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "android-12-x64-siso-rel-compilator",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "android-12l-x64-dbg",
     mirrors = [
