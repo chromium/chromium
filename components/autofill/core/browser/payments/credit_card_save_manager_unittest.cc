@@ -132,6 +132,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               AddServerCvc,
               (int64_t instrument_id, const std::u16string& cvc),
               (override));
+  MOCK_METHOD(void,
+              UpdateLocalCvc,
+              (const std::string& guid, const std::u16string& cvc),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -245,6 +249,11 @@ class CreditCardSaveManagerTest : public testing::Test {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
         AutofillClient::SaveCardOfferUserDecision::kAccepted,
         user_provided_card_details);
+  }
+
+  void UserDidDecideCvcLocalSave(
+      AutofillClient::SaveCardOfferUserDecision user_decision) {
+    credit_card_save_manager_->OnUserDidDecideOnCvcLocalSave(user_decision);
   }
 
   // Returns a `FormData` with data corresponding to a simple credit card form.
@@ -941,6 +950,23 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_client_.get_save_credit_card_options().has_non_focusable_field);
   EXPECT_FALSE(
       autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
+}
+
+// Tests that when triggering AttemptToOfferCvcLocalSave function and user
+// accept, UpdateCreditCard function will be triggered.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcLocalSave_ShouldUpdateCreditCardWhenUserAccept) {
+  CreditCard local_card = test::GetCreditCard();
+  const std::u16string kCvc = u"123";
+  local_card.set_cvc(kCvc);
+  credit_card_save_manager_->AttemptToOfferCvcLocalSave(
+      /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
+      local_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_CALL(personal_data(), UpdateLocalCvc(local_card.guid(), kCvc));
+  UserDidDecideCvcLocalSave(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted);
 }
 #endif
 

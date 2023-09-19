@@ -665,8 +665,18 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
 
 void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
     AutofillClient::SaveCardOfferUserDecision user_decision) {
-  // TODO(crbug.com/1450749): Implement OnUserDidDecideOnCvcLocalSave
-  NOTIMPLEMENTED();
+  switch (user_decision) {
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+      // TODO(crbug.com/1450749): Remove strikes.
+      // This card exists when this line is invoked, so UpdateLocalCvc is safe
+      // here.
+      personal_data_manager_->UpdateLocalCvc(card_save_candidate_.guid(),
+                                             card_save_candidate_.cvc());
+      break;
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+      NOTIMPLEMENTED();
+  }
 }
 
 void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(
