@@ -32,9 +32,9 @@ TEST_F(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
   EXPECT_THAT(albums,
               UnorderedElementsAre(
                   Pointee(FieldsAre(kCloudsAlbumId, false, "Cloud Flow", _, _,
-                                    AmbientModeTopicSource::kVideo, _)),
+                                    mojom::TopicSource::kVideo, _)),
                   Pointee(FieldsAre(kNewMexicoAlbumId, true, "Earth Flow", _, _,
-                                    AmbientModeTopicSource::kVideo, _))));
+                                    mojom::TopicSource::kVideo, _))));
 
   albums.clear();
   AppendAmbientVideoAlbums(AmbientVideo::kClouds, albums);

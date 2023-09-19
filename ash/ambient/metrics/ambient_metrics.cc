@@ -204,7 +204,8 @@ void RecordAmbientModeVideoSmoothnessInternal(
 
 AmbientModePhotoSource AmbientSettingsToPhotoSource(
     const AmbientSettings& settings) {
-  if (settings.topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+  if (settings.topic_source ==
+      ash::personalization_app::mojom::TopicSource::kArtGallery) {
     return AmbientModePhotoSource::kArtGallery;
   }
 

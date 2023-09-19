@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
-#include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,7 +53,7 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
         IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION,
         product_name);
     album->url = GURL(video_album_info.url);
-    album->topic_source = AmbientModeTopicSource::kVideo;
+    album->topic_source = mojom::TopicSource::kVideo;
     output.emplace_back(std::move(album));
   }
 }

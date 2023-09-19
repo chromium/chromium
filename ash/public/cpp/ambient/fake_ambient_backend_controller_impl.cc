@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,8 +23,8 @@ namespace ash {
 
 namespace {
 
-constexpr AmbientModeTopicSource kTopicSource =
-    AmbientModeTopicSource::kGooglePhotos;
+constexpr personalization_app::mojom::TopicSource kTopicSource =
+    personalization_app::mojom::TopicSource::kGooglePhotos;
 
 constexpr AmbientModeTemperatureUnit kTemperatureUnit =
     AmbientModeTemperatureUnit::kCelsius;

@@ -127,15 +127,6 @@ struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
 };
 
 template <>
-struct EnumTraits<ash::personalization_app::mojom::TopicSource,
-                  ash::AmbientModeTopicSource> {
-  using MojomTopicSource = ::ash::personalization_app::mojom::TopicSource;
-  static MojomTopicSource ToMojom(ash::AmbientModeTopicSource input);
-  static bool FromMojom(MojomTopicSource input,
-                        ash::AmbientModeTopicSource* output);
-};
-
-template <>
 struct EnumTraits<ash::personalization_app::mojom::TemperatureUnit,
                   ash::AmbientModeTemperatureUnit> {
   using MojomTemperatureUnit =

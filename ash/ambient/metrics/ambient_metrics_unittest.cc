@@ -27,10 +27,11 @@ namespace ambient {
 namespace metrics {
 using AmbientMetricsTest = testing::Test;
 using ash::personalization_app::mojom::AmbientTheme;
+using ash::personalization_app::mojom::TopicSource;
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceArt) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kArtGallery;
+  settings.topic_source = TopicSource::kArtGallery;
 
   EXPECT_EQ(AmbientModePhotoSource::kArtGallery,
             AmbientSettingsToPhotoSource(settings));
@@ -38,7 +39,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceArt) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosEmpty) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
 
   EXPECT_EQ(AmbientModePhotoSource::kGooglePhotosEmpty,
@@ -47,7 +48,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosEmpty) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosRecentHighlights) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back(
       ash::kAmbientModeRecentHighlightsAlbumId);
@@ -58,7 +59,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosRecentHighlights) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosBoth) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back(
       ash::kAmbientModeRecentHighlightsAlbumId);
@@ -70,7 +71,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosBoth) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosPersonalAlbum) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back("abcde");
 

@@ -63,10 +63,6 @@ mojom("mojom") {
           move_only = true
         },
         {
-          mojom = "ash.personalization_app.mojom.TopicSource"
-          cpp = "::ash::AmbientModeTopicSource"
-        },
-        {
           mojom = "ash.personalization_app.mojom.TemperatureUnit"
           cpp = "::ash::AmbientModeTemperatureUnit"
         },

@@ -54,11 +54,11 @@ class PersonalizationAppAmbientProviderImpl
   void SetAmbientModeEnabled(bool enabled) override;
   void SetAmbientTheme(mojom::AmbientTheme ambient_theme) override;
   void SetScreenSaverDuration(int minutes) override;
-  void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
+  void SetTopicSource(mojom::TopicSource topic_source) override;
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override;
   void SetAlbumSelected(const std::string& id,
-                        ash::AmbientModeTopicSource topic_source,
+                        mojom::TopicSource topic_source,
                         bool selected) override;
   void SetPageViewed() override;
   void FetchSettingsAndAlbums() override;
@@ -100,7 +100,7 @@ class PersonalizationAppAmbientProviderImpl
   void SyncSettingsAndAlbums();
 
   // Update topic source if needed.
-  void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
+  void MaybeUpdateTopicSource(mojom::TopicSource topic_source);
 
   void FetchPreviewImages();
   void OnPreviewsFetched(const std::vector<GURL>& preview_urls);
@@ -118,7 +118,7 @@ class PersonalizationAppAmbientProviderImpl
   // leave `settings_` untouched while the video theme is active so that the
   // user's exact `AmbientSettings` can be restored when switching back to a
   // non-video theme (ex: slideshow).
-  AmbientModeTopicSource GetCurrentTopicSource() const;
+  mojom::TopicSource GetCurrentTopicSource() const;
 
   void BroadcastAmbientModeEnabledStatus(bool enabled);
 

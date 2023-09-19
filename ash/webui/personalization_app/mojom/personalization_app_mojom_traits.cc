@@ -30,7 +30,6 @@ namespace mojo {
 using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
 using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
-using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
 using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 using MojomAmbientUiVisibility =
     ash::personalization_app::mojom::AmbientUiVisibility;
@@ -367,39 +366,6 @@ bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   out->index = data.index();
   return data.ReadTitle(&out->title) && data.ReadUrl(&out->url) &&
          data.ReadSourceInfo(&out->source_info);
-}
-
-// TODO (b/220933864): remove ash::AmbientModeTopicSource and
-// ash::AmbientModeTemperatureUnit enums.
-MojomTopicSource
-EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::ToMojom(
-    ash::AmbientModeTopicSource input) {
-  switch (input) {
-    case ash::AmbientModeTopicSource::kGooglePhotos:
-      return MojomTopicSource::kGooglePhotos;
-    case ash::AmbientModeTopicSource::kArtGallery:
-      return MojomTopicSource::kArtGallery;
-    case ash::AmbientModeTopicSource::kVideo:
-      return MojomTopicSource::kVideo;
-  }
-}
-
-bool EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::FromMojom(
-    MojomTopicSource input,
-    ash::AmbientModeTopicSource* output) {
-  switch (input) {
-    case MojomTopicSource::kGooglePhotos:
-      *output = ash::AmbientModeTopicSource::kGooglePhotos;
-      return true;
-    case MojomTopicSource::kArtGallery:
-      *output = ash::AmbientModeTopicSource::kArtGallery;
-      return true;
-    case MojomTopicSource::kVideo:
-      *output = ash::AmbientModeTopicSource::kVideo;
-      return true;
-  }
-  NOTREACHED();
-  return false;
 }
 
 MojomTemperatureUnit

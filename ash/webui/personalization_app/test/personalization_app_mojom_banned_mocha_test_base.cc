@@ -47,7 +47,7 @@ class MockPersonalizationAppAmbientProvider
   MOCK_METHOD(void, SetScreenSaverDuration, (int minutes), (override));
   MOCK_METHOD(void,
               SetTopicSource,
-              (ash::AmbientModeTopicSource topic_source),
+              (mojom::TopicSource topic_source),
               (override));
   MOCK_METHOD(void,
               SetTemperatureUnit,
@@ -56,7 +56,7 @@ class MockPersonalizationAppAmbientProvider
   MOCK_METHOD(void,
               SetAlbumSelected,
               (const std::string& id,
-               ash::AmbientModeTopicSource topic_source,
+               mojom::TopicSource topic_source,
                bool selected),
               (override));
   MOCK_METHOD(void, SetPageViewed, (), (override));
