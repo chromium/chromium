@@ -41,6 +41,12 @@ enum AuctionAdConfigBuyerTimeoutField {
   kPerBuyerCumulativeTimeouts
 };
 
+// Coordinator which is conducting the auction.
+enum AdAuctionCoordinator {
+  kAWS,
+  kGCP,
+};
+
 // Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
 interface AbortableAdAuction {
   // These methods should be called to provide a value for part of auction
@@ -237,6 +243,6 @@ interface AdAuctionService {
 
   // Gets the ad auction data for running an external auction on a bidding and
   // auction server.
-  GetInterestGroupAdAuctionData(url.mojom.Origin seller)
+  GetInterestGroupAdAuctionData(url.mojom.Origin seller, AdAuctionCoordinator coordinator)
       => (mojo_base.mojom.BigBuffer request, mojo_base.mojom.Uuid? request_id);
 };

@@ -5,8 +5,16 @@
 // Information about a Bidding and Auction server style auction.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
 
+enum AdAuctionCoordinator {
+// Add coordinators here in alphabetical order.
+  "aws",
+  "gcp",
+};
+
 dictionary AdAuctionDataConfig {
   required USVString seller;
+  // TODO(1473331): Make `coordinator` required.
+  AdAuctionCoordinator coordinator;
 };
 
 dictionary AdAuctionData {

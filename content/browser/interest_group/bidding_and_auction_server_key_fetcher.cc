@@ -58,84 +58,115 @@ constexpr net::NetworkTrafficAnnotationTag
     )");
 }  // namespace
 
-BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() =
-    default;
+BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::
+    PerCoordinatorFetcherState() = default;
+BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::
+    ~PerCoordinatorFetcherState() = default;
+BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::
+    PerCoordinatorFetcherState(PerCoordinatorFetcherState&& state) = default;
+BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState&
+BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::operator=(
+    PerCoordinatorFetcherState&& state) = default;
+
+BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() {
+  fetcher_state_map_.insert_or_assign(blink::mojom::AdAuctionCoordinator::kGCP,
+                                      PerCoordinatorFetcherState());
+  fetcher_state_map_.insert_or_assign(blink::mojom::AdAuctionCoordinator::kAWS,
+                                      PerCoordinatorFetcherState());
+  CHECK_EQ(
+      fetcher_state_map_.size(),
+      static_cast<size_t>(blink::mojom::AdAuctionCoordinator::kMaxValue) -
+          static_cast<size_t>(blink::mojom::AdAuctionCoordinator::kMinValue) +
+          1);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeBiddingAndAuctionServer)) {
+    fetcher_state_map_.at(blink::mojom::AdAuctionCoordinator::kGCP).key_url =
+        GURL(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
+  }
+}
+
 BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
     default;
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     network::mojom::URLLoaderFactory* loader_factory,
+    blink::mojom::AdAuctionCoordinator coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
-  GURL key_url(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
-  if (!key_url.is_valid()) {
+  PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
+  if (!state.key_url.is_valid()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
   // If we have keys and they haven't expired just call the callback now.
-  if (keys_.size() > 0 && expiration_ > base::Time::Now()) {
+  if (state.keys.size() > 0 && state.expiration > base::Time::Now()) {
     // Use a random key from the set to limit the server's ability to identify
     // us based on the key we use.
-    std::move(callback).Run(keys_[base::RandInt(0, keys_.size() - 1)]);
+    std::move(callback).Run(
+        state.keys[base::RandInt(0, state.keys.size() - 1)]);
     return;
   }
 
-  queue_.push_back(std::move(callback));
-  if (queue_.size() > 1) {
+  state.queue.push_back(std::move(callback));
+  if (state.queue.size() > 1) {
     return;
   }
-  keys_.clear();
+  state.keys.clear();
 
+  CHECK(!state.loader);
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = key_url;
+  resource_request->url = state.key_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->trusted_params.emplace();
   resource_request->trusted_params->isolation_info = net::IsolationInfo();
-  loader_ = network::SimpleURLLoader::Create(
+  state.loader = network::SimpleURLLoader::Create(
       std::move(resource_request),
       kBiddingAndAuctionServerKeyFetchTrafficAnnotation);
-  loader_->SetTimeoutDuration(kRequestTimeout);
+  state.loader->SetTimeoutDuration(kRequestTimeout);
 
-  loader_->DownloadToString(
+  state.loader->DownloadToString(
       loader_factory,
       base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnFetchKeyComplete,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), coordinator),
       /*max_body_size=*/kMaxBodySize);
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeyComplete(
+    blink::mojom::AdAuctionCoordinator coordinator,
     std::unique_ptr<std::string> response) {
+  fetcher_state_map_.at(coordinator).loader.reset();
   if (!response) {
-    FailAllCallbacks();
+    FailAllCallbacks(coordinator);
     return;
   }
-  loader_.reset();
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
       base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeys,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), coordinator));
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
+    blink::mojom::AdAuctionCoordinator coordinator,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
-    FailAllCallbacks();
+    FailAllCallbacks(coordinator);
     return;
   }
 
   const base::Value::Dict* response_dict = result->GetIfDict();
   if (!response_dict) {
-    FailAllCallbacks();
+    FailAllCallbacks(coordinator);
     return;
   }
 
-  const base::Value::List* keys = response_dict->FindList("keys");
-  if (!keys) {
-    FailAllCallbacks();
+  const base::Value::List* key_values = response_dict->FindList("keys");
+  if (!key_values) {
+    FailAllCallbacks(coordinator);
     return;
   }
 
-  for (const auto& entry : *keys) {
+  std::vector<BiddingAndAuctionServerKey> keys;
+  for (const auto& entry : *key_values) {
     BiddingAndAuctionServerKey key;
     const base::Value::Dict* key_dict = entry.GetIfDict();
     if (!key_dict) {
@@ -156,38 +187,43 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
       continue;
     }
     key.id = key_id;
-    keys_.push_back(std::move(key));
+    keys.push_back(std::move(key));
   }
 
-  if (keys_.size() == 0) {
-    FailAllCallbacks();
+  if (keys.size() == 0) {
+    FailAllCallbacks(coordinator);
     return;
   }
 
-  expiration_ = base::Time::Now() + kKeyRequestInterval;
+  PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
+  state.keys = std::move(keys);
+  state.expiration = base::Time::Now() + kKeyRequestInterval;
 
-  while (!queue_.empty()) {
+  while (!state.queue.empty()) {
     // We call the callback *before* removing the current request from the list.
-    // It is possible that the callback may synchronously enqueue another
-    // request. If we remove the current request first then enqueuing the
-    // request would start another thread of execution since there was an empty
-    // queue.
+    // That avoids the problem if callback were to synchronously enqueue another
+    // request. If we removed the current request first then enqueued the
+    // request, that would start another thread of execution since there was an
+    // empty queue.
     // Use a random key from the set to limit the server's ability to identify
     // us based on the key we use.
-    std::move(queue_.front()).Run(keys_[base::RandInt(0, keys_.size() - 1)]);
-    queue_.pop_front();
+    std::move(state.queue.front())
+        .Run(state.keys[base::RandInt(0, state.keys.size() - 1)]);
+    state.queue.pop_front();
   }
 }
 
-void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks() {
-  while (!queue_.empty()) {
+void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks(
+    blink::mojom::AdAuctionCoordinator coordinator) {
+  PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
+  while (!state.queue.empty()) {
     // We call the callback *before* removing the current request from the list.
-    // It is possible that the callback may synchronously enqueue another
-    // request. If we remove the current request first then enqueuing the
-    // request would start another thread of execution since there was an empty
-    // queue.
-    std::move(queue_.front()).Run(absl::nullopt);
-    queue_.pop_front();
+    // That avoids the problem if callback were to synchronously enqueue another
+    // request. If we removed the current request first then enqueued the
+    // request, that would start another thread of execution since there was an
+    // empty queue.
+    std::move(state.queue.front()).Run(absl::nullopt);
+    state.queue.pop_front();
   }
 }
 

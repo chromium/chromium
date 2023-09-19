@@ -8444,7 +8444,7 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     base::RunLoop run_loop;
     absl::optional<AdAuctionDataAndId> output;
     interest_service->GetInterestGroupAdAuctionData(
-        seller,
+        seller, blink::mojom::AdAuctionCoordinator::kGCP,
         base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
                                        const absl::optional<base::Uuid>& id) {
           AdAuctionDataAndId data;

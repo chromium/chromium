@@ -81,6 +81,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       DeprecatedReplaceInURNCallback callback) override;
   void GetInterestGroupAdAuctionData(
       const url::Origin& seller,
+      blink::mojom::AdAuctionCoordinator coordinator,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
@@ -118,6 +119,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     BiddingAndAuctionData data;
     base::Uuid request_id;
     url::Origin seller;
+    blink::mojom::AdAuctionCoordinator coordinator;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 

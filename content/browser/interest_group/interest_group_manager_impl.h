@@ -329,6 +329,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
+      blink::mojom::AdAuctionCoordinator coordinator,
       base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
           callback);
 
