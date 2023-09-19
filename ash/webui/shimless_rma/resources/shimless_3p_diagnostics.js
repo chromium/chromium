@@ -54,6 +54,18 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
       },
 
       /** @protected */
+      installableAppPath_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected {Shimless3pDiagnosticsAppInfo} */
+      appInfo_: {
+        type: Object,
+        value: null,
+      },
+
+      /** @protected */
       errorTitle_: {
         type: String,
         value: '',
@@ -111,7 +123,40 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * @private
    */
   showFindInstallableDialog_(appPath) {
-    // TODO(chungsheng): Implement this.
+    this.installableAppPath_ = appPath.path;
+    this.root.querySelector('#shimless3pDiagFindInstallableDialog').showModal();
+  }
+
+  /**
+   * Completes the last installation by replying the user approval result. If
+   * the installation is approved, then show the app. Otherwise, just finish the
+   * launch process.
+   * @param {boolean} isApproved
+   * @private
+   */
+  completeLastInstall_(isApproved) {
+    this.shimlessRmaService_.completeLast3pDiagnosticsInstallation(isApproved)
+        .then(() => {
+          isApproved ? this.show3pDiagnosticsApp_() : this.completeLaunch_();
+        });
+  }
+
+  /**
+   * Shows the permission review dialog for users to review the app permissions.
+   * If there is no permission requested, the dialog won't be shown and the app
+   * is approved.
+   * @param {Shimless3pDiagnosticsAppInfo} appInfo
+   * @private
+   */
+  showPermissionReviewDialogOrCompleteLastInstall_(appInfo) {
+    if (!appInfo.permissionMessage) {
+      this.completeLastInstall_(true);
+      return;
+    }
+
+    this.appInfo_ = appInfo;
+    this.root.querySelector('#shimless3pDiagReviewPermissionDialog')
+        .showModal();
   }
 
   /**
@@ -137,6 +182,57 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
       }
       assertNotReached();
     });
+  }
+
+  /**
+   * Handles cancel event or skip button of installable dialog. Skips the
+   * install process and tries to load the installed app.
+   * @protected
+   */
+  onCancelOrSkipInstallButtonClicked_() {
+    this.shadowRoot.querySelector('#shimless3pDiagFindInstallableDialog')
+        .close();
+    this.show3pDiagnosticsApp_();
+  }
+
+  /**
+   * Handles install button of installable dialog. Installs the installable app.
+   * @protected
+   */
+  onInstallButtonClicked_() {
+    this.shadowRoot.querySelector('#shimless3pDiagFindInstallableDialog')
+        .close();
+    this.shimlessRmaService_.installLastFound3pDiagnosticsApp().then(
+        (result) => {
+          result.appInfo ?
+              this.showPermissionReviewDialogOrCompleteLastInstall_(
+                  result.appInfo) :
+              this.showError_(
+                  '3pFailedToInstallDialogTitle',
+                  '3pCheckWithOemDialogMessage');
+        });
+  }
+
+  /**
+   * Handles cancel event or cancel button of permission review dialog. Cancels
+   * the installation and ends the launch process.
+   * @protected
+   */
+  onCancelOrCancelInstallButtonClicked_() {
+    this.shadowRoot.querySelector('#shimless3pDiagReviewPermissionDialog')
+        .close();
+    this.completeLastInstall_(/*isApproved=*/ false);
+  }
+
+  /**
+   * Handles accept button of permission review dialog. Continues the
+   * installation.
+   * @protected
+   */
+  onAcceptPermissionButtonClicked_() {
+    this.shadowRoot.querySelector('#shimless3pDiagReviewPermissionDialog')
+        .close();
+    this.completeLastInstall_(/*isApproved=*/ true);
   }
 
   /**
@@ -171,11 +267,8 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
 
     this.shimlessRmaService_.getInstallable3pDiagnosticsAppPath().then(
         (result) => {
-          if (result.appPath) {
-            this.showFindInstallableDialog_(result.appPath);
-          } else {
-            this.show3pDiagnosticsApp_();
-          }
+          result.appPath ? this.showFindInstallableDialog_(result.appPath) :
+                           this.show3pDiagnosticsApp_();
         });
   }
 }

@@ -7,8 +7,8 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {Shimless3pDiagnostics} from 'chrome://shimless-rma/shimless_3p_diagnostics.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {Show3pDiagnosticsAppResult} from 'chrome://shimless-rma/shimless_rma_types.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {Shimless3pDiagnosticsAppInfo, Show3pDiagnosticsAppResult} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {eventToPromise} from '../test_util.js';
@@ -61,6 +61,7 @@ suite('shimless3pDiagTest', function() {
     loadTimeData.overrideValues({'3pDiagnosticsEnabled': true});
     service.setGet3pDiagnosticsProviderResult('Google');
     service.setInstallable3pDiagnosticsAppPath(null);
+    service.setInstallLastFound3pDiagnosticsApp(null);
     service.setShow3pDiagnosticsAppResult(
         Show3pDiagnosticsAppResult.kAppNotInstalled);
   });
@@ -335,4 +336,247 @@ suite('shimless3pDiagTest', function() {
       assertFalse(isAllButtonsDisabled);
     });
   }
+
+  // Verify the flow that there is an installable app, users choose to skip the
+  // installation, but there is no installed app.
+  test('SkipInstallableButDontHaveInstalledApp', async () => {
+    service.setInstallable3pDiagnosticsAppPath(
+        {path: '/fake/installable.swbn'});
+    service.setShow3pDiagnosticsAppResult(
+        Show3pDiagnosticsAppResult.kAppNotInstalled);
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+    assertEquals(
+        'Install Google diagnostics app?',
+        component.shadowRoot
+            .querySelector('#shimless3pDiagFindInstallableDialogTitle')
+            .textContent.trim());
+    assertEquals(
+        'There is an installable app at /fake/installable.swbn',
+        component.shadowRoot
+            .querySelector('#shimless3pDiagFindInstallableDialogBody')
+            .textContent.trim());
+
+    await clickButton('#shimless3pDiagFindInstallableDialogSkipButton');
+    await flushTasks();
+    assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertEquals(
+        'Google diagnostics app is not installed',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogTitle')
+            .textContent.trim());
+    assertEquals(
+        'Check with the device manufacturer',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogBody')
+            .textContent.trim());
+
+    await clickButton('#shimless3pDiagErrorDialogButton');
+    assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertFalse(isAllButtonsDisabled);
+  });
+
+  // Verify the flow that there is an installable app, users choose to skip the
+  // installation, and there is an installed app.
+  for (const [name, dialogAction] of [
+           [
+             'SkipInstallableByButton',
+             () =>
+                 clickButton('#shimless3pDiagFindInstallableDialogSkipButton'),
+           ],
+           [
+             'SkipInstallableByCancel',
+             () => cancelDialog('#shimless3pDiagFindInstallableDialog'),
+           ],
+  ]) {
+    test(`${name}AndHasInstalledApp`, async () => {
+      service.setInstallable3pDiagnosticsAppPath(
+          {path: '/fake/installable.swbn'});
+      service.setShow3pDiagnosticsAppResult(Show3pDiagnosticsAppResult.kOk);
+      await initialize();
+      assertTrue(!!component);
+
+      component.launch3pDiagnostics();
+
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+
+      await dialogAction();
+      assertFalse(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertFalse(isAllButtonsDisabled);
+    });
+  }
+
+  // Verify the flow that there is an installable app, users choose to install,
+  // but fail to load the installable.
+  for (const [name, dialogAction] of [
+           [
+             'InstallInstallableByButton',
+             () => clickButton(
+                 '#shimless3pDiagFindInstallableDialogInstallButton'),
+           ],
+           [
+             'InstallInstallableByEnter',
+             () => pressEnterOnDialog('#shimless3pDiagFindInstallableDialog'),
+           ],
+  ]) {
+    test(`${name}ButFailToLoad`, async () => {
+      service.setInstallable3pDiagnosticsAppPath(
+          {path: '/fake/installable.swbn'});
+      await initialize();
+      assertTrue(!!component);
+
+      component.launch3pDiagnostics();
+
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+
+      await dialogAction();
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
+      assertEquals(
+          'Couldn\'t install Google diagnostics app',
+          component.shadowRoot.querySelector('#shimless3pDiagErrorDialogTitle')
+              .textContent.trim());
+      assertEquals(
+          'Check with the device manufacturer',
+          component.shadowRoot.querySelector('#shimless3pDiagErrorDialogBody')
+              .textContent.trim());
+
+      await clickButton('#shimless3pDiagErrorDialogButton');
+      assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
+      assertFalse(isAllButtonsDisabled);
+    });
+  }
+
+  // Verify the flow that there is an installable app, users choose to install,
+  // but don't accept the permission of the loaded app.
+  for (const [name, dialogAction] of [
+           [
+             'DontAcceptByButton',
+             () => clickButton(
+                 '#shimless3pDiagReviewPermissionDialogCancelButton'),
+           ],
+           [
+             'DontAcceptByCancel',
+             () => cancelDialog('#shimless3pDiagReviewPermissionDialog'),
+           ],
+  ]) {
+    test(`InstallInstallableBut${name}`, async () => {
+      service.setInstallable3pDiagnosticsAppPath(
+          {path: '/fake/installable.swbn'});
+      service.setInstallLastFound3pDiagnosticsApp(
+          /** @type {!Shimless3pDiagnosticsAppInfo} */ ({
+            name: 'Test Diag App',
+            permissionMessage: 'Run diagnostics test\nGet device info\n',
+          }));
+      await initialize();
+      assertTrue(!!component);
+
+      component.launch3pDiagnostics();
+
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+
+      await clickButton('#shimless3pDiagFindInstallableDialogInstallButton');
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
+      assertEquals(
+          'Review Test Diag App permissions',
+          component.shadowRoot
+              .querySelector('#shimless3pDiagReviewPermissionDialogTitle')
+              .textContent.trim());
+      assertDeepEquals(
+          ['It can:', 'Run diagnostics test', 'Get device info', ''],
+          component.shadowRoot
+              .querySelector(
+                  '#shimless3pDiagReviewPermissionDialogMessage span')
+              .textContent.split('\n')
+              .map(line => line.trim()));
+
+      await dialogAction();
+      assertEquals(
+          false,
+          service.getLastCompleteLast3pDiagnosticsInstallationApproval());
+      assertFalse(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
+      assertFalse(service.wasShow3pDiagnosticsAppCalled());
+      assertFalse(isAllButtonsDisabled);
+    });
+  }
+
+  // Verify the flow that there is an installable app, users choose to install,
+  // accept the permission of the loaded app, and the app is shown.
+  for (const [name, dialogAction] of [
+           [
+             'AcceptByButton',
+             () => clickButton(
+                 '#shimless3pDiagReviewPermissionDialogAcceptButton'),
+           ],
+           [
+             'AcceptByEnter',
+             () => pressEnterOnDialog('#shimless3pDiagReviewPermissionDialog'),
+           ],
+  ]) {
+    test(`InstallInstallableAnd${name}`, async () => {
+      service.setInstallable3pDiagnosticsAppPath(
+          {path: '/fake/installable.swbn'});
+      service.setInstallLastFound3pDiagnosticsApp(
+          /** @type {!Shimless3pDiagnosticsAppInfo} */ ({
+            name: 'Test Diag App',
+            permissionMessage: 'Run diagnostics test\nGet device info\n',
+          }));
+      service.setShow3pDiagnosticsAppResult(Show3pDiagnosticsAppResult.kOk);
+      await initialize();
+      assertTrue(!!component);
+
+      component.launch3pDiagnostics();
+
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+
+      await clickButton('#shimless3pDiagFindInstallableDialogInstallButton');
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
+
+      await dialogAction();
+      await flushTasks();
+      assertEquals(
+          true, service.getLastCompleteLast3pDiagnosticsInstallationApproval());
+      assertFalse(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
+      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertFalse(isAllButtonsDisabled);
+    });
+  }
+
+  // Verify the flow that there is an installable app without permission
+  // request, users choose to install, and the app is shown. If there is no
+  // permission request the permission review step should be skipped.
+  test('InstallInstallableNoPermissionRequest', async () => {
+    service.setInstallable3pDiagnosticsAppPath(
+        {path: '/fake/installable.swbn'});
+    service.setInstallLastFound3pDiagnosticsApp(
+        /** @type {!Shimless3pDiagnosticsAppInfo} */ ({
+          name: 'Test Diag App',
+          permissionMessage: null,
+        }));
+    service.setShow3pDiagnosticsAppResult(Show3pDiagnosticsAppResult.kOk);
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertTrue(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
+
+    await clickButton('#shimless3pDiagFindInstallableDialogInstallButton');
+    await flushTasks();
+    assertEquals(
+        true, service.getLastCompleteLast3pDiagnosticsInstallationApproval());
+    assertTrue(service.wasShow3pDiagnosticsAppCalled());
+    assertFalse(isAllButtonsDisabled);
+  });
 });
