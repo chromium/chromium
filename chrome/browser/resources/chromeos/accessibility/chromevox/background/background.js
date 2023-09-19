@@ -10,6 +10,7 @@ import {Flags} from '../../common/flags.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
+import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
@@ -82,6 +83,8 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   init_() {
+    this.earcons_.playEarcon(EarconId.CHROMEVOX_LOADING);
+
     // Export globals on ChromeVox.
     ChromeVox.braille = BrailleBackground.instance;
     // Read-only earcons.
@@ -367,6 +370,7 @@ export class Background extends ChromeVoxState {
    * @private
    */
   onIntroduceChromeVox_() {
+    this.earcons_.playEarcon(EarconId.CHROMEVOX_LOADED);
     ChromeVox.tts.speak(
         Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
         new TtsSpeechProperties({doNotInterrupt: true}));
