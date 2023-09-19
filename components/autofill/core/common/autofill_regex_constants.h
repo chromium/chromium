@@ -508,6 +508,27 @@ inline constexpr char16_t kFlightRe[] =
     u"|便名|航空会社";                   // ja-JP
 
 /////////////////////////////////////////////////////////////////////////////
+// iban_field.cc
+/////////////////////////////////////////////////////////////////////////////
+// Used to match the HTML name and label for International Bank Account Number
+// (IBAN).
+inline constexpr char16_t kIbanRe[] =
+    u"(\\biban(\\b|_)|international bank account number)";
+
+/////////////////////////////////////////////////////////////////////////////
+// merchant_promo_code_field.cc
+/////////////////////////////////////////////////////////////////////////////
+// "promo code", "promotion code", "promotional code" are all acceptable
+// keywords.
+inline constexpr char16_t kMerchantPromoCodeRe[] =
+    u"(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code";
+
+/////////////////////////////////////////////////////////////////////////////
+// All regexes below this point are non-parsing related and thus don't have a
+// JSON based definition.
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
 // validation.cc
 /////////////////////////////////////////////////////////////////////////////
 
@@ -630,11 +651,6 @@ inline constexpr char16_t kUPIVirtualPaymentAddressRe[] =
     u"yesbankltd"
     u")$";
 
-// Used to match the HTML name and label for International Bank Account Number
-// (IBAN).
-inline constexpr char16_t kIbanRe[] =
-    u"(\\biban(\\b|_)|international bank account number)";
-
 // Used to match field value that might be an International Bank Account Number.
 // TODO(crbug.com/977377): The regex doesn't match IBANs for Saint Lucia (LC),
 // Kazakhstan (KZ) and Romania (RO). Consider replace the regex with something
@@ -662,15 +678,6 @@ inline constexpr char16_t kCreditCard4DigitExpYearPattern[] =
 //       /blah/search_all.jsp
 inline constexpr char16_t kUrlSearchActionRe[] =
     u"/search(/|((\\w*\\.\\w+)?$))";
-
-/////////////////////////////////////////////////////////////////////////////
-// merchant_promo_code_field.cc
-/////////////////////////////////////////////////////////////////////////////
-// "promo code", "promotion code", "promotional code" are all acceptable
-// keywords.
-inline constexpr char16_t kMerchantPromoCodeRe[] =
-    u"(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code";
-
 
 }  // namespace autofill
 

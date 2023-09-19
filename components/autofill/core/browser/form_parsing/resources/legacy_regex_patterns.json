@@ -3052,68 +3052,6 @@
       }
     ]
   },
-  "UPI_VIRTUAL_PAYMENT_ADDRESS": {
-    "en": [
-      {
-        "positive_pattern": "^[\\w.+-_]+@(\\w+\\.ifsc\\.npci|aadhaar\\.npci|mobile\\.npci|rupay\\.npci)$",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      },
-      {
-        "positive_pattern": "^[\\w.+-_]+@(airtel|airtelpaymentsbank|albk|allahabadbank|allbank|andb|apb|apl|axis|axisbank|axisgo|bandhan|barodampay|birla|boi|cbin|cboi|centralbank|cmsidfc|cnrb|csbcash|csbpay|cub|dbs|dcb|dcbbank|denabank|dlb|eazypay|equitas|ezeepay|fbl|federal|finobank|hdfcbank|hsbc|icici|idbi|idbibank|idfc|idfcbank|idfcnetc|ikwik|imobile|indbank|indianbank|indianbk|indus|iob|jkb|jsb|jsbp|karb|karurvysyabank|kaypay|kbl|kbl052|kmb|kmbl|kotak|kvb|kvbank|lime|lvb|lvbank|mahb|obc|okaxis|okbizaxis|okhdfcbank|okicici|oksbi|paytm|payzapp|pingpay|pnb|pockets|psb|purz|rajgovhdfcbank|rbl|sbi|sc|scb|scbl|scmobile|sib|srcb|synd|syndbank|syndicate|tjsb|tjsp|ubi|uboi|uco|unionbank|unionbankofindia|united|upi|utbi|vijayabank|vijb|vjb|ybl|yesbank|yesbankltd)$",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
-  "INTERNATIONAL_BANK_ACCOUNT_NUMBER": {
-    "en": [
-      {
-        "positive_pattern": "^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
-  "VALIDATION_CREDIT_CARD_VERIFICATION_CODE": {
-    "en": [
-      {
-        "positive_pattern": "^\\d{3,4}$",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
-  "VALIDATION_CREDIT_CARD_EXP_YEAR": {
-    "en": [
-      {
-        "positive_pattern": "^[2][0][1-9][0-9]$",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
-  "URL_SEARCH_ACTION": {
-    "en": [
-      {
-        "positive_pattern": "/search(/|((\\w*\\.\\w+)?$))",
-        "positive_score": 0,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ]
-  },
   "MERCHANT_PROMO_CODE": {
     "en": [
       {
