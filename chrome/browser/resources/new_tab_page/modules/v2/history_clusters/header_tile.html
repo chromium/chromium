@@ -80,11 +80,6 @@
     align-items: start;
   }
 
-  :host([suggestion-chip-header-enabled_][format='wide']
-      :not([show-related-searches])) #suggestion-chip {
-    height: 116px;
-  }
-
   h2 {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -103,6 +98,7 @@
   #suggestion-chip {
     display: flex;
     font-size: var(--ntp-module-text-size);
+    height: 100%;
     position: relative;
     text-decoration: none;
   }

@@ -75,8 +75,8 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       imagesEnabled_: {
         type: Boolean,
-        computed: `computeImagesEnabled_(cart)`,
         reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('historyClustersImagesEnabled'),
       },
 
       showRelatedSearches: {
@@ -131,11 +131,6 @@ export class HistoryClustersModuleElement extends I18nMixin
     HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
         this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly,
         this.cluster.id);
-  }
-
-  private computeImagesEnabled_(): boolean {
-    return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
-        !!this.cart;
   }
 
   private computeShowRelatedSearches(): boolean {
