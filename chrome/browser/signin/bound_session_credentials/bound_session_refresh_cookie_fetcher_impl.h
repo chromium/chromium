@@ -106,6 +106,7 @@ class BoundSessionRefreshCookieFetcherImpl
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
+  absl::optional<base::TimeTicks> cookie_refresh_duration_;
   base::WeakPtrFactory<BoundSessionRefreshCookieFetcherImpl> weak_ptr_factory_{
       this};
 };

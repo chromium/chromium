@@ -75,6 +75,10 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     absl::optional<std::string> sec_session_challenge_response) {
+  if (!cookie_refresh_duration_.has_value()) {
+    cookie_refresh_duration_ = base::TimeTicks::Now();
+  }
+
   // TODO(b/273920907): Update the `traffic_annotation` setting once a mechanism
   // allowing the user to disable the feature is implemented.
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -136,9 +140,6 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
   cookie_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
   request->trusted_params->cookie_observer = std::move(remote);
 
-  // TODO(b/273920907): Figure out how to handle redirects. Currently
-  // `network::SimpleURLLoader::SetOnRedirectCallback()` doesn't support
-  // modifying the headers nor asynchronously resuming the reguest.
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   url_loader_->SetRetryOptions(
@@ -222,6 +223,13 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   }
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.CookieRotationResult", result_);
+
+  CHECK(cookie_refresh_duration_.has_value());
+  base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;
+  cookie_refresh_duration_.reset();
+  base::UmaHistogramMediumTimes(
+      "Signin.BoundSessionCredentials.CookieRotationTotalDuration", duration);
+
   std::move(callback_).Run(result_);
 }
 
@@ -297,8 +305,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     base::ElapsedTimer generate_assertion_timer,
     std::string assertion) {
   base::UmaHistogramMediumTimes(
-      "Signin.BoundSessionCredentials."
-      "CookieRotationGenerateAssertionDuration",
+      "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
 
   if (assertion.empty()) {
