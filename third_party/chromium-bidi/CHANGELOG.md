@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.28](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.27...chromium-bidi-v0.4.28) (2023-09-20)
+
+
+### Features
+
+* handle `Fetch.requestPaused` event ([#1304](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1304)) ([5b6a579](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5b6a579ed4ccab359935a6d531c623106afd3bbd)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* support redirect response ([#1313](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1313)) ([7c17942](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7c179422ea2f37c9857ca93bc0879a7a6354041a))
+
+
+### Bug Fixes
+
+* restore functionality to subscribe to all CDP events ([#1301](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1301)) ([171518f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/171518f1a0d3ebc24301075183725f30570e54a8))
+* separate click count by button ([#1321](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1321)) ([9ebf2ed](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9ebf2ed14903ff0fb88613bdaf636c7a81526a7a))
+
 ## [0.4.27](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.26...chromium-bidi-v0.4.27) (2023-09-12)
 
 
