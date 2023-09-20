@@ -17,6 +17,13 @@ suite('TabSearchAppTest', () => {
   let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
+  // http://crbug.com/1481787: Replace this function with
+  // tabSearchPage.setValue() to be able to reproduce the bug.
+  function setSearchText(text: string) {
+    tabSearchPage.getSearchInput().value = text;
+    tabSearchPage.onSearchTermInput();
+  }
+
   function verifyTabIds(rows: NodeListOf<HTMLElement>, ids: number[]) {
     assertEquals(ids.length, rows.length);
     rows.forEach((row, index) => {
@@ -139,12 +146,12 @@ suite('TabSearchAppTest', () => {
           recentlyClosedSectionExpanded: true,
         }),
         {useFuzzySearch: false});
-    tabSearchPage.setValue('bing');
+    setSearchText('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
-    tabSearchPage.setValue('paypal');
+    setSearchText('paypal');
     await flushTasks();
     verifyTabIds(queryRows(), [100]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
@@ -177,7 +184,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    tabSearchPage.setValue('sample');
+    setSearchText('sample');
     await flushTasks();
 
     // Assert that the recently closed items associated to a recently closed
@@ -188,7 +195,7 @@ suite('TabSearchAppTest', () => {
 
   test('No tab selected when there are no search matches', async () => {
     await setupTest(createProfileData());
-    tabSearchPage.setValue('Twitter');
+    setSearchText('Twitter');
     await flushTasks();
     assertEquals(0, queryRows().length);
     assertEquals(-1, tabSearchPage.getSelectedIndex());
@@ -519,7 +526,7 @@ suite('TabSearchAppTest', () => {
 
     const searchField = tabSearchPage.$.searchField;
 
-    tabSearchPage.setValue('Apple');
+    setSearchText('Apple');
     await flushTasks();
     verifyTabIds(queryRows(), [6, 4]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
@@ -574,7 +581,7 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    tabSearchPage.setValue('bing');
+    setSearchText('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
 
@@ -604,7 +611,7 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    tabSearchPage.setValue('bing');
+    setSearchText('bing');
     await flushTasks();
     await waitAfterNextRender(tabSearchPage);
     verifyTabIds(queryRows(), [2]);
