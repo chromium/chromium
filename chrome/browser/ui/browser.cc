@@ -2387,8 +2387,8 @@ void Browser::FileSelectedWithExtraInfo(const ui::SelectedFileInfo& file_info,
 
   profile_->set_last_selected_directory(file_info.file_path.DirName());
 
-  GURL url = std::move(file_info.url)
-                 .value_or(net::FilePathToFileURL(file_info.local_path));
+  GURL url =
+      file_info.url.value_or(net::FilePathToFileURL(file_info.local_path));
 
   if (url.is_empty())
     return;
