@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -13,6 +14,8 @@
 
 const char kSelectFileDialogExtensionUserDataKey[] =
     "SelectFileDialogExtensionUserDataKey";
+
+static policy::DlpFileDestination* g_fake_dialog_caller = nullptr;
 
 SelectFileDialogExtensionUserData::~SelectFileDialogExtensionUserData() =
     default;
@@ -74,10 +77,21 @@ SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
     return absl::nullopt;
   }
 
+  if (g_fake_dialog_caller) {
+    CHECK_IS_TEST();
+    return *g_fake_dialog_caller;
+  }
+
   SelectFileDialogExtensionUserData* data =
       static_cast<SelectFileDialogExtensionUserData*>(
           web_contents->GetUserData(kSelectFileDialogExtensionUserDataKey));
   return data ? data->dialog_caller() : absl::nullopt;
+}
+
+// static
+void SelectFileDialogExtensionUserData::SetDialogCallerForTesting(
+    policy::DlpFileDestination* dialog_caller) {
+  g_fake_dialog_caller = dialog_caller;
 }
 
 SelectFileDialogExtensionUserData::SelectFileDialogExtensionUserData(

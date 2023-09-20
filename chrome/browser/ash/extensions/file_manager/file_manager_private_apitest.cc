@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_misc.h"
+#include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
@@ -1210,5 +1212,21 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "showPolicyDialog"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_GetDialogCaller) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+  policy::DlpFileDestination caller(GURL("https://example.com"));
+  SelectFileDialogExtensionUserData::SetDialogCallerForTesting(&caller);
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "getDialogCaller"},
                                {.load_as_component = true}));
 }

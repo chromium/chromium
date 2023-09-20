@@ -214,6 +214,18 @@ chrome.test.getConfig(config => {
         }
       ]);
     break;
+    case 'getDialogCaller':
+      chrome.test.runTests([
+        async function getDialogCaller() {
+          chrome.fileManagerPrivate.getDialogCaller(
+            chrome.test.callbackPass(
+              caller => {
+                chrome.test.assertEq({url: 'https://example.com/'},
+                caller)})
+            );
+        }
+      ]);
+      break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {

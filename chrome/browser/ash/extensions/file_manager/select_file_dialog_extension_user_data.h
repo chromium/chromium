@@ -45,6 +45,10 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
   // if it can be found.
   static absl::optional<policy::DlpFileDestination>
   GetDialogCallerForWebContents(content::WebContents* web_contents);
+  // Sets the fake dialog caller value to be used as return value for
+  // `GetDialogCallerForWebContents()` calls in tests.
+  static void SetDialogCallerForTesting(
+      policy::DlpFileDestination* dialog_caller);
 
  private:
   SelectFileDialogExtensionUserData(
