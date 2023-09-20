@@ -71,7 +71,6 @@ public class MockTab extends TabImpl {
             TabState tabState, boolean initializeRenderer) {
         if (loadUrlParams != null) {
             mGurlOverride = new GURL(loadUrlParams.getUrl());
-            CriticalPersistedTabData.from(this).setUrl(mGurlOverride);
         }
         TabHelpers.initTabHelpers(this, parent);
     }
@@ -154,5 +153,10 @@ public class MockTab extends TabImpl {
 
     public void setParentId(int parentId) {
         mParentId = parentId;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        super.setTitle(title);
     }
 }

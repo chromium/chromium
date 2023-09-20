@@ -12,7 +12,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -161,7 +160,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         if (tab.getWebContents() != null) {
             committedUrlOrFrozenUrl = tab.getWebContents().getLastCommittedUrl();
         } else {
-            if (CriticalPersistedTabData.from(tab).getWebContentsState() == null) return false;
+            if (tab.getWebContentsState() == null) return false;
 
             committedUrlOrFrozenUrl = tab.getUrl();
         }
@@ -214,7 +213,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // restoring from the WebContentsState. This tempState acts as an empty object placeholder.
         if (tab.getWebContents() != null) return tempState;
 
-        WebContentsState state = CriticalPersistedTabData.from(tab).getWebContentsState();
+        WebContentsState state = tab.getWebContentsState();
         return (state == null) ? tempState : state;
     }
 

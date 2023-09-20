@@ -214,6 +214,23 @@ public class TabImpl implements Tab {
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
+    /**
+     * Navigation state of the WebContents as returned by nativeGetContentsStateAsByteBuffer(),
+     * stored to be inflated on demand using unfreezeContents(). If this is not null, there is no
+     * WebContents around. Upon tab switch WebContents will be unfrozen and the variable will be set
+     * to null.
+     */
+    private WebContentsState mWebContentsState;
+
+    /**
+     * Title of the ContentViews webpage.
+     */
+    private String mTitle;
+
+    /**
+     * URL of the page currently loading. Used as a fall-back in case tab restore fails.
+     */
+    private GURL mUrl;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -380,12 +397,10 @@ public class TabImpl implements Tab {
         // If we have a ContentView, or a NativePage, or the url is not empty, we have a WebContents
         // so cache the WebContent's url. If not use the cached version.
         if (getWebContents() != null || isNativePage() || !url.getSpec().isEmpty()) {
-            CriticalPersistedTabData.from(this).setUrl(url);
+            mUrl = url;
         }
 
-        return CriticalPersistedTabData.from(this).getUrl() != null
-                ? CriticalPersistedTabData.from(this).getUrl()
-                : GURL.emptyGURL();
+        return mUrl != null ? mUrl : GURL.emptyGURL();
     }
 
     @Override
@@ -395,10 +410,9 @@ public class TabImpl implements Tab {
 
     @CalledByNative
     @Override
-    // TODO(crbug.com/1113834) migrate getTitle() to CriticalPersistedTabData.from(tab).getTitle()
     public String getTitle() {
-        if (CriticalPersistedTabData.from(this).getTitle() == null) updateTitle();
-        return CriticalPersistedTabData.from(this).getTitle();
+        if (mTitle == null) updateTitle();
+        return mTitle;
     }
 
     Context getThemedApplicationContext() {
@@ -903,7 +917,7 @@ public class TabImpl implements Tab {
             mCreationState = creationState;
             mPendingLoadParams = loadUrlParams;
             if (loadUrlParams != null) {
-                CriticalPersistedTabData.from(this).setUrl(new GURL(loadUrlParams.getUrl()));
+                mUrl = new GURL(loadUrlParams.getUrl());
             }
 
             // The {@link mDelegateFactory} needs to be set before calling
@@ -926,8 +940,7 @@ public class TabImpl implements Tab {
 
             // If there is a frozen WebContents state or a pending lazy load, don't create a new
             // WebContents. Restoring will be done when showing the tab in the foreground.
-            if (CriticalPersistedTabData.from(this).getWebContentsState() != null
-                    || getPendingLoadParams() != null) {
+            if (mWebContentsState != null || getPendingLoadParams() != null) {
                 return;
             }
 
@@ -993,12 +1006,10 @@ public class TabImpl implements Tab {
      */
     void restoreFieldsFromState(TabState state) {
         assert state != null;
-        CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
+        mWebContentsState = state.contentsState;
         setTimestampMillis(state.timestampMillis);
-        CriticalPersistedTabData.from(this).setUrl(
-                new GURL(state.contentsState.getVirtualUrlFromState()));
-        CriticalPersistedTabData.from(this).setTitle(
-                state.contentsState.getDisplayTitleFromState());
+        mUrl = new GURL(state.contentsState.getVirtualUrlFromState());
+        setTitle(state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
         setUserAgent(state.userAgent);
@@ -1251,9 +1262,9 @@ public class TabImpl implements Tab {
      * @param title Title of the page.
      */
     void updateTitle(String title) {
-        if (TextUtils.equals(CriticalPersistedTabData.from(this).getTitle(), title)) return;
+        if (TextUtils.equals(mTitle, title)) return;
 
-        CriticalPersistedTabData.from(this).setTitle(title);
+        setTitle(title);
         notifyPageTitleChanged();
     }
 
@@ -1384,23 +1395,18 @@ public class TabImpl implements Tab {
 
     @CalledByNative
     private ByteBuffer getWebContentsStateByteBuffer() {
-        WebContentsState webContentsState =
-                CriticalPersistedTabData.from(this).getWebContentsState();
-
         // Return a temp byte buffer if the state is null.
-        if (webContentsState == null) {
+        if (mWebContentsState == null) {
             byte[] bytes = new byte[0];
             return ByteBuffer.wrap(bytes);
         }
-        return webContentsState.buffer();
+        return mWebContentsState.buffer();
     }
 
     @CalledByNative
     private int getWebContentsStateSavedStateVersion() {
-        WebContentsState webContentsState =
-                CriticalPersistedTabData.from(this).getWebContentsState();
         // Return an invalid saved state version if the state is null.
-        return webContentsState == null ? -1 : webContentsState.version();
+        return mWebContentsState == null ? -1 : mWebContentsState.version();
     }
 
     /**
@@ -1564,14 +1570,13 @@ public class TabImpl implements Tab {
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             if (isFrozen()) {
-                assert CriticalPersistedTabData.from(this).getWebContentsState()
+                assert mWebContentsState
                         != null
                     : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
             }
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
-            if ((isFrozen() && CriticalPersistedTabData.from(this).getWebContentsState() != null
-                        && !unfreezeContents())
+            if ((isFrozen() && mWebContentsState != null && !unfreezeContents())
                     || !needsReload()) {
                 return;
             }
@@ -1602,12 +1607,10 @@ public class TabImpl implements Tab {
         boolean restored = true;
         try {
             TraceEvent.begin("Tab.unfreezeContents");
-            WebContentsState webContentsState =
-                    CriticalPersistedTabData.from(this).getWebContentsState();
-            assert webContentsState != null;
+            assert mWebContentsState != null;
 
             WebContents webContents = WebContentsStateBridge.restoreContentsFromByteBuffer(
-                    webContentsState, isHidden());
+                    mWebContentsState, isHidden());
             if (webContents == null) {
                 // State restore failed, just create a new empty web contents as that is the best
                 // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
@@ -1623,13 +1626,11 @@ public class TabImpl implements Tab {
             View compositorView = compositorViewHolderSupplier.get();
             webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
 
-            CriticalPersistedTabData.from(this).setWebContentsState(null);
+            mWebContentsState = null;
             initWebContents(webContents);
 
             if (!restored) {
-                String url = CriticalPersistedTabData.from(this).getUrl().getSpec().isEmpty()
-                        ? UrlConstants.NTP_URL
-                        : CriticalPersistedTabData.from(this).getUrl().getSpec();
+                String url = mUrl.getSpec().isEmpty() ? UrlConstants.NTP_URL : mUrl.getSpec();
                 loadUrl(new LoadUrlParams(url, PageTransition.GENERATED));
             }
         } finally {
@@ -1690,6 +1691,21 @@ public class TabImpl implements Tab {
         mUserAgent = userAgent;
     }
 
+    @Override
+    public WebContentsState getWebContentsState() {
+        return mWebContentsState;
+    }
+
+    @VisibleForTesting
+    public void setWebContentsState(WebContentsState webContentsState) {
+        mWebContentsState = webContentsState;
+    }
+
+    @VisibleForTesting
+    protected void setTitle(String title) {
+        mTitle = title;
+    }
+
     /**
      * Throws a RuntimeException. Useful for testing crash reports with obfuscated Java stacktraces.
      */
@@ -1704,13 +1720,11 @@ public class TabImpl implements Tab {
      */
     @CalledByNative
     private void deleteNavigationEntriesFromFrozenState(long predicate) {
-        WebContentsState webContentsState =
-                CriticalPersistedTabData.from(this).getWebContentsState();
-        if (webContentsState == null) return;
+        if (mWebContentsState == null) return;
         WebContentsState newState =
-                WebContentsStateBridge.deleteNavigationEntries(webContentsState, predicate);
+                WebContentsStateBridge.deleteNavigationEntries(mWebContentsState, predicate);
         if (newState != null) {
-            CriticalPersistedTabData.from(this).setWebContentsState(newState);
+            mWebContentsState = newState;
             notifyNavigationEntriesDeleted();
         }
     }

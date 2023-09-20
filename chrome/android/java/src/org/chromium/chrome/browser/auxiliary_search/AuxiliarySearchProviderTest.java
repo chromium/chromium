@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -89,7 +88,7 @@ public class AuxiliarySearchProviderTest {
         for (int i = 0; i < 200; i++) {
             MockTab tab = (MockTab) mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
-            CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + Integer.toString(i));
+            tab.setTitle(TAB_TITLE + Integer.toString(i));
             tab.setTimestampMillis(i);
         }
 
@@ -160,14 +159,14 @@ public class AuxiliarySearchProviderTest {
         // Add a normal tab
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add a null title tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(1)));
         tab.setTimestampMillis(1);
-        CriticalPersistedTabData.from(tab).setTitle(null);
+        tab.setTitle(null);
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
         AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
@@ -187,14 +186,14 @@ public class AuxiliarySearchProviderTest {
         // Add a normal tab
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add an empty title tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "1"));
         tab.setTimestampMillis(1);
-        CriticalPersistedTabData.from(tab).setTitle("");
+        tab.setTitle("");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
         AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
@@ -214,14 +213,14 @@ public class AuxiliarySearchProviderTest {
         // Add a normal tab
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add a null url tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(null);
         tab.setTimestampMillis(1);
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
         AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
@@ -241,14 +240,14 @@ public class AuxiliarySearchProviderTest {
         // Add a normal tab
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add an invalid url tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL("invalid"));
         tab.setTimestampMillis(1);
-        CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
+        tab.setTitle(TAB_TITLE + "0");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
         AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
@@ -270,7 +269,7 @@ public class AuxiliarySearchProviderTest {
         for (int i = 0; i < 200; i++) {
             MockTab tab = (MockTab) mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
-            CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + Integer.toString(i));
+            tab.setTitle(TAB_TITLE + Integer.toString(i));
             tab.setTimestampMillis(i);
             if (i >= 100) {
                 tabList.add(tab);

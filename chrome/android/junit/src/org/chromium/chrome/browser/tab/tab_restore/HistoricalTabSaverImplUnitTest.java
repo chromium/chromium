@@ -22,7 +22,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.nio.ByteBuffer;
@@ -114,10 +113,8 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = new MockTab(0, false);
-        CriticalPersistedTabData tempData = new CriticalPersistedTabData(tab);
-        tempData.setWebContentsState(tempState);
-        tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, tempData);
+        MockTab tab = (MockTab) MockTab.createAndInitialize(0, false);
+        tab.setWebContentsState(tempState);
 
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
@@ -151,10 +148,8 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = new MockTab(0, false);
-        CriticalPersistedTabData tempData = new CriticalPersistedTabData(tab);
-        tempData.setWebContentsState(tempState);
-        tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, tempData);
+        MockTab tab = (MockTab) MockTab.createAndInitialize(0, false);
+        tab.setWebContentsState(tempState);
 
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));

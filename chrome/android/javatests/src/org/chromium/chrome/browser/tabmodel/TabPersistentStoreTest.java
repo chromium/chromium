@@ -1024,9 +1024,8 @@ public class TabPersistentStoreTest {
                     Assert.assertEquals("Incorrect regular tab at position " + i,
                             info.contents[tabInfoIndex].tabId, tab.getId());
                 } else {
-                    String url = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                        return CriticalPersistedTabData.from(tab).getUrl().getSpec();
-                    });
+                    String url = TestThreadUtils.runOnUiThreadBlocking(
+                            () -> { return tab.getUrl().getSpec(); });
                     Assert.assertEquals(
                             "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
                 }
@@ -1041,9 +1040,8 @@ public class TabPersistentStoreTest {
                     Assert.assertEquals("Incorrect incognito tab at position " + i,
                             info.contents[i].tabId, tab.getId());
                 } else {
-                    String url = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                        return CriticalPersistedTabData.from(tab).getUrl().getSpec();
-                    });
+                    String url = TestThreadUtils.runOnUiThreadBlocking(
+                            () -> { return tab.getUrl().getSpec(); });
                     Assert.assertEquals(
                             "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
                 }

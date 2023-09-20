@@ -316,9 +316,13 @@ public interface Tab extends TabLifecycle {
      */
     @TabUserAgent
     int getUserAgent();
-
     /**
      * Set user agent type for the {@link Tab}
      */
     void setUserAgent(@TabUserAgent int userAgent);
+
+    /**
+     * @return content state bytes for the {@link Tab}
+     */
+    WebContentsState getWebContentsState();
 }
