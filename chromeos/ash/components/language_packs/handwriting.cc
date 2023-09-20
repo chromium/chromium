@@ -24,23 +24,6 @@ namespace ash::language_packs {
 
 using ::ash::input_method::InputMethodManager;
 
-base::flat_set<std::string> MapIdsToHandwritingLocales(
-    base::span<const std::string> ids,
-    base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
-        id_to_handwriting_locale) {
-  std::vector<std::string> handwriting_locales;
-
-  for (const std::string& engine_id : ids) {
-    absl::optional<std::string> handwriting_language =
-        id_to_handwriting_locale.Run(engine_id);
-    if (handwriting_language.has_value()) {
-      handwriting_locales.push_back(std::move(*handwriting_language));
-    }
-  }
-
-  return handwriting_locales;
-}
-
 // TODO: b/294162606 - Move this code to the input_method codebase.
 absl::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,

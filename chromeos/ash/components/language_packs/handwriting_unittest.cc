@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
+#include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,17 +34,6 @@ using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 class HandwritingTest : public testing::Test {};
-
-absl::optional<std::string> GetSecondUnderscorePart(
-    const std::string& engine_id) {
-  std::vector<std::string> split = base::SplitString(
-      engine_id, "_", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (split.size() < 2) {
-    return absl::nullopt;
-  } else {
-    return split[1];
-  }
-}
 
 // Populates proto message DlcsWithContent with the given list of dlc_ids.
 // All fields other than `id` are left as default.
@@ -154,48 +144,6 @@ class FakeInputMethodManager : public MockInputMethodManager {
   DelegateUtil delegate_util_;
 };
 
-TEST_F(HandwritingTest, MapIdsToHandwritingLocalesNoInput) {
-  EXPECT_THAT(
-      MapIdsToHandwritingLocales(
-          {}, base::BindRepeating([](const std::string& unused_engine_id)
-                                      -> absl::optional<std::string> {
-            ADD_FAILURE() << "engine_id_to_handwriting_locale was called";
-            return "en";
-          })),
-      IsEmpty());
-}
-
-TEST_F(HandwritingTest, MapIdsToHandwritingLocalesAllToNullopt) {
-  EXPECT_THAT(MapIdsToHandwritingLocales(
-                  {{"qwerty_en", "qwertz_de"}},
-                  base::BindRepeating([](const std::string& unused_engine_id)
-                                          -> absl::optional<std::string> {
-                    return absl::nullopt;
-                  })),
-              IsEmpty());
-}
-
-TEST_F(HandwritingTest, MapIdsToHandwritingLocalesAllToUniqueStrings) {
-  EXPECT_THAT(
-      MapIdsToHandwritingLocales({{"qwerty_en", "qwertz_de"}},
-                                 base::BindRepeating(GetSecondUnderscorePart)),
-      UnorderedElementsAre("en", "de"));
-}
-
-TEST_F(HandwritingTest, MapIdsToHandwritingLocalesRepeatedString) {
-  EXPECT_THAT(
-      MapIdsToHandwritingLocales({{"qwerty_en", "qzertz_de", "qwertz_en"}},
-                                 base::BindRepeating(GetSecondUnderscorePart)),
-      UnorderedElementsAre("en", "de"));
-}
-
-TEST_F(HandwritingTest, MapIdsToHandwritingLocalesSomeNullopt) {
-  EXPECT_THAT(
-      MapIdsToHandwritingLocales({{"qwerty_en", "nohandwriting", "qwertz_de"}},
-                                 base::BindRepeating(GetSecondUnderscorePart)),
-      UnorderedElementsAre("en", "de"));
-}
-
 TEST_F(HandwritingTest, MapEngineIdToHandwritingLocaleNoInputMethods) {
   DelegateUtil delegate_util({});
   input_method::InputMethodUtil* util = delegate_util.util();
@@ -252,7 +200,7 @@ TEST_F(HandwritingTest, MapEngineIdsToHandwritingLocalesIntegration) {
   input_method::InputMethodUtil* util = delegate_util.util();
 
   EXPECT_THAT(
-      MapIdsToHandwritingLocales(
+      MapThenFilterStrings(
           {{"xkb:de::ger", "xkb:us::eng", "xkb:gb:extd:eng", "xkb:fr::fra"}},
           base::BindRepeating(MapEngineIdToHandwritingLocale, util)),
       UnorderedElementsAre("en", "fr"));
@@ -338,7 +286,7 @@ TEST_F(HandwritingTest, MapInputMethodIdsToHandwritingLocalesIntegration) {
   input_method::InputMethodUtil* util = delegate_util.util();
 
   EXPECT_THAT(
-      MapIdsToHandwritingLocales(
+      MapThenFilterStrings(
           {{extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger"),
             extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"),
             extension_ime_util::GetInputMethodIDByEngineID("xkb:gb:extd:eng"),
