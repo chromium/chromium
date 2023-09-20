@@ -81,7 +81,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
   ASSERT_EQ(expected_tab_item_count, tab_item_count);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, SwitchToTabAction) {
+// Flaky on ChromeOS. See https://crbug.com/1484897
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SwitchToTabAction DISABLED_SwitchToTabAction
+#else
+#define MAYBE_SwitchToTabAction SwitchToTabAction
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, MAYBE_SwitchToTabAction) {
   int tab_count = browser()->tab_strip_model()->GetTabCount();
   int tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1));
