@@ -25,6 +25,7 @@ GLOB_INCLUDES=(
   toolchains/llvm/prebuilt/linux-x86_64/${LIB}/clang/${CLANG_VERSION}/lib/linux/*/lldb-server
   toolchains/llvm/prebuilt/linux-x86_64/${LIB}/lib*.*
   toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3
+  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3.10
   toolchains/llvm/prebuilt/linux-x86_64/python3
   # Used for compilation.
   toolchains/llvm/prebuilt/linux-x86_64/sysroot
