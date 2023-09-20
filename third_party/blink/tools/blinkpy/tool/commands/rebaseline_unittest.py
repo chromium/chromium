@@ -996,8 +996,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
     def test_rebaseline_test_passes_unexpectedly_but_on_another_port(self):
         # Similar to test_rebaseline_test_passes_unexpectedly, except that the
         # build was run on a different port than the port we are rebaselining
-        # (possible when rebaseline-cl --fill-missing), in which case we don't
-        # update the expectations.
+        # (possible when rebaseline-cl fills in missing results), in which case
+        # we don't update the expectations.
         self._write(
             self.test_expectations_path,
             '# results: [ Failure ]\nuserscripts/all-pass.html [ Failure ]\n')

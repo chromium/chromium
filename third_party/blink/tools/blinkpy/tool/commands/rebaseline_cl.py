@@ -63,15 +63,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         super(RebaselineCL, self).__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
-            optparse.make_option('--fill-missing',
-                                 dest='fill_missing',
-                                 action='store_true',
-                                 default=None,
-                                 help=optparse.SUPPRESS_HELP),
-            optparse.make_option('--no-fill-missing',
-                                 dest='fill_missing',
-                                 action='store_false',
-                                 help=optparse.SUPPRESS_HELP),
             self.test_name_file_option,
             optparse.make_option(
                 '--builders',
@@ -124,12 +115,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._tool = tool
         self._dry_run = options.dry_run
         self.git_cl = self.git_cl or GitCL(tool)
-
-        # TODO(crbug.com/1383284): Cleanup this warning and the options above.
-        if options.fill_missing is not None:
-            _log.warning(
-                '`--{no-,}fill-missing` is deprecated and will be removed '
-                'soon due to limited utility (crbug.com/1383284).')
 
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
