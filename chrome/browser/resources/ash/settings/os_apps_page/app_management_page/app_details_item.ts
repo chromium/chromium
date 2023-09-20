@@ -70,20 +70,13 @@ export class AppManagementAppDetailsItem extends
   }
 
   /**
-   * The version is only shown for Android and Chrome apps.
+   * The version is shown for every app apart from System apps.
    */
   private shouldShowVersion_(app: App): boolean {
-    if (!app.version) {
+    if (app.installReason === InstallReason.kSystem) {
       return false;
     }
-
-    switch (app.type) {
-      case AppType.kArc:
-      case AppType.kChromeApp:
-        return true;
-      default:
-        return false;
-    }
+    return Boolean(app.version);
   }
 
   /**
