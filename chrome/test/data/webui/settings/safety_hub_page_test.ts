@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
+import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent,SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -66,44 +66,51 @@ suite('SafetyHubPage', function() {
     return flushTasks();
   });
 
+  function assertNoRecommendationState(shouldBeVisible: boolean) {
+    assertEquals(
+        shouldBeVisible, isChildVisible(testElement, '#emptyStateModule'));
+    assertEquals(
+        shouldBeVisible, isChildVisible(testElement, '#userEducationModule'));
+  }
+
   test(
       'No Recommendation State Visibility With Unused Site Permissions Module',
       async function() {
         // The element is visible when there is nothing to review.
-        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(true);
 
         // The element becomes hidden if the is any module that needs attention.
         webUIListenerCallback(
             SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
             unusedSitePermissionMockData);
         await flushTasks();
-        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(false);
 
         // Once hidden, it remains hidden as other modules are visible.
         webUIListenerCallback(
             SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
         await flushTasks();
-        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(false);
       });
 
   test(
       'No Recommendation State Visibility With Notification Permissions Module',
       async function() {
         // The element is visible when there is nothing to review.
-        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(true);
 
         // The element becomes hidden if the is any module that needs attention.
         webUIListenerCallback(
             SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
             notificationPermissionMockData);
         await flushTasks();
-        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(false);
 
         // Once hidden, it remains hidden as other modules are visible.
         webUIListenerCallback(
             SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
         await flushTasks();
-        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+        assertNoRecommendationState(false);
       });
 
   test(

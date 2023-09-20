@@ -4376,4 +4376,10 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_GO_NOTIFICATION_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Review Notification Permissions' in this page shows the websites that send a lot of notifications. This label is for the action menu item that navigates users to notification the settings page.">
     Go to notification settings
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_SUBHEADER" desc="The subheader of the second item in the 'User Education Module' in the Safety Hub page. This item explains Incognito mode.">
+    Incognito mode keeps <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>your browsing private from others<ph name="END_LINK">&lt;/a&gt;</ph> who use your device
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
+    Safe Browsing
+  </message>
 </grit-part>

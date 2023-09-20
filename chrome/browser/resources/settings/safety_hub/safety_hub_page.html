@@ -68,7 +68,14 @@
 </template>
 <template is="dom-if" if="[[showNoRecommendationsState_]]">
   <settings-safety-hub-module id="emptyStateModule" class="module box"
-    header="$i18n{safetyHubEmptyStateModuleHeader}"
-    subheader="$i18n{safetyHubEmptyStateModuleSubheader}">
+      header="$i18n{safetyHubEmptyStateModuleHeader}"
+      subheader="$i18n{safetyHubEmptyStateModuleSubheader}">
+  </settings-safety-hub-module>
+  <settings-safety-hub-module
+      id="userEducationModule"
+      class="module box"
+      header="$i18n{safetyHubUserEduModuleHeader}"
+      header-icon="settings20:lightbulb"
+      sites="[[userEducationItemList_]]">
   </settings-safety-hub-module>
 </template>

@@ -13,13 +13,15 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './safety_hub_module.html.js';
 
 export interface SiteInfo {
   origin: string;
-  detail: string;
+  detail: string|TrustedHTML;
+  icon?: string;
 }
 
 export interface SiteInfoWithTarget extends SiteInfo {
@@ -68,7 +70,7 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
 
   sites: SiteInfo[];
   header: string;
-  subheader: string;
+  subheader: string|TrustedHTML;
   headerIcon: string;
   buttonIcon: string;
   moreActionVisible: boolean;
@@ -87,6 +89,10 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
       composed: true,
       detail: item,
     }));
+  }
+
+  private sanitizeInnerHtml_(rawString: string): TrustedHTML {
+    return sanitizeInnerHtml(rawString);
   }
 }
 

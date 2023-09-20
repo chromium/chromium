@@ -91,6 +91,9 @@ extern const char kIsolatedAppScheme[];
 // widgets instead of using HTML.
 extern const char kChromeNativeScheme[];
 
+// The URL of safe section in Chrome page (https://www.google.com/chrome).
+extern const char kChromeSafePageURL[];
+
 // Pages under chrome-search.
 extern const char kChromeSearchLocalNtpHost[];
 
@@ -206,6 +209,9 @@ extern const char kHighEfficiencyModeLearnMoreUrl[];
 // exceptions add dialog.
 extern const char kHighEfficiencyModeTabDiscardingHelpUrl[];
 
+// The URL to the help center article of Incognito mode.
+extern const char kIncognitoHelpCenterURL[];
+
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
 extern const char kLearnMoreReportingURL[];
@@ -265,6 +271,9 @@ extern const char kSafeBrowsingHelpCenterUpdatedURL[];
 
 // "Learn more" URL for Enhanced Protection
 extern const char kSafeBrowsingInChromeHelpCenterURL[];
+
+// The URL of Safe Browsing p-tour.
+extern const char kSafeBrowsingPTourURL[];
 
 // "Learn more" URL for safety tip bubble.
 extern const char kSafetyTipHelpCenterURL[];

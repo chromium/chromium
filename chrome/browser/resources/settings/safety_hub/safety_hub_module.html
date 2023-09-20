@@ -33,7 +33,7 @@
     max-width: 100%;
   }
 
-  site-favicon, #header-icon {
+  site-favicon, #header-icon, .item-icon {
     padding-inline-end: 16px;
   }
 
@@ -43,10 +43,14 @@
     flex: 1;
     margin-top: 16px;
   }
+
+  .link a[href] {
+    text-decoration: none;
+  }
 </style>
 
 <div id="header-wrapper">
-  <iron-icon id="header-icon" icon="[[headerIcon]]">"</iron-icon>
+  <iron-icon id="header-icon" icon="[[headerIcon]]"></iron-icon>
   <div id="header-text-wrapper">
     <div id="header">[[header]]</div>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
@@ -60,14 +64,23 @@
   <div id="siteList">
     <template is="dom-repeat" items="[[sites]]">
       <div class="list-item site-entry">
-        <site-favicon url="[[item.origin]]"></site-favicon>
+        <template is="dom-if" if="[[item.icon]]">
+          <iron-icon class="item-icon" icon="[[item.icon]]"></iron-icon>
+        </template>
+        <template is="dom-if" if="[[!item.icon]]">
+          <site-favicon url="[[item.origin]]"></site-favicon>
+        </template>
         <div class="display-name cr-padded-text">
           <div class="site-representation">[[item.origin]]</div>
-          <div class="cr-secondary-text">[[item.detail]]</div>
+          <div class="cr-secondary-text link"
+              inner-h-t-m-l="[[sanitizeInnerHtml_(item.detail)]]">
+          </div>
         </div>
-        <cr-icon-button iron-icon="[[buttonIcon]]" id="mainButton"
-            on-click="onItemButtonClick_" actionable>
-        </cr-icon-button>
+        <template is="dom-if" if="[[buttonIcon]]">
+          <cr-icon-button iron-icon="[[buttonIcon]]" id="mainButton"
+              on-click="onItemButtonClick_" actionable>
+          </cr-icon-button>
+        </template>
         <template is="dom-if" if="[[moreActionVisible]]">
           <cr-icon-button class="icon-more-vert" id="moreActionButton"
               on-click="onMoreActionClick_" title="$i18n{moreActions}"

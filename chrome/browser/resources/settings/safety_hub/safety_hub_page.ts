@@ -10,6 +10,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './safety_hub_card.js';
+import './safety_hub_module.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -20,6 +21,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {CardInfo, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {SiteInfo} from './safety_hub_module.js';
 import {getTemplate} from './safety_hub_page.html.js';
 
 export interface SettingsSafetyHubPageElement {
@@ -77,6 +79,8 @@ export class SettingsSafetyHubPageElement extends
         computed:
             'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*, showExtensions_.*, showNotificationPermissions_.*)',
       },
+
+      userEducationItemList_: Array,
     };
   }
 
@@ -87,6 +91,7 @@ export class SettingsSafetyHubPageElement extends
   private showUnusedSitePermissions_: boolean;
   private showNoRecommendationsState_: boolean;
   private showExtensions_: boolean;
+  private userEducationItemList_: SiteInfo[];
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
 
@@ -95,6 +100,7 @@ export class SettingsSafetyHubPageElement extends
 
     this.initializeCards_();
     this.initializeModules_();
+    this.initializeUserEducation_();
   }
 
   private initializeCards_() {
@@ -136,6 +142,26 @@ export class SettingsSafetyHubPageElement extends
 
     this.browserProxy_.getNumberOfExtensionsThatNeedReview().then(
         (num: number) => this.onExtensionsChanged_(num));
+  }
+
+  private initializeUserEducation_() {
+    this.userEducationItemList_ = [
+      {
+        origin: this.i18n('safetyHubUserEduDataHeader'),
+        detail: this.i18nAdvanced('safetyHubUserEduDataSubheader'),
+        icon: 'settings20:chrome-filled',
+      },
+      {
+        origin: this.i18n('safetyHubUserEduIncognitoHeader'),
+        detail: this.i18nAdvanced('safetyHubUserEduIncognitoSubheader'),
+        icon: 'settings20:incognito-unfilled',
+      },
+      {
+        origin: this.i18n('safetyHubUserEduSafeBrowsingHeader'),
+        detail: this.i18nAdvanced('safetyHubUserEduSafeBrowsingSubheader'),
+        icon: 'cr:security',
+      },
+    ];
   }
 
   private onPasswordsClick_() {

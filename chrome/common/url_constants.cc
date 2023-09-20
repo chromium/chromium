@@ -93,6 +93,8 @@ const char kIsolatedAppScheme[] = "isolated-app";
 
 const char kChromeNativeScheme[] = "chrome-native";
 
+const char kChromeSafePageURL[] = "https://www.google.com/chrome/#safe";
+
 const char kChromeSearchLocalNtpHost[] = "local-ntp";
 
 const char kChromeSearchMostVisitedHost[] = "most-visited";
@@ -194,6 +196,9 @@ const char kHighEfficiencyModeLearnMoreUrl[] =
 const char kHighEfficiencyModeTabDiscardingHelpUrl[] =
     "https://support.google.com/chrome/?p=performance_site_exclusion";
 
+const char kIncognitoHelpCenterURL[] =
+    "https://support.google.com/chrome/answer/9845881";
+
 const char kLearnMoreReportingURL[] =
     "https://support.google.com/chrome/?p=ui_usagestat";
 
@@ -287,6 +292,9 @@ const char kSafeBrowsingHelpCenterUpdatedURL[] =
 
 const char kSafeBrowsingInChromeHelpCenterURL[] =
     "https://support.google.com/chrome?p=safebrowsing_in_chrome";
+
+const char kSafeBrowsingPTourURL[] =
+    "https://support.google.com/chrome/answer/13844634";
 
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";

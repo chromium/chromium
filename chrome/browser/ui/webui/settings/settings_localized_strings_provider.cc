@@ -2353,8 +2353,33 @@ void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_HUB_GO_SITE_SETTINGS_ITEM},
       {"safetyHubGoNotificationSettingsItem",
        IDS_SETTINGS_SAFETY_HUB_GO_NOTIFICATION_SETTINGS_ITEM},
+      {"safetyHubUserEduModuleHeader",
+       IDS_SETTINGS_SAFETY_HUB_USER_EDU_MODULE_HEADER},
+      {"safetyHubUserEduDataHeader",
+       IDS_SETTINGS_SAFETY_HUB_USER_EDU_DATA_HEADER},
+      {"safetyHubUserEduIncognitoHeader",
+       IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_HEADER},
+      {"safetyHubUserEduSafeBrowsingHeader",
+       IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("safetyHubUserEduDataSubheader",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_SAFETY_HUB_USER_EDU_DATA_SUBHEADER,
+                             base::ASCIIToUTF16(chrome::kChromeSafePageURL)));
+
+  html_source->AddString(
+      "safetyHubUserEduIncognitoSubheader",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_SUBHEADER,
+          base::ASCIIToUTF16(chrome::kIncognitoHelpCenterURL)));
+
+  html_source->AddString(
+      "safetyHubUserEduSafeBrowsingSubheader",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_SUBHEADER,
+          base::ASCIIToUTF16(chrome::kSafeBrowsingPTourURL)));
 }
 
 void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {

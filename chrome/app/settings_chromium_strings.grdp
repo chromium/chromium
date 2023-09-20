@@ -366,4 +366,19 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS" desc="This text explains that passwords saved in Chrome are automatically checked for issues (e.g. password is leaked or weak) by SafetyHub. However the user does not have any passwords stored in Chrome, therefore the feature does not operate. This text is shown as a subtitle of the passwords card of SafetyHub. It sits below the title 'No saved passwords'.">
     Chromium can check your passwords when you save them
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_MODULE_HEADER" desc="The header of the 'User Education Module' in the Safety Hub page. The 'User Education Module' is visible if there is no safety recommendation and gives information about some Chrome features.">
+    Learn how Chromium keeps you safe
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_DATA_HEADER" desc="The header of the first item in the 'User Education Module' in the Safety Hub page. This item explains how Chrome's tools help user to keep their data safe.">
+    Chromium's safety tools
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_DATA_SUBHEADER" desc="The subheader of the first item in the 'User Education Module' in the Safety Hub page. This item explains how Chrome's tools help user to keep their data safe.">
+    With <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>tools from Chromium<ph name="END_LINK">&lt;/a&gt;</ph>, you can browse safely and stay in control
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_HEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Incognito mode.">
+    Chromium Incognito
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_SUBHEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
+    <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chromium warns you<ph name="END_LINK">&lt;/a&gt;</ph> about unsafe sites and downloads
+  </message>
 </grit-part>
