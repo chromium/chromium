@@ -308,6 +308,10 @@ void ProjectorClientImpl::Clear() {
   ash::ProjectorAppClient::Get()->Clear();
 }
 
+void ProjectorClientImpl::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
+}
+
 void ProjectorClientImpl::OnFileSystemMounted() {
   OnNewScreencastPreconditionChanged(
       controller_->GetNewScreencastPrecondition());

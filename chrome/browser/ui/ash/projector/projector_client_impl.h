@@ -33,7 +33,7 @@ class SpeechRecognitionRecognizerClientImpl;
 class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public ash::ProjectorAnnotatorController,
-                            public drive::DriveIntegrationServiceObserver,
+                            public drive::DriveIntegrationService::Observer,
                             public session_manager::SessionManagerObserver {
  public:
   // RecordingOverlayViewImpl calls this function to initialize the annotator
@@ -82,7 +82,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void Redo() override;
   void Clear() override;
 
-  // drive::DriveIntegrationServiceObserver:
+  // DriveIntegrationService::Observer implementation.
+  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
@@ -116,7 +117,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationServiceObserver>
+                          drive::DriveIntegrationService::Observer>
       drive_observation_{this};
 
   ProjectorDriveFsProvider drive_helper_;
