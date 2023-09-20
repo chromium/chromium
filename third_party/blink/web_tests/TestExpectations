@@ -2719,6 +2719,7 @@ crbug.com/1484043 [ Mac ] virtual/fetch-later/external/wpt/fetch/fetch-later/sen
 crbug.com/1484043 [ Win ] virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/compositing/root-element-background-image-transparency-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-003.html [ Failure ]
