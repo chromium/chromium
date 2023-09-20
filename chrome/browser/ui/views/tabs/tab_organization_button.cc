@@ -20,7 +20,7 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
                                              Edge flat_edge)
     : TabStripControlButton(tab_strip,
                             PressedCallback(),  // Tab organize callback
-                            kPaintbrushIcon,
+                            l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
                             flat_edge) {
   SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
 

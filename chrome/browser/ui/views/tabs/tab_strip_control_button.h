@@ -36,6 +36,18 @@ class TabStripControlButton : public views::LabelButton,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         Edge flat_edge = Edge::kNone);
+
+  TabStripControlButton(TabStrip* tab_strip,
+                        PressedCallback callback,
+                        const std::u16string& text,
+                        Edge flat_edge = Edge::kNone);
+
+  TabStripControlButton(TabStrip* tab_strip,
+                        PressedCallback callback,
+                        const gfx::VectorIcon& icon,
+                        const std::u16string& text,
+                        Edge flat_edge = Edge::kNone);
+
   TabStripControlButton(const TabStripControlButton&) = delete;
   TabStripControlButton& operator=(const TabStripControlButton&) = delete;
   ~TabStripControlButton() override = default;
@@ -108,7 +120,7 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateBackground();
   void UpdateInkDrop();
 
-  // Icon for the label button.
+  // Optional icon for the label button.
   const raw_ref<const gfx::VectorIcon> icon_;
 
   bool paint_transparent_for_custom_image_theme_;

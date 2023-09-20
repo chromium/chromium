@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
+
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -53,12 +54,30 @@ class ControlButtonHighlightPathGenerator
 
 const int TabStripControlButton::kIconSize = 16;
 const gfx::Size TabStripControlButton::kButtonSize{28, 28};
+const gfx::VectorIcon kEmptyIcon;
 
 TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
                                              PressedCallback callback,
                                              const gfx::VectorIcon& icon,
                                              Edge flat_edge)
-    : views::LabelButton(std::move(callback)),
+    : TabStripControlButton(tab_strip,
+                            callback,
+                            icon,
+                            std::u16string(),
+                            flat_edge) {}
+
+TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
+                                             PressedCallback callback,
+                                             const std::u16string& text,
+                                             Edge flat_edge)
+    : TabStripControlButton(tab_strip, callback, kEmptyIcon, text, flat_edge) {}
+
+TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
+                                             PressedCallback callback,
+                                             const gfx::VectorIcon& icon,
+                                             const std::u16string& text,
+                                             Edge flat_edge)
+    : views::LabelButton(std::move(callback), text),
       icon_(icon),
       flat_edge_(flat_edge),
       tab_strip_(tab_strip) {
@@ -87,6 +106,14 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
       this, std::make_unique<ControlButtonHighlightPathGenerator>(this));
   UpdateInkDrop();
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
+
+  if (text.size() > 0) {
+    // Required for text to be visible on hover
+    label()->SetPaintToLayer();
+    label()->SetSkipSubpixelRenderingOpacityCheck(true);
+    label()->layer()->SetFillsBoundsOpaquely(false);
+    label()->SetSubpixelRenderingEnabled(false);
+  }
 }
 
 ui::ColorId TabStripControlButton::GetBackgroundColor() {
@@ -102,6 +129,10 @@ ui::ColorId TabStripControlButton::GetForegroundColor() {
 }
 
 void TabStripControlButton::UpdateIcon() {
+  if (icon_->is_empty()) {
+    return;
+  }
+
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       icon_.get(), GetForegroundColor(), kIconSize);
 

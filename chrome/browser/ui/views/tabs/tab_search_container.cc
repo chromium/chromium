@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -45,6 +46,14 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
                            : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
+    const int space_between_buttons = 4;
+    gfx::Insets margin = gfx::Insets();
+    if (before_tab_strip) {
+      margin.set_left(space_between_buttons);
+    } else {
+      margin.set_right(space_between_buttons);
+    }
+    tab_organization_button_->SetProperty(views::kMarginsKey, margin);
   }
 
   if (!before_tab_strip) {
