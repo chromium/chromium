@@ -76,13 +76,18 @@ copy("signing") {
 
 artifact_zip("updater_zip") {
   output = "$root_build_dir/updater.zip"
-  inputs = [
-             "$root_build_dir/UpdaterSetup.exe",
-             "$root_build_dir/UpdaterSetup_test.exe",
-             "$root_build_dir/qualification_app.exe",
-           ] + get_target_outputs(":signing")
+  inputs =
+      [
+        "$root_build_dir/UpdaterSetup.exe",
+        "$root_build_dir/UpdaterSetup_test.exe",
+        "$root_build_dir/qualification_app.exe",
+        "$root_gen_dir/chrome/updater/app/server/win/updater_idl.h",
+        "$root_gen_dir/chrome/updater/app/server/win/updater_internal_idl.h",
+      ] + get_target_outputs(":signing")
   deps = [
     ":signing",
+    "//chrome/updater/app/server/win:updater_idl_idl",
+    "//chrome/updater/app/server/win:updater_internal_idl_idl",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",
