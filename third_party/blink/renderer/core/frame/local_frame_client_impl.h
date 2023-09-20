@@ -293,10 +293,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver)
       override;
 
-  void UpdateSubresourceFactory(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory)
-      override;
-
  private:
   bool IsLocalFrameClientImpl() const override { return true; }
   WebDevToolsAgentImpl* DevToolsAgent();

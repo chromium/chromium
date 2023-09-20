@@ -119,7 +119,6 @@ class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
 struct Impression;
 struct JavaScriptFrameworkDetectionResult;
-struct MobileFriendliness;
 
 namespace scheduler {
 class TaskAttributionId;
@@ -451,12 +450,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {}
-
-  // AppCache ------------------------------------------------------------
-  virtual void UpdateSubresourceFactory(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {}
-
-  virtual void DidChangeMobileFriendliness(const MobileFriendliness&) {}
 };
 
 }  // namespace blink

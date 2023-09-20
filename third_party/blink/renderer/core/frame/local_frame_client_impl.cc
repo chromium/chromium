@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
@@ -1143,12 +1142,6 @@ void LocalFrameClientImpl::BindDevToolsAgent(
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
   if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
     devtools->BindReceiver(std::move(host), std::move(receiver));
-}
-
-void LocalFrameClientImpl::UpdateSubresourceFactory(
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {
-  DCHECK(web_frame_->Client());
-  web_frame_->Client()->UpdateSubresourceFactory(std::move(pending_factory));
 }
 
 }  // namespace blink

@@ -716,10 +716,6 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  // AppCache ------------------------------------------------------------
-  virtual void UpdateSubresourceFactory(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {}
-
   // Misc ----------------------------------------------------------------
 
   // Returns true when the contents of plugin are handled externally. This means

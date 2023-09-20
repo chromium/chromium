@@ -3261,13 +3261,6 @@ v8::Local<v8::Object> RenderFrameImpl::GetScriptableObject(
 #endif
 }
 
-void RenderFrameImpl::UpdateSubresourceFactory(
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info) {
-  auto child_info = std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
-      std::move(info));
-  GetLoaderFactoryBundle()->Update(std::move(child_info));
-}
-
 void RenderFrameImpl::BindToFrame(blink::WebNavigationControl* frame) {
   DCHECK(!frame_);
 
