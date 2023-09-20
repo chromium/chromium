@@ -176,6 +176,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // Indicates whether the accelerator supports bitstreams with
     // specific chroma subsampling format.
     virtual bool IsChromaSamplingSupported(VideoChromaSampling format) = 0;
+
+    // Indicates whether the accelerator supports an alpha layer.
+    virtual bool IsAlphaLayerSupported();
   };
 
   H265Decoder(std::unique_ptr<H265Accelerator> accelerator,

@@ -21,6 +21,7 @@ namespace media {
 struct MEDIA_GPU_EXPORT VideoToolboxSessionMetadata {
   bool allow_software_decoding = false;
   bool is_hbd = false;
+  bool has_alpha = false;
 };
 
 struct MEDIA_GPU_EXPORT VideoToolboxDecodeMetadata {

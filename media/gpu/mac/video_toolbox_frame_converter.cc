@@ -44,6 +44,8 @@ absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
       return viz::MultiPlaneFormat::kNV12;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
       return viz::MultiPlaneFormat::kP010;
+    case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
+      return viz::MultiPlaneFormat::kNV12A;
     default:
       return absl::nullopt;
   }
@@ -55,6 +57,8 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
       return PIXEL_FORMAT_NV12;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
       return PIXEL_FORMAT_P016LE;
+    case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
+      return PIXEL_FORMAT_NV12A;
     default:
       return PIXEL_FORMAT_UNKNOWN;
   }

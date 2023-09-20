@@ -243,7 +243,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
   READ_BOOL_OR_RETURN(&vps->vps_base_layer_internal_flag);
   READ_BOOL_OR_RETURN(&vps->vps_base_layer_available_flag);
   READ_BITS_OR_RETURN(6, &vps->vps_max_layers_minus1);
-  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 62);
+  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 63);
   READ_BITS_OR_RETURN(3, &vps->vps_max_sub_layers_minus1);
   IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, 7);
   READ_BOOL_OR_RETURN(&vps->vps_temporal_id_nesting_flag);
@@ -286,9 +286,200 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
   }
 
   READ_BITS_OR_RETURN(6, &vps->vps_max_layer_id);
-  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 62);
+  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 63);
   READ_UE_OR_RETURN(&vps->vps_num_layer_sets_minus1);
   IN_RANGE_OR_RETURN(vps->vps_num_layer_sets_minus1, 0, 1023);
+  for (int i = 1; i <= vps->vps_num_layer_sets_minus1; ++i) {
+    for (int j = 0; j <= vps->vps_max_layer_id; ++j) {
+      SKIP_BITS_OR_RETURN(1);  // layer_id_included_flag[i][j]
+    }
+  }
+
+  bool vps_timing_info_present_flag;
+  READ_BOOL_OR_RETURN(&vps_timing_info_present_flag);
+  if (vps_timing_info_present_flag) {
+    SKIP_BITS_OR_RETURN(32);  // vps_num_units_in_tick (!= 0)
+    SKIP_BITS_OR_RETURN(32);  // vps_time_scale (!= 0)
+    bool vps_poc_proportional_to_timing_flag;
+    READ_BOOL_OR_RETURN(&vps_poc_proportional_to_timing_flag);
+    if (vps_poc_proportional_to_timing_flag) {
+      int vps_num_ticks_poc_diff_one_minus1;
+      // Valid range is 0 to 2^32 - 2, which doesn't actually fit in an int.
+      READ_UE_OR_RETURN(&vps_num_ticks_poc_diff_one_minus1);
+    }
+    int vps_num_hrd_parameters;
+    READ_UE_OR_RETURN(&vps_num_hrd_parameters);
+    IN_RANGE_OR_RETURN(vps_num_hrd_parameters, 0,
+                       vps->vps_num_layer_sets_minus1 + 1);
+    for (int i = 0; i < vps_num_hrd_parameters; ++i) {
+      int hrd_layer_set_idx_i;
+      READ_UE_OR_RETURN(&hrd_layer_set_idx_i);
+      IN_RANGE_OR_RETURN(hrd_layer_set_idx_i,
+                         vps->vps_base_layer_internal_flag ? 0 : 1,
+                         vps->vps_num_layer_sets_minus1 + 1);
+      bool cprms_present_flag = true;
+      if (i > 0) {
+        READ_BOOL_OR_RETURN(&cprms_present_flag);
+      }
+
+      // E.2.2 hrd_parameters()
+      bool nal_hrd_parameters_present_flag = false;
+      bool vcl_hrd_parameters_present_flag = false;
+      bool sub_pic_hrd_params_present_flag = false;
+      if (cprms_present_flag) {
+        READ_BOOL_OR_RETURN(&nal_hrd_parameters_present_flag);
+        READ_BOOL_OR_RETURN(&vcl_hrd_parameters_present_flag);
+        if (nal_hrd_parameters_present_flag ||
+            vcl_hrd_parameters_present_flag) {
+          READ_BOOL_OR_RETURN(&sub_pic_hrd_params_present_flag);
+          if (sub_pic_hrd_params_present_flag) {
+            SKIP_BITS_OR_RETURN(8);  // tick_divisor_minus2
+            SKIP_BITS_OR_RETURN(
+                5);  // du_cpb_removal_delay_increment_length_minus1
+            SKIP_BITS_OR_RETURN(
+                1);  // sub_pic_cpb_params_in_pic_timing_sei_flag
+            SKIP_BITS_OR_RETURN(5);  // dpb_output_delay_du_length_minus1
+          }
+          SKIP_BITS_OR_RETURN(4);  // bit_rate_scale
+          SKIP_BITS_OR_RETURN(4);  // cpb_size_scale
+          if (sub_pic_hrd_params_present_flag) {
+            SKIP_BITS_OR_RETURN(4);  // cpb_size_du_scale
+          }
+          SKIP_BITS_OR_RETURN(5);  // initial_cpb_removal_delay_length_minus1
+          SKIP_BITS_OR_RETURN(5);  // au_cpb_removal_delay_length_minus1
+          SKIP_BITS_OR_RETURN(5);  // dpb_output_delay_length_minus1
+        }
+      }
+      for (int j = 0; j <= vps->vps_max_sub_layers_minus1; ++j) {
+        bool fixed_pic_rate_general_flag_j;
+        READ_BOOL_OR_RETURN(&fixed_pic_rate_general_flag_j);
+        bool fixed_pic_rate_within_cvs_flag_j = true;
+        if (!fixed_pic_rate_general_flag_j) {
+          READ_BOOL_OR_RETURN(&fixed_pic_rate_within_cvs_flag_j);
+        }
+        bool low_delay_hrd_flag_j = false;
+        if (fixed_pic_rate_within_cvs_flag_j) {
+          int elemental_duration_in_tc_minus1;
+          READ_UE_OR_RETURN(&elemental_duration_in_tc_minus1);
+        } else {
+          READ_BOOL_OR_RETURN(&low_delay_hrd_flag_j);
+        }
+        int cpb_cnt_minus1_j = 0;
+        if (!low_delay_hrd_flag_j) {
+          READ_UE_OR_RETURN(&cpb_cnt_minus1_j);
+        }
+        if (nal_hrd_parameters_present_flag) {
+          // E.2.3 sub_layer_hrd_parameters()
+          for (int k = 0; k < cpb_cnt_minus1_j + 1; ++k) {
+            int bit_rate_value_minus1_k;
+            READ_UE_OR_RETURN(&bit_rate_value_minus1_k);
+            int cpb_size_value_minus1_k;
+            READ_UE_OR_RETURN(&cpb_size_value_minus1_k);
+            if (sub_pic_hrd_params_present_flag) {
+              int cpb_size_du_value_minus1_k;
+              READ_UE_OR_RETURN(&cpb_size_du_value_minus1_k);
+              int bit_rate_du_value_minus1_k;
+              READ_UE_OR_RETURN(&bit_rate_du_value_minus1_k);
+            }
+            SKIP_BITS_OR_RETURN(1);  // cbr_flag
+          }
+        }
+        if (vcl_hrd_parameters_present_flag) {
+          // E.2.3 sub_layer_hrd_parameters()
+          for (int k = 0; k < cpb_cnt_minus1_j + 1; ++k) {
+            int bit_rate_value_minus1_k;
+            READ_UE_OR_RETURN(&bit_rate_value_minus1_k);
+            int cpb_size_value_minus1_k;
+            READ_UE_OR_RETURN(&cpb_size_value_minus1_k);
+            if (sub_pic_hrd_params_present_flag) {
+              int cpb_size_du_value_minus1_k;
+              READ_UE_OR_RETURN(&cpb_size_du_value_minus1_k);
+              int bit_rate_du_value_minus1_k;
+              READ_UE_OR_RETURN(&bit_rate_du_value_minus1_k);
+            }
+            SKIP_BITS_OR_RETURN(1);  // cbr_flag
+          }
+        }
+      }
+    }
+  }
+
+  // F.7.3.2.1 multi-layer video_parameter_set_rbsp()
+  bool vps_extension_flag;
+  READ_BOOL_OR_RETURN(&vps_extension_flag);
+  if (vps_extension_flag) {
+    BYTE_ALIGNMENT();
+    // F.7.3.2.1.1 vps_extension()
+    if (vps->vps_max_layers_minus1 > 0 && vps->vps_base_layer_internal_flag) {
+      H265ProfileTierLevel profile_tier_level;
+      res = ParseProfileTierLevel(false, vps->vps_max_sub_layers_minus1,
+                                  &profile_tier_level);
+      if (res != kOk) {
+        return res;
+      }
+    }
+    bool splitting_flag;
+    READ_BOOL_OR_RETURN(&splitting_flag);
+    bool scalability_mask_flag[16] = {false};
+    int num_scalability_types = 0;
+    for (int i = 0; i < 16; ++i) {
+      READ_BOOL_OR_RETURN(&scalability_mask_flag[i]);
+      num_scalability_types += scalability_mask_flag[i];
+    }
+    int dimension_id_len_minus1[16] = {0};
+    for (int j = 0; j < (num_scalability_types - splitting_flag); ++j) {
+      READ_BITS_OR_RETURN(3, &dimension_id_len_minus1[j]);
+    }
+
+    int dim_bit_offset[17] = {0};
+    if (splitting_flag) {
+      // Equation F-2
+      for (int j = 1; j <= num_scalability_types - 1; ++j) {
+        dim_bit_offset[j] =
+            dim_bit_offset[j - 1] + dimension_id_len_minus1[j - 1] + 1;
+      }
+      // F.7.4.3.1.1 dimension_id_len_minus1
+      dimension_id_len_minus1[num_scalability_types - 1] =
+          5 - dim_bit_offset[num_scalability_types - 1];
+      dim_bit_offset[num_scalability_types] = 6;
+    }
+
+    bool vps_nuh_layer_id_present_flag;
+    READ_BOOL_OR_RETURN(&vps_nuh_layer_id_present_flag);
+    for (int i = 1; i <= std::min(62, vps->vps_max_layers_minus1); ++i) {
+      int layer_id_in_nuh_i = i;
+      if (vps_nuh_layer_id_present_flag) {
+        READ_BITS_OR_RETURN(6, &layer_id_in_nuh_i);
+      }
+      int dimension_id_i[16] = {0};
+      if (!splitting_flag) {
+        for (int j = 0; j < num_scalability_types; ++j) {
+          READ_BITS_OR_RETURN(dimension_id_len_minus1[j] + 1,
+                              &dimension_id_i[j]);
+        }
+      } else {
+        // F.7.4.3.1.1 dimension_id
+        for (int j = 0; j < num_scalability_types; ++j) {
+          dimension_id_i[j] =
+              (layer_id_in_nuh_i & ((1 << dim_bit_offset[j + 1]) - 1)) >>
+              dim_bit_offset[j];
+        }
+      }
+
+      // F.7.4.3.1.1 dimension_id
+      // We can skip layer zero because all dimension_id[0][j] == 0.
+      int scalability_id_i[16] = {0};
+      for (int sm_idx = 0, j = 0; sm_idx < 16; ++sm_idx) {
+        if (scalability_mask_flag[sm_idx]) {
+          scalability_id_i[sm_idx] = dimension_id_i[j++];
+        }
+      }
+
+      if (scalability_id_i[3] == 1) {
+        vps->aux_alpha_layer_id = layer_id_in_nuh_i;
+      }
+    }
+  }
 
   // If an VPS with the same id already exists, replace it.
   *vps_id = vps->vps_video_parameter_set_id;

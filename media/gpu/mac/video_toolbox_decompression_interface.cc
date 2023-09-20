@@ -213,8 +213,11 @@ bool VideoToolboxDecompressionInterface::CreateSession(
   }
 
   FourCharCode pixel_format =
-      session_metadata.is_hbd ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
-                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+      session_metadata.has_alpha
+          ? kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar
+      : session_metadata.is_hbd
+          ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+          : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
 
   base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pixel_format));

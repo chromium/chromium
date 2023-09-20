@@ -150,7 +150,9 @@ struct MEDIA_EXPORT H265VPS {
   int vps_max_latency_increase_plus1[kMaxSubLayers];
   int vps_max_layer_id;
   int vps_num_layer_sets_minus1;
-  bool vps_timing_info_present_flag;
+
+  // Computed from ScalabilityId
+  int aux_alpha_layer_id;
 
   // skipped the rest
 };

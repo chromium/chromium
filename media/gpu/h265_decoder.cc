@@ -96,6 +96,10 @@ H265Decoder::H265Accelerator::Status H265Decoder::H265Accelerator::SetStream(
   return H265Decoder::H265Accelerator::Status::kNotSupported;
 }
 
+bool H265Decoder::H265Accelerator::IsAlphaLayerSupported() {
+  return false;
+}
+
 H265Decoder::H265Decoder(std::unique_ptr<H265Accelerator> accelerator,
                          VideoCodecProfile profile,
                          const VideoColorSpace& container_color_space)
@@ -228,11 +232,89 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       DVLOG(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
     }
 
-    // 8.1.2 We only want nuh_layer_id of zero.
-    // TODO(crbug.com/1331597): Support alpha on macOS.
+    // 8.1.2 We only handle nuh_layer_id of zero.
+    // As a workaround for accelerators that support alpha layers, the data is
+    // simply passed through.
+    // TODO(crbug.com/1331597): Only pass through vps->aux_alpha_layer_id.
     if (curr_nalu_->nuh_layer_id) {
-      DVLOG(4) << "Skipping NALU with nuh_layer_id="
-               << curr_nalu_->nuh_layer_id;
+      if (accelerator_->IsAlphaLayerSupported()) {
+        switch (curr_nalu_->nal_unit_type) {
+          case H265NALU::BLA_W_LP:
+          case H265NALU::BLA_W_RADL:
+          case H265NALU::BLA_N_LP:
+          case H265NALU::IDR_W_RADL:
+          case H265NALU::IDR_N_LP:
+          case H265NALU::TRAIL_N:
+          case H265NALU::TRAIL_R:
+          case H265NALU::TSA_N:
+          case H265NALU::TSA_R:
+          case H265NALU::STSA_N:
+          case H265NALU::STSA_R:
+          case H265NALU::RADL_N:
+          case H265NALU::RADL_R:
+          case H265NALU::RASL_N:
+          case H265NALU::RASL_R:
+          case H265NALU::CRA_NUT: {
+            if (!curr_slice_hdr_) {
+              curr_slice_hdr_ = std::make_unique<H265SliceHeader>();
+              par_res = parser_.ParseSliceHeader(
+                  *curr_nalu_, curr_slice_hdr_.get(), last_slice_hdr_.get());
+              if (par_res == H265Parser::kMissingParameterSet) {
+                // As with the base layer, we could be trying to start decoding
+                // from a bad frame, and may be able to recover later.
+                curr_slice_hdr_.reset();
+                last_slice_hdr_.reset();
+                break;
+              }
+              if (par_res != H265Parser::kOk) {
+                SET_ERROR_AND_RETURN();
+              }
+            }
+            const H265PPS* pps =
+                parser_.GetPPS(curr_slice_hdr_->slice_pic_parameter_set_id);
+            const H265SPS* sps = parser_.GetSPS(pps->pps_seq_parameter_set_id);
+            H265Picture::Vector empty;
+            CHECK_ACCELERATOR_RESULT(accelerator_->SubmitSlice(
+                sps, pps, curr_slice_hdr_.get(), empty, empty, empty, empty,
+                empty, curr_pic_.get(), curr_slice_hdr_->nalu_data,
+                curr_slice_hdr_->nalu_size, parser_.GetCurrentSubsamples()));
+            last_slice_hdr_.swap(curr_slice_hdr_);
+            curr_slice_hdr_.reset();
+            break;
+          }
+          case H265NALU::SPS_NUT: {
+            int sps_id;
+            par_res = parser_.ParseSPS(&sps_id);
+            if (par_res != H265Parser::kOk) {
+              SET_ERROR_AND_RETURN();
+            }
+            accelerator_->ProcessSPS(
+                parser_.GetSPS(sps_id),
+                base::span<const uint8_t>(
+                    curr_nalu_->data,
+                    base::checked_cast<size_t>(curr_nalu_->size)));
+            break;
+          }
+          case H265NALU::PPS_NUT: {
+            int pps_id;
+            par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
+            if (par_res != H265Parser::kOk) {
+              SET_ERROR_AND_RETURN();
+            }
+            accelerator_->ProcessPPS(
+                parser_.GetPPS(pps_id),
+                base::span<const uint8_t>(
+                    curr_nalu_->data,
+                    base::checked_cast<size_t>(curr_nalu_->size)));
+            break;
+          }
+          default:
+            break;
+        }
+      } else {
+        DVLOG(4) << "Skipping NALU with nuh_layer_id="
+                 << curr_nalu_->nuh_layer_id;
+      }
       curr_nalu_.reset();
       continue;
     }

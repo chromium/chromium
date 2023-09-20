@@ -151,7 +151,70 @@ TEST_F(H265ParserTest, VpsParsing) {
   }
   EXPECT_EQ(vps->vps_max_layer_id, 0);
   EXPECT_EQ(vps->vps_num_layer_sets_minus1, 0);
-  EXPECT_FALSE(vps->vps_timing_info_present_flag);
+}
+
+TEST_F(H265ParserTest, VpsAlphaLayerId) {
+  constexpr uint8_t kStream[] = {
+      // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 32 (VPS).
+      0x40,
+      0x01,
+      0x0c,
+      0x11,
+      0xff,
+      0xff,
+      0x01,
+      0x60,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0xb0,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0x3e,
+      0x19,
+      0x40,
+      0xbf,
+      0x3e,
+      0x08,
+      0x00,
+      0x08,
+      0x30,
+      0x20,
+      0xa4,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0xc5,
+      0x20,
+  };
+
+  H265Parser parser;
+  parser.SetStream(kStream, std::size(kStream));
+
+  H265NALU target_nalu;
+  ASSERT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
+  ASSERT_EQ(target_nalu.nal_unit_type, H265NALU::VPS_NUT);
+
+  int vps_id;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVPS(&vps_id));
+
+  const H265VPS* vps = parser.GetVPS(vps_id);
+  EXPECT_EQ(vps->aux_alpha_layer_id, 1);
 }
 
 TEST_F(H265ParserTest, SpsParsing) {
@@ -546,4 +609,5 @@ TEST_F(H265ParserTest, RecursiveSEIParsing) {
     }
   }
 }
+
 }  // namespace media

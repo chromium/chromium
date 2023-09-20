@@ -40,18 +40,24 @@ scoped_refptr<H265Picture> VideoToolboxH265Accelerator::CreateH265Picture() {
 void VideoToolboxH265Accelerator::ProcessVPS(
     const H265VPS* vps,
     base::span<const uint8_t> vps_nalu_data) {
-  DVLOG(3) << __func__ << ": vps_video_parameter_set_id="
-           << vps->vps_video_parameter_set_id;
+  DVLOG(3) << __func__ << ":"
+           << " vps_video_parameter_set_id=" << vps->vps_video_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   seen_vps_data_[vps->vps_video_parameter_set_id] =
       std::vector<uint8_t>(vps_nalu_data.begin(), vps_nalu_data.end());
+  if (vps->aux_alpha_layer_id) {
+    alpha_vps_ids_.insert(vps->vps_video_parameter_set_id);
+  } else {
+    alpha_vps_ids_.erase(vps->vps_video_parameter_set_id);
+  }
 }
 
 void VideoToolboxH265Accelerator::ProcessSPS(
     const H265SPS* sps,
     base::span<const uint8_t> sps_nalu_data) {
-  DVLOG(3) << __func__
-           << ": sps_seq_parameter_set_id=" << sps->sps_seq_parameter_set_id;
+  DVLOG(3) << __func__ << ":"
+           << " sps_seq_parameter_set_id=" << sps->sps_seq_parameter_set_id
+           << " sps_video_parameter_set_id=" << sps->sps_video_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   seen_sps_data_[sps->sps_seq_parameter_set_id] =
       std::vector<uint8_t>(sps_nalu_data.begin(), sps_nalu_data.end());
@@ -60,12 +66,87 @@ void VideoToolboxH265Accelerator::ProcessSPS(
 void VideoToolboxH265Accelerator::ProcessPPS(
     const H265PPS* pps,
     base::span<const uint8_t> pps_nalu_data) {
-  DVLOG(3) << __func__
-           << ": pps_pic_parameter_set_id=" << pps->pps_pic_parameter_set_id
+  DVLOG(3) << __func__ << ":"
+           << " pps_pic_parameter_set_id=" << pps->pps_pic_parameter_set_id
            << " pps_seq_parameter_set_id=" << pps->pps_seq_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   seen_pps_data_[pps->pps_pic_parameter_set_id] =
       std::vector<uint8_t>(pps_nalu_data.begin(), pps_nalu_data.end());
+}
+
+bool VideoToolboxH265Accelerator::ExtractParameterSetData(
+    const char* parameter_set_name,
+    const base::flat_set<int>& parameter_set_ids,
+    const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
+    base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
+    std::vector<const uint8_t*>* parameter_set_data_out,
+    std::vector<size_t>* parameter_set_size_out) {
+  for (int parameter_set_id : parameter_set_ids) {
+    // Check that the ID is valid.
+    const auto it = seen_parameter_set_data.find(parameter_set_id);
+    if (it == seen_parameter_set_data.end()) {
+      MEDIA_LOG(ERROR, media_log_.get())
+          << "Missing " << parameter_set_name << " " << parameter_set_id;
+      return false;
+    }
+    // Update active parameter set data.
+    (*active_parameter_set_data_out)[parameter_set_id] = it->second;
+    // Extract the parameter set data.
+    parameter_set_data_out->push_back(it->second.data());
+    parameter_set_size_out->push_back(it->second.size());
+  }
+  return true;
+}
+
+bool VideoToolboxH265Accelerator::CreateFormat() {
+  active_vps_data_.clear();
+  active_sps_data_.clear();
+  active_pps_data_.clear();
+
+  // Gather parameter sets and update active parameter set data.
+  std::vector<const uint8_t*> parameter_set_data;
+  std::vector<size_t> parameter_set_size;
+  if (!ExtractParameterSetData("VPS", frame_vps_ids_, seen_vps_data_,
+                               &active_vps_data_, &parameter_set_data,
+                               &parameter_set_size)) {
+    return false;
+  }
+  if (!ExtractParameterSetData("SPS", frame_sps_ids_, seen_sps_data_,
+                               &active_sps_data_, &parameter_set_data,
+                               &parameter_set_size)) {
+    return false;
+  }
+  if (!ExtractParameterSetData("PPS", frame_pps_ids_, seen_pps_data_,
+                               &active_pps_data_, &parameter_set_data,
+                               &parameter_set_size)) {
+    return false;
+  }
+
+  // Create the format description.
+  active_format_.reset();
+
+  OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
+      /*allocator=*/kCFAllocatorDefault,
+      /*parameterSetCount=*/parameter_set_data.size(),
+      /*parameterSetPointers=*/parameter_set_data.data(),
+      /*parameterSetSizes=*/parameter_set_size.data(),
+      /*NALUnitHeaderLength=*/kNALUHeaderLength,
+      /*extensions=*/nullptr,
+      /*formatDescriptionOut=*/active_format_.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMVideoFormatDescriptionCreateFromHEVCParameterSets()";
+    return false;
+  }
+
+  // Record session metadata.
+  active_session_metadata_ = VideoToolboxSessionMetadata{
+      /*allow_software_decoding=*/true,
+      /*is_hbd=*/frame_is_hbd_,
+      /*has_alpha=*/frame_has_alpha_,
+  };
+
+  return true;
 }
 
 VideoToolboxH265Accelerator::Status
@@ -84,8 +165,7 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
            << " pps_pic_parameter_set_id=" << pps->pps_pic_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  slice_nalu_data_.clear();
-  drop_frame_ = false;
+  ResetFrameData();
 
   // Handle NoRaslOutputFlag.
   if (slice_hdr->irap_pic) {
@@ -104,63 +184,10 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
     return Status::kOk;
   }
 
-  // H265Decoder ignores VPS, so it doesn't check whether a valid one was
-  // provided.
-  if (!seen_vps_data_.contains(sps->sps_video_parameter_set_id)) {
-    MEDIA_LOG(ERROR, media_log_.get()) << "Missing VPS";
-    return Status::kFail;
-  }
-
-  // Detect format changes.
-  DCHECK(seen_sps_data_.contains(sps->sps_seq_parameter_set_id));
-  DCHECK(seen_pps_data_.contains(pps->pps_pic_parameter_set_id));
-  std::vector<uint8_t>& vps_data =
-      seen_vps_data_[sps->sps_video_parameter_set_id];
-  std::vector<uint8_t>& sps_data =
-      seen_sps_data_[sps->sps_seq_parameter_set_id];
-  std::vector<uint8_t>& pps_data =
-      seen_pps_data_[pps->pps_pic_parameter_set_id];
-  if (vps_data != active_vps_data_ || sps_data != active_sps_data_ ||
-      pps_data != active_pps_data_) {
-    // If we're not at a keyframe and only the PPS has changed, put the new PPS
-    // in-band and don't create a new format.
-    // TODO(crbug.com/1331597): Record that this PPS has been provided and avoid
-    // sending it again.
-    if (!slice_hdr->irap_pic && vps_data == active_vps_data_ &&
-        sps_data == active_sps_data_) {
-      slice_nalu_data_.push_back(
-          base::make_span(pps_data.data(), pps_data.size()));
-      return Status::kOk;
-    }
-
-    active_format_.reset();
-
-    const uint8_t* nalu_data[3] = {vps_data.data(), sps_data.data(),
-                                   pps_data.data()};
-    size_t nalu_size[3] = {vps_data.size(), sps_data.size(), pps_data.size()};
-    OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
-        kCFAllocatorDefault,
-        3,                  // parameter_set_count
-        nalu_data,          // parameter_set_pointers
-        nalu_size,          // parameter_set_sizes
-        kNALUHeaderLength,  // nal_unit_header_length
-        nullptr,            // extensions
-        active_format_.InitializeInto());
-    if (status != noErr) {
-      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-          << "CMVideoFormatDescriptionCreateFromHEVCParameterSets()";
-      return Status::kFail;
-    }
-
-    active_vps_data_ = vps_data;
-    active_sps_data_ = sps_data;
-    active_pps_data_ = pps_data;
-
-    session_metadata_ = VideoToolboxSessionMetadata{
-        /*allow_software_decoding=*/true,
-        /*is_hbd=*/sps->bit_depth_y > 8,
-    };
-  }
+  // Update frame state.
+  frame_is_keyframe_ = slice_hdr->irap_pic;
+  frame_is_hbd_ = sps->bit_depth_y > 8;
+  frame_has_alpha_ = alpha_vps_ids_.contains(sps->sps_video_parameter_set_id);
 
   return Status::kOk;
 }
@@ -185,8 +212,41 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitSlice(
     return Status::kOk;
   }
 
-  slice_nalu_data_.push_back(base::make_span(data, size));
+  frame_vps_ids_.insert(sps->sps_video_parameter_set_id);
+  frame_sps_ids_.insert(pps->pps_seq_parameter_set_id);
+  frame_pps_ids_.insert(pps->pps_pic_parameter_set_id);
+  frame_slice_data_.push_back(base::make_span(data, size));
+
   return Status::kOk;
+}
+
+bool VideoToolboxH265Accelerator::ExtractChangedParameterSetData(
+    const char* parameter_set_name,
+    const base::flat_set<int>& parameter_set_ids,
+    const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
+    base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
+    std::vector<base::span<const uint8_t>>* parameter_set_data_out) {
+  for (int parameter_set_id : parameter_set_ids) {
+    // Check that the ID is valid.
+    const auto seen_it = seen_parameter_set_data.find(parameter_set_id);
+    if (seen_it == seen_parameter_set_data.end()) {
+      MEDIA_LOG(ERROR, media_log_.get())
+          << "Missing " << parameter_set_name << " " << parameter_set_id;
+      return false;
+    }
+    // Check if the data has changed.
+    const auto active_it =
+        active_parameter_set_data_out->find(parameter_set_id);
+    if (active_it == active_parameter_set_data_out->end() ||
+        active_it->second != seen_it->second) {
+      // Update active parameter set data.
+      (*active_parameter_set_data_out)[parameter_set_id] = seen_it->second;
+      // Extract the parameter set data.
+      parameter_set_data_out->push_back(
+          base::make_span(seen_it->second.data(), seen_it->second.size()));
+    }
+  }
+  return true;
 }
 
 VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
@@ -198,9 +258,37 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     return Status::kOk;
   }
 
+  // Extract changed parameter sets and update active parameter set data.
+  std::vector<base::span<const uint8_t>> combined_nalu_data;
+  if (!ExtractChangedParameterSetData("VPS", frame_vps_ids_, seen_vps_data_,
+                                      &active_vps_data_, &combined_nalu_data)) {
+    return Status::kFail;
+  }
+  if (!ExtractChangedParameterSetData("SPS", frame_sps_ids_, seen_sps_data_,
+                                      &active_sps_data_, &combined_nalu_data)) {
+    return Status::kFail;
+  }
+  if (!ExtractChangedParameterSetData("PPS", frame_pps_ids_, seen_pps_data_,
+                                      &active_pps_data_, &combined_nalu_data)) {
+    return Status::kFail;
+  }
+
+  // Create a new format description if necessary.
+  // We assume that session metadata can only change at a keyframe.
+  // TODO(crbug.com/1331597): It's not clear when it is better to inline the
+  // parameter sets vs. creating a new format.
+  if (!active_format_ || (combined_nalu_data.size() && frame_is_keyframe_)) {
+    combined_nalu_data.clear();
+    CreateFormat();
+  }
+
+  // Append slice data.
+  combined_nalu_data.insert(combined_nalu_data.end(), frame_slice_data_.begin(),
+                            frame_slice_data_.end());
+
   // Determine the final size of the converted bitstream.
   size_t data_size = 0;
-  for (const auto& nalu_data : slice_nalu_data_) {
+  for (const auto& nalu_data : combined_nalu_data) {
     data_size += kNALUHeaderLength + nalu_data.size();
   }
 
@@ -231,7 +319,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
 
   // Copy each NALU into the buffer, prefixed with a length header.
   size_t offset = 0;
-  for (const auto& nalu_data : slice_nalu_data_) {
+  for (const auto& nalu_data : combined_nalu_data) {
     // Write length header.
     uint32_t header =
         base::HostToNet32(static_cast<uint32_t>(nalu_data.size()));
@@ -275,7 +363,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  decode_cb_.Run(std::move(sample), session_metadata_, std::move(pic));
+  decode_cb_.Run(std::move(sample), active_session_metadata_, std::move(pic));
   return Status::kOk;
 }
 
@@ -291,18 +379,29 @@ bool VideoToolboxH265Accelerator::OutputPicture(
 void VideoToolboxH265Accelerator::Reset() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  seen_vps_data_.clear();
-  seen_sps_data_.clear();
-  seen_pps_data_.clear();
-  active_vps_data_.clear();
-  active_sps_data_.clear();
-  active_pps_data_.clear();
-  active_format_.reset();
-  slice_nalu_data_.clear();
+  no_rasl_output_flag_ = false;
+  ResetFrameData();
+}
+
+void VideoToolboxH265Accelerator::ResetFrameData() {
+  DVLOG(4) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  frame_vps_ids_.clear();
+  frame_sps_ids_.clear();
+  frame_pps_ids_.clear();
+  frame_slice_data_.clear();
+  frame_is_keyframe_ = false;
+  frame_is_hbd_ = false;
+  frame_has_alpha_ = false;
+  drop_frame_ = false;
 }
 
 bool VideoToolboxH265Accelerator::IsChromaSamplingSupported(
     VideoChromaSampling format) {
+  return true;
+}
+
+bool VideoToolboxH265Accelerator::IsAlphaLayerSupported() {
   return true;
 }
 

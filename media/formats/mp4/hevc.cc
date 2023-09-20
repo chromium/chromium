@@ -224,15 +224,33 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
   parser.SetStream(param_sets.data(), param_sets.size());
   while (true) {
     H265Parser::Result result = parser.AdvanceToNextNALU(&nalu);
-    if (result != H265Parser::kOk)
+    if (result != H265Parser::kOk) {
       break;
-
+    }
+    if (nalu.nuh_layer_id) {
+      continue;
+    }
     switch (nalu.nal_unit_type) {
+      case H265NALU::VPS_NUT: {
+        int vps_id = -1;
+        result = parser.ParseVPS(&vps_id);
+        if (result != H265Parser::kOk) {
+          DVLOG(1) << "Could not parse VPS";
+          break;
+        }
+
+        const H265VPS* vps = parser.GetVPS(vps_id);
+        DCHECK(vps);
+        alpha_mode = vps->aux_alpha_layer_id
+                         ? VideoDecoderConfig::AlphaMode::kHasAlpha
+                         : VideoDecoderConfig::AlphaMode::kIsOpaque;
+        break;
+      }
       case H265NALU::SPS_NUT: {
         int sps_id = -1;
         result = parser.ParseSPS(&sps_id);
         if (result != H265Parser::kOk) {
-          DVLOG(1) << "Could not parse SPS for fetching colorspace";
+          DVLOG(1) << "Could not parse SPS";
           break;
         }
 
@@ -245,7 +263,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
         H265SEI sei;
         result = parser.ParseSEI(&sei);
         if (result != H265Parser::kOk) {
-          DVLOG(1) << "Could not parse SEI for fetching HDR metadata";
+          DVLOG(1) << "Could not parse SEI";
           break;
         }
         for (auto& sei_msg : sei.msgs) {
@@ -256,12 +274,6 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
             case H265SEIMessage::kSEIMasteringDisplayInfo:
               hdr_metadata.smpte_st_2086 =
                   sei_msg.mastering_display_info.ToGfx();
-              break;
-            case H265SEIMessage::kSEIAlphaChannelInfo:
-              alpha_mode =
-                  sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0
-                      ? VideoDecoderConfig::AlphaMode::kHasAlpha
-                      : VideoDecoderConfig::AlphaMode::kIsOpaque;
               break;
             default:
               break;

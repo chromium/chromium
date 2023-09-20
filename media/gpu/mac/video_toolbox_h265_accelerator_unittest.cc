@@ -201,8 +201,8 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
+  // The two samples should still have the same configurations.
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
             CMSampleBufferGetFormatDescription(sample1));
 }
 
@@ -248,8 +248,8 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
+  // The two samples should still have the same configurations.
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
             CMSampleBufferGetFormatDescription(sample1));
 }
 
