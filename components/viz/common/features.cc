@@ -181,7 +181,7 @@ BASE_FEATURE(kAllowBypassRenderPassQuads,
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to:
 // - Perform periodic inactive frame culling.
