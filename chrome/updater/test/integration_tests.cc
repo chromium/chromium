@@ -85,8 +85,9 @@ using enterprise_management::OmahaSettingsClientProto;
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
-  test_server->ExpectOnce({request::GetContentMatcher({base::StringPrintf(
-                              R"(.*"appid":"%s".*)", app_id.c_str())})},
+  test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                           request::GetContentMatcher({base::StringPrintf(
+                               R"(.*"appid":"%s".*)", app_id.c_str())})},
                           base::StringPrintf(")]}'\n"
                                              R"({"response":{)"
                                              R"(  "protocol":"3.1",)"
@@ -696,8 +697,9 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
   // This instance is now qualified and should activate itself and check itself
   // for updates on the next check.
-  test_server.ExpectOnce({request::GetContentMatcher(
-                             {base::StringPrintf(".*%s.*", kUpdaterAppId)})},
+  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                          request::GetContentMatcher(
+                              {base::StringPrintf(".*%s.*", kUpdaterAppId)})},
                          ")]}'\n");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -793,8 +795,9 @@ TEST_F(IntegrationTest, ReportsActive) {
   ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
   test_server.ExpectOnce(
-      {request::GetContentMatcher(
-          {R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)"})},
+      {request::GetUpdaterUserAgentMatcher(),
+       request::GetContentMatcher(
+           {R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)"})},
       R"()]}')"
       "\n"
       R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
@@ -1347,14 +1350,16 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
       R"(}})",
       app_id.c_str());
   test_server.ExpectOnce(
-      {request::GetContentMatcher(
-          {R"("updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)"})},
+      {request::GetUpdaterUserAgentMatcher(),
+       request::GetContentMatcher(
+           {R"("updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)"})},
       response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kAllowed));
 
-  test_server.ExpectOnce({request::GetContentMatcher(
-                             {R"(.*"updatecheck":{},"version":"0.1"}.*)"})},
+  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                          request::GetContentMatcher(
+                              {R"(.*"updatecheck":{},"version":"0.1"}.*)"})},
                          response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kNotAllowed));
@@ -1389,9 +1394,10 @@ TEST_F(IntegrationTest, InstallDataIndex) {
       app_id.c_str());
 
   test_server.ExpectOnce(
-      {request::GetContentMatcher({base::StringPrintf(
-          R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
-          install_data_index.c_str())})},
+      {request::GetUpdaterUserAgentMatcher(),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
+           install_data_index.c_str())})},
       response);
 
   ASSERT_NO_FATAL_FAILURE(

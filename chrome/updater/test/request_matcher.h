@@ -35,6 +35,9 @@ using MatcherGroup = std::list<Matcher>;
     const std::string& header_name,
     const std::string& expected_header_regex);
 
+// Returns a matcher which returns true if the request has updater's user-agent.
+Matcher GetUpdaterUserAgentMatcher();
+
 // Returns a matcher which returns true if all regexex are found in the given
 // order.
 [[nodiscard]] Matcher GetContentMatcher(

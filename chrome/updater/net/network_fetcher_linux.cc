@@ -33,6 +33,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -159,6 +160,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPPOST, 1L) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
+                       GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPHEADER, headers) ||
       curl_easy_setopt(curl_.get(), CURLOPT_POSTFIELDSIZE, post_data.size()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_POSTFIELDS, post_data.c_str()) ||
@@ -237,6 +240,8 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPGET, 1L) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
+                       GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlWriteFileCallback) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA, &file) ||

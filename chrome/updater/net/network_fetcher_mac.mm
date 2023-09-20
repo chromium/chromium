@@ -385,6 +385,8 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 
   NSMutableURLRequest* urlRequest =
       [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
+  [urlRequest setValue:base::SysUTF8ToNSString(GetUpdaterUserAgent())
+      forHTTPHeaderField:@"User-Agent"];
 
   NSURLSessionDownloadTask* downloadTask =
       [session downloadTaskWithRequest:urlRequest];

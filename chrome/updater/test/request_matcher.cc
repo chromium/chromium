@@ -18,6 +18,7 @@
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -68,6 +69,10 @@ Matcher GetHeaderMatcher(const std::string& header_name,
         }
         return true;
       });
+}
+
+Matcher GetUpdaterUserAgentMatcher() {
+  return GetHeaderMatcher("User-Agent", GetUpdaterUserAgent());
 }
 
 Matcher GetContentMatcher(

@@ -224,6 +224,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   // First request: update check.
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
            {base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())}),
        request::GetScopeMatcher(scope),
@@ -235,6 +236,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   // is ignored by the client:
   // {errorCategory::kService, ServiceError::CHECK_FOR_UPDATE_ONLY}
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher({base::StringPrintf(
                                R"(.*"errorcat":4,"errorcode":4,)"
                                R"("eventresult":0,"eventtype":%d,)"
@@ -262,6 +264,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
   // First request: update check.
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
            {base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
             install_data_index.empty()
@@ -279,10 +282,13 @@ void ExpectUpdateSequence(UpdaterScope scope,
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+  test_server->ExpectOnce(
+      {request::GetUpdaterUserAgentMatcher(), request::GetContentMatcher({""})},
+      crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher({base::StringPrintf(
                                R"(.*"eventresult":1,"eventtype":%d,)"
                                R"("nextversion":"%s","previousversion":"%s".*)",
@@ -304,6 +310,7 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
            test_server->device_management_path().c_str(), request_type.c_str(),
            PRODUCT_FULLNAME_STRING, kUpdaterVersion,
            GetDefaultDMStorage()->GetDeviceID().c_str())),
+       request::GetUpdaterUserAgentMatcher(),
        request::GetHeaderMatcher(
            "Authorization",
            base::StringPrintf("%s token=%s", authorization_type.c_str(),
@@ -543,6 +550,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
         crx_path, run_action.MaybeAsASCII().c_str(), app.args));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher(app_requests),
                            request::GetScopeMatcher(scope)},
                           GetUpdateResponse(app_responses));
@@ -554,13 +562,16 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       ASSERT_TRUE(base::PathExists(crx_path));
       std::string crx_bytes;
       base::ReadFileToString(crx_path, &crx_bytes);
-      test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+      test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                               request::GetContentMatcher({""})},
+                              crx_bytes);
     }
 
     if (app.should_update) {
       // Followed by event ping.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),
+           request::GetUpdaterUserAgentMatcher(),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
                R"("eventresult":1,"eventtype":%d,)"
@@ -575,6 +586,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       // Event ping for apps that doesn't update.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),
+           request::GetUpdaterUserAgentMatcher(),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
                R"(.*"errorcat":%d,"errorcode":%d,)"
@@ -926,6 +938,7 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
 
 void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher({R"(.*"eventtype":4.*)"}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
@@ -968,6 +981,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
 
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher({R"("updatecheck":{})"}),
                            request::GetScopeMatcher(scope)},
                           GetUpdateResponse({}));
@@ -1010,6 +1024,7 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
   // First request: update check.
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
            {base::StringPrintf(R"("appid":"%s")", app_id.c_str()),
             install_data_index.empty()
@@ -1028,11 +1043,14 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+  test_server->ExpectOnce(
+      {request::GetUpdaterUserAgentMatcher(), request::GetContentMatcher({""})},
+      crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher({base::StringPrintf(
            R"(.*"errorcat":1,"errorcode":12,"eventresult":0,"eventtype":3,)"
            R"("nextversion":"%s","previousversion":"%s".*)",
