@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_SHELL_SURFACE_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_SHELL_SURFACE_H_
 
-#include <utility>
-
 #include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace app_restore {
 struct AppRestoreData;
@@ -56,8 +56,11 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
 
   void InitContentOverlay(const std::string& app_id,
                           uint32_t theme_color,
-                          arc::GhostWindowType type);
+                          arc::GhostWindowType type,
+                          absl::optional<gfx::RoundedCornersF>&& corners_radii);
+
   void SetAppId(const absl::optional<std::string>& id);
+
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 

@@ -4,22 +4,25 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 
-#include "ash/components/arc/arc_util.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/wm/desks/desks_util.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
-#include "ui/views/window/caption_button_types.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_controller.h"
 
 namespace ash::full_restore {
 
@@ -36,6 +39,14 @@ bool IsMinimizedState(
     const absl::optional<chromeos::WindowStateType>& window_state) {
   return window_state.has_value() &&
          window_state.value() == chromeos::WindowStateType::kMinimized;
+}
+
+bool ShouldHaveRoundedWindow(
+    const absl::optional<chromeos::WindowStateType>& window_state) {
+  return window_state.has_value() &&
+         (window_state.value() == chromeos::WindowStateType::kNormal ||
+          window_state.value() == chromeos::WindowStateType::kDefault ||
+          window_state.value() == chromeos::WindowStateType::kFloated);
 }
 
 }  // namespace
@@ -139,9 +150,26 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   shell_surface->SetFrameButtons(kVisibleButtonMask, kVisibleButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
+  absl::optional<gfx::RoundedCornersF> overlay_corners_radii;
+  if (chromeos::features::IsRoundedWindowsEnabled()) {
+    const int window_corner_radius =
+        ShouldHaveRoundedWindow(window_state)
+            ? chromeos::features::RoundedWindowsRadius()
+            : 0;
+    shell_surface->SetWindowCornerRadii(
+        gfx::RoundedCornersF(window_corner_radius));
+
+    // Ghost surface is an overlay widget, so its corners must be rounded. The
+    // bottom two corners of the ghost window overlay overlap with the window,
+    // so we need to round them.
+    overlay_corners_radii->Set(0, 0, window_corner_radius,
+                               window_corner_radius);
+  }
+
   shell_surface->controller_surface()->Commit();
 
-  shell_surface->InitContentOverlay(app_id, theme_color, type);
+  shell_surface->InitContentOverlay(app_id, theme_color, type,
+                                    std::move(overlay_corners_radii));
 
   // Relayout overlay.
   shell_surface->GetWidget()->LayoutRootViewIfNecessary();
@@ -175,9 +203,11 @@ exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
   return controller_surface_.get();
 }
 
-void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
-                                                    uint32_t theme_color,
-                                                    arc::GhostWindowType type) {
+void ArcGhostWindowShellSurface::InitContentOverlay(
+    const std::string& app_id,
+    uint32_t theme_color,
+    arc::GhostWindowType type,
+    absl::optional<gfx::RoundedCornersF>&& corners_radii) {
   std::string app_name;
   // TODO(sstan): Move this part out of shell surface.
   // In test env, ArcAppListPrefs or App maybe null.
@@ -197,6 +227,7 @@ void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
   exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(view));
   overlay_params.translucent = true;
   overlay_params.overlaps_frame = false;
+  overlay_params.corners_radii = std::move(corners_radii);
   AddOverlay(std::move(overlay_params));
 }
 

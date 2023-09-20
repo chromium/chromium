@@ -207,6 +207,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     // TODO(oshima): It's unlikely for overlay not to request focus.
     // Remove this.
     bool focusable = true;
+    absl::optional<gfx::RoundedCornersF> corners_radii;
     std::unique_ptr<views::View> contents_view;
   };
 

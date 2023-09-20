@@ -173,7 +173,6 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     shell_surface_->ApplyRoundedCornersToSurfaceTree(
         gfx::RectF(root_surface->surface_hierarchy_content_bounds()),
         root_surface_radii);
-    // TODO(crbug/1415486): Apply rounded corners to ghost surface if present.
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -1000,6 +999,14 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
   overlay_widget_->Init(std::move(params));
   overlay_widget_->GetNativeWindow()->SetEventTargeter(
       std::make_unique<aura::WindowTargeter>());
+
+  if (overlay_params.corners_radii) {
+    ui::Layer* layer = overlay_widget_->GetLayer();
+    const gfx::RoundedCornersF& radii = overlay_params.corners_radii.value();
+    layer->SetRoundedCornerRadius(radii);
+    layer->SetIsFastRoundedCorner(/*enable=*/!radii.IsEmpty());
+  }
+
   overlay_widget_->Show();
 
   // Setup Focus Traversal.
