@@ -486,6 +486,42 @@ try_.compilator_builder(
     xcode = xcode.x15main,
 )
 
+try_.orchestrator_builder(
+    name = "ios-simulator-siso",
+    description_html = """\
+This builder shadows ios-simulator builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating ios-simulator from Ninja to Siso. b/277863839
+""",
+    mirrors = builder_config.copy_from("try/ios-simulator"),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+    os = os.LINUX_DEFAULT,
+    compilator = "ios-simulator-siso-compilator",
+    contact_team_email = "chrome-build-team@google.com",
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["overall", "unit"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "ios-simulator-siso-compilator",
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-build-team@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+    xcode = xcode.x15main,
+)
+
 ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.selector.IOS_BRANCHES,

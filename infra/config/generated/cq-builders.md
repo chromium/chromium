@@ -622,6 +622,9 @@ as required builders.
 * [fuchsia-x64-cast-receiver-siso-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast-receiver-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast-receiver-siso-rel""))
   * Experiment percentage: 20.0
 
+* [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
+  * Experiment percentage: 10.0
+
 * [linux-chromeos-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-siso-rel""))
   * Experiment percentage: 20.0
 
