@@ -53,7 +53,7 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              bool is_togglable) {
   // TODO(b/290696780): Update logic so the toolbar can drag from icon buttons.
   auto button = std::make_unique<IconButton>(
-      std::move(callback), IconButton::Type::kSmallFloating, icon, text,
+      std::move(callback), IconButton::Type::kMedium, icon, text,
       /*is_togglable=*/is_togglable, /*has_border=*/true);
   button->SetID(view_id);
   return button;
@@ -347,6 +347,13 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*is_togglable=*/true));
+    record_game_button_->SetVectorIcon(kGdRecordGameIcon);
+    record_game_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+
+    record_game_button_->SetBackgroundToggledColorId(
+        cros_tokens::kCrosSysError);
+    record_game_button_->SetToggledVectorIcon(kCaptureModeCircleStopIcon);
+    record_game_button_->SetIconToggledColorId(cros_tokens::kCrosSysOnError);
     UpdateRecordGameButton(
         GameDashboardController::Get()->active_recording_context() == context_);
   }
@@ -397,8 +404,6 @@ void GameDashboardToolbarView::UpdateRecordGameButton(
       is_recording_game_window ||
       !CaptureModeController::Get()->is_recording_in_progress());
   record_game_button_->SetToggled(is_recording_game_window);
-  // TODO(b/273641154): Update record_game_button_'s UI to reflect the updated
-  // state.
 }
 
 void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,

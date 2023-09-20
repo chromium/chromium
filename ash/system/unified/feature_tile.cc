@@ -237,10 +237,15 @@ void FeatureTile::UpdateColors() {
   ui::ColorId foreground_optional_color;
 
   if (GetEnabled()) {
-    background_color = toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                                : cros_tokens::kCrosSysSystemOnBase;
-    foreground_color = toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                : cros_tokens::kCrosSysOnSurface;
+    background_color =
+        toggled_
+            ? background_toggled_color_.value_or(
+                  cros_tokens::kCrosSysSystemPrimaryContainer)
+            : background_color_.value_or(cros_tokens::kCrosSysSystemOnBase);
+    foreground_color =
+        toggled_ ? foreground_toggled_color_.value_or(
+                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                 : foreground_color_.value_or(cros_tokens::kCrosSysOnSurface);
     foreground_optional_color =
         toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                  : cros_tokens::kCrosSysOnSurfaceVariant;
@@ -295,6 +300,47 @@ void FeatureTile::SetVectorIcon(const gfx::VectorIcon& icon) {
   auto image_model = ui::ImageModel::FromVectorIcon(icon, color_id, kIconSize);
   icon_button_->SetImageModel(views::Button::STATE_NORMAL, image_model);
   icon_button_->SetImageModel(views::Button::STATE_DISABLED, image_model);
+}
+
+void FeatureTile::SetBackgroundColorId(ui::ColorId background_color_id) {
+  if (background_color_ == background_color_id) {
+    return;
+  }
+  background_color_ = background_color_id;
+  if (!toggled_) {
+    UpdateColors();
+  }
+}
+void FeatureTile::SetBackgroundToggledColorId(
+    ui::ColorId background_toggled_color_id) {
+  if (background_toggled_color_ == background_toggled_color_id) {
+    return;
+  }
+  background_toggled_color_ = background_toggled_color_id;
+  if (toggled_) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundColorId(ui::ColorId foreground_color_id) {
+  if (foreground_color_ == foreground_color_id) {
+    return;
+  }
+  foreground_color_ = foreground_color_id;
+  if (!toggled_) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundToggledColorId(
+    ui::ColorId foreground_toggled_color_id) {
+  if (foreground_toggled_color_ == foreground_toggled_color_id) {
+    return;
+  }
+  foreground_toggled_color_ = foreground_toggled_color_id;
+  if (toggled_) {
+    UpdateColors();
+  }
 }
 
 void FeatureTile::SetImage(gfx::ImageSkia image) {
@@ -370,8 +416,9 @@ ui::ColorId FeatureTile::GetIconColorId() const {
   if (!GetEnabled()) {
     return cros_tokens::kCrosSysDisabled;
   }
-  return toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                  : cros_tokens::kCrosSysOnSurface;
+  return toggled_ ? foreground_toggled_color_.value_or(
+                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                  : foreground_color_.value_or(cros_tokens::kCrosSysOnSurface);
 }
 
 void FeatureTile::UpdateIconButtonRippleColors() {

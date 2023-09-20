@@ -259,8 +259,7 @@ void GameDashboardMainMenuView::OnRecordingEnded() {
 
 void GameDashboardMainMenuView::UpdateRecordingDuration(
     const std::u16string& duration) {
-  // TODO(b/295070122): Update `record_game_tile_`'s sub-label text to
-  // `duration`.
+  record_game_tile_->SetSubLabel(duration);
 }
 
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
@@ -420,6 +419,13 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*sub_label=*/absl::nullopt));
+    record_game_tile_->SetBackgroundColorId(
+        cros_tokens::kCrosSysSystemOnBaseOpaque);
+    record_game_tile_->SetForegroundColorId(cros_tokens::kCrosSysOnSurface);
+    record_game_tile_->SetBackgroundToggledColorId(
+        cros_tokens::kCrosSysSystemNegativeContainer);
+    record_game_tile_->SetForegroundToggledColorId(
+        cros_tokens::kCrosSysSystemOnNegativeContainer);
     UpdateRecordGameTile(
         GameDashboardController::Get()->active_recording_context() == context_);
   }
@@ -632,9 +638,19 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
   record_game_tile_->SetEnabled(
       is_recording_game_window ||
       !CaptureModeController::Get()->is_recording_in_progress());
+
+  record_game_tile_->SetVectorIcon(is_recording_game_window
+                                       ? kCaptureModeCircleStopIcon
+                                       : kGdRecordGameIcon);
+  record_game_tile_->SetLabel(l10n_util::GetStringUTF16(
+      is_recording_game_window
+          ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_RECORDING_TITLE
+          : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE));
+  if (is_recording_game_window) {
+    record_game_tile_->SetSubLabel(context_->recording_duration());
+  }
+  record_game_tile_->SetSubLabelVisibility(is_recording_game_window);
   record_game_tile_->SetToggled(is_recording_game_window);
-  // TODO(b/273641154): Update record_game_tile_'s UI to reflect the updated
-  // state.
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
