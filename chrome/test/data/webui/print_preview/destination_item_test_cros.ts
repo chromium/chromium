@@ -13,32 +13,7 @@ import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {FakeMediaQueryList} from './print_preview_test_utils.js';
 
-const destination_item_test_cros = {
-  suiteName: 'DestinationItemTestCros',
-  TestNames: {
-    NewStatusUpdatesIcon: 'new status updates icon',
-    ChangingDestinationUpdatesIcon: 'changing destination updates icon',
-    OnlyUpdateMatchingDestination: 'only update matching destination',
-    // TODO(b/289091283): Remove test for flag off and update test name for flag
-    //                    on when `isPrintPreviewSetupAssistanceEnabled` flag is
-    //                    removed.
-    PrinterIconMapsToPrinterStatus_FlagOff: 'printer icon maps to printer ' +
-        'status with isPrintPreviewSetupAssistanceEnabled flag off',
-    PrinterIconMapsToPrinterStatus_FlagOn: 'printer icon maps to printer ' +
-        'status with isPrintPreviewSetupAssistanceEnabled flag on',
-    // TODO(b/289091283): Remove test for flag off and update test name for flag
-    //                    on when `isPrintPreviewSetupAssistanceEnabled` flag is
-    //                    removed.
-    PrinterConnectionStatusClass_FlagOff: 'printer connection status class ' +
-        'with isPrintPreviewSetupAssistanceEnabled flag off',
-    PrinterConnectionStatusClass_FlagOn: 'printer connection status class ' +
-        'with isPrintPreviewSetupAssistanceEnabled flag on',
-  },
-};
-
-Object.assign(window, {destination_item_test_cros: destination_item_test_cros});
-
-suite(destination_item_test_cros.suiteName, function() {
+suite('DestinationItemTestCros', function() {
   let listItem: PrintPreviewDestinationListItemElement;
 
   let nativeLayerCros: NativeLayerCrosStub;
@@ -136,7 +111,7 @@ suite(destination_item_test_cros.suiteName, function() {
   });
 
   test(
-      destination_item_test_cros.TestNames.NewStatusUpdatesIcon, function() {
+      'NewStatusUpdatesIcon', function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
@@ -146,8 +121,7 @@ suite(destination_item_test_cros.suiteName, function() {
       });
 
   test(
-      destination_item_test_cros.TestNames.ChangingDestinationUpdatesIcon,
-      function() {
+      'ChangingDestinationUpdatesIcon', function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
@@ -166,8 +140,7 @@ suite(destination_item_test_cros.suiteName, function() {
   // destination key in the printer status response matches the current
   // destination.
   test(
-      destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination,
-      function() {
+      'OnlyUpdateMatchingDestination', function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
         const firstDestinationStatusRequestPromise =
@@ -188,45 +161,40 @@ suite(destination_item_test_cros.suiteName, function() {
 
   // Verifies expected icon displays for given status when
   // `isPrintPreviewSetupAssistanceEnabled` flag is disabled.
-  test(
-      destination_item_test_cros.TestNames
-          .PrinterIconMapsToPrinterStatus_FlagOff,
-      async function() {
-        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
-        // Before destination status request icon should be grey.
-        assertEquals('print-preview:printer-status-grey', icon.icon);
+  test('PrinterIconMapsToPrinterStatus_FlagOff', async function() {
+    const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+    // Before destination status request icon should be grey.
+    assertEquals('print-preview:printer-status-grey', icon.icon);
 
-        // Verify destination with `PrinterStatusReason.NO_ERROR` uses a green
-        // icon.
-        listItem.destination = createTestDestination('One');
-        await listItem.destination.requestPrinterStatus();
-        assertEquals('print-preview:printer-status-green', icon.icon);
+    // Verify destination with `PrinterStatusReason.NO_ERROR` uses a green
+    // icon.
+    listItem.destination = createTestDestination('One');
+    await listItem.destination.requestPrinterStatus();
+    assertEquals('print-preview:printer-status-green', icon.icon);
 
-        // Verify destination with PrinterStatusReason that is not `NO_ERROR`,
-        // null, or `UNKNOWN_REASON` uses a red icon.
-        listItem.destination = createTestDestination('Two');
-        await listItem.destination.requestPrinterStatus();
-        assertEquals('print-preview:printer-status-red', icon.icon);
+    // Verify destination with PrinterStatusReason that is not `NO_ERROR`,
+    // null, or `UNKNOWN_REASON` uses a red icon.
+    listItem.destination = createTestDestination('Two');
+    await listItem.destination.requestPrinterStatus();
+    assertEquals('print-preview:printer-status-red', icon.icon);
 
-        // Verify destination with `PrinterStatusReason.PRINTER_UNREACHABLE`
-        // uses a red icon.
-        listItem.destination = createTestDestination('Three');
-        await listItem.destination.requestPrinterStatus();
-        assertEquals('print-preview:printer-status-red', icon.icon);
+    // Verify destination with `PrinterStatusReason.PRINTER_UNREACHABLE`
+    // uses a red icon.
+    listItem.destination = createTestDestination('Three');
+    await listItem.destination.requestPrinterStatus();
+    assertEquals('print-preview:printer-status-red', icon.icon);
 
-        // Verify destination with `PrinterStatusReason.UNKNOWN_REASON` uses a
-        // grey icon.
-        listItem.destination = createTestDestination('Four');
-        await listItem.destination.requestPrinterStatus();
-        assertEquals('print-preview:printer-status-grey', icon.icon);
-      });
+    // Verify destination with `PrinterStatusReason.UNKNOWN_REASON` uses a
+    // grey icon.
+    listItem.destination = createTestDestination('Four');
+    await listItem.destination.requestPrinterStatus();
+    assertEquals('print-preview:printer-status-grey', icon.icon);
+  });
 
   // Verifies expected icon displays for given status when
   // `isPrintPreviewSetupAssistanceEnabled` flag is enabled.
   test(
-      destination_item_test_cros.TestNames
-          .PrinterIconMapsToPrinterStatus_FlagOn,
-      async function() {
+      'PrinterIconMapsToPrinterStatus_FlagOn', async function() {
         // Set flag on and reset destination item to ensure it is using the
         // latest flag state.
         loadTimeData.overrideValues({
@@ -266,8 +234,7 @@ suite(destination_item_test_cros.suiteName, function() {
   // on PrinterStatusReason when `isPrintPreviewSetupAssistanceEnabled` flag is
   // disabled.
   test(
-      destination_item_test_cros.TestNames.PrinterConnectionStatusClass_FlagOff,
-      async function() {
+      'PrinterConnectionStatusClass_FlagOff', async function() {
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: false,
         });
@@ -309,8 +276,7 @@ suite(destination_item_test_cros.suiteName, function() {
   // on PrinterStatusReason when `isPrintPreviewSetupAssistanceEnabled` flag is
   // disabled.
   test(
-      destination_item_test_cros.TestNames.PrinterConnectionStatusClass_FlagOn,
-      async function() {
+      'PrinterConnectionStatusClass_FlagOn', async function() {
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
         });

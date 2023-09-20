@@ -940,3 +940,197 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, InvalidPinDisablesPrint) {
   RunTestCase("InvalidPinDisablesPrint");
 }
 #endif
+
+class PrintPreviewDestinationItemTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_item_test.js",
+        base::StringPrintf("runMochaTest('DestinationItemTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTest, NoQuery) {
+  RunTestCase("NoQuery");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTest, QueryName) {
+  RunTestCase("QueryName");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTest, QueryDescription) {
+  RunTestCase("QueryDescription");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewDestinationItemTestCros : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_item_test_cros.js",
+        base::StringPrintf("runMochaTest('DestinationItemTestCros', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       NewStatusUpdatesIcon) {
+  RunTestCase("NewStatusUpdatesIcon");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       ChangingDestinationUpdatesIcon) {
+  RunTestCase("ChangingDestinationUpdatesIcon");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       OnlyUpdateMatchingDestination) {
+  RunTestCase("OnlyUpdateMatchingDestination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       PrinterIconMapsToPrinterStatus_FlagOff) {
+  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOff");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       PrinterIconMapsToPrinterStatus_FlagOn) {
+  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOn");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       PrinterConnectionStatusClass_FlagOff) {
+  RunTestCase("PrinterConnectionStatusClass_FlagOff");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
+                       PrinterConnectionStatusClass_FlagOn) {
+  RunTestCase("PrinterConnectionStatusClass_FlagOn");
+}
+#endif
+
+class PrintPreviewAdvancedItemTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/advanced_item_test.js",
+        base::StringPrintf("runMochaTest('AdvancedItemTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, DisplaySelect) {
+  RunTestCase("DisplaySelect");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, DisplayInput) {
+  RunTestCase("DisplayInput");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, UpdateSelect) {
+  RunTestCase("UpdateSelect");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, UpdateInput) {
+  RunTestCase("UpdateInput");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryName) {
+  RunTestCase("QueryName");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryOption) {
+  RunTestCase("QueryOption");
+}
+
+class PrintPreviewDestinationListTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_list_test.js",
+        base::StringPrintf("runMochaTest('DestinationListTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationListTest, FilterDestinations) {
+  RunTestCase("FilterDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationListTest,
+                       FireDestinationSelected) {
+  RunTestCase("FireDestinationSelected");
+}
+
+class PrintPreviewPrintButtonTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/print_button_test.js",
+        base::StringPrintf("runMochaTest('PrintButtonTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest, LocalPrintHidePreview) {
+  RunTestCase("LocalPrintHidePreview");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest, PDFPrintVisiblePreview) {
+  RunTestCase("PDFPrintVisiblePreview");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest,
+                       SaveToDriveVisiblePreviewCros) {
+  RunTestCase("SaveToDriveVisiblePreviewCros");
+}
+#endif
+
+class PrintPreviewKeyEventTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/key_event_test.js",
+        base::StringPrintf("runMochaTest('KeyEventTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EnterTriggersPrint) {
+  RunTestCase("EnterTriggersPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, NumpadEnterTriggersPrint) {
+  RunTestCase("NumpadEnterTriggersPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EnterOnInputTriggersPrint) {
+  RunTestCase("EnterOnInputTriggersPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EnterOnDropdownDoesNotPrint) {
+  RunTestCase("EnterOnDropdownDoesNotPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EnterOnButtonDoesNotPrint) {
+  RunTestCase("EnterOnButtonDoesNotPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EnterOnCheckboxDoesNotPrint) {
+  RunTestCase("EnterOnCheckboxDoesNotPrint");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, EscapeClosesDialogOnMacOnly) {
+  RunTestCase("EscapeClosesDialogOnMacOnly");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest,
+                       CmdPeriodClosesDialogOnMacOnly) {
+  RunTestCase("CmdPeriodClosesDialogOnMacOnly");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, CtrlShiftPOpensSystemDialog) {
+  RunTestCase("CtrlShiftPOpensSystemDialog");
+}
