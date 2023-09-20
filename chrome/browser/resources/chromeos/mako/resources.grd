@@ -15,11 +15,13 @@
       <if expr="_google_chrome">
         <then>
           <include name="IDR_MAKO_ORCA_HTML" file="resources/orca/orca.html" resource_path="orca.html" type="BINDATA" />
+          <include name="IDR_MAKO_PRIVACY_HTML" file="resources/orca/privacy.html" resource_path="privacy.html" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_JS" file="resources/orca/web_js.js" resource_path="web_js.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_EN" file="resources/orca/translations/translations__en.js" resource_path="translations/translations__en.js" type="BINDATA" />
         </then>
         <else>
           <include name="IDR_MAKO_ORCA_HTML" file="mako" resource_path="orca.html" type="BINDATA" />
+          <include name="IDR_MAKO_PRIVACY_HTML" file="mako" resource_path="privacy.html" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_JS" file="mako" resource_path="web_js.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_EN" file="mako" resource_path="translations/translations__en.js" type="BINDATA" />
         </else>

@@ -7,7 +7,8 @@
 namespace ash {
 
 const char kChromeUIMakoHost[] = "mako";
-const char kChromeUIOrcaURL[] = "chrome-untrusted://mako/orca.html";
 const char kChromeUIMakoURL[] = "chrome-untrusted://mako/";
+const char kChromeUIMakoOrcaURL[] = "chrome-untrusted://mako/orca.html";
+const char kChromeUIMakoPrivacyURL[] = "chrome-untrusted://mako/privacy.html";
 
 }  // namespace ash

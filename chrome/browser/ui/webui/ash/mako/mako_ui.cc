@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
@@ -188,28 +189,36 @@ void MakoPageHandler::ShowConsentUI(Profile* profile) {
     return;
   }
 
-  // TODO(b/300554470): Use the actual consent url, maybe using the constants
-  // defined in the orca_resources_map.
+  caret_bounds_ = GetTextInputClient()->GetCaretBounds();
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      GURL(kChromeUIOrcaURL), profile, kMakoTaskManagerStringID);
+      GURL(kChromeUIMakoPrivacyURL), profile, kMakoTaskManagerStringID);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoConsentView>(contents_wrapper_.get(),
-                                        GetTextInputClient()->GetCaretBounds()))
+                                        caret_bounds_.value()))
       ->Show();
 }
 
 void MakoPageHandler::ShowRewriteUI(Profile* profile) {
-  if (!GetTextInputClient()) {
+  if (contents_wrapper_ != nullptr) {
+    // If switching to the rewrite UI (e.g. from consent UI to rewrite UI),
+    // close the current contents and use the cached caret bounds.
+    contents_wrapper_->CloseUI();
+    CHECK(caret_bounds_.has_value());
+  } else if (const auto* text_input_client = GetTextInputClient()) {
+    // Otherwise, try to get the caret bounds from the text input client.
+    caret_bounds_ = text_input_client->GetCaretBounds();
+  } else {
+    // Otherwise, don't show the rewrite UI.
     return;
   }
 
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      GURL(kChromeUIOrcaURL), profile, kMakoTaskManagerStringID);
+      GURL(kChromeUIMakoOrcaURL), profile, kMakoTaskManagerStringID);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
-                                        GetTextInputClient()->GetCaretBounds()))
+                                        caret_bounds_.value()))
       ->Show();
 }
 
@@ -217,6 +226,7 @@ void MakoPageHandler::CloseUI() {
   if (contents_wrapper_) {
     contents_wrapper_->CloseUI();
     contents_wrapper_ = nullptr;
+    caret_bounds_ = absl::nullopt;
   }
 }
 
