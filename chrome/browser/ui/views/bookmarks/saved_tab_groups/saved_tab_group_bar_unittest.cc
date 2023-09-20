@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -53,7 +55,9 @@ const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
  public:
   SavedTabGroupBarUnitTest()
-      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {}
+      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {
+    feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
+  }
 
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
@@ -120,6 +124,7 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;

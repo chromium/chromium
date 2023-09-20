@@ -10,12 +10,14 @@
 
 #include "base/functional/bind.h"
 #include "base/uuid.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
@@ -182,14 +184,18 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
 BEGIN_METADATA(SavedTabGroupBar, OverflowMenu, views::View)
 END_METADATA
 
-// TODO(crbug/1372008): Prevent `SavedTabGroupBar` from instantiating if the
-// corresponding feature flag is disabled.
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    SavedTabGroupModel* saved_tab_group_model,
                                    bool animations_enabled = true)
     : saved_tab_group_model_(saved_tab_group_model),
       browser_(browser),
       animations_enabled_(animations_enabled) {
+  // When the #tab-groups-saved feature flag is turned on and profile is
+  // regular, `SavedTabGroupBar` is instantiated. If the #tab-groups-saved
+  // feature flag is turned off, there is no SavedTabGroupModel.
+  DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSave));
+  DCHECK(browser_->profile()->IsRegularProfile());
+  DCHECK(saved_tab_group_model_);
   SetAccessibilityProperties(
       ax::mojom::Role::kToolbar,
       /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
