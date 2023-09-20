@@ -19,6 +19,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -31,6 +33,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -273,6 +276,59 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->match_type,
             apps::PatternMatchType::kFileExtension);
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
+}
+
+// Verify that the default-installed partner app has its OEM install source
+// overwritten as InstallReason::kDefault.
+// TODO(b/300857328): Remove this workaround.
+TEST_F(WebAppPublisherHelperTest, PublishPartnerOemAppAsDefault) {
+  const std::string name = "some app name";
+  const GURL start_url("https://example.com/start_url");
+
+  // Manually edit the database to create an app with the specific App ID but a
+  // non-matching start URL.
+  {
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
+
+    auto new_app = std::make_unique<WebApp>(kDefaultInstalledPartnerAppId);
+    new_app->SetStartUrl(start_url);
+    new_app->AddSource(WebAppManagement::Type::kOem);
+    new_app->SetName(name);
+
+    update->CreateApp(std::move(new_app));
+  }
+
+  const WebApp* web_app =
+      provider_->registrar_unsafe().GetAppById(kDefaultInstalledPartnerAppId);
+
+  apps::AppPtr app = publisher_->CreateWebApp(web_app);
+  EXPECT_EQ(app->install_reason, apps::InstallReason::kDefault);
+}
+
+// Verify that the above behavior only applies when the app is OEM-installed.
+// TODO(b/300857328): Remove this workaround.
+TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
+  const std::string name = "some app name";
+  const GURL start_url("https://example.com/start_url");
+
+  // Manually edit the database to create an app with the specific App ID but a
+  // non-matching start URL.
+  {
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
+
+    auto new_app = std::make_unique<WebApp>(kDefaultInstalledPartnerAppId);
+    new_app->SetStartUrl(start_url);
+    new_app->AddSource(WebAppManagement::Type::kSync);
+    new_app->SetName(name);
+
+    update->CreateApp(std::move(new_app));
+  }
+
+  const WebApp* web_app =
+      provider_->registrar_unsafe().GetAppById(kDefaultInstalledPartnerAppId);
+
+  apps::AppPtr app = publisher_->CreateWebApp(web_app);
+  EXPECT_EQ(app->install_reason, apps::InstallReason::kSync);
 }
 
 class WebAppPublisherHelperTest_WebLockScreenApi
