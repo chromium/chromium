@@ -23,16 +23,11 @@
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
-namespace {
-
-void CloseDiskCacheEntry(disk_cache::Entry* entry) { entry->Close(); }
-
-}  // namespace
-
 namespace pnacl {
-// This is in pnacl namespace instead of static so they can be used
-// by the unit test.
-const int kMaxMemCacheSize = 100 * 1024 * 1024;
+
+// This is in pnacl namespace instead of static so it can be used by the unit
+// test.
+constexpr int kMaxMemCacheSize = 100 * 1024 * 1024;
 
 //////////////////////////////////////////////////////////////////////
 // Handle Reading/Writing to Cache.
@@ -217,7 +212,8 @@ void PnaclTranslationCacheEntry::CloseEntry(int rv) {
     entry_->Doom();
   }
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CloseDiskCacheEntry, entry_));
+      FROM_HERE,
+      base::BindOnce(&disk_cache::Entry::Close, base::Unretained(entry_)));
   Finish(rv);
 }
 
@@ -298,9 +294,11 @@ void PnaclTranslationCacheEntry::DispatchNext(int rv) {
       } else if (rv > 0) {
         io_buf_->DidConsume(rv);
         if (io_buf_->BytesRemaining() > 0) {
-          is_read_
-              ? ReadEntry(io_buf_->BytesConsumed(), io_buf_->BytesRemaining())
-              : WriteEntry(io_buf_->BytesConsumed(), io_buf_->BytesRemaining());
+          if (is_read_) {
+            ReadEntry(io_buf_->BytesConsumed(), io_buf_->BytesRemaining());
+          } else {
+            WriteEntry(io_buf_->BytesConsumed(), io_buf_->BytesRemaining());
+          }
           break;
         }
       }
@@ -402,9 +400,7 @@ int PnaclTranslationCache::InitInMemory(CompletionOnceCallback callback) {
 }
 
 int PnaclTranslationCache::Size() {
-  if (!disk_cache_)
-    return -1;
-  return disk_cache_->GetEntryCount();
+  return disk_cache_ ? disk_cache_->GetEntryCount() : -1;
 }
 
 // Beware that any changes to this function or to PnaclCacheInfo will
