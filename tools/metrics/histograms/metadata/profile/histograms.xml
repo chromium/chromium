@@ -124,9 +124,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Destroyer.OffTheRecord" enum="ProfileDestructionType"
-    expires_after="2023-10-15">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-privacy-core@google.com</owner>
+    expires_after="2024-04-15">
+  <owner>arabm@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
   <summary>
     Track if the off-the-record profile was immidiately destroyed when asked to
     be destroyed, or was scheduled for a delayed destruction, and possibly was
