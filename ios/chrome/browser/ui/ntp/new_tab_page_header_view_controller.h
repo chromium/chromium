@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
-#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
 
@@ -28,8 +27,7 @@
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface NewTabPageHeaderViewController
-    : UIViewController <LogoAnimationControllerOwnerOwner,
-                        NewTabPageHeaderConsumer,
+    : UIViewController <NewTabPageHeaderConsumer,
                         UserAccountImageUpdateDelegate>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

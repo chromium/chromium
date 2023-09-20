@@ -159,11 +159,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kStartSurfaceShrinkLogoParam] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(kStartSurface, parameters);
-
   // Landscape.
   CGFloat heightLogoLandscape =
       DoodleHeight(YES, YES, IPhoneLandscapeTraitCollection());

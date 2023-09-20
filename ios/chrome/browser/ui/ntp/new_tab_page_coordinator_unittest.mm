@@ -162,6 +162,16 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
+  std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
+    auto test_web_state = std::make_unique<web::FakeWebState>();
+    NewTabPageTabHelper::CreateForWebState(test_web_state.get());
+    test_web_state->SetCurrentURL(GURL(url));
+    test_web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    test_web_state->SetBrowserState(browser_state_.get());
+    return test_web_state;
+  }
+
   void CreateCoordinator(bool off_the_record) {
     if (off_the_record) {
       ChromeBrowserState* otr_state =
@@ -170,6 +180,16 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     } else {
       browser_ = std::make_unique<TestBrowser>(browser_state_.get());
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
+      // Create non-NTP WebState
+      browser_.get()->GetWebStateList()->InsertWebState(
+          0, CreateWebState("http://chromium.org"),
+          WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      favicon::WebFaviconDriver::CreateForWebState(
+          browser_.get()->GetWebStateList()->GetActiveWebState(),
+          /*favicon_service=*/nullptr);
+      StartSurfaceRecentTabBrowserAgent* browser_agent =
+          StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
+      browser_agent->SaveMostRecentTab();
     }
     scene_state_ = OCMClassMock([SceneState class]);
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);

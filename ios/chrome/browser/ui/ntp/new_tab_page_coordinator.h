@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
 namespace web {
@@ -20,9 +19,7 @@ class WebState;
 @protocol NewTabPageControllerDelegate;
 
 // Coordinator handling the NTP.
-@interface NewTabPageCoordinator
-    : ChromeCoordinator <LogoAnimationControllerOwnerOwner,
-                         NewTabPageConfiguring>
+@interface NewTabPageCoordinator : ChromeCoordinator <NewTabPageConfiguring>
 
 // Initializes this coordinator with its `browser`, a nil base view
 // controller, and the given `componentFactory`.

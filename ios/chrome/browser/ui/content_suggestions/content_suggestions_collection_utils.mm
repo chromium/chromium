@@ -45,11 +45,9 @@ const CGFloat kShrunkDoodleTopMarginOther = 65;
 const CGFloat kDoodleScaledTopMarginOther = 10;
 
 // Top margin for the search field
-const CGFloat kSearchFieldTopMargin = 32;
 const CGFloat kShrunkLogoSearchFieldTopMargin = 22;
 
 // Bottom margin for the search field.
-const CGFloat kNTPSearchFieldBottomPadding = 18;
 const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
 
 // Height for the logo and doodle frame.
@@ -80,7 +78,7 @@ CGFloat DoodleHeight(BOOL logo_is_showing,
     return 0;
   }
 
-  if (ShouldShrinkLogoForStartSurface() && logo_is_showing) {
+  if (logo_is_showing) {
     if (doodle_is_showing ||
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return kGoogleSearchDoodleShrunkHeight;
@@ -96,15 +94,13 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
                         UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection))
     return kDoodleTopMarginRegularXRegular;
-  if (IsCompactHeight(trait_collection) && !ShouldShrinkLogoForStartSurface())
-    return top_inset;
   CGFloat top_margin =
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
   // If Magic Stack is not enabled, this value is zero (e.g. no-op).
   top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
-  if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(trait_collection)) {
+  if (!IsCompactHeight(trait_collection)) {
     top_margin += kShrunkDoodleTopMarginOther;
   } else {
     top_margin += kDoodleTopMarginOther;
@@ -117,8 +113,7 @@ CGFloat HeaderSeparatorHeight() {
 }
 
 CGFloat SearchFieldTopMargin() {
-  return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
-                                           : kSearchFieldTopMargin;
+  return kShrunkLogoSearchFieldTopMargin;
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
@@ -161,9 +156,7 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
 }
 
 CGFloat HeaderBottomPadding() {
-  return ShouldShowReturnToMostRecentTabForStartSurface()
-             ? kNTPShrunkLogoSearchFieldBottomPadding
-             : kNTPSearchFieldBottomPadding;
+  return kNTPShrunkLogoSearchFieldBottomPadding;
 }
 
 UIImageView* CreateMagnifyingGlassView() {

@@ -2519,14 +2519,6 @@ enum HeaderBehaviour {
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  NewTabPageCoordinator* coordinator = self.ntpCoordinator;
-  if (coordinator.isNTPActiveForCurrentWebState) {
-    if ([coordinator logoAnimationControllerOwner]) {
-      // If NTP coordinator is showing a GLIF view (e.g. the NTP when there is
-      // no doodle), use that GLIFControllerOwner.
-      return [coordinator logoAnimationControllerOwner];
-    }
-  }
   return nil;
 }
 

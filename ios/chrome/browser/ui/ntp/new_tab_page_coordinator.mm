@@ -1259,13 +1259,6 @@
 - (void)setUpListItemOpened {
   RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
 }
-
-#pragma mark - LogoAnimationControllerOwnerOwner
-
-- (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  return [self.headerViewController logoAnimationControllerOwner];
-}
-
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {

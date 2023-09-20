@@ -272,9 +272,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
-    [self.audience viewWillDisappear];
-  }
+  [self.audience viewWillDisappear];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

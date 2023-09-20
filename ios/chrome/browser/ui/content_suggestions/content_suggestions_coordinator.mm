@@ -97,14 +97,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-namespace {
-// Kill-switch for quick fix of crbug.com/1204507
-BASE_FEATURE(kNoRecentTabIfNullWebState,
-             "NoRecentTabIfNullWebState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
@@ -284,9 +276,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   DiscoverFeedServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->SetIsShownOnStartSurface(false);
-  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
-    [self.contentSuggestionsMediator hideRecentTabTile];
-  }
+  [self.contentSuggestionsMediator hideRecentTabTile];
 }
 
 - (void)returnToRecentTabWasAdded {
@@ -641,30 +631,24 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     return;
   }
 
-  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
-    web::WebState* most_recent_tab =
-        StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-            ->most_recent_tab();
-    // TODO(crbug.com/1204507): Fix reproduced steps that produce state where
-    // most_recent_tab is null but ShouldShowStartSurface() is YES.
-    if (!base::FeatureList::IsEnabled(kNoRecentTabIfNullWebState) ||
-        most_recent_tab) {
-      [self.contentSuggestionsMetricsRecorder recordReturnToRecentTabTileShown];
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->SetIsShownOnStartSurface(true);
-      NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
-      [self.contentSuggestionsMediator
-          configureMostRecentTabItemWithWebState:most_recent_tab
-                                       timeLabel:time_label];
-      if (!_startSurfaceObserver) {
-        _startSurfaceObserver =
-            std::make_unique<StartSurfaceRecentTabObserverBridge>(
-                self.contentSuggestionsMediator);
-        StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-            ->AddObserver(_startSurfaceObserver.get());
-      }
-    }
+  web::WebState* most_recent_tab =
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+          ->most_recent_tab();
+  CHECK(most_recent_tab);
+  [self.contentSuggestionsMetricsRecorder recordReturnToRecentTabTileShown];
+  DiscoverFeedServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->SetIsShownOnStartSurface(true);
+  NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
+  [self.contentSuggestionsMediator
+      configureMostRecentTabItemWithWebState:most_recent_tab
+                                   timeLabel:time_label];
+  if (!_startSurfaceObserver) {
+    _startSurfaceObserver =
+        std::make_unique<StartSurfaceRecentTabObserverBridge>(
+            self.contentSuggestionsMediator);
+    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+        ->AddObserver(_startSurfaceObserver.get());
   }
 }
 
