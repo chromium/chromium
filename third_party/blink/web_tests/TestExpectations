@@ -2720,6 +2720,7 @@ crbug.com/1484043 [ Mac ] virtual/fetch-later/external/wpt/fetch/fetch-later/sen
 crbug.com/1484043 [ Win ] virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win11 ] external/wpt/fetch/orb/tentative/known-mime-type.sub.any.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-shadow-parts/animation-part.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Crash Failure ]
@@ -5706,6 +5707,7 @@ crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-018-2.html [ 
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-002.html [ Skip Timeout ]
 crbug.com/1385905 [ Win ] external/wpt/editing/run/caret-navigation-around-line-break.html [ Skip Timeout ]
 crbug.com/1385881 [ Win ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia-capture-controller.https.window.html [ Skip Timeout ]
 crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Skip Timeout ]

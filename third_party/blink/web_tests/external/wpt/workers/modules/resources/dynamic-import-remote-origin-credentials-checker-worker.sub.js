@@ -1,6 +1,6 @@
 // Import a remote origin script.
 const import_url =
-    'http://{{hosts[alt][]}}:{{ports[http][0]}}/workers/modules/resources/export-credentials.py';
+    'http://{{domains[www1]}}:{{ports[http][0]}}/workers/modules/resources/export-credentials.py';
 if ('DedicatedWorkerGlobalScope' in self &&
     self instanceof DedicatedWorkerGlobalScope) {
   import(import_url)
