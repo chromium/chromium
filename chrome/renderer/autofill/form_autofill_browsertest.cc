@@ -2671,38 +2671,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
 }
 
-// We should not extract the value for non-text and non-select fields.
-TEST_F(FormAutofillTest, WebFormControlElementToFormFieldInvalidType) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='hidden' id='hidden' value='apple'/>"
-           "  <INPUT type='submit' id='submit' value='Send'/>"
-           "</FORM>");
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  WebFormControlElement element = GetFormControlElementById("hidden");
-  FormFieldData result;
-  WebFormControlElementToFormField(element.Form(), element, nullptr,
-                                   EXTRACT_VALUE, &result);
-
-  FormFieldData expected;
-  expected.max_length = 0;
-
-  expected.id_attribute = u"hidden";
-  expected.name = expected.id_attribute;
-  expected.form_control_type = "hidden";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
-
-  element = GetFormControlElementById("submit");
-  WebFormControlElementToFormField(element.Form(), element, nullptr,
-                                   EXTRACT_VALUE, &result);
-  expected.id_attribute = u"submit";
-  expected.name = expected.id_attribute;
-  expected.form_control_type = "submit";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
-}
-
 // We should be able to extract password fields.
 TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
   LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"

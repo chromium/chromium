@@ -239,7 +239,7 @@ std::vector<blink::WebFormControlElement> ExtractAutofillableElementsInForm(
 
 struct ShadowFieldData;
 
-// Fills out a FormField object from a given WebFormControlElement.
+// Fills out a FormField object from a given autofillable WebFormControlElement.
 // |extract_mask|: See the enum ExtractMask above for details. Field properties
 // will be copied from |field_data_manager|, if the argument is not null and
 // has entry for |element| (see properties in FieldPropertiesFlags).

@@ -2027,6 +2027,7 @@ void WebFormControlElementToFormField(
   DCHECK(field);
   DCHECK(!element.IsNull());
   DCHECK(element.GetDocument().GetFrame());
+  DCHECK(IsAutofillableElement(element));
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   const FieldRendererId renderer_id = GetFieldRendererId(element);
@@ -2106,24 +2107,18 @@ void WebFormControlElementToFormField(
       field->aria_description = GetAriaDescription(host.GetDocument(), host);
   }
 
-  if (!IsAutofillableElement(element))
-    return;
-
-  if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
-      IsSelectOrSelectListElement(element)) {
-    // The browser doesn't need to differentiate between preview and autofill.
-    field->is_autofilled = element.IsAutofilled();
-    field->is_focusable = IsWebElementFocusableForAutofill(element);
-    field->is_visible = IsWebElementVisible(element);
-    field->should_autocomplete =
-        element.AutoComplete() &&
-        !(field->parsed_autocomplete.has_value() &&
-          field->parsed_autocomplete.value().field_type ==
-              HtmlFieldType::kOneTimeCode);
-    field->text_direction = GetTextDirectionForElement(element);
-    field->is_enabled = element.IsEnabled();
-    field->is_readonly = element.IsReadOnly();
-  }
+  // The browser doesn't need to differentiate between preview and autofill.
+  field->is_autofilled = element.IsAutofilled();
+  field->is_focusable = IsWebElementFocusableForAutofill(element);
+  field->is_visible = IsWebElementVisible(element);
+  field->should_autocomplete =
+      element.AutoComplete() &&
+      !(field->parsed_autocomplete.has_value() &&
+        field->parsed_autocomplete.value().field_type ==
+            HtmlFieldType::kOneTimeCode);
+  field->text_direction = GetTextDirectionForElement(element);
+  field->is_enabled = element.IsEnabled();
+  field->is_readonly = element.IsReadOnly();
 
   if (IsAutofillableInputElement(input_element)) {
     SetCheckStatus(field, IsCheckableElement(input_element),
