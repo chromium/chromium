@@ -145,8 +145,9 @@ export class GifSaver {
       private readonly blobs: Blob[],
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
-  async write(frame: Uint8ClampedArray): Promise<void> {
-    await this.processor.write(new Blob([frame]));
+  write(frame: Uint8ClampedArray): void {
+    // processor.write does queuing internally.
+    void this.processor.write(new Blob([frame]));
   }
 
   /**

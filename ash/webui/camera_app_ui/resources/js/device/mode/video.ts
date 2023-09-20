@@ -444,7 +444,11 @@ export class Video extends ModeBase {
 
     this.mediaRecorder.addEventListener(toggledEvent, onToggled);
     if (toBePaused) {
-      waitable.wait().then(() => this.playPauseEffect(toBePaused));
+      // This is for playing pause effect after the toggle is done, and
+      // shouldn't be included in the returned promise.
+      // TODO(pihsun): Reconsider if we should return a Promise for audio /
+      // animation.
+      void waitable.wait().then(() => this.playPauseEffect(toBePaused));
       this.recordTime.pause();
       this.mediaRecorder.pause();
     } else {
@@ -648,7 +652,7 @@ export class Video extends ModeBase {
       if (this.recordTime.inMilliseconds() <
           (MINIMUM_VIDEO_DURATION_IN_MILLISECONDS * TIME_LAPSE_INITIAL_SPEED)) {
         toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
-        timeLapseSaver.cancel();
+        await timeLapseSaver.cancel();
         return [Promise.resolve()];
       }
 
@@ -672,12 +676,8 @@ export class Video extends ModeBase {
           videoSaver = await this.captureVideo();
         } finally {
           this.recordTime.stop();
-          sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
-          // TypeScript wrongly deduce the type of this.snapshotting to be
-          // null, since there's an assert at the beginning of this function,
-          // and TypeScript doesn't consider other methods will change the type
-          // of properties.
-          // eslint-disable-next-line @typescript-eslint/await-thenable
+          // TODO(pihsun): Reconsider if sound.play should return a Promise.
+          void sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
           await this.snapshottingQueue.flush();
         }
       } catch (e) {
@@ -810,51 +810,44 @@ export class Video extends ModeBase {
     const reader = trackProcessor.readable.getReader();
 
     state.set(state.State.RECORDING, true);
-    const frames = await new Promise<number>((resolve, reject) => {
-      let frameCount = 0;
-      let writtenFrameCount = 0;
 
-      async function onError(error: unknown) {
-        await saver.cancel();
-        reject(error);
-      }
-      saver.setErrorCallback(onError);
-
-      async function updateFrame(): Promise<void> {
-        if (!state.get(state.State.RECORDING)) {
-          resolve(writtenFrameCount);
-          return;
-        }
-        if (state.get(state.State.RECORDING_PAUSED)) {
-          state.addOneTimeObserver(state.State.RECORDING_PAUSED, updateFrame);
-          return;
-        }
-        let frame: VideoFrame|null = null;
-        try {
-          const {done, value} = await reader.read();
-          if (done) {
-            resolve(writtenFrameCount);
-            return;
-          }
-          frame = value;
-          if (frameCount % saver.speed === 0) {
-            saver.write(frame, frameCount);
-            writtenFrameCount++;
-          }
-        } catch (e) {
-          onError(e);
-        } finally {
-          if (frame !== null) {
-            frame.close();
-          }
-        }
-        frameCount++;
-        updateFrame();
-      }
-      updateFrame();
+    const errorPromise = new Promise<never>((_, reject) => {
+      saver.setErrorCallback(reject);
     });
 
-    if (frames === 0) {
+    let frameCount = 0;
+    let writtenFrameCount = 0;
+
+    while (state.get(state.State.RECORDING)) {
+      if (state.get(state.State.RECORDING_PAUSED)) {
+        const waitUnpaused = new WaitableEvent();
+        state.addOneTimeObserver(
+            state.State.RECORDING_PAUSED, () => waitUnpaused.signal());
+        await Promise.race([waitUnpaused.wait(), errorPromise]);
+        continue;
+      }
+      let frame: VideoFrame|null = null;
+      try {
+        const {done, value} = await Promise.race([reader.read(), errorPromise]);
+        if (done) {
+          break;
+        }
+        frame = value;
+        if (frameCount % saver.speed === 0) {
+          saver.write(frame, frameCount);
+          writtenFrameCount++;
+        }
+      } catch (e) {
+        await saver.cancel();
+        throw e;
+      } finally {
+        if (frame !== null) {
+          frame.close();
+        }
+      }
+      frameCount++;
+    }
+    if (writtenFrameCount === 0) {
       throw new NoFrameError();
     }
 
@@ -872,10 +865,10 @@ export class Video extends ModeBase {
       await new Promise((resolve, reject) => {
         let noChunk = true;
 
-        function onDataAvailable(event: BlobEvent) {
+        async function onDataAvailable(event: BlobEvent) {
           if (event.data.size > 0) {
             noChunk = false;
-            saver.write(event.data);
+            await saver.write(event.data);
           }
         }
 
