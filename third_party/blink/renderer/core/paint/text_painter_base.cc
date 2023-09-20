@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -240,33 +239,6 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
       decoration_painter.Paint(flags);
     }
   }
-}
-
-void TextPainterBase::PaintEmphasisMarkForCombinedText(
-    const TextPaintStyle& text_style,
-    const Font& emphasis_mark_font,
-    const AutoDarkMode& auto_dark_mode) {
-  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
-  DCHECK(emphasis_mark_);
-  const SimpleFontData* const font_data = font_.PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return;
-
-  if (text_style.emphasis_mark_color != text_style.fill_color) {
-    // See virtual/text-antialias/emphasis-combined-text.html
-    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-  }
-
-  const auto font_ascent = font_data->GetFontMetrics().Ascent();
-  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
-  const gfx::PointF emphasis_mark_text_origin(
-      text_frame_rect_.X().ToFloat(),
-      text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
-  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
-  graphics_context_.DrawEmphasisMarks(emphasis_mark_font, text_run_paint_info,
-                                      emphasis_mark_, emphasis_mark_text_origin,
-                                      auto_dark_mode);
 }
 
 }  // namespace blink

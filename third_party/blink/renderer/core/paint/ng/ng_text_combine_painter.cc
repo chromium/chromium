@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
@@ -70,9 +71,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
       text_combine.GetDocument(), style, paint_info);
 
   if (has_emphasis_mark) {
-    text_painter.PaintEmphasisMark(text_style,
-                                   text_combine.Parent()->StyleRef().GetFont(),
-                                   text_combine.GetDocument());
+    text_painter.PaintEmphasisMark(text_style, style.GetFont());
   }
 
   if (has_text_decoration)
@@ -114,13 +113,31 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
 }
 
 void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
-                                             const Font& emphasis_mark_font,
-                                             const Document& document) {
+                                             const Font& emphasis_mark_font) {
   DCHECK_NE(style_.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   SetEmphasisMark(style_.TextEmphasisMarkString(),
                   style_.GetTextEmphasisPosition());
-  PaintEmphasisMarkForCombinedText(
-      text_style, emphasis_mark_font,
+  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
+  DCHECK(emphasis_mark_);
+  const SimpleFontData* const font_data = font_.PrimaryFont();
+  DCHECK(font_data);
+  if (!font_data) {
+    return;
+  }
+  if (text_style.emphasis_mark_color != text_style.fill_color) {
+    // See virtual/text-antialias/emphasis-combined-text.html
+    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
+  }
+
+  const auto font_ascent = font_data->GetFontMetrics().Ascent();
+  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
+  const gfx::PointF emphasis_mark_text_origin(
+      text_frame_rect_.X().ToFloat(),
+      text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
+  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
+  graphics_context_.DrawEmphasisMarks(
+      emphasis_mark_font, text_run_paint_info, emphasis_mark_,
+      emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }
 
