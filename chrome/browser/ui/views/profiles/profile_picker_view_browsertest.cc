@@ -1004,6 +1004,57 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(new_browser->profile(), profile);
   EXPECT_FALSE(entry->IsSigninRequired());
 }
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninReauthWithAnotherAccount) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(initial_browser_count, 0u);
+
+  const std::vector<Profile*> profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  ASSERT_GE(profiles.size(), 1u);
+  Profile* profile = profiles[0];
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+
+  ASSERT_TRUE(entry->IsSigninRequired());
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  const std::string email("test@managedchrome.com");
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSignin);
+  // Only managed accounts are allowed to reauth.
+  entry->SetUserAcceptedAccountManagement(true);
+
+  CoreAccountId primary_account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.empty());
+
+  // Simulate an invalid account.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Opening the locked profile from the profile picker should trigger the
+  // reauth.
+  OpenProfileFromPicker(entry->GetPath(), false);
+  WaitForLoadStop(GetChromeReauthURL(email));
+
+  // Simulate a successful sign in with another email address.
+  const std::string different_email("test2@managedchrome.com");
+  ASSERT_NE(email, different_email);
+  SimulateSuccesfulSignin(identity_manager, different_email);
+
+  // Expect the profile picker to be opened instead of a browser, and the
+  // profile to be still locked.
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
+  EXPECT_TRUE(entry->IsSigninRequired());
+}
 #endif
 
 // Regression test for crbug.com/1266415.

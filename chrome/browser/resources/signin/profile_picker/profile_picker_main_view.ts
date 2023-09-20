@@ -15,6 +15,7 @@ import './strings.m.js';
 
 import {listenOnce} from '//resources/js/util_ts.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,6 +35,8 @@ export interface ProfilePickerMainViewElement {
     profilesContainer: HTMLElement,
     wrapper: HTMLElement,
     profiles: DomRepeat,
+    forceSigninErrorDialog: CrDialogElement,
+
   };
 }
 
@@ -114,6 +117,9 @@ export class ProfilePickerMainViewElement extends
         'profiles-list-changed', this.handleProfilesListChanged_.bind(this));
     this.addWebUiListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
+    this.addWebUiListener(
+        'display-force-signin-error-dialog',
+        () => this.showForceSigninErrorDialog());
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
@@ -258,6 +264,14 @@ export class ProfilePickerMainViewElement extends
 
   getProfileListForTesting(): ProfileState[] {
     return this.profilesList_;
+  }
+
+  showForceSigninErrorDialog(): void {
+    this.$.forceSigninErrorDialog.showModal();
+  }
+
+  private onForceSigninErrorDialogOkButtonClicked_(): void {
+    this.$.forceSigninErrorDialog.close();
   }
 }
 

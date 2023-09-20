@@ -198,9 +198,12 @@ void ProfilePicker::SwitchToDiceSignIn(
 }
 
 // static
-void ProfilePicker::SwitchToReauth(Profile* profile) {
+void ProfilePicker::SwitchToReauth(
+    Profile* profile,
+    base::OnceCallback<void()> on_error_callback) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToReauth(profile);
+    g_profile_picker_view->SwitchToReauth(profile,
+                                          std::move(on_error_callback));
   }
 }
 #endif
@@ -756,8 +759,11 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
   ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
 }
 
-void ProfilePickerView::SwitchToReauth(Profile* profile) {
-  GetProfilePickerFlowController()->SwitchToReauth(profile);
+void ProfilePickerView::SwitchToReauth(
+    Profile* profile,
+    base::OnceCallback<void()> on_error_callback) {
+  GetProfilePickerFlowController()->SwitchToReauth(
+      profile, std::move(on_error_callback));
 }
 #endif
 

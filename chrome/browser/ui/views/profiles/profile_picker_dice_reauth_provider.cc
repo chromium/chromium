@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -104,9 +105,15 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
   // account).
   bool success = gaia_id_to_reauth_ == account_info.gaia;
 
-  // TODO(https://crbug.com/1478217): Handle the case where `success` is
-  // false; eventually signing out the account if it was not previously signed
-  // in.
+  // If the email reauth-ed is not the same as the intended email, we do not
+  // want the user to proceed with success. Since at this point this would be a
+  // new sign in, the account should be signed out.
+  if (!success) {
+    identity_manager_->GetAccountsMutator()->RemoveAccount(
+        account_info.account_id,
+        signin_metrics::SourceForRefreshTokenOperation::
+            kForceSigninReauthWithDifferentAccount);
+  }
 
   Finish(success);
 }

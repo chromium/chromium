@@ -450,8 +450,9 @@ enum class SourceForRefreshTokenOperation {
   // DEPRECATED on 09/2021 (used for force migration to DICE)
   // kAccountReconcilor_RevokeTokensNotInCookies = 18,
   kLogoutTabHelper_PrimaryPageChanged = 19,
+  kForceSigninReauthWithDifferentAccount = 20,
 
-  kMaxValue = kLogoutTabHelper_PrimaryPageChanged,
+  kMaxValue = kForceSigninReauthWithDifferentAccount,
 };
 
 // Different types of reporting. This is used as a histogram suffix.

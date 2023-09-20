@@ -177,6 +177,12 @@ void AddStrings(content::WebUIDataSource* html_source) {
     {"removeWarningSignedInProfile",
      IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
 #endif
+    {"forceSigninErrorDialogTitle",
+     IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_TITLE},
+    {"forceSigninErrorDialogBody",
+     IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_BODY},
+    {"ok", IDS_OK},
+
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

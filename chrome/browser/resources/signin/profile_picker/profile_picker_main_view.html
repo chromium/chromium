@@ -181,3 +181,18 @@
     $i18n{askOnStartupCheckboxText}
   </cr-checkbox>
 </div>
+
+<cr-dialog id="forceSigninErrorDialog">
+  <div slot="title" class="key-text">
+    $i18n{forceSigninErrorDialogTitle}
+  </div>
+  <div slot="body" class="warning-message">
+    $i18n{forceSigninErrorDialogBody}
+  </div>
+  <div slot="button-container">
+    <cr-button class="action-button"
+        on-click="onForceSigninErrorDialogOkButtonClicked_">
+    $i18n{ok}
+    </cr-button>
+  </div>
+</cr-dialog>

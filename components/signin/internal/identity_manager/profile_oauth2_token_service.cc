@@ -66,6 +66,8 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "TokenService::ExtractCredentials";
     case SourceForRefreshTokenOperation::kLogoutTabHelper_PrimaryPageChanged:
       return "LogoutTabHelper::PrimaryPageChanged";
+    case SourceForRefreshTokenOperation::kForceSigninReauthWithDifferentAccount:
+      return "ForceSigninReauthWithDifferentAccount";
   }
 }
 }  // namespace

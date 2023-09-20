@@ -228,8 +228,10 @@ class ProfilePicker {
   // out.
   // On successful reauth, the profile is unlocked and a browser associated with
   // the `profile` will be opened. On unsuccessful reauth, the user will be
-  // redirected to the profile picker main page.
-  static void SwitchToReauth(Profile* profile);
+  // redirected to the profile picker main page, with a popup error dialog
+  // displayed through `on_error_callback`.
+  static void SwitchToReauth(Profile* profile,
+                             base::OnceCallback<void()> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

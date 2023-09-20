@@ -338,7 +338,9 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
       std::move(switch_finished_callback));
 }
 
-void ProfilePickerFlowController::SwitchToReauth(Profile* profile) {
+void ProfilePickerFlowController::SwitchToReauth(
+    Profile* profile,
+    base::OnceCallback<void()> on_error_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
   DCHECK(!IsStepInitialized(Step::kReauth));
 
@@ -347,21 +349,25 @@ void ProfilePickerFlowController::SwitchToReauth(Profile* profile) {
       CreateReauthReauthStep(
           host(), profile,
           base::BindOnce(&ProfilePickerFlowController::OnReauthCompleted,
-                         base::Unretained(this), profile)));
+                         base::Unretained(this), profile,
+                         std::move(on_error_callback))));
   SwitchToStep(Step::kReauth, true);
 }
 
-void ProfilePickerFlowController::OnReauthCompleted(Profile* profile,
-                                                    bool success) {
+void ProfilePickerFlowController::OnReauthCompleted(
+    Profile* profile,
+    base::OnceCallback<void()> on_error_callback,
+    bool success) {
   // Unregister to make sure the next reauth is properly initialised and the
   // current step is cleaned.
   UnregisterStep(Step::kReauth);
 
-  // TODO(https://crbug.com/1478217): handle success=false where we need to sign
-  // out the wrongly signed in account (maybe in the reauth provider?) and
-  // redirect to the Profile Picker Main page with an error message.
   if (!success) {
-    SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
+    SwitchToStep(
+        Step::kProfilePicker, /*reset_state=*/true,
+        base::BindOnce(
+            &ProfilePickerFlowController::OnProfilePickerStepShownReauthError,
+            base::Unretained(this), std::move(on_error_callback)));
     return;
   }
 
@@ -372,6 +378,19 @@ void ProfilePickerFlowController::OnReauthCompleted(Profile* profile,
 
   FinishFlowAndRunInBrowser(profile, PostHostClearedCallback());
 }
+
+void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
+    base::OnceCallback<void()> on_error_callback,
+    bool switch_step_success) {
+  // If the step switch to the profile picker was not successful, do not proceed
+  // with displaying the error dialog.
+  if (!switch_step_success) {
+    return;
+  }
+
+  std::move(on_error_callback).Run();
+}
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

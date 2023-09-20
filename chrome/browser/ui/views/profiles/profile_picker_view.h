@@ -193,8 +193,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Switches the profile picker layout to display the reauth page to the main
   // account of the given `profile` if needed. On success the `profile` is
   // unlocked and a browser is opend. On failure the user is redirected to the
-  // profile picker main page.
-  void SwitchToReauth(Profile* profile);
+  // profile picker main page with an popup error dialog displayed through
+  // `on_error_callback`.
+  void SwitchToReauth(Profile* profile,
+                      base::OnceCallback<void()> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

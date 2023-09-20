@@ -30,7 +30,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
                           StepSwitchFinishedCallback switch_finished_callback);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void SwitchToReauth(Profile* profile);
+  void SwitchToReauth(Profile* profile,
+                      base::OnceCallback<void()> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -51,7 +52,12 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
 
-  void OnReauthCompleted(Profile* profile, bool success);
+  void OnReauthCompleted(Profile* profile,
+                         base::OnceCallback<void()> on_error_callback,
+                         bool success);
+  void OnProfilePickerStepShownReauthError(
+      base::OnceCallback<void()> on_error_callback,
+      bool switch_step_success);
 #endif
 
   std::unique_ptr<ProfilePickerSignedInFlowController>

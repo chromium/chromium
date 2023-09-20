@@ -567,7 +567,10 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
     DCHECK(signin_util::IsForceSigninEnabled());
     if (entry->CanBeManaged()) {
       if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-        ProfilePicker::SwitchToReauth(profile);
+        ProfilePicker::SwitchToReauth(
+            profile,
+            base::BindOnce(&ProfilePickerHandler::OnReauthErrorCallback,
+                           weak_factory_.GetWeakPtr()));
       } else {
         ProfilePickerForceSigninDialog::ShowReauthDialog(
             profile, base::UTF16ToUTF8(entry->GetUserName()));
@@ -596,6 +599,11 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
     ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void ProfilePickerHandler::OnReauthErrorCallback() {
+  AllowJavascript();
+  FireWebUIListener("display-force-signin-error-dialog", base::Value());
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

@@ -596,6 +596,12 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
       Delete this profile and its data?
     </message>
+    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth with an email address different than the original one.">
+      Unable to unlock the Profile.
+    </message>
+    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth with an email address different than the original one.">
+      To unlock the profile you need to re-authenticate with your main account.
+    </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
       Browsing history
     </message>
