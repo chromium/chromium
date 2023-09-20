@@ -1654,6 +1654,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
     ),
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "mac",
@@ -1684,6 +1685,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
     ),
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "macss",
@@ -1710,6 +1712,7 @@ This builder measures build performance for Mac developer builds, by simulating 
         ),
     ),
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "macdev",
