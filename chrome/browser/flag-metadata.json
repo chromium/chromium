@@ -2562,8 +2562,8 @@
   },
   {
     "name": "enable-discover-feed-top-sync-promo",
-    "owners": [ "adamta", "mrefaat", "sczs"],
-    "expiry_milestone": 118
+    "owners": [ "adamta", "guiperez", "sczs"],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-discover-multi-column",
@@ -2736,8 +2736,8 @@
   },
   {
     "name": "enable-feed-ablation",
-    "owners": [ "adamta", "sczs" ],
-    "expiry_milestone": 118
+    "owners": [ "adamta", "chrome-feed-fundamentals@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-feed-card-menu-sign-in-promo",
