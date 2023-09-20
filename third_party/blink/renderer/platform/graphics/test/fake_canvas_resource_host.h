@@ -25,6 +25,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override {}
   void UpdateMemoryUsage() override {}
   bool PrintedInCurrentTask() const override { return false; }
+  bool IsPageVisible() override { return page_visible_; }
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override {
@@ -67,6 +68,15 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     return ResourceProvider();
   }
 
+  void SetPageVisible(bool visible) {
+    if (page_visible_ != visible) {
+      page_visible_ = visible;
+      PageVisibilityChanged();
+    }
+  }
+
+ private:
+  bool page_visible_ = true;
 };
 
 }  // namespace blink

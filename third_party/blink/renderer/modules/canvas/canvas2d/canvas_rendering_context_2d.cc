@@ -651,11 +651,13 @@ void CanvasRenderingContext2D::drawFormattedText(
   }
 }
 
-void CanvasRenderingContext2D::SetIsInHiddenPage(bool hidden) {
-  if (IsPaintable())
-    canvas()->GetCanvas2DLayerBridge()->SetIsInHiddenPage(hidden);
-  if (hidden)
+void CanvasRenderingContext2D::PageVisibilityChanged() {
+  if (IsPaintable()) {
+    canvas()->GetCanvas2DLayerBridge()->PageVisibilityChanged();
+  }
+  if (!Host()->IsPageVisible()) {
     PruneLocalFontCache(0);
+  }
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {

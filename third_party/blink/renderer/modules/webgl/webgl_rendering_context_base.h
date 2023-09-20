@@ -740,7 +740,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool IsAccelerated() const override { return true; }
   bool UsingSwapChain() const override;
   bool IsOriginTopLeft() const override;
-  void SetIsInHiddenPage(bool) override;
+  void PageVisibilityChanged() override;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;

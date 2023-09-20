@@ -59,7 +59,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  void SetIsInHiddenPage(bool) final { NOTREACHED(); }
+  void PageVisibilityChanged() override {}
   void Stop() final { NOTREACHED(); }
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);

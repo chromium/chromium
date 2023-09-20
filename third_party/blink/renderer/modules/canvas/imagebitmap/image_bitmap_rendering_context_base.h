@@ -33,7 +33,7 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   bool CanCreateCanvas2dResourceProvider() const;
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
-  void SetIsInHiddenPage(bool) override {}
+  void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   // If SetImage receives a null imagebitmap, it will Reset the internal bitmap
   // to a black and transparent bitmap.

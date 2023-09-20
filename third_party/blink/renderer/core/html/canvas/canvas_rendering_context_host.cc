@@ -418,4 +418,17 @@ IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
   return final_digest;
 }
 
+void CanvasRenderingContextHost::PageVisibilityChanged() {
+  bool page_visible = IsPageVisible();
+  if (RenderingContext()) {
+    RenderingContext()->PageVisibilityChanged();
+    if (page_visible) {
+      RenderingContext()->SendContextLostEventIfNeeded();
+    }
+  }
+  if (!page_visible && (IsWebGL() || IsWebGPU())) {
+    DiscardResourceProvider();
+  }
+}
+
 }  // namespace blink

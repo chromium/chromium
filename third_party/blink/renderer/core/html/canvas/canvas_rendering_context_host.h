@@ -102,6 +102,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
       RasterModeHint hint) final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
+  void PageVisibilityChanged() override;
 
   bool IsWebGL() const;
   bool IsWebGPU() const;

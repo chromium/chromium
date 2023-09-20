@@ -68,7 +68,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
       viz::ReleaseCallback* out_release_callback) override;
 
   void FinalizeFrame(CanvasResourceProvider::FlushReason);
-  void SetIsInHiddenPage(bool);
+  void PageVisibilityChanged();
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
   void DidDraw();
@@ -155,7 +155,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   friend class CanvasRenderingContext2DTest;
   friend class HTMLCanvasPainterTestForCAP;
 
-  bool IsHidden() { return is_hidden_; }
   CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
 
@@ -169,7 +168,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   scoped_refptr<cc::TextureLayer> layer_;
   std::unique_ptr<Logger> logger_;
   bool have_recorded_draw_commands_;
-  bool is_hidden_;
   bool hibernation_scheduled_ = false;
   bool always_measure_for_testing_ = false;
   bool context_lost_ = false;

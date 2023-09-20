@@ -164,12 +164,14 @@ class CORE_EXPORT CanvasRenderingContext
     return !IsAccelerated();
   }
   virtual bool ShouldAntialias() const { return false; }
-  // Indicates whether the entire tab is backgrounded. Passing false
-  // to this method may cause some canvas context implementations to
-  // aggressively discard resources, which is not desired for canvases
+  // Called when the entire tab is backgrounded or unbackgrounded.
+  // The page's visibility status can be queried at any time via
+  // Host()->IsPageVisible().
+  // Some canvas context implementations may aggressively discard
+  // when the page is not visible, which is not desired for canvases
   // which are being rendered to, just not being displayed in the
   // page.
-  virtual void SetIsInHiddenPage(bool) = 0;
+  virtual void PageVisibilityChanged() = 0;
   virtual bool isContextLost() const { return true; }
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
   virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*

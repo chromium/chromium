@@ -75,7 +75,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
       SourceDrawingBuffer src_buffer,
       const gfx::ColorSpace& dst_color_space,
       VideoFrameCopyCompletedCallback callback) override;
-  void SetIsInHiddenPage(bool) override {}
+  void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
   bool IsAccelerated() const final { return true; }

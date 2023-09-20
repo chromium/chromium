@@ -438,6 +438,10 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   return result;
 }
 
+bool HTMLCanvasElement::IsPageVisible() {
+  return GetPage()->IsPageVisible();
+}
+
 CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     const String& type,
     const CanvasContextCreationAttributesCore& attributes) {
@@ -1512,17 +1516,8 @@ void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
 void HTMLCanvasElement::PageVisibilityChanged() {
   // If we are still painting, then continue to allow animations, even if the
   // page is otherwise hidden.
+  CanvasRenderingContextHost::PageVisibilityChanged();
   UpdateSuspendOffscreenCanvasAnimation();
-  if (!context_)
-    return;
-
-  bool hidden = !GetPage()->IsPageVisible();
-  context_->SetIsInHiddenPage(hidden);
-  if (hidden && (IsWebGL() || IsWebGPU()))
-    DiscardResourceProvider();
-
-  if (!hidden)
-    context_->SendContextLostEventIfNeeded();
 }
 
 void HTMLCanvasElement::ContextDestroyed() {

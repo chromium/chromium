@@ -31,6 +31,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const = 0;
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
+  virtual void PageVisibilityChanged() {}
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
@@ -60,6 +61,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   void SetIsDisplayed(bool);
   bool IsDisplayed() { return is_displayed_; }
+
+  virtual bool IsPageVisible() = 0;
 
   virtual bool IsPrinting() const { return false; }
   virtual bool PrintedInCurrentTask() const = 0;

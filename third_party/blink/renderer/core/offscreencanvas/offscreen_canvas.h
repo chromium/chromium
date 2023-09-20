@@ -132,6 +132,10 @@ class CORE_EXPORT OffscreenCanvas final
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;
   size_t GetMemoryUsage() const override;
+  // Because OffscreenCanvas is not tied to a DOM, it's visibility cannot be
+  // determined synchronously.
+  // TODO(junov): Propagate changes in visibility from the placeholder canvas.
+  bool IsPageVisible() override { return true; }
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {

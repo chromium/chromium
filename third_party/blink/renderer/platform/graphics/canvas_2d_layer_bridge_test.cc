@@ -409,7 +409,8 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
 
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -425,7 +426,8 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationEndedNormally));
 
-  bridge->SetIsInHiddenPage(false);
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_TRUE(bridge->IsAccelerated());
@@ -452,11 +454,14 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   // Toggle visibility before the task that enters hibernation gets a
   // chance to run.
-  bridge->SetIsInHiddenPage(false);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -472,7 +477,8 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationEndedNormally));
 
-  bridge->SetIsInHiddenPage(false);
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_TRUE(bridge->IsAccelerated());
@@ -499,7 +505,8 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -536,7 +543,8 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -562,7 +570,8 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationEndedNormally))
       .Times(1);
-  bridge->SetIsInHiddenPage(false);
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
 }
 
 TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
@@ -583,7 +592,8 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
   EXPECT_CALL(
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   bridge.reset();
   // In production, we would expect a
   // HibernationAbortedDueToDestructionWhileHibernatePending event to be
@@ -620,8 +630,10 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
       ReportHibernationEvent(
           Canvas2DLayerBridge::kHibernationAbortedDueToVisibilityChange))
       .Times(1);
-  bridge->SetIsInHiddenPage(true);
-  bridge->SetIsInHiddenPage(false);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -657,7 +669,8 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
                   Canvas2DLayerBridge::kHibernationAbortedDueGpuContextLoss))
       .Times(1);
 
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -685,7 +698,8 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
       *mock_logger_ptr,
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
@@ -775,7 +789,8 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   // resource should be dropped.
   std::move(callbacks[0]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
-  bridge->SetIsInHiddenPage(true);
+  Host()->SetPageVisible(false);
+  bridge->PageVisibilityChanged();  // Temporary plumbing
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
 
   // Release second frame, this resource is not released because its the current

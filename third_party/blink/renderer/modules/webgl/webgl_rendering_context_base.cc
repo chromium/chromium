@@ -1746,9 +1746,9 @@ bool WebGLRenderingContextBase::IsOriginTopLeft() const {
   return is_origin_top_left_;
 }
 
-void WebGLRenderingContextBase::SetIsInHiddenPage(bool hidden) {
+void WebGLRenderingContextBase::PageVisibilityChanged() {
   if (GetDrawingBuffer())
-    GetDrawingBuffer()->SetIsInHiddenPage(hidden);
+    GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
 
 bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(

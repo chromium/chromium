@@ -252,7 +252,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsDesynchronized() const override {
     return CreationAttributes().desynchronized;
   }
-  void SetIsInHiddenPage(bool) override;
+  void PageVisibilityChanged() override;
   void Stop() final;
 
   cc::Layer* CcLayer() const override;

@@ -52,7 +52,6 @@ bool Canvas2DLayerBridge::IsHibernationEnabled() {
 Canvas2DLayerBridge::Canvas2DLayerBridge(OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
-      is_hidden_(false),
       opacity_mode_(opacity_mode),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr) {
@@ -127,17 +126,18 @@ static void LoseContextInBackgroundWrapper(
 
 void Canvas2DLayerBridge::Hibernate() {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
+  CHECK(resource_host_);
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
 
   hibernation_scheduled_ = false;
 
-  if (!resource_host_ || !resource_host_->ResourceProvider()) {
+  if (!resource_host_->ResourceProvider()) {
     logger_->ReportHibernationEvent(kHibernationAbortedBecauseNoSurface);
     return;
   }
 
-  if (!IsHidden()) {
+  if (resource_host_->IsPageVisible()) {
     logger_->ReportHibernationEvent(kHibernationAbortedDueToVisibilityChange);
     return;
   }
@@ -195,9 +195,10 @@ void Canvas2DLayerBridge::LoseContext() {
 
   // If canvas becomes visible again or canvas already lost its resource,
   // return here.
-  if (!resource_host_ || !resource_host_->ResourceProvider() || !IsHidden() ||
-      !IsValid() || context_lost_)
+  if (!resource_host_ || !resource_host_->ResourceProvider() ||
+      resource_host_->IsPageVisible() || !IsValid() || context_lost_) {
     return;
+  }
 
   SkipQueuedDrawCommands();
   DCHECK(!have_recorded_draw_commands_);
@@ -291,7 +292,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   if (resource_provider->IsAccelerated()) {
     logger_->ReportHibernationEvent(kHibernationEndedNormally);
   } else {
-    if (IsHidden()) {
+    if (!resource_host_->IsPageVisible()) {
       logger_->ReportHibernationEvent(
           kHibernationEndedWithSwitchToBackgroundRendering);
     } else {
@@ -339,13 +340,10 @@ void Canvas2DLayerBridge::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
     layer_->SetHdrMetadata(hdr_metadata);
 }
 
-void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
-  if (is_hidden_ == hidden)
-    return;
-
-  is_hidden_ = hidden;
+void Canvas2DLayerBridge::PageVisibilityChanged() {
+  bool page_is_visible = resource_host_->IsPageVisible();
   if (ResourceProvider())
-    ResourceProvider()->SetResourceRecyclingEnabled(!IsHidden());
+    ResourceProvider()->SetResourceRecyclingEnabled(page_is_visible);
 
   // Conserve memory.
   if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden) &&
@@ -355,11 +353,11 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
                                 ->ContextProvider()
                                 ->ContextSupport();
     if (context_support)
-      context_support->SetAggressivelyFreeResources(hidden);
+      context_support->SetAggressivelyFreeResources(!page_is_visible);
   }
 
   if (!lose_context_in_background_ && !lose_context_in_background_scheduled_ &&
-      ResourceProvider() && !context_lost_ && IsHidden() &&
+      ResourceProvider() && !context_lost_ && !page_is_visible &&
       base::FeatureList::IsEnabled(
           ::features::kCanvasContextLostInBackground)) {
     lose_context_in_background_scheduled_ = true;
@@ -367,7 +365,7 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
         FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundWrapper,
                                  weak_ptr_factory_.GetWeakPtr()));
   } else if (IsHibernationEnabled() && ResourceProvider() && IsAccelerated() &&
-             IsHidden() && !hibernation_scheduled_ &&
+             !page_is_visible && !hibernation_scheduled_ &&
              !base::FeatureList::IsEnabled(
                  ::features::kCanvasContextLostInBackground)) {
     if (layer_)
@@ -378,8 +376,9 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
         FROM_HERE,
         WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
   }
-  if (!IsHidden() && (IsHibernating() || lose_context_in_background_))
+  if (page_is_visible && (IsHibernating() || lose_context_in_background_)) {
     GetOrCreateResourceProvider();  // Rude awakening
+  }
 }
 
 void Canvas2DLayerBridge::DrawFullImage(const cc::PaintImage& image) {
@@ -635,8 +634,9 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
   }
 
   // If hibernating but not hidden, we want to wake up from hibernation.
-  if (IsHibernating() && IsHidden())
+  if (IsHibernating() && !resource_host_->IsPageVisible()) {
     return false;
+  }
 
   if (!IsValid())
     return false;
