@@ -115,10 +115,23 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-brya-chrome-skylab": {
+  "chromeos-brya-chrome-dchecks-skylab": {
     "args_file": "//build/args/chromeos/brya.gni",
     "gn_args": {
       "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "use_remoteexec": true
+    }
+  },
+  "chromeos-brya-chrome-skylab": {
+    "args_file": "//build/args/chromeos/brya.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -179,10 +192,22 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-jacuzzi-chrome-skylab": {
+  "chromeos-jacuzzi-chrome-dchecks-skylab": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
       "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "use_remoteexec": true
+    }
+  },
+  "chromeos-jacuzzi-chrome-skylab": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -220,7 +245,7 @@
   "chromeos-octopus-chrome-skylab": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -259,7 +284,7 @@
   "chromeos-trogdor-chrome-skylab": {
     "args_file": "//build/args/chromeos/trogdor.gni",
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -272,7 +297,7 @@
   "chromeos-volteer-chrome-skylab": {
     "args_file": "//build/args/chromeos/volteer.gni",
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
