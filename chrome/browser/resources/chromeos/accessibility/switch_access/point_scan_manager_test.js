@@ -52,9 +52,8 @@ AX_TEST_F(
       await new Promise(verifyChecked(false));
     });
 
-// TODO(crbug.com/1284450): Flaky.
 AX_TEST_F(
-    'SwitchAccessPointScanManagerTest', 'DISABLED_PointScanRightClick',
+    'SwitchAccessPointScanManagerTest', 'PointScanRightClick',
     async function() {
       const website = '<p>Kittens r cute</p>';
       const rootWebArea = await this.runWithLoadedTree(website);

@@ -33,10 +33,12 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
+# TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
--ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
--DockedMagnifierVirtualKeyboardTest.WelcomeScreen
+# TODO(b/275342946): Flaky on Lacros.
+-SwitchAccessPointScanManagerTest.PointScanRightClick
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
@@ -54,11 +56,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
 -ChromeVoxPanelTest.ActionsMenu
 -ChromeVoxPanelTest.SearchMenu
-# TODO(crbug.com/1432222): Flaky
--DictationE2ETest.SilencesSpokenFeedbackWhenStarting
--DictationUIE2ETest.HintsTimeoutWithChromeVox
-# TODO(b/262789941): Flaky
--MagnifierE2ETest.IgnoresRootNodeFocus
 # TODO(accessibility): these are native C++ tests that need investigation.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
