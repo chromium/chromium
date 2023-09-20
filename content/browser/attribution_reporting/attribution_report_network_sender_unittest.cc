@@ -462,9 +462,8 @@ TEST_F(AttributionReportNetworkSenderTest, ManyReports_AllSentSuccessfully) {
 
 TEST_F(AttributionReportNetworkSenderTest, HeadersPopulated) {
   AttributionReport report =
-      ReportBuilder(
-          AttributionInfoBuilder().Build(),
-          SourceBuilder(base::Time::FromJavaTime(1234483200000)).BuildStored())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();

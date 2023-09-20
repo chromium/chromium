@@ -226,9 +226,8 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
   })json");
 
   AttributionReport report =
-      ReportBuilder(
-          AttributionInfoBuilder().Build(),
-          SourceBuilder(base::Time::FromJavaTime(1234483200000)).BuildStored())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();

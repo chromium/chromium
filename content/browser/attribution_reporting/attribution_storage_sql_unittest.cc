@@ -1213,8 +1213,7 @@ TEST_P(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   // `sql::Statement::ColumnInt64()` and `sql::Statement::BindInt64()` works
   // with the maximum value.
 
-  const auto impression = SourceBuilder().SetSourceEventId(kMaxUint64).Build();
-  storage()->StoreSource(impression);
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(kMaxUint64).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(kMaxUint64)));
 
@@ -1456,9 +1455,8 @@ TEST_P(AttributionStorageSqlTest,
   for (const auto& test_case : kTestCases) {
     OpenDatabase();
 
-    SourceBuilder source_builder;
     storage()->StoreSource(
-        source_builder.SetExpiry(base::Milliseconds(3)).Build());
+        SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
     ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1)) << test_case.sql;
 
     CloseDatabase();
@@ -1497,11 +1495,9 @@ TEST_P(AttributionStorageSqlTest, CreateReport_DeletesUnattributedSources) {
 
 TEST_P(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
   OpenDatabase();
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(1).SetPriority(1).Build());
+  storage()->StoreSource(SourceBuilder().SetPriority(1).Build());
   MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(2).SetPriority(2).Build());
+  storage()->StoreSource(SourceBuilder().SetPriority(2).Build());
   MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
   CloseDatabase();
 

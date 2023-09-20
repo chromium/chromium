@@ -1483,10 +1483,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  SourceBuilder builder;
-  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
-  StorableSource source = builder.Build();
-
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -1505,7 +1501,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
   }
 
-  attribution_manager_->HandleSource(source, kFrameId);
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
   checkpoint.Call(1);
 
@@ -1514,8 +1511,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
   checkpoint.Call(2);
 
   attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build(),
-      kFrameId);
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(2));
 }
 
@@ -1524,10 +1520,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
       &observer);
   observation.Observe(attribution_manager_.get());
-
-  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
-  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
-  StorableSource source = builder.Build();
 
   Checkpoint checkpoint;
   {
@@ -1553,7 +1545,11 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
     EXPECT_CALL(observer, OnReportsChanged);
   }
 
-  attribution_manager_->HandleSource(source, kFrameId);
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
   checkpoint.Call(1);
 

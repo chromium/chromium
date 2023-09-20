@@ -323,11 +323,10 @@ TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
 
 TEST_F(AttributionStorageTest,
        AggregatableReportWindowPassed_NoReportGenerated) {
-  SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
-
-  storage()->StoreSource(
-      source_builder.SetAggregatableReportWindow(base::Milliseconds(2))
-          .Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetAggregatableReportWindow(base::Milliseconds(2))
+                             .Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   EXPECT_THAT(
@@ -587,9 +586,7 @@ TEST_F(AttributionStorageTest,
   DeleteReports(storage()->GetAttributionReports(base::Time::Now()));
 
   // Store a new impression that should mark the first inactive.
-  SourceBuilder builder;
-  builder.SetSourceEventId(1000);
-  storage()->StoreSource(builder.Build());
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(1000).Build());
 
   // Only the new impression should convert.
   auto conversion = DefaultTrigger();
@@ -607,9 +604,8 @@ TEST_F(AttributionStorageTest,
        NonMatchingImpressionForConvertedImpression_FirstRemainsActive) {
   auto reporting_origin =
       SuitableOrigin::Deserialize("https://reporter.test").value();
-  SourceBuilder builder;
-  builder.SetReportingOrigin(reporting_origin);
-  storage()->StoreSource(builder.Build());
+  storage()->StoreSource(
+      SourceBuilder().SetReportingOrigin(reporting_origin).Build());
 
   auto conversion = TriggerBuilder().SetReportingOrigin(reporting_origin);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -656,9 +652,7 @@ TEST_F(
   task_environment_.FastForwardBy(base::Milliseconds(3));
 
   // Make a conversion with different impression data.
-  SourceBuilder builder;
-  builder.SetSourceEventId(10);
-  storage()->StoreSource(builder.Build());
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(10).Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
@@ -1087,8 +1081,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
   base::Time now = base::Time::Now();
-  auto impression = SourceBuilder(now).Build();
-  storage()->StoreSource(impression);
+  storage()->StoreSource(SourceBuilder(now).Build());
   storage()->ClearData(
       now, now, GetMatcher(url::Origin::Create(GURL("https://no-match.com"))));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -1220,10 +1213,7 @@ TEST_F(AttributionStorageTest, ClearDataWithImpressionOutsideRange) {
 TEST_F(AttributionStorageTest, ClearDataRangeBetweenEvents) {
   base::Time start = base::Time::Now();
 
-  SourceBuilder builder;
-  builder.SetExpiry(base::Days(30)).Build();
-
-  auto impression = builder.Build();
+  auto impression = SourceBuilder().SetExpiry(base::Days(30)).Build();
   auto conversion = DefaultTrigger();
 
   storage()->StoreSource(impression);
@@ -1247,11 +1237,8 @@ TEST_F(AttributionStorageTest, ClearDataWithMultiTouch) {
   storage()->StoreSource(impression1);
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto impression2 = SourceBuilder().SetExpiry(base::Days(30)).Build();
-  auto impression3 = SourceBuilder().SetExpiry(base::Days(30)).Build();
-
-  storage()->StoreSource(impression2);
-  storage()->StoreSource(impression3);
+  storage()->StoreSource(SourceBuilder().SetExpiry(base::Days(30)).Build());
+  storage()->StoreSource(SourceBuilder().SetExpiry(base::Days(30)).Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -1267,8 +1254,8 @@ TEST_F(AttributionStorageTest, ClearDataWithMultiTouch) {
 TEST_F(AttributionStorageTest, DeleteAll) {
   base::Time start = base::Time::Now();
   for (int i = 0; i < 10; i++) {
-    auto impression = SourceBuilder(start).SetExpiry(base::Days(30)).Build();
-    storage()->StoreSource(impression);
+    storage()->StoreSource(
+        SourceBuilder(start).SetExpiry(base::Days(30)).Build());
     task_environment_.FastForwardBy(base::Days(1));
   }
 
@@ -1290,8 +1277,8 @@ TEST_F(AttributionStorageTest, DeleteAll) {
 TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
   base::Time start = base::Time::Now();
   for (int i = 0; i < 10; i++) {
-    auto impression = SourceBuilder(start).SetExpiry(base::Days(30)).Build();
-    storage()->StoreSource(impression);
+    storage()->StoreSource(
+        SourceBuilder(start).SetExpiry(base::Days(30)).Build());
     task_environment_.FastForwardBy(base::Days(1));
   }
 
@@ -1453,7 +1440,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        AttributeFalseImpression_OtherSourceStillActive) {
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
+  storage()->StoreSource(SourceBuilder().Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
   const base::Time fake_report_time = base::Time::Now() + kReportDelay;
@@ -1464,8 +1451,7 @@ TEST_F(AttributionStorageTest,
           {.trigger_data = 7,
            .trigger_time = fake_trigger_time,
            .report_time = fake_report_time}});
-  StoreSourceResult result =
-      storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
+  StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
@@ -2214,13 +2200,11 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
 TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetSourceEventId(1)
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://a.example")})
           .Build());
   storage()->StoreSource(
       SourceBuilder()
-          .SetSourceEventId(2)
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://b.example")})
           .Build());
@@ -2294,7 +2278,6 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
 TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetSourceEventId(1)
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://a.example")})
           .Build());
@@ -2341,13 +2324,11 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
   TestAggregatableSourceProvider provider;
   storage()->StoreSource(
       provider.GetBuilder()
-          .SetSourceEventId(1)
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://a.example")})
           .Build());
   storage()->StoreSource(
       provider.GetBuilder()
-          .SetSourceEventId(2)
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://b.example")})
           .Build());
@@ -2792,9 +2773,7 @@ TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreEventLevelReport_ReturnsDeactivatedSources) {
   delegate()->set_max_attributions_per_source(kMaxConversions);
 
-  SourceBuilder builder;
-  builder.SetSourceEventId(7);
-  storage()->StoreSource(builder.Build());
+  storage()->StoreSource(SourceBuilder().Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
@@ -3064,14 +3043,12 @@ TEST_F(AttributionStorageTest, GetAttributionDataKeysSet) {
 }
 
 TEST_F(AttributionStorageTest, SourceDebugKey_RoundTrips) {
-  storage()->StoreSource(
-      SourceBuilder(base::Time::Now()).SetDebugKey(33).Build());
+  storage()->StoreSource(SourceBuilder().SetDebugKey(33).Build());
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceDebugKeyIs(33)));
 }
 
 TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
-  storage()->StoreSource(
-      SourceBuilder(base::Time::Now()).SetDebugKey(22).Build());
+  storage()->StoreSource(SourceBuilder().SetDebugKey(22).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDebugKey(33).Build()));
@@ -3092,7 +3069,7 @@ TEST_F(AttributionStorageTest, AttributionAggregationKeys_RoundTrips) {
 }
 
 TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
-  storage()->StoreSource(SourceBuilder(base::Time::Now()).Build());
+  storage()->StoreSource(SourceBuilder().Build());
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   TriggerBuilder().SetTriggerData(123).Build()),
               AllOf(CreateReportEventLevelStatusIs(
@@ -3209,10 +3186,6 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
 
   auto provider = TestAggregatableSourceProvider(/*size=*/2);
   storage()->StoreSource(provider.GetBuilder().Build());
-
-  ReportBuilder builder(
-      AttributionInfoBuilder().Build(),
-      SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored());
 
   // A single contribution exceeds the budget.
   EXPECT_THAT(
@@ -3747,9 +3720,7 @@ TEST_F(
     MaybeCreateAndStoreAggregatableReport_reachedEventLevelAttributionLimit) {
   delegate()->set_max_attributions_per_source(kMaxConversions);
 
-  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
-  builder.SetSourceEventId(7);
-  storage()->StoreSource(builder.Build());
+  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
