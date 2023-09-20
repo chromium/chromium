@@ -861,7 +861,14 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
 // activation and that it does alert the browser after activation. Also ensures
 // that programmatic input on the prerendered page does not result in unexpected
 // messages prior to activation and that things work correctly post-activation.
-IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
+//
+// Flaky on Mac. See https://crbug.com/1484862
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DeferWhilePrerendering DISABLED_DeferWhilePrerendering
+#else
+#define MAYBE_DeferWhilePrerendering DeferWhilePrerendering
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, MAYBE_DeferWhilePrerendering) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/autofill/prerendered.html");
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
