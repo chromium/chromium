@@ -986,7 +986,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_cred, has_plat},
        {psync("a")},
-       {c(cred1), add},
+       {c(cred1), p("a"), add},
 #if BUILDFLAG(IS_MAC)
        plat_ui,
 #else
@@ -1009,6 +1009,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {psync("a")},
        {c(phonecred1), add},
        pconf},
+      // Phone from sync that has no credentials for empty allow-list request.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {},
+       {psync("a")},
+       {p("a"), add},
+       mss},
 
 #if BUILDFLAG(IS_MAC)
       // Even with iCloud Keychain present, we shouldn't jump to it without

@@ -1806,8 +1806,15 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     AddWindowsButton(windows_button_label->first, windows_button_label->second);
   }
 
+  // Only list phones as transports if we did not already list GPM passkeys
+  // above and this is an allow-list request. That way, users can tap their
+  // synced phone name to use a non-discoverable credential from their synced
+  // phone.
+  bool all_matching_phone_creds_listed =
+      list_phone_passkeys &&
+      (specific_phones_listed || transport_availability_.has_empty_allow_list);
   if (base::Contains(transport_availability_.available_transports, kCable) &&
-      !list_phone_passkeys && !windows_handles_hybrid) {
+      !all_matching_phone_creds_listed && !windows_handles_hybrid) {
     // List phones as transports.
     for (const auto& phone_name : paired_phone_names()) {
       const std::u16string name16 = base::UTF8ToUTF16(phone_name);
