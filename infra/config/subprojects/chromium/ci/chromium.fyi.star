@@ -1667,6 +1667,7 @@ build_perf_builder(
 This builder measures Mac build performance with Siso.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
 """,
+    executable = "recipe:chrome_build/build_perf_siso",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1697,6 +1698,7 @@ build_perf_builder(
     description_html = """\
 This builder measures build performance for Mac developer builds, by simulating developer build scenarios on a bot.\
 """,
+    executable = "recipe:chrome_build/build_perf_developer",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
