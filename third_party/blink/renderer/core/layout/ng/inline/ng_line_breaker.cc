@@ -2726,6 +2726,43 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   state_ = LineBreakState::kDone;
 }
 
+// Figure out if the float should be pushed after the current line.
+bool NGLineBreaker::ShouldPushFloatAfterLine(
+    NGUnpositionedFloat* unpositioned_float,
+    NGLineInfo* line_info) {
+  LayoutUnit inline_margin_size =
+      ComputeMarginBoxInlineSizeForUnpositionedFloat(unpositioned_float);
+
+  LayoutUnit used_size = position_ + inline_margin_size +
+                         ComputeFloatAncestorInlineEndSize(
+                             constraint_space_, Items(), current_.item_index);
+  bool can_fit_float =
+      used_size <= line_opportunity_.AvailableFloatInlineSize().AddEpsilon();
+  if (!can_fit_float) {
+    // Floats need to know the current line width to determine whether to put it
+    // into the current line or to the next line. Trailing spaces will be
+    // removed if this line breaks here because they should be collapsed across
+    // floats, but they are still included in the current line position at this
+    // point. Exclude it when computing whether this float can fit or not.
+    can_fit_float = used_size - TrailingCollapsibleSpaceWidth(line_info) <=
+                    line_opportunity_.AvailableFloatInlineSize().AddEpsilon();
+  }
+
+  LayoutUnit bfc_block_offset =
+      unpositioned_float->origin_bfc_offset.block_offset;
+
+  // The float should be positioned after the current line if:
+  //  - It can't fit within the non-shape area. (Assuming the current position
+  //    also is strictly within the non-shape area).
+  //  - It will be moved down due to block-start edge alignment.
+  //  - It will be moved down due to clearance.
+  //  - An earlier float has been pushed to the next fragmentainer.
+  return !can_fit_float ||
+         exclusion_space_->LastFloatBlockStart() > bfc_block_offset ||
+         exclusion_space_->ClearanceOffset(unpositioned_float->ClearType(
+             constraint_space_.Direction())) > bfc_block_offset;
+}
+
 // Performs layout and positions a float.
 //
 // If there is a known available_width (e.g. something has resolved the
@@ -2782,35 +2819,8 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
       {constraint_space_.BfcOffset().line_offset, bfc_block_offset},
       constraint_space_, node_.Style());
 
-  LayoutUnit inline_margin_size =
-      ComputeMarginBoxInlineSizeForUnpositionedFloat(&unpositioned_float);
-
-  LayoutUnit used_size = position_ + inline_margin_size +
-                         ComputeFloatAncestorInlineEndSize(
-                             constraint_space_, Items(), current_.item_index);
-  bool can_fit_float =
-      used_size <= line_opportunity_.AvailableFloatInlineSize().AddEpsilon();
-  if (!can_fit_float) {
-    // Floats need to know the current line width to determine whether to put it
-    // into the current line or to the next line. Trailing spaces will be
-    // removed if this line breaks here because they should be collapsed across
-    // floats, but they are still included in the current line position at this
-    // point. Exclude it when computing whether this float can fit or not.
-    can_fit_float = used_size - TrailingCollapsibleSpaceWidth(line_info) <=
-                    line_opportunity_.AvailableFloatInlineSize().AddEpsilon();
-  }
-
-  // The float should be positioned after the current line if:
-  //  - It can't fit within the non-shape area. (Assuming the current position
-  //    also is strictly within the non-shape area).
-  //  - It will be moved down due to block-start edge alignment.
-  //  - It will be moved down due to clearance.
-  //  - An earlier float has been pushed to the next fragmentainer.
   bool float_after_line =
-      !can_fit_float ||
-      exclusion_space_->LastFloatBlockStart() > bfc_block_offset ||
-      exclusion_space_->ClearanceOffset(unpositioned_float.ClearType(
-          constraint_space_.Direction())) > bfc_block_offset;
+      ShouldPushFloatAfterLine(&unpositioned_float, line_info);
 
   // Check if we already have a pending float. That's because a float cannot be
   // higher than any block or floated box generated before.

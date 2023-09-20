@@ -217,8 +217,10 @@ class CORE_EXPORT NGLineBreaker {
   const NGInlineItem* TryGetAtomicInlineItemAfter(
       const NGInlineItem& item) const;
 
+  bool ShouldPushFloatAfterLine(NGUnpositionedFloat*, NGLineInfo*);
   void HandleFloat(const NGInlineItem&,
                    NGLineInfo*);
+
   void HandleInitialLetter(const NGInlineItem&, NGLineInfo*);
   void HandleOutOfFlowPositioned(const NGInlineItem&, NGLineInfo*);
 
