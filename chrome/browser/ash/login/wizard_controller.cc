@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -1745,13 +1746,19 @@ void WizardController::OnDisplaySizeScreenExit(
 
 void WizardController::SkipToLoginForTesting() {
   VLOG(1) << "WizardController::SkipToLoginForTesting()";
+
+  // This method should only be used on test images.
+  base::SysInfo::CrashIfChromeOSNonTestImage();
+
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId) {
     return;
   }
   wizard_context_->skip_to_login_for_tests = true;
 
-  PerformPostNetworkScreenActions();
-  OnDeviceDisabledChecked(false /* device_disabled */);
+  StartNetworkTimezoneResolve();
+  DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
+                       ->EnsureCustomizationAppliedClosure());
+  OnDeviceDisabledChecked(/*device_disabled=*/false);
 }
 
 void WizardController::OnScreenExit(OobeScreenId screen,
