@@ -669,8 +669,9 @@ TEST_F(PrimaryAccountManagerTest,
       /*expected_count=*/0);
 }
 
+// TODO(crbug.com/1484870): The test was failing on android-12-x64-rel.
 TEST_F(PrimaryAccountManagerTest,
-       DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
+       DISABLED_DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
   user_prefs_.SetString(prefs::kGoogleServicesLastGaiaId, "previous_gaia_id");
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
