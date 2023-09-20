@@ -141,10 +141,9 @@ void AshMessageCenterLockScreenController::EncourageUserToUnlock(
                   base::UTF8ToUTF16(active_account_id_.GetUserEmail()));
   }
 
-  // TODO(yoshiki): Update UI after the UX finalizes.
   Shell::Get()->toast_manager()->Show(
       ToastData(kToastId, ToastCatalogName::kEncourageUnlock, message,
-                ToastData::kInfiniteDuration,
+                ToastData::kDefaultToastDuration,
                 /*visible_on_lock_screen=*/true));
 }
 
