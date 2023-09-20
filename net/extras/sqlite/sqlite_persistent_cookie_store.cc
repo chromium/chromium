@@ -122,6 +122,7 @@ namespace {
 
 // Version number of the database.
 //
+// Version 19 - 2023/09/22 - https://crrev.com/c/4704672
 // Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 // Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
@@ -145,6 +146,10 @@ namespace {
 // Version 5  - 2011/12/05 - https://codereview.chromium.org/8533013
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
 //
+//
+// Version 19 caps expires_utc to no more than 400 days in the future for all
+// stored cookies with has_expires. This is in compliance with section 7.2 of
+// draft-ietf-httpbis-rfc6265bis-12.
 //
 // Version 18 adds one new field: "last_update_utc" (if not 0 this represents
 // the last time the cookie was updated). This is distinct from creation_utc
@@ -228,8 +233,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 18;
-const int kCompatibleVersionNumber = 18;
+const int kCurrentVersionNumber = 19;
+const int kCompatibleVersionNumber = 19;
 
 }  // namespace
 
@@ -669,6 +674,12 @@ bool CreateV18Schema(sql::Database* db) {
   return true;
 }
 
+// Initializes the cookies table, returning true on success.
+// The table/index cannot exist when calling this function.
+bool CreateV19Schema(sql::Database* db) {
+  return CreateV18Schema(db);
+}
+
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::Load(
@@ -775,7 +786,7 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   if (db()->DoesTableExist("cookies"))
     return true;
 
-  return CreateV18Schema(db());
+  return CreateV19Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -1117,6 +1128,38 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
     if (!db()->Execute("DROP TABLE cookies_old"))
       return absl::nullopt;
+
+    ++cur_version;
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
+  }
+
+  if (cur_version == 18) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV19");
+
+    sql::Statement update_statement(
+        db()->GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE cookies SET expires_utc = ? WHERE "
+                                 "has_expires = 1 AND expires_utc > ?"));
+    if (!update_statement.is_valid()) {
+      return absl::nullopt;
+    }
+
+    sql::Transaction transaction(db());
+    if (!transaction.Begin()) {
+      return absl::nullopt;
+    }
+
+    base::Time expires_cap = base::Time::Now() + base::Days(400);
+    update_statement.BindTime(0, expires_cap);
+    update_statement.BindTime(1, expires_cap);
+    if (!update_statement.Run()) {
+      return absl::nullopt;
+    }
 
     ++cur_version;
     if (!meta_table()->SetVersionNumber(cur_version) ||
