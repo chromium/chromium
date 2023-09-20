@@ -6792,7 +6792,7 @@
           'skylab_tests': 'chromeos_brya_skylab_tests',
         }
       },
-      'chromeos-jacuzzi-chrome-dcheck-skylab': {
+      'chromeos-jacuzzi-chrome-dchecks-skylab': {
         'additional_compile_targets': [
           "chrome",
           "linux_symbols",
