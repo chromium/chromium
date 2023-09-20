@@ -1848,8 +1848,7 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, FallbackSurfacesClosed) {
   // immediately so that the child can submit another frame and catch up with
   // the parent.
   SendNextBeginFrame();
-  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_))
-      .Times(BeginFrameAcksEnabled() ? 0 : 1);
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(1);
   child_support1().SubmitCompositorFrame(
       child_id1.local_surface_id(),
       MakeCompositorFrame({arbitrary_id},
