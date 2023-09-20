@@ -12,7 +12,6 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/ambient_weather_controller.h"
-#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_progress_tracker.h"
@@ -20,6 +19,8 @@
 #include "cc/paint/skottie_wrapper.h"
 
 namespace ash {
+
+class AmbientAnimationMetricsRecorder;
 
 // Launches |AmbientTheme::kFeelTheBreeze| or |AmbientTheme::kFloatOnBy|
 // determined by the Ambient UI Settings. Display the animated screen saver with
@@ -66,7 +67,7 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
   ScopedSessionObserver session_observer_{this};
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate_;
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
-  std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
+  std::unique_ptr<AmbientAnimationMetricsRecorder> animation_metrics_recorder_;
 };
 
 }  // namespace ash

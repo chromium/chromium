@@ -1167,10 +1167,11 @@ AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
+  CHECK(session_metrics_recorder_);
+  session_metrics_recorder_->RegisterScreen();
   std::unique_ptr<AmbientContainerView> container_view;
   container_view = std::make_unique<AmbientContainerView>(
-      GetCurrentUiSettings(), ambient_ui_launcher_->CreateView(),
-      session_metrics_recorder_.get());
+      GetCurrentUiSettings(), ambient_ui_launcher_->CreateView());
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 

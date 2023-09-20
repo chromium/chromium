@@ -12,7 +12,6 @@
 
 namespace ash {
 
-class AmbientSessionMetricsRecorder;
 class AmbientUiSettings;
 
 namespace ambient {
@@ -29,8 +28,7 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   // child of |AmbientContainerView|, and |AmbientContainerView| sets up some
   // parameters in the view hierarchy that are common to all ambient UIs.
   AmbientContainerView(AmbientUiSettings ui_settings,
-                       std::unique_ptr<views::View> main_rendering_view,
-                       AmbientSessionMetricsRecorder* session_metrics_recorder);
+                       std::unique_ptr<views::View> main_rendering_view);
   ~AmbientContainerView() override;
 
  private:

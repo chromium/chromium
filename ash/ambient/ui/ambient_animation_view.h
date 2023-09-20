@@ -37,7 +37,7 @@ class AmbientAnimationPlayer;
 class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
-class AmbientSessionMetricsRecorder;
+class AmbientAnimationMetricsRecorder;
 class AmbientViewDelegateImpl;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
@@ -52,7 +52,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
       AmbientViewDelegateImpl* view_delegate,
       AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-      AmbientSessionMetricsRecorder* session_metrics_recorder,
+      AmbientAnimationMetricsRecorder* animation_metrics_recorder,
       AmbientAnimationFrameRateController* frame_rate_controller);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
@@ -61,7 +61,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   JitterCalculator* GetJitterCalculatorForTesting();
 
  private:
-  void Init(AmbientSessionMetricsRecorder* session_metrics_recorder);
+  void Init(AmbientAnimationMetricsRecorder* animation_metrics_recorder);
 
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
