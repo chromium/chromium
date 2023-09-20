@@ -287,6 +287,8 @@ EnumTraits<mojom_acceleartor_action, ash::AcceleratorAction>::ToMojom(
       return mojom_acceleartor_action::kDebugPrintWindowHierarchy;
     case ash::AcceleratorAction::kDebugShowToast:
       return mojom_acceleartor_action::kDebugShowToast;
+    case ash::AcceleratorAction::kDebugShowSystemNudge:
+      return mojom_acceleartor_action::kDebugShowSystemNudge;
     case ash::AcceleratorAction::kDebugSystemUiStyleViewer:
       return mojom_acceleartor_action::kDebugSystemUiStyleViewer;
     case ash::AcceleratorAction::kDebugToggleDarkMode:
@@ -737,6 +739,9 @@ bool EnumTraits<mojom_acceleartor_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_acceleartor_action::kDebugShowToast:
       *out = ash::AcceleratorAction::kDebugShowToast;
+      return true;
+    case mojom_acceleartor_action::kDebugShowSystemNudge:
+      *out = ash::AcceleratorAction::kDebugShowSystemNudge;
       return true;
     case mojom_acceleartor_action::kDebugSystemUiStyleViewer:
       *out = ash::AcceleratorAction::kDebugSystemUiStyleViewer;

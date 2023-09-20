@@ -166,6 +166,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(DebugPrintViewHierarchy)                     \
   ACCELERATOR_ACTION_ENTRY(DebugPrintWindowHierarchy)                   \
   ACCELERATOR_ACTION_ENTRY(DebugShowToast)                              \
+  ACCELERATOR_ACTION_ENTRY(DebugShowSystemNudge)                        \
   ACCELERATOR_ACTION_ENTRY(DebugSystemUiStyleViewer)                    \
   ACCELERATOR_ACTION_ENTRY(DebugToggleDarkMode)                         \
   ACCELERATOR_ACTION_ENTRY(DebugToggleDynamicColor)                     \

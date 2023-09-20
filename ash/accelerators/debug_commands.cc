@@ -20,12 +20,14 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
@@ -43,6 +45,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -274,6 +277,45 @@ void HandleShowToast() {
       has_leading_icon ? kSystemMenuBusinessIcon : gfx::kNoneIcon));
 }
 
+// Iterates through different system nudge variations:
+// 1. Body text only
+// 2. Body text and buttons
+// 3. Title, body text and buttons
+// 4. Image, title, body text and buttons
+void HandleShowSystemNudge() {
+  static int index = 0;
+  bool has_buttons = index > 0;
+  bool has_title = index > 1;
+  bool has_image = index > 2;
+  ++index %= 4;
+
+  const std::u16string title_text = u"Title text";
+  const std::u16string short_body_text = u"Nudge body text";
+  const std::u16string long_body_text =
+      u"Nudge body text should be clear, short and succint (80 characters "
+      u"recommended)";
+
+  AnchoredNudgeData nudge_data(/*id=*/"id", NudgeCatalogName::kTestCatalogName,
+                               has_title ? long_body_text : short_body_text);
+
+  if (has_title) {
+    nudge_data.title_text = title_text;
+  }
+
+  if (has_image) {
+    nudge_data.image_model = ui::ImageModel::FromVectorIcon(
+        vector_icons::kDogfoodIcon, kColorAshIconColorPrimary,
+        /*icon_size=*/64);
+  }
+
+  if (has_buttons) {
+    nudge_data.first_button_text = u"First";
+    nudge_data.second_button_text = u"Second";
+  }
+
+  Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+}
+
 }  // namespace
 
 void PrintUIHierarchies() {
@@ -317,6 +359,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugShowToast:
       HandleShowToast();
+      break;
+    case AcceleratorAction::kDebugShowSystemNudge:
+      HandleShowSystemNudge();
       break;
     case AcceleratorAction::kDebugSystemUiStyleViewer:
       SystemUIComponentsStyleViewerView::CreateAndShowWidget();
