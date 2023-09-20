@@ -152,7 +152,7 @@ def _GetLLVMProfilePath(device_coverage_dir, suite, coverage_index):
 
 
 class _ApkDelegate:
-  def __init__(self, test_instance, tool):
+  def __init__(self, test_instance, env):
     self._activity = test_instance.activity
     self._apk_helper = test_instance.apk_helper
     self._test_apk_incremental_install_json = (
@@ -164,7 +164,7 @@ class _ApkDelegate:
     self._component = '%s/%s' % (self._package, self._runner)
     self._extras = test_instance.extras
     self._wait_for_java_debugger = test_instance.wait_for_java_debugger
-    self._tool = tool
+    self._env = env
     self._coverage_dir = test_instance.coverage_dir
     self._coverage_index = 0
     self._use_existing_test_data = test_instance.use_existing_test_data
@@ -195,6 +195,7 @@ class _ApkDelegate:
     device_api = device.build_version_sdk
 
     if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+      # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
       device_coverage_dir = (
           code_coverage_utils.GetDeviceClangCoverageDir(device))
       extras[_EXTRA_COVERAGE_DEVICE_FILE] = _GetLLVMProfilePath(
@@ -232,7 +233,10 @@ class _ApkDelegate:
     # since we will not have yet applied legacy storage permission workarounds
     # on R+.
     stdout_file = device_temp_file.DeviceTempFile(
-        device.adb, dir=device.GetAppWritablePath(), suffix='.gtest_out')
+        device.adb,
+        dir=device.GetAppWritablePath(),
+        suffix='.gtest_out',
+        device_utils=device)
     extras[_EXTRA_STDOUT_FILE] = stdout_file.name
 
     if self._wait_for_java_debugger:
@@ -264,7 +268,12 @@ class _ApkDelegate:
               device, device_coverage_dir, self._coverage_dir,
               str(self._coverage_index))
 
-      return device.ReadFile(stdout_file.name).splitlines()
+      stdout_file_path = stdout_file.name
+      if self._env.force_main_user:
+        stdout_file_path = device.ResolveSpecialPath(stdout_file_path)
+      stdout_file_content = device.ReadFile(stdout_file_path,
+                                            as_root=self._env.force_main_user)
+      return stdout_file_content.splitlines()
 
   def PullAppFiles(self, device, files, directory):
     device_dir = device.GetApplicationDataDirectory(self._package)
@@ -283,7 +292,7 @@ class _ApkDelegate:
 
 class _ExeDelegate:
 
-  def __init__(self, tr, test_instance, tool):
+  def __init__(self, tr, test_instance, env):
     self._host_dist_dir = test_instance.exe_dist_dir
     self._exe_file_name = os.path.basename(
         test_instance.exe_dist_dir)[:-len('__dist')]
@@ -291,7 +300,7 @@ class _ExeDelegate:
         constants.TEST_EXECUTABLE_DIR,
         os.path.basename(test_instance.exe_dist_dir))
     self._test_run = tr
-    self._tool = tool
+    self._env = env
     self._suite = test_instance.suite
     self._coverage_dir = test_instance.coverage_dir
     self._coverage_index = 0
@@ -305,7 +314,8 @@ class _ExeDelegate:
     # TODO(jbudorick): Look into merging this with normal data deps pushing if
     # executables become supported on nonlocal environments.
     device.PushChangedFiles([(self._host_dist_dir, self._device_dist_dir)],
-                            delete_device_stale=True)
+                            delete_device_stale=True,
+                            as_root=self._env.force_main_user)
 
   def ResultsDirectory(self, device):
     # pylint: disable=no-self-use
@@ -338,7 +348,7 @@ class _ExeDelegate:
           device_coverage_dir, self._suite, self._coverage_index)
       self._coverage_index += 1
 
-    if self._tool != 'asan':
+    if self._env.tool != 'asan':
       env['UBSAN_OPTIONS'] = constants.UBSAN_OPTIONS
 
     try:
@@ -355,6 +365,7 @@ class _ExeDelegate:
         cmd, cwd=cwd, env=env, check_return=False, large_output=True, **kwargs)
 
     if self._coverage_dir:
+      # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
       code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
           device, device_coverage_dir, self._coverage_dir,
           str(self._coverage_index))
@@ -384,9 +395,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       ]
 
     if self._test_instance.apk:
-      self._delegate = _ApkDelegate(self._test_instance, env.tool)
+      self._delegate = _ApkDelegate(self._test_instance, self._env)
     elif self._test_instance.exe_dist_dir:
-      self._delegate = _ExeDelegate(self, self._test_instance, self._env.tool)
+      self._delegate = _ExeDelegate(self, self._test_instance, self._env)
     if self._test_instance.isolated_script_test_perf_output:
       self._test_perf_output_filenames = _GenerateSequentialFileNames(
           self._test_instance.isolated_script_test_perf_output)
@@ -414,20 +425,30 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           return
         # Push data dependencies.
         device_root = self._delegate.GetTestDataRoot(dev)
+        if self._env.force_main_user:
+          device_root = dev.ResolveSpecialPath(device_root)
         host_device_tuples_substituted = [
             (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
             for h, d in host_device_tuples]
-        local_device_environment.place_nomedia_on_device(dev, device_root)
+        local_device_environment.place_nomedia_on_device(
+            dev, device_root, as_root=self._env.force_main_user)
         dev.PushChangedFiles(
             host_device_tuples_substituted,
             delete_device_stale=True,
+            as_root=self._env.force_main_user,
             # Some gtest suites, e.g. unit_tests, have data dependencies that
             # can take longer than the default timeout to push. See
             # crbug.com/791632 for context.
             timeout=600 * math.ceil(_GetDeviceTimeoutMultiplier() / 10))
         if not host_device_tuples:
-          dev.RemovePath(device_root, force=True, recursive=True, rename=True)
-          dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
+          dev.RemovePath(device_root,
+                         force=True,
+                         recursive=True,
+                         rename=True,
+                         as_root=self._env.force_main_user)
+          dev.RunShellCommand(['mkdir', '-p', device_root],
+                              check_return=True,
+                              as_root=self._env.force_main_user)
 
       def init_tool_and_start_servers(dev):
         tool = self.GetTool(dev)
@@ -715,18 +736,25 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     with device_temp_file.DeviceTempFile(
         adb=device.adb,
         dir=self._delegate.ResultsDirectory(device),
-        suffix=suffix) as device_tmp_results_file:
+        suffix=suffix,
+        device_utils=device) as device_tmp_results_file:
       with contextlib_ext.Optional(
           device_temp_file.NamedDeviceTemporaryDirectory(
-              adb=device.adb, dir='/sdcard/'),
+              adb=device.adb,
+              dir=device.GetExternalStoragePath(),
+              device_utils=device),
           self._test_instance.gs_test_artifacts_bucket) as test_artifacts_dir:
-        with (contextlib_ext.Optional(
+        with contextlib_ext.Optional(
             device_temp_file.DeviceTempFile(
-                adb=device.adb, dir=self._delegate.ResultsDirectory(device)),
-            test_perf_output_filename)) as isolated_script_test_perf_output:
+                adb=device.adb,
+                dir=self._delegate.ResultsDirectory(device),
+                device_utils=device),
+            test_perf_output_filename) as isolated_script_test_perf_output:
           with contextlib_ext.Optional(
-              device_temp_file.NamedDeviceTemporaryDirectory(adb=device.adb,
-                                                             dir='/sdcard/'),
+              device_temp_file.NamedDeviceTemporaryDirectory(
+                  adb=device.adb,
+                  dir=device.GetExternalStoragePath(),
+                  device_utils=device),
               self._test_instance.render_test_output_dir
           ) as render_test_output_dir:
 
