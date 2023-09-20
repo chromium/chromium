@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("file_system_access") {
   sources = [
+    "allow_shared_buffer_source_util.h",
     "data_transfer_item_file_system_access.cc",
     "data_transfer_item_file_system_access.h",
     "file_system_access_capacity_tracker.cc",

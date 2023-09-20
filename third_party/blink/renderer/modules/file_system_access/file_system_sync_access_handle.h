@@ -10,8 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_sync_access_handle_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_read_write_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/file_system_access/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -44,11 +43,11 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
 
   void truncate(uint64_t size, ExceptionState&);
 
-  uint64_t read(MaybeShared<DOMArrayBufferView> buffer,
+  uint64_t read(const AllowSharedBufferSource* buffer,
                 FileSystemReadWriteOptions* options,
                 ExceptionState&);
 
-  uint64_t write(MaybeShared<DOMArrayBufferView> buffer,
+  uint64_t write(const AllowSharedBufferSource* buffer,
                  FileSystemReadWriteOptions* options,
                  ExceptionState&);
 

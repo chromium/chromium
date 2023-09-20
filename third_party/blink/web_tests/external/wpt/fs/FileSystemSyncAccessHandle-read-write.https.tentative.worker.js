@@ -10,6 +10,18 @@ sync_access_handle_test((t, handle) => {
 }, 'Test reading an empty file through a sync access handle.');
 
 sync_access_handle_test((t, handle) => {
+  const readBuffer = new ArrayBuffer(0);
+  const readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(0, readBytes, 'Check that no bytes were read');
+}, 'Test using an empty ArrayBuffer.');
+
+sync_access_handle_test((t, handle) => {
+  const readBuffer = new ArrayBuffer(24);
+  const readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(0, readBytes, 'Check that no bytes were read');
+}, 'Test using an ArrayBuffer.');
+
+sync_access_handle_test((t, handle) => {
   if (!('TextEncoder' in self)) {
     return;
   }
