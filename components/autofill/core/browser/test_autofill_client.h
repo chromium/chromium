@@ -359,8 +359,7 @@ class TestAutofillClientTemplate : public T {
     confirm_save_credit_card_locally_called_ = true;
     offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
     save_credit_card_options_ = options;
-    std::move(callback).Run(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted);
+    std::move(callback).Run(get_save_card_offer_user_decision());
   }
 
   void ConfirmSaveCreditCardToCloud(
@@ -371,8 +370,8 @@ class TestAutofillClientTemplate : public T {
     confirm_save_credit_card_to_cloud_called_ = true;
     offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
     save_credit_card_options_ = options;
-    std::move(callback).Run(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
+
+    std::move(callback).Run(get_save_card_offer_user_decision(), {});
   }
 
   void CreditCardUploadCompleted(bool card_saved) override {}
@@ -601,6 +600,11 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
+  void set_save_card_offer_user_decision(
+      AutofillClient::SaveCardOfferUserDecision decision) {
+    save_card_offer_user_decision_ = decision;
+  }
+
   void set_should_save_autofill_profiles(bool value) {
     should_save_autofill_profiles_ = value;
   }
@@ -647,6 +651,11 @@ class TestAutofillClientTemplate : public T {
 
   AutofillClient::SaveCreditCardOptions get_save_credit_card_options() {
     return save_credit_card_options_.value();
+  }
+
+  AutofillClient::SaveCardOfferUserDecision
+  get_save_card_offer_user_decision() {
+    return save_card_offer_user_decision_;
   }
 
   ::testing::NiceMock<MockAutocompleteHistoryManager>*
@@ -792,6 +801,10 @@ class TestAutofillClientTemplate : public T {
   // Populated if credit card local save or upload was offered.
   absl::optional<AutofillClient::SaveCreditCardOptions>
       save_credit_card_options_;
+
+  // User decision when credit card / CVC local save or upload was offered.
+  AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
+      AutofillClient::SaveCardOfferUserDecision::kAccepted;
 
   // Populated if IBAN save was offered. True if bubble was shown, false
   // otherwise.

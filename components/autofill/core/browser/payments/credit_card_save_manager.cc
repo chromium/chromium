@@ -127,12 +127,18 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(
     bool has_non_focusable_field,
     const CreditCard& card) {
   card_save_candidate_ = card;
+  show_save_prompt_.reset();
   has_non_focusable_field_ = has_non_focusable_field;
   from_dynamic_change_form_ = from_dynamic_change_form;
 
-  // TODO(crbug.com/1450749): Query strike database.
+  // Query the CvcStorageStrikeDatabase if we should pop up the offer-to-save
+  // prompt for this CVC.
+  if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
+    show_save_prompt_ =
+        !strike_db->ShouldBlockFeature(card_save_candidate_.guid());
+  }
   OfferCvcLocalSave();
-  return true;
+  return show_save_prompt_.value_or(false);
 }
 
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
@@ -439,6 +445,17 @@ CreditCardSaveManager::GetCreditCardSaveStrikeDatabase() {
   return credit_card_save_strike_database_.get();
 }
 
+CvcStorageStrikeDatabase* CreditCardSaveManager::GetCvcStorageStrikeDatabase() {
+  if (!client_->GetStrikeDatabase()) {
+    return nullptr;
+  }
+  if (!cvc_storage_strike_database_) {
+    cvc_storage_strike_database_ = std::make_unique<CvcStorageStrikeDatabase>(
+        CvcStorageStrikeDatabase(client_->GetStrikeDatabase()));
+  }
+  return cvc_storage_strike_database_.get();
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 LocalCardMigrationStrikeDatabase*
 CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
@@ -563,7 +580,7 @@ void CreditCardSaveManager::OfferCvcLocalSave() {
   client_->ConfirmSaveCreditCardLocally(
       card_save_candidate_,
       AutofillClient::SaveCreditCardOptions()
-          .with_show_prompt(true)
+          .with_show_prompt(show_save_prompt_.value_or(false))
           .with_from_dynamic_change_form(from_dynamic_change_form_)
           .with_has_non_focusable_field(has_non_focusable_field_)
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
@@ -667,15 +684,25 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
     AutofillClient::SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
-      // TODO(crbug.com/1450749): Remove strikes.
-      // This card exists when this line is invoked, so UpdateLocalCvc is safe
-      // here.
+      // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
+      // is later removed and we want to offer local CVC save for this card
+      // again.
+      if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
+        strike_db->ClearStrikes(card_save_candidate_.guid());
+      }
       personal_data_manager_->UpdateLocalCvc(card_save_candidate_.guid(),
                                              card_save_candidate_.cvc());
       break;
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
-      NOTIMPLEMENTED();
+      if (show_save_prompt_.value_or(false)) {
+        // If the user rejected or ignored save and the offer-to-save bubble or
+        // infobar was actually shown (NOT just the icon if on desktop), count
+        // that as a strike against offering upload in the future.
+        if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
+          strike_db->AddStrike(card_save_candidate_.guid());
+        }
+      }
   }
 }
 
