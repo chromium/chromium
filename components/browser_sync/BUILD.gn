@@ -32,6 +32,7 @@ static_library("browser_sync") {
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/sharing",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:features",
     "//components/prefs",

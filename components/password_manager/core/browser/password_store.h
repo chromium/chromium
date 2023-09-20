@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 
 class PrefService;

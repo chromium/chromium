@@ -893,6 +893,7 @@ static_library("extensions") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/browser/sharing",
     "//components/payments/core",
     "//components/performance_manager",
     "//components/permissions",
