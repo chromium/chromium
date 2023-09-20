@@ -64,8 +64,9 @@ NSArray* multitaskingTests() {
     @"testSignInPopUpAccountOnSyncSettings",   // AccountCollectionsTestCase
     @"testAutofillProfileEditing",             // AutofillSettingsTestCase
     @"testAccessibilityOfBlockPopupSettings",  // BlockPopupsTestCase
-    @"testClearCookies",                       // SettingsTestCase
-    @"testAccessibilityOfTranslateSettings",   // TranslateUITestCase
+    // TODO(crbug.com/1485297): Failing on ios-simulator-full-configs.
+    // @"testClearCookies",                       // SettingsTestCase
+    @"testAccessibilityOfTranslateSettings",  // TranslateUITestCase
 
     // UI tests
     @"testActivityServiceControllerPrintAfterRedirectionToUnprintablePage",
