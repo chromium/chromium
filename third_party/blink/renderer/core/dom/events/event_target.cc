@@ -464,7 +464,8 @@ bool EventTarget::AddEventListenerInternal(
   }
 
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          execution_context->GetIsolate());
   if (activity_logger) {
     Vector<String> argv;
     argv.push_back(ToNode() ? ToNode()->nodeName() : InterfaceName());

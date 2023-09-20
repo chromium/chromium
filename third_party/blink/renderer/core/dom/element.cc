@@ -130,6 +130,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -8145,11 +8146,13 @@ void Element::MapLanguageAttributeToLocale(const AtomicString& value,
 void Element::LogAddElementIfIsolatedWorldAndInDocument(
     const char element[],
     const QualifiedName& attr1) {
-  if (!isConnected()) {
+  if (!isConnected() ||
+      !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
   }
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          GetDocument().GetAgent().isolate());
   if (!activity_logger) {
     return;
   }
@@ -8163,11 +8166,13 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
     const char element[],
     const QualifiedName& attr1,
     const QualifiedName& attr2) {
-  if (!isConnected()) {
+  if (!isConnected() ||
+      !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
   }
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          GetDocument().GetAgent().isolate());
   if (!activity_logger) {
     return;
   }
@@ -8183,11 +8188,13 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
     const QualifiedName& attr1,
     const QualifiedName& attr2,
     const QualifiedName& attr3) {
-  if (!isConnected()) {
+  if (!isConnected() ||
+      !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
   }
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          GetDocument().GetAgent().isolate());
   if (!activity_logger) {
     return;
   }
@@ -8202,11 +8209,13 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
 void Element::LogUpdateAttributeIfIsolatedWorldAndInDocument(
     const char element[],
     const AttributeModificationParams& params) {
-  if (!isConnected()) {
+  if (!isConnected() ||
+      !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
   }
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          GetDocument().GetAgent().isolate());
   if (!activity_logger) {
     return;
   }

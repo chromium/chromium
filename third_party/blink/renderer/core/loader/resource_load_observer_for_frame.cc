@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -119,11 +120,12 @@ void ResourceLoadObserverForFrame::DidStartRequest(
       !params.IsSpeculativePreload()) {
     V8DOMActivityLogger* activity_logger = nullptr;
     const AtomicString& initiator_name = params.Options().initiator_info.name;
+    v8::Isolate* isolate = document_->GetAgent().isolate();
     if (initiator_name == fetch_initiator_type_names::kXmlhttprequest) {
-      activity_logger = V8DOMActivityLogger::CurrentActivityLogger();
+      activity_logger = V8DOMActivityLogger::CurrentActivityLogger(isolate);
     } else {
       activity_logger =
-          V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld();
+          V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(isolate);
     }
     if (activity_logger) {
       Vector<String> argv = {

@@ -803,7 +803,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // is looked up based on the current v8::Context. When the request actually
   // begins, the v8::Context may no longer be on the stack.
   if (V8DOMActivityLogger* activity_logger =
-          V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld()) {
+          V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+              frame_->DomWindow()->GetIsolate())) {
     if (!DocumentLoader::WillLoadUrlAsEmpty(url)) {
       Vector<String> argv;
       argv.push_back("Main resource");

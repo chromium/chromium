@@ -292,7 +292,8 @@ void Location::SetLocation(const String& url,
   }
 
   V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld();
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+          incumbent_window->GetIsolate());
   if (activity_logger) {
     Vector<String> argv;
     argv.push_back("LocalDOMWindow");

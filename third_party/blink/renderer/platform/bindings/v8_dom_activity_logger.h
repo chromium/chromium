@@ -78,16 +78,12 @@ class PLATFORM_EXPORT V8DOMActivityLogger {
   static V8DOMActivityLogger* ActivityLogger(int world_id, const KURL&);
 
   // Returns activity logger for current V8 context or 0.
-  static V8DOMActivityLogger* CurrentActivityLogger();
+  static V8DOMActivityLogger* CurrentActivityLogger(v8::Isolate* isolate);
   // Returns activity logger for current V8 context if the context belongs to
   // an isolated world or 0.
-  static V8DOMActivityLogger* CurrentActivityLoggerIfIsolatedWorld();
-  static V8DOMActivityLogger*
-  CurrentActivityLoggerIfIsolatedWorldForMainThread();
-
- private:
   static V8DOMActivityLogger* CurrentActivityLoggerIfIsolatedWorld(
-      v8::Isolate*);
+      v8::Isolate* isolate);
+  static bool HasActivityLoggerInIsolatedWorlds();
 };
 
 }  // namespace blink
