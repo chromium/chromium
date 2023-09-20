@@ -171,10 +171,10 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   return MediaTrackSettings::Create();
 }
 
-MediaStreamTrackVideoStats* TransferredMediaStreamTrack::videoStats(
+MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats(
     ExceptionState& exception_state) {
   if (track_) {
-    return track_->videoStats(exception_state);
+    return track_->stats(exception_state);
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
   return MakeGarbageCollected<MediaStreamTrackVideoStats>(nullptr);

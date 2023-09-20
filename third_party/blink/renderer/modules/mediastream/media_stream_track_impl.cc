@@ -665,13 +665,13 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   return settings;
 }
 
-MediaStreamTrackVideoStats* MediaStreamTrackImpl::videoStats(
+MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats(
     ExceptionState& exception_state) {
   switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "MediaStreamTrack.videoStats is not supported for audio tracks.");
+          "MediaStreamTrack.stats is not supported on audio tracks.");
       return nullptr;
     case MediaStreamSource::kTypeVideo:
       if (!video_stats_) {

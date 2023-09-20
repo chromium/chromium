@@ -6090,7 +6090,7 @@ interface MediaStreamTrack : EventTarget
     getter onmute
     getter onunmute
     getter readyState
-    getter videoStats
+    getter stats
     method applyConstraints
     method clone
     method constructor
