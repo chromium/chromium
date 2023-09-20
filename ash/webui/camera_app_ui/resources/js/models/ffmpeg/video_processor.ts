@@ -381,7 +381,7 @@ class FFMpegVideoProcessor {
         // be called when the runtime is initialized. Note that because the
         // then() function will return the object itself again, using await here
         // would cause an infinite loop.
-        runFFmpeg(config).then(() => resolve());
+        void runFFmpeg(config).then(() => resolve());
       });
     }
     this.jobQueue.push(initFFmpeg);
