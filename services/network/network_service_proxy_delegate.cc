@@ -4,6 +4,7 @@
 
 #include "services/network/network_service_proxy_delegate.h"
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -326,13 +327,7 @@ bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
   // This list will typically be quite short (2-3), so linear search is
   // adequate.
   std::string proxy_server_host = proxy_server.GetHost();
-  for (auto& list_host : ipp_config_cache_->ProxyList()) {
-    if (list_host == proxy_server_host) {
-      return true;
-    }
-  }
-
-  return false;
+  return base::Contains(ipp_config_cache_->ProxyList(), proxy_server_host);
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(
