@@ -13,6 +13,8 @@ source_set("passwords_in_other_apps") {
     ":passwords_in_other_apps_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
   ]
@@ -60,12 +62,26 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "passwords_in_other_apps_mediator_unittest.mm" ]
+  sources = [
+    "passwords_in_other_apps_coordinator_unittest.mm",
+    "passwords_in_other_apps_mediator_unittest.mm",
+  ]
   deps = [
     ":passwords_in_other_apps",
     ":passwords_in_other_apps_ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/password_settings:common",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_ui",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
     "//testing/gtest:gtest",
   ]
 }
