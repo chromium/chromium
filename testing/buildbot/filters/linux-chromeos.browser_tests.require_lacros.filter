@@ -47,28 +47,13 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
 -SwitchAccessPointScanManagerTest.PointScanRightClick
-# TODO(crbug.com/1424533): Flaky
+# TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
--ChromeVoxEditingTest.EditableLineTwoStaticTexts
--ChromeVoxEditingTest.MoveByLineIntent
--ChromeVoxEditingTest.RichTextImageByCharacter
--ChromeVoxEditingTest.SelectAllBareTextContent
--ChromeVoxEditingTest.TelTrimsWhitespace
--ChromeVoxEditingTest.TextAreaBrailleEmptyLine
--ChromeVoxEditingTest.TextAreaEvents
--ChromeVoxEditingTest.RichTextExtendByCharacter
--ChromeVoxEditingTest.InputEvents
--ChromeVoxEditingTest.SelectAll
--ChromeVoxEditingTest.BackwardWordDeleteAcrossParagraphs
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
 -ChromeVoxAutoScrollHandlerTest.ScrollForward
 -ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
 -ChromeVoxPanelTest.ActionsMenu
 -ChromeVoxPanelTest.SearchMenu
-# TODO(b/277821091) Flaky
--ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
--ChromeVoxEditingTest.MoveByWordSuggestions
--ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
 # TODO(crbug.com/1432222): Flaky
 -DictationE2ETest.SilencesSpokenFeedbackWhenStarting
 -DictationUIE2ETest.HintsTimeoutWithChromeVox
