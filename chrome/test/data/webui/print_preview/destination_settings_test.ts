@@ -18,37 +18,7 @@ import {NativeLayerStub} from './native_layer_stub.js';
 import {getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 // clang-format on
 
-const destination_settings_test = {
-  suiteName: 'DestinationSettingsTest',
-  TestNames: {
-    ChangeDropdownState: 'change dropdown state',
-    NoRecentDestinations: 'no recent destinations',
-    RecentDestinations: 'recent destinations',
-    RecentDestinationsMissing: 'recent destinations missing',
-    SaveAsPdfRecent: 'save as pdf recent',
-    // <if expr="is_chromeos">
-    GoogleDriveRecent: 'google drive recent',
-    GoogleDriveAutoselect: 'google drive autoselect',
-    // </if>
-    SelectSaveAsPdf: 'select save as pdf',
-    // <if expr="is_chromeos">
-    SelectGoogleDrive: 'select google drive',
-    // </if>
-    SelectRecentDestination: 'select recent destination',
-    OpenDialog: 'open dialog',
-    UpdateRecentDestinations: 'update recent destinations',
-    DisabledSaveAsPdf: 'disabled save as pdf',
-    NoDestinations: 'no destinations',
-    // <if expr="is_chromeos">
-    EulaIsRetrieved: 'eula is retrieved',
-    SaveToDriveDisabled: 'Save to Drive disabled',
-    // </if>
-  },
-};
-
-Object.assign(window, {destination_settings_test: destination_settings_test});
-
-suite(destination_settings_test.suiteName, function() {
+suite('DestinationSettingsTest', function() {
   let destinationSettings: PrintPreviewDestinationSettingsElement;
 
   let nativeLayer: NativeLayerStub;
@@ -112,7 +82,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown is enabled or disabled correctly based on
   // the state.
   test(
-      destination_settings_test.TestNames.ChangeDropdownState, function() {
+      'ChangeDropdownState', function() {
         const dropdown = destinationSettings.$.destinationSelect;
         // Initial state: No destination store means that there is no
         // destination yet.
@@ -237,7 +207,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown contains the appropriate destinations when there
   // are no recent destinations.
   test(
-      destination_settings_test.TestNames.NoRecentDestinations, function() {
+      'NoRecentDestinations', function() {
         initialize();
         return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
           // This will result in the destination store setting the Save as
@@ -259,7 +229,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown contains the appropriate destinations when there
   // are 5 recent destinations.
   test(
-      destination_settings_test.TestNames.RecentDestinations, function() {
+      'RecentDestinations', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
 
@@ -291,8 +261,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown contains the appropriate destinations when one of
   // the destinations can no longer be found.
   test(
-      destination_settings_test.TestNames.RecentDestinationsMissing,
-      function() {
+      'RecentDestinationsMissing', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         localDestinations.splice(1, 1);
@@ -325,7 +294,7 @@ suite(destination_settings_test.suiteName, function() {
 
   // Tests that the dropdown contains the appropriate destinations when Save
   // as PDF is one of the recent destinations.
-  test(destination_settings_test.TestNames.SaveAsPdfRecent, function() {
+  test('SaveAsPdfRecent', function() {
     recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     recentDestinations.splice(
@@ -358,7 +327,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that the dropdown contains the appropriate destinations when
   // Google Drive is in the recent destinations.
   test(
-      destination_settings_test.TestNames.GoogleDriveRecent, function() {
+      'GoogleDriveRecent', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         const driveDestination = getGoogleDriveDestination();
@@ -393,7 +362,7 @@ suite(destination_settings_test.suiteName, function() {
   // correctly when Google Drive is the most recent destination. Regression test
   // for https://crbug.com/1038645.
   test(
-      destination_settings_test.TestNames.GoogleDriveAutoselect, function() {
+      'GoogleDriveAutoselect', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
@@ -428,7 +397,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that selecting the Save as PDF destination results in the
   // DESTINATION_SELECT event firing, with Save as PDF set as the current
   // destination.
-  test(destination_settings_test.TestNames.SelectSaveAsPdf, function() {
+  test('SelectSaveAsPdf', function() {
     recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     recentDestinations.splice(
@@ -482,7 +451,7 @@ suite(destination_settings_test.suiteName, function() {
   // DESTINATION_SELECT event firing, with Google Drive set as the current
   // destination.
   test(
-      destination_settings_test.TestNames.SelectGoogleDrive, function() {
+      'SelectGoogleDrive', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
@@ -531,7 +500,7 @@ suite(destination_settings_test.suiteName, function() {
   // DESTINATION_SELECT event firing, with the recent destination set as the
   // current destination.
   test(
-      destination_settings_test.TestNames.SelectRecentDestination, function() {
+      'SelectRecentDestination', function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         const whenCapabilitiesDone =
@@ -574,7 +543,7 @@ suite(destination_settings_test.suiteName, function() {
       });
 
   // Tests that selecting the 'see more' option opens the dialog.
-  test(destination_settings_test.TestNames.OpenDialog, function() {
+  test('OpenDialog', function() {
     recentDestinations = destinations.slice(0, 5).map(
         destination => makeRecentDestination(destination));
     const whenCapabilitiesDone =
@@ -638,7 +607,7 @@ suite(destination_settings_test.suiteName, function() {
    * destinations array.
    */
   test(
-      destination_settings_test.TestNames.UpdateRecentDestinations, function() {
+      'UpdateRecentDestinations', function() {
         // Recent destinations start out empty.
         assertRecentDestinations([]);
         assertEquals(0, nativeLayer.getCallCount('getPrinterCapabilities'));
@@ -715,7 +684,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that disabling the Save as PDF destination hides the corresponding
   // dropdown item.
   test(
-      destination_settings_test.TestNames.DisabledSaveAsPdf, function() {
+      'DisabledSaveAsPdf', function() {
         // Initialize destination settings with the PDF printer disabled.
         pdfPrinterDisabled = true;
         initialize();
@@ -741,7 +710,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that disabling the 'Save as PDF' destination and exposing no
   // printers to the native layer results in a 'No destinations' option in the
   // dropdown.
-  test(destination_settings_test.TestNames.NoDestinations, function() {
+  test('NoDestinations', function() {
     nativeLayer.setLocalDestinations([]);
 
     // Initialize destination settings with the PDF printer disabled.
@@ -767,7 +736,7 @@ suite(destination_settings_test.suiteName, function() {
    * Tests that destinations with a EULA will fetch the EULA URL when
    * selected.
    */
-  test(destination_settings_test.TestNames.EulaIsRetrieved, function() {
+  test('EulaIsRetrieved', function() {
     // Recent destinations start out empty.
     assertRecentDestinations([]);
 
@@ -832,7 +801,7 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that disabling Google Drive on Chrome OS hides the Save to Drive
   // destination.
   test(
-      destination_settings_test.TestNames.SaveToDriveDisabled, function() {
+      'SaveToDriveDisabled', function() {
         saveToDriveDisabled = true;
         initialize();
 

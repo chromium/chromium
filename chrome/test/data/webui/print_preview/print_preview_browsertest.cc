@@ -26,6 +26,12 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettingsTest) {
   RunTest("print_preview/copies_settings_test.js", "mocha.run()");
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelectTest) {
+  RunTest("print_preview/destination_select_test.js", "mocha.run()");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettingsTest) {
   RunTest("print_preview/dpi_settings_test.js", "mocha.run()");
 }
@@ -1133,4 +1139,220 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest,
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewKeyEventTest, CtrlShiftPOpensSystemDialog) {
   RunTestCase("CtrlShiftPOpensSystemDialog");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewPrinterStatusTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/printer_status_test.js",
+        base::StringPrintf("runMochaTest('PrinterStatusTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
+                       PrinterStatusUpdatesColor_FlagOff) {
+  RunTestCase("PrinterStatusUpdatesColor_FlagOff");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
+                       PrinterStatusUpdatesColor_FlagOn) {
+  RunTestCase("PrinterStatusUpdatesColor_FlagOn");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, SendStatusRequestOnce) {
+  RunTestCase("SendStatusRequestOnce");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, HiddenStatusText) {
+  RunTestCase("HiddenStatusText");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, ChangeIcon) {
+  RunTestCase("ChangeIcon");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
+                       SuccessfulPrinterStatusAfterRetry) {
+  RunTestCase("SuccessfulPrinterStatusAfterRetry");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOff) {
+  RunTestCase("StatusTextClass_FlagOff");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOn) {
+  RunTestCase("StatusTextClass_FlagOn");
+}
+
+class PrintPreviewDestinationDropdownCrosTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_dropdown_cros_test.js",
+        base::StringPrintf("runMochaTest('DestinationDropdownCrosTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       CorrectListItems) {
+  RunTestCase("CorrectListItems");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       HighlightedAfterUpDown) {
+  RunTestCase("HighlightedAfterUpDown");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       DestinationChangeAfterUpDown) {
+  RunTestCase("DestinationChangeAfterUpDown");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       EnterOpensCloses) {
+  RunTestCase("EnterOpensCloses");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       HighlightedFollowsMouse) {
+  RunTestCase("HighlightedFollowsMouse");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest, Disabled) {
+  RunTestCase("Disabled");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosTest,
+                       HighlightedWhenOpened) {
+  RunTestCase("HighlightedWhenOpened");
+}
+#endif
+
+class PrintPreviewDestinationSettingsTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/destination_settings_test.js",
+        base::StringPrintf("runMochaTest('DestinationSettingsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       ChangeDropdownState) {
+  RunTestCase("ChangeDropdownState");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       NoRecentDestinations) {
+  RunTestCase("NoRecentDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       RecentDestinations) {
+  RunTestCase("RecentDestinations");
+}
+
+// Flaky on Mac and Linux, see https://crbug.com/1147205
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_RecentDestinationsMissing DISABLED_RecentDestinationsMissing
+#else
+#define MAYBE_RecentDestinationsMissing RecentDestinationsMissing
+#endif
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       MAYBE_RecentDestinationsMissing) {
+  RunTestCase("RecentDestinationsMissing");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SaveAsPdfRecent) {
+  RunTestCase("SaveAsPdfRecent");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, GoogleDriveRecent) {
+  RunTestCase("GoogleDriveRecent");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       GoogleDriveAutoselect) {
+  RunTestCase("GoogleDriveAutoselect");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SelectSaveAsPdf) {
+  RunTestCase("SelectSaveAsPdf");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SelectGoogleDrive) {
+  RunTestCase("SelectGoogleDrive");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       SelectRecentDestination) {
+  RunTestCase("SelectRecentDestination");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, OpenDialog) {
+  RunTestCase("OpenDialog");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       UpdateRecentDestinations) {
+  RunTestCase("UpdateRecentDestinations");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, DisabledSaveAsPdf) {
+  RunTestCase("DisabledSaveAsPdf");
+}
+
+// Flaky on Mac, see https://crbug.com/1146513.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NoDestinations DISABLED_NoDestinations
+#else
+#define MAYBE_NoDestinations NoDestinations
+#endif
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       MAYBE_NoDestinations) {
+  RunTestCase("NoDestinations");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, EulaIsRetrieved) {
+  RunTestCase("EulaIsRetrieved");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
+                       SaveToDriveDisabled) {
+  RunTestCase("SaveToDriveDisabled");
+}
+#endif
+
+class PrintPreviewScalingSettingsTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/scaling_settings_test.js",
+        base::StringPrintf("runMochaTest('ScalingSettingsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
+                       ShowCorrectDropdownOptions) {
+  RunTestCase("ShowCorrectDropdownOptions");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest, SetScaling) {
+  RunTestCase("SetScaling");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
+                       InputNotDisabledOnValidityChange) {
+  RunTestCase("InputNotDisabledOnValidityChange");
 }

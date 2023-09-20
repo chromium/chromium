@@ -10,25 +10,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
-const destination_dropdown_cros_test = {
-  suiteName: 'PrintPreviewDestinationDropdownCrosTest',
-  TestNames: {
-    CorrectListItems: 'correct list items',
-    ClickCloses: 'click closes dropdown',
-    HighlightedAfterUpDown: 'highlighted after keyboard press up and down',
-    DestinationChangeAfterUpDown:
-        'destination changes after keyboard press up and down',
-    EnterOpensCloses: 'enter opens and closes dropdown',
-    HighlightedFollowsMouse: 'highlighted follows mouse',
-    Disabled: 'disabled',
-    HighlightedWhenOpened: 'highlighted when opened',
-  },
-};
-
-Object.assign(
-    window, {destination_dropdown_cros_test: destination_dropdown_cros_test});
-
-suite(destination_dropdown_cros_test.suiteName, function() {
+suite('DestinationDropdownCrosTest', function() {
   let dropdown: PrintPreviewDestinationDropdownCrosElement;
 
   function setItemList(items: Destination[]) {
@@ -92,7 +74,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   });
 
   test(
-      destination_dropdown_cros_test.TestNames.CorrectListItems, function() {
+      'CorrectListItems', function() {
         setItemList([
           createDestination('One', DestinationOrigin.CROS),
           createDestination('Two', DestinationOrigin.CROS),
@@ -106,7 +88,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         assertEquals('Three', itemList[2]!.textContent!.trim());
       });
 
-  test(destination_dropdown_cros_test.TestNames.ClickCloses, function() {
+  test('ClickCloses', function() {
     const destinationOne = createDestination('One', DestinationOrigin.CROS);
     setItemList([destinationOne]);
     dropdown.value = destinationOne;
@@ -127,37 +109,34 @@ suite(destination_dropdown_cros_test.suiteName, function() {
     assertFalse(ironDropdown.opened);
   });
 
-  test(
-      destination_dropdown_cros_test.TestNames.HighlightedAfterUpDown,
-      function() {
-        const destinationOne = createDestination('One', DestinationOrigin.CROS);
-        setItemList([destinationOne]);
-        dropdown.value = destinationOne;
-        clickDropdown();
+  test('HighlightedAfterUpDown', function() {
+    const destinationOne = createDestination('One', DestinationOrigin.CROS);
+    setItemList([destinationOne]);
+    dropdown.value = destinationOne;
+    clickDropdown();
 
-        assertEquals('One', getHighlightedElementText());
-        down();
-        assertEquals('Save as PDF', getHighlightedElementText());
-        down();
-        assertEquals('Save to Google Drive', getHighlightedElementText());
-        down();
-        assertEquals('See more…', getHighlightedElementText());
-        down();
-        assertEquals('See more…', getHighlightedElementText());
+    assertEquals('One', getHighlightedElementText());
+    down();
+    assertEquals('Save as PDF', getHighlightedElementText());
+    down();
+    assertEquals('Save to Google Drive', getHighlightedElementText());
+    down();
+    assertEquals('See more…', getHighlightedElementText());
+    down();
+    assertEquals('See more…', getHighlightedElementText());
 
-        up();
-        assertEquals('Save to Google Drive', getHighlightedElementText());
-        up();
-        assertEquals('Save as PDF', getHighlightedElementText());
-        up();
-        assertEquals('One', getHighlightedElementText());
-        up();
-        assertEquals('One', getHighlightedElementText());
-      });
+    up();
+    assertEquals('Save to Google Drive', getHighlightedElementText());
+    up();
+    assertEquals('Save as PDF', getHighlightedElementText());
+    up();
+    assertEquals('One', getHighlightedElementText());
+    up();
+    assertEquals('One', getHighlightedElementText());
+  });
 
   test(
-      destination_dropdown_cros_test.TestNames.DestinationChangeAfterUpDown,
-      function() {
+      'DestinationChangeAfterUpDown', function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         const pdfDestination = getSaveAsPdfDestination();
         setItemList([destinationOne]);
@@ -185,7 +164,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         });
       });
 
-  test(destination_dropdown_cros_test.TestNames.EnterOpensCloses, function() {
+  test('EnterOpensCloses', function() {
     const destinationOne = createDestination('One', DestinationOrigin.CROS);
     setItemList([destinationOne]);
     dropdown.value = destinationOne;
@@ -198,8 +177,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   });
 
   test(
-      destination_dropdown_cros_test.TestNames.HighlightedFollowsMouse,
-      function() {
+      'HighlightedFollowsMouse', function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         setItemList([
           destinationOne,
@@ -224,7 +202,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         assertEquals('One', getHighlightedElementText());
       });
 
-  test(destination_dropdown_cros_test.TestNames.Disabled, function() {
+  test('Disabled', function() {
     const destinationOne = createDestination('One', DestinationOrigin.CROS);
     setItemList([destinationOne]);
     dropdown.value = destinationOne;
@@ -241,8 +219,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   });
 
   test(
-      destination_dropdown_cros_test.TestNames.HighlightedWhenOpened,
-      function() {
+      'HighlightedWhenOpened', function() {
         const destinationTwo = createDestination('Two', DestinationOrigin.CROS);
         const destinationThree =
             createDestination('Three', DestinationOrigin.CROS);

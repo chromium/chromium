@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -35,3 +36,21 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsFocusTest,
                        EnterOnInputTriggersPrint) {
   RunTestCase("EnterOnInputTriggersPrint");
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PrintPreviewDestinationDropdownCrosFocusTest
+    : public PrintPreviewFocusTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewFocusTest::RunTest(
+        "print_preview/destination_dropdown_cros_test.js",
+        base::StringPrintf("runMochaTest('DestinationDropdownCrosTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosFocusTest,
+                       ClickCloses) {
+  RunTestCase("ClickCloses");
+}
+#endif

@@ -270,9 +270,6 @@ if (include_js2gtest_tests) {
     if (enable_webui_certificate_viewer) {
       sources += [ "certificate_viewer_dialog_browsertest.js" ]
     }
-    if (enable_print_preview) {
-      sources += [ "print_preview/print_preview_ui_browsertest.js" ]
-    }
     if (is_cfm) {
       sources += [
         "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
