@@ -45,10 +45,12 @@ crosapi::mojom::EditorPanelManager& GetEditorPanelManager() {
 
 PresetTextQueries GetPresetTextQueries(
     const std::vector<EditorPanelPresetTextQueryPtr>& preset_text_queries) {
+  // TODO(b/295059934): Use EditorPanelPresetTextQueryPtrs to get the actual
+  // query categories.
   PresetTextQueries queries;
   for (const auto& query : preset_text_queries) {
     queries.emplace_back(query->text_query_id, base::UTF8ToUTF16(query->name),
-                         PresetQueryCategory(query->category));
+                         PresetQueryCategory::kUnknown);
   }
   return queries;
 }

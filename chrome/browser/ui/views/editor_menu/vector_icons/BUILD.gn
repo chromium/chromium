@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/vector_icons/vector_icons.gni")
+
+aggregate_vector_icons("editor_menu_vector_icons") {
+  icon_directory = "."
+
+  sources = [
+    "editor_menu_elaborate.icon",
+    "editor_menu_emojify.icon",
+    "editor_menu_formalize.icon",
+    "editor_menu_rephrase.icon",
+    "editor_menu_shorten.icon",
+  ]
+}
+
+source_set("vector_icons") {
+  sources = get_target_outputs(":editor_menu_vector_icons")
+
+  deps = [
+    ":editor_menu_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

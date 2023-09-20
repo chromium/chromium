@@ -17,8 +17,11 @@ namespace chromeos::editor_menu {
 // Categories of preset text prompts to be shown on editor menu chips.
 enum class PresetQueryCategory {
   kUnknown = 0,
-  kPlaceholder,
-  kAnotherPlaceholder,
+  kShorten,
+  kElaborate,
+  kRephrase,
+  kFormalize,
+  kEmojify,
 };
 
 struct PresetTextQuery {

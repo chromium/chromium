@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "chrome/browser/ui/views/editor_menu/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -21,10 +22,16 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
   switch (category) {
     case PresetQueryCategory::kUnknown:
       return vector_icons::kKeyboardIcon;
-    case PresetQueryCategory::kPlaceholder:
-      return vector_icons::kContentCopyIcon;
-    case PresetQueryCategory::kAnotherPlaceholder:
-      return vector_icons::kContentPasteIcon;
+    case PresetQueryCategory::kShorten:
+      return kEditorMenuShortenIcon;
+    case PresetQueryCategory::kElaborate:
+      return kEditorMenuElaborateIcon;
+    case PresetQueryCategory::kRephrase:
+      return kEditorMenuRephraseIcon;
+    case PresetQueryCategory::kFormalize:
+      return kEditorMenuFormalizeIcon;
+    case PresetQueryCategory::kEmojify:
+      return kEditorMenuEmojifyIcon;
   }
 }
 

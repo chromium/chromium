@@ -19,6 +19,7 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/views/editor_menu/vector_icons",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/events",
