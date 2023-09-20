@@ -78,8 +78,6 @@ double SumOfFrequency(const std::map<std::string, double>& histogram,
 
 // This class implements the algorithm to update the
 // `LcppStringFrequencyStatData` with given entries.
-// For more information, see:
-// https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
 //
 // The class is used in three steps.
 // 1. Instantiate.
@@ -88,7 +86,8 @@ double SumOfFrequency(const std::map<std::string, double>& histogram,
 // e.g.
 // ```
 // // Instantiate.
-// LcppStringFrequencyStatDataUpdater updater(
+// LcppFrequencyStatDataUpdater updater =
+// LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
 //     config, *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat());
 // // Update.
 // updater.Update(url);
@@ -96,32 +95,136 @@ double SumOfFrequency(const std::map<std::string, double>& histogram,
 // *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat() =
 //     updater.ToLcppStringFrequencyStatData();
 // ```
-class LcppStringFrequencyStatDataUpdater {
+//
+// The algorithm takes two parameters:
+// - sliding_window_size
+// - max_histogram_buckets
+//
+// `sliding_window_size` is a virtual sliding window size that builds
+// histogram.
+// `max_histogram_buckets` is a bucket count that actually can be saved
+// in the database. If the histogram has more buckets than
+// `max_histogram_buckets`, this algorithm sums up the less frequent
+// buckets, and stores them in a single "other_bucket" called
+// `other_bucket_frequency`.
+//
+// <Conceptual model of sliding window and histogram>
+//
+// <------ sliding window ------->
+// +-----------------------------+                 <- data feed
+// | /#a   /#a   /#a   /#b   /#b | /#b   /#c   /#d   /#c   /#d
+// +-----------------------------+
+//  => histogram: {/#a: 3, /#b: 2}
+//
+//       <------ sliding window ------->
+//       +-----------------------------+
+//   /#a | /#a   /#a   /#b   /#b   /#b | /#c   /#d   /#c   /#d
+//       +-----------------------------+
+//        => histogram: {/#a: 2, /#b: 3}
+//
+//             <------ sliding window ------->
+//             +-----------------------------+
+//   /#a   /#a | /#a   /#b   /#b   /#b   /#c | /#d   /#c   /#d
+//             +-----------------------------+
+//              => histogram: {/#a: 1, /#b: 3, /#c: 1}
+//
+// The above sliding window model has the following two problems for us.
+//
+// - [Problem_1] We need to keep the entire data inside the sliding
+//               window to know which item is the first item inside
+//               the sliding window. But we don't want to keep such
+//               large data.
+// - [Problem_2] The histogram can be large if the items don't have
+//               overlap. We don't want to keep a large histogram.
+//
+// To address [Problem_1], we decided not to use the first item
+// inside the sliding window. Instead, We decided to reduce the
+// weight of the item.
+//
+// histogram: {/#a: 3, /#b: 2}
+// => histogram: {/#a: {1, 1, 1}, /#b: {1, 1}}
+//
+// To add new item "/#c", Reduce the item weight, and add "/#c".
+//
+// histogram: {/#a: {4/5, 4/5, 4/5}, /#b: {4/5, 4/5}, /#c: {1}}
+//
+// To address [Problem_2], we decided to introduce an "others"
+// bucket.
+//
+// histogram: {/#a: 5, /#b: 3, /#c: 2, /#d: 2}
+//
+// To reduce the bucket count under 3 buckets, we merge /#c and /#d
+// buckets into an <other> bucket.
+//
+// histogram: {/#a: 5, /#b: 3, <other>: 4}
+//
+// For more information, please see:
+// https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
+class LcppFrequencyStatDataUpdater {
  public:
-  LcppStringFrequencyStatDataUpdater(
+  ~LcppFrequencyStatDataUpdater() = default;
+  LcppFrequencyStatDataUpdater(const LcppFrequencyStatDataUpdater&) = delete;
+  const LcppFrequencyStatDataUpdater& operator=(
+      const LcppFrequencyStatDataUpdater&) = delete;
+
+  static std::unique_ptr<LcppFrequencyStatDataUpdater>
+  FromLcppStringFrequencyStatData(
       const LoadingPredictorConfig& config,
-      const LcppStringFrequencyStatData& lcpp_stat_data)
-      : sliding_window_size_(config.lcpp_histogram_sliding_window_size),
-        max_histogram_buckets_(config.max_lcpp_histogram_buckets) {
+      const LcppStringFrequencyStatData& lcpp_stat_data) {
     // Prepare working variables (histogram and other_bucket_frequency) from
     // proto. If the data is corrupted, the previous data will be cleared.
     bool corrupted = false;
-    other_bucket_frequency_ = lcpp_stat_data.other_bucket_frequency();
-    if (other_bucket_frequency_ < 0 ||
-        lcpp_stat_data.main_buckets().size() > max_histogram_buckets_) {
+    double other_bucket_frequency = lcpp_stat_data.other_bucket_frequency();
+    if (other_bucket_frequency < 0 || lcpp_stat_data.main_buckets().size() >
+                                          config.max_lcpp_histogram_buckets) {
       corrupted = true;
     }
+    std::map<std::string, double> histogram;
     for (const auto& [entry, frequency] : lcpp_stat_data.main_buckets()) {
       if (corrupted || entry.empty() || frequency < 0.0) {
         corrupted = true;
         break;
       }
-      histogram_.insert_or_assign(entry, frequency);
+      histogram.insert_or_assign(entry, frequency);
     }
     if (corrupted) {
-      other_bucket_frequency_ = 0;
-      histogram_.clear();
+      other_bucket_frequency = 0;
+      histogram.clear();
     }
+    return base::WrapUnique(new LcppFrequencyStatDataUpdater(
+        config, histogram, other_bucket_frequency));
+  }
+
+  static std::unique_ptr<LcppFrequencyStatDataUpdater>
+  FromLcpElementLocatorStat(
+      const LoadingPredictorConfig& config,
+      const LcpElementLocatorStat& lcp_element_locator_stat) {
+    // Prepare working variables (histogram and other_bucket_frequency) from
+    // proto. If the data is corrupted, the previous data will be cleared.
+    bool corrupted = false;
+    double other_bucket_frequency =
+        lcp_element_locator_stat.other_bucket_frequency();
+    if (other_bucket_frequency < 0 ||
+        lcp_element_locator_stat.lcp_element_locator_buckets_size() >
+            static_cast<int>(config.max_lcpp_histogram_buckets)) {
+      corrupted = true;
+    }
+    std::map<std::string, double> histogram;
+    for (const auto& it :
+         lcp_element_locator_stat.lcp_element_locator_buckets()) {
+      if (corrupted || !it.has_lcp_element_locator() || !it.has_frequency() ||
+          it.frequency() < 0.0) {
+        corrupted = true;
+        break;
+      }
+      histogram.insert_or_assign(it.lcp_element_locator(), it.frequency());
+    }
+    if (corrupted) {
+      other_bucket_frequency = 0;
+      histogram.clear();
+    }
+    return base::WrapUnique(new LcppFrequencyStatDataUpdater(
+        config, histogram, other_bucket_frequency));
   }
 
   void Update(const std::string& new_entry) {
@@ -184,9 +287,31 @@ class LcppStringFrequencyStatDataUpdater {
     return out_data;
   }
 
+  LcpElementLocatorStat ToLcpElementLocatorStat() {
+    LcpElementLocatorStat lcp_element_locator_stat;
+    // Copy the results (histogram and other_bucket_frequency) into proto.
+    lcp_element_locator_stat.set_other_bucket_frequency(
+        other_bucket_frequency_);
+    for (const auto& bucket : histogram_) {
+      auto* bucket_to_add =
+          lcp_element_locator_stat.add_lcp_element_locator_buckets();
+      bucket_to_add->set_lcp_element_locator(bucket.first);
+      bucket_to_add->set_frequency(bucket.second);
+    }
+    return lcp_element_locator_stat;
+  }
+
   bool has_updated() { return has_updated_; }
 
  private:
+  LcppFrequencyStatDataUpdater(const LoadingPredictorConfig& config,
+                               std::map<std::string, double> histogram,
+                               double other_bucket_frequency)
+      : sliding_window_size_(config.lcpp_histogram_sliding_window_size),
+        max_histogram_buckets_(config.max_lcpp_histogram_buckets),
+        histogram_(histogram),
+        other_bucket_frequency_(other_bucket_frequency) {}
+
   const size_t sliding_window_size_;
   const size_t max_histogram_buckets_;
   std::map<std::string, double> histogram_;
@@ -867,72 +992,6 @@ void ResourcePrefetchPredictor::LearnLcpp(
   }
 }
 
-// The Record*Histogram functions' algorithm uses the following configuration.
-// For more information, see:
-// https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
-//
-// - kSlidingWindowSize
-// - kMaxHistogramBuckets
-//
-// `kSlidingWindowSize` is a virtual
-// sliding window size that builds histogram.
-// `kMaxHistogramBuckets` is a bucket count
-// that actually can be saved in the database. If the histogram has more
-// buckets than kMaxHistogramBuckets, this
-// algorithm sums up the less frequent buckets, and stores them in a single
-// "other_bucket" called `other_bucket_frequency`.
-//
-// <Conceptual model of sliding window and histogram>
-//
-// <------ sliding window ------->
-// +-----------------------------+                 <- data feed
-// | /#a   /#a   /#a   /#b   /#b | /#b   /#c   /#d   /#c   /#d
-// +-----------------------------+
-//  => histogram: {/#a: 3, /#b: 2}
-//
-//       <------ sliding window ------->
-//       +-----------------------------+
-//   /#a | /#a   /#a   /#b   /#b   /#b | /#c   /#d   /#c   /#d
-//       +-----------------------------+
-//        => histogram: {/#a: 2, /#b: 3}
-//
-//             <------ sliding window ------->
-//             +-----------------------------+
-//   /#a   /#a | /#a   /#b   /#b   /#b   /#c | /#d   /#c   /#d
-//             +-----------------------------+
-//              => histogram: {/#a: 1, /#b: 3, /#c: 1}
-//
-// The above sliding window model has the following two problems for us.
-//
-// - [Problem_1] We need to keep the entire data inside the sliding
-//               window to know which item is the first item inside
-//               the sliding window. But we don't want to keep such
-//               large data.
-// - [Problem_2] The histogram can be large if the items don't have
-//               overlap. We don't want to keep a large histogram.
-//
-// To address [Problem_1], we decided not to use the first item
-// inside the sliding window. Instead, We decided to reduce the
-// weight of the item.
-//
-// histogram: {/#a: 3, /#b: 2}
-// => histogram: {/#a: {1, 1, 1}, /#b: {1, 1}}
-//
-// To add new item "/#c", Reduce the item weight, and add "/#c".
-//
-// histogram: {/#a: {4/5, 4/5, 4/5}, /#b: {4/5, 4/5}, /#c: {1}}
-//
-// To address [Problem_2], we decided to introduce an "others"
-// bucket.
-//
-// histogram: {/#a: 5, /#b: 3, /#c: 2, /#d: 2}
-//
-// To reduce the bucket count under 3 buckets, we merge /#c and /#d
-// buckets into an <other> bucket.
-//
-// histogram: {/#a: 5, /#b: 3, <other>: 4}
-//
-//
 bool ResourcePrefetchPredictor::RecordLcpElementLocatorHistogram(
     LcppData& data,
     const std::string& host,
@@ -942,92 +1001,13 @@ bool ResourcePrefetchPredictor::RecordLcpElementLocatorHistogram(
       lcp_element_locator.empty()) {
     return false;
   }
-  LcpElementLocatorStat& lcp_element_locator_stat =
-      *data.mutable_lcpp_stat()->mutable_lcp_element_locator_stat();
-
-  const size_t kSlidingWindowSize = config_.lcpp_histogram_sliding_window_size;
-  const size_t kMaxHistogramBuckets = config_.max_lcpp_histogram_buckets;
-
-  // Prepare working variables (histogram and other_bucket_frequency) from
-  // proto. If the data is corrupted, the previous data will be cleared.
-  bool corrupted = false;
-  double other_bucket_frequency =
-      lcp_element_locator_stat.other_bucket_frequency();
-  if (other_bucket_frequency < 0 ||
-      lcp_element_locator_stat.lcp_element_locator_buckets_size() >
-          int(kMaxHistogramBuckets)) {
-    corrupted = true;
-  }
-  std::map<std::string, double> histogram;
-  for (const auto& it :
-       lcp_element_locator_stat.lcp_element_locator_buckets()) {
-    if (corrupted || !it.has_lcp_element_locator() || !it.has_frequency() ||
-        it.frequency() < 0.0) {
-      corrupted = true;
-      break;
-    }
-    histogram.insert_or_assign(it.lcp_element_locator(), it.frequency());
-  }
-  if (corrupted) {
-    other_bucket_frequency = 0;
-    histogram.clear();
-  }
-
-  // If there is no room to add a new `lcp_element_locator` (the capacity is
-  // the same as the sliding window size), create a room by discounting the
-  // existing histogram frequency.
-  if (1 + SumOfFrequency(histogram, other_bucket_frequency) >
-      kSlidingWindowSize) {
-    double discount = 1.0 / kSlidingWindowSize;
-    for (auto it = histogram.begin(); it != histogram.end();) {
-      it->second -= it->second * discount;
-      // Remove item that has too small frequency.
-      if (it->second < 1e-7) {
-        it = histogram.erase(it);
-      } else {
-        ++it;
-      }
-    }
-    other_bucket_frequency -= other_bucket_frequency * discount;
-  }
-
-  // Now we have one free space to store a new lcp_element_locator.
-  // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
-  // Adds `1e-5` to avoid floating point errors.
-  DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
-            kSlidingWindowSize + 1e-5);
-
-  // Store new lcp_element_locator.
-  {
-    auto it = histogram.emplace(lcp_element_locator, 1);
-    if (!it.second) {
-      ++it.first->second;
-    }
-  }
-
-  // Before saving histogram, we need to reduce the count of buckets less
-  // than `kMaxHistogramBuckets`. If the bucket count is more than
-  // `kMaxHistogramBuckets`, we can merge the least frequent bucket into
-  // other_bucket.
-  if (histogram.size() > kMaxHistogramBuckets) {
-    const auto& least_frequent_bucket =
-        std::min_element(histogram.begin(), histogram.end(),
-                         [](const auto& lhs, const auto& rhs) {
-                           return lhs.second < rhs.second;
-                         });
-    other_bucket_frequency += least_frequent_bucket->second;
-    histogram.erase(least_frequent_bucket);
-  }
-
-  // Copy the results (histogram and other_bucket_frequency) into proto.
-  lcp_element_locator_stat.set_other_bucket_frequency(other_bucket_frequency);
-  lcp_element_locator_stat.clear_lcp_element_locator_buckets();
-  for (const auto& bucket : histogram) {
-    auto* bucket_to_add =
-        lcp_element_locator_stat.add_lcp_element_locator_buckets();
-    bucket_to_add->set_lcp_element_locator(bucket.first);
-    bucket_to_add->set_frequency(bucket.second);
-  }
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcpElementLocatorStat(
+          config_, data.mutable_lcpp_stat()->lcp_element_locator_stat());
+  CHECK(updater);
+  updater->Update(lcp_element_locator);
+  *data.mutable_lcpp_stat()->mutable_lcp_element_locator_stat() =
+      updater->ToLcpElementLocatorStat();
   return true;
 }
 
@@ -1041,8 +1021,10 @@ bool ResourcePrefetchPredictor::RecordLcpInfluencerScriptUrlsHistogram(
 
   // Contrasting to LCPP Element locator, there are multiple LCP dependency URLs
   // for an origin. Record each in a separate histogram.
-  LcppStringFrequencyStatDataUpdater updater(
-      config_, *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat());
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
+          config_, data.mutable_lcpp_stat()->lcp_script_url_stat());
+  CHECK(updater);
   for (auto& script_url : lcp_influencer_scripts) {
     const auto& lcpp_script = script_url.spec();
     if (lcpp_script.size() >
@@ -1050,11 +1032,11 @@ bool ResourcePrefetchPredictor::RecordLcpInfluencerScriptUrlsHistogram(
         lcpp_script.empty()) {
       continue;
     }
-    updater.Update(lcpp_script);
+    updater->Update(lcpp_script);
   }
   *data.mutable_lcpp_stat()->mutable_lcp_script_url_stat() =
-      updater.ToLcppStringFrequencyStatData();
-  return updater.has_updated();
+      updater->ToLcppStringFrequencyStatData();
+  return updater->has_updated();
 }
 
 void ResourcePrefetchPredictor::OnURLsDeleted(
