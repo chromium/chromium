@@ -124,8 +124,9 @@ absl::optional<base::Value::Dict> ResponseBuilder::Build() const {
     event_configs.Append(std::move(lock));
     std::string encoded;
     base::Base64Encode("Fake signature", &encoded);
-    configuration_file.Set("configurationFileSignature", std::move(encoded));
-    configuration_file.Set("eventConfigs", std::move(event_configs));
+    configuration_file.Set("configFileSignature", std::move(encoded));
+    configuration_file.Set("blockedEventConfigs", std::move(event_configs));
+    configuration_file.Set("version", 123456);
     response.Set("configurationFile", std::move(configuration_file));
   }
 

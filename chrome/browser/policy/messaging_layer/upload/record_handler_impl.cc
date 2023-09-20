@@ -234,6 +234,14 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
     const base::Value::Dict& file) {
   ConfigFile config_file;
 
+  // Handle the version.
+  const auto config_file_version = file.FindInt("version");
+  if (!config_file_version.has_value()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Field version is missing from configurationFile");
+  }
+  config_file.set_version(config_file_version.value());
+
   // Handle the signature.
   const std::string* config_file_signature =
       file.FindString("configFileSignature");
@@ -244,15 +252,16 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
   }
   config_file.set_config_file_signature(*config_file_signature);
 
-  auto* const event_config_result = file.FindList("eventConfigs");
+  auto* const event_config_result = file.FindList("blockedEventConfigs");
   if (!event_config_result) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Field eventConfigs is missing from configurationFile");
+    return Status(
+        error::INVALID_ARGUMENT,
+        "Field blockedEventConfigs is missing from configurationFile");
   }
 
   // Parse the list of event configs.
   for (auto& entry : *event_config_result) {
-    auto* const current_config = config_file.add_event_configs();
+    auto* const current_config = config_file.add_blocked_event_configs();
     auto* const dict = entry.GetIfDict();
     if (dict->empty()) {
       return Status(error::INVALID_ARGUMENT,
