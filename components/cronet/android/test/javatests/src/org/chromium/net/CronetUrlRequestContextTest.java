@@ -162,10 +162,13 @@ public class CronetUrlRequestContextTest {
         mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
     }
 
-    private void setLogFlag(String marker, String minVersion) {
+    private void setLogFlag(String marker, String appId, String minVersion) {
         FlagValue.ConstrainedValue.Builder constrainedValueBuilder =
                 FlagValue.ConstrainedValue.newBuilder().setStringValue(
                         "Test log flag value " + marker);
+        if (appId != null) {
+            constrainedValueBuilder.setAppId(appId);
+        }
         if (minVersion != null) {
             constrainedValueBuilder.setMinVersion(minVersion);
         }
@@ -224,7 +227,7 @@ public class CronetUrlRequestContextTest {
     testHttpFlagsAreLoaded() throws Exception {
         setReadHttpFlagsInManifest(true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /*minVersion=*/null);
+        setLogFlag(marker, /*appId=*/null, /*minVersion=*/null);
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
     }
 
@@ -236,8 +239,33 @@ public class CronetUrlRequestContextTest {
     testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
         setReadHttpFlagsInManifest(false);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /*minVersion=*/null);
+        setLogFlag(marker, /*appId=*/null, /*minVersion=*/null);
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testHttpFlagsNotAppliedIfAppIdDoesntMatch() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(marker, /*appId=*/"org.chromium.fake.app.id", /*minVersion=*/null);
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testHttpFlagsAppliedIfAppIdMatches() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(marker, /*appId=*/mTestRule.getTestFramework().getContext().getPackageName(),
+                /*minVersion=*/ImplVersion.getCronetVersion());
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
     }
 
     @Test
@@ -248,7 +276,7 @@ public class CronetUrlRequestContextTest {
     testHttpFlagsNotAppliedIfBelowMinVersion() throws Exception {
         setReadHttpFlagsInManifest(true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /*minVersion=*/"999999.0.0.0");
+        setLogFlag(marker, /*appId=*/null, /*minVersion=*/"999999.0.0.0");
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
     }
 
@@ -260,7 +288,7 @@ public class CronetUrlRequestContextTest {
     testHttpFlagsAppliedIfAtMinVersion() throws Exception {
         setReadHttpFlagsInManifest(true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /*minVersion=*/ImplVersion.getCronetVersion());
+        setLogFlag(marker, /*appId=*/null, /*minVersion=*/ImplVersion.getCronetVersion());
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
     }
 
@@ -272,7 +300,7 @@ public class CronetUrlRequestContextTest {
     testHttpFlagsAppliedIfAboveMinVersion() throws Exception {
         setReadHttpFlagsInManifest(true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /*minVersion=*/"100.0.0.0");
+        setLogFlag(marker, /*appId=*/null, /*minVersion=*/"100.0.0.0");
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
     }
 
