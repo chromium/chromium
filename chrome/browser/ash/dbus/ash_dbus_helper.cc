@@ -62,6 +62,7 @@
 #include "chromeos/ash/components/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -257,6 +258,10 @@ void InitializeFeatureListDependentDBus() {
       features::IsQuickDimEnabled()) {
     InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
+
+  if (features::IsCellularCarrierLockEnabled()) {
+    InitializeDBusClient<Modem3gppClient>(bus);
+  }
 }
 
 void ShutdownDBus() {
@@ -266,6 +271,10 @@ void ShutdownDBus() {
 
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
+  if (features::IsCellularCarrierLockEnabled()) {
+    Modem3gppClient::Shutdown();
+  }
+
   if (features::IsSnoopingProtectionEnabled() ||
       features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();

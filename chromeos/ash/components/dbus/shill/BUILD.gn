@@ -20,6 +20,8 @@ component("shill") {
   ]
 
   sources = [
+    "fake_modem_3gpp_client.cc",
+    "fake_modem_3gpp_client.h",
     "fake_modem_messaging_client.cc",
     "fake_modem_messaging_client.h",
     "fake_shill_device_client.cc",
@@ -37,6 +39,8 @@ component("shill") {
     "fake_shill_third_party_vpn_driver_client.h",
     "fake_sms_client.cc",
     "fake_sms_client.h",
+    "modem_3gpp_client.cc",
+    "modem_3gpp_client.h",
     "modem_messaging_client.cc",
     "modem_messaging_client.h",
     "shill_client_helper.cc",
@@ -76,6 +80,7 @@ source_set("test_support") {
   ]
 
   sources = [
+    "modem_3gpp_client_unittest.cc",
     "modem_messaging_client_unittest.cc",
     "shill_client_unittest_base.cc",
     "shill_client_unittest_base.h",
