@@ -48,7 +48,7 @@ class TestSyncService;
 
 namespace commerce {
 
-extern const int64_t kInvalidDiscountId;
+extern const uint64_t kInvalidDiscountId;
 
 // A mock Optimization Guide decider that allows us to specify the response for
 // a particular URL.

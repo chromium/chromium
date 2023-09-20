@@ -23,7 +23,7 @@ message DiscountContent {
   optional ClusterType cluster_type = 1;
 
   // The unique ID that identifies the discount.
-  optional int64 id = 2;
+  optional uint64 id = 2;
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
@@ -55,5 +55,5 @@ message DiscountContent {
   optional string discount_code = 10;
 
   // The discount associated offer id.
-  optional int64 offer_id = 11;
+  optional uint64 offer_id = 11;
 }
