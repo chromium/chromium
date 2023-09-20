@@ -352,6 +352,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
@@ -363,6 +364,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: []}},
     };
     flush();
@@ -373,6 +375,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       browser: {enable_spellchecking: {value: false}},
       spellcheck: {
         dictionaries: {value: ['en-US']},
@@ -392,6 +395,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
@@ -403,6 +407,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: []}},
     };
     flush();
