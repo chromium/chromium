@@ -813,7 +813,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 #pragma mark - Drag and drop in Multiwindow
 
 // Tests that dragging a tab grid item to the edge opens a new window and that
-// the tab is properly transferred, including navigation stack.
+// the tab is properly transferred, incuding navigation stack.
 - (void)testDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
@@ -919,6 +919,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)testDragAndDropBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+
+  // TODO(crbug.com/1369148): Test is failing on iPad devices and simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
 
   // Setup first window with tabs 1 and 2.
   [ChromeEarlGrey loadURL:_URL1];
