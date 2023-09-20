@@ -105,9 +105,16 @@ class ChromeSigninClient : public SigninClient {
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
+      bool should_sign_out,
       bool has_sync_account,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Used as the `on_token_fetch_complete` callback in the
+  // `ForceSigninVerifier`.
+  void OnTokenFetchComplete(bool token_is_valid);
+#endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;

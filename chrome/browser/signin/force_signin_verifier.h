@@ -19,10 +19,6 @@
 
 class Profile;
 
-namespace base {
-class FilePath;
-}
-
 namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
@@ -36,8 +32,10 @@ class ForceSigninVerifier
     : public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public signin::IdentityManager::Observer {
  public:
-  explicit ForceSigninVerifier(Profile* profile,
-                               signin::IdentityManager* identity_manager);
+  explicit ForceSigninVerifier(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      base::OnceCallback<void(bool)> on_token_fetch_complete);
 
   ForceSigninVerifier(const ForceSigninVerifier&) = delete;
   ForceSigninVerifier& operator=(const ForceSigninVerifier&) = delete;
@@ -52,9 +50,6 @@ class ForceSigninVerifier
 
   // Cancel any pending or ongoing verification.
   void Cancel();
-
-  // Return the value of |has_token_verified_|.
-  bool HasTokenBeenVerified();
 
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(
@@ -75,9 +70,6 @@ class ForceSigninVerifier
 
   bool ShouldSendRequest();
 
-  virtual void CloseAllBrowserWindows();
-  void OnCloseBrowsersSuccess(const base::FilePath& profile_path);
-
   signin::PrimaryAccountAccessTokenFetcher* GetAccessTokenFetcherForTesting();
   net::BackoffEntry* GetBackoffEntryForTesting();
   base::OneShotTimer* GetOneShotTimerForTesting();
@@ -95,6 +87,7 @@ class ForceSigninVerifier
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  base::OnceCallback<void(bool)> on_token_fetch_complete_;
 
   // We need this observer in order to reset the value of the reference
   // to the `identity_manager_`.

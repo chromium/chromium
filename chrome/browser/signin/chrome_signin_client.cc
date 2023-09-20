@@ -222,7 +222,7 @@ void ChromeSigninClient::PreSignOut(
         profile_,
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
                             base::Unretained(this), signout_source_metric,
-                            has_sync_account),
+                            /*should_sign_out=*/true, has_sync_account),
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
                             base::Unretained(this)),
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
@@ -312,9 +312,37 @@ void ChromeSigninClient::VerifySyncToken() {
   // We only verifiy the token once when Profile is just created.
   if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_)
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
-        profile_, IdentityManagerFactory::GetForProfile(profile_));
+        profile_, IdentityManagerFactory::GetForProfile(profile_),
+        base::BindOnce(&ChromeSigninClient::OnTokenFetchComplete,
+                       base::Unretained(this)));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
+  // If the token is valid we do need to do anything special and let the user
+  // proceed.
+  if (token_is_valid) {
+    return;
+  }
+
+  // Token is not valid, we close all the browsers and open the Profile
+  // Picker.
+  should_display_user_manager_ = true;
+  BrowserList::CloseAllBrowsersWithProfile(
+      profile_,
+      base::BindRepeating(
+          &ChromeSigninClient::OnCloseBrowsersSuccess, base::Unretained(this),
+          signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin,
+          // Do not sign the user out to allow them to reauthenticate from the
+          // profile picker.
+          /*should_sign_out=*/false,
+          // Sync value is not used since we are not signing out.
+          /*has_sync_account=*/false),
+      /*on_close_aborted=*/base::DoNothing(),
+      /*skip_beforeunload=*/true);
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in
@@ -401,6 +429,7 @@ void ChromeSigninClient::SetURLLoaderFactoryForTest(
 
 void ChromeSigninClient::OnCloseBrowsersSuccess(
     const signin_metrics::ProfileSignout signout_source_metric,
+    bool should_sign_out,
     bool has_sync_account,
     const base::FilePath& profile_path) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -409,8 +438,10 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
   }
 #endif
 
-  std::move(on_signout_decision_reached_)
-      .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
+  if (should_sign_out) {
+    std::move(on_signout_decision_reached_)
+        .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
+  }
 
   LockForceSigninProfile(profile_path);
   // After sign out, lock the profile and show UserManager if necessary.
