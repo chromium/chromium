@@ -46,7 +46,7 @@ enum {
   kAutofillCreditCardEnabled = 1,
   kAutofillEnabledDeprecated = 2,
   kAutofillHasSeenIban = 3,
-  kAutofillIbanEnabled = 4,  // Obsolete.
+  // kAutofillIbanEnabled = 4,  (obsolete).
   kAutofillLastVersionDeduped = 5,
   kAutofillLastVersionDisusedAddressesDeleted = 6,
   kAutofillProfileEnabled = 7,
