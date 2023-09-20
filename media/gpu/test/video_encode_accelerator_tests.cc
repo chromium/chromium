@@ -191,7 +191,8 @@ class VideoEncoderTest : public ::testing::Test {
       base::FilePath::StringType output_file_prefix;
       if (spatial_layer_index_to_decode) {
         output_file_prefix +=
-            (inter_layer_pred_mode == SVCInterLayerPredMode::kOff
+            (inter_layer_pred_mode == SVCInterLayerPredMode::kOff &&
+                     spatial_layer_resolutions.size() > 1
                  ? FILE_PATH_LITERAL("S")
                  : FILE_PATH_LITERAL("L")) +
             base::NumberToString(*spatial_layer_index_to_decode);

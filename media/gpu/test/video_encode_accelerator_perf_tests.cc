@@ -338,6 +338,7 @@ struct BitstreamQualityMetrics {
       const DecoderBufferValidator* const decoder_buffer_validator,
       const absl::optional<size_t>& spatial_idx,
       const absl::optional<size_t>& temporal_idx,
+      size_t num_spatial_layers,
       SVCInterLayerPredMode inter_layer_pred_mode);
 
   void Output(uint32_t target_bitrate, uint32_t actual_bitrate);
@@ -380,6 +381,7 @@ struct BitstreamQualityMetrics {
       uint32_t target_bitrate,
       uint32_t actual_bitrate) const;
 
+  const size_t num_spatial_layers_;
   const SVCInterLayerPredMode inter_layer_pred_mode;
 
   const raw_ptr<const PSNRVideoFrameValidator> psnr_validator;
@@ -398,9 +400,11 @@ BitstreamQualityMetrics::BitstreamQualityMetrics(
     const DecoderBufferValidator* const decoder_buffer_validator,
     const absl::optional<size_t>& spatial_idx,
     const absl::optional<size_t>& temporal_idx,
+    size_t num_spatial_layers,
     SVCInterLayerPredMode inter_layer_pred_mode)
     : spatial_idx(spatial_idx),
       temporal_idx(temporal_idx),
+      num_spatial_layers_(num_spatial_layers),
       inter_layer_pred_mode(inter_layer_pred_mode),
       psnr_validator(psnr_validator),
       ssim_validator(ssim_validator),
@@ -459,9 +463,11 @@ void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
                                      uint32_t actual_bitrate) {
   std::string svc_text;
   if (spatial_idx) {
-    svc_text +=
-        (inter_layer_pred_mode == SVCInterLayerPredMode::kOff ? "S" : "L") +
-        base::NumberToString(*spatial_idx + 1);
+    svc_text += (inter_layer_pred_mode == SVCInterLayerPredMode::kOff &&
+                         num_spatial_layers_ > 1
+                     ? "S"
+                     : "L") +
+                base::NumberToString(*spatial_idx + 1);
   }
   if (temporal_idx)
     svc_text += "T" + base::NumberToString(*temporal_idx + 1);
@@ -709,7 +715,8 @@ class VideoEncoderTest : public ::testing::Test {
         psnr_validator.get(), ssim_validator.get(),
         bottom_row_psnr_validator.get(), log_likelihood_validator.get(),
         decoder_buffer_validator, spatial_layer_index_to_decode,
-        temporal_layer_index_to_decode, inter_layer_pred_mode));
+        temporal_layer_index_to_decode, spatial_layer_resolutions.size(),
+        inter_layer_pred_mode));
     video_frame_processors.push_back(std::move(ssim_validator));
     video_frame_processors.push_back(std::move(psnr_validator));
     video_frame_processors.push_back(std::move(bottom_row_psnr_validator));
