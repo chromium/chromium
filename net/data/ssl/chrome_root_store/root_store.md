@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 11
+Version: 12
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -135,3 +135,5 @@ e74fbda55bd564c473a36b441aa799c8a68e077440e8288b9fa1e50e4bbaca11 | CN=Security C
 2e44102ab58cb85419451c8e19d9acf3662cafbc614b6a53960a30f7d0e2eb41 | CN=TunTrust Root CA,O=Agence Nationale de Certification Electronique,C=TN | 2019-04-26 | 2044-04-26
 30fbba2c32238e2a98547af97931e550428b9b3f1c8eeb6633dcfa86c5b27dd3 | CN=vTrus ECC Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
 8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387 | CN=vTrus Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
+b2fae53e14ccd7ab9212064701ae279c1d8988facb775fa8a008914e663988a8 | CN=Atos TrustedRoot Root CA ECC TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17
+81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f | CN=Atos TrustedRoot Root CA RSA TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17

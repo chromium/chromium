@@ -20,8 +20,6 @@ const char kFakePolicyStr[] = "2.16.840.1.42";
 // DER OID values (no tag or length).
 const uint8_t kFakePolicy[] = {0x60, 0x86, 0x48, 0x01, 0x2a};
 const uint8_t kCabEvPolicy[] = {0x67, 0x81, 0x0c, 0x01, 0x01};
-const uint8_t kStarfieldPolicy[] = {0x60, 0x86, 0x48, 0x01, 0x86, 0xFD,
-                                    0x6E, 0x01, 0x07, 0x17, 0x03};
 
 const SHA256HashValue kFakeFingerprint = {
     {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa,
@@ -36,27 +34,23 @@ TEST(EVRootCAMetadataTest, Basic) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
 
   // Contains an expected policy.
-  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(der::Input(kStarfieldPolicy)));
+  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(der::Input(kCabEvPolicy)));
 
   // Does not contain an unregistered policy.
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(der::Input(kFakePolicy)));
 
   // The policy is correct for the right root.
   EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
-                                          der::Input(kStarfieldPolicy)));
+                                          der::Input(kCabEvPolicy)));
 
   // The policy does not match if the root does not match.
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
-                                           der::Input(kStarfieldPolicy)));
+  EXPECT_FALSE(
+      ev_metadata->HasEVPolicyOID(kFakeFingerprint, der::Input(kCabEvPolicy)));
 
   // The expected root only has the expected policies; it should fail to match
-  // the root against both unknown policies as well as policies associated
-  // with other roots.
+  // the root against unknown policies.
   EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
                                            der::Input(kFakePolicy)));
-
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
-                                           der::Input(kCabEvPolicy)));
 
   // Test a completely bogus OID.
   const uint8_t bad_oid[] = {0};
