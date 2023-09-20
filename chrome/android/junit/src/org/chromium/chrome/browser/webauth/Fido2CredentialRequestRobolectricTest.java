@@ -256,6 +256,24 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_prfRequestedOverHybrid_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        mCreationOptions.prfEnable = true;
+
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, /*mFrameHost=*/null,
+                /*maybeClientDataHash=*/new byte[] {0}, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
+        verifyNoInteractions(mCredManHelperMock);
+    }
+
+    @Test
+    @SmallTest
     public void testGetAssertion_credManEnabled_success() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);

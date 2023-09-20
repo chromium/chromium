@@ -234,6 +234,16 @@ public class Fido2CredentialRequest
         mAttestationAcceptable = rkDiscouraged;
         mEchoCredProps = options.credProps;
 
+        // If the PRF option is requested over hybrid then send the request
+        // directly to Play Services. PRF evaluation points come over hybrid
+        // pre-hashed, so it's not possible to send them via CredMan because
+        // the JSON form of the PRF extension needs them unhashed. Thus, for
+        // getAssertion, PRF requests go directly to Play Services. Because of
+        // that, makeCredential requests with PRF are also sent directly to
+        // Play Services so that users don't create a credential in a 3rd-party
+        // password manager that they cannot then assert.
+        final boolean prfOverHybrid = frameHost == null && options.prfEnable;
+
         // residentKey=discouraged requests are often for the traditional,
         // non-syncing platform authenticator on Android. A number of sites use
         // this and, so as not to disrupt them with Android 14, these requests
@@ -244,7 +254,8 @@ public class Fido2CredentialRequest
         //
         // Payments requests are also routed to Play Services since we haven't defined how SPC works
         // in CredMan yet.
-        if (!rkDiscouraged && !options.isPaymentCredentialCreation && isCredManEnabled()) {
+        if (!rkDiscouraged && !options.isPaymentCredentialCreation && !prfOverHybrid
+                && isCredManEnabled()) {
             int result = mCredManHelper.startMakeRequest(mContext, mFrameHost, options,
                     convertOriginToString(origin), maybeClientDataHash, callback,
                     this::returnErrorAndResetCallback);
