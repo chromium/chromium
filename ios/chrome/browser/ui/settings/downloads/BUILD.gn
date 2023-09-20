@@ -4,6 +4,9 @@
 
 source_set("downloads") {
   sources = [
+    "downloads_settings_coordinator.h",
+    "downloads_settings_coordinator.mm",
+    "downloads_settings_coordinator_delegate.h",
     "downloads_settings_table_view_controller.h",
     "downloads_settings_table_view_controller.mm",
     "downloads_settings_table_view_controller_action_delegate.h",
@@ -21,6 +24,9 @@ source_set("downloads") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/downloads/save_to_photos",
@@ -47,20 +53,37 @@ source_set("identity_button_cell") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "downloads_settings_table_view_controller_unittest.mm" ]
+  sources = [
+    "downloads_settings_coordinator_unittest.mm",
+    "downloads_settings_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":downloads",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:system_identity",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/settings/downloads:identity_button_cell",
     "//ios/chrome/browser/ui/settings/downloads/save_to_photos",
     "//ios/chrome/browser/ui/settings/downloads/save_to_photos:test_support",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
     "//ui/base:test_support",
   ]

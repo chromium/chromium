@@ -20,6 +20,8 @@ source_set("fakes") {
     "fake_overscroll_actions_controller_delegate.mm",
     "fake_password_auto_fill_status_manager.h",
     "fake_password_auto_fill_status_manager.mm",
+    "fake_ui_navigation_controller.h",
+    "fake_ui_navigation_controller.mm",
     "fake_ui_view_controller.h",
     "fake_ui_view_controller.mm",
     "fake_web_content_handler.h",
