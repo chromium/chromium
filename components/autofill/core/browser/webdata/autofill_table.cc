@@ -515,15 +515,15 @@ bool DeleteWhereColumnEq(sql::Database* db,
 }
 
 // Wrapper around `DeleteBuilder()`, which initializes the where clause as
-// `column` = `value`.
+// `column` = `value` for int64_t type.
 // Runs the statement and returns true if it was successful.
 bool DeleteWhereColumnEq(sql::Database* db,
                          std::string_view table_name,
                          std::string_view column,
-                         int value) {
+                         int64_t value) {
   sql::Statement statement;
   DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
-  statement.BindInt(0, value);
+  statement.BindInt64(0, value);
   return statement.Run();
 }
 

@@ -1455,7 +1455,7 @@ TEST_F(AutofillTableTest, UpdateCreditCardCvc_Delete) {
 // expected.
 TEST_F(AutofillTableTest, ServerCvc) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
-  int64_t kInstrumentId = 1111;
+  int64_t kInstrumentId = 111111111111;
   const std::u16string kCvc = u"123";
   const ServerCvc kServerCvc{kInstrumentId, kCvc, kArbitraryTime};
   EXPECT_TRUE(table_->AddServerCvc(kServerCvc));
