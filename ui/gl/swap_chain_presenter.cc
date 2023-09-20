@@ -464,6 +464,8 @@ SwapChainPresenter::SwapChainPresenter(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device)
     : layer_tree_(layer_tree),
+      swap_chain_buffer_count_(BufferCount(
+          layer_tree->force_dcomp_triple_buffer_video_swap_chain())),
       switched_to_BGRA8888_time_tick_(base::TimeTicks::Now()),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
@@ -1487,30 +1489,32 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   if (first_present_) {
     first_present_ = false;
     UINT flags = DXGI_PRESENT_USE_DURATION;
-    hr = swap_chain_->Present(0, flags);
-    // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
-    // that the window is occluded and we can stop rendering.
-    if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-      DLOG(ERROR) << "Present failed with error 0x" << std::hex << hr;
-      return false;
-    }
-
     // DirectComposition can display black for a swap chain between the first
-    // and second time it's presented to - maybe the first Present can get
-    // lost somehow and it shows the wrong buffer. In that case copy the
-    // buffers so both have the correct contents, which seems to help. The
-    // first Present() after this needs to have SyncInterval > 0, or else the
-    // workaround doesn't help.
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture;
-    swap_chain_->GetBuffer(0, IID_PPV_ARGS(&dest_texture));
-    DCHECK(dest_texture);
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> src_texture;
-    hr = swap_chain_->GetBuffer(1, IID_PPV_ARGS(&src_texture));
-    DCHECK(src_texture);
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-    d3d11_device_->GetImmediateContext(&context);
-    DCHECK(context);
-    context->CopyResource(dest_texture.Get(), src_texture.Get());
+    // and second time it's presented to - maybe the first Present can get lost
+    // somehow and it shows the wrong buffer. In that case copy the buffers so
+    // all have the correct contents, which seems to help. The first Present()
+    // after this needs to have SyncInterval > 0, or else the workaround doesn't
+    // help.
+    for (size_t i = 0; i < swap_chain_buffer_count_ - 1; ++i) {
+      hr = swap_chain_->Present(0, flags);
+      // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
+      // indicates that the window is occluded and we can stop rendering.
+      if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
+        DLOG(ERROR) << "Present failed with error 0x" << std::hex << hr;
+        return false;
+      }
+
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture;
+      swap_chain_->GetBuffer(0, IID_PPV_ARGS(&dest_texture));
+      DCHECK(dest_texture);
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> src_texture;
+      hr = swap_chain_->GetBuffer(1, IID_PPV_ARGS(&src_texture));
+      DCHECK(src_texture);
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+      d3d11_device_->GetImmediateContext(&context);
+      DCHECK(context);
+      context->CopyResource(dest_texture.Get(), src_texture.Get());
+    }
 
     // Additionally wait for the GPU to finish executing its commands, or
     // there still may be a black flicker when presenting expensive content
@@ -2040,8 +2044,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   desc.Format = swap_chain_format;
   desc.Stereo = FALSE;
   desc.SampleDesc.Count = 1;
-  desc.BufferCount =
-      BufferCount(layer_tree_->force_dcomp_triple_buffer_video_swap_chain());
+  desc.BufferCount = swap_chain_buffer_count_;
   desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
   desc.Scaling = DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
