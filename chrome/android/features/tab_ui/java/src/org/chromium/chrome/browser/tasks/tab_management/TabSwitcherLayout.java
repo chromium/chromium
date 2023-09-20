@@ -20,7 +20,6 @@ import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -193,44 +192,6 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private PerfListener mPerfListenerForTesting;
-
-    /** Custom image view that can run code in response to next layout. */
-    private static class TabImageView extends ImageView {
-        private Runnable mOnNextImageViewLayout;
-
-        TabImageView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onLayout(boolean changed, int l, int t, int r, int b) {
-            super.onLayout(changed, l, t, r, b);
-            runOnNextLayoutRunnable();
-        }
-
-        /**
-         * Sets a runnable to run on the next layout or immediately if there is no layout planned.
-         * @param runnable to invoke now or on the next layout.
-         */
-        void setOnNextLayoutRunnable(Runnable runnable) {
-            mOnNextImageViewLayout = runnable;
-            if (!isAttachedToWindow() || !isLayoutRequested()) {
-                runOnNextLayoutRunnable();
-            }
-        }
-
-        /**
-         * Runs the on next layout runnable. Not private so that the outer class can invoke if
-         * needed to force animations to complete.
-         */
-        void runOnNextLayoutRunnable() {
-            if (mOnNextImageViewLayout != null) {
-                Runnable r = mOnNextImageViewLayout;
-                mOnNextImageViewLayout = null;
-                r.run();
-            }
-        }
-    };
 
     private TabImageView mTabJavaView;
 
