@@ -76,6 +76,10 @@
         {
           "builder": "mac-rel",
           "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac-siso-rel",
+          "group": "tryserver.chromium.mac"
         }
       ]
     }

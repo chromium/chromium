@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "reclient", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso", "xcode")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -21,6 +21,10 @@ try_.defaults.set(
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 def ios_builder(*, name, **kwargs):
@@ -141,6 +145,39 @@ try_.compilator_builder(
     # Allow both x64 and arm64 bots.
     cpu = None,
     main_list_view = "try",
+)
+
+try_.orchestrator_builder(
+    name = "mac-siso-rel",
+    description_html = """\
+This builder shadows mac-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating mac-rel from Ninja to Siso. b/277863839
+""",
+    mirrors = builder_config.copy_from("try/mac-rel"),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+    compilator = "mac-siso-rel-compilator",
+    contact_team_email = "chrome-build-team@google.com",
+    coverage_test_types = ["overall", "unit"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "mac-siso-rel-compilator",
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-build-team@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(

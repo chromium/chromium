@@ -640,6 +640,9 @@ as required builders.
 * [linux_chromium_tsan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_tsan_siso_rel_ng""))
   * Experiment percentage: 20.0
 
+* [mac-siso-rel](https://ci.chromium.org/p/chromium/builders/try/mac-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-siso-rel""))
+  * Experiment percentage: 10.0
+
 * [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
   * Experiment percentage: 100.0
 
