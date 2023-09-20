@@ -553,7 +553,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'NearbySharePageNearbyShareHighVisibilityPage',
    'nearby_share_page/nearby_share_high_visibility_page_test.js'
  ],
- ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
+ [
+   'NearbySharePageNearbyShareReceiveDialog',
+   'nearby_share_page/nearby_share_receive_dialog_test.js'
+ ],
  [
    'NearbySharePageNearbyShareSubpage',
    'nearby_share_page/nearby_share_subpage_test.js',
