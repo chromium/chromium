@@ -83,15 +83,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-// TODO(crbug.com/1446968): The service worker version is flaky.
-using RuntimeApiBackgroundPageTest = RuntimeApiTest;
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         RuntimeApiBackgroundPageTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-IN_PROC_BROWSER_TEST_P(RuntimeApiBackgroundPageTest,
-                       ChromeRuntimeUninstallURL) {
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
@@ -500,8 +492,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 
 // Tests that when a blocklisted extension with a set uninstall url is
 // uninstalled, its uninstall url does not open.
-// TODO(crbug.com/1446468): Flaky on multiple builds.
-IN_PROC_BROWSER_TEST_P(RuntimeApiBackgroundPageTest,
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                        DoNotOpenUninstallUrlForBlocklistedExtensions) {
   ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
