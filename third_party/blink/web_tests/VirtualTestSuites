@@ -898,6 +898,8 @@
       "external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html",
       "fast/dynamic/text-combine.html",
+      "fast/forms/month/month-appearance-l10n.html",
+      "fast/forms/select/select-text-autospace.html",
       "virtual/text-antialias/justify-ideograph-leading-expansion.html"
     ],
     "args": [

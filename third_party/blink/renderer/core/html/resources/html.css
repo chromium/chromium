@@ -917,6 +917,14 @@ input[readonly]::-webkit-calendar-picker-indicator {
     visibility: hidden;
 }
 
+/* Form controls that measure the inline size without doing actual layout
+   need to disable `text-autospace`, if their content can be affected by
+   the property. crbug.com/1484863 */
+input[type="date" i], input[type="datetime-local" i], input[type="month" i],
+input[type="week" i], select {
+    text-autospace: no-autospace !important;
+}
+
 select {
     appearance: auto;
     box-sizing: border-box;
