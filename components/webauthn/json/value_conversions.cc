@@ -713,6 +713,15 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     }
     response->supports_large_blob = *supported;
   }
+  const base::Value::Dict* prf = client_extension_results->FindDict("prf");
+  if (prf) {
+    response->echo_prf = true;
+    const absl::optional<bool> enabled = prf->FindBool("enabled");
+    if (!prf) {
+      return InvalidMakeCredentialField("prf");
+    }
+    response->prf = *enabled;
+  }
 
   return {std::move(response), ""};
 }
@@ -822,6 +831,31 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     if (written) {
       response->echo_large_blob_written = true;
       response->large_blob_written = *written;
+    }
+  }
+  const base::Value::Dict* prf = client_extension_results->FindDict("prf");
+  if (prf) {
+    const base::Value::Dict* results = prf->FindDict("results");
+    if (results) {
+      absl::optional<std::string> first =
+          Base64UrlDecodeStringKey(*results, "first");
+      if (!first || first->size() != 32) {
+        return InvalidGetAssertionField("first");
+      }
+      absl::optional<std::string> second =
+          Base64UrlDecodeStringKey(*results, "second");
+      if (second && second->size() != 32) {
+        return InvalidGetAssertionField("second");
+      }
+
+      auto prf_values = blink::mojom::PRFValues::New();
+      prf_values->first.assign(first->begin(), first->end());
+      if (second) {
+        prf_values->second.emplace(second->begin(), second->end());
+      }
+
+      response->echo_prf = true;
+      response->prf_results = std::move(prf_values);
     }
   }
 

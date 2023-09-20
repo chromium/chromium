@@ -217,7 +217,8 @@ TEST(WebAuthenticationJSONConversionTest,
     "credBlob": true,
     "credProps": { "rk": true },
     "hmacCreateSecret": true,
-    "largeBlob": { "supported": true }
+    "largeBlob": { "supported": true },
+    "prf": { "enabled": true }
   },
   "id": "dGVzdCBpZA",
   "rawId": "dGVzdCBpZA",
@@ -249,7 +250,7 @@ TEST(WebAuthenticationJSONConversionTest,
       std::vector<device::FidoTransportProtocol>{
           device::FidoTransportProtocol::kUsbHumanInterfaceDevice},
       /*echo_hmac_create_secret=*/true, /*hmac_create_secret=*/true,
-      /*echo_prf=*/false, /*prf=*/false, /*echo_cred_blob=*/true,
+      /*echo_prf=*/true, /*prf=*/true, /*echo_cred_blob=*/true,
       /*cred_blob=*/true, /*public_key_der=*/kPublicKey,
       /*public_key_algo=*/-7,
       /*echo_cred_props=*/true, /*has_cred_props_rk=*/true,
@@ -476,6 +477,12 @@ TEST(WebAuthenticationJSONConversionTest,
     "largeBlob": {
       "blob": "dGVzdCBsYXJnZSBibG9i",
       "written": true
+    },
+    "prf": {
+      "results": {
+        "first": "mZ0wKXvFA3ule4G8-CezRxvoP4Bn9vuLZD0Ka80JTH0",
+        "second": "zfLUaH8wtbWPmGOYySfBjNehFIvhUZQduKXlOH6c9EI"
+      }
     }
   },
   "id": "dGVzdCBpZA",
@@ -508,13 +515,23 @@ TEST(WebAuthenticationJSONConversionTest,
       /*echo_user_verification_methods=*/false,
       /*user_verification_methods=*/absl::nullopt,
 #endif
-      /*echo_prf=*/false, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
+      /*echo_prf=*/true, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
       /*echo_large_blob=*/true,
       /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
       /*large_blob_written=*/true,
       /*get_cred_blob=*/kCredBlob,
       // TODO: support devicePubKey in JSON when it's stable.
       /*device_public_key=*/nullptr);
+  static const uint8_t expected_prf_first[32] = {
+      0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
+      0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,
+      0xfb, 0x8b, 0x64, 0x3d, 0x0a, 0x6b, 0xcd, 0x09, 0x4c, 0x7d,
+  };
+  static const uint8_t expected_prf_second[32] = {
+      0xcd, 0xf2, 0xd4, 0x68, 0x7f, 0x30, 0xb5, 0xb5, 0x8f, 0x98, 0x63,
+      0x98, 0xc9, 0x27, 0xc1, 0x8c, 0xd7, 0xa1, 0x14, 0x8b, 0xe1, 0x51,
+      0x94, 0x1d, 0xb8, 0xa5, 0xe5, 0x38, 0x7e, 0x9c, 0xf4, 0x42,
+  };
 
   EXPECT_EQ(response->info, expected->info);
   EXPECT_EQ(response->authenticator_attachment,
@@ -524,7 +541,12 @@ TEST(WebAuthenticationJSONConversionTest,
   EXPECT_EQ(response->echo_appid_extension, expected->echo_appid_extension);
   EXPECT_EQ(response->appid_extension, expected->appid_extension);
   EXPECT_EQ(response->echo_prf, expected->echo_prf);
-  EXPECT_EQ(response->prf_results, expected->prf_results);
+  ASSERT_TRUE(response->prf_results);
+  EXPECT_TRUE(
+      base::ranges::equal(response->prf_results->first, expected_prf_first));
+  ASSERT_TRUE(response->prf_results->second);
+  EXPECT_TRUE(
+      base::ranges::equal(*response->prf_results->second, expected_prf_second));
   EXPECT_EQ(response->prf_not_evaluated, expected->prf_not_evaluated);
   EXPECT_EQ(response->echo_large_blob, expected->echo_large_blob);
   EXPECT_EQ(response->large_blob, expected->large_blob);
@@ -533,7 +555,9 @@ TEST(WebAuthenticationJSONConversionTest,
   EXPECT_EQ(response->large_blob_written, expected->large_blob_written);
   EXPECT_EQ(response->get_cred_blob, expected->get_cred_blob);
   // Produce a failure even if the list above is missing any fields. But this
-  // will not print any meaningful error.
+  // will not print any meaningful error. `prf_values` has to be cleared
+  // because a pointer comparison will be performed for it.
+  response->prf_results = nullptr;
   EXPECT_EQ(response, expected);
 }
 
