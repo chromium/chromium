@@ -844,14 +844,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {p("a"), add},
        pconf},
       // Unless there is a recognized platform credential.
-      // Or a USB credential.
       {L,
        ga,
        {cable, internal},
        {only_hybrid_or_internal, has_plat},
        {pqr("a")},
-       {p("a"), add},
+       {p("a"), add, t(internal)},
        plat_ui},
+      // Or a USB credential.
       {L,
        ga,
        {usb, cable, internal},
@@ -992,7 +992,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 #else
        use_pk,
 #endif
-     },
+      },
       // Single phone credential with empty allow list.
       {L,
        ga,
@@ -1017,6 +1017,16 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {psync("a")},
        {p("a"), add},
        mss},
+      // Regression test for crbug.com/1484660.
+      // A platform authenticator that reports the availability of credentials
+      // but does not enumerate them should be listed.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {has_plat},
+       {psync("a")},
+       {p("a"), add, t(internal)},
+       plat_ui},
 
 #if BUILDFLAG(IS_MAC)
       // Even with iCloud Keychain present, we shouldn't jump to it without

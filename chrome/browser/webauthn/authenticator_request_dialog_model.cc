@@ -1695,6 +1695,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       is_new_get_assertion_ui && priority_phone_index_ &&
       base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
   bool specific_phones_listed = false;
+  bool specific_local_passkeys_listed = false;
   if (is_new_get_assertion_ui && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
@@ -1708,6 +1709,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       }
       if (cred.source == device::AuthenticatorType::kPhone) {
         specific_phones_listed = true;
+      } else {
+        specific_local_passkeys_listed = true;
       }
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
       auto& mechanism = mechanisms_.emplace_back(
@@ -1726,12 +1729,27 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   // Do not list the internal transport if we can offer users to select a
   // platform credential directly. This is true for both conditional requests
   // and the new passkey selector UI.
-  bool can_list_local_passkeys =
-      use_conditional_mediation_ ||
-      (is_new_get_assertion_ui &&
-       transport_availability_.has_platform_authenticator_credential !=
-           device::FidoRequestHandlerBase::RecognizedCredential::kUnknown);
-  if (!can_list_local_passkeys &&
+  bool did_enumerate_local_passkeys = false;
+  if (use_conditional_mediation_) {
+    did_enumerate_local_passkeys = true;
+  } else if (is_new_get_assertion_ui) {
+    switch (transport_availability_.has_platform_authenticator_credential) {
+      case device::FidoRequestHandlerBase::RecognizedCredential::
+          kNoRecognizedCredential:
+        did_enumerate_local_passkeys = true;
+        break;
+      case device::FidoRequestHandlerBase::RecognizedCredential::
+          kHasRecognizedCredential:
+        // Some platform authenticators (like ChromeOS) will report passkey
+        // availability but will not enumerate them.
+        did_enumerate_local_passkeys = specific_local_passkeys_listed;
+        break;
+      case device::FidoRequestHandlerBase::RecognizedCredential::kUnknown:
+        did_enumerate_local_passkeys = false;
+        break;
+    }
+  }
+  if (!did_enumerate_local_passkeys &&
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal)) {
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
