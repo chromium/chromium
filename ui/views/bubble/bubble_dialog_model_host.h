@@ -114,16 +114,16 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   };
 
   struct DialogModelHostField {
-    raw_ptr<ui::DialogModelField> dialog_model_field;
+    raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
 
     // View representing the entire field.
-    raw_ptr<View, DanglingUntriaged> field_view;
+    raw_ptr<View, DanglingUntriaged> field_view = nullptr;
 
     // Child view to |field_view|, if any, that's used for focus. For instance,
     // a textfield row would be a container that contains both a
     // views::Textfield and a descriptive label. In this case |focusable_view|
     // would refer to the views::Textfield which is also what would gain focus.
-    raw_ptr<View, DanglingUntriaged> focusable_view;
+    raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
   };
 
   void OnWindowClosing();
