@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -47,6 +48,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -132,6 +134,32 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   return button;
 }
 
+std::unique_ptr<views::ImageView> CreateIcon() {
+  std::unique_ptr<views::ImageView> icon = std::make_unique<views::ImageView>();
+  icon->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, 0, 0,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  return icon;
+}
+
+std::unique_ptr<views::Label> CreateTitle() {
+  std::unique_ptr<views::Label> title = std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_HEADLINE_5);
+
+  title->SetEnabledColorId(kColorSidePanelEntryTitle);
+  title->SetSubpixelRenderingEnabled(false);
+  title->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithAlignment(views::LayoutAlignment::kStart));
+  return title;
+}
+
 using PopulateSidePanelCallback = base::OnceCallback<void(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view)>;
@@ -215,7 +243,9 @@ class SidePanelContentSwappingContainer : public views::View {
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {
-  combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
+  }
 
   auto global_registry = std::make_unique<SidePanelRegistry>();
   global_registry_ = global_registry.get();
@@ -403,6 +433,7 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
+  CHECK(combobox_model_);
   return combobox_model_->GetKeyAt(header_combobox_->GetSelectedIndex().value())
       .id();
 }
@@ -560,10 +591,14 @@ void SidePanelCoordinator::InitializeSidePanel() {
 void SidePanelCoordinator::PopulateSidePanel(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view) {
-  // Ensure that the correct combobox entry is selected. This may not be the
-  // case if `Show()` was called after registering a contextual entry.
-  DCHECK(header_combobox_);
-  SetSelectedEntryInCombobox(entry->key());
+  if (!header_combobox_) {
+    UpdatePanelIconView(entry->icon());
+    panel_title_->SetText(entry->name());
+  } else {
+    // Ensure that the correct combobox entry is selected. This may not be the
+    // case if `Show()` was called after registering a contextual entry.
+    SetSelectedEntryInCombobox(entry->key());
+  }
 
   auto* content_container = GetContentContainerView();
   DCHECK(content_container);
@@ -659,7 +694,7 @@ SidePanelCoordinator::GetLastActiveEntryKey() const {
 absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
     const {
   // If the side panel is not shown then return nullopt.
-  if (!header_combobox_ || !IsSidePanelShowing()) {
+  if (!header_combobox_ || !IsSidePanelShowing() || !combobox_model_) {
     return absl::nullopt;
   }
 
@@ -711,10 +746,15 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   constexpr int kDefaultSidePanelHeaderHeight = 40;
   layout->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
 
-  header_combobox_ = header->AddChildView(CreateCombobox());
-  header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  header_combobox_->SetProperty(views::kElementIdentifierKey,
-                                kSidePanelComboboxElementId);
+  if (!combobox_model_) {
+    panel_icon_ = header->AddChildView(CreateIcon());
+    panel_title_ = header->AddChildView(CreateTitle());
+  } else {
+    header_combobox_ = header->AddChildView(CreateCombobox());
+    header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    header_combobox_->SetProperty(views::kElementIdentifierKey,
+                                  kSidePanelComboboxElementId);
+  }
 
   header_pin_button_ =
       header->AddChildView(CreatePinToggleButton(base::BindRepeating(
@@ -749,6 +789,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 }
 
 std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
+  CHECK(combobox_model_);
   auto combobox = std::make_unique<views::Combobox>(combobox_model_.get());
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
@@ -794,6 +835,7 @@ void SidePanelCoordinator::OnComboboxMenuWillShow() {
 
 void SidePanelCoordinator::SetSelectedEntryInCombobox(
     const SidePanelEntry::Key& entry_key) {
+  CHECK(header_combobox_);
   header_combobox_->SetSelectedIndex(
       combobox_model_->GetIndexForKey(entry_key));
   header_combobox_->SchedulePaint();
@@ -813,7 +855,8 @@ bool SidePanelCoordinator::ShouldRemoveFromComboboxOnDeregister(
       deregistering_registry == GetActiveContextualRegistry() &&
       !global_registry_->GetEntryForKey(key);
 
-  return remove_if_global || remove_if_contextual;
+  return (combobox_model_ != nullptr) &&
+         (remove_if_global || remove_if_contextual);
 }
 
 SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
@@ -870,10 +913,12 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
-  combobox_model_->AddItem(entry);
-  if (GetContentContainerView()) {
-    SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
-        SidePanelEntry::Key(GetDefaultEntry())));
+  if (combobox_model_) {
+    combobox_model_->AddItem(entry);
+    if (GetContentContainerView()) {
+      SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
+          SidePanelEntry::Key(GetDefaultEntry())));
+    }
   }
 
   // If `entry` is a contextual entry and the global entry with the same key is
@@ -889,7 +934,6 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   absl::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
   if (ShouldRemoveFromComboboxOnDeregister(registry, entry->key())) {
     combobox_model_->RemoveItem(entry->key());
-
     if (GetContentContainerView()) {
       SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())));
@@ -905,8 +949,8 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
-  if (GetContentContainerView() && selected_key.has_value() &&
-      selected_key.value() == entry->key()) {
+  if (GetContentContainerView() && current_entry_ &&
+      (current_entry_->key() == entry->key())) {
     // If a global entry is deregistered but a contextual entry with the same
     // key is shown, do nothing.
     if (registry == global_registry_ &&
@@ -943,7 +987,11 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
 }
 
 void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {
-  combobox_model_->UpdateIconForEntry(entry);
+  if (combobox_model_) {
+    combobox_model_->UpdateIconForEntry(entry);
+  } else if (current_entry_ && (current_entry_->key() == entry->key())) {
+    UpdatePanelIconView(entry->icon());
+  }
 }
 
 void SidePanelCoordinator::OnRegistryDestroying(SidePanelRegistry* registry) {
@@ -963,17 +1011,17 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       SidePanelRegistry::Get(selection.old_contents);
   if (old_contextual_registry) {
     registry_observations_.RemoveObservation(old_contextual_registry);
-    std::vector<SidePanelEntry::Key> contextual_keys_to_remove;
-
-    // Only remove the previous tab's contextual entries from the combobox if
-    // they are not in the global registry.
-    for (auto const& entry : old_contextual_registry->entries()) {
-      if (!global_registry_->GetEntryForKey(entry->key())) {
-        contextual_keys_to_remove.push_back(entry->key());
+    if (combobox_model_) {
+      std::vector<SidePanelEntry::Key> contextual_keys_to_remove;
+      // Only remove the previous tab's contextual entries from the combobox if
+      // they are not in the global registry.
+      for (auto const& entry : old_contextual_registry->entries()) {
+        if (!global_registry_->GetEntryForKey(entry->key())) {
+          contextual_keys_to_remove.push_back(entry->key());
+        }
       }
+      combobox_model_->RemoveItems(contextual_keys_to_remove);
     }
-
-    combobox_model_->RemoveItems(contextual_keys_to_remove);
   }
 
   // Add the current tab's contextual registry and update the combobox.
@@ -981,7 +1029,9 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       SidePanelRegistry::Get(selection.new_contents);
   if (new_contextual_registry) {
     registry_observations_.AddObservation(new_contextual_registry);
-    combobox_model_->AddItems(new_contextual_registry->entries());
+    if (combobox_model_) {
+      combobox_model_->AddItems(new_contextual_registry->entries());
+    }
   }
 
   // Show an entry in the following fallback order: new contextual registry's
@@ -991,7 +1041,9 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     // one is found, show it.
     if (auto* new_active_entry = GetNewActiveEntryOnTabChanged()) {
       Show(new_active_entry, SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
-      SetSelectedEntryInCombobox(new_active_entry->key());
+      if (combobox_model_) {
+        SetSelectedEntryInCombobox(new_active_entry->key());
+      }
     } else {
       // If there is no suitable entry to be shown after the tab switch, cache
       // the view of the old contextual registry (if it was active), and close
@@ -1047,6 +1099,16 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
   side_panel_button->SetTooltipText(l10n_util::GetStringUTF16(
       side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
                          : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+}
+
+void SidePanelCoordinator::UpdatePanelIconView(const ui::ImageModel& icon) {
+  ui::ImageModel updated_icon = icon;
+  if (icon.IsVectorIcon()) {
+    updated_icon = ui::ImageModel::FromVectorIcon(
+        *icon.GetVectorIcon().vector_icon(), kColorSidePanelEntryIcon,
+        icon.GetVectorIcon().icon_size());
+  }
+  panel_icon_->SetImage(updated_icon);
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

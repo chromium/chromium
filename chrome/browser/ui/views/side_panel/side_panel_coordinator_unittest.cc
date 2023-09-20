@@ -5,12 +5,15 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 
 #include <memory>
+#include <string>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -22,7 +25,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -1674,6 +1679,41 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
       SidePanelUtil::DeregisterAndReturnView(global_registry_, extension_key);
   ASSERT_TRUE(returned_view);
   EXPECT_EQ(33, static_cast<ViewWithCounter*>(returned_view.get())->counter());
+}
+
+class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
+    SidePanelCoordinatorTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SidePanelPinningCoordinatorTest, SidePanelTitleUpdates) {
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kBookmarks);
+  EXPECT_EQ(coordinator_->panel_title_->GetText(),
+            l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE));
+
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+  EXPECT_EQ(coordinator_->panel_title_->GetText(),
+            l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
+
+  // Checks that the title updates even for contextual side panels
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kSideSearch);
+  EXPECT_EQ(coordinator_->panel_title_->GetText(), u"testing1");
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing
