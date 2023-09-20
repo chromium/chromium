@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -23,13 +24,18 @@
 
 namespace kcer::internal {
 
-// Implementation of the Kcer interface.
-class KcerImpl : public Kcer {
+// Implementation of the Kcer interface, exported for KcerFactory.
+class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
  public:
-  KcerImpl(scoped_refptr<base::TaskRunner> token_task_runner,
-           base::WeakPtr<KcerToken> user_token,
-           base::WeakPtr<KcerToken> device_token);
+  KcerImpl();
   ~KcerImpl() override;
+
+  // Completes the initialization. The object is usable right after creation,
+  // but it will queue requests in the internal queue until it's initialized.
+  void Initialize(scoped_refptr<base::TaskRunner> token_task_runner,
+                  base::WeakPtr<KcerToken> user_token,
+                  base::WeakPtr<KcerToken> device_token);
+  base::WeakPtr<KcerImpl> GetWeakPtr();
 
   // Implements Kcer.
   base::CallbackListSubscription AddObserver(
@@ -75,7 +81,7 @@ class KcerImpl : public Kcer {
   void SignRsaPkcs1Raw(PrivateKeyHandle key,
                        DigestWithPrefix digest_with_prefix,
                        SignCallback callback) override;
-  base::flat_set<Token> GetAvailableTokens() override;
+  void GetAvailableTokens(GetAvailableTokensCallback callback) override;
   void GetTokenInfo(Token token, GetTokenInfoCallback callback) override;
   void GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
@@ -133,6 +139,8 @@ class KcerImpl : public Kcer {
       SignCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
+  base::flat_set<Token> GetCurrentTokens() const;
+
   void GetKeyInfoWithToken(
       GetKeyInfoCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
@@ -163,6 +171,9 @@ class KcerImpl : public Kcer {
   base::WeakPtr<KcerToken> user_token_;
   base::WeakPtr<KcerToken> device_token_;
   KcerNotifierNet notifier_;
+
+  // A task queue for the initialization period until the tokens are assigned.
+  std::unique_ptr<std::deque<base::OnceClosure>> init_queue_;
 
   base::WeakPtrFactory<KcerImpl> weak_factory_{this};
 };
