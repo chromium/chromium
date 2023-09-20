@@ -217,12 +217,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // descendants are removed.
   void RemoveIncludedSubtree(AXObject* object, bool remove_root);
 
-  // This will invalidate cached values on all AXObjects in the subtree, whether
-  // they or not they are marked as included for serialization. This can only be
-  // called while flat tree traversal is safe and there are no slot assignments
-  // pending.
-  void InvalidateCachedValuesOnSubtreeWithCleanLayout(Node* node);
-
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
   // In addition, ChildrenChanged() on an included ancestor that might contain
@@ -658,8 +652,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(LayoutObject*, bool notify_parent);
   void Remove(NGAbstractInlineTextBox*, bool notify_parent);
 
-  void InvalidateCachedValuesOnSubtreeWithCleanLayoutRecursive(AXObject*);
-
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
   void Remove(AXID, bool notify_parent);
@@ -725,32 +717,31 @@ class MODULES_EXPORT AXObjectCacheImpl
     kEditableTextContentChanged = 8,
     kFocusableChanged = 9,
     kIdChanged = 10,
-    kInvalidateCachedValuesOnSubtree = 11,
-    kMarkDirtyFromHandleLayout = 12,
-    kMarkDirtyFromHandleScroll = 13,
-    kMarkDirtyFromRemove = 14,
-    kNameAttributeChanged = 15,
-    kNodeGainedFocus = 16,
-    kNodeLostFocus = 17,
-    kPostNotificationFromHandleLoadComplete = 18,
-    kPostNotificationFromHandleLoadStart = 19,
-    kPostNotificationFromHandleScrolledToAnchor = 20,
-    kRemoveValidationMessageObjectFromFocusedUIElement = 21,
-    kRemoveValidationMessageObjectFromValidationMessageObject = 22,
-    kRoleChangeFromAriaHasPopup = 23,
-    kRoleChangeFromRoleOrType = 24,
-    kRoleMaybeChangedFromEventListener = 25,
-    kRoleMaybeChangedFromHref = 26,
-    kSectionOrRegionRoleMaybeChangedFromLabel = 27,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 28,
-    kSectionOrRegionRoleMaybeChangedFromTitle = 29,
-    kTextChangedFromTextChangedNode = 30,
-    kTextMarkerDataAdded = 31,
-    kUpdateActiveMenuOption = 32,
-    kNodeIsAttached = 33,
-    kUpdateTableRole = 34,
-    kUseMapAttributeChanged = 35,
-    kValidationMessageVisibilityChanged = 36,
+    kMarkDirtyFromHandleLayout = 11,
+    kMarkDirtyFromHandleScroll = 12,
+    kMarkDirtyFromRemove = 13,
+    kNameAttributeChanged = 14,
+    kNodeGainedFocus = 15,
+    kNodeLostFocus = 16,
+    kPostNotificationFromHandleLoadComplete = 17,
+    kPostNotificationFromHandleLoadStart = 18,
+    kPostNotificationFromHandleScrolledToAnchor = 19,
+    kRemoveValidationMessageObjectFromFocusedUIElement = 20,
+    kRemoveValidationMessageObjectFromValidationMessageObject = 21,
+    kRoleChangeFromAriaHasPopup = 22,
+    kRoleChangeFromRoleOrType = 23,
+    kRoleMaybeChangedFromEventListener = 24,
+    kRoleMaybeChangedFromHref = 25,
+    kSectionOrRegionRoleMaybeChangedFromLabel = 26,
+    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
+    kSectionOrRegionRoleMaybeChangedFromTitle = 28,
+    kTextChangedFromTextChangedNode = 29,
+    kTextMarkerDataAdded = 30,
+    kUpdateActiveMenuOption = 31,
+    kNodeIsAttached = 32,
+    kUpdateTableRole = 33,
+    kUseMapAttributeChanged = 34,
+    kValidationMessageVisibilityChanged = 35,
 
     // These updates are associated with an AXID:
     kChildrenChanged = 100,
