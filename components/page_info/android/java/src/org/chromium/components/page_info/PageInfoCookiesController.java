@@ -233,8 +233,8 @@ public class PageInfoCookiesController
     }
 
     private void updateRowViewSubtitle() {
-        boolean blockingEnabled = mStatus == CookieControlsStatus.ENABLED;
-        if (!blockingEnabled) {
+        if (mStatus == CookieControlsStatus.DISABLED) return;
+        if (mStatus == CookieControlsStatus.DISABLED_FOR_SITE) {
             mRowView.updateSubtitle(
                     mRowView.getContext().getString(R.string.page_info_cookies_subtitle_allowed));
             return;
