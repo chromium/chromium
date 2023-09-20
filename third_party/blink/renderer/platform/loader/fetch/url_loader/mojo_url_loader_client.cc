@@ -74,7 +74,7 @@ class MojoURLLoaderClient::DeferredOnReceiveRedirect final
   DeferredOnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
       : redirect_info_(redirect_info),
         response_head_(std::move(response_head)),
         task_runner_(std::move(task_runner)) {}
@@ -88,7 +88,7 @@ class MojoURLLoaderClient::DeferredOnReceiveRedirect final
  private:
   const net::RedirectInfo redirect_info_;
   network::mojom::URLResponseHeadPtr response_head_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class MojoURLLoaderClient::DeferredOnUploadProgress final
@@ -158,7 +158,7 @@ class MojoURLLoaderClient::BodyBuffer final
   BodyBuffer(MojoURLLoaderClient* owner,
              mojo::ScopedDataPipeConsumerHandle readable,
              mojo::ScopedDataPipeProducerHandle writable,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+             scoped_refptr<base::SequencedTaskRunner> task_runner)
       : owner_(owner),
         writable_(std::move(writable)),
         writable_watcher_(FROM_HERE,
@@ -271,7 +271,7 @@ class MojoURLLoaderClient::BodyBuffer final
 
 MojoURLLoaderClient::MojoURLLoaderClient(
     ResourceRequestSender* resource_request_sender,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     bool bypass_redirect_checks,
     const GURL& request_url,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)

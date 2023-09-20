@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -100,7 +100,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   // execute loading tasks on.
   virtual int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       const Vector<String>& cors_exempt_header_list,
@@ -112,7 +112,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
 
   // Cancels the current request and `request_info_` will be released.
-  virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  virtual void Cancel(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
   // general concept of "freezing" in the loading module. See
@@ -124,7 +124,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
                          int intra_priority_value);
 
   virtual void DeletePendingRequest(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Called when the transfer size is updated.
   virtual void OnTransferSizeUpdated(int32_t transfer_size_diff);
@@ -145,7 +145,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   virtual void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Called when the response body becomes available.
   virtual void OnStartLoadingResponseBody(
@@ -202,7 +202,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   void OnFollowRedirectCallback(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::vector<std::string> removed_headers);
 
   // Follows redirect, if any, for the given request.

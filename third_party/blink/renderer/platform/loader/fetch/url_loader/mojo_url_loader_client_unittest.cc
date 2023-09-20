@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,7 +47,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
   void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->complete);
     ++context_->seen_redirects;

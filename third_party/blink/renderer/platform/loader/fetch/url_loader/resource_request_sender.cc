@@ -229,7 +229,7 @@ void ResourceRequestSender::SendSync(
 
 int ResourceRequestSender::SendAsync(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
     const Vector<String>& cors_exempt_header_list,
@@ -297,7 +297,7 @@ int ResourceRequestSender::SendAsync(
 }
 
 void ResourceRequestSender::Cancel(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // Cancel the request if it didn't complete, and clean it up so the bridge
   // will receive no more messages.
   DeletePendingRequest(std::move(task_runner));
@@ -330,7 +330,7 @@ void ResourceRequestSender::DidChangePriority(net::RequestPriority new_priority,
 }
 
 void ResourceRequestSender::DeletePendingRequest(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (!request_info_) {
     return;
   }
@@ -461,7 +461,7 @@ void ResourceRequestSender::OnReceivedCachedMetadata(
 void ResourceRequestSender::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   TRACE_EVENT0("loading", "ResourceRequestSender::OnReceivedRedirect");
   if (!request_info_) {
     return;
@@ -494,7 +494,7 @@ void ResourceRequestSender::OnReceivedRedirect(
 void ResourceRequestSender::OnFollowRedirectCallback(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<std::string> removed_headers) {
   // DeletePendingRequest() may have cleared request_info_.
   if (!request_info_) {

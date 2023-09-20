@@ -79,7 +79,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
   }
 
   void DeletePendingRequest(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
     client_.reset();
   }
 

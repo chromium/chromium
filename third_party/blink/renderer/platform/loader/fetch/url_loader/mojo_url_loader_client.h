@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace net {
@@ -47,7 +47,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
  public:
   MojoURLLoaderClient(
       ResourceRequestSender* resource_request_sender,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       bool bypass_redirect_checks,
       const GURL& request_url,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
@@ -109,7 +109,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
   ResourceRequestSender* const resource_request_sender_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;
   WeakPersistent<BackForwardCacheLoaderHelper>

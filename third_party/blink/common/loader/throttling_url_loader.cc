@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "net/http/http_status_code.h"
@@ -284,7 +285,7 @@ ThrottlingURLLoader::StartInfo::StartInfo(
     int32_t in_request_id,
     uint32_t in_options,
     network::ResourceRequest* in_url_request,
-    scoped_refptr<base::SingleThreadTaskRunner> in_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> in_task_runner,
     absl::optional<std::vector<std::string>> in_cors_exempt_header_list)
     : url_loader_factory(std::move(in_url_loader_factory)),
       request_id(in_request_id),
@@ -324,7 +325,7 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     network::ResourceRequest* url_request,
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     absl::optional<std::vector<std::string>> cors_exempt_header_list) {
   DCHECK(url_request);
   std::unique_ptr<ThrottlingURLLoader> loader(new ThrottlingURLLoader(
@@ -475,7 +476,7 @@ void ThrottlingURLLoader::Start(
     int32_t request_id,
     uint32_t options,
     network::ResourceRequest* url_request,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     absl::optional<std::vector<std::string>> cors_exempt_header_list) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);

@@ -30,7 +30,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace blink {
@@ -60,7 +60,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       network::ResourceRequest* url_request,
       network::mojom::URLLoaderClient* client,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       absl::optional<std::vector<std::string>> cors_exempt_header_list =
           absl::nullopt);
 
@@ -139,7 +139,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
              int32_t request_id,
              uint32_t options,
              network::ResourceRequest* url_request,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
              absl::optional<std::vector<std::string>> cors_exempt_header_list);
 
   void StartNow();
@@ -252,7 +252,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
         int32_t in_request_id,
         uint32_t in_options,
         network::ResourceRequest* in_url_request,
-        scoped_refptr<base::SingleThreadTaskRunner> in_task_runner,
+        scoped_refptr<base::SequencedTaskRunner> in_task_runner,
         absl::optional<std::vector<std::string>> in_cors_exempt_header_list);
     ~StartInfo();
 
@@ -262,7 +262,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
     network::ResourceRequest url_request;
     // |task_runner| is used to set up |client_receiver_|.
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
     absl::optional<std::vector<std::string>> cors_exempt_header_list;
   };
   // Holds any info needed to start or restart the request. Used when start is

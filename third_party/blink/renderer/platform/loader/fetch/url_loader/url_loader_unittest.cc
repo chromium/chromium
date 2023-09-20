@@ -93,7 +93,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
   int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       const Vector<String>& cors_exempt_header_list,
@@ -111,8 +111,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
     return 1;
   }
 
-  void Cancel(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+  void Cancel(scoped_refptr<base::SequencedTaskRunner> task_runner) override {
     EXPECT_FALSE(canceled_);
     canceled_ = true;
 
