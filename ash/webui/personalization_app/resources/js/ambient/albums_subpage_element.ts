@@ -19,14 +19,13 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getNumberOfGridItemsPerRow, isNonEmptyArray} from '../utils.js';
+import {getNumberOfGridItemsPerRow, getZerosArray, isNonEmptyArray} from '../utils.js';
 
 import {AlbumSelectedChangedEvent} from './album_list_element.js';
 import {getTemplate} from './albums_subpage_element.html.js';
 import {setAlbumSelected} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
-import {getZerosArray} from './utils.js';
 
 /** Height in pixels of a tile. */
 const kTileHeightPx = 136;

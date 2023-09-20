@@ -164,3 +164,10 @@ export function getCheckmarkIcon(): string {
   return isPersonalizationJellyEnabled() ? 'personalization:circle_checkmark' :
                                            'personalization:checkmark';
 }
+
+/**
+ * Returns a x-length dummy array of zeros (0s)
+ */
+export function getZerosArray(x: number): number[] {
+  return new Array(x).fill(0);
+}

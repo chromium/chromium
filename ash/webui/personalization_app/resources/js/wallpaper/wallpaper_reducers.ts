@@ -625,6 +625,30 @@ function googlePhotosReducer(
   }
 }
 
+function seaPenReducer(
+    state: WallpaperState['seaPen'], action: Actions,
+    _: PersonalizationState): WallpaperState['seaPen'] {
+  switch (action.name) {
+    case WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS:
+      return {
+        thumbnailsLoading: true,
+        query: action.query,
+        thumbnails: state.thumbnails,
+      };
+    case WallpaperActionName.SET_IMAGE_THUMBNAILS:
+      console.log('seaPenReducer, text: ', action.query);
+      assert(!!action.query, 'input text is empty.');
+      console.log('seapenReducer, thumbnails: ', action.images);
+      return {
+        thumbnailsLoading: false,
+        query: action.query,
+        thumbnails: action.images,
+      };
+    default:
+      return state;
+  }
+}
+
 export const wallpaperReducers:
     {[K in keyof WallpaperState]: ReducerFunction<WallpaperState[K]>} = {
       backdrop: backdropReducer,
@@ -636,4 +660,5 @@ export const wallpaperReducers:
       dailyRefresh: dailyRefreshReducer,
       fullscreen: fullscreenReducer,
       googlePhotos: googlePhotosReducer,
+      seaPen: seaPenReducer,
     };

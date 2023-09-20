@@ -33,3 +33,8 @@ export interface ImageTile {
   isTimeOfDayWallpaper?: boolean;
   hasPreviewImage?: boolean;
 }
+
+export interface WallpaperSearchThumbnail {
+  url: Url;
+  id: bigint;
+}

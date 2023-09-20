@@ -22,12 +22,12 @@ import {AmbientModeAlbum, AmbientTheme, TemperatureUnit, TopicSource} from '../.
 import {isAmbientModeAllowed, isPersonalizationJellyEnabled, isScreenSaverDurationEnabled} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {getZerosArray} from '../utils.js';
 
 import {dismissTimeOfDayBanner, setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {getTemplate} from './ambient_subpage_element.html.js';
-import {getZerosArray} from './utils.js';
 
 export class AmbientSubpageElement extends WithPersonalizationStore {
   static get is() {

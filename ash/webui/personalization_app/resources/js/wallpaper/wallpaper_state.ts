@@ -6,7 +6,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, WallpaperSearchThumbnail} from './constants.js';
 
 /**
  * Stores collections and images from backdrop server.
@@ -85,6 +85,12 @@ export interface LoadingState {
   };
 }
 
+export interface SeaPenState {
+  query: string|null;
+  thumbnails: WallpaperSearchThumbnail[]|null;
+  thumbnailsLoading: boolean;
+}
+
 /**
  * |images| stores the list of images on local disk. The image in index 0 may be
  * a special case for default image thumbnail.
@@ -120,6 +126,7 @@ export interface WallpaperState {
   dailyRefresh: DailyRefreshState|null;
   fullscreen: boolean;
   googlePhotos: GooglePhotosState;
+  seaPen: SeaPenState;
 }
 
 export function emptyState(): WallpaperState {
@@ -157,6 +164,11 @@ export function emptyState(): WallpaperState {
       photosByAlbumId: {},
       resumeTokens:
           {albums: null, albumsShared: null, photos: null, photosByAlbumId: {}},
+    },
+    seaPen: {
+      query: null,
+      thumbnails: null,
+      thumbnailsLoading: false,
     },
   };
 }

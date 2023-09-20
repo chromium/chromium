@@ -40,13 +40,6 @@ export function getTopicSourceName(topicSource: TopicSource): string {
 }
 
 /**
- * Returns a x-length dummy array of zeros (0s)
- */
-export function getZerosArray(x: number): number[] {
-  return new Array(x).fill(0);
-}
-
-/**
  * Returns whether the params represent a valid ambient state.
  *
  * Note: TopicSource.kVideo is exclusively paired with AmbientTheme.kVideo
