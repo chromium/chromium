@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_CONSTANTS_H_
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,8 +35,10 @@ constexpr int kRevampedTrayMenuWidth = 400;
 constexpr int kGlanceablesLeftRightMargin = 16;
 constexpr int kGlanceablesVerticalMargin = 16;
 
-constexpr int kTrayPopupAutoCloseDelayInSeconds = 2;
-constexpr int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
+constexpr base::TimeDelta kSecondaryBubbleDuration = base::Seconds(3);
+constexpr base::TimeDelta kSecondaryBubbleWithSpokenFeedbackDuration =
+    base::Seconds(5);
+
 constexpr int kTrayPopupPaddingHorizontal = 18;
 constexpr int kTrayPopupButtonEndMargin = 10;
 

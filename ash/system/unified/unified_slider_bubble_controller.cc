@@ -370,8 +370,8 @@ void UnifiedSliderBubbleController::CreateSliderController() {
 
 void UnifiedSliderBubbleController::StartAutoCloseTimer() {
   autoclose_.Stop();
-  autoclose_.Start(FROM_HERE, base::Seconds(kTrayPopupAutoCloseDelayInSeconds),
-                   this, &UnifiedSliderBubbleController::CloseBubble);
+  autoclose_.Start(FROM_HERE, kSecondaryBubbleDuration, this,
+                   &UnifiedSliderBubbleController::CloseBubble);
 }
 
 }  // namespace ash

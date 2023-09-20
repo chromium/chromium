@@ -125,12 +125,12 @@ void PrivacyScreenToastController::StartAutoCloseTimer() {
   if (toast_view_ && toast_view_->IsButtonFocused())
     return;
 
-  int autoclose_delay = kTrayPopupAutoCloseDelayInSeconds;
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
-    autoclose_delay = kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
-
-  close_timer_.Start(FROM_HERE, base::Seconds(autoclose_delay), this,
-                     &PrivacyScreenToastController::HideToast);
+  close_timer_.Start(
+      FROM_HERE,
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()
+          ? kSecondaryBubbleWithSpokenFeedbackDuration
+          : kSecondaryBubbleDuration,
+      this, &PrivacyScreenToastController::HideToast);
 }
 
 void PrivacyScreenToastController::UpdateToastView() {

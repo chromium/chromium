@@ -53,7 +53,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     kShelfPodBubble = 0,
     // Bubble used for accessibility.
     kAccessibilityBubble = 1,
-    // This contains slider bubbles and toast bubbles.
+    // Used for slider bubbles.
+    // TODO(b/297201925): Autozoom and e-privacy screen toast bubbles also use
+    // this type, but these toasts are planned to migrate to regular toasts.
     kSecondaryBubble = 2,
     kMaxValue = kSecondaryBubble
   };
