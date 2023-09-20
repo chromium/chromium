@@ -138,7 +138,6 @@ class AttributionStorageTest : public testing::Test {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
     auto delegate = std::make_unique<ConfigurableStorageDelegate>();
     delegate->set_report_delay(kReportDelay);
-    delegate->set_max_attributions_per_source(kMaxConversions);
     delegate_ = delegate.get();
     storage_ = std::make_unique<AttributionStorageSql>(dir_.GetPath(),
                                                        std::move(delegate));
@@ -357,6 +356,8 @@ TEST_F(AttributionStorageTest, ImpressionExpired_ConversionsStoredPrior) {
 
 TEST_F(AttributionStorageTest,
        ImpressionWithDefaultMaxConversions_ConversionReportNotStored) {
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   storage()->StoreSource(SourceBuilder().Build());
 
   for (int i = 0; i < kMaxConversions; i++) {
@@ -529,6 +530,8 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
 
 TEST_F(AttributionStorageTest,
        ManyImpressionsWithManyConversions_OneImpressionAttributed) {
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   const int kNumMultiTouchImpressions = 20;
 
   // Store a large, arbitrary number of impressions.
@@ -1306,6 +1309,11 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
 }
 
 TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
+  // TODO(linnan): This should be irrelevant to this test, but isn't due to
+  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
+  // field of the source, which is not relevant to this test.
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   delegate()->set_rate_limits(
       RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
         r.time_window = base::TimeDelta::Max();
@@ -1500,6 +1508,11 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
 
 TEST_F(AttributionStorageTest,
        NeverAttributeSource_AggregatableReportStoredAndRateLimitsChanged) {
+  // TODO(linnan): This should be irrelevant to this test, but isn't due to
+  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
+  // field of the source, which is not relevant to this test.
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   delegate()->set_rate_limits(
       RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
         r.time_window = base::TimeDelta::Max();
@@ -2777,6 +2790,8 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
 TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreEventLevelReport_ReturnsDeactivatedSources) {
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   SourceBuilder builder;
   builder.SetSourceEventId(7);
   storage()->StoreSource(builder.Build());
@@ -3689,6 +3704,11 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
+  // TODO(linnan): This should be irrelevant to this test, but isn't due to
+  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
+  // field of the source, which is not relevant to this test.
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   auto source_builder = TestAggregatableSourceProvider().GetBuilder();
   storage()->StoreSource(source_builder.Build());
 
@@ -3725,6 +3745,8 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
 TEST_F(
     AttributionStorageTest,
     MaybeCreateAndStoreAggregatableReport_reachedEventLevelAttributionLimit) {
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(7);
   storage()->StoreSource(builder.Build());
@@ -3947,6 +3969,11 @@ TEST_F(AttributionStorageTest, NoAggregatableData_NoNullReport) {
 }
 
 TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
+  // TODO(linnan): This should be irrelevant to this test, but isn't due to
+  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
+  // field of the source, which is not relevant to this test.
+  delegate()->set_max_attributions_per_source(kMaxConversions);
+
   base::Time now = base::Time::Now();
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder(now);
