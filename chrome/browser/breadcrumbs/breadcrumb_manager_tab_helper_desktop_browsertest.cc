@@ -13,8 +13,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/download_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace {
@@ -52,6 +52,9 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
     BreadcrumbManagerTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
+
+ private:
+  breadcrumbs::ScopedEnableBreadcrumbsForTesting enable_breadcrumbs_;
 };
 
 // Tests download navigation.
@@ -106,6 +109,9 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  breadcrumbs::ScopedEnableBreadcrumbsForTesting enable_breadcrumbs_;
 };
 
 // Broken authentication.
