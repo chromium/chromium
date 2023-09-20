@@ -139,9 +139,6 @@ constexpr char kExpectedPDFAXTree[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
-// `kPDFLoadedToA11yTreeMsg` must be synced with `IDS_PDF_LOADED_TO_A11Y_TREE`.
-constexpr char kPDFLoadedToA11yTreeMsg[] = "Finished loading PDF";
-
 }  // namespace
 
 // Using ASSERT_TRUE deliberately instead of ASSERT_EQ or ASSERT_STREQ
@@ -157,16 +154,6 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   ~PDFExtensionAccessibilityTest() override = default;
 
  protected:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
-    // PDF OCR should not be enabled in `PDFExtensionAccessibilityTest`. If a
-    // new test class is derived from this class and needs to test PDF OCR,
-    // make sure that `GetDisabledFeatures()` is overridden to exclude
-    // `::features::kPdfOcr` from a list of disabled features.
-    disabled.push_back(::features::kPdfOcr);
-    return disabled;
-  }
-
   ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
       content::WebContents* web_contents) {
     content::FindAccessibilityNodeCriteria find_criteria;
@@ -190,15 +177,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest);
 
-  WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
-  WaitForAccessibilityTreeToContainNodeWithName(contents,
+  WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
-
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  ui::AXTreeUpdate ax_tree =
+      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
 
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
@@ -217,13 +199,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
-
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
@@ -237,12 +214,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
@@ -256,12 +229,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
       embedded_test_server()->GetURL("/pdf/test-cross-site-iframe.html")));
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
@@ -283,13 +252,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(guest);
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
-
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
 
   bool found = false;
@@ -322,7 +286,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(guest);
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   ASSERT_TRUE(
       content::ExecJs(contents,
                       "document.getElementsByTagName('embed')[0].postMessage("
@@ -331,10 +294,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
-
   ui::AXTreeUpdate ax_tree_update =
       GetAccessibilityTreeSnapshotForPdf(contents);
   ui::AXTree ax_tree(ax_tree_update);
@@ -388,7 +347,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(guest);
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
   ASSERT_TRUE(
       content::ExecJs(contents,
                       "document.getElementsByTagName('embed')[0].postMessage("
@@ -397,9 +355,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
 
   // Find pdfRoot node in the accessibility tree.
   content::FindAccessibilityNodeCriteria find_criteria;
@@ -444,9 +399,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", true,
@@ -579,16 +531,12 @@ class PDFExtensionAccessibilityTextExtractionTest
             "/" + std::string(file_dir) + "/" +
             test_file_path.BaseName().MaybeAsASCII()));
     ASSERT_TRUE(guest);
-
-    WebContents* contents = GetActiveWebContents();
-    ASSERT_TRUE(contents);
-    WaitForAccessibilityTreeToContainNodeWithName(contents, "Page 1");
-    // Wait for the status node to be deleted.
-    EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-        contents, kPDFLoadedToA11yTreeMsg));
+    WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                  "Page 1");
 
     // Extract the text content.
-    ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+    ui::AXTreeUpdate ax_tree =
+        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
     auto actual_lines = CollectLines(ax_tree);
 
     // Aborts if CollectLines() had a failure.
@@ -784,6 +732,13 @@ class PDFExtensionAccessibilityTreeDumpTest
     return enabled;
   }
 
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionAccessibilityTest::GetDisabledFeatures();
+    // PDF OCR should not modify the dump.
+    disabled.push_back(::features::kPdfOcr);
+    return disabled;
+  }
+
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -858,19 +813,14 @@ class PDFExtensionAccessibilityTreeDumpTest
             "/" + std::string(file_dir) + "/" +
             test_file_path.BaseName().MaybeAsASCII()));
     ASSERT_TRUE(guest);
-
-    WebContents* contents = GetActiveWebContents();
-    ASSERT_TRUE(contents);
-    WaitForAccessibilityTreeToContainNodeWithName(contents, "Page 1");
-    // Wait for the status node to be deleted.
-    EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-        contents, kPDFLoadedToA11yTreeMsg));
+    WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                  "Page 1");
 
     // Find the embedded PDF and dump the accessibility tree.
     content::FindAccessibilityNodeCriteria find_criteria;
     find_criteria.role = ax::mojom::Role::kPdfRoot;
     ui::AXPlatformNodeDelegate* pdf_root =
-        content::FindAccessibilityNode(contents, find_criteria);
+        content::FindAccessibilityNode(GetActiveWebContents(), find_criteria);
     ASSERT_TRUE(pdf_root);
 
     std::string actual_contents = formatter->Format(pdf_root);
@@ -1009,27 +959,23 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/accessibility/weblinks.pdf"));
   ASSERT_TRUE(guest);
-
-  WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
-  WaitForAccessibilityTreeToContainNodeWithName(contents, "Page 1");
-  // Wait for the status node to be deleted.
-  EXPECT_TRUE(WaitForAccessibilityTreeUntilNoNodeWithName(
-      contents, kPDFLoadedToA11yTreeMsg));
+  WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                "Page 1");
 
   // Find the specific link node.
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.role = ax::mojom::Role::kLink;
   find_criteria.name = "http://bing.com";
   ui::AXPlatformNodeDelegate* link_node =
-      content::FindAccessibilityNode(contents, find_criteria);
+      content::FindAccessibilityNode(GetActiveWebContents(), find_criteria);
   ASSERT_TRUE(link_node);
 
   // Invoke action on a link and wait for navigation to complete.
   EXPECT_EQ(ax::mojom::DefaultActionVerb::kJump,
             link_node->GetData().GetDefaultActionVerb());
   content::AccessibilityNotificationWaiter event_waiter(
-      contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+      GetActiveWebContents(), ui::kAXModeComplete,
+      ax::mojom::Event::kLoadComplete);
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = link_node->GetData().id;
@@ -1037,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   ASSERT_TRUE(event_waiter.WaitForNotification());
 
   // Test that navigation occurred correctly.
-  const GURL& expected_url = contents->GetLastCommittedURL();
+  const GURL& expected_url = GetActiveWebContents()->GetLastCommittedURL();
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
@@ -1054,13 +1000,6 @@ class PDFExtensionAccessibilityPdfOcrTest
     auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(::features::kPdfOcr);
     return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    // `PDFExtensionAccessibilityTest` has `::features::kPdfOcr` in a list of
-    // disabled features. Now that `::features::kPdfOcr` is used in this test,
-    // just return an empty list to exclude the feature from the list.
-    return {};
   }
 
   void ClickPdfOcrToggleButton(MimeHandlerViewGuest* guest_view) {

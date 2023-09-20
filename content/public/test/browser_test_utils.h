@@ -1026,14 +1026,6 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents);
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
                                                    base::StringPiece name);
 
-// Searches the accessibility tree to see if any node with the given name gets
-// deleted from the tree. If any node with the given name doesn't exist in the
-// tree in the first place, return false. Otherwise, repeatedly call
-// `WaitForAccessibilityTreeToChange` above to keep looping until no node is
-// found and then return true (or keep looping until the test times out).
-bool WaitForAccessibilityTreeUntilNoNodeWithName(WebContents* web_contents,
-                                                 base::StringPiece name);
-
 // Get a snapshot of a web page's accessibility tree.
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents);
 
