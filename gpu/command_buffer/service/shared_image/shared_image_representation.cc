@@ -631,8 +631,11 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
         format.PrefersExternalSampler()
             ? ToClosestSkColorTypeExternalSampler(format)
             : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    auto origin = representation()->surface_origin() == kTopLeft_GrSurfaceOrigin
+                      ? skgpu::Origin::kTopLeft
+                      : skgpu::Origin::kBottomLeft;
     return SkImages::AdoptTextureFrom(recorder, graphite_texture(), color_type,
-                                      alpha_type, sk_color_space);
+                                      alpha_type, sk_color_space, origin);
   } else {
     CHECK_EQ(static_cast<int>(graphite_textures_.size()),
              format.NumberOfPlanes());

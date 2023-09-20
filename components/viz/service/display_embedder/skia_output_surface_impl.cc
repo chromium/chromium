@@ -640,15 +640,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
                                     /*is_yuv_plane=*/false, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
-    static_assert(skgpu::Origin::kTopLeft ==
-                      static_cast<skgpu::Origin>(
-                          GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin),
-                  "");
-    static_assert(skgpu::Origin::kBottomLeft ==
-                      static_cast<skgpu::Origin>(
-                          GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin),
-                  "");
-    skgpu::Origin origin = static_cast<skgpu::Origin>(image_context->origin());
+    skgpu::Origin origin = image_context->origin() == kTopLeft_GrSurfaceOrigin
+                               ? skgpu::Origin::kTopLeft
+                               : skgpu::Origin::kBottomLeft;
     auto image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
         texture_info, color_info, origin, skgpu::graphite::Volatile::kYes,
