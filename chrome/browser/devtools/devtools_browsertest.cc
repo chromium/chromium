@@ -1718,8 +1718,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestConsoleContextNames) {
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
 
-// TODO(https://crbug.com/1479768): Flaky on Linux Tests.
-#if BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1479768): Flaky on Linux and ChromeOS Tests.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CantInspectNewTabPage DISABLED_CantInspectNewTabPage
 #else
 #define MAYBE_CantInspectNewTabPage CantInspectNewTabPage
