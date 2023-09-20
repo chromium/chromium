@@ -83,10 +83,18 @@ UIImage* CaptureViewWithOption(UIView* view,
       [[UIGraphicsImageRenderer alloc] initWithSize:view.bounds.size
                                              format:format];
 
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    [view drawViewHierarchyInRect:view.bounds
-               afterScreenUpdates:option == kClientSideRendering];
-  }];
+  UIImage* image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [view drawViewHierarchyInRect:view.bounds
+                   afterScreenUpdates:option == kClientSideRendering];
+      }];
+
+  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
+  // from.
+  DUMP_WILL_BE_CHECK(!image ||
+                     (image.size.width != 0 && image.size.height != 0));
+
+  return image;
 }
 
 UIImage* CaptureView(UIView* view, CGFloat scale) {
@@ -104,13 +112,24 @@ UIImage* GreyImage(UIImage* image) {
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:greyImageRect.size
                                              format:format];
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    UIBezierPath* background = [UIBezierPath bezierPathWithRect:greyImageRect];
-    [UIColor.blackColor set];
-    [background fill];
+  UIImage* result_image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        UIBezierPath* background =
+            [UIBezierPath bezierPathWithRect:greyImageRect];
+        [UIColor.blackColor set];
+        [background fill];
 
-    [image drawInRect:greyImageRect blendMode:kCGBlendModeLuminosity alpha:1.0];
-  }];
+        [image drawInRect:greyImageRect
+                blendMode:kCGBlendModeLuminosity
+                    alpha:1.0];
+      }];
+
+  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
+  // from.
+  DUMP_WILL_BE_CHECK(!result_image || (result_image.size.width != 0 &&
+                                       result_image.size.height != 0));
+
+  return result_image;
 }
 
 UIImage* NativeReversibleImage(int imageID, BOOL reversible) {

@@ -159,13 +159,21 @@ const CGFloat kResizeFactor = 4;
       [[UIGraphicsImageRenderer alloc] initWithSize:smallSize.size
                                              format:format];
 
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    UIBezierPath* background = [UIBezierPath bezierPathWithRect:smallSize];
-    [UIColor.blackColor set];
-    [background fill];
+  UIImage* result_image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        UIBezierPath* background = [UIBezierPath bezierPathWithRect:smallSize];
+        [UIColor.blackColor set];
+        [background fill];
 
-    [image drawInRect:smallSize blendMode:kCGBlendModeLuminosity alpha:1.0];
-  }];
+        [image drawInRect:smallSize blendMode:kCGBlendModeLuminosity alpha:1.0];
+      }];
+
+  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
+  // from.
+  DUMP_WILL_BE_CHECK(!result_image || (result_image.size.width != 0 &&
+                                       result_image.size.height != 0));
+
+  return result_image;
 }
 
 // Create card view based on `_webStateList`'s index.

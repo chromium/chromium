@@ -6,6 +6,7 @@
 
 #import "ios/chrome/common/ui/util/image_util.h"
 
+#import "base/check.h"
 #import "ui/gfx/image/resize_image_dimensions.h"
 
 UIImage* ResizeImage(UIImage* image,
@@ -37,9 +38,17 @@ UIImage* ResizeImage(UIImage* image,
       [[UIGraphicsImageRenderer alloc] initWithSize:revisedTargetSize
                                              format:format];
 
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    [image drawInRect:projectTo];
-  }];
+  UIImage* result_image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [image drawInRect:projectTo];
+      }];
+
+  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
+  // from.
+  DUMP_WILL_BE_CHECK(!result_image || (result_image.size.width != 0 &&
+                                       result_image.size.height != 0));
+
+  return result_image;
 }
 
 UIImage* ResizeImageForSearchByImage(UIImage* image) {

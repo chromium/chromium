@@ -458,6 +458,12 @@
   AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
       [self coordinatorWithToolbarType:toolbarType];
 
+  // Don't take snapshot if the bottom toolbar is not visible.
+  if (toolbarType == ToolbarType::kSecondary &&
+      !IsSplitToolbarMode(adaptiveToolbarCoordinator.viewController)) {
+    return nil;
+  }
+
   [adaptiveToolbarCoordinator updateToolbarForSideSwipeSnapshot:webState];
   [self updateLocationBarForSideSwipeSnapshot:webState];
 
