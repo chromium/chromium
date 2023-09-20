@@ -233,10 +233,6 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       case CSSValueID::kDropShadow: {
         ShadowData shadow = StyleBuilderConverter::ConvertShadow(
             conversion_data, &state, filter_value->Item(0));
-        // TODO(fs): Resolve 'currentcolor' when constructing the filter chain.
-        if (shadow.GetColor().IsCurrentColor()) {
-          shadow.OverrideColor(state.StyleBuilder().GetCurrentColor());
-        }
         operations.Operations().push_back(
             MakeGarbageCollected<DropShadowFilterOperation>(shadow));
         break;
@@ -319,10 +315,6 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
       case CSSValueID::kDropShadow: {
         ShadowData shadow = StyleBuilderConverter::ConvertShadow(
             conversion_data, nullptr, filter_value->Item(0));
-        // For offscreen canvas, the default color is always black.
-        if (shadow.GetColor().IsCurrentColor()) {
-          shadow.OverrideColor(Color::kBlack);
-        }
         operations.Operations().push_back(
             MakeGarbageCollected<DropShadowFilterOperation>(shadow));
         break;

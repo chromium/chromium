@@ -98,6 +98,12 @@ bool FilterOperations::HasReferenceFilter() const {
                         &FilterOperation::GetType);
 }
 
+bool FilterOperations::UsesCurrentColor() const {
+  return base::ranges::any_of(operations_, [](const auto& operation) {
+    return operation->UsesCurrentColor();
+  });
+}
+
 void FilterOperations::AddClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
     if (operation->GetType() == FilterOperation::OperationType::kReference) {

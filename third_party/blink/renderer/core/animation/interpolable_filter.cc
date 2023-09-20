@@ -197,8 +197,6 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     case FilterOperation::OperationType::kDropShadow: {
       ShadowData shadow_data =
           To<InterpolableShadow>(*value_).CreateShadowData(state);
-      if (shadow_data.GetColor().IsCurrentColor())
-        shadow_data.OverrideColor(Color::kBlack);
       return MakeGarbageCollected<DropShadowFilterOperation>(shadow_data);
     }
 

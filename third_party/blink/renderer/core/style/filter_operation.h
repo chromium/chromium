@@ -122,6 +122,8 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   // True if the the value of one pixel can affect the value of another pixel
   // under this operation, such as blur.
   virtual bool MovesPixels() const { return false; }
+  // True if the operation depends on the 'currentcolor' value.
+  virtual bool UsesCurrentColor() const { return false; }
 
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
@@ -150,6 +152,14 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
+  bool UsesCurrentColor() const override {
+    // This is pessimistic. A reference filter _may_ contain a primitive that
+    // references 'currentcolor'. If `filter_` is set it could be used to
+    // produce a less pessimistic result, but additional pre-processing would
+    // be required since enough information isn't preserved.
+    return true;
+  }
+
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
   const AtomicString& Url() const { return url_; }
@@ -340,6 +350,10 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
+  bool UsesCurrentColor() const override {
+    return shadow_.GetColor().IsCurrentColor();
+  }
+
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
   String DebugString() const override {

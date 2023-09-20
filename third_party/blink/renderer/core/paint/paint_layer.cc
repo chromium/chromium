@@ -54,6 +54,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -2171,7 +2172,16 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     MarkAncestorChainForFlagsUpdate();
   }
 
+  // If the (current)color changes and a filter is applied that uses it, the
+  // filter needs to be updated.
   const ComputedStyle& new_style = GetLayoutObject().StyleRef();
+  if (diff.TextDecorationOrColorChanged()) {
+    if (new_style.HasFilter() && new_style.Filter().UsesCurrentColor()) {
+      GetLayoutObject().SetNeedsPaintPropertyUpdate();
+      SetFilterOnEffectNodeDirty();
+    }
+  }
+
   // HasNonContainedAbsolutePositionDescendant depends on position changes.
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
@@ -2239,7 +2249,8 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
   gfx::RectF reference_box = FilterReferenceBox();
 
   // CompositorFilter needs the reference box to be unzoomed.
-  float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
+  const ComputedStyle& style = GetLayoutObject().StyleRef();
+  float zoom = style.EffectiveZoom();
   if (zoom != 1)
     reference_box.Scale(1 / zoom);
 
@@ -2249,7 +2260,10 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
     return;
 
   operations =
-      FilterEffectBuilder(reference_box, zoom).BuildFilterOperations(filter);
+      FilterEffectBuilder(reference_box, zoom,
+                          style.VisitedDependentColor(GetCSSPropertyColor()),
+                          style.UsedColorScheme())
+          .BuildFilterOperations(filter);
   filter_on_effect_node_dirty_ = false;
 }
 
@@ -2288,9 +2302,12 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
   filter_operations.Operations().AppendVector(style.Filter().Operations());
   // Use kClamp tile mode to avoid pixel moving filters bringing in black
   // transparent pixels from the viewport edge.
-  operations = FilterEffectBuilder(reference_box, zoom, nullptr, nullptr,
-                                   SkTileMode::kClamp)
-                   .BuildFilterOperations(filter_operations);
+  operations =
+      FilterEffectBuilder(reference_box, zoom,
+                          style.VisitedDependentColor(GetCSSPropertyColor()),
+                          style.UsedColorScheme(), nullptr, nullptr,
+                          SkTileMode::kClamp)
+          .BuildFilterOperations(filter_operations);
   // Note that |operations| may be empty here, if the |filter_operations| list
   // contains only invalid filters (e.g. invalid reference filters). See
   // https://crbug.com/983157 for details.

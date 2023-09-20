@@ -864,7 +864,8 @@ void AddKeyframeToCurve(cc::KeyframedFilterAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
-  FilterEffectBuilder builder(gfx::RectF(), 1);
+  FilterEffectBuilder builder(gfx::RectF(), 1, Color::kBlack,
+                              mojom::blink::ColorScheme::kLight);
   CompositorFilterOperations operations = builder.BuildFilterOperations(
       To<CompositorKeyframeFilterOperations>(value)->Operations());
   std::unique_ptr<cc::FilterKeyframe> filter_keyframe =

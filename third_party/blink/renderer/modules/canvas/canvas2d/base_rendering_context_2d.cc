@@ -207,7 +207,8 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
 
     FilterEffectBuilder filter_effect_builder(
         gfx::RectF(Width(), Height()),
-        1.0f);  // Deliberately ignore zoom on the canvas element.
+        1.0f,  // Deliberately ignore zoom on the canvas element.
+        Color::kBlack, mojom::blink::ColorScheme::kLight);
 
     // Save the layer's filter in the parent state, along with all the other
     // render states impacting the layer. Technically, this is only required so

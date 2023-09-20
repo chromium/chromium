@@ -283,9 +283,6 @@ class ComputedStyle final : public ComputedStyleBase {
   friend class LengthPropertyFunctions;
   // Edits the background for media controls and accesses UserModify().
   friend class StyleAdjuster;
-  // Access to GetCurrentColor(). (drop-shadow() does not resolve 'currentcolor'
-  // at use-time.)
-  friend class FilterOperationResolver;
   // Access to GetCurrentColor().
   friend class StyleResolver;
   // Access to UserModify().

@@ -83,8 +83,6 @@ class CORE_EXPORT ShadowData {
   StyleColor GetColor() const { return color_; }
   float Opacity() const { return opacity_; }
 
-  void OverrideColor(Color color) { color_ = StyleColor(color); }
-
   // Outsets needed to adjust a source rectangle to the one cast by this
   // shadow.
   gfx::OutsetsF RectOutsets() const;

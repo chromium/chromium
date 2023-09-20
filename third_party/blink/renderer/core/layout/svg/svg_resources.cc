@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -356,7 +357,9 @@ void SVGElementResourceClient::UpdateFilterData(
       reference_box == operations.ReferenceBox())
     return;
   const ComputedStyle& style = object.StyleRef();
-  FilterEffectBuilder builder(reference_box, 1);
+  FilterEffectBuilder builder(
+      reference_box, 1, style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme());
   builder.SetShorthandScale(1 / style.EffectiveZoom());
   const FilterOperations& filter = style.Filter();
   // If the filter is a single 'url(...)' reference we can optimize some
