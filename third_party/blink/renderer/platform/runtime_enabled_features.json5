@@ -2518,7 +2518,6 @@
       // Disable this feature to stop parsing or allowing these values.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "NonStandardAppearanceValuesLowUsage",
-      status: "stable",
     },
     {
       name: "NotificationConstructor",
