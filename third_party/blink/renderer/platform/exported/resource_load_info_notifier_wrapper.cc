@@ -36,14 +36,14 @@ ResourceLoadInfoNotifierWrapper::ResourceLoadInfoNotifierWrapper(
           std::move(weak_wrapper_resource_load_info_notifier)),
       task_runner_(std::move(task_runner)) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 ResourceLoadInfoNotifierWrapper::~ResourceLoadInfoNotifierWrapper() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 void ResourceLoadInfoNotifierWrapper::NotifyUpdateUserGestureCarryoverInfo() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {
       weak_wrapper_resource_load_info_notifier_
@@ -65,9 +65,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
     const GURL& referrer,
     network::mojom::RequestDestination request_destination,
     net::RequestPriority request_priority) {
-  // Should bind |thread_checker_| to the caller's thread and class member
-  // functions expect ctor/dtor should be called from the same thread.
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!resource_load_info_);
   resource_load_info_ = mojom::ResourceLoadInfo::New();
@@ -84,7 +82,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
 void ResourceLoadInfoNotifierWrapper::NotifyResourceRedirectReceived(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_response) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(resource_load_info_);
   resource_load_info_->final_url = redirect_info.new_url;
   resource_load_info_->method = redirect_info.new_method;
@@ -105,7 +103,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceRedirectReceived(
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
     network::mojom::URLResponseHeadPtr response_head) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (response_head->network_accessed) {
     if (resource_load_info_->request_destination ==
         network::mojom::RequestDestination::kDocument) {
@@ -155,7 +153,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
     int32_t transfer_size_diff) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {
       weak_wrapper_resource_load_info_notifier_
@@ -174,7 +172,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
     const network::URLLoaderCompletionStatus& status) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordLoadHistograms(url::Origin::Create(resource_load_info_->final_url),
                        resource_load_info_->request_destination,
                        status.error_code);
@@ -203,7 +201,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCanceled(
     int net_error) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordLoadHistograms(url::Origin::Create(resource_load_info_->final_url),
                        resource_load_info_->request_destination, net_error);
 
