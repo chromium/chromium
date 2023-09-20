@@ -130,6 +130,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app,
                              bool skip_icons_on_download_failure = false);
 
+// Updates product icon fields of |web_app| using |web_app_info|.
+void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
+                                WebApp& web_app);
+
 // Possibly updates |options| to disable OS-integrations based on the
 // configuration of the given app.
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,

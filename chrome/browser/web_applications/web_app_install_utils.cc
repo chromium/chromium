@@ -1206,12 +1206,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetSyncFallbackData(std::move(sync_fallback_data));
 
   if (!skip_icons_on_download_failure) {
-    web_app.SetManifestIcons(web_app_info.manifest_icons);
-    for (IconPurpose purpose : kIconPurposes) {
-      web_app.SetDownloadedIconSizes(
-          purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
-    }
-    web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+    SetWebAppProductIconFields(web_app_info, web_app);
     web_app.SetShortcutsMenuInfo(GetShortcutsMenuInfoWithIconSizes(
         web_app_info.shortcuts_menu_item_infos,
         web_app_info.shortcuts_menu_icon_bitmaps));
@@ -1247,6 +1242,16 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
     web_app.SetValidatedScopeExtensions(
         web_app_info.validated_scope_extensions.value());
   }
+}
+
+void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
+                                WebApp& web_app) {
+  web_app.SetManifestIcons(web_app_info.manifest_icons);
+  for (IconPurpose purpose : kIconPurposes) {
+    web_app.SetDownloadedIconSizes(
+        purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
+  }
+  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 }
 
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,

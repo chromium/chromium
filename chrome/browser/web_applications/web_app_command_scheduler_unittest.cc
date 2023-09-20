@@ -26,6 +26,17 @@ class WebAppCommandSchedulerTest : public WebAppTest {
 
   FakeWebAppProvider* provider() { return provider_; }
 
+  bool IsCommandQueued(std::string_view command_name) {
+    base::Value::Dict log =
+        provider()->command_manager().ToDebugValue().TakeDict();
+    for (const base::Value& command : *log.FindList("command_queue")) {
+      if (*command.GetDict().FindString("name") == command_name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void WaitForProviderReady() {
     base::RunLoop run_loop;
     provider()->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
@@ -48,14 +59,8 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 
   WaitForProviderReady();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
-  base::Value::Dict log =
-      provider()->command_manager().ToDebugValue().TakeDict();
-  base::Value::List* command_queue = log.FindList("command_queue");
 
-  EXPECT_EQ(command_queue->size(), 1u);
-  EXPECT_EQ(*command_queue->front().GetDict().FindString("name"),
-            "FetchManifestAndInstallCommand");
+  EXPECT_TRUE(IsCommandQueued("FetchManifestAndInstallCommand"));
 }
 
 TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
@@ -67,15 +72,9 @@ TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 
   WaitForProviderReady();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
-  base::Value::Dict log =
-      provider()->command_manager().ToDebugValue().TakeDict();
-  base::Value::List* command_queue = log.FindList("command_queue");
 
-  EXPECT_EQ(command_queue->size(), 1u);
+  EXPECT_TRUE(IsCommandQueued("UpdateFileHandlerCommand"));
 
-  const base::Value::Dict& command_log = command_queue->front().GetDict();
-  EXPECT_EQ(*command_log.FindString("name"), "UpdateFileHandlerCommand");
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 
   provider()->Shutdown();

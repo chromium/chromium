@@ -27,6 +27,7 @@ class AbstractWebAppDatabaseFactory;
 class ExtensionsManager;
 class ExternallyManagedAppManager;
 class FileUtilsWrapper;
+class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
@@ -185,6 +186,8 @@ class WebAppProvider : public KeyedService {
 
   ExtensionsManager& extensions_manager();
 
+  GeneratedIconFixManager& generated_icon_fix_manager();
+
   AbstractWebAppDatabaseFactory& database_factory();
 
   // KeyedService:
@@ -254,6 +257,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppOriginAssociationManager> origin_association_manager_;
   std::unique_ptr<WebContentsManager> web_contents_manager_;
   std::unique_ptr<ExtensionsManager> extensions_manager_;
+  std::unique_ptr<GeneratedIconFixManager> generated_icon_fix_manager_;
   scoped_refptr<FileUtilsWrapper> file_utils_;
 
   base::OneShotEvent on_registry_ready_;

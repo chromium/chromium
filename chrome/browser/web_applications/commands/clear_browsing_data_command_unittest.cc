@@ -135,7 +135,6 @@ TEST_F(ClearBrowsingDataCommandTest,
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 
   Init();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
   EXPECT_TRUE(future.Wait());
 }
 

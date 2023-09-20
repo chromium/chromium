@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -292,6 +293,10 @@ ExtensionsManager& WebAppProvider::extensions_manager() {
   return *extensions_manager_;
 }
 
+GeneratedIconFixManager& WebAppProvider::generated_icon_fix_manager() {
+  return *generated_icon_fix_manager_;
+}
+
 AbstractWebAppDatabaseFactory& WebAppProvider::database_factory() {
   return *database_factory_;
 }
@@ -336,6 +341,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
 #endif
   extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
+  generated_icon_fix_manager_ = std::make_unique<GeneratedIconFixManager>();
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
 
@@ -406,6 +412,7 @@ void WebAppProvider::ConnectSubsystems() {
 #endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);
+  generated_icon_fix_manager_->SetProvider(pass_key, *this);
 
   connected_ = true;
 }
@@ -459,6 +466,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
+  generated_icon_fix_manager_->Start();
   command_manager_->Start();
 
   on_registry_ready_.Signal();

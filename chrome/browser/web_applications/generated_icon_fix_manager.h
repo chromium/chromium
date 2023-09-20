@@ -1,0 +1,81 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_MANAGER_H_
+
+#include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/types/pass_key.h"
+#include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
+#include "chrome/browser/web_applications/locks/with_app_resources.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace web_app {
+
+class WebAppProvider;
+
+enum class GeneratedIconFixScheduleDecision {
+  kNoApp,
+  kTimeWindowExpired,
+  kNotRequired,
+  kAlreadyScheduled,
+  kSchedule,
+};
+
+class GeneratedIconFixManager {
+ public:
+  GeneratedIconFixManager();
+  ~GeneratedIconFixManager();
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
+  void Start();
+
+  // TODO(crbug.com/1216965): Schedule fixes ten minutes after sync install.
+  // TODO(crbug.com/1216965): Schedule fixes on network reconnection.
+
+  const base::flat_set<AppId>& scheduled_fixes_for_testing() const {
+    return scheduled_fixes_;
+  }
+
+  base::OnceCallback<void(const AppId&, GeneratedIconFixScheduleDecision)>&
+  maybe_schedule_callback_for_testing() {
+    return maybe_schedule_callback_for_testing_;
+  }
+
+  base::OnceCallback<void(const AppId&, GeneratedIconFixResult)>&
+  fix_completed_callback_for_testing() {
+    return fix_completed_callback_for_testing_;
+  }
+
+  absl::optional<base::Time>& time_for_testing() { return time_for_testing_; }
+
+ private:
+  GeneratedIconFixScheduleDecision MaybeScheduleFix(WithAppResources& resources,
+                                                    const AppId& app_id);
+  GeneratedIconFixScheduleDecision MakeScheduleDecision(
+      const WebAppRegistrar& registrar,
+      const AppId& app_id);
+  void FixCompleted(const AppId& app_id, GeneratedIconFixResult result);
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+
+  base::flat_set<AppId> scheduled_fixes_;
+
+  base::OnceCallback<void(const AppId&, GeneratedIconFixScheduleDecision)>
+      maybe_schedule_callback_for_testing_;
+  base::OnceCallback<void(const AppId&, GeneratedIconFixResult)>
+      fix_completed_callback_for_testing_;
+  absl::optional<base::Time> time_for_testing_;
+
+  base::WeakPtrFactory<GeneratedIconFixManager> weak_ptr_factory_{this};
+};
+
+}  // namespace web_app
+
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_MANAGER_H_

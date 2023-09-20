@@ -160,8 +160,9 @@ void WebAppCommandManager::StartCommand(WebAppCommand* command,
 
 void WebAppCommandManager::Shutdown() {
   // Ignore duplicate shutdowns for unittests.
-  if (is_in_shutdown_)
+  if (is_in_shutdown_) {
     return;
+  }
   is_in_shutdown_ = true;
   AddValueToLog(base::Value("Shutdown has begun"));
 
@@ -176,8 +177,9 @@ void WebAppCommandManager::Shutdown() {
     }
   }
   for (const auto& command_ptr : commands_to_shutdown) {
-    if (!command_ptr)
+    if (!command_ptr) {
       continue;
+    }
     command_ptr->OnShutdown();
   }
   commands_.clear();
