@@ -96,16 +96,6 @@ void RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
     std::vector<AutofillProfile*>* profiles);
 
-// Prepares a collection of Suggestions to show to the user. Adds |labels| to
-// their corresponding |suggestions| and removes duplicates, if any. A label
-// corresponds to the suggestion with the same index.
-//
-// NOTE: |suggestions| are assumed to have already been sorted from most to
-// least important.
-void PrepareSuggestions(const std::vector<std::u16string>& labels,
-                        std::vector<Suggestion>* suggestions,
-                        const AutofillProfileComparator& comparator);
-
 }  // namespace suggestion_selection
 }  // namespace autofill
 
