@@ -82172,6 +82172,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="3"
       label="TerminalVisit; the page is visited by a link navigation, but not
              followed by any link navigation."/>
+  <int value="4"
+      label="HistoryVisit; the page is visited by a history navigation."/>
 </enum>
 
 <enum name="PageWhitelistingInitiatorCheck">
