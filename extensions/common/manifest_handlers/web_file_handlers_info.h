@@ -46,8 +46,9 @@ struct WebFileHandlers : public Extension::ManifestData {
   static bool HasFileHandlers(const Extension& extension);
 
   // Support for web file handlers, introduced in MV3 based on the web API named
-  // `File Handling Explainer`. True when MV3 and either using
-  // the kExtensionWebFileHandlers feature or a QuickOffice extension.
+  // `File Handling Explainer`. Supported extensions are MV3+. The
+  // kExtensionWebFileHandlers feature must be enabled or the extension must be
+  // in the allowlist.
   // TODO(crbug/1179530): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const Extension& extension);
 
@@ -57,6 +58,10 @@ struct WebFileHandlers : public Extension::ManifestData {
   // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
   static WebFileHandler::LaunchType GetLaunchType(
       const absl::optional<std::string>& launch_type);
+
+  // Determine if this extension can bypass the permission dialog, e.g.
+  // extension in allowlist or default installed.
+  static bool CanBypassPermissionDialog(const Extension& extension);
 };
 
 // Parses the `file_handlers` manifest key.

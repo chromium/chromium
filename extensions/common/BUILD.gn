@@ -445,6 +445,7 @@ static_library("common") {
     "verifier_formats.h",
     "view_type_util.cc",
     "view_type_util.h",
+    "web_file_handler_constants.h",
   ]
 
   configs += [

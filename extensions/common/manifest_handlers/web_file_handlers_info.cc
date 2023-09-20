@@ -22,6 +22,11 @@ namespace {
 
 using FileHandlersManifestKeys = api::file_handlers::ManifestKeys;
 
+bool IsInAllowlist(const Extension& extension) {
+  const Feature* feature = FeatureProvider::GetManifestFeature("file_handlers");
+  return feature->IsIdInAllowlist(extension.hashed_id());
+}
+
 // Verifies manifest input. Disambiguates `file_extensions` on `accept` into a
 // list, which could otherwise have also been a string. `icon.sizes` remains as
 // is because the generated data type only accepts a string. This string can be
@@ -262,6 +267,7 @@ bool WebFileHandlersParser::Validate(
   return true;
 }
 
+// static
 bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
   // MV3+ is required.
   if (extension.manifest_version() < 3) {
@@ -278,10 +284,13 @@ bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
   return false;
 #else
   // An extension in the allowlist running on Ash is supported.
-  const Feature* feature = FeatureProvider::GetManifestFeature("file_handlers");
-  bool is_id_in_allowlist = feature->IsIdInAllowlist(extension.hashed_id());
-  return is_id_in_allowlist;
+  return IsInAllowlist(extension);
 #endif
+}
+
+// static
+bool WebFileHandlers::CanBypassPermissionDialog(const Extension& extension) {
+  return IsInAllowlist(extension) || extension.was_installed_by_default();
 }
 
 }  // namespace extensions

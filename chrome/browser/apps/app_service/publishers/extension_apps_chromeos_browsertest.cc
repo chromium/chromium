@@ -28,6 +28,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
+#include "extensions/common/web_file_handler_constants.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
@@ -170,16 +171,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, LaunchWithFileIntent) {
 IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
   struct {
     const char* title;
-    const char* manifest_part;
+    const std::string manifest_part;
   } test_cases[] = {
       {"Default", ""},
-      {"QuickOffice", R"(,
-      "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4zyYTii0VTKI7W2U6fDeAvs3YCVZeAt7C62IC64IDCMHvWy7SKMpOPjfg5v1PgYkFm+fGsCsVLN8NaF7fzYMVtjLc5bqhqPAi56Qidrqh1HxPAAYhwFQd5BVGhZmh1fySHXFPE8VI2tIHwRrASOtx67jbSEk4nBAcJz6n+eGq8QIDAQAB")"},
+      {"QuickOffice",
+       base::StringPrintf(R"(, "key": "%s")",
+                          extensions::web_file_handlers::kQuickOfficeKey)},
   };
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
-    const std::string manifest = base::StringPrintf(R"({
+    const std::string manifest =
+        base::StringPrintf(R"({
       "name": "Test",
       "version": "0.0.1",
       "manifest_version": 3,
@@ -192,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
       ]
       %s
     })",
-                                                    test_case.manifest_part);
+                           test_case.manifest_part.c_str());
 
     // Load extension.
     extensions::TestExtensionDir extension_dir;

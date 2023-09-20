@@ -33,14 +33,17 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
+#include "extensions/common/web_file_handler_constants.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -69,10 +72,29 @@ class WebFileHandlersFileLaunchBrowserTest
         extensions_features::kExtensionWebFileHandlers);
   }
 
-  // Load an extension with a file handler instance that can be awaited later.
-  const extensions::Extension* WriteDirForFileHandlingExtension() {
-    // Load extension.
-    extension_dir_.WriteManifest(kManifest);
+  // Verify that the launch result matches expectations.
+  void VerifyLaunchResult(base::RepeatingClosure quit_closure,
+                          apps::LaunchResult::State expected,
+                          apps::LaunchResult&& launch_result) {
+    ASSERT_EQ(expected, launch_result.state);
+    std::move(quit_closure).Run();
+  }
+
+ protected:
+  // Install the file path as am extension that's installed by default.
+  const extensions::Extension* WriteToDirAndLoadDefaultInstalledExtension(
+      const std::string& manifest) {
+    WriteToExtensionDir(manifest);
+    return InstallExtensionWithSourceAndFlags(
+        extension_dir_.UnpackedPath(),
+        /*expected_change=*/true,
+        extensions::mojom::ManifestLocation::kInternal,
+        extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  }
+
+  // Write expected files to the extension directory.
+  void WriteToExtensionDir(const std::string& manifest) {
+    extension_dir_.WriteManifest(manifest);
     extension_dir_.WriteFile("open-csv.js", R"(
       chrome.test.assertTrue('launchQueue' in window);
       launchQueue.setConsumer((launchParams) => {
@@ -85,10 +107,18 @@ class WebFileHandlersFileLaunchBrowserTest
     extension_dir_.WriteFile("open-csv.html",
                              R"(<script src="/open-csv.js"></script>"
                               "<body>Test</body>)");
-    const extensions::Extension* extension =
-        LoadExtension(extension_dir_.UnpackedPath());
+  }
 
-    return extension;
+  // Load an extension with a file handler instance that can be awaited later.
+  const extensions::Extension* WriteToDirAndLoadExtension() {
+    WriteToExtensionDir(kManifest);
+    return LoadExtension(extension_dir_.UnpackedPath());
+  }
+
+  const extensions::Extension* LoadAndGetExtension(
+      const std::string& manifest) {
+    WriteToExtensionDir(manifest);
+    return LoadExtension(extension_dir_.UnpackedPath());
   }
 
   // Load an extension with a few extra files for testing multiple-clients.
@@ -126,14 +156,6 @@ class WebFileHandlersFileLaunchBrowserTest
     extensions::ResultCatcher catcher;
     LaunchAppWithIntent(std::move(intent), extension.id(), base::DoNothing());
     ASSERT_TRUE(catcher.GetNextResult());
-  }
-
-  // Verify that the launch result matches expectations.
-  void VerifyLaunchResult(base::RepeatingClosure quit_closure,
-                          apps::LaunchResult::State expected,
-                          apps::LaunchResult&& launch_result) {
-    ASSERT_EQ(expected, launch_result.state);
-    std::move(quit_closure).Run();
   }
 
   // Launch the extension and accept the dialog.
@@ -439,6 +461,11 @@ class WebFileHandlersFileLaunchBrowserTest
     return intent;
   }
 
+  void SetChannelAndResetFeatureList(version_info::Channel channel) {
+    extensions::SetCurrentChannel(channel);
+    feature_list_.Reset();
+  }
+
  private:
   extensions::TestExtensionDir extension_dir_;
 
@@ -472,7 +499,7 @@ class WebFileHandlersFileLaunchBrowserTest
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
                        WebFileHandlersPermissionHandler) {
   // Install and get extension.
-  auto* extension = WriteDirForFileHandlingExtension();
+  auto* extension = WriteToDirAndLoadExtension();
   ASSERT_TRUE(extension);
 
   // Test opening a file after being presented with the permission handler UI.
@@ -490,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
                        WebFileHandlersPermissionHandlerRememberCancel) {
   // Install and get extension.
-  auto* extension = WriteDirForFileHandlingExtension();
+  auto* extension = WriteToDirAndLoadExtension();
   ASSERT_TRUE(extension);
 
   // Clicking "Don't Open" should remember that choice for the file extension.
@@ -502,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
                        WebFileHandlersPermissionHandlerRememberClose) {
   // Install and get extension.
-  auto* extension = WriteDirForFileHandlingExtension();
+  auto* extension = WriteToDirAndLoadExtension();
   ASSERT_TRUE(extension);
 
   // e.g. pressing escape to close the dialog shouldn't remember that choice.
@@ -512,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 // Verify that the file opened.
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, CallSetConsumer) {
   // Install and get extension.
-  auto* extension = WriteDirForFileHandlingExtension();
+  auto* extension = WriteToDirAndLoadExtension();
   ASSERT_TRUE(extension);
 
   // Open a file and remember that selection for automatic reopening.
@@ -520,6 +547,71 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, CallSetConsumer) {
 
   // Reopen the file and ensure that it's available in `launchParams`.
   LaunchExtensionAndCatchResult(*extension);
+}
+
+// Reuse `WebFileHandlersFileLaunchBrowserTest` but make the following changes:
+// * Use stable channel instead of beta.
+// * Remove all extension flags, especially `kExtensionWebFileHandlers`.
+class WebFileHandlersFileLaunchOnStableChannelBrowserTest
+    : public WebFileHandlersFileLaunchBrowserTest {
+ public:
+  WebFileHandlersFileLaunchOnStableChannelBrowserTest() {
+    // Set channel and extension features.
+    SetChannelAndResetFeatureList(version_info::Channel::STABLE);
+  }
+};
+
+// Verify that the Ash component of this ChromeOS feature is on the stable
+// channel.
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
+                       QuickOffice) {
+  const std::string manifest =
+      base::StringPrintf(R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [{
+      "name": "Comma separated values",
+      "action": "/open-csv.html",
+      "accept": {"text/csv": [".csv"]}
+    }],
+    "key": "%s"
+  })",
+                         extensions::web_file_handlers::kQuickOfficeKey);
+
+  // Install and get extension.
+  auto* extension = LoadAndGetExtension(manifest);
+  ASSERT_TRUE(extension);
+
+  // Web File Handlers are supported.
+  ASSERT_TRUE(extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
+
+  // Reopen the file and ensure that it's available in `launchParams`.
+  LaunchExtensionAndCatchResult(*extension);
+}
+
+// Verify that the Ash component of this ChromeOS feature is on the stable
+// channel.
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
+                       DefaultInstalled) {
+  static constexpr char kManifest[] = R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [{
+      "name": "Comma separated values",
+      "action": "/open-csv.html",
+      "accept": {"text/csv": [".csv"]}
+    }]
+  })";
+
+  // Install and get extension.
+  auto* extension = WriteToDirAndLoadDefaultInstalledExtension(kManifest);
+  ASSERT_TRUE(extension);
+
+  // Web File Handlers are not supported.
+  ASSERT_FALSE(
+      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
 }
 
 // Verify `{"launch_type": "multiple-clients"}`.

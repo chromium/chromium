@@ -85,9 +85,7 @@ void WebFileHandlersPermissionHandler::Confirm(
   // TODO(crbug.com/1448893): Remove the allowlist check after development.
   // Also, for development and manual testing purposes, the manifest_features
   // allowlist can also bypass the dialog.
-  const Feature* feature = FeatureProvider::GetManifestFeature("file_handlers");
-  bool is_id_in_allowlist = feature->IsIdInAllowlist(extension.hashed_id());
-  if (extension.was_installed_by_default() || is_id_in_allowlist) {
+  if (WebFileHandlers::CanBypassPermissionDialog(extension)) {
     std::move(launch_callback).Run(/*should_open=*/true);
     return;
   }
