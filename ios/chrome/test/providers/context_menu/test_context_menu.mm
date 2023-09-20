@@ -8,7 +8,6 @@ namespace ios {
 namespace provider {
 
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
@@ -33,6 +32,7 @@ BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
 }
 
 absl::optional<base::Value> ExtractDataElementsFromText(
+    const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,

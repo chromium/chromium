@@ -339,8 +339,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   // inserting at beginning or adding to end.
   ElementsToAddToContextMenu* result =
       ios::provider::GetContextMenuElementsToAdd(
-          self.browser->GetBrowserState(), webState, params,
-          self.baseViewController,
+          webState, params, self.baseViewController,
           HandlerForProtocol(self.browser->GetCommandDispatcher(),
                              MiniMapCommands));
   if (result && result.elements) {

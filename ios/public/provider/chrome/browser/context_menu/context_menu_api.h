@@ -13,7 +13,6 @@
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-class ChromeBrowserState;
 @protocol MiniMapCommands;
 
 // Wraps information to add/show to/in a context menu
@@ -37,7 +36,6 @@ namespace provider {
 // Returns the elements to add to the context menu, with their title. If no
 // elements needs to be added, returns nil.
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
@@ -64,6 +62,7 @@ BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
 // `model_path` for the give web state should be passed in if a detection by
 // model is required. (Note that some flags might still not allow it.)
 absl::optional<base::Value> ExtractDataElementsFromText(
+    const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,

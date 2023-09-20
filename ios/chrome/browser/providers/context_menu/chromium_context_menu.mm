@@ -4,11 +4,9 @@
 
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 
-namespace ios {
-namespace provider {
+namespace ios::provider {
 
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
@@ -33,6 +31,7 @@ BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
 }
 
 absl::optional<base::Value> ExtractDataElementsFromText(
+    const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,
@@ -40,5 +39,4 @@ absl::optional<base::Value> ExtractDataElementsFromText(
   return absl::nullopt;
 }
 
-}  // namespace provider
-}  // namespace ios
+}  // namespace ios::provider
