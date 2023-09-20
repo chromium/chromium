@@ -469,6 +469,8 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
     // MostVisitedURL.title is either the title or the URL which is treated
     // exactly as the title. Differentiating here is not worth the overhead.
     tile.title_source = TileTitleSource::TITLE_TAG;
+    tile.visit_count = visited.visit_count;
+    tile.last_visit_time = visited.last_visit_time;
     // TODO(crbug.com/773278): Populate |data_generation_time| here in order to
     // log UMA metrics of age.
     tiles.push_back(std::move(tile));

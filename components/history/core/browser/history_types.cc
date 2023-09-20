@@ -215,10 +215,8 @@ QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
 
 MostVisitedURL::MostVisitedURL() = default;
 
-MostVisitedURL::MostVisitedURL(const GURL& url,
-                               const std::u16string& title,
-                               double score)
-    : url(url), title(title), score(score) {}
+MostVisitedURL::MostVisitedURL(const GURL& url, const std::u16string& title)
+    : url(url), title(title) {}
 
 MostVisitedURL::MostVisitedURL(const MostVisitedURL& other) = default;
 

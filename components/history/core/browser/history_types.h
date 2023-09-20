@@ -443,9 +443,7 @@ struct VisibleVisitCountToHostResult {
 // Holds the information for a Most Visited page.
 struct MostVisitedURL {
   MostVisitedURL();
-  MostVisitedURL(const GURL& url,
-                 const std::u16string& title,
-                 double score = 0.0);
+  MostVisitedURL(const GURL& url, const std::u16string& title);
   MostVisitedURL(const MostVisitedURL& other);
   MostVisitedURL(MostVisitedURL&& other) noexcept;
   ~MostVisitedURL();
@@ -456,9 +454,11 @@ struct MostVisitedURL {
     return url == other.url;
   }
 
-  GURL url;              // The URL of the page.
-  std::u16string title;  // The title of the page.
-  double score{0.0};     // The frecency score of the page.
+  GURL url;                    // The URL of the page.
+  std::u16string title;        // The title of the page.
+  int visit_count{0};          // The page visit count.
+  base::Time last_visit_time;  // The time of the last visit to the page.
+  double score{0.0};           // The frecency score of the page.
 };
 
 // FilteredURL -----------------------------------------------------------------

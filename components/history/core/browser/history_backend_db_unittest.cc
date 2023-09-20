@@ -3047,7 +3047,6 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   const GURL url2("http://www.foo.com");
   const int visit_count1 = 10;
   const int visit_count2 = 5;
-  const base::Time time(base::Time::Now());
 
   URLID url_id1 = db_->AddURL(URLRow(url1));
   ASSERT_NE(0, url_id1);
@@ -3061,8 +3060,14 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
       url_id2, VisitSegmentDatabase::ComputeSegmentName(url2));
   ASSERT_NE(0, segment_id2);
 
-  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id1, time, visit_count1));
-  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id2, time, visit_count2));
+  const base::Time now(base::Time::Now());
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id1, now, visit_count1));
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id2, now, visit_count2));
+  const base::Time two_days_ago = now - base::Days(2);
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id1, two_days_ago, visit_count1));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id2, two_days_ago, visit_count2));
 
   // Without a filter, the "file://" URL should win.
   std::vector<std::unique_ptr<PageUsageData>> results =
@@ -3070,6 +3075,8 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(url1, results[0]->GetURL());
   EXPECT_EQ(segment_id1, results[0]->GetID());
+  EXPECT_EQ(now.LocalMidnight(), results[0]->GetLastVisitTimeslot());
+  EXPECT_EQ(visit_count1 * 2, results[0]->GetVisitCount());
 
   // With the filter, the "file://" URL should be filtered out, so the "http://"
   // URL should win instead.
@@ -3078,6 +3085,8 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   ASSERT_EQ(1u, results2.size());
   EXPECT_EQ(url2, results2[0]->GetURL());
   EXPECT_EQ(segment_id2, results2[0]->GetID());
+  EXPECT_EQ(now.LocalMidnight(), results2[0]->GetLastVisitTimeslot());
+  EXPECT_EQ(visit_count2 * 2, results2[0]->GetVisitCount());
 }
 
 TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {

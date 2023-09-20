@@ -2829,9 +2829,12 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
       db_->QuerySegmentUsage(result_count, url_filter);
 
   MostVisitedURLList result;
-  for (const std::unique_ptr<PageUsageData>& current_data : data)
-    result.emplace_back(current_data->GetURL(), current_data->GetTitle(),
-                        current_data->GetScore());
+  for (const std::unique_ptr<PageUsageData>& current_data : data) {
+    result.emplace_back(current_data->GetURL(), current_data->GetTitle());
+    result.back().visit_count = current_data->GetVisitCount();
+    result.back().last_visit_time = current_data->GetLastVisitTimeslot();
+    result.back().score = current_data->GetScore();
+  }
 
   UMA_HISTOGRAM_TIMES("History.QueryMostVisitedURLsTime",
                       base::TimeTicks::Now() - begin_time);
