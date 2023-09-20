@@ -48,9 +48,12 @@ orca::mojom::TextQueryResponsePtr ParseResponse(
 
   std::vector<orca::mojom::TextQueryResultPtr> results;
   if (auto* output_data_list = raw_response.FindList("outputData")) {
+    int result_id = 0;
     for (const auto& data : *output_data_list) {
       if (const auto* text = data.GetDict().FindString("text")) {
-        results.push_back(orca::mojom::TextQueryResult::New("", *text));
+        results.push_back(orca::mojom::TextQueryResult::New(
+            base::NumberToString(result_id), *text));
+        ++result_id;
       }
     }
   }
