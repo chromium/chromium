@@ -227,9 +227,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
-  # https://crbug.com/1483337
-  "lacros.Activate.keep_alive",
-
   # b/301133350
   "privacyhub.SettingsPage.feature_v1_mic_cam_loc_golden",
 
@@ -275,9 +272,6 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1470305
   "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
-
-  # https://crbug.com/1483337
-  "lacros.Activate.keep_alive",
 
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
