@@ -550,6 +550,65 @@ TEST_F(TestLauncherTest, DisablePreTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Test TestLauncher enforce to run tests in the exact positive filter.
+TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFilter) {
+  AddMockedTests("Test", {"firstTest",
+                          "secondTest"
+                          "thirdTest"});
+  SetUpExpectCalls();
+
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.firstTest\nTest.thirdTest");
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  command_line->AppendSwitchASCII("test-launcher-total-shards", "2");
+  command_line->AppendSwitchASCII("test-launcher-shard-index", "0");
+
+  // Test.firstTest is in the exact positive filter, so expected to run.
+  // Test.thirdTest is launched in another shard.
+  std::vector<std::string> tests_names = {"Test.firstTest"};
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_SUCCESS)));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter and
+// gtest_filter both presented.
+TEST_F(TestLauncherTest,
+       EnforceRunTestsInExactPositiveFailWithGtestFilterFlag) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  command_line->AppendSwitchASCII("gtest_filter", "Test.firstTest;-Test.*");
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter is set
+// with negative test filters.
+TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFailWithNegativeFilter) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = CreateFilterFile();
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter is set
+// with wildcard positive filters.
+TEST_F(TestLauncherTest,
+       EnforceRunTestsInExactPositiveFailWithWildcardPositiveFilter) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.*");
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
 // Tests fail if they produce too much output.
 TEST_F(TestLauncherTest, ExcessiveOutput) {
   AddMockedTests("Test", {"firstTest"});

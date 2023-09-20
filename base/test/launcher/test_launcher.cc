@@ -1486,6 +1486,25 @@ bool LoadFilterFile(const FilePath& file_path,
   return true;
 }
 
+bool TestLauncher::IsOnlyExactPositiveFilterFromFile(
+    const CommandLine* command_line) const {
+  if (command_line->HasSwitch(kGTestFilterFlag)) {
+    LOG(ERROR) << "Found " << switches::kTestLauncherFilterFile;
+    return false;
+  }
+  if (!negative_test_filter_.empty()) {
+    LOG(ERROR) << "Found negative filters in the filter file.";
+    return false;
+  }
+  for (const auto& filter : positive_test_filter_) {
+    if (Contains(filter, '*')) {
+      LOG(ERROR) << "Found wildcard positive filters in the filter file.";
+      return false;
+    }
+  }
+  return true;
+}
+
 bool TestLauncher::Init(CommandLine* command_line) {
   // Initialize sharding. Command line takes precedence over legacy environment
   // variables.
@@ -1640,6 +1659,18 @@ bool TestLauncher::Init(CommandLine* command_line) {
   // tests in testing/buildbot/filters.
   if (command_line->HasSwitch(kGTestRunDisabledTestsFlag)) {
     negative_test_filter_.clear();
+  }
+
+  // If `kEnforceExactPositiveFilter` is set, only accept exact positive
+  // filters from the filter file.
+  enforce_exact_postive_filter_ =
+      command_line->HasSwitch(switches::kEnforceExactPositiveFilter);
+  if (enforce_exact_postive_filter_ &&
+      !IsOnlyExactPositiveFilterFromFile(command_line)) {
+    LOG(ERROR) << "With " << switches::kEnforceExactPositiveFilter
+               << ", only accept exact positive filters via "
+               << switches::kTestLauncherFilterFile;
+    return false;
   }
 
   // Split --gtest_filter at '-', if there is one, to separate into
@@ -1970,6 +2001,14 @@ void TestLauncher::CombinePositiveTestFilters(
   }
 }
 
+bool TestLauncher::ShouldRunInCurrentShard(
+    const std::string& prefix_stripped_name) const {
+  CHECK(!StartsWith(prefix_stripped_name, kPreTestPrefix) &&
+        !StartsWith(prefix_stripped_name, kDisabledTestPrefix));
+  return PersistentHash(prefix_stripped_name) % total_shards_ ==
+         static_cast<uint32_t>(shard_index_);
+}
+
 std::vector<std::string> TestLauncher::CollectTests() {
   std::vector<std::string> test_names;
   // To support RTS(regression test selection), which may have 100,000 or
@@ -1978,6 +2017,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   std::vector<StringPiece> positive_wildcards_filter;
   std::unordered_set<StringPiece> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
+  std::unordered_set<std::string> enforced_positive_tests;
   for (const std::string& filter : positive_test_filter_) {
     if (filter.find('*') != std::string::npos) {
       positive_wildcards_filter.push_back(filter);
@@ -2008,6 +2048,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
                        positive_exact_filter.end() ||
                    positive_exact_filter.find(prefix_stripped_name) !=
                        positive_exact_filter.end();
+      if (found && enforce_exact_postive_filter_) {
+        enforced_positive_tests.insert(prefix_stripped_name);
+      }
       if (!found) {
         for (const StringPiece& filter : positive_wildcards_filter) {
           if (MatchPattern(test_name, filter) ||
@@ -2041,8 +2084,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    if (PersistentHash(prefix_stripped_name) % total_shards_ !=
-        static_cast<uint32_t>(shard_index_)) {
+    if (!ShouldRunInCurrentShard(prefix_stripped_name)) {
       continue;
     }
 
@@ -2060,6 +2102,20 @@ std::vector<std::string> TestLauncher::CollectTests() {
     }
 
     test_names.push_back(test_name);
+  }
+
+  // If `kEnforceExactPositiveFilter` is set, all test cases listed in the
+  // exact positive filter for the current shard should exist in the
+  // `enforced_positive_tests`. Otherwise, fail loudly.
+  if (enforce_exact_postive_filter_) {
+    for (const auto& filter : positive_exact_filter) {
+      std::string filter_string(filter);
+      if (!ShouldRunInCurrentShard(filter_string)) {
+        continue;
+      }
+      CHECK(Contains(enforced_positive_tests, filter_string))
+          << "Found exact positive filter not enforced: " << filter;
+    }
   }
 
   return test_names;
