@@ -137,16 +137,18 @@ export class EmptyFolderController {
                   'Unexpectedly failed to fetch custom actions for ODFS ' +
                   'root because of: ' + chrome.runtime.lastError.message);
               fulfill(false);
+              return;
             }
             // Find the reauthentication required action.
-            customActions.forEach(action => {
+            for (const action of customActions) {
               if (action.id ===
                       constants
                           .FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED &&
                   action.title === 'true') {
                 fulfill(true);
+                return;
               }
-            });
+            }
             fulfill(false);
           });
     });
