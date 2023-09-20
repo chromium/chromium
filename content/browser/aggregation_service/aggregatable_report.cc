@@ -202,6 +202,16 @@ std::vector<uint8_t> EncodeIntegerForPayload(T integer) {
   return byte_string;
 }
 
+void AppendEncodedContributionToCborArray(
+    cbor::Value::ArrayValue& array,
+    const blink::mojom::AggregatableReportHistogramContribution& contribution) {
+  cbor::Value::MapValue map;
+  map.emplace("bucket",
+              EncodeIntegerForPayload<absl::uint128>(contribution.bucket));
+  map.emplace("value", EncodeIntegerForPayload<uint32_t>(contribution.value));
+  array.emplace_back(std::move(map));
+}
+
 // Returns a vector with a serialized CBOR map. See the AggregatableReport
 // documentation for more detail on the expected format. Returns an empty
 // vector in case of error.
@@ -212,15 +222,20 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   value.emplace(kOperationKey, kHistogramValue);
 
   cbor::Value::ArrayValue data;
-  for (const blink::mojom::AggregatableReportHistogramContribution&
-           contribution : payload_contents.contributions) {
-    cbor::Value::MapValue data_map;
-    data_map.emplace(
-        "bucket", EncodeIntegerForPayload<absl::uint128>(contribution.bucket));
-    data_map.emplace("value",
-                     EncodeIntegerForPayload<uint32_t>(contribution.value));
-    data.push_back(cbor::Value(std::move(data_map)));
+  base::ranges::for_each(
+      payload_contents.contributions,
+      [&data](const blink::mojom::AggregatableReportHistogramContribution&
+                  contribution) {
+        AppendEncodedContributionToCborArray(data, contribution);
+      });
+
+  // TODO(crbug.com/1478353): Replace this with more generic padding solution.
+  if (payload_contents.contributions.empty()) {
+    AppendEncodedContributionToCborArray(
+        data, blink::mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/0, /*value=*/0));
   }
+
   value.emplace("data", std::move(data));
 
   absl::optional<std::vector<uint8_t>> unencrypted_payload =
@@ -899,7 +914,7 @@ bool AggregatableReport::IsNumberOfHistogramContributionsValid(
   // Note: APIs using the aggregation service may impose their own limits.
   switch (aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased:
-      return number >= 1u;
+      return true;
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 1u;
   }

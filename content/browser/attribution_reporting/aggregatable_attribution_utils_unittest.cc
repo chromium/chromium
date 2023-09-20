@@ -213,9 +213,7 @@ TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
                             .BuildStored())
               .BuildNullAggregatable());
   ASSERT_TRUE(request.has_value());
-  EXPECT_THAT(request->payload_contents().contributions,
-              ElementsAre(blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/0, /*value=*/0)));
+  EXPECT_TRUE(request->payload_contents().contributions.empty());
   EXPECT_FALSE(
       request->payload_contents().aggregation_coordinator_origin.has_value());
   const std::string* source_registration_time =

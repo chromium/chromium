@@ -758,10 +758,7 @@ TEST_F(PrivateAggregationHostTest,
     EXPECT_THAT(validated_request->additional_fields(),
                 testing::ElementsAre(
                     testing::Pair("context_id", "example_context_id")));
-    ASSERT_EQ(validated_request->payload_contents().contributions.size(), 1u);
-    EXPECT_EQ(validated_request->payload_contents().contributions[0].bucket,
-              0u);
-    EXPECT_EQ(validated_request->payload_contents().contributions[0].value, 0);
+    ASSERT_TRUE(validated_request->payload_contents().contributions.empty());
 
     // Null reports never have debug mode set according to the current spec.
     EXPECT_EQ(validated_request->shared_info().debug_mode,
@@ -1050,9 +1047,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutBeforeDisconnect) {
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 0u);
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 0);
+            EXPECT_TRUE(request.payload_contents().contributions.empty());
             EXPECT_EQ(request.debug_key(), absl::nullopt);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1112,9 +1107,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutAfterDisconnect) {
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 0u);
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 0);
+            EXPECT_TRUE(request.payload_contents().contributions.empty());
             EXPECT_EQ(request.debug_key(), absl::nullopt);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1200,9 +1193,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_THAT(
       validated_request1->additional_fields(),
       testing::ElementsAre(testing::Pair("context_id", "example_context_id")));
-  ASSERT_EQ(validated_request1->payload_contents().contributions.size(), 1u);
-  EXPECT_EQ(validated_request1->payload_contents().contributions[0].bucket, 0u);
-  EXPECT_EQ(validated_request1->payload_contents().contributions[0].value, 0);
+  EXPECT_TRUE(validated_request1->payload_contents().contributions.empty());
   EXPECT_EQ(validated_request1->debug_key(), absl::nullopt);
   EXPECT_EQ(validated_request1->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1217,9 +1208,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_THAT(
       validated_request2->additional_fields(),
       testing::ElementsAre(testing::Pair("context_id", "example_context_id")));
-  ASSERT_EQ(validated_request2->payload_contents().contributions.size(), 1u);
-  EXPECT_EQ(validated_request2->payload_contents().contributions[0].bucket, 0u);
-  EXPECT_EQ(validated_request2->payload_contents().contributions[0].value, 0);
+  EXPECT_TRUE(validated_request2->payload_contents().contributions.empty());
   EXPECT_EQ(validated_request2->debug_key(), absl::nullopt);
   EXPECT_EQ(validated_request2->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1282,9 +1271,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_THAT(
       validated_request1->additional_fields(),
       testing::ElementsAre(testing::Pair("context_id", "example_context_id")));
-  ASSERT_EQ(validated_request1->payload_contents().contributions.size(), 1u);
-  EXPECT_EQ(validated_request1->payload_contents().contributions[0].bucket, 0u);
-  EXPECT_EQ(validated_request1->payload_contents().contributions[0].value, 0);
+  EXPECT_TRUE(validated_request1->payload_contents().contributions.empty());
   EXPECT_EQ(validated_request1->debug_key(), absl::nullopt);
   EXPECT_EQ(validated_request1->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1295,9 +1282,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_THAT(
       validated_request2->additional_fields(),
       testing::ElementsAre(testing::Pair("context_id", "example_context_id")));
-  ASSERT_EQ(validated_request2->payload_contents().contributions.size(), 1u);
-  EXPECT_EQ(validated_request2->payload_contents().contributions[0].bucket, 0u);
-  EXPECT_EQ(validated_request2->payload_contents().contributions[0].value, 0);
+  EXPECT_TRUE(validated_request2->payload_contents().contributions.empty());
   EXPECT_EQ(validated_request2->debug_key(), absl::nullopt);
   EXPECT_EQ(validated_request2->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);

@@ -259,11 +259,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     absl::optional<std::string> context_id,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions) {
-  // TODO(crbug.com/1478353): Move this to the aggregation service layer.
-  if (contributions.empty()) {
-    CHECK(context_id.has_value());
-    contributions.emplace_back(/*bucket=*/0, /*value=*/0);
-  }
+  CHECK(context_id.has_value() || !contributions.empty());
 
   AggregationServicePayloadContents payload_contents(
       AggregationServicePayloadContents::Operation::kHistogram,

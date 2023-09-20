@@ -148,7 +148,6 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           [&](const AttributionReport::NullAggregatableData& data) {
             source_time = data.fake_source_time;
             common_aggregatable_data = &data.common_data;
-            contributions.emplace_back(/*bucket=*/0, /*value=*/0);
           },
       },
       report.data());

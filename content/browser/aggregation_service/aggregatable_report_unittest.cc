@@ -257,6 +257,46 @@ TEST(AggregatableReportTest,
                    /*expected_additional_fields=*/{}, {hpke_key}));
 }
 
+TEST(AggregatableReportTest, ValidNoContributionsRequest_ValidReportReturned) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          blink::mojom::AggregationServiceMode::kTeeBased);
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.contributions.clear();
+
+  // A null contribution should be added automatically.
+  AggregationServicePayloadContents expected_payload_contents =
+      payload_contents;
+  expected_payload_contents.contributions = {
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/0,
+          /*value=*/0)};
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(expected_payload_contents,
+                                        example_request.shared_info().Clone());
+  ASSERT_TRUE(request.has_value());
+
+  AggregatableReportSharedInfo expected_shared_info =
+      request->shared_info().Clone();
+  size_t expected_num_processing_urls = request->processing_urls().size();
+
+  aggregation_service::TestHpkeKey hpke_key =
+      aggregation_service::GenerateKey("id123");
+
+  absl::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          std::move(*request), {hpke_key.public_key});
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyReport(report, expected_payload_contents, expected_shared_info,
+                   expected_num_processing_urls,
+                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_additional_fields=*/{}, {hpke_key}));
+}
+
 TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -391,9 +431,10 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   EXPECT_FALSE(request.has_value());
 }
 
-TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
+TEST(AggregatableReportTest, TeeBasedRequestCreatedWithZeroContributions) {
   AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
+      aggregation_service::CreateExampleRequest(
+          blink::mojom::AggregationServiceMode::kTeeBased);
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
@@ -402,7 +443,23 @@ TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
-  ASSERT_FALSE(request.has_value());
+  EXPECT_TRUE(request.has_value());
+}
+
+TEST(AggregatableReportTest,
+     ExperimentalPoplarRequestNotCreatedWithZeroContributions) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          blink::mojom::AggregationServiceMode::kExperimentalPoplar);
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+
+  payload_contents.contributions.clear();
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone());
+  EXPECT_FALSE(request.has_value());
 }
 
 TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
