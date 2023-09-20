@@ -20,11 +20,6 @@ const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
     AttributionConfig::RateLimitConfig::
         kDefaultMaxReportingOriginsPerSourceReportingSite};
 
-const base::FeatureParam<int> kMaxAttributionsPerEventSourceParam{
-    &attribution_reporting::features::kConversionMeasurement,
-    "max_attributions_per_event_source",
-    AttributionConfig::EventLevelLimit::kDefaultMaxAttributionsPerEventSource};
-
 const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
     &attribution_reporting::features::kConversionMeasurement,
     "first_report_window_deadline",
@@ -225,9 +220,7 @@ AttributionConfig& AttributionConfig::operator=(const AttributionConfig&) =
 AttributionConfig& AttributionConfig::operator=(AttributionConfig&&) = default;
 
 AttributionConfig::EventLevelLimit::EventLevelLimit()
-    : max_attributions_per_event_source(
-          kMaxAttributionsPerEventSourceParam.Get()),
-      first_navigation_report_window_deadline(
+    : first_navigation_report_window_deadline(
           kFirstNavigationReportWindowDeadline.Get()),
       second_navigation_report_window_deadline(
           kSecondNavigationReportWindowDeadline.Get()),
@@ -236,10 +229,6 @@ AttributionConfig::EventLevelLimit::EventLevelLimit()
           kSecondEventReportWindowDeadline.Get()),
       max_navigation_info_gain(kNavigationMaxInfoGain.Get()),
       max_event_info_gain(kEventMaxInfoGain.Get()) {
-  if (max_attributions_per_event_source <= 0) {
-    max_attributions_per_event_source = kDefaultMaxAttributionsPerEventSource;
-  }
-
   if (!AreReportWindowDeadlinesValid(
           first_navigation_report_window_deadline,
           second_navigation_report_window_deadline)) {

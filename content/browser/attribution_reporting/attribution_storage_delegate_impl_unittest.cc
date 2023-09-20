@@ -994,21 +994,6 @@ TEST(AttributionStorageDelegateImplTest, GetMaxAttributionsPerSource) {
                    SourceType::kEvent));
   EXPECT_EQ(3, AttributionStorageDelegateImpl().GetDefaultAttributionsPerSource(
                    SourceType::kNavigation));
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{attribution_reporting::features::kConversionMeasurement,
-          {{"max_attributions_per_event_source", "5"}}}},
-        /*disabled_features=*/{});
-
-    EXPECT_EQ(5,
-              AttributionStorageDelegateImpl().GetDefaultAttributionsPerSource(
-                  SourceType::kEvent));
-    EXPECT_EQ(3,
-              AttributionStorageDelegateImpl().GetDefaultAttributionsPerSource(
-                  SourceType::kNavigation));
-  }
 }
 
 }  // namespace
