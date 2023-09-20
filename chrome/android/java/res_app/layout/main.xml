@@ -49,12 +49,6 @@ found in the LICENSE file.
             android:background="@drawable/capture_overlay_border"
             android:visibility="gone" />
 
-        <FrameLayout
-            android:id="@+id/overview_list_layout_holder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-
         <org.chromium.chrome.browser.ui.BottomContainer
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
