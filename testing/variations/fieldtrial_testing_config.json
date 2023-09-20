@@ -4874,12 +4874,11 @@
     "DeskButton": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros"
+                "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230828",
+                    "name": "Enabled_20230919",
                     "enable_features": [
                         "DeskButton"
                     ]
