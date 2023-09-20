@@ -205,12 +205,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   static net::NetworkDelegate::PrivacySetting PrivacySetting(
       const CookieSettingWithMetadata& setting);
 
-  // Determines the scope of third-party-cookie-blocking, i.e. whether it
-  // applies to all cookies or just unpartitioned cookies. Assumes that
-  // checks have already determined to block third-party cookies.
-  ThirdPartyBlockingScope GetThirdPartyBlockingScope(
-      const GURL& first_party_url) const;
-
   // Returns the cookie setting for the given request, along with metadata
   // associated with the lookup. Namely, whether the setting is due to
   // third-party cookie blocking settings or not.

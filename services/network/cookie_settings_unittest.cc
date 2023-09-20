@@ -905,15 +905,6 @@ TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
                 GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
                 url::Origin::Create(GURL(kURL)), GetCookieSettingOverrides()));
 
-  // Setting a site-specific rule for the top-level frame origin that blocks
-  // access should cause partitioned state to be disallowed.
-  settings.set_content_settings(
-      {CreateSetting("*", kOtherURL, CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateDisallowed,
-            settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
-                                          url::Origin::Create(GURL(kOtherURL)),
-                                          GetCookieSettingOverrides()));
-
   // Setting a site-specific rule for the top-level frame origin when it is
   // embedded on an unrelated site should not affect if partitioned state is
   // allowed.
