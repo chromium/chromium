@@ -38,7 +38,8 @@ class IbanSaveManagerTest : public testing::Test {
                          /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
                          /*image_fetcher=*/nullptr);
-    iban_save_manager_ = std::make_unique<IbanSaveManager>(&autofill_client_);
+    iban_save_manager_ =
+        std::make_unique<IbanSaveManager>(&autofill_client_, &personal_data());
   }
 
   IbanSaveManager& GetIbanSaveManager() { return *iban_save_manager_; }
@@ -58,9 +59,22 @@ class IbanSaveManagerTest : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(IbanSaveManagerTest, AttemptToOfferIbanLocalSave_ValidIban) {
-  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(
-      autofill::test::GetIban()));
+TEST_F(IbanSaveManagerTest,
+       AttemptToOfferIbanLocalSave_NewIban_ShouldOfferSave) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban));
+}
+
+TEST_F(IbanSaveManagerTest,
+       AttemptToOfferIbanLocalSave_LocalIban_ShouldNotOfferLocalSave) {
+  Iban iban_candidate = autofill::test::GetIban();
+  personal_data().AddIban(iban_candidate);
+
+  Iban another_iban;
+  another_iban.set_value(iban_candidate.value());
+  EXPECT_FALSE(
+      GetIbanSaveManager().AttemptToOfferIbanLocalSave(iban_candidate));
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {

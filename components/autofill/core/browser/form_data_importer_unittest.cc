@@ -2981,14 +2981,15 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 
-  // Simulate a form submission with the same IBAN.
+  // Simulate a form submission with the same IBAN. The IBAN can be extracted
+  // from the form.
   FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  ASSERT_FALSE(extracted_data.iban_import_candidate);
+  EXPECT_TRUE(extracted_data.iban_import_candidate);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3896,12 +3897,13 @@ TEST_P(FormDataImporterTest,
   personal_data_manager_->AddIban(iban);
 
   WaitForOnPersonalDataChanged();
-  // Simulate a form submission with a new IBAN.
+  // Simulate a form submission with the same IBAN. The IBAN should not be
+  // offered to be saved, because it already exists as a local IBAN.
   FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
 
-  ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
+  EXPECT_FALSE(ExtractFormDataAndProcessIbanCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true));
 }

@@ -153,7 +153,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
+      iban_save_manager_(
+          std::make_unique<IbanSaveManager>(client, personal_data_manager)),
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
                                                       payments_client,
@@ -946,17 +947,6 @@ absl::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   // still be able to save new IBANs from the settings page using this pref.
   personal_data_manager_->SetAutofillHasSeenIban();
 
-  bool found_existing_local_iban = base::ranges::any_of(
-      personal_data_manager_->GetLocalIbans(), [&](const auto& iban) {
-        return iban->value() == candidate_iban.value();
-      });
-
-  if (found_existing_local_iban) {
-    return absl::nullopt;
-  }
-
-  // Only offer to save new IBAN. Users can go to the payment methods settings
-  // page to update existing IBANs if desired.
   return candidate_iban;
 }
 

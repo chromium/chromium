@@ -29,7 +29,8 @@ class IbanSaveManager {
     virtual void OnDeclineSaveIbanComplete() {}
   };
 
-  explicit IbanSaveManager(AutofillClient* client);
+  IbanSaveManager(AutofillClient* client,
+                  PersonalDataManager* personal_data_manager);
   IbanSaveManager(const IbanSaveManager&) = delete;
   IbanSaveManager& operator=(const IbanSaveManager&) = delete;
   virtual ~IbanSaveManager();
@@ -61,6 +62,10 @@ class IbanSaveManager {
   }
 
  private:
+  // Returns true if local save should be offered for the
+  // `iban_import_candidate`.
+  bool ShouldOfferLocalSave(const Iban& iban_import_candidate);
+
   // Returns the IbanSaveStrikeDatabase for `client_`;
   IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
 
@@ -77,6 +82,10 @@ class IbanSaveManager {
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
+
+  // The personal data manager, used to save and load personal data to/from the
+  // web database.
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
   std::unique_ptr<IbanSaveStrikeDatabase> iban_save_strike_database_;

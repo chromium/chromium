@@ -13,7 +13,9 @@
 
 namespace autofill {
 
-IbanSaveManager::IbanSaveManager(AutofillClient* client) : client_(client) {}
+IbanSaveManager::IbanSaveManager(AutofillClient* client,
+                                 PersonalDataManager* personal_data_manager)
+    : client_(client), personal_data_manager_(personal_data_manager) {}
 
 IbanSaveManager::~IbanSaveManager() = default;
 
@@ -27,7 +29,13 @@ std::string IbanSaveManager::GetPartialIbanHashString(
 bool IbanSaveManager::AttemptToOfferIbanLocalSave(
     const Iban& iban_import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!ShouldOfferLocalSave(iban_import_candidate)) {
+    return false;
+  }
   iban_save_candidate_ = iban_import_candidate;
+  // Set the guid as this IBAN will be offered to save locally.
+  iban_save_candidate_.set_identifier(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
   bool show_save_prompt =
@@ -53,6 +61,15 @@ bool IbanSaveManager::AttemptToOfferIbanLocalSave(
   // IBAN save prompts do not currently exist on mobile.
   return false;
 #endif
+}
+
+bool IbanSaveManager::ShouldOfferLocalSave(const Iban& iban_import_candidate) {
+  // Only offer to save new IBANs. Users can go to the payment methods settings
+  // page to update existing IBANs if desired.
+  return std::ranges::none_of(
+      personal_data_manager_->GetLocalIbans(), [&](const auto& iban) {
+        return iban->value() == iban_import_candidate.value();
+      });
 }
 
 IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
@@ -83,9 +100,6 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       // Clear all IbanSave strikes for this IBAN, so that if it's later removed
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
-      // Set the guid as this IBAN will be offered to save locally.
-      iban_save_candidate_.set_identifier(
-          Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
       client_->GetPersonalDataManager()->OnAcceptedLocalIbanSave(
           iban_save_candidate_);
       if (observer_for_testing_) {
