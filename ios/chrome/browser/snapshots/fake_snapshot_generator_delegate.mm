@@ -32,10 +32,4 @@
   return self.view;
 }
 
-- (UIViewTintAdjustmentMode)snapshotGenerator:
-                                (SnapshotGenerator*)snapshotGenerator
-         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
-  return UIViewTintAdjustmentModeAutomatic;
-}
-
 @end

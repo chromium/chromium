@@ -287,11 +287,8 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     image = nil;
   }
 
-  // Defaults to UIViewTintAdjustmentModeAutomatic if there is no delegate.
-  baseView.tintAdjustmentMode =
-      _delegate ? [_delegate snapshotGenerator:self
-                      defaultTintAdjustmentModeForWebState:_webState]
-                : UIViewTintAdjustmentModeAutomatic;
+  // Set the mode to UIViewTintAdjustmentModeAutomatic.
+  baseView.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
 
   return image;
 }

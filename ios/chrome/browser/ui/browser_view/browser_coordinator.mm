@@ -2821,12 +2821,6 @@ enum class ToolbarKind {
   return webState->GetView();
 }
 
-- (UIViewTintAdjustmentMode)snapshotGenerator:
-                                (SnapshotGenerator*)snapshotGenerator
-         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
-  return UIViewTintAdjustmentModeAutomatic;
-}
-
 #pragma mark - NewTabPageCommands
 
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
