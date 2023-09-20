@@ -103637,7 +103637,7 @@ would be helpful to identify which type is being sent.
   <int value="100137" label="UserImageInfo"/>
   <int value="100138" label="GdataDisabled"/>
   <int value="100139" label="GdataCellularDisabled"/>
-  <int value="100140" label="AlternateErrorPagesEnabled"/>
+  <int value="100140" label="(obsolete) AlternateErrorPagesEnabled"/>
   <int value="100141" label="TabDiscardingExceptions"/>
   <int value="100142" label="AccessibilityImageLabelsEnabled"/>
   <int value="100143" label="AccessibilityImageLabelsOptInAccepted"/>

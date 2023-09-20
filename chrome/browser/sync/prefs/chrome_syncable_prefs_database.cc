@@ -9,7 +9,6 @@
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "components/embedder_support/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -192,7 +191,7 @@ enum {
   kUserImageInfo = 100137,
   kGdataDisabled = 100138,
   kGdataCellularDisabled = 100139,
-  kAlternateErrorPagesEnabled = 100140,
+  // kAlternateErrorPagesEnabled = 100140, (deprecated)
   kTabDiscardingExceptions = 100141,
   kAccessibilityImageLabelsEnabled = 100142,
   kAccessibilityImageLabelsOptInAccepted = 100143,
@@ -897,9 +896,6 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kGdataCellularDisabled, syncer::OS_PREFERENCES,
           false, sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        {embedder_support::kAlternateErrorPagesEnabled,
-         {syncable_prefs_ids::kAlternateErrorPagesEnabled, syncer::PREFERENCES,
-          false, sync_preferences::MergeBehavior::kNone}},
         {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
          {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
           true, sync_preferences::MergeBehavior::kNone}},
