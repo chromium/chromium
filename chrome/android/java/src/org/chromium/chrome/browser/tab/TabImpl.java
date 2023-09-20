@@ -213,6 +213,7 @@ public class TabImpl implements Tab {
     private long mTimestampMillis;
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
+    private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -1000,7 +1001,7 @@ public class TabImpl implements Tab {
                 state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
-        CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
+        setUserAgent(state.userAgent);
     }
 
     /**
@@ -1676,6 +1677,17 @@ public class TabImpl implements Tab {
         for (TabObserver observer : mObservers) {
             observer.onRootIdChanged(this, rootId);
         }
+    }
+
+    @Override
+    @CalledByNative
+    public @TabUserAgent int getUserAgent() {
+        return mUserAgent;
+    }
+
+    @Override
+    public void setUserAgent(@TabUserAgent int userAgent) {
+        mUserAgent = userAgent;
     }
 
     /**

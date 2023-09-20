@@ -21,7 +21,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content
  * from network but also other types of content such as NTP, navigation history, etc) and
@@ -311,4 +310,15 @@ public interface Tab extends TabLifecycle {
      * Set the root identifier for the {@link Tab}
      */
     void setRootId(int rootId);
+
+    /**
+     * @return user agent type for the {@link Tab}
+     */
+    @TabUserAgent
+    int getUserAgent();
+
+    /**
+     * Set user agent type for the {@link Tab}
+     */
+    void setUserAgent(@TabUserAgent int userAgent);
 }

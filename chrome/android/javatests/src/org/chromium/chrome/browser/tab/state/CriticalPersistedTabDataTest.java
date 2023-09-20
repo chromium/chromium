@@ -193,7 +193,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
                                          mCriticalPersistedTabData.getWebContentsState().buffer()),
                 WEB_CONTENTS_STATE_BYTES);
-        assertEquals(mCriticalPersistedTabData.getUserAgent(), USER_AGENT_A);
         assertEquals(mCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis(),
                 LAST_NAVIGATION_COMMITTED_TIMESTAMP);
         Semaphore deleteSemaphore = new Semaphore(0);
@@ -324,7 +323,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
                 CriticalPersistedTabData.getContentStateByteArray(
                         deserialized.getWebContentsState().buffer()));
-        assertEquals(USER_AGENT_A, deserialized.getUserAgent());
         assertEquals(LAST_NAVIGATION_COMMITTED_TIMESTAMP,
                 deserialized.getLastNavigationCommittedTimestampMillis());
     }
@@ -536,31 +534,6 @@ public class CriticalPersistedTabDataTest {
         }
     }
 
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testUserAgentSavedWhenNecessary() {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            CriticalPersistedTabData spyCriticalPersistedTabData =
-                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_B);
-            assertEquals(USER_AGENT_B, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(2)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(3)).save();
-        }
-    }
-
     @SmallTest
     @Test
     public void testConvertTabLaunchTypeToProtoLaunchType() {
@@ -760,7 +733,6 @@ public class CriticalPersistedTabDataTest {
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
         assertEquals(LaunchTypeAtCreationTest.FROM_LINK,
                 (int) deserialized.getTabLaunchTypeAtCreation());
-        assertEquals(TabUserAgent.DEFAULT, deserialized.getUserAgent());
     }
 
     private static final ByteBuffer getFlatBufferWithNoWebContentsState() {

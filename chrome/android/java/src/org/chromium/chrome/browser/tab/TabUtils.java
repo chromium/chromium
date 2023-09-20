@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -166,7 +165,7 @@ public class TabUtils {
                     == switchToDesktop) {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
-            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+            tab.setUserAgent(tabUserAgent);
         }
     }
 
@@ -187,7 +186,7 @@ public class TabUtils {
      */
     public static @TabUserAgent int getTabUserAgent(Tab tab) {
         @TabUserAgent
-        int tabUserAgent = CriticalPersistedTabData.from(tab).getUserAgent();
+        int tabUserAgent = tab.getUserAgent();
         WebContents webContents = tab.getWebContents();
         boolean currentRequestDesktopSite = isUsingDesktopUserAgent(webContents);
         // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
@@ -200,7 +199,7 @@ public class TabUtils {
             } else {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
-            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+            tab.setUserAgent(tabUserAgent);
         }
         return tabUserAgent;
     }

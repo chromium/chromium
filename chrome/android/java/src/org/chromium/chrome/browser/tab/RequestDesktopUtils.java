@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -261,7 +260,7 @@ public class RequestDesktopUtils {
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
                 profile, url, tabUserAgent == TabUserAgent.DESKTOP);
         // Reset the tab level setting after upgrade.
-        CriticalPersistedTabData.from(tab).setUserAgent(TabUserAgent.DEFAULT);
+        tab.setUserAgent(TabUserAgent.DEFAULT);
     }
 
     /**

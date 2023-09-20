@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,12 +25,10 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -84,25 +81,19 @@ public class TabUtilsUnitTest {
     private NavigationController mNavigationController;
     @Mock
     private Profile mProfile;
-    @Mock
-    private CriticalPersistedTabData mCriticalPersistedTabData;
 
     private boolean mRdsDefault;
     private @ContentSettingValues int mRdsException;
     private boolean mIsGlobal;
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
+    private @TabUserAgent int mTabNativeUserAgent;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         ShadowProfile.setProfile(mProfile);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-
-        UserDataHost tabDataHost = new UserDataHost();
-        when(mTab.getUserDataHost()).thenReturn(tabDataHost);
-        when(mTabNative.getUserDataHost()).thenReturn(tabDataHost);
-        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
 
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabNative.isNativePage()).thenReturn(true);
@@ -124,12 +115,19 @@ public class TabUtilsUnitTest {
         doAnswer(invocation -> mUseDesktopUserAgent)
                 .when(mNavigationController)
                 .getUseDesktopUserAgent();
-        doAnswer(invocation -> mTabUserAgent).when(mCriticalPersistedTabData).getUserAgent();
+        doAnswer(invocation -> mTabUserAgent).when(mTab).getUserAgent();
+        doAnswer(invocation -> mTabNativeUserAgent).when(mTabNative).getUserAgent();
         doAnswer(invocation -> {
             mTabUserAgent = invocation.getArgument(0);
             return null;
         })
-                .when(mCriticalPersistedTabData)
+                .when(mTab)
+                .setUserAgent(anyInt());
+        doAnswer(invocation -> {
+            mTabNativeUserAgent = invocation.getArgument(0);
+            return null;
+        })
+                .when(mTabNative)
                 .setUserAgent(anyInt());
     }
 
@@ -159,7 +157,7 @@ public class TabUtilsUnitTest {
                 .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
 
         // CriticalPersistedTabData#setUserAgent should not be used when it is not forcedByUser.
-        verify(mCriticalPersistedTabData, never()).setUserAgent(anyInt());
+        verify(mTab, never()).setUserAgent(anyInt());
     }
 
     @Test
@@ -171,23 +169,23 @@ public class TabUtilsUnitTest {
         TabUtils.switchUserAgent(mTab, false, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
 
         TabUtils.switchUserAgent(mTab, true, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DESKTOP);
+        verify(mTab).setUserAgent(TabUserAgent.DESKTOP);
 
         // Test native tab.
         TabUtils.switchUserAgent(mTabNative, false, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTabNative).setUserAgent(TabUserAgent.DEFAULT);
 
         TabUtils.switchUserAgent(mTabNative, true, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.DESKTOP);
+        verify(mTabNative).setUserAgent(TabUserAgent.DESKTOP);
     }
 
     @Test
@@ -199,23 +197,23 @@ public class TabUtilsUnitTest {
         TabUtils.switchUserAgent(mTab, false, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.MOBILE);
+        verify(mTab).setUserAgent(TabUserAgent.MOBILE);
 
         TabUtils.switchUserAgent(mTab, true, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
 
         // Test native tab.
         TabUtils.switchUserAgent(mTabNative, false, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.MOBILE);
+        verify(mTabNative).setUserAgent(TabUserAgent.MOBILE);
 
         TabUtils.switchUserAgent(mTabNative, true, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTabNative).setUserAgent(TabUserAgent.DEFAULT);
     }
 
     @Test
@@ -236,13 +234,13 @@ public class TabUtilsUnitTest {
         mUseDesktopUserAgent = false;
         Assert.assertEquals("TabUserAgent is not set up correctly for upgrade path.",
                 TabUserAgent.DEFAULT, TabUtils.getTabUserAgent(mTab));
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
 
         mTabUserAgent = TabUserAgent.UNSET;
         mUseDesktopUserAgent = true;
         Assert.assertEquals("TabUserAgent is not set up correctly for upgrade path.",
                 TabUserAgent.DESKTOP, TabUtils.getTabUserAgent(mTab));
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DESKTOP);
+        verify(mTab).setUserAgent(TabUserAgent.DESKTOP);
     }
 
     @Test
@@ -256,7 +254,7 @@ public class TabUtilsUnitTest {
         Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.MOBILE,
                 TabUtils.getTabUserAgent(mTab));
 
-        verify(mCriticalPersistedTabData, never()).setUserAgent(anyInt());
+        verify(mTab, never()).setUserAgent(anyInt());
     }
 
     @Test
@@ -270,7 +268,7 @@ public class TabUtilsUnitTest {
         Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.DESKTOP,
                 TabUtils.getTabUserAgent(mTab));
 
-        verify(mCriticalPersistedTabData, never()).setUserAgent(anyInt());
+        verify(mTab, never()).setUserAgent(anyInt());
     }
 
     @Test

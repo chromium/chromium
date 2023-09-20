@@ -1417,7 +1417,7 @@ public class RequestDesktopUtilsUnitTest {
 
         Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
                 ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
-        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
     }
 
     // Tests the fix for crash crbug.com/1381841. When the global setting opt-in message is clicked,

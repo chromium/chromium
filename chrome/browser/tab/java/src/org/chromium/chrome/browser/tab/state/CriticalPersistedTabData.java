@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -121,7 +120,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     private boolean mShouldSaveForTesting;
     /** Tab level Request Desktop Site setting. */
-    private @TabUserAgent int mUserAgent;
     private boolean mShouldSave;
 
     @VisibleForTesting
@@ -154,7 +152,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mContentStateVersion = contentStateVersion;
         mOpenerAppId = openerAppId;
         mTabLaunchTypeAtCreation = launchTypeAtCreation;
-        mUserAgent = userAgent;
         mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
     }
 
@@ -290,7 +287,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     ? null
                     : deserialized.openerAppId();
             mTabLaunchTypeAtCreation = getLaunchType(deserialized.launchTypeAtCreation());
-            mUserAgent = getTabUserAgentType(deserialized.userAgent());
             return true;
         }
     }
@@ -493,7 +489,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             private String mOpenerAppIdSnapshot;
             private int mWebContentsStateVersionSnapshot;
             private int mLaunchTypeSnapshot;
-            private int mUserAgentTypeSnapshot;
             private long mLastNavigationCommittedTimestampMillisSnapshot;
             private boolean mPreSerialized;
 
@@ -533,7 +528,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                             fbb, TabState.UNSPECIFIED_THEME_COLOR);
                     CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(
                             fbb, mLaunchTypeSnapshot);
-                    CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, mUserAgentTypeSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, 1 /* unused*/);
                     CriticalPersistedTabDataFlatBuffer.addLastNavigationCommittedTimestampMillis(
                             fbb, mLastNavigationCommittedTimestampMillisSnapshot);
                     int r = CriticalPersistedTabDataFlatBuffer
@@ -559,7 +554,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     mOpenerAppIdSnapshot = mOpenerAppId;
                     mWebContentsStateVersionSnapshot = mContentStateVersion;
                     mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
-                    mUserAgentTypeSnapshot = getUserAgentType(mUserAgent);
                     mLastNavigationCommittedTimestampMillisSnapshot =
                             mLastNavigationCommittedTimestampMillis;
                 }
@@ -727,24 +721,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         save();
     }
 
-    /**
-     * @return user agent type for the {@link Tab}
-     */
-    public @TabUserAgent int getUserAgent() {
-        return mUserAgent;
-    }
-
-    /**
-     * Set user agent type for the {@link Tab}
-     */
-    public void setUserAgent(@TabUserAgent int userAgent) {
-        if (mUserAgent == userAgent) {
-            return;
-        }
-        mUserAgent = userAgent;
-        save();
-    }
-
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {
         mShouldSaveForTesting = shouldSaveForTesting;
         ResettersForTesting.register(() -> mShouldSaveForTesting = false);
@@ -780,8 +756,4 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return sMapper;
     }
 
-    @CalledByNative
-    public static @TabUserAgent int getUserAgent(Tab tab) {
-        return CriticalPersistedTabData.from(tab).getUserAgent();
-    }
 }
