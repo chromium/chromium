@@ -48,9 +48,15 @@ namespace blink {
     EXPECT_NEAR(expected.fA, actual.fA, error);        \
   } while (false)
 
+enum { kHitTestTransparency = 0x80 };
+
 // Tests the integration between blink and cc where a layer list is sent to cc.
-class CompositingTest : public PaintTestConfigurations, public testing::Test {
+class CompositingTest : public PaintTestConfigurations,
+                        public testing::Test,
+                        private ScopedHitTestTransparencyForTest {
  public:
+  CompositingTest()
+      : ScopedHitTestTransparencyForTest(GetParam() & kHitTestTransparency) {}
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
     web_view_helper_->Initialize();
@@ -121,7 +127,10 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(CompositingTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CompositingTest,
+                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
+                                           kHitTestTransparency));
 
 TEST_P(CompositingTest, DisableAndEnableAcceleratedCompositing) {
   UpdateAllLifecyclePhases();
@@ -618,10 +627,6 @@ TEST_P(CompositingTest, FullPACUpdateOnScrollWithSyntheticClipAcrossScroller) {
 }
 
 TEST_P(CompositingTest, HitTestOpaqueness) {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return;
-  }
-
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="transparent1" style="pointer-events: none; will-change: transform;
                                   width: 100px; height: 50px">
@@ -676,14 +681,14 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
     </svg>
   )HTML");
 
-  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
-                ? cc::HitTestOpaqueness::kTransparent
-                : cc::HitTestOpaqueness::kMixed,
+  const auto hit_test_transparent =
+      RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+          ? cc::HitTestOpaqueness::kTransparent
+          : cc::HitTestOpaqueness::kMixed;
+  EXPECT_EQ(hit_test_transparent,
             CcLayersByDOMElementId(RootCcLayer(), "transparent1")[0]
                 ->hit_test_opaqueness());
-  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
-                ? cc::HitTestOpaqueness::kTransparent
-                : cc::HitTestOpaqueness::kMixed,
+  EXPECT_EQ(hit_test_transparent,
             CcLayersByDOMElementId(RootCcLayer(), "transparent2")[0]
                 ->hit_test_opaqueness());
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
@@ -695,31 +700,45 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
             CcLayersByDOMElementId(RootCcLayer(), "mixed3")[0]
                 ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque1")[0]
-                ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque2")[0]
-                ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque3")[0]
-                ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque4")[0]
-                ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
-                ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            CcLayersByDOMElementId(RootCcLayer(), "opaque6")[0]
-                ->hit_test_opaqueness());
+  const auto hit_test_opaque =
+      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+          ? cc::HitTestOpaqueness::kOpaque
+          : cc::HitTestOpaqueness::kMixed;
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque1")[0]
+                                 ->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque2")[0]
+                                 ->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque3")[0]
+                                 ->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque4")[0]
+                                 ->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
+                                 ->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque6")[0]
+                                 ->hit_test_opaqueness());
+}
+
+TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="target" style="will-change: transform; width: 100px; height: 100px;
+                            background: green">
+    </div>
+  )HTML");
+
+  auto* layer = CcLayersByDOMElementId(RootCcLayer(), "target")[0];
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(layer->IsSolidColorLayerForTesting());
+  } else {
+    EXPECT_FALSE(layer->IsSolidColorLayerForTesting());
+  }
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
+  } else {
+    EXPECT_EQ(cc::HitTestOpaqueness::kMixed, layer->hit_test_opaqueness());
+  }
 }
 
 TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return;
-  }
-
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="parent">
       <div id="target" style="will-change: transform; width: 50px; height: 50px;
@@ -727,6 +746,15 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
       </div>
     </div>
   )HTML");
+
+  const auto hit_test_transparent =
+      RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+          ? cc::HitTestOpaqueness::kTransparent
+          : cc::HitTestOpaqueness::kMixed;
+  const auto hit_test_opaque =
+      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+          ? cc::HitTestOpaqueness::kOpaque
+          : cc::HitTestOpaqueness::kMixed;
 
   Element* parent = GetElementById("parent");
   Element* target = GetElementById("target");
@@ -737,8 +765,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   ASSERT_TRUE(display_item_client->IsValid());
   const cc::Layer* target_layer =
       CcLayersByDOMElementId(RootCcLayer(), "target")[0];
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            target_layer->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   target->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
   GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
@@ -746,23 +773,23 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   // Change of PointerEvents should not invalidate the painting layer, but not
   // the display item client.
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
-  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  }
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
-                ? cc::HitTestOpaqueness::kTransparent
-                : cc::HitTestOpaqueness::kMixed,
-            target_layer->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
   GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
-  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  }
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            target_layer->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   parent->setAttribute(html_names::kInertAttr, AtomicString(""));
   GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
@@ -770,23 +797,23 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
   // Change of parent inert attribute (affecting target's used pointer events)
   // should invalidate the painting layer but not the display item client.
-  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  }
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
-                ? cc::HitTestOpaqueness::kTransparent
-                : cc::HitTestOpaqueness::kMixed,
-            target_layer->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   parent->removeAttribute(html_names::kInertAttr);
   GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
-  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  }
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
-            target_layer->hit_test_opaqueness());
+  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {

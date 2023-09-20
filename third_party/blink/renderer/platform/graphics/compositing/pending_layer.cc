@@ -544,14 +544,10 @@ void PendingLayer::UpdateScrollHitTestLayer(PendingLayer* old_pending_layer) {
   } else {
     cc_layer_ = cc::Layer::Create();
     cc_layer_->SetElementId(scroll_node.GetCompositorElementId());
-    if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-      cc_layer_->SetHitTestable(true);
-    }
   }
 
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    cc_layer_->SetHitTestOpaqueness(hit_test_opaqueness_);
-  }
+  UpdateCcLayerHitTestOpaqueness();
+
   cc_layer_->SetOffsetToTransformParent(
       gfx::Vector2dF(scroll_node.ContainerRect().OffsetFromOrigin()));
   // TODO(pdr): The scroll layer's bounds are currently set to the clipped
@@ -619,11 +615,7 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
   }
   cc_layer_->SetOffsetToTransformParent(LayerOffset());
   cc_layer_->SetBounds(LayerBounds());
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    cc_layer_->SetHitTestOpaqueness(hit_test_opaqueness_);
-  } else {
-    cc_layer_->SetHitTestable(true);
-  }
+  UpdateCcLayerHitTestOpaqueness();
   cc_layer_->SetBackgroundColor(GetSolidColor());
   cc_layer_->SetIsDrawable(draws_content_);
 }
@@ -665,6 +657,19 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
   if (!layer.subtree_property_changed() &&
       PropertyTreeStateChanged(old_pending_layer)) {
     layer.SetSubtreePropertyChanged();
+  }
+}
+
+void PendingLayer::UpdateCcLayerHitTestOpaqueness() const {
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    auto hit_test_opaqueness = GetHitTestOpaqueness();
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent &&
+        !RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    CcLayer().SetHitTestOpaqueness(hit_test_opaqueness);
+  } else {
+    CcLayer().SetHitTestable(true);
   }
 }
 

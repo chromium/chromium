@@ -3096,9 +3096,9 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
   }
 
-  if (old_style &&
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() && old_style &&
       old_style->UsedPointerEvents() != StyleRef().UsedPointerEvents()) {
-    // UsedPointerEvents affects hit test opaqueness.
+    // UsedPointerEvents affects hit test opacity.
     SetShouldInvalidatePaintForHitTest();
   }
 
@@ -4550,6 +4550,7 @@ void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
 
 void LayoutObject::SetShouldInvalidatePaintForHitTest() {
   NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::HitTestOpaquenessEnabled());
   if (PaintInvalidationReasonForPrePaint() <
       PaintInvalidationReason::kHitTest) {
     SetShouldCheckForPaintInvalidationWithoutLayoutChange();

@@ -141,6 +141,8 @@ class PLATFORM_EXPORT PendingLayer {
     return content_layer_client_.get();
   }
 
+  void UpdateCcLayerHitTestOpaqueness() const;
+
   // For this PendingLayer, creates a composited layer or uses the existing
   // one in |old_pending_layer|, and updates the layer according to the current
   // contents and properties of this PendingLayer.
