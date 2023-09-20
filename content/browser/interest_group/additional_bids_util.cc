@@ -162,8 +162,6 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   }
 
   auto synth_interest_group = std::make_unique<StorageInterestGroup>();
-  synth_interest_group->interest_group.owner =
-      url::Origin::Create(ig_bidding_url);
   synth_interest_group->interest_group.name = *ig_name;
   synth_interest_group->interest_group.owner = std::move(ig_owner).value();
   synth_interest_group->interest_group.bidding_url = std::move(ig_bidding_url);
