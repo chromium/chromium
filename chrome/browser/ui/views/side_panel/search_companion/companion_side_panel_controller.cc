@@ -282,6 +282,24 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   }
 }
 
+void CompanionSidePanelController::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  // We need to wait for the WebContents to have bounds before issuing the Lens
+  // request. This method gets notified once the WebContents has bounds, so we
+  // can issue the Lens request.
+  if (render_frame_host && !render_frame_host->GetParent()) {
+    auto* tab_helper =
+        companion::CompanionTabHelper::FromWebContents(web_contents_);
+    std::unique_ptr<side_panel::mojom::ImageQuery> image_query =
+        tab_helper->GetImageQuery();
+    if (!image_query) {
+      return;
+    }
+    tab_helper->GetCompanionPageHandler()->OnImageQuery(*image_query);
+  }
+}
+
 void CompanionSidePanelController::NotifyLinkClick(
     GURL opened_url,
     side_panel::mojom::LinkOpenMetadataPtr metadata,

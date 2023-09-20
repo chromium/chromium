@@ -92,6 +92,7 @@ class CompanionTabHelper
   // Returns the latest image data saved to the helper and not passed to the
   // handler or an empty pointer if none.
   std::unique_ptr<side_panel::mojom::ImageQuery> GetImageQuery();
+  bool HasImageQuery();
 
   // Called when the companion side panel is closed. Used for cleaning up any
   // local state.

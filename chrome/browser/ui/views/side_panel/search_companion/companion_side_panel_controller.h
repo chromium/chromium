@@ -79,6 +79,8 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
 
   void AddObserver();
   void RemoveObserver();

@@ -41,6 +41,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
@@ -277,10 +278,11 @@ void CompanionPageHandler::ShowUI() {
       return;
     }
 
-    std::unique_ptr<side_panel::mojom::ImageQuery> image_query =
-        helper->GetImageQuery();
-    if (image_query) {
-      OnImageQuery(*image_query);
+    if (helper->HasImageQuery()) {
+      // If there is an image query to run, we need to wait until the side panel
+      // view has bounds in order for us to issue the request to Lens properly.
+      // This is called in the CompanionSidePanelController once it detects a
+      // change in the Companion's WebContents bounds.
       return;
     }
 
