@@ -82,7 +82,7 @@ class MODULES_EXPORT AudioEncoder final
 
   ParsedConfig* ParseConfig(const AudioEncoderConfig* opts,
                             ExceptionState&) override;
-  bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
+  bool VerifyCodecSupport(ParsedConfig*, String* js_error_message) override;
 
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;

@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
@@ -32,9 +30,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
@@ -46,12 +44,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -150,8 +144,8 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   absl::optional<MediaConfigType> media_config =
       MakeMediaConfig(*config, &js_error_message);
   if (!media_config) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      js_error_message);
+    Shutdown(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
     return;
   }
 
@@ -499,15 +493,16 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
                !!exception);
 
   shutting_down_ = true;
-  shutting_down_due_to_error_ = !!exception;
+  shutting_down_due_to_error_ = exception;
 
   // Abort pending work (otherwise it will never complete)
   if (pending_request_) {
     if (pending_request_->resolver) {
       pending_request_->resolver.Release()->Reject(
-          MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kAbortError,
-              exception ? "Aborted due to error" : "Aborted due to close()"));
+          exception
+              ? exception
+              : MakeGarbageCollected<DOMException>(
+                    DOMExceptionCode::kAbortError, "Aborted due to close()"));
     }
 
     pending_request_.Release()->EndTracing(/*shutting_down*/ true);
@@ -563,9 +558,14 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   num_pending_decodes_ = 0;
   ScheduleDequeueEvent();
 
-  // Fire the error callback if necessary.
-  if (exception)
-    error_cb->InvokeAndReportException(nullptr, exception);
+  // Fire the error callback if necessary. Per spec, this is a queued task.
+  if (exception) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&V8WebCodecsErrorCallback::InvokeAndReportException,
+                      WrapPersistent(error_cb), nullptr,
+                      WrapPersistent(exception)));
+  }
 }
 
 template <typename Traits>
@@ -820,6 +820,7 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(requests_);
   visitor->Trace(pending_request_);
   visitor->Trace(pending_decodes_);
+  visitor->Trace(shutting_down_due_to_error_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);
@@ -858,12 +859,13 @@ bool DecoderTemplate<Traits>::MaybeAbortRequest(Request* request) const {
   }
 
   if (request->resolver) {
-    request->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError,
-        shutting_down_
-            ? (shutting_down_due_to_error_ ? "Aborted due to error"
-                                           : "Aborted due to close()")
-            : "Aborted due to reset()"));
+    request->resolver.Release()->Reject(
+        shutting_down_due_to_error_
+            ? shutting_down_due_to_error_.Get()
+            : MakeGarbageCollected<DOMException>(
+                  DOMExceptionCode::kAbortError,
+                  shutting_down_ ? "Aborted due to close()"
+                                 : "Aborted due to reset()"));
   }
   return true;
 }

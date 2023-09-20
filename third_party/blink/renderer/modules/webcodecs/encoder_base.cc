@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
@@ -108,8 +109,10 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
     return;
   }
 
-  if (!VerifyCodecSupport(parsed_config, exception_state)) {
-    DCHECK(exception_state.HadException());
+  String js_error_message;
+  if (!VerifyCodecSupport(parsed_config, &js_error_message)) {
+    HandleError(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
     return;
   }
 
@@ -173,7 +176,8 @@ void EncoderBase<Traits>::close(ExceptionState& exception_state) {
 
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
-  ResetInternal();
+  ResetInternal(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted due to close()"));
   output_callback_.Clear();
   error_callback_.Clear();
 }
@@ -207,26 +211,36 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
   TRACE_EVENT0(kCategory, GetTraceNames()->reset.c_str());
 
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
-  ResetInternal();
+  ResetInternal(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted due to reset()"));
 }
 
 template <typename Traits>
-void EncoderBase<Traits>::ResetInternal() {
+void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   reset_count_++;
+
+  if (blocking_request_in_progress_ &&
+      blocking_request_in_progress_->resolver) {
+    blocking_request_in_progress_->resolver.Release()->Reject(ex);
+  }
+
   while (!requests_.empty()) {
     Request* pending_req = requests_.TakeFirst();
     DCHECK(pending_req);
-    if (pending_req->resolver)
-      pending_req->resolver.Release()->Resolve();
-    if (pending_req->input)
+    if (pending_req->resolver) {
+      pending_req->resolver.Release()->Reject(ex);
+    }
+    if (pending_req->input) {
       pending_req->input.Release()->close();
+    }
   }
   if (requested_encodes_ > 0) {
     requested_encodes_ = 0;
     ScheduleDequeueEvent();
   }
-  blocking_request_in_progress_ = false;
+
+  blocking_request_in_progress_ = nullptr;
 
   // Schedule deletion of |media_encoder_| for later.
   // ResetInternal() might be called by an error reporting callback called by
@@ -260,7 +274,7 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
 
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
-  ResetInternal();
+  ResetInternal(ex);
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
@@ -273,7 +287,13 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
     return;
 
   ScriptState::Scope scope(script_state_);
-  error_callback->InvokeAndReportException(nullptr, ex);
+
+  // Per spec, this is a queued task.
+  callback_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&V8WebCodecsErrorCallback::InvokeAndReportException,
+                    WrapPersistent(error_callback), nullptr,
+                    WrapPersistent(ex)));
 }
 
 template <typename Traits>
@@ -325,17 +345,23 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
   auto done_callback = [](EncoderBase<Traits>* self, Request* req,
                           media::EncoderStatus status) {
     DCHECK(req);
-    DCHECK(req->resolver);
+
+    if (!req->resolver) {
+      // Some error occurred and this was resolved earlier.
+      return;
+    }
 
     if (!self) {
-      req->resolver.Release()->Reject();
+      req->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Aborted due to close()"));
       req->EndTracing(/*aborted=*/true);
       return;
     }
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (self->reset_count_ != req->reset_count) {
-      req->resolver.Release()->Reject();
+      req->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Aborted due to reset()"));
       req->EndTracing(/*aborted=*/true);
       return;
     }
@@ -344,17 +370,17 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
     } else {
       self->HandleError(self->logger_->MakeEncodingError("Flushing error.",
                                                          std::move(status)));
-      req->resolver.Release()->Reject();
+      DCHECK(!req->resolver);
     }
     req->EndTracing();
 
-    self->blocking_request_in_progress_ = false;
+    self->blocking_request_in_progress_ = nullptr;
     self->ProcessRequests();
   };
 
   request->StartTracing();
 
-  blocking_request_in_progress_ = true;
+  blocking_request_in_progress_ = request;
   media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
       done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
       MakeUnwrappingCrossThreadHandle(request))));
@@ -370,7 +396,8 @@ void EncoderBase<Traits>::OnCodecReclaimed(DOMException* exception) {
 template <typename Traits>
 void EncoderBase<Traits>::ContextDestroyed() {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
-  ResetInternal();
+  ResetInternal(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted due to close()"));
   logger_->Neuter();
 }
 
@@ -428,6 +455,7 @@ void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(output_callback_);
   visitor->Trace(error_callback_);
   visitor->Trace(requests_);
+  visitor->Trace(blocking_request_in_progress_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);

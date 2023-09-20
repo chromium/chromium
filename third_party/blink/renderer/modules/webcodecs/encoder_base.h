@@ -129,13 +129,14 @@ class MODULES_EXPORT EncoderBase
   virtual void ProcessConfigure(Request* request) = 0;
   virtual void ProcessReconfigure(Request* request) = 0;
   virtual void ProcessFlush(Request* request);
-  virtual void ResetInternal();
+  virtual void ResetInternal(DOMException* ex);
 
   virtual bool CanReconfigure(InternalConfigType& original_config,
                               InternalConfigType& new_config) = 0;
   virtual InternalConfigType* ParseConfig(const ConfigType*,
                                           ExceptionState&) = 0;
-  virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
+  virtual bool VerifyCodecSupport(InternalConfigType*,
+                                  String* js_error_message) = 0;
 
   // ReclaimableCodec implementation.
   void OnCodecReclaimed(DOMException*) override;
@@ -166,9 +167,12 @@ class MODULES_EXPORT EncoderBase
 
   // Some kConfigure and kFlush requests can't be executed in parallel with
   // kEncode. Even some kEncode might have synchronous parts like readback.
-  // This flag stops processing of new requests in the requests_ queue
-  // till the current request is finished.
-  bool blocking_request_in_progress_ = false;
+  //
+  // Set this to stop processing of new requests in `requests_` until the
+  // current request is finished.
+  //
+  // During reset(), this member is used to reject any pending promises.
+  Member<Request> blocking_request_in_progress_;
 
   bool first_output_after_configure_ = true;
 

@@ -191,11 +191,22 @@ validButUnsupportedConfigs.forEach(entry => {
 validButUnsupportedConfigs.forEach(entry => {
   async_test(
       t => {
-        let codec = new VideoEncoder(getDefaultCodecInit(t));
-        assert_throws_dom('NotSupportedError', () => {
-          codec.configure(entry.config);
+        let codec = new VideoEncoder({
+          output: t.unreached_func('unexpected output'),
+          error: t.step_func_done(e => {
+            assert_true(e instanceof DOMException);
+            assert_equals(e.name, 'NotSupportedError');
+            assert_equals(codec.state, 'closed', 'state');
+          })
         });
-        t.done();
+        codec.configure(entry.config);
+        codec.flush()
+            .then(t.unreached_func('flush succeeded unexpectedly'))
+            .catch(t.step_func(e => {
+              assert_true(e instanceof DOMException);
+              assert_equals(e.name, 'InvalidStateError');
+              assert_equals(codec.state, 'closed', 'state');
+            }));
       },
       'Test that VideoEncoder.configure() doesn\'t support config: ' +
           entry.comment);

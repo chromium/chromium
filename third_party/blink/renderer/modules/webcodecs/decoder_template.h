@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "media/base/decoder_status.h"
-#include "media/base/media_log.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -220,7 +219,7 @@ class MODULES_EXPORT DecoderTemplate
 
   // Set on Shutdown(), used to generate accurate abort messages.
   bool shutting_down_ = false;
-  bool shutting_down_due_to_error_ = false;
+  Member<DOMException> shutting_down_due_to_error_;
 
   // Which state the codec is in, determining which calls we can receive.
   V8CodecState state_;

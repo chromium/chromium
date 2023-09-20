@@ -109,7 +109,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   void ProcessEncode(Request* request) override;
   void ProcessConfigure(Request* request) override;
   void ProcessReconfigure(Request* request) override;
-  void ResetInternal() override;
+  void ResetInternal(DOMException* ex) override;
 
   void OnEncodeDone(Request* request, media::EncoderStatus status);
   media::VideoEncoder::EncodeOptions CreateEncodeOptions(Request* request);
@@ -125,7 +125,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*,
                             ExceptionState&) override;
-  bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
+  bool VerifyCodecSupport(ParsedConfig*, String* js_error_message) override;
 
   // Virtual for UTs.
   // Returns the VideoEncoder.
