@@ -3284,10 +3284,10 @@ TEST_F(
   personal_data_->AddCreditCard(credit_card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
-  // Turn off autofill profile sync.
+  // Turn off payments sync.
   syncer::UserSelectableTypeSet user_selectable_type_set =
       sync_service_.GetUserSettings()->GetSelectedTypes();
-  user_selectable_type_set.Remove(syncer::UserSelectableType::kAutofill);
+  user_selectable_type_set.Remove(syncer::UserSelectableType::kPayments);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/user_selectable_type_set);

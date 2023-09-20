@@ -610,6 +610,9 @@ class PersonalDataManager : public KeyedService,
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   bool IsSyncFeatureEnabledForAutofill() const;
 
+  // Returns true if the user's selectable `type` is enabled.
+  bool IsUserSelectableTypeEnabled(syncer::UserSelectableType type) const;
+
   // The functions below are related to the payments mandatory re-auth feature.
   // All of this functionality is done through per-profile per-device prefs.
   // `SetPaymentMethodsMandatoryReauthEnabled()` is used to update the opt-in

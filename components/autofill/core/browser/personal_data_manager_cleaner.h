@@ -158,8 +158,8 @@ class PersonalDataManagerCleaner {
   // `SyncStarted()` event has triggered yet.
   // TODO(crbug.com/1348294): Remove once the AUTOFILL_PROFILE sync bridge is
   // deprecated.
-  bool autofill_profile_sync_started = false;
-  bool contact_info_sync_started = false;
+  bool autofill_profile_sync_started_ = false;
+  bool contact_info_sync_started_ = false;
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.
