@@ -54,6 +54,7 @@ namespace {
 struct TabInfo {
   int opener_index = -1;
   bool pinned = false;
+  bool with_navigation = true;
 };
 
 // Information about a collection of N tabs that needs to be restored.
@@ -93,8 +94,13 @@ CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-  session_storage.lastCommittedItemIndex = 0;
-  session_storage.itemStorages = CreateNavigationStorage();
+  if (tab_info.with_navigation) {
+    session_storage.lastCommittedItemIndex = 0;
+    session_storage.itemStorages = CreateNavigationStorage();
+  } else {
+    session_storage.lastCommittedItemIndex = -1;
+    session_storage.itemStorages = @[];
+  }
   session_storage.userData = CreateSessionUserData(tab_info);
   return session_storage;
 }
@@ -235,24 +241,59 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   SessionRestorationBrowserAgent* session_restoration_agent_;
 };
 
-// Tests that CRWSessionStorage with empty item_storages are not restored.
-TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
+// Tests that restoring a session where all items have no navigation items
+// does not restore anything (as all items would be dropped).
+TEST_F(SessionRestorationBrowserAgentTest, RestoreSession_AllNoNavigation) {
   CreateSessionRestorationBrowserAgent(true);
 
-  NSMutableArray<CRWSessionStorage*>* sessions = [NSMutableArray array];
-  for (int i = 0; i < 3; i++) {
-    CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-    session_storage.lastCommittedItemIndex = -1;
-    [sessions addObject:session_storage];
-  }
-  SessionWindowIOS* window = [[SessionWindowIOS alloc] initWithSessions:sessions
-                                                          selectedIndex:2];
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<3>{
+      .active_index = 2,
+      .tab_infos =
+          {
+              TabInfo{.with_navigation = false},
+              TabInfo{.with_navigation = false},
+              TabInfo{.with_navigation = false},
+          },
+  });
 
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
   ASSERT_EQ(0, browser_->GetWebStateList()->count());
+}
+
+// Tests that restoring a session where some items have no navigation items
+// only restore those items, and correct fix the opener-opened relationship.
+TEST_F(SessionRestorationBrowserAgentTest, RestoreSesssion_MixedNoNavigation) {
+  CreateSessionRestorationBrowserAgent(true);
+
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<8>{
+      .active_index = 2,
+      .tab_infos =
+          {
+              TabInfo{.with_navigation = false},
+              TabInfo{.with_navigation = false},
+              TabInfo{.with_navigation = false},
+              TabInfo{.opener_index = 0},
+              TabInfo{.opener_index = 2},
+              TabInfo{.with_navigation = false},
+              TabInfo{.with_navigation = false},
+              TabInfo{.opener_index = 3},
+          },
+  });
+
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
+
+  // Check that only tabs with navigation history have been restored, that
+  // the active index points to the child of the non-restored active tab,
+  // that the opener-opened relationship has been restored when possible.
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(3, web_state_list->count());
+  EXPECT_EQ(1, web_state_list->active_index());
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(0).opener, nullptr);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, nullptr);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(2).opener,
+            web_state_list->GetWebStateAt(0));
 }
 
 // Tests that restoring a session works correctly on empty WebStateList.
