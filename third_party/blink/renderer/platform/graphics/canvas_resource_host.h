@@ -19,11 +19,13 @@ class PaintCanvas;
 
 namespace blink {
 class CanvasResourceProvider;
+class SharedContextRateLimiter;
 
 class PLATFORM_EXPORT CanvasResourceHost {
  public:
-  explicit CanvasResourceHost(gfx::Size size) : size_(size) {}
-  virtual ~CanvasResourceHost() = default;
+  explicit CanvasResourceHost(gfx::Size size);
+  virtual ~CanvasResourceHost();
+
   virtual void NotifyGpuContextLost() = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const = 0;
@@ -56,6 +58,9 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void DiscardResourceProvider();
 
+  void SetIsDisplayed(bool);
+  bool IsDisplayed() { return is_displayed_; }
+
   virtual bool IsPrinting() const { return false; }
   virtual bool PrintedInCurrentTask() const = 0;
 
@@ -66,9 +71,20 @@ class PLATFORM_EXPORT CanvasResourceHost {
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
+  // Temporary plumbing while relocating code from Canvas2DLayerBridge.
+  SharedContextRateLimiter* RateLimiter() const;
+  void CreateRateLimiter();
+  unsigned IncrementFramesSinceLastCommit() {
+    return ++frames_since_last_commit_;
+  }
+  void ResetFramesSinceLastCommit() { frames_since_last_commit_ = 0; }
+
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);
 
+  bool is_displayed_ = false;
+  unsigned frames_since_last_commit_ = 0;
+  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;

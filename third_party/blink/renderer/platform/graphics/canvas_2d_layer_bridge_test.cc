@@ -995,26 +995,26 @@ TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
-  bridge->SetIsBeingDisplayed(true);
-  EXPECT_FALSE(bridge->HasRateLimiterForTesting());
+  Host()->SetIsDisplayed(true);
+  EXPECT_FALSE(!!Host()->RateLimiter());
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  EXPECT_TRUE(bridge->HasRateLimiterForTesting());
+  EXPECT_TRUE(!!Host()->RateLimiter());
 }
 
 TEST_F(Canvas2DLayerBridgeTest, NonDisplayedCanvasIsNotRateLimited) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
-  bridge->SetIsBeingDisplayed(true);
+  Host()->SetIsDisplayed(true);
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  EXPECT_TRUE(bridge->HasRateLimiterForTesting());
-  bridge->SetIsBeingDisplayed(false);
-  EXPECT_FALSE(bridge->HasRateLimiterForTesting());
+  EXPECT_TRUE(!!Host()->RateLimiter());
+  Host()->SetIsDisplayed(false);
+  EXPECT_FALSE(!!Host()->RateLimiter());
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  EXPECT_FALSE(bridge->HasRateLimiterForTesting());
+  EXPECT_FALSE(!!Host()->RateLimiter());
 }
 
 TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasIsCompositedIfImageChromium) {

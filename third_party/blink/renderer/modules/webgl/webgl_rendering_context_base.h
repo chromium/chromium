@@ -741,7 +741,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool UsingSwapChain() const override;
   bool IsOriginTopLeft() const override;
   void SetIsInHiddenPage(bool) override;
-  void SetIsBeingDisplayed(bool) override {}
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;

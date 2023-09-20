@@ -51,7 +51,6 @@ class TextureLayer;
 namespace blink {
 
 class Canvas2DLayerBridgeTest;
-class SharedContextRateLimiter;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
@@ -70,7 +69,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   void FinalizeFrame(CanvasResourceProvider::FlushReason);
   void SetIsInHiddenPage(bool);
-  void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
   void DidDraw();
@@ -146,8 +144,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
                : base::OptionalToPtr(last_recording_);
   }
 
-  bool HasRateLimiterForTesting();
-
   static bool IsHibernationEnabled();
 
   CanvasHibernationHandler& GetHibernationHandlerForTesting() {
@@ -171,12 +167,9 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   CanvasHibernationHandler hibernation_handler_;
 
   scoped_refptr<cc::TextureLayer> layer_;
-  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<Logger> logger_;
-  int frames_since_last_commit_ = 0;
   bool have_recorded_draw_commands_;
   bool is_hidden_;
-  bool is_being_displayed_;
   bool hibernation_scheduled_ = false;
   bool always_measure_for_testing_ = false;
   bool context_lost_ = false;

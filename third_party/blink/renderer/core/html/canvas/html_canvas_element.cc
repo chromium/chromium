@@ -315,9 +315,8 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(
       GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript)) {
     // Allocation of a layout object indicates that the canvas doesn't
     // have display:none set, so is conceptually being displayed.
-    if (context_) {
-      context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
-    }
+    bool is_displayed = GetLayoutObject() && style_is_visible_;
+    SetIsDisplayed(is_displayed);
     return MakeGarbageCollected<LayoutHTMLCanvas>(this);
   }
   return HTMLElement::CreateLayoutObject(style);
@@ -496,8 +495,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 
   LayoutObject* layout_object = GetLayoutObject();
   if (layout_object) {
-    context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
-
     if (IsRenderingContext2D() && !context_->CreationAttributes().alpha) {
       // In the alpha false case, canvas is initially opaque, so we need to
       // trigger an invalidation.
@@ -1451,8 +1448,6 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
 
   canvas2d_bridge_->SetCanvasResourceHost(this);
 
-  canvas2d_bridge_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
-
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
 
@@ -1555,8 +1550,9 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
     filter_quality = cc::PaintFlags::FilterQuality::kNone;
   SetFilterQuality(filter_quality);
   style_is_visible_ = new_style.Visibility() == EVisibility::kVisible;
+  bool is_displayed = GetLayoutObject() && style_is_visible_;
+  SetIsDisplayed(is_displayed);
   if (context_) {
-    context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
     context_->StyleDidChange(old_style, new_style);
   }
   if (StyleChangeNeedsDidDraw(old_style, new_style))
@@ -1566,9 +1562,7 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
 void HTMLCanvasElement::LayoutObjectDestroyed() {
   // If the canvas has no layout object then it definitely isn't being
   // displayed any more.
-  if (context_) {
-    context_->SetIsBeingDisplayed(false);
-  }
+  SetIsDisplayed(false);
 }
 
 void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {

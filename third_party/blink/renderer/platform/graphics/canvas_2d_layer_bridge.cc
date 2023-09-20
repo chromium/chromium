@@ -30,6 +30,7 @@
 #include "cc/layers/texture_layer.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -52,7 +53,6 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
       is_hidden_(false),
-      is_being_displayed_(false),
       opacity_mode_(opacity_mode),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr) {
@@ -382,19 +382,6 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
     GetOrCreateResourceProvider();  // Rude awakening
 }
 
-void Canvas2DLayerBridge::SetIsBeingDisplayed(bool displayed) {
-  is_being_displayed_ = displayed;
-  // If the canvas is no longer being displayed, stop using the rate
-  // limiter.
-  if (!is_being_displayed_) {
-    frames_since_last_commit_ = 0;
-    if (rate_limiter_) {
-      rate_limiter_->Reset();
-      rate_limiter_.reset(nullptr);
-    }
-  }
-}
-
 void Canvas2DLayerBridge::DrawFullImage(const cc::PaintImage& image) {
   GetPaintCanvas()->drawImage(image, 0, 0);
 }
@@ -561,10 +548,6 @@ void Canvas2DLayerBridge::FlushRecording(
   have_recorded_draw_commands_ = false;
 }
 
-bool Canvas2DLayerBridge::HasRateLimiterForTesting() {
-  return !!rate_limiter_;
-}
-
 bool Canvas2DLayerBridge::IsValid() {
   if (IsHibernating()) {
     return true;
@@ -642,11 +625,14 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
+  CHECK(resource_host_);
   DCHECK(layer_);  // This explodes if FinalizeFrame() was not called.
 
-  frames_since_last_commit_ = 0;
-  if (rate_limiter_)
-    rate_limiter_->Reset();
+  resource_host_->ResetFramesSinceLastCommit();
+
+  if (resource_host_->RateLimiter()) {
+    resource_host_->RateLimiter()->Reset();
+  }
 
   // If hibernating but not hidden, we want to wake up from hibernation.
   if (IsHibernating() && IsHidden())
@@ -709,6 +695,7 @@ void Canvas2DLayerBridge::DidDraw() {
 void Canvas2DLayerBridge::FinalizeFrame(
     CanvasResourceProvider::FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
+  CHECK(resource_host_);
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
@@ -717,22 +704,19 @@ void Canvas2DLayerBridge::FinalizeFrame(
 
   FlushRecording(reason);
   if (reason == CanvasResourceProvider::FlushReason::kCanvasPushFrame) {
-    if (is_being_displayed_) {
-      ++frames_since_last_commit_;
+    if (resource_host_->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.
       constexpr unsigned kMaxCanvasAnimationBacklog = 2;
-      if (frames_since_last_commit_ >=
+      if (resource_host_->IncrementFramesSinceLastCommit() >=
           static_cast<int>(kMaxCanvasAnimationBacklog)) {
-        if (resource_host_ && resource_host_->IsComposited() &&
-            !rate_limiter_) {
-          rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
-              kMaxCanvasAnimationBacklog);
+        if (resource_host_->IsComposited() && !resource_host_->RateLimiter()) {
+          resource_host_->CreateRateLimiter();
         }
       }
     }
 
-    if (rate_limiter_) {
-      rate_limiter_->Tick();
+    if (resource_host_->RateLimiter()) {
+      resource_host_->RateLimiter()->Tick();
     }
   }
 }
