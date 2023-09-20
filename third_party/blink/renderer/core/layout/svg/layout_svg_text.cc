@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 
 #include <limits>
 
@@ -50,8 +50,9 @@ LayoutNGSVGText::LayoutNGSVGText(Element* element)
 void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (needs_text_metrics_update_ && diff.HasDifference() && old_style)
+  if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
+  }
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
@@ -147,10 +148,12 @@ void LayoutNGSVGText::WillBeRemovedFromTree() {
 void LayoutNGSVGText::SubtreeStructureChanged(
     LayoutInvalidationReasonForTracing) {
   NOT_DESTROYED();
-  if (BeingDestroyed() || !EverHadLayout())
+  if (BeingDestroyed() || !EverHadLayout()) {
     return;
-  if (DocumentBeingDestroyed())
+  }
+  if (DocumentBeingDestroyed()) {
     return;
+  }
 
   SetNeedsTextMetricsUpdate();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
@@ -159,8 +162,9 @@ void LayoutNGSVGText::SubtreeStructureChanged(
 void LayoutNGSVGText::UpdateFont() {
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
-    if (auto* text = DynamicTo<LayoutSVGInlineText>(descendant))
+    if (auto* text = DynamicTo<LayoutSVGInlineText>(descendant)) {
       text->UpdateScaledFont();
+    }
   }
 }
 
@@ -193,8 +197,9 @@ void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
     // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
     // Scale, and Offset, probably via a single transform operation to
     // FirstFragment().PreTransform().
-    if (const auto* transform = properties->Transform())
+    if (const auto* transform = properties->Transform()) {
       block_info.TransformCullRect(*transform);
+    }
   }
   ScopedSVGTransformState transform_state(block_info, *this);
 
@@ -289,11 +294,13 @@ gfx::RectF LayoutNGSVGText::ObjectBoundingBox() const {
     gfx::RectF bbox;
     DCHECK_LE(PhysicalFragmentCount(), 1u);
     for (const auto& fragment : PhysicalFragments()) {
-      if (!fragment.Items())
+      if (!fragment.Items()) {
         continue;
+      }
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSvgText)
+        if (item.Type() != NGFragmentItem::kSvgText) {
           continue;
+        }
         // Do not use item.RectInContainerFragment() in order to avoid
         // precision loss.
         bbox.Union(item.ObjectBoundingBox(*fragment.Items()));
@@ -323,8 +330,9 @@ gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   // TODO(crbug.com/1179585): Just use ink overflow?
   gfx::RectF box = ObjectBoundingBox();
-  if (box.IsEmpty())
+  if (box.IsEmpty()) {
     return gfx::RectF();
+  }
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
@@ -346,8 +354,9 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
                                   HitTestPhase phase) {
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
-  if (!local_location)
+  if (!local_location) {
     return false;
+  }
 
   if (HasClipPath() && !ClipPathClipper::HitTest(*this, *local_location)) {
     return false;
@@ -366,18 +375,21 @@ PositionWithAffinity LayoutNGSVGText::PositionForPoint(
   for (const LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
     const auto* text = DynamicTo<LayoutSVGInlineText>(descendant);
-    if (!text)
+    if (!text) {
       continue;
+    }
     float distance =
         (descendant->ObjectBoundingBox().ClosestPoint(point) - point)
             .LengthSquared();
-    if (distance >= min_distance)
+    if (distance >= min_distance) {
       continue;
+    }
     min_distance = distance;
     closest_inline_text = text;
   }
-  if (!closest_inline_text)
+  if (!closest_inline_text) {
     return CreatePositionWithAffinity(0);
+  }
   return closest_inline_text->PositionForPoint(point_in_contents);
 }
 

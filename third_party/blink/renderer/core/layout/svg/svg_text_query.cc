@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_query.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_text_query.h"
 
 #include <unicode/utf16.h>
 
@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -39,12 +39,14 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
   if (query_root.IsNGSVGText()) {
     DCHECK_LE(To<LayoutBox>(query_root).PhysicalFragmentCount(), 1u);
     for (const auto& fragment : To<LayoutBox>(query_root).PhysicalFragments()) {
-      if (!fragment.Items())
+      if (!fragment.Items()) {
         continue;
+      }
       items = fragment.Items();
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() == NGFragmentItem::kSvgText)
+        if (item.Type() == NGFragmentItem::kSvgText) {
           item_list.push_back(&item);
+        }
       }
     }
   } else {
@@ -58,8 +60,9 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
         item_list.push_back(&item);
       } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
         for (; descendants; descendants.MoveToNext()) {
-          if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText)
+          if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText) {
             item_list.push_back(descendants.CurrentItem());
+          }
         }
       }
     }
@@ -136,8 +139,9 @@ std::tuple<const NGFragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
       FindFragmentItemForAddressableCodeUnitIndex(query_root, code_unit_index);
   DCHECK(item);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
+  if (item->IsHiddenForPaint()) {
     return {item, gfx::RectF()};
+  }
   auto char_rect =
       gfx::RectF(item->LocalRect(item_text, start_ifc_offset, end_ifc_offset));
   char_rect.Offset(item->SvgFragmentData()->rect.OffsetFromOrigin());
@@ -150,8 +154,9 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
                                QueryPosition pos) {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root, index);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
+  if (item->IsHiddenForPaint()) {
     return gfx::PointF();
+  }
   const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
   const SimpleFontData* font = inline_text.ScaledFont().PrimaryFont();
   const float ascent =
@@ -167,8 +172,9 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
     point = left_or_top ? char_rect.top_right() : char_rect.bottom_right();
     point.Offset(-ascent, 0.0f);
   }
-  if (item->HasSvgTransformForPaint())
+  if (item->HasSvgTransformForPaint()) {
     point = item->BuildSvgTransformForPaint().MapPoint(point);
+  }
   const float scaling_factor = inline_text.ScalingFactor();
   point.Scale(1 / scaling_factor, 1 / scaling_factor);
   return point;
@@ -180,15 +186,17 @@ unsigned NGSvgTextQuery::NumberOfCharacters() const {
   auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   unsigned addressable_code_unit_count = 0;
-  for (const auto* item : item_list)
+  for (const auto* item : item_list) {
     addressable_code_unit_count += item->Text(*items).length();
+  }
   return addressable_code_unit_count;
 }
 
 float NGSvgTextQuery::SubStringLength(unsigned start_index,
                                       unsigned length) const {
-  if (length <= 0)
+  if (length <= 0) {
     return 0.0f;
+  }
   auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   float total_length = 0.0f;
@@ -196,8 +204,9 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
   unsigned character_index = 0;
   const unsigned end_index = start_index + length;
   for (const auto* item : item_list) {
-    if (end_index <= character_index)
+    if (end_index <= character_index) {
       break;
+    }
     StringView item_text = item->Text(*items);
     unsigned next_character_index = character_index + item_text.length();
     if ((character_index <= start_index &&
@@ -225,10 +234,12 @@ gfx::PointF NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
 gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
+  if (item->IsHiddenForPaint()) {
     return gfx::RectF();
-  if (item->HasSvgTransformForPaint())
+  }
+  if (item->HasSvgTransformForPaint()) {
     char_rect = item->BuildSvgTransformForPaint().MapRect(char_rect);
+  }
   char_rect.Scale(1 / item->SvgScalingFactor());
   return char_rect;
 }
@@ -238,24 +249,29 @@ float NGSvgTextQuery::RotationOfCharacter(unsigned index) const {
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
+  if (item->IsHiddenForPaint()) {
     return 0.0f;
+  }
   float rotation = item->SvgFragmentData()->angle;
-  if (item->Style().IsHorizontalWritingMode())
+  if (item->Style().IsHorizontalWritingMode()) {
     return rotation;
+  }
   ETextOrientation orientation = item->Style().GetTextOrientation();
-  if (orientation == ETextOrientation::kUpright)
+  if (orientation == ETextOrientation::kUpright) {
     return rotation;
-  if (orientation == ETextOrientation::kSideways)
+  }
+  if (orientation == ETextOrientation::kSideways) {
     return rotation + 90.0f;
+  }
   DCHECK_EQ(orientation, ETextOrientation::kMixed);
   CanvasRotationInVertical canvas_rotation;
   // GetCanvasRotation() is called only once because a pair of
   // start_ifc_offset and end_ifc_offset represents a single glyph.
   item->TextShapeResult()->ForEachGlyph(0, start_ifc_offset, end_ifc_offset, 0,
                                         GetCanvasRotation, &canvas_rotation);
-  if (IsCanvasRotationInVerticalUpright(canvas_rotation))
+  if (IsCanvasRotationInVerticalUpright(canvas_rotation)) {
     return rotation;
+  }
   return rotation + 90.0f;
 }
 
@@ -274,8 +290,9 @@ int NGSvgTextQuery::CharacterNumberAtPosition(
       break;
     }
   }
-  if (!hit_item)
+  if (!hit_item) {
     return -1;
+  }
 
   // Count code units before |hit_item|.
   std::sort(item_list.begin(), item_list.end(),
@@ -284,8 +301,9 @@ int NGSvgTextQuery::CharacterNumberAtPosition(
             });
   unsigned addressable_code_unit_count = 0;
   for (const auto* item : item_list) {
-    if (item == hit_item)
+    if (item == hit_item) {
       break;
+    }
     addressable_code_unit_count += item->Text(*items).length();
   }
 

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_items_data.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_inline_node_data.h"
 
 namespace blink {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_INLINE_NODE_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_INLINE_NODE_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
@@ -50,4 +50,4 @@ struct SvgInlineNodeData final : public GarbageCollected<SvgInlineNodeData> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_INLINE_NODE_DATA_H_

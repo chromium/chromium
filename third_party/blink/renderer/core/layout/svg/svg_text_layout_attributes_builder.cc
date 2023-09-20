@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
@@ -82,10 +82,12 @@ class LayoutAttributesIterator final
 
   float MatchedOrLastRotate() const {
     uint32_t length = rotate_->length();
-    if (length == 0)
+    if (length == 0) {
       return SvgCharacterData::EmptyValue();
-    if (consumed_ < length)
+    }
+    if (consumed_ < length) {
       return rotate_->at(consumed_)->Value();
+    }
     return rotate_->at(length - 1)->Value();
   }
 
@@ -128,8 +130,9 @@ class LayoutAttributesStack final {
   // Advance all of iterators in the stack.
   void Advance() {
     DCHECK_GT(stack_.size(), 0u);
-    for (auto& iterator : stack_)
+    for (auto& iterator : stack_) {
       iterator->Advance();
+    }
   }
 
   // X(), Y(), Dx(), and Dy() return an effective 'x, 'y', 'dx', or 'dy' value,
@@ -183,14 +186,17 @@ class LayoutAttributesStack final {
     }
 
     for (const auto& attrs : base::Reversed(stack_)) {
-      if (!attrs->InTextPath())
+      if (!attrs->InTextPath()) {
         return false;
+      }
       if (horizontal) {
-        if (attrs->HasX())
+        if (attrs->HasX()) {
           return true;
+        }
       } else {
-        if (attrs->HasY())
+        if (attrs->HasY()) {
           return true;
+        }
       }
     }
     return false;
@@ -318,30 +324,34 @@ void NGSvgTextLayoutAttributesBuilder::Build(
 
       // 1.6.1.3. If "in_text_path" flag is true and the "horizontal" flag is
       // false, unset resolve_x[index].
-      if (in_text_path && !horizontal)
+      if (in_text_path && !horizontal) {
         data.x = SvgCharacterData::EmptyValue();
+      }
       // Not in the specification; Set X of the first character in a
       // <textPath> to 0 in order to:
       //   - Reset dx in AdjustPositionsDxDy().
       //   - Anchor at 0 in ApplyAnchoring().
       // https://github.com/w3c/svgwg/issues/274
-      if (first_char_in_text_path && horizontal && !data.HasX())
+      if (first_char_in_text_path && horizontal && !data.HasX()) {
         data.x = 0.0f;
+      }
 
       // 1.6.1.4. If i < length of y, then set resolve_y[index + j] to y[i].
       data.y = attr_stack.Y();
 
       // 1.6.1.5. If "in_text_path" flag is true and the "horizontal" flag is
       // true, unset resolve_y[index].
-      if (in_text_path && horizontal)
+      if (in_text_path && horizontal) {
         data.y = SvgCharacterData::EmptyValue();
+      }
       // Not in the specification; Set Y of the first character in a
       // <textPath> to 0 in order to:
       //   - Reset dy in AdjustPositionsDxDy().
       //   - Anchor at 0 in ApplyAnchoring().
       // https://github.com/w3c/svgwg/issues/274
-      if (first_char_in_text_path && !horizontal && !data.HasY())
+      if (first_char_in_text_path && !horizontal && !data.HasY()) {
         data.y = 0.0f;
+      }
 
       first_char_in_text_path = false;
 
@@ -351,11 +361,13 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       if (is_first_char) {
         is_first_char = false;
         if (horizontal) {
-          if (!data.HasX())
+          if (!data.HasX()) {
             data.x = 0.0f;
+          }
         } else {
-          if (!data.HasY())
+          if (!data.HasY()) {
             data.y = 0.0f;
+          }
         }
       }
 

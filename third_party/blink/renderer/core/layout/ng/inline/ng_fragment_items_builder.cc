@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
 namespace blink {
 

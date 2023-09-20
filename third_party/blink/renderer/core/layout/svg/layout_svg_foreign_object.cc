@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -214,8 +214,9 @@ bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
-  if (!local_location)
+  if (!local_location) {
     return false;
+  }
 
   // |local_location| already includes the offset of the <foreignObject>
   // element, but PaintLayer::HitTestLayer assumes it has not been.
@@ -232,10 +233,11 @@ bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
   // this, to better support hit tests that don't start at frame boundaries.
   PhysicalOffset original_point_in_inner_node_frame =
       result.PointInInnerNodeFrame();
-  if (result.GetHitTestRequest().ListBased())
+  if (result.GetHitTestRequest().ListBased()) {
     result.Append(layer_result);
-  else
+  } else {
     result = layer_result;
+  }
   result.SetPointInInnerNodeFrame(original_point_in_inner_node_frame);
   return retval;
 }

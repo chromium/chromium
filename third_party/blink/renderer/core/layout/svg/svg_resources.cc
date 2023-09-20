@@ -20,9 +20,9 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"

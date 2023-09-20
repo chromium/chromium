@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 

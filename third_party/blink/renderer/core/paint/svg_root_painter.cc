@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"

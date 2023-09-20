@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
 #include <algorithm>
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/resolved_text_layout_attributes_iterator.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
+#include "third_party/blink/renderer/core/layout/svg/resolved_text_layout_attributes_iterator.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
@@ -44,13 +44,15 @@ PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
   // "CSS_positions", and "resolved" is the number of addressable characters.
 
   // 1. Setup
-  if (!Setup(ifc_text_content.length()))
+  if (!Setup(ifc_text_content.length())) {
     return PhysicalSize();
+  }
 
   // 2. Set flags and assign initial positions
   SetFlags(ifc_text_content, items);
-  if (addressable_count_ == 0)
+  if (addressable_count_ == 0) {
     return PhysicalSize();
+  }
 
   // 3. Resolve character positioning
   // This was already done in PrepareLayout() step. See
@@ -60,10 +62,12 @@ PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
       inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
     const SvgCharacterData& resolve = iterator.AdvanceTo(i);
-    if (resolve.HasRotate())
+    if (resolve.HasRotate()) {
       result_[i].rotate = resolve.rotate;
-    if (resolve.anchored_chunk)
+    }
+    if (resolve.anchored_chunk) {
       result_[i].anchored_chunk = true;
+    }
   }
 
   // 4. Adjust positions: dx, dy
@@ -92,8 +96,9 @@ bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
   // 1.3. Let result be an array of length count whose entries contain the
   // per-character information described above.
   // ... If result is empty, then return result.
-  if (approximate_count == 0)
+  if (approximate_count == 0) {
     return false;
+  }
   // ==> We don't fill |result| here. We do it in the step 2.
   result_.reserve(approximate_count);
 
@@ -114,8 +119,9 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
   Vector<wtf_size_t> sorted_item_indexes;
   sorted_item_indexes.reserve(items.size());
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (items[i]->Type() == NGFragmentItem::kText)
+    if (items[i]->Type() == NGFragmentItem::kText) {
       sorted_item_indexes.push_back(i);
+    }
   }
   if (inline_node_.IsBidiEnabled()) {
     std::sort(sorted_item_indexes.data(),
@@ -153,8 +159,9 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
     }
     gfx::PointF offset(logical_offset.inline_offset,
                        logical_offset.block_offset + ascent);
-    if (!horizontal_)
+    if (!horizontal_) {
       offset.SetPoint(-offset.y(), offset.x());
+    }
     css_positions_.push_back(offset);
 
     info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
@@ -190,10 +197,12 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   for (wtf_size_t i = 0; i < addressable_count_; ++i) {
     const SvgCharacterData& resolve = iterator.AdvanceTo(i);
     // https://github.com/w3c/svgwg/issues/846
-    if (resolve.HasX())
+    if (resolve.HasX()) {
       shift.set_x(0.0f);
-    if (resolve.HasY())
+    }
+    if (resolve.HasY()) {
       shift.set_y(0.0f);
+    }
 
     // If this character is the first one in a <textPath>, reset both of x
     // and y.
@@ -225,8 +234,9 @@ void NGSvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
   // Start indexes of the highest textLength elements which were already
   // handled by ResolveTextLength().
   Vector<wtf_size_t> resolved_descendant_node_starts;
-  for (const auto& range : inline_node_.SvgTextLengthRangeList())
+  for (const auto& range : inline_node_.SvgTextLengthRangeList()) {
     ResolveTextLength(items, range, resolved_descendant_node_starts);
+  }
 }
 
 // The implementation of step 2 of "Procedure: resolve text length"
@@ -283,25 +293,28 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
     max_position = std::max(max_position, min_char_pos + inline_size);
   }
   // 2.4. If a != +Infinity then:
-  if (min_position == std::numeric_limits<float>::infinity())
+  if (min_position == std::numeric_limits<float>::infinity()) {
     return;
+  }
   // 2.4.1. Find the distance delta = ‘textLength’ computed value − (b − a).
   const float delta = text_length - (max_position - min_position);
 
   float shift;
   if (length_adjust == kSVGLengthAdjustSpacingAndGlyphs) {
     // If the target range contains no glyphs, we do nothing.
-    if (min_position >= max_position)
+    if (min_position >= max_position) {
       return;
+    }
     float length_adjust_scale = text_length / (max_position - min_position);
     for (wtf_size_t k = i; k < j_plus_1; ++k) {
       SvgPerCharacterInfo& info = result_[k];
       float original_x = *info.x;
       float original_y = *info.y;
-      if (horizontal_)
+      if (horizontal_) {
         *info.x = min_position + (*info.x - min_position) * length_adjust_scale;
-      else
+      } else {
         *info.y = min_position + (*info.y - min_position) * length_adjust_scale;
+      }
       info.text_length_shift_x += *info.x - original_x;
       info.text_length_shift_y += *info.y - original_y;
       if (!info.middle && !info.text_length_resolved) {
@@ -336,8 +349,9 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
     //  ==> This loop should run in visual order.
     Vector<wtf_size_t> visual_indexes;
     visual_indexes.reserve(j_plus_1 - i);
-    for (wtf_size_t k = i; k < j_plus_1; ++k)
+    for (wtf_size_t k = i; k < j_plus_1; ++k) {
       visual_indexes.push_back(k);
+    }
     if (inline_node_.IsBidiEnabled()) {
       std::sort(visual_indexes.begin(), visual_indexes.end(),
                 [&](wtf_size_t a, wtf_size_t b) {
@@ -360,8 +374,9 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
       // character in a resolved descendant node other than the first character
       // then shift = shift + small-delta.
       if (!info.middle && (base::Contains(resolved_descendant_node_starts, k) ||
-                           !info.text_length_resolved))
+                           !info.text_length_resolved)) {
         shift += character_delta;
+      }
       info.text_length_resolved = true;
     }
   }
@@ -369,12 +384,14 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
   // Note: This is not defined by the algorithm. But it seems major SVG
   // engines work so.
   for (wtf_size_t k = j_plus_1; k < result_.size(); ++k) {
-    if (result_[k].anchored_chunk)
+    if (result_[k].anchored_chunk) {
       break;
-    if (horizontal_)
+    }
+    if (horizontal_) {
       *result_[k].x += shift;
-    else
+    } else {
       *result_[k].y += shift;
+    }
   }
 
   // Remove resolved_descendant_node_starts entries for descendant nodes,
@@ -418,8 +435,9 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
       shift.set_x(resolve.x * scaling_factor - css_positions_[i].x() -
                   result_[i].text_length_shift_x);
       // Take into account of baseline-shift.
-      if (!horizontal_)
+      if (!horizontal_) {
         shift.set_x(shift.x() + css_positions_[i].x());
+      }
       shift.set_x(ClampTo<float>(shift.x()));
     }
     // 3.2. If resolved_y[index] is set, then let
@@ -429,18 +447,20 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
       shift.set_y(resolve.y * scaling_factor - css_positions_[i].y() -
                   result_[i].text_length_shift_y);
       // Take into account of baseline-shift.
-      if (horizontal_)
+      if (horizontal_) {
         shift.set_y(shift.y() + css_positions_[i].y());
+      }
       shift.set_y(ClampTo<float>(shift.y()));
     }
 
     // If this character is the first one in a <textPath>, reset the
     // block-direction shift.
     if (IsFirstCharacterInTextPath(i)) {
-      if (horizontal_)
+      if (horizontal_) {
         shift.set_y(0.0f);
-      else
+      } else {
         shift.set_x(0.0f);
+      }
     }
 
     // 3.3. Let result.x[index] = result.x[index] + shift.x and
@@ -454,8 +474,9 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
       result_[i].anchored_chunk = false;
       // 3.4.2. If index + 1 < count, then set the "anchored chunk" flag of
       // result[index + 1] to true.
-      if (i + 1 < result_.size())
+      if (i + 1 < result_.size()) {
         result_[i + 1].anchored_chunk = true;
+      }
     }
   }
 }
@@ -547,10 +568,11 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
       for (wtf_size_t k = i; k <= j; ++k) {
         // 1.3.3.1. Add shift to the x coordinate of the position in result[k],
         // if the "horizontal" flag is true, and to the y coordinate otherwise.
-        if (horizontal_)
+        if (horizontal_) {
           *result_[k].x += shift;
-        else
+        } else {
           *result_[k].y += shift;
+        }
       }
     }
     i = j + 1;
@@ -560,8 +582,9 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
 void NGSvgTextLayoutAlgorithm::PositionOnPath(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   const auto& ranges = inline_node_.SvgTextPathRangeList();
-  if (ranges.empty())
+  if (ranges.empty()) {
     return;
+  }
 
   wtf_size_t range_index = 0;
   wtf_size_t in_path_index = WTF::kNotFound;
@@ -649,11 +672,13 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
             PointAndTangent point_tangent;
             PathPositionMapper::PositionType position_type =
                 path_mapper->PointAndNormalAtLength(mid, point_tangent);
-            if (position_type != PathPositionMapper::kOnPath)
+            if (position_type != PathPositionMapper::kOnPath) {
               info.hidden = true;
+            }
             point_tangent.tangent_in_degrees += info.rotate.value_or(0.0f);
-            if (!horizontal_)
+            if (!horizontal_) {
               point_tangent.tangent_in_degrees -= 90;
+            }
             info.rotate = point_tangent.tangent_in_degrees;
             if (*info.rotate == 0.0f) {
               if (horizontal_) {
@@ -752,8 +777,9 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
         }
       }
     }
-    if (range_index < ranges.size() && index == ranges[range_index].end_index)
+    if (range_index < ranges.size() && index == ranges[range_index].end_index) {
       ++range_index;
+    }
   }
 }
 
@@ -761,8 +787,9 @@ PhysicalSize NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   gfx::RectF unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
-    if (info.middle)
+    if (info.middle) {
       continue;
+    }
     NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
     const auto* layout_object =
         To<LayoutSVGInlineText>(item->GetLayoutObject());
@@ -833,8 +860,9 @@ float NGSvgTextLayoutAlgorithm::ScalingFactorAt(
 
 bool NGSvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
     wtf_size_t index) const {
-  if (!result_[index].anchored_chunk)
+  if (!result_[index].anchored_chunk) {
     return false;
+  }
   // This implementation is O(N) where N is the number of <textPath>s in
   // a <text>. If this function is a performance bottleneck, we should add
   // |first_in_text_path| flag to SvgCharacterData.
