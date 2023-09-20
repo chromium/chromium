@@ -33,6 +33,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
+<variants name="ModelExecutionFeature">
+  <variant name="Unknown" summary="Unknown"/>
+  <variant name="WallpaperSearch" summary="Wallpaper search"/>
+</variants>
+
 <variants name="OptimizationTarget">
   <variant name="AutofillFieldTypeClassification"
       summary="Classifies autofill field types"/>
@@ -490,6 +495,52 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the metadata fetch validation received the hints correctly.
     Recorded on iOS when the mainframe navigation commits.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutionFetcher.FetchLatency.{ModelExecutionFeature}"
+    units="ms" expires_after="2024-03-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    The duration of a request to fetch model execution from the remote
+    Optimization Guide Service starts until it completes. Recorded every time
+    model execution results are fetched and parsed successfully.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelExecutionFetcher.NetErrorCode"
+    enum="NetErrorCodes" expires_after="2024-03-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Net error codes for each model execution request to the Optimization Guide
+    Service, recorded on success and failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutionFetcher.RequestStatus.{ModelExecutionFeature}"
+    enum="OptimizationGuideFetcherRequestStatus" expires_after="2024-03-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    The status of making a model execution request for {ModelExecutionFeature}
+    to the Optmization Guide Service. This includes whether a network request
+    was actually sent or not.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelExecutionFetcher.Status"
+    enum="HttpResponseCode" expires_after="2024-03-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    The HTTP response code for each model execution request to the Optimization
+    Guide Service, recorded on success and failure.
   </summary>
 </histogram>
 

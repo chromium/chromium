@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -35,6 +36,7 @@ namespace android {
 class OptimizationGuideBridge;
 }  // namespace android
 class ChromeHintsManager;
+class ModelExecutionManager;
 class ModelInfo;
 class OptimizationGuideStore;
 class PredictionManager;
@@ -63,6 +65,7 @@ class OptimizationGuideKeyedService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider,
+      public optimization_guide::OptimizationGuideModelExecutor,
       public ProfileObserver {
  public:
   explicit OptimizationGuideKeyedService(
@@ -95,6 +98,13 @@ class OptimizationGuideKeyedService
   void RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
+
+  // optimization_guide::OptimizationGuideModelExecutor implementation:
+  void ExecuteModel(
+      optimization_guide::proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& request_metadata,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback);
 
   // Adds hints for a URL with provided metadata to the optimization guide.
   // For testing purposes only. This will flush any callbacks for |url| that
@@ -210,6 +220,10 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
+  // Manages the model execution. Not created for off the record profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionManager>
+      model_execution_manager_;
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
