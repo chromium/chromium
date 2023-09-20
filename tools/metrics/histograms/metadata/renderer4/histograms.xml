@@ -51,26 +51,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.CompositorTouchScrollUpdateThread"
-    enum="ScrollThread" expires_after="M97">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Whether the scroll from touch is executed on main thread. Recorded once for
-    each scroll. Contains incomplete data from M85 to M89 inclusively.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.CompositorWheelScrollUpdateThread"
-    enum="ScrollThread" expires_after="M97">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Whether the scroll from mouse wheel is executed on main thread. Recorded
-    once for each scroll. Contains incomplete data from M85 to M89 inclusively.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
     expires_after="2024-03-17">
   <owner>vmpstr@chromium.org</owner>

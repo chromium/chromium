@@ -33,18 +33,6 @@ namespace {
 
 enum SlowScrollMetricThread { MAIN_THREAD, CC_THREAD };
 
-void RecordCompositorSlowScrollMetric(ui::ScrollInputType type,
-                                      SlowScrollMetricThread scroll_thread) {
-  bool scroll_on_main_thread = (scroll_thread == MAIN_THREAD);
-  if (type == ui::ScrollInputType::kWheel) {
-    UMA_HISTOGRAM_BOOLEAN("Renderer4.CompositorWheelScrollUpdateThread",
-                          scroll_on_main_thread);
-  } else if (type == ui::ScrollInputType::kTouchscreen) {
-    UMA_HISTOGRAM_BOOLEAN("Renderer4.CompositorTouchScrollUpdateThread",
-                          scroll_on_main_thread);
-  }
-}
-
 }  // namespace
 
 InputHandlerCommitData::InputHandlerCommitData() = default;
@@ -258,7 +246,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     // should never send scrolls to the main thread.
     DCHECK(!unification_enabled);
 
-    RecordCompositorSlowScrollMetric(type, MAIN_THREAD);
     scroll_status.thread = InputHandler::ScrollThread::kScrollOnMainThread;
     return scroll_status;
   } else if (!scrolling_node) {
@@ -2045,7 +2032,6 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
   last_scroll_begin_state_ = scroll_state;
 
   compositor_delegate_->DidStartScroll();
-  RecordCompositorSlowScrollMetric(type, CC_THREAD);
 
   UpdateScrollSourceInfo(scroll_state, type);
 }
