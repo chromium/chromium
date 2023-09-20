@@ -4,8 +4,6 @@
 
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 
-#include <stddef.h>
-
 #include <string>
 #include <utility>
 
@@ -14,7 +12,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -31,9 +28,6 @@ constexpr char kKeyPiece[] = "key_piece";
 constexpr char kSourceKeys[] = "source_keys";
 
 bool AreSourceKeysValid(const AggregatableTriggerData::Keys& source_keys) {
-  if (source_keys.size() > kMaxAggregationKeysPerSourceOrTrigger)
-    return false;
-
   return base::ranges::all_of(source_keys, [](const auto& key) {
     return AggregationKeyIdHasValidLength(key);
   });
@@ -73,15 +67,8 @@ ParseSourceKeys(base::Value::Dict& registration) {
         TriggerRegistrationError::kAggregatableTriggerDataSourceKeysWrongType);
   }
 
-  const size_t num_source_keys = l->size();
-
-  if (num_source_keys > kMaxAggregationKeysPerSourceOrTrigger) {
-    return base::unexpected(TriggerRegistrationError::
-                                kAggregatableTriggerDataSourceKeysTooManyKeys);
-  }
-
   AggregatableTriggerData::Keys source_keys;
-  source_keys.reserve(num_source_keys);
+  source_keys.reserve(l->size());
 
   for (auto& maybe_string_value : *l) {
     std::string* s = maybe_string_value.GetIfString();

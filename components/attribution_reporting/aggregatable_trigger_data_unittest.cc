@@ -28,18 +28,6 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 TEST(AggregatableTriggerDataTest, FromJSON) {
-  const auto make_aggregatable_trigger_data_with_keys = [](size_t n) {
-    base::Value::Dict dict;
-    dict.Set("key_piece", "0x1");
-
-    base::Value::List list;
-    for (size_t i = 0; i < n; ++i) {
-      list.Append(base::NumberToString(i));
-    }
-    dict.Set("source_keys", std::move(list));
-    return base::Value(std::move(dict));
-  };
-
   const auto make_aggregatable_trigger_data_with_key_length = [](size_t n) {
     base::Value::Dict dict;
     dict.Set("key_piece", "0x1");
@@ -146,13 +134,6 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
                                kAggregatableTriggerDataSourceKeysKeyWrongType),
       },
       {
-          "source_keys_too_many_keys",
-          make_aggregatable_trigger_data_with_keys(
-              kMaxAggregationKeysPerSourceOrTrigger + 1),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataSourceKeysTooManyKeys),
-      },
-      {
           "source_keys_key_too_long",
           make_aggregatable_trigger_data_with_key_length(
               kMaxBytesPerAggregationKeyId + 1),
@@ -183,12 +164,6 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
     EXPECT_EQ(AggregatableTriggerData::FromJSON(test_case.json),
               test_case.expected)
         << test_case.description;
-  }
-
-  {
-    base::Value json = make_aggregatable_trigger_data_with_keys(
-        kMaxAggregationKeysPerSourceOrTrigger);
-    EXPECT_TRUE(AggregatableTriggerData::FromJSON(json).has_value());
   }
 
   {

@@ -125,7 +125,7 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
    private:
     std::string GetKey(size_t index) const {
       // Note that this might not be robust as
-      // `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger` varies
+      // `attribution_reporting::kMaxAggregationKeysPerSource` varies
       // which might generate invalid JSON.
       return std::string(key_size, 'A' + index % 26 + 32 * (index / 26));
     }
@@ -133,8 +133,8 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
 
   const TestCase kTestCases[] = {
       {"empty", true, 0, 0},
-      {"max_keys", true, kMaxAggregationKeysPerSourceOrTrigger, 1},
-      {"too_many_keys", false, kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
+      {"max_keys", true, kMaxAggregationKeysPerSource, 1},
+      {"too_many_keys", false, kMaxAggregationKeysPerSource + 1, 1},
       {"max_key_size", true, 1, kMaxBytesPerAggregationKeyId},
       {"excessive_key_size", false, 1, kMaxBytesPerAggregationKeyId + 1},
   };

@@ -25,7 +25,7 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 bool IsValid(const AggregationKeys::Keys& keys) {
-  return keys.size() <= kMaxAggregationKeysPerSourceOrTrigger &&
+  return keys.size() <= kMaxAggregationKeysPerSource &&
          base::ranges::all_of(keys, [](const auto& key) {
            return AggregationKeyIdHasValidLength(key.first);
          });
@@ -35,7 +35,7 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(
-      kMaxAggregationKeysPerSourceOrTrigger < kExclusiveMaxHistogramValue,
+      kMaxAggregationKeysPerSource < kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource", count);
@@ -63,7 +63,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
   const size_t num_keys = dict->size();
 
-  if (num_keys > kMaxAggregationKeysPerSourceOrTrigger) {
+  if (num_keys > kMaxAggregationKeysPerSource) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysTooManyKeys);
   }

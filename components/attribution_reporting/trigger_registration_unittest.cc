@@ -280,7 +280,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError6";
+      "Conversions.TriggerRegistrationError7";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -373,7 +373,7 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError6";
+      "Conversions.TriggerRegistrationError7";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
