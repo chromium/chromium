@@ -44082,6 +44082,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4662" label="ViewportFitContain"/>
   <int value="4663" label="ViewportFitCover"/>
   <int value="4664" label="ViewportFitCoverOrSafeAreaInsetBottom"/>
+  <int value="4665" label="OutOfFlowJustifySelfNoInsets"/>
+  <int value="4666" label="OutOfFlowJustifySelfSingleInset"/>
+  <int value="4667" label="OutOfFlowJustifySelfBothInsets"/>
+  <int value="4668" label="OutOfFlowAlignSelfNoInsets"/>
+  <int value="4669" label="OutOfFlowAlignSelfSingleInset"/>
+  <int value="4670" label="OutOfFlowAlignSelfBothInsets"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

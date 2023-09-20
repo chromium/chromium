@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -1841,6 +1842,33 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
       anchor_evaluator);
+
+  {
+    auto& document = node_info.node.GetDocument();
+    if (candidate_style.ResolvedJustifySelf(ItemPosition::kNormal)
+            .GetPosition() != ItemPosition::kNormal) {
+      if (insets.inline_start && insets.inline_end) {
+        UseCounter::Count(document,
+                          WebFeature::kOutOfFlowJustifySelfBothInsets);
+      } else if (insets.inline_start || insets.inline_end) {
+        UseCounter::Count(document,
+                          WebFeature::kOutOfFlowJustifySelfSingleInset);
+      } else {
+        UseCounter::Count(document, WebFeature::kOutOfFlowJustifySelfNoInsets);
+      }
+    }
+
+    if (candidate_style.ResolvedAlignSelf(ItemPosition::kNormal)
+            .GetPosition() != ItemPosition::kNormal) {
+      if (insets.block_start && insets.block_end) {
+        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfBothInsets);
+      } else if (insets.block_start || insets.block_end) {
+        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfSingleInset);
+      } else {
+        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfNoInsets);
+      }
+    }
+  }
 
   const LogicalRect unclamped_available_rect =
       ComputeOutOfFlowAvailableRect(node_info.node, node_info.constraint_space,

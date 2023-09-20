@@ -1760,5 +1760,35 @@ TEST_F(NGOutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   EXPECT_EQ(fragmentainer->Children().size(), 2u);
 }
 
+TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="position: absolute; justify-self: center;"></div>
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfNoInsets));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfNoInsets));
+}
+
+TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="position: absolute; right: 0; bottom: 0; justify-self: center;"></div>
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfSingleInset));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfSingleInset));
+}
+
+TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="position: absolute; inset: 0; justify-self: center;"></div>
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfBothInsets));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfBothInsets));
+}
+
 }  // namespace
 }  // namespace blink
