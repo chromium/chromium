@@ -5549,7 +5549,7 @@
   {
     "name": "messages-for-android-stacking-animation",
     "owners": [ "lazzzis", "aishwaryarj"],
-    "expiry_milestone": 118
+    "expiry_milestone": 125
   },
   {
     "name": "metal",
