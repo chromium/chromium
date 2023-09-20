@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/observer_list_types.h"
 
 namespace drivefs {
@@ -19,8 +20,10 @@ class SyncingStatus;
 
 struct SyncState;
 
-class DriveFsHostObserver : public base::CheckedObserver {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHostObserver
+    : public base::CheckedObserver {
  public:
+  ~DriveFsHostObserver() override;
   virtual void OnUnmounted() {}
   virtual void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {}
   virtual void OnIndividualSyncingStatusesDelta(

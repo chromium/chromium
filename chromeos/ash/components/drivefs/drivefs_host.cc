@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -438,6 +439,10 @@ mojom::QueryParameters::QuerySource DriveFsHost::PerformSearch(
 
 std::string DriveFsHost::GetDefaultMountDirName() const {
   return base::StrCat({"drivefs-", delegate_->GetObfuscatedAccountId()});
+}
+
+DriveFsHostObserver::~DriveFsHostObserver() {
+  CHECK(!IsInObserverList());
 }
 
 }  // namespace drivefs
