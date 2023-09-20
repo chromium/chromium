@@ -1072,7 +1072,7 @@ BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
 // https://github.com/WebAssembly/gc.
 BASE_FEATURE(kWebAssemblyGarbageCollection,
              "WebAssemblyGarbageCollection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WebAssembly lazy compilation (JIT on first call).
 BASE_FEATURE(kWebAssemblyLazyCompilation,
