@@ -257,11 +257,6 @@ targets.generated_script(
     ],
 )
 
-targets.compile_target(
-    name = "boundary_interface_example_apk",
-    label = "//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk",
-)
-
 # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
 # targets.windowed_test_launcher(
 #     name = "browser_tests_apprtc",
@@ -928,11 +923,6 @@ targets.console_test_launcher(
     label = "//ui/display:display_unittests",
 )
 
-targets.compile_target(
-    name = "dump_syms",
-    label = "//third_party/breakpad:dump_syms",
-)
-
 targets.windowed_test_launcher(
     name = "elevation_service_unittests",
     label = "//chrome/elevation_service:elevation_service_unittests",
@@ -1389,11 +1379,6 @@ targets.windowed_test_launcher(
 targets.windowed_test_launcher(
     name = "message_center_unittests",
     label = "//ui/message_center:message_center_unittests",
-)
-
-targets.compile_target(
-    name = "microdump_stackwalk",
-    label = "//third_party/breakpad:microdump_stackwalk",
 )
 
 targets.windowed_test_launcher(

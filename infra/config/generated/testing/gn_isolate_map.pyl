@@ -211,10 +211,6 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
-  "boundary_interface_example_apk": {
-    "label": "//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk",
-    "type": "additional_compile_target",
-  },
   "boringssl_crypto_tests": {
     "label": "//third_party/boringssl:boringssl_crypto_tests",
     "type": "console_test_launcher",
@@ -748,10 +744,6 @@
     "label": "//ui/display:display_unittests",
     "type": "console_test_launcher",
   },
-  "dump_syms": {
-    "label": "//third_party/breakpad:dump_syms",
-    "type": "additional_compile_target",
-  },
   "elevation_service_unittests": {
     "label": "//chrome/elevation_service:elevation_service_unittests",
     "type": "windowed_test_launcher",
@@ -1128,10 +1120,6 @@
   "message_center_unittests": {
     "label": "//ui/message_center:message_center_unittests",
     "type": "windowed_test_launcher",
-  },
-  "microdump_stackwalk": {
-    "label": "//third_party/breakpad:microdump_stackwalk",
-    "type": "additional_compile_target",
   },
   "midi_unittests": {
     "label": "//media/midi:midi_unittests",

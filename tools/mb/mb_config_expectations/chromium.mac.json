@@ -86,6 +86,15 @@
       "use_remoteexec": true
     }
   },
+  "mac-arm64-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "mac-arm64-on-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,

@@ -497,9 +497,6 @@
       "android-13-x64-rel": {
         "_default": "_default"
       },
-      "android-archive-dbg": {
-        "_default": "_default"
-      },
       "android-archive-rel": {
         "_default": "_default"
       },
@@ -873,9 +870,6 @@
       "lacros64-archive-rel": {
         "_default": "_default"
       },
-      "linux-archive-dbg": {
-        "_default": "_default"
-      },
       "linux-archive-rel": {
         "_default": "_default"
       },
@@ -1003,16 +997,13 @@
       "linux-win_cross-rel": {
         "_default": "_default"
       },
-      "mac-archive-dbg": {
-        "_default": "_default"
-      },
       "mac-archive-rel": {
         "_default": "_default"
       },
-      "mac-arm64-archive-dbg": {
+      "mac-arm64-archive-rel": {
         "_default": "_default"
       },
-      "mac-arm64-archive-rel": {
+      "mac-arm64-dbg": {
         "_default": "_default"
       },
       "mac-arm64-on-arm64-rel": {
@@ -1039,9 +1030,6 @@
       "mac13-arm64-rel-tests": {
         "_default": "_default"
       },
-      "win-archive-dbg": {
-        "_default": "_default"
-      },
       "win-archive-rel": {
         "_default": "_default"
       },
@@ -1049,9 +1037,6 @@
         "_default": "_default"
       },
       "win-rel-cft": {
-        "_default": "_default"
-      },
-      "win32-archive-dbg": {
         "_default": "_default"
       },
       "win32-archive-rel": {

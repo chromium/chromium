@@ -371,11 +371,6 @@
     'name': 'chromium',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'android-archive-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'android-archive-rel': {
         'additional_compile_targets': [
           'all',
@@ -414,11 +409,6 @@
         ],
         'os_type': 'chromeos',
       },
-      'linux-archive-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'linux-archive-rel': {
         'mixins': [
           'linux-archive-rel-args',
@@ -437,18 +427,8 @@
           'all',
         ],
       },
-      'mac-archive-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'mac-archive-rel': {
         'mixins': ['mac-archive-rel-args'],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-archive-dbg': {
         'additional_compile_targets': [
           'all',
         ],
@@ -464,11 +444,6 @@
           'all',
         ],
       },
-      'win-archive-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'win-archive-rel': {
         'additional_compile_targets': [
           'all',
@@ -478,11 +453,6 @@
         },
       },
       'win-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win32-archive-dbg': {
         'additional_compile_targets': [
           'all',
         ],
@@ -585,10 +555,7 @@
       },
       'Android arm Builder (dbg)': {
         'additional_compile_targets': [
-          'android_lint',
-          'boundary_interface_example_apk',
-          'dump_syms',
-          'microdump_stackwalk',
+          'all',
         ],
         'test_suites': {
           'junit_tests': 'chromium_junit_tests_no_swarming',
@@ -5159,6 +5126,11 @@
           'isolated_scripts': 'ios_simulator_noncq_tests'
         },
       },
+      'mac-arm64-dbg': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'mac-arm64-on-arm64-rel': {
         'additional_compile_targets': [
           'all',
@@ -6313,6 +6285,11 @@
         'test_suites': {
           'scripts': 'chromium_win_scripts',
         },
+      },
+      'Win x64 Builder (dbg)': {
+        'additional_compile_targets': [
+          'all'
+        ],
       },
       'Win10 Tests x64': {
         'mixins': [

@@ -45,40 +45,6 @@ consoles.console_view(
 )
 
 ci.builder(
-    name = "android-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "main_builder",
-        ),
-    ),
-    cores = 8,
-    tree_closing = True,
-    # Bump to 32 if needed.
-    console_view_entry = consoles.console_view_entry(
-        category = "android",
-        short_name = "dbg",
-    ),
-    execution_timeout = 4 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "android-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -415,35 +381,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-        ),
-    ),
-    # Bump to 32 if needed.
-    cores = 8,
-    tree_closing = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "dbg",
-    ),
-    contact_team_email = "chrome-browser-infra-team@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "linux-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -516,31 +453,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "mac-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-        ),
-    ),
-    cores = 12,
-    os = os.MAC_DEFAULT,
-    tree_closing = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "dbg",
-    ),
-)
-
-ci.builder(
     name = "mac-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -574,31 +486,6 @@ ci.builder(
             ],
         },
     },
-)
-
-ci.builder(
-    name = "mac-arm64-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-        ),
-    ),
-    cores = 12,
-    os = os.MAC_DEFAULT,
-    tree_closing = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac|arm",
-        short_name = "dbg",
-    ),
 )
 
 ci.builder(
@@ -669,28 +556,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "win-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-        ),
-    ),
-    cores = 32,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "win|dbg",
-        short_name = "64",
-    ),
-)
-
-ci.builder(
     name = "win-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -753,30 +618,6 @@ ci.builder(
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
-    name = "win32-archive-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-        ),
-    ),
-    cores = 32,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "win|dbg",
-        short_name = "32",
-    ),
 )
 
 ci.builder(

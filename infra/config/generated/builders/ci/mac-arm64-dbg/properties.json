@@ -6,20 +6,21 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "win-archive-dbg",
+              "builder": "mac-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium",
+              "builder_group": "chromium.mac",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "clobber",
                   "mb"
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "mac"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -31,7 +32,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "win-archive-dbg",
+          "builder": "mac-arm64-dbg",
           "project": "chromium"
         }
       ]
@@ -50,7 +51,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium",
+  "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromium"
