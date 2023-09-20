@@ -872,7 +872,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
+        verify(mFirstRunPageDelegateMock, timeout(1000)).advanceToNextPage();
     }
 
     @Test

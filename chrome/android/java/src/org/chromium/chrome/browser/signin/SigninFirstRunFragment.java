@@ -261,10 +261,14 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     /** Implements {@link DeviceLockCoordinator.Delegate}. */
     @Override
     public void onDeviceLockReady() {
-        restoreMainView();
-        mDeviceLockCoordinator.destroy();
-        mDeviceLockCoordinator = null;
-        mSigninFirstRunCoordinator.continueSignIn();
+        if (mFragmentView != null) {
+            restoreMainView();
+        }
+        if (mDeviceLockCoordinator != null) {
+            mDeviceLockCoordinator.destroy();
+            mDeviceLockCoordinator = null;
+            mSigninFirstRunCoordinator.continueSignIn();
+        }
     }
 
     /** Implements {@link DeviceLockCoordinator.Delegate}. */
