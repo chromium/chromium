@@ -51,7 +51,9 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
       forwarding_client_(std::move(forwarding_client)),
       body_consumer_watcher_(FROM_HERE,
                              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                             base::SequencedTaskRunner::GetCurrentDefault()) {
+                             base::SequencedTaskRunner::GetCurrentDefault()),
+      request_start_(base::TimeTicks::Now()),
+      request_start_time_(base::Time::Now()) {
   // The feature param may override the buffer size.
   uint32_t data_pipe_size = base::GetFieldTrialParamByFeatureAsInt(
       features::kServiceWorkerBypassFetchHandler,
@@ -118,6 +120,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
       head_ = std::move(head);
+      head_->load_timing.request_start = request_start_;
+      head_->load_timing.request_start_time = request_start_time_;
       cached_metadata_ = std::move(cached_metadata);
       body_ = std::move(body);
       WatchDataUpdate();

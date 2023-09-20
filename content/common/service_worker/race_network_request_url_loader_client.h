@@ -225,6 +225,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   absl::optional<base::TimeTicks> fetch_handler_end_time_;
   absl::optional<bool> is_fetch_handler_fallback_;
 
+  base::TimeTicks request_start_;
+  base::Time request_start_time_;
+
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};
 };
