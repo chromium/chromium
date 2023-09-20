@@ -50,6 +50,8 @@ class ObservableWebView : public WebView {
   void ResetDelegate();
 
  private:
+  // TODO(https://crbug.com/1484794): Resolve the lifetime issues around this
+  // member, then mark this as triaged.
   raw_ptr<ui::WebDialogDelegate, DanglingUntriaged> delegate_;
 };
 
