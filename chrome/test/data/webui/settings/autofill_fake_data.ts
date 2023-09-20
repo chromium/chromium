@@ -254,7 +254,6 @@ export class TestAutofillManager extends TestBrowserProxy implements
 export class PaymentsManagerExpectations {
   requestedCreditCards: number = 0;
   listeningCreditCards: number = 0;
-  requestedUpiIds: number = 0;
   removedCreditCards: number = 0;
   clearedCachedCreditCards: number = 0;
   addedVirtualCards: number = 0;
@@ -278,7 +277,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   data: {
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
-    upiIds: string[],
   };
 
   lastCallback:
@@ -290,7 +288,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'removePersonalDataManagerListener',
       'getCreditCardList',
       'getIbanList',
-      'getUpiIdList',
       'clearCachedCreditCard',
       'removeCreditCard',
       'removeIban',
@@ -304,7 +301,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     this.data = {
       creditCards: [],
       ibans: [],
-      upiIds: [],
     };
 
     // Holds the last callbacks so they can be called when needed.
@@ -325,11 +321,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   getCreditCardList() {
     this.methodCalled('getCreditCardList');
     return Promise.resolve(this.data.creditCards);
-  }
-
-  getUpiIdList() {
-    this.methodCalled('getUpiIdList');
-    return Promise.resolve(this.data.upiIds);
   }
 
   clearCachedCreditCard(_guid: string) {

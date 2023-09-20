@@ -216,7 +216,6 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
       return FieldTypeGroup::kBirthdateField;
 
     case HtmlFieldType::kUpiVpa:
-      // TODO(crbug/702223): Add support for UPI-VPA.
       return FieldTypeGroup::kNoGroup;
 
     case HtmlFieldType::kOneTimeCode:

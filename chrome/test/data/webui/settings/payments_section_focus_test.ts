@@ -27,7 +27,7 @@ suite('PaymentSectionFocusTests', function() {
         [
           createIbanEntry('FI1410093000123458', 'NickName'),
         ],
-        [], {credit_card_enabled: {value: true}});
+        {credit_card_enabled: {value: true}});
     const manager = (PaymentsManagerImpl.getInstance() as TestPaymentsManager);
 
     const addButton = section.shadowRoot!.querySelector('#addPaymentMethods');

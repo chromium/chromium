@@ -59,8 +59,7 @@ suite('PaymentsSection', function() {
 
   test('verifyNoCreditCards', async function() {
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -86,7 +85,7 @@ suite('PaymentsSection', function() {
       showIbansSettings: false,
     });
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
+        /*creditCards=*/[], /*ibans=*/[],
         {credit_card_enabled: {value: false}});
 
     assertFalse(section.$.autofillCreditCardToggle.disabled);
@@ -107,8 +106,7 @@ suite('PaymentsSection', function() {
     ];
 
     const section = await createPaymentsSection(
-        creditCards, /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        creditCards, /*ibans=*/[], {credit_card_enabled: {value: true}});
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(
@@ -137,8 +135,7 @@ suite('PaymentsSection', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isMigratable = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -149,8 +146,7 @@ suite('PaymentsSection', function() {
     creditCard.metadata!.isMigratable = true;
     // Mock credit card save toggle is turned off by users.
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: false}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: false}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -161,8 +157,7 @@ suite('PaymentsSection', function() {
     // Mock credit card is not valid.
     creditCard.metadata!.isMigratable = false;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -172,8 +167,7 @@ suite('PaymentsSection', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isMigratable = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertFalse(section.$.migrateCreditCards.hidden);
   });
@@ -189,8 +183,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
@@ -207,8 +200,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertFalse(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
@@ -222,8 +214,7 @@ suite('PaymentsSection', function() {
     loadTimeData.overrideValues(
         {fidoAuthenticationAvailableForAutofill: false});
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
     assertFalse(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
   });
@@ -235,7 +226,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           credit_card_fido_auth_enabled: {value: true},
         });
@@ -251,7 +242,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           credit_card_fido_auth_enabled: {value: false},
         });
@@ -265,7 +256,7 @@ suite('PaymentsSection', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], /*prefValues=*/ {});
+        /*creditCards=*/[], /*ibans=*/[], /*prefValues=*/ {});
 
     section.$.canMakePaymentToggle.click();
     const result =
@@ -277,7 +268,7 @@ suite('PaymentsSection', function() {
   test(
       'verifyNoAddPaymentMethodsButtonIfPaymentPrefDisabled', async function() {
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
+            /*creditCards=*/[], /*ibans=*/[],
             {credit_card_enabled: {value: false}});
 
         const addPaymentMethodsButton =
@@ -305,7 +296,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -329,7 +320,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -355,7 +346,7 @@ suite('PaymentsSection', function() {
         });
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -370,7 +361,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: false});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -395,7 +386,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: false});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -420,7 +411,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: false},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -444,7 +435,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: false},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -468,7 +459,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -495,7 +486,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -519,8 +510,8 @@ suite('PaymentsSection', function() {
   test('verifyEditLocalCardTriggersUserAuth', async function() {
     loadTimeData.overrideValues({deviceAuthAvailable: true});
 
-    const section = await createPaymentsSection(
-        [createCreditCardEntry()], /*ibans=*/[], /*upiIds=*/[], {
+    const section =
+        await createPaymentsSection([createCreditCardEntry()], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           payment_methods_mandatory_reauth: {value: true},
         });
@@ -556,7 +547,7 @@ suite('PaymentsSection', function() {
     });
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
         });
     const cvcStorageToggle =

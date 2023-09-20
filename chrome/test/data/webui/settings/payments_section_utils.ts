@@ -22,13 +22,12 @@ import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_
  */
 export async function createPaymentsSection(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
-    ibans: chrome.autofillPrivate.IbanEntry[], upiIds: string[],
+    ibans: chrome.autofillPrivate.IbanEntry[],
     prefValues: any): Promise<SettingsPaymentsSectionElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
-  paymentsManager.data.upiIds = upiIds;
   // <if expr="is_win or is_macosx">
   paymentsManager.setIsDeviceAuthAvailable(
       loadTimeData.getBoolean('deviceAuthAvailable'));
