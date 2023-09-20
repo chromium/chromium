@@ -656,6 +656,159 @@ TEST(AutofillStructuredAddressAddressComponent, FormatValueFromSubcomponents) {
   EXPECT_EQ(expected_value, actual_value);
 }
 
+// Creates a compound name for testing purposes.
+class TestCompoundNameAddressComponentCustomFormatSeparator
+    : public AddressComponent {
+ public:
+  TestCompoundNameAddressComponentCustomFormatSeparator()
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+  }
+
+  // Introduces a custom format with multiple separators.
+  std::u16string GetFormatString() const override {
+    return u"${NAME_FIRST}, ${NAME_MIDDLE} .,${NAME_LAST}";
+  }
+};
+
+// Tests formatting the unstructured value from the subcomponents.
+TEST(AutofillStructuredAddressAddressComponent,
+     FormatValueFromSubcomponentsSeparators) {
+  std::u16string first_name = u"First";
+  std::u16string middle_name = u"Middle";
+  std::u16string last_name = u"Last";
+
+  // Create a compound component and set the values.
+  TestCompoundNameAddressComponentCustomFormatSeparator compound_component;
+  compound_component.SetValueForType(NAME_FIRST, first_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_MIDDLE, middle_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_LAST, last_name,
+                                     VerificationStatus::kUserVerified);
+
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First, Middle .,Last");
+
+  // Middle name is empty. The separator for middle name should be ignored.
+  compound_component.SetValueForType(NAME_MIDDLE, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First .,Last");
+
+  // Last name is also empty. Only the first name token should be shown, no
+  // separators.
+  compound_component.SetValueForType(NAME_LAST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First");
+
+  // All tokens are dropped. The formatted string should be empty.
+  compound_component.SetValueForType(NAME_FIRST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"");
+
+  // Middle and last name are non-empty. Separator for middle name should be
+  // ignored.
+  compound_component.SetValueForType(NAME_MIDDLE, middle_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_LAST, last_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"Middle .,Last");
+
+  // Only last name is non-empty. All separators should be ignored.
+  compound_component.SetValueForType(NAME_MIDDLE, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"Last");
+}
+
+// Creates a compound name for testing purposes with a formatting string that
+// contains new line characters.
+class TestCompoundNameAddressComponentCustomFormatNewLineSeparator
+    : public AddressComponent {
+ public:
+  TestCompoundNameAddressComponentCustomFormatNewLineSeparator()
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+  }
+
+  // Introduces a custom format with multiple separators.
+  std::u16string GetFormatString() const override {
+    return u"${NAME_FIRST}\n${NAME_MIDDLE} .,${NAME_LAST}";
+  }
+};
+
+// Tests formatting the unstructured value from the subcomponents.
+TEST(AutofillStructuredAddressAddressComponent,
+     FormatValueFromSubcomponentsNewLineSeparators) {
+  std::u16string first_name = u"First";
+  std::u16string middle_name = u"Middle";
+  std::u16string last_name = u"Last";
+
+  // Create a compound component and set the values.
+  TestCompoundNameAddressComponentCustomFormatNewLineSeparator
+      compound_component;
+  compound_component.SetValueForType(NAME_FIRST, first_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_MIDDLE, middle_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_LAST, last_name,
+                                     VerificationStatus::kUserVerified);
+
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First\nMiddle .,Last");
+
+  // Only middle name is empty.
+  compound_component.SetValueForType(NAME_MIDDLE, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First\nLast");
+  // Only last name is set.
+  compound_component.SetValueForType(NAME_FIRST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"Last");
+
+  // Only name last is empty.
+  compound_component.SetValueForType(NAME_FIRST, first_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_MIDDLE, middle_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_LAST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First\nMiddle");
+
+  // Only middle name is set.
+  compound_component.SetValueForType(NAME_FIRST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"Middle");
+
+  // Only first name is missing.
+  compound_component.SetValueForType(NAME_LAST, last_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"Middle .,Last");
+
+  // Only first name is set.
+  compound_component.SetValueForType(NAME_FIRST, first_name,
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_MIDDLE, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.SetValueForType(NAME_LAST, u"",
+                                     VerificationStatus::kUserVerified);
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  EXPECT_EQ(compound_component.GetValue(), u"First");
+}
+
 // Tests that formatted values are correctly trimmed.
 TEST(AutofillStructuredAddressAddressComponent,
      FormatAndTrimValueFromSubcomponents) {

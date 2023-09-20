@@ -139,9 +139,11 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
         } else {
           auto* legacy_it = kAutofillFormattingRulesMap.find(
               {kLegacyHierarchyCountryCode, field_type});
-          std::u16string_view expected =
-              legacy_it != kAutofillFormattingRulesMap.end() ? legacy_it->second
-                                                             : u"";
+          std::u16string expected =
+              legacy_it != kAutofillFormattingRulesMap.end()
+                  ? std::u16string(legacy_it->second)
+                  : StructuredAddressesFormatProvider::GetInstance()
+                        ->GetPattern(field_type, country_code);
           EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
                     expected);
         }

@@ -252,17 +252,11 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
 }
 
 std::u16string AddressComponent::GetFormatString() const {
-  auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
-  CHECK(pattern_provider);
-
   const std::string country_code =
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 
-  std::u16string result =
-      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
-          ? i18n_model_definition::GetFormattingExpression(
-                GetStorageType(), AddressCountryCode(country_code))
-          : pattern_provider->GetPattern(GetStorageType(), country_code);
+  std::u16string result = i18n_model_definition::GetFormattingExpression(
+      GetStorageType(), AddressCountryCode(country_code));
   if (!result.empty()) {
     return result;
   }
@@ -630,9 +624,25 @@ std::u16string AddressComponent::GetFormattedValueFromSubcomponents() {
   // corresponding value.
   // * Strip away double spaces as they may occur after replacing a placeholder
   // with an empty value.
-  return base::CollapseWhitespace(
-      ReplacePlaceholderTypesWithValues(GetFormatString()),
-      /*trim_sequences_with_line_breaks=*/false);
+  // * Strip away double new lines as they may occur after replacing a
+  // placeholder with an empty value.
+
+  std::vector<std::u16string> lines =
+      base::SplitString(GetFormatString(), u"\n", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  std::vector<std::u16string> formatted_lines;
+  formatted_lines.reserve(lines.size());
+  for (const std::u16string& line : lines) {
+    std::u16string formatted_line =
+        base::CollapseWhitespace(ReplacePlaceholderTypesWithValues(line),
+                                 /*trim_sequences_with_line_breaks=*/false);
+    if (!formatted_line.empty()) {
+      formatted_lines.emplace_back(std::move(formatted_line));
+    }
+  }
+
+  return base::JoinString(formatted_lines, u"\n");
 }
 
 void AddressComponent::FormatValueFromSubcomponents() {
@@ -661,7 +671,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
   bool started_control_sequence = false;
   // Track until which index the format string was fully processed.
   size_t first_unprocessed_index = 0;
-
+  std::u16string pending_separator = u"";
   for (size_t i = 0; i < format.size(); ++i) {
     // Check if a control sequence is started by '${'
     if (i + 1 < format.size() && format.substr(i, 2) == u"${") {
@@ -669,8 +679,8 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       started_control_sequence = true;
       // Append the preceding string as a separator of the current control
       // sequence and the previous one.
-      values_to_join.emplace_back(
-          format.substr(first_unprocessed_index, i - first_unprocessed_index));
+      pending_separator =
+          format.substr(first_unprocessed_index, i - first_unprocessed_index);
       // Mark character '{' as the last processed character and skip it.
       first_unprocessed_index = i + 2;
       ++i;
@@ -700,7 +710,12 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
 
       const std::u16string& value = node_for_type->GetValue();
       if (!value.empty()) {
+        if (!values_to_join.empty()) {
+          values_to_join.emplace_back(pending_separator);
+        }
         values_to_join.emplace_back(base::StrCat({prefix, value, suffix}));
+      } else {
+        pending_separator.clear();
       }
       first_unprocessed_index = i + 1;
     }
