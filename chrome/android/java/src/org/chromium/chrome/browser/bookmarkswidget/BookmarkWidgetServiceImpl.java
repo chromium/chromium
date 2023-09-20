@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -471,17 +472,18 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
             // Set the title of the bookmark. Use the url as a backup.
             views.setTextViewText(R.id.title, TextUtils.isEmpty(title) ? url : title);
-
             if (bookmark == mCurrentFolder.folder) {
-                views.setInt(R.id.favicon, "setColorFilter", mIconColor);
-                views.setImageViewResource(R.id.favicon, R.drawable.ic_arrow_back_white_24dp);
+                views.setInt(R.id.back_button, "setColorFilter", mIconColor);
+                setWidgetItemBackButtonVisible(true, views);
             } else if (bookmark.isFolder) {
                 views.setInt(R.id.favicon, "setColorFilter", mIconColor);
                 views.setImageViewResource(R.id.favicon, R.drawable.ic_folder_blue_24dp);
+                setWidgetItemBackButtonVisible(false, views);
             } else {
                 // Clear any color filter so that it doesn't cover the favicon bitmap.
                 views.setInt(R.id.favicon, "setColorFilter", 0);
                 views.setImageViewBitmap(R.id.favicon, bookmark.favicon);
+                setWidgetItemBackButtonVisible(false, views);
             }
 
             Intent fillIn;
@@ -506,6 +508,11 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         public void onSystemNightModeChanged() {
             mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
             redrawWidget(mWidgetId);
+        }
+
+        private void setWidgetItemBackButtonVisible(boolean visible, RemoteViews views) {
+            views.setViewVisibility(R.id.favicon, visible ? View.GONE : View.VISIBLE);
+            views.setViewVisibility(R.id.back_button, visible ? View.VISIBLE : View.GONE);
         }
     }
 }
