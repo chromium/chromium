@@ -280,7 +280,7 @@ E2ETestBase = class extends AccessibilityTestBase {
           const focus = await AsyncUtil.getFocus();
           // It's possible focus is elsewhere; wait until it lands on the
           // address bar text field.
-          if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+          if (!focus || focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
             return;
           }
 
