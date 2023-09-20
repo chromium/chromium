@@ -380,6 +380,7 @@ suite('AppsPageTests', function() {
       showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
       androidAppsVisible: true,
+      showManageIsolatedWebAppsRow: true,
     });
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
@@ -436,6 +437,12 @@ suite('AppsPageTests', function() {
       simulateNotificationAppChanged(app3);
       await flushTasks();
       assertEquals('1 apps', rowLink.subLabel);
+    });
+
+    test('Manage isolated web apps row', async () => {
+      const rowLink =
+          appsPage.shadowRoot.querySelector('#manageIsoalatedWebAppsRow');
+      assertTrue(!!rowLink);
     });
 
     test('Clicking enable button enables ARC', function() {

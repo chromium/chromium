@@ -5768,6 +5768,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Notifications
   </message>
+  <message name="IDS_SETTINGS_MANAGE_ISOLATED_WEB_APPS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the Manage Isolated Web Apps page.">
+    Manage isolated web apps (beta)
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_ISOLATED_WEB_APPS_SUBPAGE_TITLE" desc="The title of the Manage Isolated Web Apps subpage.">
+    Isolated web apps (beta)
+  </message>
+  <message name="IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION" desc="A short description for Isolated Web Apps and a link for additional information.">
+    Packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Manage app notifications, Do not disturb, and app badging
   </message>
@@ -5794,6 +5803,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_SETTINGS_APP_BADGING_TOGGLE_SUBLABEL" desc="The sublabel for the app badging toggle in the App Notifications page of OS Settings.">
     Show dot on app icon for app alerts
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL" desc="The label for the enable Isolated Web Apps toggle in the Manage Isolated Web Apps page of OS Settings.">
+    Turn on isolated web apps
   </message>
   <message name="IDS_SETTINGS_ANDROID_APPS_TITLE" desc="The title of Google Play Store (Arc++ / Android Apps) section.">
     Google Play Store

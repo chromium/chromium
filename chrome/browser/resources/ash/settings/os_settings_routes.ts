@@ -171,6 +171,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   KNOWN_NETWORKS: Route;
   LOCK_SCREEN: Route;
   MANAGE_ACCESSIBILITY: Route;
+  MANAGE_ISOLATED_WEB_APPS: Route;
   MANAGE_SWITCH_ACCESS_SETTINGS: Route;
   MANAGE_TTS_SETTINGS: Route;
   MULTIDEVICE: Route;
@@ -413,6 +414,9 @@ export function createRoutes(): OsSettingsRoutes {
         r.APP_MANAGEMENT, routesMojom.PLUGIN_VM_USB_PREFERENCES_SUBPAGE_PATH,
         Subpage.kPluginVmUsbPreferences);
   }
+  r.MANAGE_ISOLATED_WEB_APPS = createSubpage(
+      r.APPS, routesMojom.MANAGE_ISOLATED_WEB_APPS_SUBPAGE_PATH,
+      Subpage.kManageIsolatedWebApps);
 
   // Accessibility section.
   r.OS_ACCESSIBILITY = createSection(

@@ -199,6 +199,10 @@ const char kHighEfficiencyModeTabDiscardingHelpUrl[] =
 const char kIncognitoHelpCenterURL[] =
     "https://support.google.com/chrome/answer/9845881";
 
+// TODO(crbug.com/1480695): Update this URL with proper user-facing explainer.
+const char kIsolatedWebAppsLearnMoreUrl[] =
+    "https://github.com/WICG/isolated-web-apps/blob/main/README.md";
+
 const char kLearnMoreReportingURL[] =
     "https://support.google.com/chrome/?p=ui_usagestat";
 

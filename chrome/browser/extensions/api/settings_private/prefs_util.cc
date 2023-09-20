@@ -740,6 +740,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::ash::prefs::kAppNotificationBadgingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
+  // App - Enable Isolated Web Apps
+  (*s_allowlist)[::ash::prefs::kIsolatedWebAppsEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
   // Ambient Mode.
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

@@ -1378,6 +1378,10 @@ inline constexpr char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";
 inline constexpr char kAppNotificationBadgingEnabled[] =
     "ash.app_notification_badging_enabled";
 
+// A boolean pref for whether Isolated Web Apps are enabled by the OS.
+inline constexpr char kIsolatedWebAppsEnabled[] =
+    "ash.isolated_web_apps_enabled";
+
 // An integer pref that indicates whether global media controls is pinned to
 // shelf or it's unset and need to be determined by screen size during runtime.
 inline constexpr char kGlobalMediaControlsPinned[] =

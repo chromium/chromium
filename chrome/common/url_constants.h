@@ -212,6 +212,9 @@ extern const char kHighEfficiencyModeTabDiscardingHelpUrl[];
 // The URL to the help center article of Incognito mode.
 extern const char kIncognitoHelpCenterURL[];
 
+// The URL for "Learn more" page for Isolated Web Apps.
+extern const char kIsolatedWebAppsLearnMoreUrl[];
+
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
 extern const char kLearnMoreReportingURL[];

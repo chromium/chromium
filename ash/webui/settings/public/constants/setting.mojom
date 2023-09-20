@@ -182,6 +182,7 @@ enum Setting {
   kRestoreAppsAndPages = 703,
   kDoNotDisturbOnOff = 704,
   kAppBadgingOnOff = 705,
+  kEnableIsolatedWebAppsOnOff = 706,
 
   // Crostini section.
   kSetUpCrostini= 800,

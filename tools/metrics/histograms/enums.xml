@@ -80744,6 +80744,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="703" label="Restore Apps And Pages On Startup"/>
   <int value="704" label="Do Not Disturb: On/Off"/>
   <int value="705" label="App Badging: On/Off"/>
+  <int value="706" label="Enable Isolated Web Apps: On/Off"/>
   <int value="800" label="Set Up Crostini"/>
   <int value="801" label="Uninstall Crostini"/>
   <int value="802" label="Backup Linux Apps And Files"/>
@@ -81000,6 +81001,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="705" label="On Startup (Deprecated)"/>
   <int value="706" label="App Notifications"/>
   <int value="707" label="Arc Vm USB Preferences"/>
+  <int value="708" label="Manage Isolated Web Apps"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
   <int value="802" label="Crostini Usb Preferences"/>

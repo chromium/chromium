@@ -124,6 +124,16 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         },
       },
 
+      /**
+       * Whether the Manage Isolated Web Apps page should be shown.
+       */
+      showManageIsolatedWebAppsRow_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showManageIsolatedWebAppsRow');
+        },
+      },
+
       isPluginVmAvailable_: {
         type: Boolean,
         value: () => {
@@ -200,13 +210,14 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isDndEnabled_: boolean;
   private isPlayStoreAvailable_: boolean;
   private isPluginVmAvailable_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
   private section_: Section;
   private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
+  private showManageIsolatedWebAppsRow_: boolean;
   private showStartup_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -247,6 +258,8 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.addFocusConfig(routes.APP_MANAGEMENT, '#appManagementRow');
     this.addFocusConfig(routes.APP_NOTIFICATIONS, '#appNotificationsRow');
     this.addFocusConfig(
+        routes.MANAGE_ISOLATED_WEB_APPS, '#manageIsolatedWebAppsRow');
+    this.addFocusConfig(
         routes.ANDROID_APPS_DETAILS, '#androidApps .subpage-arrow');
   }
 
@@ -278,6 +291,10 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onClickAppNotifications_(): void {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
+  }
+
+  private onClickManageIsolatedWebApps_(): void {
+    Router.getInstance().navigateTo(routes.MANAGE_ISOLATED_WEB_APPS);
   }
 
   private onEnableAndroidAppsClick_(event: Event): void {

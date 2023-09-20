@@ -1,20 +1,16 @@
 <style include="settings-shared">
-  #appManagementRow,
-  #appNotificationsRow {
-    border-bottom: var(--cr-separator-line);
-  }
 </style>
 
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{appsPageTitle}">
-      <cr-link-row id="appManagementRow"
+      <cr-link-row id="appManagementRow" class="settings-box first"
           label="$i18n{appManagementTitle}"
           on-click="onClickAppManagement_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <template is="dom-if" if="[[showAppNotificationsRow_]]">
-        <cr-link-row id="appNotificationsRow"
+        <cr-link-row id="appNotificationsRow" class="settings-box"
             label="$i18n{appNotificationsTitle}"
             on-click="onClickAppNotifications_"
             role-description="$i18n{subpageArrowRoleDescription}"
@@ -24,7 +20,7 @@
       </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
-          <div id="androidApps" class="settings-box first"
+          <div id="androidApps" class="settings-box"
               actionable$="[[androidAppsInfo.playStoreEnabled]]"
               on-click="onAndroidAppsSubpageClick_">
             <div class="start settings-box-text">
@@ -59,7 +55,8 @@
           </div>
         </template>
         <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
-          <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+          <cr-link-row id="manageApps" class="settings-box"
+              label="$i18n{androidAppsManageApps}"
               on-click="onManageAndroidAppsClick_"
               external
               deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
@@ -94,6 +91,13 @@
             </settings-dropdown-menu>
           </div>
         </template>
+      </template>
+      <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
+        <cr-link-row id="manageIsoalatedWebAppsRow" class="settings-box"
+            label="$i18n{manageIsolatedWebAppsLinkText}"
+            on-click="onClickManageIsolatedWebApps_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
     </settings-card>
   </div>
@@ -170,4 +174,15 @@
       </os-settings-subpage>
     </template>
   </template>
+
+  <!-- Manage Isolated Web Apps -->
+  <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
+    <template is="dom-if" route-path="/manage-isolated-web-apps">
+      <os-settings-subpage page-title="$i18n{manageIsolatedWebAppsTitle}">
+        <settings-manage-isolated-web-apps-subpage prefs="{{prefs}}">
+        </settings-manage-isolated-web-apps-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
 </os-settings-animated-pages>
