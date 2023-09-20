@@ -19,7 +19,16 @@ constexpr bool kNotFocused = false;
 
 }  // namespace
 
-TEST(ContainerAppKiller, SortedCandidates) {
+class ContainerAppKillerTest : public testing::Test {
+ public:
+  ContainerAppKillerTest() = default;
+  ~ContainerAppKillerTest() override = default;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(ContainerAppKillerTest, SortedCandidates) {
   std::vector<arc::ArcProcess> arc_processes;
   arc_processes.emplace_back(1, 20, "visible1", arc::mojom::ProcessState::TOP,
                              kNotFocused, 6000);
@@ -32,7 +41,7 @@ TEST(ContainerAppKiller, SortedCandidates) {
 
   std::vector<arc::ContainerAppKiller::KillCandidate> candidates =
       arc::ContainerAppKiller::GetSortedCandidates(opt_arc_processes);
-  ASSERT_EQ(3U, candidates.size());
+  EXPECT_EQ(3U, candidates.size());
 
   // Background service.
   EXPECT_EQ("service", candidates[0].process_name());
@@ -82,7 +91,7 @@ class MockContainerAppKiller : public arc::ContainerAppKiller {
   bool always_return_true_from_is_recently_killed_ = false;
 };
 
-TEST(ContainerAppKiller, IsRecentlyKilled) {
+TEST_F(ContainerAppKillerTest, IsRecentlyKilled) {
   constexpr char kProcessName1[] = "org.chromium.arc.test1";
   constexpr char kProcessName2[] = "org.chromium.arc.test2";
 
@@ -116,15 +125,6 @@ TEST(ContainerAppKiller, IsRecentlyKilled) {
   EXPECT_FALSE(app_killer.IsRecentlyKilled(kProcessName1, now));
   EXPECT_FALSE(app_killer.IsRecentlyKilled(kProcessName2, now));
 }
-
-class ContainerAppKillerTest : public testing::Test {
- public:
-  ContainerAppKillerTest() = default;
-  ~ContainerAppKillerTest() override = default;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-};
 
 TEST_F(ContainerAppKillerTest, DoNotKillRecentlyKilled) {
   // Instantiate the mock instance.
@@ -189,7 +189,7 @@ TEST_F(ContainerAppKillerTest, KillMultipleProcesses) {
 
   // Killed processes and their nspid. All of the apps (except the focused and
   // persistent processes) should have been killed.
-  ASSERT_EQ(4U, killed_processes.size());
+  EXPECT_EQ(4U, killed_processes.size());
   EXPECT_EQ(3, killed_processes[0]);
   EXPECT_EQ(4, killed_processes[1]);
   EXPECT_EQ(2, killed_processes[2]);

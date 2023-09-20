@@ -5,23 +5,23 @@
 #ifndef CHROME_BROWSER_ASH_ARC_MEMORY_PRESSURE_CONTAINER_APP_KILLER_H_
 #define CHROME_BROWSER_ASH_ARC_MEMORY_PRESSURE_CONTAINER_APP_KILLER_H_
 
-#include "base/feature_list.h"
-
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"  // For FORWARD_DECLARE_TEST.
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"         // For WeakPtrFactory.
 #include "base/process/process_handle.h"  // For ProcessId.
 #include "base/time/time.h"               // For TimeTicks.
+#include "chrome/browser/ash/arc/memory_pressure/container_oom_score_manager.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
-FORWARD_DECLARE_TEST(ContainerAppKiller, IsRecentlyKilled);
-FORWARD_DECLARE_TEST(ContainerAppKiller, SortedCandidates);
 FORWARD_DECLARE_TEST(ContainerAppKillerTest, DoNotKillRecentlyKilled);
+FORWARD_DECLARE_TEST(ContainerAppKillerTest, IsRecentlyKilled);
 FORWARD_DECLARE_TEST(ContainerAppKillerTest, KillMultipleProcesses);
+FORWARD_DECLARE_TEST(ContainerAppKillerTest, SortedCandidates);
 
 namespace arc {
 
@@ -51,10 +51,10 @@ class ContainerAppKiller : public ash::ResourcedClient::ArcContainerObserver {
   virtual bool KillArcProcess(base::ProcessId nspid);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(::ContainerAppKiller, IsRecentlyKilled);
-  FRIEND_TEST_ALL_PREFIXES(::ContainerAppKiller, SortedCandidates);
   FRIEND_TEST_ALL_PREFIXES(::ContainerAppKillerTest, DoNotKillRecentlyKilled);
+  FRIEND_TEST_ALL_PREFIXES(::ContainerAppKillerTest, IsRecentlyKilled);
   FRIEND_TEST_ALL_PREFIXES(::ContainerAppKillerTest, KillMultipleProcesses);
+  FRIEND_TEST_ALL_PREFIXES(::ContainerAppKillerTest, SortedCandidates);
 
   static constexpr base::TimeDelta kArcRespawnKillDelay = base::Seconds(60);
 
@@ -74,6 +74,9 @@ class ContainerAppKiller : public ash::ResourcedClient::ArcContainerObserver {
 
   // Map maintaining ARC process names and their last killed time.
   KilledProcessesMap recently_killed_;
+
+  // Assigns oom_score_adj to ARC container processes.
+  ContainerOomScoreManager oom_score_manager_;
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<ContainerAppKiller> weak_ptr_factory_{this};

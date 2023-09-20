@@ -462,17 +462,23 @@ void TabManagerDelegate::AdjustOomPriorities() {
   if (g_browser_process->IsShuttingDown())
     return;
 
-  arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
   // ARCVM defers to Android's LMK to manage low memory situations, so don't
-  // adjust OOM scores for VM processes.
-  if (arc_process_service && !arc::IsArcVmEnabled()) {
-    arc_process_service->RequestAppProcessList(
-        base::BindOnce(&TabManagerDelegate::AdjustOomPrioritiesImpl,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // Pass in nullopt if unable to get ARC processes.
-    AdjustOomPrioritiesImpl(absl::nullopt);
+  // assign oom_score_adj for VM processes. When feature kContainerAppKiller
+  // is enabled, ARC container process oom_score_adj assignment is handled by
+  // ContainerOomScoreManager.
+  if (!arc::IsArcVmEnabled() &&
+      !base::FeatureList::IsEnabled(arc::kContainerAppKiller)) {
+    arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
+    if (arc_process_service) {
+      arc_process_service->RequestAppProcessList(
+          base::BindOnce(&TabManagerDelegate::AdjustOomPrioritiesImpl,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
   }
+
+  // Pass in nullopt if unable to get ARC container processes.
+  AdjustOomPrioritiesImpl(absl::nullopt);
 }
 
 // Get a list of candidates to kill, sorted by descending importance.

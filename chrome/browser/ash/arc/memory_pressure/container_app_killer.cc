@@ -111,9 +111,9 @@ void ContainerAppKiller::LowMemoryKill(
                    << ", protected: " << candidate.is_protected() << ", "
                    << estimated_memory_freed_kb << " KB freed";
     } else {
-      LOG(WARNING) << "Failed to kill " << candidate.process_name()
-                   << ", pid:" << candidate.pid()
-                   << ", protected: " << candidate.is_protected();
+      LOG(ERROR) << "Failed to kill " << candidate.process_name()
+                 << ", pid:" << candidate.pid()
+                 << ", protected: " << candidate.is_protected();
     }
     if (reclaim_target_kb <= total_freed_kb) {
       break;
