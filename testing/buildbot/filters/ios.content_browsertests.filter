@@ -14,14 +14,6 @@
 -All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink1
 -All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink0
 -All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink1
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink0
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink1
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink0
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink1
 -All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink0
@@ -30,10 +22,6 @@
 -All/DumpAccessibilityTreeTest.AccessibilitySelect/blink1
 -All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink0
 -All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink1
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink0
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink1
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink0
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink1
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/0
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/1
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/0
@@ -204,6 +192,20 @@
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
+
+# TODO(crbug.com/1484998): These tests fail by a different width for a frame.
+-All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink0
+-All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink0
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink0
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink0
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink1
+-All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink0
+-All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink1
+-All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink0
+-All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink1
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
