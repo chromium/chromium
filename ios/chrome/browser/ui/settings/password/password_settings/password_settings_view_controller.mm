@@ -426,8 +426,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   _bulkMovePasswordsToAccountDescriptionItem.enabled = NO;
   _bulkMovePasswordsToAccountDescriptionItem.accessibilityIdentifier =
       kPasswordSettingsBulkMovePasswordsToAccountDescriptionTableViewId;
-  _bulkMovePasswordsToAccountDescriptionItem.accessibilityTraits |=
-      UIAccessibilityTraitLink;
 
   std::u16string pattern = l10n_util::GetStringUTF16(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_DESCRIPTION);
@@ -514,8 +512,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   _onDeviceEncryptionOptInDescriptionItem.enabled = NO;
   _onDeviceEncryptionOptInDescriptionItem.accessibilityIdentifier =
       kPasswordSettingsOnDeviceEncryptionOptInId;
-  _onDeviceEncryptionOptInDescriptionItem.accessibilityTraits |=
-      UIAccessibilityTraitLink;
   return _onDeviceEncryptionOptInDescriptionItem;
 }
 
