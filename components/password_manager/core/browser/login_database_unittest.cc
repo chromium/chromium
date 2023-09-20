@@ -2012,14 +2012,20 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
 
   base::FilePath database_path_;
 
+  void AdvanceTime(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
   base::FilePath database_dump_location_;
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 void LoginDatabaseMigrationTest::MigrationToVCurrent(
     base::StringPiece sql_file) {
+  AdvanceTime(base::Days(10));
   SCOPED_TRACE(testing::Message("Version file = ") << sql_file);
   CreateDatabase(sql_file);
 
@@ -2058,10 +2064,7 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
       std::vector<InsecureCredential> insecure_credentials(
           db.insecure_credentials_table().GetRows(FormPrimaryKey(1)));
       ASSERT_EQ(2U, insecure_credentials.size());
-      base::Time time_now = base::Time::Now();
-      base::Time time_slightly_before = time_now - base::Seconds(2);
-      EXPECT_LE(insecure_credentials[0].create_time, time_now);
-      EXPECT_GE(insecure_credentials[0].create_time, time_slightly_before);
+      EXPECT_EQ(insecure_credentials[0].create_time, base::Time::Now());
     }
   }
   // Added 07/21. Safe to remove in a year.
