@@ -784,6 +784,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
        {"GOOGLE_ACCOUNT:c1"}},
       {kGoogle, HasCreds, {"c2", "AUTOFILL_AUTH:c3"}, NoCreds, {}},
       {kGoogle, UnknownCreds, {}, UnknownCreds, {}},
+      {kGoogle, HasCreds, {}, HasCreds, {}},
   };
 
   for (const auto& test : kTests) {
