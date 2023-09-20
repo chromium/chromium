@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/date_time_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_handler.h"
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
@@ -50,8 +50,9 @@ int GetSystemTimezoneAutomaticDetectionPolicyValue() {
 // Returns whether the user can set the automatic detection setting, based on
 // flags and policies.
 bool IsTimezoneAutomaticDetectionUserEditable() {
-  if (system::HasSystemTimezonePolicy())
+  if (system::HasSystemTimezonePolicy()) {
     return false;
+  }
 
   if (IsSystemTimezoneAutomaticDetectionManaged()) {
     return GetSystemTimezoneAutomaticDetectionPolicyValue() ==
@@ -132,8 +133,9 @@ void DateTimeHandler::HandleGetTimeZones(const base::Value::List& args) {
 
 void DateTimeHandler::HandleShowSetDateTimeUI(const base::Value::List& args) {
   // Make sure the clock status hasn't changed since the button was clicked.
-  if (!SystemClockClient::Get()->CanSetTime())
+  if (!SystemClockClient::Get()->CanSetTime()) {
     return;
+  }
   SetTimeDialog::ShowDialog(
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }
@@ -157,8 +159,9 @@ void DateTimeHandler::HandleShowParentAccessForTimeZone(
 }
 
 void DateTimeHandler::OnParentAccessValidation(bool success) {
-  if (success)
+  if (success) {
     FireWebUIListener("access-code-validation-complete");
+  }
 }
 
 void DateTimeHandler::NotifyTimezoneAutomaticDetectionPolicy() {

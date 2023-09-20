@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 
+#include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
-#include "chrome/browser/ui/webui/settings/ash/date_time_section.h"
 #include "chrome/browser/ui/webui/settings/ash/languages_section.h"
 #include "chrome/browser/ui/webui/settings/ash/power_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
