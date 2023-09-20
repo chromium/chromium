@@ -197,6 +197,11 @@ bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
   return reposition_controller_->OnKeyReleased(event);
 }
 
+void ActionView::ShowButtonOptionsMenu() {
+  DCHECK(display_overlay_controller_);
+  display_overlay_controller_->AddButtonOptionsMenuWidget(action_);
+}
+
 void ActionView::OnDraggingCallback() {
   MayUpdateLabelPosition();
   display_overlay_controller_->RemoveButtonOptionsMenuWidget();
@@ -250,11 +255,6 @@ void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
   if (touch_point_) {
     touch_point_->OnCenterPositionChanged(*touch_point_center_);
   }
-}
-
-void ActionView::ShowButtonOptionsMenu() {
-  DCHECK(display_overlay_controller_);
-  display_overlay_controller_->AddButtonOptionsMenuWidget(action_);
 }
 
 void ActionView::AddTouchPoint(ActionType action_type) {

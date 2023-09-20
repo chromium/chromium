@@ -97,6 +97,8 @@ class ActionView : public views::View {
   bool ApplyKeyPressed(const ui::KeyEvent& event);
   bool ApplyKeyReleased(const ui::KeyEvent& event);
 
+  void ShowButtonOptionsMenu();
+
   // Callbacks related to reposition operations.
   void OnDraggingCallback();
   void OnMouseDragEndCallback();
@@ -157,8 +159,6 @@ class ActionView : public views::View {
   friend class ActionViewTest;
   friend class OverlayViewTestBase;
   friend class ViewTestBase;
-
-  void ShowButtonOptionsMenu();
 
   void RemoveTouchPoint();
 
