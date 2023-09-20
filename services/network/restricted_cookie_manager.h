@@ -162,7 +162,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // |pending_receiver|.
   void InstallReceiver(
       mojo::PendingReceiver<mojom::RestrictedCookieManager> pending_receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::OnceClosure on_disconnect_callback);
 
   // Computes the First-Party Set metadata corresponding to the given `origin`,
