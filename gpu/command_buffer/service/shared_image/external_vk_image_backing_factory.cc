@@ -249,7 +249,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (format.is_multi_plane()) {
-    if (gmb_type != gfx::EMPTY_BUFFER) {
+    if (gmb_type != gfx::EMPTY_BUFFER && !format.PrefersExternalSampler()) {
       return false;
     }
 
