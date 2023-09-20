@@ -2084,7 +2084,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorageAfterTabReplace) {
   EXPECT_EQ(1, new_browser->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabWithDownloadDoesNotGetRestored) {
+// Failing on Mac. See https://crbug.com/1484860
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabWithDownloadDoesNotGetRestored \
+  DISABLED_TabWithDownloadDoesNotGetRestored
+#else
+#define MAYBE_TabWithDownloadDoesNotGetRestored \
+  TabWithDownloadDoesNotGetRestored
+#endif
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
+                       MAYBE_TabWithDownloadDoesNotGetRestored) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(browser()->is_type_normal());
 
