@@ -5,6 +5,7 @@
 #include "components/page_image_service/image_service_consent_helper.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
@@ -30,6 +31,9 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
     syncer::SyncService* sync_service,
     syncer::ModelType model_type)
     : sync_service_(sync_service), model_type_(model_type) {
+  base::TimeDelta timeout_duration =
+      base::Seconds(GetFieldTrialParamByFeatureAsInt(
+          kImageServiceObserveSyncDownloadStatus, "timeout_seconds", 10));
   if (base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus)) {
     sync_service_observer_.Observe(sync_service);
   } else if (model_type == syncer::ModelType::BOOKMARKS) {
@@ -39,12 +43,12 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
             NewPersonalizedBookmarksDataCollectionConsentHelper(
                 sync_service,
                 /*require_sync_feature_enabled=*/true),
-        kTimeout);
+        timeout_duration);
   } else if (model_type == syncer::ModelType::HISTORY_DELETE_DIRECTIVES) {
     consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
         unified_consent::UrlKeyedDataCollectionConsentHelper::
             NewPersonalizedDataCollectionConsentHelper(sync_service),
-        kTimeout);
+        timeout_duration);
   } else {
     NOTREACHED();
   }
