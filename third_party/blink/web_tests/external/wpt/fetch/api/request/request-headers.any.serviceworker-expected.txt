@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 62 tests; 61 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 60 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Adding valid request header "Content-Type: OK"
 PASS Adding valid request header "Potato: OK"
 PASS Adding valid request header "proxy: OK"
@@ -14,7 +14,6 @@ PASS Adding invalid request header "ACCEPT-ENCODING: KO"
 PASS Adding invalid request header "Accept-Encoding: KO"
 PASS Adding invalid request header "Access-Control-Request-Headers: KO"
 PASS Adding invalid request header "Access-Control-Request-Method: KO"
-PASS Adding invalid request header "Access-Control-Request-Private-Network: KO"
 PASS Adding invalid request header "Connection: KO"
 PASS Adding invalid request header "Content-Length: KO"
 PASS Adding invalid request header "Cookie: KO"
