@@ -175,25 +175,25 @@ std::unique_ptr<AddressComponent> BuildSubTree(const TreeDefinition& tree_def,
 }
 
 base::span<const autofill::i18n_model_definition::FieldTypeDescription>
-GetTreeEdges(std::string_view country_code) {
+GetTreeEdges(AddressCountryCode country_code) {
   // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
   // out.
   if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    return kAutofillModelRules.find("XX")->second;
+    return kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second;
   }
 
-  auto* it = kAutofillModelRules.find(country_code);
+  auto* it = kAutofillModelRules.find(country_code.value());
 
   // If the entry is not defined, use the legacy rules.
   return it == kAutofillModelRules.end()
-             ? kAutofillModelRules.find("XX")->second
+             ? kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second
              : it->second;
 }
 
 }  // namespace
 
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
-    std::string_view country_code) {
+    AddressCountryCode country_code) {
   base::span<const autofill::i18n_model_definition::FieldTypeDescription>
       tree_edges = GetTreeEdges(country_code);
 
@@ -207,26 +207,28 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
   auto result = BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS);
 
-  if (!country_code.empty()) {
+  if (!country_code->empty()) {
     // Set the address model country to the one requested.
     result->SetValueForType(ADDRESS_HOME_COUNTRY,
-                            base::UTF8ToUTF16(country_code),
+                            base::UTF8ToUTF16(country_code.value()),
                             VerificationStatus::kObserved);
   }
   return result;
 }
 
 std::u16string GetFormattingExpression(ServerFieldType field_type,
-                                       std::string_view country_code) {
-  auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
+                                       AddressCountryCode country_code) {
+  auto* it =
+      kAutofillFormattingRulesMap.find({country_code.value(), field_type});
   // If `country_code` is specified return a custom formatting expression if
   // exist.
-  if (!country_code.empty() && it != kAutofillFormattingRulesMap.end()) {
+  if (!country_code->empty() && it != kAutofillFormattingRulesMap.end()) {
     return std::u16string(it->second);
   }
 
   // Otherwise return a legacy formatting expression that exists.
-  auto* legacy_it = kAutofillFormattingRulesMap.find({"XX", field_type});
+  auto* legacy_it = kAutofillFormattingRulesMap.find(
+      {kLegacyHierarchyCountryCode, field_type});
   return legacy_it != kAutofillFormattingRulesMap.end()
              ? std::u16string(legacy_it->second)
              : u"";
@@ -235,24 +237,25 @@ std::u16string GetFormattingExpression(ServerFieldType field_type,
 i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     ServerFieldType field_type,
-    std::string_view country_code) {
-  auto* it = kAutofillParsingRulesMap.find({country_code, field_type});
+    AddressCountryCode country_code) {
+  auto* it = kAutofillParsingRulesMap.find({country_code.value(), field_type});
   // If `country_code` is specified, attempt to parse the `value` using a custom
   // parsing structure (if exist).
-  if (!country_code.empty() && it != kAutofillParsingRulesMap.end()) {
+  if (!country_code->empty() && it != kAutofillParsingRulesMap.end()) {
     return it->second->Parse(value);
   }
 
   // Otherwise try using a legacy parsing expression (if exist).
-  auto* legacy_it = kAutofillParsingRulesMap.find({"XX", field_type});
+  auto* legacy_it =
+      kAutofillParsingRulesMap.find({kLegacyHierarchyCountryCode, field_type});
   return legacy_it != kAutofillParsingRulesMap.end()
              ? legacy_it->second->Parse(value)
              : absl::nullopt;
 }
 
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
-                             std::string_view country_code) {
-  auto* it = kAutofillModelRules.find(country_code);
+                             AddressCountryCode country_code) {
+  auto* it = kAutofillModelRules.find(country_code.value());
   if (it == kAutofillModelRules.end()) {
     return false;
   }

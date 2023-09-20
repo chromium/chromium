@@ -260,8 +260,8 @@ std::u16string AddressComponent::GetFormatString() const {
 
   std::u16string result =
       base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
-          ? i18n_model_definition::GetFormattingExpression(GetStorageType(),
-                                                           country_code)
+          ? i18n_model_definition::GetFormattingExpression(
+                GetStorageType(), AddressCountryCode(country_code))
           : pattern_provider->GetPattern(GetStorageType(), country_code);
   if (!result.empty()) {
     return result;

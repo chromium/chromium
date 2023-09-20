@@ -5,24 +5,29 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_
 
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 namespace autofill::i18n_model_definition {
 
+// Country code that represents autofill's legacy address hierarchy model as
+// stored `kAutofillModelRules`.
+constexpr std::string_view kLegacyHierarchyCountryCode = "XX";
+
 // Creates an instance of the address hierarchy model corresponding to the
 // provided country. All the nodes have empty values, except for the country
 // node (if exist). If no country is provided, returns the legacy address
 // hierarchy.
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
-    std::string_view country_code = "");
+    AddressCountryCode country_code = AddressCountryCode(""));
 
 // Returns the formatting expression corresponding to the provided parameters.
 // If the expression can't be found or the country is empty, it attempts to look
 // for a legacy expression. Returns an empty string if none can be found.
 std::u16string GetFormattingExpression(ServerFieldType field_type,
-                                       std::string_view country_code);
+                                       AddressCountryCode country_code);
 
 // Parses the given `value` using a custom parsing process (if available) for
 // the corresponding `field_type` and `country_code`. If the country is empty or
@@ -32,12 +37,12 @@ std::u16string GetFormattingExpression(ServerFieldType field_type,
 i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     ServerFieldType field_type,
-    std::string_view country_code);
+    AddressCountryCode country_code);
 
 // The function returns true if the provided `field_type` is included in the
 // hierarchy model of the given country. Otherwise it returns false.
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
-                             std::string_view country_code);
+                             AddressCountryCode country_code);
 
 }  // namespace autofill::i18n_model_definition
 
