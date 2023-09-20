@@ -112,7 +112,9 @@ RemoteFrame::RemoteFrame(
             insert_type,
             frame_token,
             devtools_frame_token,
-            MakeGarbageCollected<RemoteWindowProxyManager>(*this),
+            MakeGarbageCollected<RemoteWindowProxyManager>(
+                page.GetAgentGroupScheduler().Isolate(),
+                *this),
             inheriting_agent_factory),
       // TODO(samans): Investigate if it is safe to delay creation of this
       // object until a FrameSinkId is provided.

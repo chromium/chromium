@@ -1643,7 +1643,9 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
             insert_type,
             frame_token,
             client->GetDevToolsFrameToken(),
-            MakeGarbageCollected<LocalWindowProxyManager>(*this),
+            MakeGarbageCollected<LocalWindowProxyManager>(
+                page.GetAgentGroupScheduler().Isolate(),
+                *this),
             inheriting_agent_factory),
       frame_scheduler_(page.GetPageScheduler()->CreateFrameScheduler(
           this,

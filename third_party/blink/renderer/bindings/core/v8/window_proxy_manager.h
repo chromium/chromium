@@ -59,7 +59,7 @@ class CORE_EXPORT WindowProxyManager
   using IsolatedWorldMap = HeapHashMap<int, Member<WindowProxy>>;
   enum class FrameType { kLocal, kRemote };
 
-  WindowProxyManager(Frame&, FrameType);
+  WindowProxyManager(v8::Isolate*, Frame&, FrameType);
 
  private:
   // Creates an uninitialized WindowProxy.
@@ -86,15 +86,18 @@ class WindowProxyManagerImplHelper : public WindowProxyManager {
   }
 
  protected:
-  WindowProxyManagerImplHelper(Frame& frame, FrameType frame_type)
-      : WindowProxyManager(frame, frame_type) {}
+  WindowProxyManagerImplHelper(v8::Isolate* isolate,
+                               Frame& frame,
+                               FrameType frame_type)
+      : WindowProxyManager(isolate, frame, frame_type) {}
 };
 
 class LocalWindowProxyManager
     : public WindowProxyManagerImplHelper<LocalFrame, LocalWindowProxy> {
  public:
-  explicit LocalWindowProxyManager(LocalFrame& frame)
+  explicit LocalWindowProxyManager(v8::Isolate* isolate, LocalFrame& frame)
       : WindowProxyManagerImplHelper<LocalFrame, LocalWindowProxy>(
+            isolate,
             frame,
             FrameType::kLocal) {}
 
@@ -116,8 +119,9 @@ class LocalWindowProxyManager
 class RemoteWindowProxyManager
     : public WindowProxyManagerImplHelper<RemoteFrame, RemoteWindowProxy> {
  public:
-  explicit RemoteWindowProxyManager(RemoteFrame& frame)
+  explicit RemoteWindowProxyManager(v8::Isolate* isolate, RemoteFrame& frame)
       : WindowProxyManagerImplHelper<RemoteFrame, RemoteWindowProxy>(
+            isolate,
             frame,
             FrameType::kRemote) {}
 };

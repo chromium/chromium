@@ -86,14 +86,14 @@ void WindowProxyManager::ResetIsolatedWorldsForTesting() {
   isolated_worlds_.clear();
 }
 
-WindowProxyManager::WindowProxyManager(Frame& frame, FrameType frame_type)
-    : isolate_(V8PerIsolateData::MainThreadIsolate()),
+WindowProxyManager::WindowProxyManager(v8::Isolate* isolate,
+                                       Frame& frame,
+                                       FrameType frame_type)
+    : isolate_(isolate),
       frame_(&frame),
       frame_type_(frame_type),
       window_proxy_(CreateWindowProxy(DOMWrapperWorld::MainWorld())) {
   // All WindowProxyManagers must be created in the main thread.
-  // Note that |isolate_| is initialized with
-  // V8PerIsolateData::MainThreadIsolate().
   CHECK(IsMainThread());
 }
 
