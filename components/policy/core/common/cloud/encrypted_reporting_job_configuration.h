@@ -130,7 +130,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   std::string GetUmaString() const override;
 
  private:
-  std::set<std::string> GetTopLevelKeyAllowList();
+  static const base::flat_set<std::string>& GetTopLevelKeyAllowList();
   const bool is_device_managed_;
 
   // Parameters populated from the payload_.

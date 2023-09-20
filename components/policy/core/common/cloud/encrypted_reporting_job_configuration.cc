@@ -4,9 +4,12 @@
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
+#include <initializer_list>
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -320,17 +323,15 @@ std::string EncryptedReportingJobConfiguration::GetUmaString() const {
   return "Browser.ERP.Unmanaged";
 }
 
-std::set<std::string>
+// static
+const base::flat_set<std::string>&
 EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
-  static std::set<std::string> kTopLevelKeyAllowList{
-      kAttachConfigurationFileKey,
-      kAttachEncryptionSettingsKey,
-      kBrowserKey,
-      kDeviceKey,
-      kEncryptedRecordListKey,
-      kRequestId,
-      kSourceKey};
-  return kTopLevelKeyAllowList;
+  static const base::NoDestructor<base::flat_set<std::string>>
+      kTopLevelKeyAllowList{std::initializer_list<std::string>{
+          kAttachConfigurationFileKey, kAttachEncryptionSettingsKey,
+          kBrowserKey, kDeviceKey, kEncryptedRecordListKey, kRequestId,
+          kSourceKey}};
+  return *kTopLevelKeyAllowList;
 }
 
 // static
