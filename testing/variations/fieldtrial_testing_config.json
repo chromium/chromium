@@ -10902,7 +10902,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_AllowLateAcks",
+                    "enable_features": [
+                        "OnBeginFrameAcks",
+                        "OnBeginFrameAllowLateAcks"
+                    ]
+                },
+                {
+                    "name": "Enabled_OnlyBatched",
                     "enable_features": [
                         "OnBeginFrameAcks"
                     ]
