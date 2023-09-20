@@ -1358,9 +1358,17 @@ void DevToolsUIBindings::RecordCountHistogram(const std::string& name,
     return;
   }
 
-  if (!(min <= sample && sample < exclusive_max && buckets >= 3)) {
-    frontend_host_->BadMessageReceived();
-    return;
+  // DevTools previously would crash if histogram counts didn't make sense.
+  // We've changed this to a DCHECK and instead clamp the value for counts,
+  // because it doesn't really make sense to crash if the histogram is out
+  // of range.
+  DCHECK_GE(sample, min);
+  DCHECK_LT(sample, exclusive_max);
+
+  if (sample < min) {
+    sample = 0;
+  } else if (sample >= exclusive_max) {
+    sample = exclusive_max - 1;
   }
 
   base::UmaHistogramCustomCounts(name, sample, min, exclusive_max, buckets);
@@ -1371,19 +1379,23 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
                                                    int boundary_value) {
   if (!frontend_host_)
     return;
+
+  DCHECK_GE(boundary_value, 0);
+  DCHECK_LT(boundary_value, 1000);
+  DCHECK_GE(sample, 0);
+  DCHECK_LT(sample, boundary_value);
   if (!(boundary_value >= 0 && boundary_value <= 1000 && sample >= 0 &&
         sample < boundary_value)) {
-    // TODO(nick): Replace with chrome::bad_message::ReceivedBadMessage().
-    frontend_host_->BadMessageReceived();
+    // We should have DCHECK'd in debug builds; for release builds, if we're
+    // out of range, just omit the histogram
     return;
   }
 
   const std::string kDevToolsHistogramPrefix = "DevTools.";
-  if (name.compare(0, kDevToolsHistogramPrefix.size(),
-                   kDevToolsHistogramPrefix) == 0)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else
-    frontend_host_->BadMessageReceived();
+  DCHECK_EQ(name.compare(0, kDevToolsHistogramPrefix.size(),
+                         kDevToolsHistogramPrefix),
+            0);
+  base::UmaHistogramExactLinear(name, sample, boundary_value);
 }
 
 void DevToolsUIBindings::RecordPerformanceHistogram(const std::string& name,
