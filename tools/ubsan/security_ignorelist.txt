@@ -74,5 +74,14 @@ fun:*re2*RegexpD*
 fun:*RendererFrameManager*CullUnlockedFrames*
 
 #############################################################################
+# Generic cleanup function pointer of wrong type.
+fun:sqlite3ParseObjectReset
+
+#############################################################################
+# Function pointer of wrong type.
+src:*/third_party/angle/src/libANGLE/renderer/vulkan/vk_wrapper.h
+fun:vmaFindMemoryTypeIndexForBufferInfo
+
+#############################################################################
 # -fsanitize=vptr suppressions should go in vptr_ignorelist.txt, not here.
 #############################################################################
