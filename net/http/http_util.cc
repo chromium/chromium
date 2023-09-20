@@ -415,23 +415,20 @@ bool HttpUtil::IsValidHeaderValue(base::StringPiece value) {
 bool HttpUtil::IsNonCoalescingHeader(base::StringPiece name) {
   // NOTE: "set-cookie2" headers do not support expires attributes, so we don't
   // have to list them here.
-  const char* const kNonCoalescingHeaders[] = {
-    "date",
-    "expires",
-    "last-modified",
-    "location",  // See bug 1050541 for details
-    "retry-after",
-    "set-cookie",
-    // The format of auth-challenges mixes both space separated tokens and
-    // comma separated properties, so coalescing on comma won't work.
-    "www-authenticate",
-    "proxy-authenticate",
-    // STS specifies that UAs must not process any STS headers after the first
-    // one.
-    "strict-transport-security"
-  };
+  // As of 2023, using FlatSet here actually makes the lookup slower, and
+  // unordered_set is even slower than that.
+  static constexpr base::StringPiece kNonCoalescingHeaders[] = {
+      "date", "expires", "last-modified",
+      "location",  // See bug 1050541 for details
+      "retry-after", "set-cookie",
+      // The format of auth-challenges mixes both space separated tokens and
+      // comma separated properties, so coalescing on comma won't work.
+      "www-authenticate", "proxy-authenticate",
+      // STS specifies that UAs must not process any STS headers after the first
+      // one.
+      "strict-transport-security"};
 
-  for (const char* header : kNonCoalescingHeaders) {
+  for (const base::StringPiece& header : kNonCoalescingHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header)) {
       return true;
     }
