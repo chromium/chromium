@@ -201,7 +201,7 @@ TEST_P(AuctionDownloaderTest, Timeout) {
       last_error_msg());
 }
 
-TEST_P(AuctionDownloaderTest, AllowFledge) {
+TEST_P(AuctionDownloaderTest, AllowAdAuction) {
   std::string allow_fledge_string;
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -217,6 +217,10 @@ TEST_P(AuctionDownloaderTest, AllowFledge) {
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "x-aLLow-fLeDgE: true");
+  EXPECT_TRUE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "aD-aUCtioN-alloWeD: true");
   EXPECT_TRUE(RunRequest());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -254,7 +258,7 @@ TEST_P(AuctionDownloaderTest, AllowFledge) {
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, "X-Allow-FLEDGE: sometimes");
+              kAsciiResponseBody, "Ad-Auction-Allowed: sometimes");
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
@@ -262,7 +266,7 @@ TEST_P(AuctionDownloaderTest, AllowFledge) {
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, "X-Allow-FLEDGE: ");
+              kAsciiResponseBody, "Ad-Auction-Allowed: ");
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
@@ -299,10 +303,10 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
   std::string data_version_string;
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, "X-Allow-FLEDGE: true");
+              kAsciiResponseBody, "Ad-Auction-Allowed: true");
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
+                                            &allow_fledge_string));
   EXPECT_EQ("true", allow_fledge_string);
   EXPECT_FALSE(
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));
@@ -310,8 +314,8 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
   mime_type_ = AuctionDownloader::MimeType::kJson;
   AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 10u);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
+                                            &allow_fledge_string));
   EXPECT_EQ("true", allow_fledge_string);
   EXPECT_TRUE(
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));
@@ -319,8 +323,8 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
 
   AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 5u);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
+                                            &allow_fledge_string));
   EXPECT_EQ("true", allow_fledge_string);
   EXPECT_TRUE(
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));
@@ -328,8 +332,8 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
 
   AddJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
+                                            &allow_fledge_string));
   EXPECT_EQ("true", allow_fledge_string);
   EXPECT_FALSE(
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));

@@ -237,16 +237,16 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
 constexpr char kFledgeUpdateHeaders[] =
     "HTTP/1.1 200 OK\n"
     "Content-type: Application/JSON\n"
-    "X-Allow-FLEDGE: true\n";
+    "Ad-Auction-Allowed: true\n";
 
 constexpr char kFledgeScriptHeaders[] =
     "HTTP/1.1 200 OK\n"
     "Content-type: Application/Javascript\n"
-    "X-Allow-FLEDGE: true\n";
+    "Ad-Auction-Allowed: true\n";
 
 constexpr char kFledgeReportHeaders[] =
     "HTTP/1.1 200 OK\n"
-    "X-Allow-FLEDGE: true\n";
+    "Ad-Auction-Allowed: true\n";
 
 // Allows registering network responses to update and scoring / bidding script
 // requests; *must* be destroyed before the task environment is shutdown (which

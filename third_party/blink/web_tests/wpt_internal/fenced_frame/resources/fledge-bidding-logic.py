@@ -11,7 +11,7 @@ from wptserve.utils import isomorphic_decode
 def main(request, response):
     # Set up response headers.
     headers = [('Content-Type', 'Application/Javascript'),
-               ('X-Allow-FLEDGE', 'true')]
+               ('Ad-Auction-Allowed', 'true')]
 
     # Parse URL params.
     requested_size = request.GET.first(b"requested-size", None)

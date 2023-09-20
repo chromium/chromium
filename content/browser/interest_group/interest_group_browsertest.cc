@@ -369,7 +369,7 @@ class AllowlistedOriginContentBrowserClient
 constexpr char kDeferredUpdateResponsePath[] =
     "/interest_group/update_deferred.json";
 
-constexpr char kFledgeHeader[] = "X-Allow-FLEDGE";
+constexpr char kFledgeHeader[] = "Ad-Auction-Allowed";
 
 // Allows registering responses to network requests.
 class NetworkResponder {
@@ -449,7 +449,7 @@ class NetworkResponder {
         builder.AddExchange(response.subresource_url,
                             {{":status", "200"},
                              {"content-type", response.content_type},
-                             {"x-allow-fledge", "true"},
+                             {"ad-auction-allowed", "true"},
                              {"x-fledge-auction-only", "true"},
                              {"access-control-allow-credentials", "true"},
                              {"access-control-allow-origin", allow_origin}},

@@ -2236,7 +2236,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
 TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
   constexpr char kJsonResponse[] = "{}";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
   direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
@@ -2339,7 +2339,7 @@ if (auctionSignalsJson !== '{"worklet":2}') {
 }
 )";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
   direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
@@ -3219,7 +3219,7 @@ TEST_F(SellerWorkletTest, ReportResultDataVersion) {
 TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
   constexpr char kJsonResponse[] = "{}";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
   direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");

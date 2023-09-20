@@ -1118,7 +1118,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsWithInvalidDataVersion) {
         GURL("https://url.test/"
              "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
         kJsonMimeType, absl::nullopt, kBaseScoringJson,
-        "X-Allow-FLEDGE: true\nData-Version: " + test_case);
+        "Ad-Auction-Allowed: true\nData-Version: " + test_case);
     scoped_refptr<TrustedSignals::Result> signals =
         FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
                             /*ad_component_render_urls=*/{}, kHostname,

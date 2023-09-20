@@ -28,7 +28,7 @@ const char kJavascriptMimeType[] = "application/javascript";
 const char kJsonMimeType[] = "application/json";
 const char kWasmMimeType[] = "application/wasm";
 
-const char kAllowFledgeHeader[] = "X-Allow-FLEDGE: true";
+const char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,

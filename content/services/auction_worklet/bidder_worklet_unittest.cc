@@ -3182,7 +3182,7 @@ TEST_F(BidderWorkletTest, GenerateBidLoadCompletionOrder) {
   constexpr char kTrustedSignalsResponse[] = R"({"keys":{"1":1}})";
   constexpr char kJsonResponse[] = "{}";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   direct_from_seller_per_buyer_signals_ =
       GURL("https://url.test/perbuyersignals");
@@ -3278,7 +3278,7 @@ if (auctionSignalsJson !== '{"worklet":2}') {
   constexpr char kRawReturnValue[] =
       R"({bid: 1, render:"https://response.test/"})";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   for (bool late_direct_from_seller_signals : {false, true}) {
     SCOPED_TRACE(late_direct_from_seller_signals);
@@ -5399,7 +5399,7 @@ TEST_F(BidderWorkletTest, ReportWinDataVersion) {
 TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
   constexpr char kJsonResponse[] = "{}";
   constexpr char kDirectFromSellerSignalsHeaders[] =
-      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+      "Ad-Auction-Allowed: true\nX-FLEDGE-Auction-Only: true";
 
   direct_from_seller_per_buyer_signals_ =
       GURL("https://url.test/perbuyersignals");
