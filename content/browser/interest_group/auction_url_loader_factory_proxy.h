@@ -19,6 +19,7 @@
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -147,6 +148,9 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // 2) The rest of the URL has none of the following characters, in unescaped
   //     form: &, #, =.
   bool CouldBeTrustedSignalsUrl(const GURL& url) const;
+
+  mojo::PendingRemote<network::mojom::DevToolsObserver>
+  CreateDevtoolsObserver();
 
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 

@@ -19,9 +19,25 @@
     };
   });
 
+  dp.Network.onRequestWillBeSentExtraInfo(async event => {
+    const requestId = event.params.requestId;
+    requestsById[requestId].requestExtraInfoReceived = true;
+    if (event.params.connectTiming) {
+      requestsById[requestId].requestHasTiming = true;
+    }
+  });
+
   dp.Network.onResponseReceived(async event => {
     const requestId = event.params.requestId;
     requestsById[requestId].received = true;
+    if (event.params.response.timing) {
+      requestsById[requestId].responseHasTiming = true;
+    }
+  });
+
+  dp.Network.onResponseReceivedExtraInfo(async event => {
+    const requestId = event.params.requestId;
+    requestsById[requestId].responseExtraInfoReceived = true;
   });
 
   dp.Network.onLoadingFinished(async event => {
@@ -36,7 +52,7 @@
 
   await session.evaluateAsync(auctionJs);
 
-  const requests = Object.values(requestsById).sort((a, b) => a.url.localeCompare(b.url,"en"));
+  const requests = Object.values(requestsById).sort((a, b) => a.url.localeCompare(b.url, "en"));
   testRunner.log(requests);
 
   testRunner.completeTest();

@@ -7,6 +7,10 @@ Verifying the events that go through the auction network event handler are accur
         }
         method : GET
         received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
         url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     }
     [1] : {
@@ -16,6 +20,10 @@ Verifying the events that go through the auction network event handler are accur
         }
         method : GET
         received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
         url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
     }
 ]

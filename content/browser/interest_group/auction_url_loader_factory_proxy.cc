@@ -18,8 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -179,12 +181,13 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.url = url_request.url;
   new_request.web_bundle_token_params =
       std::move(maybe_web_bundle_token_params);
+  new_request.devtools_request_id = url_request.devtools_request_id;
   new_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 accept_header);
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
-  new_request.enable_load_timing = url_request.enable_load_timing;
+  new_request.enable_load_timing = true;
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
@@ -259,9 +262,12 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.trusted_params->client_security_state =
         client_security_state_.Clone();
   }
+  if (new_request.trusted_params.has_value()) {
+    new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+  }
 
-  // TODO(mmenke): Investigate whether `devtools_observer` or
-  // `report_raw_headers` should be set when devtools is open.
+  // TODO(ybourouphael): Make setting of enable_load_timing and
+  // devtools_observer only happen when it is actually needed.
 
   url_loader_factory_getter.Run()->CreateLoaderAndStart(
       std::move(receiver),
@@ -327,6 +333,20 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
       top_frame_origin_.host().c_str());
   return base::StartsWith(url.spec(), full_prefix,
                           base::CompareCase::SENSITIVE);
+}
+
+mojo::PendingRemote<network::mojom::DevToolsObserver>
+AuctionURLLoaderFactoryProxy::CreateDevtoolsObserver() {
+  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* initiator_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
+
+    if (initiator_frame_tree_node) {
+      return NetworkServiceDevToolsObserver::MakeSelfOwned(
+          initiator_frame_tree_node);
+    }
+  }
+  return mojo::PendingRemote<network::mojom::DevToolsObserver>();
 }
 
 }  // namespace content
