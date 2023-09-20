@@ -45,7 +45,7 @@ enum BuiltinModelId {
   // The Adaptive Charging (20211105) ML model.
   [MinVersion=1] UNSUPPORTED_ADAPTIVE_CHARGING_20211105 = 7,
   // The Poncho Palm Rejection ML test model.
-  [MinVersion=2] PONCHO_PALM_REJECTION_20230213 = 8,
+  [MinVersion=2] UNSUPPORTED_PONCHO_PALM_REJECTION_20230213 = 8,
   // The Adaptive Charging (20230314) ML model.
   [MinVersion=3] ADAPTIVE_CHARGING_20230314= 9,
   // The Poncho Palm Rejection ML model v0.
