@@ -32,6 +32,9 @@ struct ScopedTypeRefTraits<CVDisplayLinkRef> {
 namespace ui {
 
 namespace {
+// To prevent constantly switching VSync on and off, allow this max number of
+// extra CVDisplayLink VSync running before stopping CVDisplayLink.
+constexpr int kMaxExtraVSyncs = 12;
 
 struct DisplayLinkGlobals {
   // |map| maybe accessed on anythread but only modified on the main thread..
@@ -120,10 +123,10 @@ class DisplayLinkMacSharedState {
   void RunCallbacks(const VSyncParamsMac& params) const;
 
   // The interval over which CVDisplayLinkStart and CVDisplayLinkStop are
-  // called is controlled by a reference count. The retain call will return
-  // false if CVDisplayLinkStart fails.
-  bool RetainDisplayLinkRunning();
-  void ReleaseDisplayLinkRunning();
+  // called. The EnsureDisplayLinkRunning call will return false if
+  // CVDisplayLinkStart fails.
+  bool EnsureDisplayLinkRunning();
+  void StopDisplayLinkIfNeeded();
 
   // Register and unregister a callback. Note that the callback itself will keep
   // `this` alive (because it holds a reference to a DisplayLinkMac, which holds
@@ -152,9 +155,13 @@ class DisplayLinkMacSharedState {
   // accessed or modified while holding `globals.lock`.
   std::set<VSyncCallbackMac*> callbacks_;
 
-  // Refcount for controlling if the display link is running.
-  uint32_t display_link_running_refcount_
-      GUARDED_BY(display_link_running_lock_) = 0;
+  // The number of consecutive DisplayLink VSyncs received after zero
+  // |callbacks_|. CVDisplayLink will be stopped after |kMaxExtraVSyncs| is
+  // reached. It's guarded by |globals.lock|.
+  int consecutive_vsyncs_with_no_callbacks_ = 0;
+
+  // The status whether CVDisplayLinkStart or CVDisplayLinkStop is called.
+  bool display_link_is_running_ GUARDED_BY(display_link_running_lock_) = false;
 
   // The CVDisplayLink API is called while holding `display_link_running_lock_`.
   base::Lock display_link_running_lock_;
@@ -199,6 +206,7 @@ CVReturn DisplayLinkCallback(CVDisplayLinkRef display_link,
   // Issue all of its callbacks.
   auto* shared_state = found->second.get();
   shared_state->RunCallbacks(params);
+  shared_state->StopDisplayLinkIfNeeded();
 
   return kCVReturnSuccess;
 }
@@ -252,31 +260,44 @@ std::unique_ptr<DisplayLinkMacSharedState> DisplayLinkMacSharedState::Create(
 
 // Functions to call CVDisplayLinkStart and CVDisplayLinkStop. This is
 // reference counted, and takes `display_link_running_lock_`.
-bool DisplayLinkMacSharedState::RetainDisplayLinkRunning() {
+bool DisplayLinkMacSharedState::EnsureDisplayLinkRunning() {
   base::AutoLock lock(display_link_running_lock_);
 
-  if (display_link_running_refcount_ == 0) {
+  if (!display_link_is_running_) {
     DCHECK(!CVDisplayLinkIsRunning(display_link_));
     CVReturn ret = CVDisplayLinkStart(display_link_);
     if (ret != kCVReturnSuccess) {
       LOG(ERROR) << "CVDisplayLinkStart failed. CVReturn: " << ret;
       return false;
     }
+    display_link_is_running_ = true;
   }
-  display_link_running_refcount_ += 1;
+
   return true;
 }
-void DisplayLinkMacSharedState::ReleaseDisplayLinkRunning() {
-  base::AutoLock lock(display_link_running_lock_);
 
-  DCHECK(display_link_running_refcount_ > 0);
-  display_link_running_refcount_ -= 1;
-  if (display_link_running_refcount_ > 0) {
+// Called on the system CVDisplayLink thread.
+void DisplayLinkMacSharedState::StopDisplayLinkIfNeeded() {
+  DisplayLinkGlobals::Get().AssertLockHeldByCurrentThread();
+
+  if (!callbacks_.empty()) {
+    consecutive_vsyncs_with_no_callbacks_ = 0;
+    return;
+  }
+  consecutive_vsyncs_with_no_callbacks_ += 1;
+  if (consecutive_vsyncs_with_no_callbacks_ < kMaxExtraVSyncs) {
     return;
   }
 
+  base::AutoLock lock(display_link_running_lock_);
+  if (!display_link_is_running_) {
+    return;
+  }
   CVReturn ret = CVDisplayLinkStop(display_link_);
-  if (ret != kCVReturnSuccess) {
+  if (ret == kCVReturnSuccess) {
+    display_link_is_running_ = false;
+    consecutive_vsyncs_with_no_callbacks_ = 0;
+  } else {
     LOG(ERROR) << "CVDisplayLinkStop failed. CVReturn: " << ret;
   }
 }
@@ -433,23 +454,24 @@ DisplayLinkMac::~DisplayLinkMac() {
 std::unique_ptr<VSyncCallbackMac> DisplayLinkMac::RegisterCallback(
     VSyncCallbackMac::Callback callback,
     bool do_callback_on_register_thread) {
-  // Ensure that the CVDisplayLink is running. If something goes wrong, return
-  // nullptr.
-  if (!shared_state_->RetainDisplayLinkRunning()) {
-    return nullptr;
-  }
-
-  // Make add the new callback.
+  // Make add the new callback. Register first before calling
+  // EnsureDisplayLinkRunning() to ensure the callback function is available.
   std::unique_ptr<VSyncCallbackMac> new_callback(new VSyncCallbackMac(
       base::BindOnce(&DisplayLinkMac::UnregisterCallback, this),
       std::move(callback), do_callback_on_register_thread));
   shared_state_->RegisterCallback(new_callback.get());
+
+  // Ensure that the CVDisplayLink is running. If something goes wrong, return
+  // nullptr.
+  if (!shared_state_->EnsureDisplayLinkRunning()) {
+    new_callback.reset();
+  }
+
   return new_callback;
 }
 
 void DisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   shared_state_->UnregisterCallback(callback);
-  shared_state_->ReleaseDisplayLinkRunning();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
