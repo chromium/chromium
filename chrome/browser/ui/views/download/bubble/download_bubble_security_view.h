@@ -20,7 +20,6 @@
 
 namespace views {
 class Checkbox;
-class Label;
 class ImageView;
 class StyledLabel;
 class ImageButton;
@@ -185,7 +184,7 @@ class DownloadBubbleSecurityView : public views::View,
   // The secondary button is the one that may be protected by the checkbox.
   raw_ptr<views::LabelButton, DanglingUntriaged> secondary_button_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
-  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<ParagraphsView> paragraphs_ = nullptr;
   raw_ptr<views::ImageView> secondary_icon_ = nullptr;
