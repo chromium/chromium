@@ -5,6 +5,8 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_app_interface.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -13,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
@@ -337,6 +340,23 @@ UIViewController* TopPresentedViewController() {
   return TopPresentedViewControllerFrom(rootViewController);
 }
 
+// Returns "Move Address Bar to Top" button from the location bar context menu.
+id<GREYMatcher> MoveAddressBarToTopContextMenuButton() {
+  return grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                        IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
+}
+
+// Returns "Move Address Bar to Bottom"  button from the location bar context
+// menu.
+id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
+  return grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                        IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
+}
+
 }  // namespace
 
 #pragma mark - TestCase
@@ -598,6 +618,49 @@ UIViewController* TopPresentedViewController() {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
+}
+
+// Verifies that the address bar can be moved from the location bar context
+// menu.
+- (void)testMoveAddressBarContextAction {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Bottom address bar is only available on iPhone.");
+  }
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{kBottomOmniboxSteadyState}
+                                  disabled:{}
+                            relaunchPolicy:NoForceRelaunchAndResetState];
+
+  // Ensures the test start with a preferred omnibox position set to bottom.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+
+  // Load a page to have the toolbar visible (hidden on NTP).
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilitySecondary);
+
+  // Check address bar can be moved to the top toolbar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:MoveAddressBarToTopContextMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::DefocusedLocationView(),
+                                 VisibleInPrimaryToolbar(), nil)];
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilityPrimary);
+
+  // Check address bar can be moved to the bottom toolbar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:MoveAddressBarToBottomContextMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::DefocusedLocationView(),
+                                 VisibleInSecondaryToolbar(), nil)];
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilitySecondary);
 }
 
 @end
