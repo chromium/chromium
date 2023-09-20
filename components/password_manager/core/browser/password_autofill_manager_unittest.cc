@@ -369,13 +369,23 @@ class PasswordAutofillManagerTest : public testing::Test {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 #else
-    EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
-        .WillOnce(Return(true));
+    ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
+        .WillByDefault(Return(true));
     EXPECT_CALL(*authenticator,
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true));
 #endif
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void ExpectAndSimulateAuthenticationSuccess(
+      device_reauth::MockDeviceAuthenticator* authenticator) {
+    EXPECT_CALL(*authenticator,
+                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true))
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+  }
+#endif
 
  protected:
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
@@ -443,7 +453,18 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
   for (bool is_suggestion_on_password_field : {false, true}) {
     SCOPED_TRACE(testing::Message() << "is_suggestion_on_password_field = "
                                     << is_suggestion_on_password_field);
+
     TestPasswordManagerClient client;
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      auto authenticator =
+          std::make_unique<device_reauth::MockDeviceAuthenticator>();
+      ExpectAndSimulateAuthenticationSuccess(authenticator.get());
+      ON_CALL(client, GetDeviceAuthenticator)
+          .WillByDefault(Return(testing::ByMove(std::move(authenticator))));
+    }
+#endif
+
     NiceMock<MockAutofillClient> autofill_client;
     InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -509,6 +530,16 @@ TEST_F(PasswordAutofillManagerTest,
     SCOPED_TRACE(testing::Message() << "is_suggestion_on_password_field = "
                                     << is_suggestion_on_password_field);
     TestPasswordManagerClient client;
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      auto authenticator =
+          std::make_unique<device_reauth::MockDeviceAuthenticator>();
+      ExpectAndSimulateAuthenticationSuccess(authenticator.get());
+      ON_CALL(client, GetDeviceAuthenticator)
+          .WillByDefault(Return(testing::ByMove(std::move(authenticator))));
+    }
+#endif
+
     NiceMock<MockAutofillClient> autofill_client;
     InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1165,6 +1196,16 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
 TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   // Initialize PasswordAutofillManager with credentials without username.
   TestPasswordManagerClient client;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    auto authenticator =
+        std::make_unique<device_reauth::MockDeviceAuthenticator>();
+    ExpectAndSimulateAuthenticationSuccess(authenticator.get());
+    ON_CALL(client, GetDeviceAuthenticator)
+        .WillByDefault(Return(testing::ByMove(std::move(authenticator))));
+  }
+#endif
+
   NiceMock<MockAutofillClient> autofill_client;
   fill_data().preferred_login.username_value.clear();
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1490,6 +1531,12 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
 }
 
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+#endif
+
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
 
@@ -1602,8 +1649,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
     // The authenticator exists and is available.
 #else
-    EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
-        .WillOnce(Return(true));
+    ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
+        .WillByDefault(Return(true));
     EXPECT_CALL(*authenticator,
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true))
@@ -1677,8 +1724,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     EXPECT_CALL(*authenticator, AuthenticateWithMessage)
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 #else
-    EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
-        .WillOnce(Return(true));
+    ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
+        .WillByDefault(Return(true));
     EXPECT_CALL(*authenticator,
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true))

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
+#include "base/android/build_info.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -123,6 +124,11 @@ AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
 }
 
 TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
+  // Auth is required to fill passwords in Android automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+
   AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
 
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
@@ -146,8 +152,8 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
 
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics())
-      .WillOnce(Return(true));
+  ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
+      .WillByDefault(Return(true));
   EXPECT_CALL(*authenticator,
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
                            /*use_last_valid_auth=*/true))
@@ -169,8 +175,8 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
 
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
 
-  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics())
-      .WillOnce(Return(true));
+  ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
+      .WillByDefault(Return(true));
   EXPECT_CALL(*authenticator,
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
                            /*use_last_valid_auth=*/true))
@@ -193,8 +199,8 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
   auto authenticator = std::make_unique<MockDeviceAuthenticator>();
   auto* authenticator_ptr = authenticator.get();
 
-  EXPECT_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics())
-      .WillOnce(Return(true));
+  ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics())
+      .WillByDefault(Return(true));
   EXPECT_CALL(*authenticator_ptr,
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
                            /*use_last_valid_auth=*/true));

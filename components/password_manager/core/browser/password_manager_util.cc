@@ -49,6 +49,10 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
 
@@ -432,10 +436,16 @@ bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
   }
   return client->GetPasswordFeatureManager()
       ->IsBiometricAuthenticationBeforeFillingEnabled();
-#else
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    CHECK(authenticator);
+    return true;
+  }
   return authenticator && authenticator->CanAuthenticateWithBiometrics() &&
          base::FeatureList::IsEnabled(
              password_manager::features::kBiometricTouchToFill);
+#else
+  return false;
 #endif
 }
 

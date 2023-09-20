@@ -41,6 +41,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 using autofill::password_generation::PasswordGenerationType;
 using device_reauth::MockDeviceAuthenticator;
 using password_manager::Facet;
@@ -977,6 +981,15 @@ TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }
 
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerUtilTest, CanUseBiometricAuthAndroidAutomotive) {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
+}
+
+#endif
 
 }  // namespace password_manager_util
