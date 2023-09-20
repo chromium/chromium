@@ -22,7 +22,6 @@
 
 using ::base::test::ios::kWaitForUIElementTimeout;
 using ::base::test::ios::WaitUntilConditionOrTimeout;
-using chrome_test_util::LongPressCellAndDragToOffsetOf;
 
 namespace {
 
