@@ -6004,6 +6004,29 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
         More options
       </message>
+
+      <!-- Touch To Fill No Passkeys Sheet -->
+      <message name="IDS_NO_PASSKEYS_SHEET_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string read when the no passkeys sheet is opened. It describes the bottom sheet informing users that no passkeys are available.">
+        No passkeys sheet
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_FULL_HEIGHT" is_accessibility_with_no_ui="true" desc="Accessibility string read upon opening the bottom sheet that informs users that no passkeys are available. Even at full height, the sheet will occupy the bottom half of the screen.">
+        No passkeys sheet opened at full height
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_CLOSED" is_accessibility_with_no_ui="true" desc="Accessibility string read upon closing the bottom sheet that informs users that no passkeys are available.">
+        No passkeys sheet was closed
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_TITLE" desc="Title of the bottom sheet informing users that no passkeys are available.">
+        No passkeys available
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_SUBTITLE" desc="Explanation text of the bottom sheet informing users that no passkeys are available for this site.">
+        There aren't any passkeys for <ph name="ORIGIN">%1$s<ex>example.com</ex></ph> on this device
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_OK" desc="Label for the button that allows users to dismiss the bottom sheet informing them that no passkeys are available.">
+        OK
+      </message>
+      <message name="IDS_NO_PASSKEYS_SHEET_USE_ANOTHER_DEVICE" desc="Label for the button that allows users to starts a flow allowing them to use a passkey from another device to sign into ths site.">
+        Use another device
+      </message>
     </messages>
   </release>
 </grit>

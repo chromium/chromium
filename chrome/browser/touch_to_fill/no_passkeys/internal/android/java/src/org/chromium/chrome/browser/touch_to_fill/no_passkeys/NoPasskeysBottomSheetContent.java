@@ -5,11 +5,17 @@
 package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the content for the no passkeys bottom sheet. */
-class NoPasskeysBottomSheetContent {
+class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private final Delegate mDelegate;
     private final Context mContext;
     private final String mOrigin;
@@ -40,5 +46,99 @@ class NoPasskeysBottomSheetContent {
         mDelegate = delegate;
         mContext = context;
         mOrigin = origin;
+    }
+
+    private View createContentView() {
+        View contentView =
+                LayoutInflater.from(mContext).inflate(R.layout.no_passkeys_bottom_sheet, null);
+        contentView.setLayoutDirection(LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
+                                                                       : View.LAYOUT_DIRECTION_LTR);
+        contentView.findViewById(R.id.no_passkeys_ok_button)
+                .setOnClickListener(v -> mDelegate.onClickOk());
+        contentView.findViewById(R.id.no_passkeys_use_another_device_button)
+                .setOnClickListener(v -> mDelegate.onClickUseAnotherDevice());
+
+        // TODO(crbug/1481495): Make the origin a bold typeface.
+        TextView subtitle = contentView.findViewById(R.id.no_passkeys_sheet_subtitle);
+        subtitle.setText(mContext.getString(R.string.no_passkeys_sheet_subtitle, mOrigin));
+        return contentView;
+    }
+
+    // BottomSheetContent implementation:
+    @Override
+    public View getContentView() {
+        return createContentView();
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public View getToolbarView() {
+        return null;
+    }
+
+    @Override
+    public int getVerticalScrollOffset() {
+        return 0;
+    }
+
+    @Override
+    public void destroy() {
+        mDelegate.onDestroy();
+    }
+
+    @Override
+    public int getPriority() {
+        return ContentPriority.HIGH;
+    }
+
+    @Override
+    public boolean swipeToDismissEnabled() {
+        return true;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public boolean hideOnScroll() {
+        return true;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public int getSheetContentDescriptionStringId() {
+        return R.string.no_passkeys_sheet_content_description;
+    }
+
+    @Override
+    public int getSheetHalfHeightAccessibilityStringId() {
+        assert false;
+        return 0;
+    }
+
+    @Override
+    public int getSheetFullHeightAccessibilityStringId() {
+        return R.string.no_passkeys_sheet_full_height;
+    }
+
+    @Override
+    public int getSheetClosedAccessibilityStringId() {
+        return R.string.no_passkeys_sheet_closed;
     }
 }

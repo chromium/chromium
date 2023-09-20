@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
@@ -16,14 +17,16 @@ import java.lang.ref.WeakReference;
 class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Delegate {
     private final WeakReference<BottomSheetController> mBottomSheetController;
 
-    private @Nullable NoPasskeysBottomSheetContent mBottomSheetContent;
+    private @Nullable BottomSheetContent mBottomSheetContent;
     private @Nullable Runnable mOnDismissed;
 
     /**
      * Creates the mediator.
      *
-     * @param bottomSheetController The controller to use for showing or hiding the content.
-     * @param onDismissed A runnable to clean up when the bottom sheet is finally dismissed.
+     * @param bottomSheetController The controller to use for showing or hiding the
+     *                              content.
+     * @param onDismissed           A runnable to clean up when the bottom sheet is
+     *                              finally dismissed.
      */
     NoPasskeysBottomSheetMediator(
             WeakReference<BottomSheetController> bottomSheetController, Runnable onDismissed) {
@@ -32,23 +35,28 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
     }
 
     /**
-     * Requests to show the bottom sheet content. If the environment prevents showing, the method
-     * will return early (e.g. because the finishing activity cleans up UI components.
+     * Requests to show the bottom sheet content. If the environment prevents
+     * showing, the method
+     * will return early (e.g. because the finishing activity cleans up UI
+     * components.
      *
-     * @param bottomSheetContent The {@link NoPasskeysBottomSheetContent} to be shown.
+     * @param bottomSheetContent The {@link NoPasskeysBottomSheetContent} to be
+     *                           shown.
      * @return True iff the bottomsheet is shown by the controller
      */
-    boolean show(@Nullable NoPasskeysBottomSheetContent bottomSheetContent) {
+    boolean show(@Nullable BottomSheetContent bottomSheetContent) {
         assert bottomSheetContent != null;
         if (mBottomSheetController.get() == null) {
             return false;
         }
         mBottomSheetContent = bottomSheetContent;
-        // TODO(crbug/1481495): Request the content to be shown.
-        return false;
+        return mBottomSheetController.get().requestShowContent(mBottomSheetContent, true);
     }
 
-    /** Hide the bottom sheet (if showing) and ensures the dismiss callback is called. */
+    /**
+     * Hide the bottom sheet (if showing) and ensures the dismiss callback is
+     * called.
+     */
     void destroy() {
         dismiss();
         mBottomSheetContent = null;
@@ -75,6 +83,7 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
         if (mOnDismissed == null) {
             return; // Dismissal already happened.
         }
+        mBottomSheetController.get().hideContent(mBottomSheetContent, true);
         mOnDismissed.run();
         mOnDismissed = null; // Don't call the callback repeatedly!
     }

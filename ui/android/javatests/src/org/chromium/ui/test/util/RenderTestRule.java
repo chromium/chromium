@@ -135,9 +135,9 @@ public class RenderTestRule extends TestWatcher {
             Component.UI_BROWSER_MOBILE_START, Component.UI_BROWSER_MOBILE_TAB_GROUPS,
             Component.UI_BROWSER_MOBILE_TAB_SWITCHER, Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
             Component.UI_BROWSER_NEW_TAB_PAGE, Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
-            Component.UI_BROWSER_OMNIBOX, Component.UI_BROWSER_SEARCH_VOICE,
-            Component.UI_BROWSER_SHARING, Component.UI_BROWSER_SHOPPING,
-            Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
+            Component.UI_BROWSER_OMNIBOX, Component.UI_BROWSER_PASSWORDS,
+            Component.UI_BROWSER_SEARCH_VOICE, Component.UI_BROWSER_SHARING,
+            Component.UI_BROWSER_SHOPPING, Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
             Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
             Component.UI_BROWSER_THUMBNAIL, Component.UI_BROWSER_WEB_APP_INSTALLS,
             Component.UI_SETTINGS_PRIVACY})
@@ -176,6 +176,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
         String UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES = "UI>Browser>NewTabPage>ExploreSites";
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
+        String UI_BROWSER_PASSWORDS = "UI>Browser>Passwords";
         String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
         String UI_BROWSER_SHARING = "UI>Browser>Sharing";
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
