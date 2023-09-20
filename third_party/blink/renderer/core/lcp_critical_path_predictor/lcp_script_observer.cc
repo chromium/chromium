@@ -15,12 +15,18 @@ HashSet<String> LCPScriptObserver::GetExecutingScriptUrls() {
 
   // Gather sync and async scripts in execution
   for (const probe::ExecuteScript* probe : stack_script_probes_) {
+    if (probe->script_url.empty()) {
+      continue;
+    }
     script_urls.insert(probe->script_url);
   }
 
   // Gather async functions in execution
   for (const probe::CallFunction* probe : stack_function_probes_) {
     String url = GetScriptUrlFromCallFunctionProbe(probe);
+    if (url.empty()) {
+      continue;
+    }
     script_urls.insert(url);
   }
 
@@ -30,11 +36,16 @@ HashSet<String> LCPScriptObserver::GetExecutingScriptUrls() {
   DCHECK(isolate);
   auto v8_stack_urls = GetScriptUrlsFromCurrentStack(isolate, 0);
   for (auto& url : v8_stack_urls) {
+    if (url.empty()) {
+      continue;
+    }
     script_urls.insert(url);
   }
 
   const String document_url = local_root_->GetDocument()->Url();
-  script_urls.erase(document_url);
+  if (!document_url.empty()) {
+    script_urls.erase(document_url);
+  }
 
   return script_urls;
 }
