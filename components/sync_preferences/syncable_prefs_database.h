@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -67,10 +66,7 @@ class SyncablePrefMetadata {
     return is_history_opt_in_required_;
   }
 
-  MergeBehavior merge_behavior() const {
-    NOTREACHED() << "The database has not been populated yet.";
-    return merge_behaviour_;
-  }
+  MergeBehavior merge_behavior() const { return merge_behaviour_; }
 
  private:
   int syncable_pref_id_;

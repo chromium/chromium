@@ -317,7 +317,7 @@ const auto& SyncablePreferences() {
               false, MergeBehavior::kNone}},
             {kSyncableMergeableDictPrefForTesting,
              {syncable_prefs_ids::kSyncableMergeableDictPrefForTesting,
-              syncer::PREFERENCES, false, MergeBehavior::kNone}},
+              syncer::PREFERENCES, false, MergeBehavior::kMergeableDict}},
             {autofill::prefs::kAutofillPaymentCvcStorage,
              {syncable_prefs_ids::kAutofillPaymentCvcStorage,
               syncer::PREFERENCES, false, MergeBehavior::kNone}},

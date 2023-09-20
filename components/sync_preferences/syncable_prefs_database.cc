@@ -5,7 +5,6 @@
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 
 namespace sync_preferences {
@@ -17,7 +16,6 @@ bool SyncablePrefsDatabase::IsPreferenceSyncable(
 
 bool SyncablePrefsDatabase::IsPreferenceMergeable(
     const std::string& pref_name) const {
-  NOTIMPLEMENTED() << "The database has not been populated yet.";
   absl::optional<SyncablePrefMetadata> metadata =
       GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());
