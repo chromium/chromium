@@ -408,13 +408,8 @@ class ShoppingService : public KeyedService,
       const std::string& source_page_domain,
       GetParcelStatusCallback callback);
 
-  // Gets status for a list of parcels. If the parcel status is outdated, a
-  // request will be sent to the server to retrieve the information. Otherwise,
-  // recently cached status will be returned in the callback.
-  void GetParcelStatus(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      GetParcelStatusCallback callback);
+  // Gets the status of all parcel status stored in the db.
+  void GetAllParcelStatuses(GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
   void StopTrackingParcel(const std::string& tracking_id,

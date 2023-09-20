@@ -47,11 +47,8 @@ class ParcelsManager {
       const std::string& source_page_domain,
       GetParcelStatusCallback callback);
 
-  // Gets status for a list of parcels.
-  void GetParcelStatus(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      GetParcelStatusCallback callback);
+  // Gets status for all stored parcels.
+  void GetAllParcelStatuses(GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
   void StopTrackingParcel(const std::string& tracking_id,

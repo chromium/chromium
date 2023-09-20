@@ -1513,12 +1513,9 @@ void ShoppingService::StartTrackingParcels(
   }
 }
 
-void ShoppingService::GetParcelStatus(
-    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-        parcel_identifiers,
-    GetParcelStatusCallback callback) {
+void ShoppingService::GetAllParcelStatuses(GetParcelStatusCallback callback) {
   if (parcels_manager_) {
-    parcels_manager_->GetParcelStatus(parcel_identifiers, std::move(callback));
+    parcels_manager_->GetAllParcelStatuses(std::move(callback));
   } else {
     std::move(callback).Run(
         false, std::make_unique<std::vector<ParcelTrackingStatus>>());

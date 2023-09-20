@@ -72,13 +72,14 @@ void ParcelsManager::StartTrackingParcels(
       base::BindOnce(&OnGetParcelStatusDone, std::move(callback)));
 }
 
-void ParcelsManager::GetParcelStatus(
-    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-        parcel_identifiers,
-    GetParcelStatusCallback callback) {
-  // TODO(qinmin): check db first before sending request to the server.
+void ParcelsManager::GetAllParcelStatuses(GetParcelStatusCallback callback) {
+  auto parcel_status = parcels_storage_->GetAllParcelStatus();
+  std::vector<ParcelIdentifier> identifiers;
+  for (auto& status : *parcel_status) {
+    identifiers.emplace_back(status.parcel_identifier());
+  }
   parcels_server_proxy_->GetParcelStatus(
-      ConvertParcelIdentifier(parcel_identifiers),
+      std::move(identifiers),
       base::BindOnce(&OnGetParcelStatusDone, std::move(callback)));
 }
 
