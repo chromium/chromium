@@ -21,44 +21,25 @@
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/token_key_finder.h"
 #include "chromeos/components/kcer/token_results_merger.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
 
 namespace kcer::internal {
 
-KcerImpl::KcerImpl()
-    : init_queue_(std::make_unique<std::deque<base::OnceClosure>>()) {}
-KcerImpl::~KcerImpl() = default;
-
-void KcerImpl::Initialize(scoped_refptr<base::TaskRunner> token_task_runner,
-                          base::WeakPtr<KcerToken> user_token,
-                          base::WeakPtr<KcerToken> device_token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(init_queue_) << "Initialize can only be called once";
-
-  token_task_runner_ = std::move(token_task_runner);
-  user_token_ = std::move(user_token);
-  device_token_ = std::move(device_token);
+KcerImpl::KcerImpl(scoped_refptr<base::TaskRunner> token_task_runner,
+                   base::WeakPtr<KcerToken> user_token,
+                   base::WeakPtr<KcerToken> device_token)
+    : token_task_runner_(std::move(token_task_runner)),
+      user_token_(std::move(user_token)),
+      device_token_(std::move(device_token)) {
   if (user_token_.MaybeValid() || device_token_.MaybeValid()) {
     notifier_.Initialize();
   }
-
-  // Moving out from `init_queue_` makes it invalid and all the other methods
-  // will start processing requests instead of queueing them.
-  auto pending_tasks = std::move(init_queue_);
-  for (base::OnceClosure& task : *pending_tasks) {
-    std::move(task).Run();
-  }
 }
 
-base::WeakPtr<KcerImpl> KcerImpl::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return weak_factory_.GetWeakPtr();
-}
+KcerImpl::~KcerImpl() = default;
 
 base::CallbackListSubscription KcerImpl::AddObserver(
     base::RepeatingClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return notifier_.AddObserver(std::move(callback));
 }
 
@@ -66,14 +47,6 @@ void KcerImpl::GenerateRsaKey(Token token,
                               uint32_t modulus_length_bits,
                               bool hardware_backed,
                               GenerateKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::GenerateRsaKey, weak_factory_.GetWeakPtr(), token,
-        modulus_length_bits, hardware_backed, std::move(callback)));
-  }
-
   const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
   if (!kcer_token.MaybeValid()) {
     return std::move(callback).Run(
@@ -90,14 +63,6 @@ void KcerImpl::GenerateEcKey(Token token,
                              EllipticCurve curve,
                              bool hardware_backed,
                              GenerateKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::GenerateEcKey, weak_factory_.GetWeakPtr(),
-                       token, curve, hardware_backed, std::move(callback)));
-  }
-
   const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
   if (!kcer_token.MaybeValid()) {
     return std::move(callback).Run(
@@ -113,14 +78,6 @@ void KcerImpl::GenerateEcKey(Token token,
 void KcerImpl::ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                          ImportKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::ImportKey, weak_factory_.GetWeakPtr(), token,
-                       pkcs8_private_key_info_der, std::move(callback)));
-  }
-
   const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
   if (!kcer_token.MaybeValid()) {
     return std::move(callback).Run(
@@ -136,14 +93,6 @@ void KcerImpl::ImportKey(Token token,
 void KcerImpl::ImportCertFromBytes(Token token,
                                    CertDer cert_der,
                                    StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::ImportCertFromBytes, weak_factory_.GetWeakPtr(), token,
-        std::move(cert_der), std::move(callback)));
-  }
-
   const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
   if (!kcer_token.MaybeValid()) {
     return std::move(callback).Run(
@@ -159,14 +108,6 @@ void KcerImpl::ImportCertFromBytes(Token token,
 void KcerImpl::ImportX509Cert(Token token,
                               scoped_refptr<net::X509Certificate> cert,
                               StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::ImportX509Cert, weak_factory_.GetWeakPtr(),
-                       token, std::move(cert), std::move(callback)));
-  }
-
   if (!cert) {
     return std::move(callback).Run(
         base::unexpected(Error::kInvalidCertificate));
@@ -185,26 +126,16 @@ void KcerImpl::ImportPkcs12Cert(Token token,
                                 std::string password,
                                 bool hardware_backed,
                                 StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(244408716): Implement.
 }
 
 void KcerImpl::ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                                 ExportPkcs12Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(244408716): Implement.
 }
 
 void KcerImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
                                  StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::RemoveKeyAndCerts, weak_factory_.GetWeakPtr(),
-                       std::move(key), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return RemoveKeyAndCertsWithToken(std::move(callback), std::move(key));
   }
@@ -218,8 +149,6 @@ void KcerImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
 void KcerImpl::RemoveKeyAndCertsWithToken(
     StatusCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -239,14 +168,6 @@ void KcerImpl::RemoveKeyAndCertsWithToken(
 
 void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
                           StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::RemoveCert, weak_factory_.GetWeakPtr(),
-                       std::move(cert), std::move(callback)));
-  }
-
   if (!cert) {
     return std::move(callback).Run(
         base::unexpected(Error::kInvalidCertificate));
@@ -265,14 +186,6 @@ void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
 
 void KcerImpl::ListKeys(base::flat_set<Token> tokens,
                         ListKeysCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::ListKeys, weak_factory_.GetWeakPtr(),
-                       std::move(tokens), std::move(callback)));
-  }
-
   if (tokens.empty()) {
     return std::move(callback).Run(/*certs=*/{}, /*errors=*/{});
   }
@@ -297,14 +210,6 @@ void KcerImpl::ListKeys(base::flat_set<Token> tokens,
 
 void KcerImpl::ListCerts(base::flat_set<Token> tokens,
                          ListCertsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::ListCerts, weak_factory_.GetWeakPtr(),
-                       std::move(tokens), std::move(callback)));
-  }
-
   if (tokens.empty()) {
     return std::move(callback).Run(/*certs=*/{}, /*errors=*/{});
   }
@@ -329,14 +234,6 @@ void KcerImpl::ListCerts(base::flat_set<Token> tokens,
 
 void KcerImpl::DoesPrivateKeyExist(PrivateKeyHandle key,
                                    DoesKeyExistCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::DoesPrivateKeyExist, weak_factory_.GetWeakPtr(),
-        std::move(key), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     const base::WeakPtr<KcerToken>& kcer_token =
         GetToken(key.GetTokenInternal().value());
@@ -362,8 +259,6 @@ void KcerImpl::DoesPrivateKeyExist(PrivateKeyHandle key,
 void KcerImpl::DoesPrivateKeyExistWithToken(
     DoesKeyExistCallback callback,
     base::expected<absl::optional<Token>, Error> find_key_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!find_key_result.has_value()) {
     return std::move(callback).Run(base::unexpected(find_key_result.error()));
   }
@@ -375,14 +270,6 @@ void KcerImpl::Sign(PrivateKeyHandle key,
                     SigningScheme signing_scheme,
                     DataToSign data,
                     SignCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::Sign, weak_factory_.GetWeakPtr(), std::move(key),
-        signing_scheme, std::move(data), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return SignWithToken(signing_scheme, std::move(data), std::move(callback),
                          std::move(key));
@@ -399,8 +286,6 @@ void KcerImpl::SignWithToken(
     DataToSign data,
     SignCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -422,14 +307,6 @@ void KcerImpl::SignWithToken(
 void KcerImpl::SignRsaPkcs1Raw(PrivateKeyHandle key,
                                DigestWithPrefix digest_with_prefix,
                                SignCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::SignRsaPkcs1Raw, weak_factory_.GetWeakPtr(), std::move(key),
-        std::move(digest_with_prefix), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return SignRsaPkcs1RawWithToken(std::move(digest_with_prefix),
                                     std::move(callback), std::move(key));
@@ -445,8 +322,6 @@ void KcerImpl::SignRsaPkcs1RawWithToken(
     DigestWithPrefix digest_with_prefix,
     SignCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -465,21 +340,7 @@ void KcerImpl::SignRsaPkcs1RawWithToken(
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
-void KcerImpl::GetAvailableTokens(GetAvailableTokensCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(&KcerImpl::GetAvailableTokens,
-                                                 weak_factory_.GetWeakPtr(),
-                                                 std::move(callback)));
-  }
-  content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), GetCurrentTokens()));
-}
-
-base::flat_set<Token> KcerImpl::GetCurrentTokens() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+base::flat_set<Token> KcerImpl::GetAvailableTokens() {
   base::flat_set<Token> result;
   if (user_token_.MaybeValid()) {
     result.insert(Token::kUser);
@@ -491,14 +352,6 @@ base::flat_set<Token> KcerImpl::GetCurrentTokens() const {
 }
 
 void KcerImpl::GetTokenInfo(Token token, GetTokenInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(&KcerImpl::GetTokenInfo,
-                                                 weak_factory_.GetWeakPtr(),
-                                                 token, std::move(callback)));
-  }
-
   const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
   if (!kcer_token.MaybeValid()) {
     return std::move(callback).Run(
@@ -511,14 +364,6 @@ void KcerImpl::GetTokenInfo(Token token, GetTokenInfoCallback callback) {
 }
 
 void KcerImpl::GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(
-        base::BindOnce(&KcerImpl::GetKeyInfo, weak_factory_.GetWeakPtr(),
-                       std::move(key), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return GetKeyInfoWithToken(std::move(callback), std::move(key));
   }
@@ -532,8 +377,6 @@ void KcerImpl::GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) {
 void KcerImpl::GetKeyInfoWithToken(
     GetKeyInfoCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -554,14 +397,6 @@ void KcerImpl::GetKeyInfoWithToken(
 void KcerImpl::SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::SetKeyNickname, weak_factory_.GetWeakPtr(), std::move(key),
-        std::move(nickname), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return SetKeyNicknameWithToken(std::move(nickname), std::move(callback),
                                    std::move(key));
@@ -577,8 +412,6 @@ void KcerImpl::SetKeyNicknameWithToken(
     std::string nickname,
     StatusCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -600,14 +433,6 @@ void KcerImpl::SetKeyNicknameWithToken(
 void KcerImpl::SetKeyPermissions(PrivateKeyHandle key,
                                  chaps::KeyPermissions key_permissions,
                                  StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::SetKeyPermissions, weak_factory_.GetWeakPtr(),
-        std::move(key), std::move(key_permissions), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return SetKeyPermissionsWithToken(std::move(key_permissions),
                                       std::move(callback), std::move(key));
@@ -623,8 +448,6 @@ void KcerImpl::SetKeyPermissionsWithToken(
     chaps::KeyPermissions key_permissions,
     StatusCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -646,14 +469,6 @@ void KcerImpl::SetKeyPermissionsWithToken(
 void KcerImpl::SetCertProvisioningProfileId(PrivateKeyHandle key,
                                             std::string profile_id,
                                             StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (init_queue_) {
-    return init_queue_->push_back(base::BindOnce(
-        &KcerImpl::SetCertProvisioningProfileId, weak_factory_.GetWeakPtr(),
-        std::move(key), std::move(profile_id), std::move(callback)));
-  }
-
   if (key.GetTokenInternal().has_value()) {
     return SetCertProvisioningProfileIdWithToken(
         std::move(profile_id), std::move(callback), std::move(key));
@@ -669,8 +484,6 @@ void KcerImpl::SetCertProvisioningProfileIdWithToken(
     std::string profile_id,
     StatusCallback callback,
     base::expected<PrivateKeyHandle, Error> key_or_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!key_or_error.has_value()) {
     return std::move(callback).Run(base::unexpected(key_or_error.error()));
   }
@@ -690,7 +503,6 @@ void KcerImpl::SetCertProvisioningProfileIdWithToken(
 }
 
 base::WeakPtr<internal::KcerToken>& KcerImpl::GetToken(Token token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   switch (token) {
     case Token::kUser:
       return user_token_;
@@ -704,9 +516,7 @@ void KcerImpl::FindKeyToken(
     PrivateKeyHandle key,
     base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
         callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::flat_set<Token> tokens = GetCurrentTokens();
+  base::flat_set<Token> tokens = GetAvailableTokens();
 
   if (tokens.empty()) {
     return std::move(callback).Run(
@@ -733,8 +543,6 @@ void KcerImpl::PopulateTokenForKey(
     PrivateKeyHandle key,
     base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)>
         callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   auto on_find_key_done =
       base::BindOnce(&KcerImpl::PopulateTokenForKeyWithToken,
                      weak_factory_.GetWeakPtr(), key, std::move(callback));
@@ -746,8 +554,6 @@ void KcerImpl::PopulateTokenForKeyWithToken(
     PrivateKeyHandle key,
     base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)> callback,
     base::expected<absl::optional<Token>, Error> find_key_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!find_key_result.has_value()) {
     return std::move(callback).Run(base::unexpected(find_key_result.error()));
   }
