@@ -82,8 +82,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
         UpdateBounds(window_state);
       }
       break;
-    case WM_EVENT_WORKAREA_BOUNDS_CHANGED:
-    case WM_EVENT_DISPLAY_BOUNDS_CHANGED:
+    case WM_EVENT_DISPLAY_METRICS_CHANGED:
       UpdateBounds(window_state);
       break;
   }

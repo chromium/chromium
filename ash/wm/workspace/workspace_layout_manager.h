@@ -189,9 +189,6 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // Set of windows we're listening to.
   WindowSet windows_;
 
-  // The work area in the coordinates of |window_|.
-  gfx::Rect work_area_in_parent_;
-
   // True if this workspace is currently in fullscreen mode. Tracks the
   // fullscreen state of the container |window_| associated with this workspace
   // rather than the root window.

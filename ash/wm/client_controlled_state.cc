@@ -140,7 +140,7 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                   chromeos::FloatStartLocation::kBottomRight);
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
-  } else if (event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED) {
+  } else if (event->type() == WM_EVENT_DISPLAY_METRICS_CHANGED) {
     // Explicitly handle the primary change because it can change the display id
     // with no bounds change.
     if (event->AsDisplayMetricsChangedWMEvent()->primary_changed()) {

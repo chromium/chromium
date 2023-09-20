@@ -170,7 +170,8 @@ void DefaultState::AttachState(WindowState* window_state,
         display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
     window_state->OnWMEvent(&event);
   } else if (stored_display_state_.work_area() != current_display.work_area()) {
-    const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+    const DisplayMetricsChangedWMEvent event(
+        display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
     window_state->OnWMEvent(&event);
   }
 }
@@ -240,30 +241,33 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       window_state->SetBoundsConstrained(bounds);
       return;
     }
-    case WM_EVENT_DISPLAY_BOUNDS_CHANGED: {
-      // When display bounds has changed, make sure the entire window is fully
-      // visible.
-      UpdateBoundsForDisplayOrWorkAreaBoundsChange(
-          window_state, /*ensure_full_window_visibility=*/true);
-      return;
-    }
-    case WM_EVENT_WORKAREA_BOUNDS_CHANGED: {
-      // Don't resize the maximized window when the desktop is covered
-      // by fullscreen window. crbug.com/504299.
-      // TODO(afakhry): Decide whether we want the active desk's workspace, or
-      // the workspace of the desk of `window_state->window()`.
-      // For now use the active desk's.
-      auto* workspace_controller =
-          GetActiveWorkspaceController(window_state->window()->GetRootWindow());
-      DCHECK(workspace_controller);
-      bool in_fullscreen = workspace_controller->GetWindowState() ==
-                           WorkspaceWindowState::kFullscreen;
-      if (in_fullscreen && window_state->IsMaximized())
-        return;
+    case WM_EVENT_DISPLAY_METRICS_CHANGED: {
+      const DisplayMetricsChangedWMEvent* display_event =
+          event->AsDisplayMetricsChangedWMEvent();
+      if (display_event->display_bounds_changed()) {
+        // When display bounds has changed, make sure the entire window is fully
+        // visible.
+        UpdateBoundsForDisplayOrWorkAreaBoundsChange(
+            window_state, /*ensure_full_window_visibility=*/true);
+      } else if (display_event->work_area_changed()) {
+        // Don't resize the maximized window when the desktop is covered
+        // by fullscreen window. crbug.com/504299.
+        // TODO(afakhry): Decide whether we want the active desk's workspace, or
+        // the workspace of the desk of `window_state->window()`.
+        // For now use the active desk's.
+        auto* workspace_controller = GetActiveWorkspaceController(
+            window_state->window()->GetRootWindow());
+        DCHECK(workspace_controller);
+        const bool in_fullscreen = workspace_controller->GetWindowState() ==
+                                   WorkspaceWindowState::kFullscreen;
+        if (in_fullscreen && window_state->IsMaximized()) {
+          return;
+        }
 
-      UpdateBoundsForDisplayOrWorkAreaBoundsChange(
-          window_state,
-          /*ensure_full_window_visibility=*/false);
+        UpdateBoundsForDisplayOrWorkAreaBoundsChange(
+            window_state,
+            /*ensure_full_window_visibility=*/false);
+      }
       return;
     }
     default:

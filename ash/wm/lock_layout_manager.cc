@@ -32,7 +32,8 @@ LockLayoutManager::~LockLayoutManager() {
 }
 
 void LockLayoutManager::OnWindowResized() {
-  const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+  const DisplayMetricsChangedWMEvent event(
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
   AdjustWindowsForWorkAreaChange(&event);
 }
 
@@ -106,7 +107,8 @@ void LockLayoutManager::OnDisplayMetricsChanged(const display::Display& display,
   }
 
   if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
-    const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+    const DisplayMetricsChangedWMEvent event(
+        display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
     AdjustWindowsForWorkAreaChange(&event);
   }
 }
@@ -117,8 +119,10 @@ void LockLayoutManager::OnKeyboardOccludedBoundsChanged(
 }
 
 void LockLayoutManager::AdjustWindowsForWorkAreaChange(const WMEvent* event) {
-  DCHECK(event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED ||
-         event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+  const DisplayMetricsChangedWMEvent* display_event =
+      event->AsDisplayMetricsChangedWMEvent();
+  CHECK(display_event->display_bounds_changed() ||
+        display_event->work_area_changed());
 
   for (aura::Window* child : window_->children())
     WindowState::Get(child)->OnWMEvent(event);

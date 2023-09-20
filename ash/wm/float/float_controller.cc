@@ -799,13 +799,9 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
       // Let the state object handle the display change. This is normally
       // handled by the `WorkspaceLayoutManager`, but the float container does
       // not have one attached.
-      if (metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS) {
+      if (metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS ||
+          metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
         const DisplayMetricsChangedWMEvent wm_event(metrics);
-        WindowState::Get(window)->OnWMEvent(&wm_event);
-      }
-
-      if (metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
-        const WMEvent wm_event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
         WindowState::Get(window)->OnWMEvent(&wm_event);
       }
     }

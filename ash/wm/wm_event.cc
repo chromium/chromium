@@ -18,8 +18,7 @@ WMEvent::~WMEvent() = default;
 bool WMEvent::IsWorkspaceEvent() const {
   switch (type_) {
     case WM_EVENT_ADDED_TO_WORKSPACE:
-    case WM_EVENT_WORKAREA_BOUNDS_CHANGED:
-    case WM_EVENT_DISPLAY_BOUNDS_CHANGED:
+    case WM_EVENT_DISPLAY_METRICS_CHANGED:
       return true;
     default:
       break;
@@ -98,7 +97,7 @@ const SetBoundsWMEvent* WMEvent::AsSetBoundsWMEvent() const {
 
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
-  DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
+  CHECK_EQ(type(), WM_EVENT_DISPLAY_METRICS_CHANGED);
   return static_cast<const DisplayMetricsChangedWMEvent*>(this);
 }
 
@@ -132,7 +131,7 @@ const SetBoundsWMEvent* SetBoundsWMEvent::AsSetBoundsWMEvent() const {
 }
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
-    : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),
+    : WMEvent(WM_EVENT_DISPLAY_METRICS_CHANGED),
       changed_metrics_(changed_metrics) {}
 
 DisplayMetricsChangedWMEvent::~DisplayMetricsChangedWMEvent() = default;

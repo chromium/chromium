@@ -407,14 +407,20 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                    AdjustStateForTabletMode(window_state, current_state_type_),
                    /*animate=*/true);
       break;
-    case WM_EVENT_WORKAREA_BOUNDS_CHANGED:
-      if (current_state_type_ != WindowStateType::kMinimized)
-        UpdateBounds(window_state, previous_state_type, /*animate=*/true);
-      break;
-    case WM_EVENT_DISPLAY_BOUNDS_CHANGED:
-      // Don't animate on a screen rotation - just snap to new size.
-      if (current_state_type_ != WindowStateType::kMinimized)
-        UpdateBounds(window_state, previous_state_type, /*animate=*/false);
+    case WM_EVENT_DISPLAY_METRICS_CHANGED:
+      if (current_state_type_ == WindowStateType::kMinimized) {
+        break;
+      }
+      const DisplayMetricsChangedWMEvent* display_event =
+          event->AsDisplayMetricsChangedWMEvent();
+      const bool display_bounds_changed =
+          display_event->display_bounds_changed();
+      const bool work_area_changed = display_event->work_area_changed();
+      if (display_bounds_changed || work_area_changed) {
+        // Don't animate on a screen rotation - just snap to new size.
+        UpdateBounds(window_state, previous_state_type,
+                     /*animate=*/work_area_changed);
+      }
       break;
   }
 }

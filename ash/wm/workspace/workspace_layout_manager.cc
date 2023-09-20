@@ -96,8 +96,6 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
     : window_(window),
       root_window_(window->GetRootWindow()),
       root_window_controller_(RootWindowController::ForWindow(root_window_)),
-      work_area_in_parent_(
-          screen_util::GetDisplayWorkAreaBoundsInParent(window_)),
       is_fullscreen_(GetWindowForFullscreenModeForContext(window) != nullptr) {
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
@@ -239,12 +237,14 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 
     gfx::Rect window_bounds(window->GetTargetBounds());
     ::wm::ConvertRectToScreen(window_, &window_bounds);
-    int vertical_displacement =
+    const int vertical_displacement =
         std::max(0, window_bounds.bottom() - new_bounds_in_screen.y());
-    int shift = std::min(vertical_displacement,
-                         window_bounds.y() - work_area_in_parent_.y());
+    const int shift = std::min(
+        vertical_displacement,
+        window_bounds.y() -
+            screen_util::GetDisplayWorkAreaBoundsInParent(window_).y());
     if (shift > 0) {
-      gfx::Point origin(window_bounds.x(), window_bounds.y() - shift);
+      const gfx::Point origin(window_bounds.x(), window_bounds.y() - shift);
       SetChildBounds(window, gfx::Rect(origin, window_bounds.size()));
     }
   } else if (window_state->HasRestoreBounds()) {
@@ -406,17 +406,12 @@ void WorkspaceLayoutManager::OnDisplayMetricsChanged(
   }
 
   if (changed_metrics & (display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
-                         display::DisplayObserver::DISPLAY_METRIC_PRIMARY)) {
+                         display::DisplayObserver::DISPLAY_METRIC_PRIMARY |
+                         display::DisplayObserver::DISPLAY_METRIC_WORK_AREA)) {
     const DisplayMetricsChangedWMEvent wm_event(changed_metrics);
     AdjustAllWindowsBoundsForWorkAreaChange(&wm_event);
   }
 
-  const gfx::Rect work_area(
-      screen_util::GetDisplayWorkAreaBoundsInParent(window_));
-  if (work_area != work_area_in_parent_) {
-    const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
-    AdjustAllWindowsBoundsForWorkAreaChange(&event);
-  }
   backdrop_controller_->OnDisplayMetricsChanged();
 }
 
@@ -505,10 +500,12 @@ void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
 
 void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
     const WMEvent* event) {
-  DCHECK(event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED ||
-         event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+  CHECK_EQ(WM_EVENT_DISPLAY_METRICS_CHANGED, event->type());
 
-  work_area_in_parent_ = screen_util::GetDisplayWorkAreaBoundsInParent(window_);
+  const DisplayMetricsChangedWMEvent* display_event =
+      event->AsDisplayMetricsChangedWMEvent();
+  CHECK(display_event->display_bounds_changed() ||
+        display_event->primary_changed() || display_event->work_area_changed());
 
   MaybeUpdateA11yFloatingPanelOrPipBounds();
 
