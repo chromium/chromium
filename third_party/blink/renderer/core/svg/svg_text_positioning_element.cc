@@ -81,7 +81,7 @@ void SVGTextPositioningElement::SvgAttributeChanged(
       return;
 
     if (auto* ng_text =
-            LayoutNGSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
+            LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
       ng_text->SetNeedsPositioningValuesUpdate();
     }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);

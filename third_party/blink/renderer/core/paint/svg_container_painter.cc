@@ -95,7 +95,7 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
 
     for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
          child = child->NextSibling()) {
-      if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(child)) {
+      if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
         SVGForeignObjectPainter(*foreign_object)
             .PaintLayer(paint_info_before_filtering);
       } else {

@@ -429,7 +429,7 @@ absl::optional<PhysicalSize> NGFragmentItemsBuilder::ToFragmentItems(
   ConvertToPhysical(outer_size);
   absl::optional<PhysicalSize> new_size;
   if (node_.IsSvgText()) {
-    new_size = NGSvgTextLayoutAlgorithm(node_, GetWritingMode())
+    new_size = SvgTextLayoutAlgorithm(node_, GetWritingMode())
                    .Layout(TextContent(false), items_);
   }
   new (data) NGFragmentItems(this);

@@ -16,9 +16,9 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
     LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 
 // The LayoutNG representation of SVG <text>.
-class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
+class LayoutSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  public:
-  explicit LayoutNGSVGText(Element* element);
+  explicit LayoutSVGText(Element* element);
 
   void SubtreeStructureChanged(LayoutInvalidationReasonForTracing);
   // This is called whenever a text layout attribute on the <text> or a
@@ -30,9 +30,8 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool IsObjectBoundingBoxValid() const;
 
   // These two functions return a LayoutNGSVGText or nullptr.
-  static LayoutNGSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
-  static const LayoutNGSVGText* LocateLayoutSVGTextAncestor(
-      const LayoutObject*);
+  static LayoutSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
+  static const LayoutSVGText* LocateLayoutSVGTextAncestor(const LayoutObject*);
 
   static void NotifySubtreeStructureChanged(LayoutObject*,
                                             LayoutInvalidationReasonForTracing);
@@ -84,9 +83,9 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 };
 
 template <>
-struct DowncastTraits<LayoutNGSVGText> {
+struct DowncastTraits<LayoutSVGText> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsNGSVGText();
+    return object.IsSVGText();
   }
 };
 

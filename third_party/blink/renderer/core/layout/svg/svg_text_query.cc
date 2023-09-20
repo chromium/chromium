@@ -36,7 +36,7 @@ std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
 FragmentItemsInVisualOrder(const LayoutObject& query_root) {
   Vector<const NGFragmentItem*> item_list;
   const NGFragmentItems* items = nullptr;
-  if (query_root.IsNGSVGText()) {
+  if (query_root.IsSVGText()) {
     DCHECK_LE(To<LayoutBox>(query_root).PhysicalFragmentCount(), 1u);
     for (const auto& fragment : To<LayoutBox>(query_root).PhysicalFragments()) {
       if (!fragment.Items()) {
@@ -182,7 +182,7 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
 
 }  // namespace
 
-unsigned NGSvgTextQuery::NumberOfCharacters() const {
+unsigned SvgTextQuery::NumberOfCharacters() const {
   auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   unsigned addressable_code_unit_count = 0;
@@ -192,8 +192,8 @@ unsigned NGSvgTextQuery::NumberOfCharacters() const {
   return addressable_code_unit_count;
 }
 
-float NGSvgTextQuery::SubStringLength(unsigned start_index,
-                                      unsigned length) const {
+float SvgTextQuery::SubStringLength(unsigned start_index,
+                                    unsigned length) const {
   if (length <= 0) {
     return 0.0f;
   }
@@ -223,15 +223,15 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
   return total_length;
 }
 
-gfx::PointF NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
+gfx::PointF SvgTextQuery::StartPositionOfCharacter(unsigned index) const {
   return StartOrEndPosition(query_root_, index, QueryPosition::kStart);
 }
 
-gfx::PointF NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
+gfx::PointF SvgTextQuery::EndPositionOfCharacter(unsigned index) const {
   return StartOrEndPosition(query_root_, index, QueryPosition::kEnd);
 }
 
-gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
+gfx::RectF SvgTextQuery::ExtentOfCharacter(unsigned index) const {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
   if (item->IsHiddenForPaint()) {
@@ -244,7 +244,7 @@ gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
   return char_rect;
 }
 
-float NGSvgTextQuery::RotationOfCharacter(unsigned index) const {
+float SvgTextQuery::RotationOfCharacter(unsigned index) const {
   auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
@@ -276,8 +276,7 @@ float NGSvgTextQuery::RotationOfCharacter(unsigned index) const {
 }
 
 // https://svgwg.org/svg2-draft/text.html#__svg__SVGTextContentElement__getCharNumAtPosition
-int NGSvgTextQuery::CharacterNumberAtPosition(
-    const gfx::PointF& position) const {
+int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
   // The specification says we should do hit-testing in logical order.
   // However, this does it in visual order in order to match to the legacy SVG
   // <text> behavior.

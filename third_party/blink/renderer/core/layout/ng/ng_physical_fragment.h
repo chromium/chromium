@@ -229,7 +229,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   bool IsSvg() const { return layout_object_->IsSVG(); }
-  bool IsSvgText() const { return layout_object_->IsNGSVGText(); }
+  bool IsSvgText() const { return layout_object_->IsSVGText(); }
 
   bool IsTableNGPart() const { return is_table_ng_part_; }
 

@@ -171,7 +171,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
-    if (auto* svg_text = LayoutNGSVGText::LocateLayoutSVGTextAncestor(this)) {
+    if (auto* svg_text = LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
       if (svg_text->NeedsTextMetricsUpdate())
         diff.SetNeedsFullLayout();
     }
@@ -199,13 +199,13 @@ void LayoutSVGInline::AddChild(LayoutObject* child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutInline::AddChild(child, before_child);
-  LayoutNGSVGText::NotifySubtreeStructureChanged(
+  LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
 }
 
 void LayoutSVGInline::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  LayoutNGSVGText::NotifySubtreeStructureChanged(
+  LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
   LayoutInline::RemoveChild(child);
 }

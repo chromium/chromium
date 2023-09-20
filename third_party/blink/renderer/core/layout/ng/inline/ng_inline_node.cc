@@ -1029,7 +1029,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
   block->WillCollectInlines();
 
   const SvgTextChunkOffsets* chunk_offsets = nullptr;
-  if (block->IsNGSVGText()) {
+  if (block->IsSVGText()) {
     // SVG <text> doesn't support reusing the previous result now.
     previous_data = nullptr;
     data->svg_node_data_ = nullptr;
@@ -1047,8 +1047,8 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
   data->items.reserve(EstimateInlineItemsCount(*block));
   NGInlineItemsBuilder builder(block, &data->items, chunk_offsets);
   CollectInlinesInternal(&builder, previous_data);
-  if (block->IsNGSVGText() && !data->svg_node_data_) {
-    NGSvgTextLayoutAttributesBuilder svg_attr_builder(*this);
+  if (block->IsSVGText() && !data->svg_node_data_) {
+    SvgTextLayoutAttributesBuilder svg_attr_builder(*this);
     svg_attr_builder.Build(builder.ToString(), data->items);
     data->svg_node_data_ = svg_attr_builder.CreateSvgInlineNodeData();
   }
@@ -1063,7 +1063,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
     NGInlineNodeData& data) const {
   TRACE_EVENT0("blink", "NGInlineNode::FindSvgTextChunks");
   // Build NGInlineItems and NGOffsetMapping first.  They are used only by
-  // NGSVGTextLayoutAttributesBuilder, and are discarded because they might
+  // SVGTextLayoutAttributesBuilder, and are discarded because they might
   // be different from final ones.
   HeapVector<NGInlineItem> items;
   ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
@@ -1075,7 +1075,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   CollectInlinesInternal(&items_builder, nullptr);
   String ifc_text_content = items_builder.ToString();
 
-  NGSvgTextLayoutAttributesBuilder svg_attr_builder(*this);
+  SvgTextLayoutAttributesBuilder svg_attr_builder(*this);
   svg_attr_builder.Build(ifc_text_content, items);
   data.svg_node_data_ = svg_attr_builder.CreateSvgInlineNodeData();
 

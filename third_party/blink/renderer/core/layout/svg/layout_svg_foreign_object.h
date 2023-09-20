@@ -37,10 +37,10 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 // Because of this, the frame rect and visual rect includes effective zoom. The
 // object bounding box (ObjectBoundingBox method) is however not zoomed to be
 // compatible with the expectations of the getBBox() DOM interface.
-class LayoutNGSVGForeignObject final
+class LayoutSVGForeignObject final
     : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  public:
-  explicit LayoutNGSVGForeignObject(Element* element);
+  explicit LayoutSVGForeignObject(Element* element);
 
   bool IsObjectBoundingBoxValid() const;
 
@@ -87,7 +87,7 @@ class LayoutNGSVGForeignObject final
 };
 
 template <>
-struct DowncastTraits<LayoutNGSVGForeignObject> {
+struct DowncastTraits<LayoutSVGForeignObject> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsSVGForeignObject();
   }

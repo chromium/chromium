@@ -15,52 +15,51 @@
 
 namespace blink {
 
-LayoutNGSVGForeignObject::LayoutNGSVGForeignObject(Element* element)
+LayoutSVGForeignObject::LayoutSVGForeignObject(Element* element)
     : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element) {
   DCHECK(IsA<SVGForeignObjectElement>(element));
 }
 
-const char* LayoutNGSVGForeignObject::GetName() const {
+const char* LayoutSVGForeignObject::GetName() const {
   NOT_DESTROYED();
-  return "LayoutNGSVGForeignObject";
+  return "LayoutSVGForeignObject";
 }
 
-bool LayoutNGSVGForeignObject::IsOfType(LayoutObjectType type) const {
+bool LayoutSVGForeignObject::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGSVGForeignObject ||
+  return type == kLayoutObjectSVGForeignObject ||
          LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
 }
 
-bool LayoutNGSVGForeignObject::IsChildAllowed(
-    LayoutObject* child,
-    const ComputedStyle& style) const {
+bool LayoutSVGForeignObject::IsChildAllowed(LayoutObject* child,
+                                            const ComputedStyle& style) const {
   NOT_DESTROYED();
   // Disallow arbitrary SVG content. Only allow proper <svg xmlns="svgNS">
   // subdocuments.
   return !child->IsSVGChild();
 }
 
-bool LayoutNGSVGForeignObject::IsObjectBoundingBoxValid() const {
+bool LayoutSVGForeignObject::IsObjectBoundingBoxValid() const {
   NOT_DESTROYED();
   return !viewport_.IsEmpty();
 }
 
-gfx::RectF LayoutNGSVGForeignObject::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGForeignObject::ObjectBoundingBox() const {
   NOT_DESTROYED();
   return viewport_;
 }
 
-gfx::RectF LayoutNGSVGForeignObject::StrokeBoundingBox() const {
+gfx::RectF LayoutSVGForeignObject::StrokeBoundingBox() const {
   NOT_DESTROYED();
   return viewport_;
 }
 
-gfx::RectF LayoutNGSVGForeignObject::DecoratedBoundingBox() const {
+gfx::RectF LayoutSVGForeignObject::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   return VisualRectInLocalSVGCoordinates();
 }
 
-gfx::RectF LayoutNGSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
     PhysicalOffset offset = PhysicalLocation();
@@ -70,7 +69,7 @@ gfx::RectF LayoutNGSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   return gfx::RectF(FrameRect());
 }
 
-AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
+AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   NOT_DESTROYED();
   // Include a zoom inverse in the local-to-parent transform since descendants
   // of the <foreignObject> will have regular zoom applied, and thus need to
@@ -81,25 +80,25 @@ AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-LayoutPoint LayoutNGSVGForeignObject::LocationInternal() const {
+LayoutPoint LayoutSVGForeignObject::LocationInternal() const {
   NOT_DESTROYED();
   return overridden_location_;
 }
 
-PaintLayerType LayoutNGSVGForeignObject::LayerTypeRequired() const {
+PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
   NOT_DESTROYED();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::LayerTypeRequired();
 }
 
-bool LayoutNGSVGForeignObject::CreatesNewFormattingContext() const {
+bool LayoutSVGForeignObject::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   // This is the root of a foreign object. Don't let anything inside it escape
   // to our ancestors.
   return true;
 }
 
-void LayoutNGSVGForeignObject::UpdateLayout() {
+void LayoutSVGForeignObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -183,7 +182,7 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   DCHECK(!needs_transform_update_);
 }
 
-bool LayoutNGSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && bounds_changed) {
     SVGResourceInvalidator(*this).InvalidateEffects();
@@ -191,8 +190,8 @@ bool LayoutNGSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
   return UpdateTransformAfterLayout(bounds_changed);
 }
 
-void LayoutNGSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                              const ComputedStyle* old_style) {
+void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
+                                            const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
 
@@ -205,7 +204,7 @@ void LayoutNGSVGForeignObject::StyleDidChange(StyleDifference diff,
   }
 }
 
-bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
+bool LayoutSVGForeignObject::NodeAtPointFromSVG(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,

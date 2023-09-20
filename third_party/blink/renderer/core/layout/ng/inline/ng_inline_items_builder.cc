@@ -278,8 +278,9 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
     AppendGeneratedBreakOpportunity(LayoutObject* layout_object) {
-  if (block_flow_->IsNGSVGText())
+  if (block_flow_->IsSVGText()) {
     return;
+  }
   DCHECK(layout_object);
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
@@ -1001,7 +1002,7 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<
     OffsetMappingBuilder>::ExitAndEnterSvgTextChunk(LayoutText& layout_text) {
-  DCHECK(block_flow_->IsNGSVGText());
+  DCHECK(block_flow_->IsSVGText());
   DCHECK(text_chunk_offsets_);
 
   if (bidi_context_.empty())
@@ -1021,8 +1022,9 @@ void NGInlineItemsBuilderTemplate<
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterSvgTextChunk(
     const ComputedStyle* style) {
-  if (LIKELY(!block_flow_->IsNGSVGText() || !text_chunk_offsets_))
+  if (LIKELY(!block_flow_->IsSVGText() || !text_chunk_offsets_)) {
     return;
+  }
   EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,
                    kRightToLeftIsolateCharacter,
                    kPopDirectionalIsolateCharacter);

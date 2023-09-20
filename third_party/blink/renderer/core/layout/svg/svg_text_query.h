@@ -16,13 +16,12 @@ namespace blink {
 
 class LayoutObject;
 
-// An NG version of blink::SVGTextQuery, which is an implementation of SVG DOM
-// functions to retrieve text geometry.
-class NGSvgTextQuery {
+// An implementation of SVG DOM functions to retrieve text geometry.
+class SvgTextQuery {
   STACK_ALLOCATED();
 
  public:
-  explicit NGSvgTextQuery(LayoutObject& query_root) : query_root_(query_root) {}
+  explicit SvgTextQuery(LayoutObject& query_root) : query_root_(query_root) {}
 
   unsigned NumberOfCharacters() const;
   float SubStringLength(unsigned start_index, unsigned length) const;

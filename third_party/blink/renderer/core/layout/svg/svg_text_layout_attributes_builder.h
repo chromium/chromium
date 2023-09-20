@@ -28,11 +28,11 @@ class NGInlineNode;
 // textLength.
 //
 // [1] https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
-class NGSvgTextLayoutAttributesBuilder final {
+class SvgTextLayoutAttributesBuilder final {
   STACK_ALLOCATED();
 
  public:
-  explicit NGSvgTextLayoutAttributesBuilder(NGInlineNode ifc);
+  explicit SvgTextLayoutAttributesBuilder(NGInlineNode ifc);
 
   void Build(const String& ifc_text_content,
              const HeapVector<NGInlineItem>& items);

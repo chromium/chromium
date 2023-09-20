@@ -24,8 +24,8 @@ namespace blink {
 
 // See https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 
-NGSvgTextLayoutAlgorithm::NGSvgTextLayoutAlgorithm(NGInlineNode node,
-                                                   WritingMode writing_mode)
+SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(NGInlineNode node,
+                                               WritingMode writing_mode)
     : inline_node_(node),
       // 1.5. Let "horizontal" be a flag, true if the writing mode of ‘text’
       // is horizontal, false otherwise.
@@ -33,10 +33,10 @@ NGSvgTextLayoutAlgorithm::NGSvgTextLayoutAlgorithm(NGInlineNode node,
   DCHECK(node.IsSvgText());
 }
 
-PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
+PhysicalSize SvgTextLayoutAlgorithm::Layout(
     const String& ifc_text_content,
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
-  TRACE_EVENT0("blink", "NGSvgTextLayoutAlgorithm::Layout");
+  TRACE_EVENT0("blink", "SvgTextLayoutAlgorithm::Layout");
   // https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
   //
   // The major difference from the algorithm in the specification:
@@ -88,7 +88,7 @@ PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
   return WriteBackToFragmentItems(items);
 }
 
-bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
+bool SvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
   // 1.2. Let count be the number of DOM characters within the ‘text’ element's
   // subtree.
   // ==> We don't use |count|. We set |addressable_count_| in the step 2.
@@ -111,7 +111,7 @@ bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
 }
 
 // This function updates |result_|.
-void NGSvgTextLayoutAlgorithm::SetFlags(
+void SvgTextLayoutAlgorithm::SetFlags(
     const String& ifc_text_content,
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   // This function collects information per an "addressable" character in DOM
@@ -184,7 +184,7 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
   addressable_count_ = result_.size();
 }
 
-void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
+void SvgTextLayoutAlgorithm::AdjustPositionsDxDy(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   // 1. Let shift be the cumulative x and y shifts due to ‘x’ and ‘y’
   // attributes, initialized to (0,0).
@@ -229,7 +229,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   }
 }
 
-void NGSvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
+void SvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   // Start indexes of the highest textLength elements which were already
   // handled by ResolveTextLength().
@@ -251,7 +251,7 @@ void NGSvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
 //    1. Called for the first <tspan>.
 //    2. Called for the second <tspan>.
 //    3. Called for the <text>.
-void NGSvgTextLayoutAlgorithm::ResolveTextLength(
+void SvgTextLayoutAlgorithm::ResolveTextLength(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
     const SvgTextContentRange& range,
     Vector<wtf_size_t>& resolved_descendant_node_starts) {
@@ -407,7 +407,7 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
   resolved_descendant_node_starts.push_back(i);
 }
 
-void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
+void SvgTextLayoutAlgorithm::AdjustPositionsXY(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   // This function moves characters to
   //   <position specified by x/y attributes>
@@ -481,7 +481,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
   }
 }
 
-void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
+void SvgTextLayoutAlgorithm::ApplyAnchoring(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   DCHECK_GT(result_.size(), 0u);
   DCHECK(result_[0].anchored_chunk);
@@ -579,7 +579,7 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
   }
 }
 
-void NGSvgTextLayoutAlgorithm::PositionOnPath(
+void SvgTextLayoutAlgorithm::PositionOnPath(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   const auto& ranges = inline_node_.SvgTextPathRangeList();
   if (ranges.empty()) {
@@ -783,7 +783,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
   }
 }
 
-PhysicalSize NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
+PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   gfx::RectF unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
@@ -852,13 +852,13 @@ PhysicalSize NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
           LayoutUnit(unscaled_visual_rect.bottom())};
 }
 
-float NGSvgTextLayoutAlgorithm::ScalingFactorAt(
+float SvgTextLayoutAlgorithm::ScalingFactorAt(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
     wtf_size_t addressable_index) const {
   return items[result_[addressable_index].item_index]->SvgScalingFactor();
 }
 
-bool NGSvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
+bool SvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
     wtf_size_t index) const {
   if (!result_[index].anchored_chunk) {
     return false;

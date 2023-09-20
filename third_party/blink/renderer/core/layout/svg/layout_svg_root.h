@@ -31,7 +31,7 @@
 
 namespace blink {
 
-class LayoutNGSVGText;
+class LayoutSVGText;
 class SVGElement;
 enum class SVGTransformChange;
 
@@ -112,8 +112,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   bool HasNonIsolatedBlendingDescendants() const final;
 
-  void AddSvgTextDescendant(LayoutNGSVGText& svg_text);
-  void RemoveSvgTextDescendant(LayoutNGSVGText& svg_text);
+  void AddSvgTextDescendant(LayoutSVGText& svg_text);
+  void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -199,7 +199,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   SVGContentContainer content_;
   PhysicalSize container_size_;
   AffineTransform local_to_border_box_transform_;
-  HeapHashSet<Member<LayoutNGSVGText>> text_set_;
+  HeapHashSet<Member<LayoutSVGText>> text_set_;
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;
   bool needs_boundaries_or_transform_update_ : 1;

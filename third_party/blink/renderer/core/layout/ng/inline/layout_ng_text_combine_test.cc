@@ -1541,7 +1541,7 @@ TEST_F(LayoutNGTextCombineTest, ShouldBeParentOfSvg) {
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
   +--LayoutSVGRoot svg
-  |  +--LayoutNGSVGText text style="writing-mode: vertical-rl;"
+  |  +--LayoutSVGText text style="writing-mode: vertical-rl;"
   |  |  +--LayoutSVGInlineText #text "Text"
 )DUMP",
             ToSimpleLayoutTree(*GetLayoutObjectByElementId("root")));

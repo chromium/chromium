@@ -12,11 +12,11 @@ namespace blink {
 
 struct SvgTextContentRange;
 
-class NGSvgTextLayoutAlgorithm {
+class SvgTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
  public:
-  NGSvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
+  SvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.

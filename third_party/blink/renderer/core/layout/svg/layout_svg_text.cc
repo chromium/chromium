@@ -28,10 +28,10 @@ namespace blink {
 
 namespace {
 
-const LayoutNGSVGText* FindTextRoot(const LayoutObject* start) {
+const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
   DCHECK(start);
   for (; start; start = start->Parent()) {
-    if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(start)) {
+    if (const auto* ng_text = DynamicTo<LayoutSVGText>(start)) {
       return ng_text;
     }
   }
@@ -40,15 +40,15 @@ const LayoutNGSVGText* FindTextRoot(const LayoutObject* start) {
 
 }  // namespace
 
-LayoutNGSVGText::LayoutNGSVGText(Element* element)
+LayoutSVGText::LayoutSVGText(Element* element)
     : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element),
       needs_update_bounding_box_(true),
       needs_text_metrics_update_(true) {
   DCHECK(IsA<SVGTextElement>(element));
 }
 
-void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
-                                     const ComputedStyle* old_style) {
+void LayoutSVGText::StyleDidChange(StyleDifference diff,
+                                   const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
@@ -67,55 +67,54 @@ void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutNGSVGText::WillBeDestroyed() {
+void LayoutSVGText::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearPaints(*this, Style());
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeDestroyed();
 }
 
-const char* LayoutNGSVGText::GetName() const {
+const char* LayoutSVGText::GetName() const {
   NOT_DESTROYED();
-  return "LayoutNGSVGText";
+  return "LayoutSVGText";
 }
 
-bool LayoutNGSVGText::IsOfType(LayoutObjectType type) const {
+bool LayoutSVGText::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGSVGText ||
+  return type == kLayoutObjectSVGText ||
          LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
 }
 
-bool LayoutNGSVGText::CreatesNewFormattingContext() const {
+bool LayoutSVGText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   return true;
 }
 
-void LayoutNGSVGText::UpdateFromStyle() {
+void LayoutSVGText::UpdateFromStyle() {
   NOT_DESTROYED();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::UpdateFromStyle();
   SetHasNonVisibleOverflow(false);
 }
 
-bool LayoutNGSVGText::IsChildAllowed(LayoutObject* child,
-                                     const ComputedStyle&) const {
+bool LayoutSVGText::IsChildAllowed(LayoutObject* child,
+                                   const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsSVGInline() ||
          (child->IsText() && SVGLayoutSupport::IsLayoutableTextNode(child));
 }
 
-void LayoutNGSVGText::AddChild(LayoutObject* child,
-                               LayoutObject* before_child) {
+void LayoutSVGText::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutSVGBlock::AddChild(child, before_child);
   SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
 }
 
-void LayoutNGSVGText::RemoveChild(LayoutObject* child) {
+void LayoutSVGText::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
   LayoutSVGBlock::RemoveChild(child);
 }
 
-void LayoutNGSVGText::InsertedIntoTree() {
+void LayoutSVGText::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
   bool seen_svg_root = false;
@@ -130,7 +129,7 @@ void LayoutNGSVGText::InsertedIntoTree() {
   }
 }
 
-void LayoutNGSVGText::WillBeRemovedFromTree() {
+void LayoutSVGText::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
@@ -145,7 +144,7 @@ void LayoutNGSVGText::WillBeRemovedFromTree() {
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
 }
 
-void LayoutNGSVGText::SubtreeStructureChanged(
+void LayoutSVGText::SubtreeStructureChanged(
     LayoutInvalidationReasonForTracing) {
   NOT_DESTROYED();
   if (BeingDestroyed() || !EverHadLayout()) {
@@ -159,7 +158,7 @@ void LayoutNGSVGText::SubtreeStructureChanged(
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
 }
 
-void LayoutNGSVGText::UpdateFont() {
+void LayoutSVGText::UpdateFont() {
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
     if (auto* text = DynamicTo<LayoutSVGInlineText>(descendant)) {
@@ -168,7 +167,7 @@ void LayoutNGSVGText::UpdateFont() {
   }
 }
 
-void LayoutNGSVGText::UpdateTransformAffectsVectorEffect() {
+void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
   if (StyleRef().VectorEffect() == EVectorEffect::kNonScalingStroke) {
     SetTransformAffectsVectorEffect(true);
     return;
@@ -185,7 +184,7 @@ void LayoutNGSVGText::UpdateTransformAffectsVectorEffect() {
   }
 }
 
-void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
+void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   if (paint_info.phase != PaintPhase::kForeground &&
       paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
       paint_info.phase != PaintPhase::kSelectionDragImage) {
@@ -219,7 +218,7 @@ void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
   }
 }
 
-void LayoutNGSVGText::UpdateLayout() {
+void LayoutSVGText::UpdateLayout() {
   NOT_DESTROYED();
 
   // If the root layout size changed (eg. window size changes), or the screen
@@ -267,7 +266,7 @@ void LayoutNGSVGText::UpdateLayout() {
   }
 }
 
-bool LayoutNGSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
   if (bounds_changed) {
     // Invalidate all resources of this client if our reference box changed.
     SVGResourceInvalidator resource_invalidator(*this);
@@ -279,12 +278,12 @@ bool LayoutNGSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
   return UpdateTransformAfterLayout(bounds_changed);
 }
 
-bool LayoutNGSVGText::IsObjectBoundingBoxValid() const {
+bool LayoutSVGText::IsObjectBoundingBoxValid() const {
   NOT_DESTROYED();
   return PhysicalFragments().HasFragmentItems();
 }
 
-gfx::RectF LayoutNGSVGText::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (needs_update_bounding_box_) {
     // Compute a box containing repositioned text in the non-scaled coordinate.
@@ -312,7 +311,7 @@ gfx::RectF LayoutNGSVGText::ObjectBoundingBox() const {
   return bounding_box_;
 }
 
-gfx::RectF LayoutNGSVGText::StrokeBoundingBox() const {
+gfx::RectF LayoutSVGText::StrokeBoundingBox() const {
   NOT_DESTROYED();
   gfx::RectF box = ObjectBoundingBox();
   if (box.IsEmpty()) {
@@ -321,12 +320,12 @@ gfx::RectF LayoutNGSVGText::StrokeBoundingBox() const {
   return SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box);
 }
 
-gfx::RectF LayoutNGSVGText::DecoratedBoundingBox() const {
+gfx::RectF LayoutSVGText::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   return StrokeBoundingBox();
 }
 
-gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   // TODO(crbug.com/1179585): Just use ink overflow?
   gfx::RectF box = ObjectBoundingBox();
@@ -336,22 +335,22 @@ gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
-void LayoutNGSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                    MapCoordinatesFlags mode) const {
+void LayoutSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
+                                  MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(
       LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
 }
 
-gfx::RectF LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutSVGText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   return DecoratedBoundingBox();
 }
 
-bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
-                                  const HitTestLocation& hit_test_location,
-                                  const PhysicalOffset& accumulated_offset,
-                                  HitTestPhase phase) {
+bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
+                                const HitTestLocation& hit_test_location,
+                                const PhysicalOffset& accumulated_offset,
+                                HitTestPhase phase) {
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
   if (!local_location) {
@@ -366,7 +365,7 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
       result, *local_location, accumulated_offset, phase);
 }
 
-PositionWithAffinity LayoutNGSVGText::PositionForPoint(
+PositionWithAffinity LayoutSVGText::PositionForPoint(
     const PhysicalOffset& point_in_contents) const {
   NOT_DESTROYED();
   gfx::PointF point(point_in_contents.left, point_in_contents.top);
@@ -393,37 +392,36 @@ PositionWithAffinity LayoutNGSVGText::PositionForPoint(
   return closest_inline_text->PositionForPoint(point_in_contents);
 }
 
-void LayoutNGSVGText::SetNeedsPositioningValuesUpdate() {
+void LayoutSVGText::SetNeedsPositioningValuesUpdate() {
   NOT_DESTROYED();
   // We resolve text layout attributes in CollectInlines().
   // Do not use SetNeedsCollectInlines() without arguments.
   SetNeedsCollectInlines(true);
 }
 
-void LayoutNGSVGText::SetNeedsTextMetricsUpdate() {
+void LayoutSVGText::SetNeedsTextMetricsUpdate() {
   NOT_DESTROYED();
   needs_text_metrics_update_ = true;
   // We need to re-shape text.
   SetNeedsCollectInlines(true);
 }
 
-bool LayoutNGSVGText::NeedsTextMetricsUpdate() const {
+bool LayoutSVGText::NeedsTextMetricsUpdate() const {
   NOT_DESTROYED();
   return needs_text_metrics_update_;
 }
 
-LayoutNGSVGText* LayoutNGSVGText::LocateLayoutSVGTextAncestor(
-    LayoutObject* start) {
-  return const_cast<LayoutNGSVGText*>(FindTextRoot(start));
+LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(LayoutObject* start) {
+  return const_cast<LayoutSVGText*>(FindTextRoot(start));
 }
 
-const LayoutNGSVGText* LayoutNGSVGText::LocateLayoutSVGTextAncestor(
+const LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(
     const LayoutObject* start) {
   return FindTextRoot(start);
 }
 
 // static
-void LayoutNGSVGText::NotifySubtreeStructureChanged(
+void LayoutSVGText::NotifySubtreeStructureChanged(
     LayoutObject* object,
     LayoutInvalidationReasonForTracing reason) {
   if (auto* ng_text = LocateLayoutSVGTextAncestor(object)) {

@@ -56,7 +56,7 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
   const LayoutObject* obb_layout_object = &layout_object;
   if (layout_object.IsSVGInline()) {
     obb_layout_object =
-        LayoutNGSVGText::LocateLayoutSVGTextAncestor(&layout_object);
+        LayoutSVGText::LocateLayoutSVGTextAncestor(&layout_object);
   }
   DCHECK(obb_layout_object);
 

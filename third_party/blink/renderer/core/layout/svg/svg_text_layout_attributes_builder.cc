@@ -230,8 +230,7 @@ bool HasValidTextLength(const LayoutObject& layout_object) {
 
 }  // anonymous namespace
 
-NGSvgTextLayoutAttributesBuilder::NGSvgTextLayoutAttributesBuilder(
-    NGInlineNode ifc)
+SvgTextLayoutAttributesBuilder::SvgTextLayoutAttributesBuilder(NGInlineNode ifc)
     : block_flow_(To<LayoutBlockFlow>(ifc.GetLayoutBox())) {}
 
 // This is an implementation of "3. Resolve character positioning" in [1],
@@ -241,7 +240,7 @@ NGSvgTextLayoutAttributesBuilder::NGSvgTextLayoutAttributesBuilder(
 // resolve_dy, "rotate" of result[], and "anchored chunk" of result[].
 //
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
-void NGSvgTextLayoutAttributesBuilder::Build(
+void SvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
     const HeapVector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
@@ -402,7 +401,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
   DCHECK_EQ(resolved_.size(), ifc_text_content_offsets_.size());
 }
 
-SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
+SvgInlineNodeData* SvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
   auto* svg_node_data = MakeGarbageCollected<SvgInlineNodeData>();
   svg_node_data->character_data_list = std::move(resolved_);
   svg_node_data->text_length_range_list = std::move(text_length_range_list_);
@@ -410,7 +409,7 @@ SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
   return svg_node_data;
 }
 
-unsigned NGSvgTextLayoutAttributesBuilder::IfcTextContentOffsetAt(
+unsigned SvgTextLayoutAttributesBuilder::IfcTextContentOffsetAt(
     wtf_size_t index) {
   return ifc_text_content_offsets_.at(index);
 }

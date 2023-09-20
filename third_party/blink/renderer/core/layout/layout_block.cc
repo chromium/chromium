@@ -180,7 +180,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
           old_style &&
           (IsStackingContext(*old_style) != IsStackingContext(new_style));
       for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
-        To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
+        To<LayoutSVGText>(box)->SetNeedsTextMetricsUpdate();
         if (GetNode() == GetDocument().documentElement() ||
             stacking_context_changed) {
           box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
@@ -439,7 +439,7 @@ void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
 
 void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
   NOT_DESTROYED();
-  DCHECK(IsA<LayoutNGSVGText>(svg_text));
+  DCHECK(IsA<LayoutSVGText>(svg_text));
   auto result = View()->SvgTextDescendantsMap().insert(this, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
@@ -451,7 +451,7 @@ void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
 
 void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
   NOT_DESTROYED();
-  DCHECK(IsA<LayoutNGSVGText>(svg_text));
+  DCHECK(IsA<LayoutSVGText>(svg_text));
   TrackedDescendantsMap& map = View()->SvgTextDescendantsMap();
   auto it = map.find(this);
   if (it == map.end())

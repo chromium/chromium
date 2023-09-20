@@ -1382,7 +1382,7 @@ void LayoutObject::SetNeedsCollectInlines() {
   if (NeedsCollectInlines())
     return;
 
-  if (UNLIKELY(IsSVGChild() && !IsNGSVGText() && !IsSVGInline() &&
+  if (UNLIKELY(IsSVGChild() && !IsSVGText() && !IsSVGInline() &&
                !IsSVGInlineText() && !IsSVGForeignObject())) {
     return;
   }

@@ -78,7 +78,7 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
   PaintInfo child_info(paint_info);
   for (LayoutObject* child = layout_svg_root_.FirstChild(); child;
        child = child->NextSibling()) {
-    if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(child)) {
+    if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
       SVGForeignObjectPainter(*foreign_object).PaintLayer(paint_info);
     } else {
       child->Paint(child_info);

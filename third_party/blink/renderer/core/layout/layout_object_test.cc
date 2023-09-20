@@ -1591,7 +1591,7 @@ TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgText) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* text = GetLayoutObjectByElementId("text");
-  if (text->IsNGSVGText()) {
+  if (text->IsSVGText()) {
     text->SetNeedsCollectInlines();
     EXPECT_TRUE(GetLayoutObjectByElementId("ancestor")->NeedsCollectInlines());
   }

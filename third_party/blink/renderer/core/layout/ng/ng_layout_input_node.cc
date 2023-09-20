@@ -80,7 +80,7 @@ bool NGLayoutInputNode::IsSliderThumb() const {
 }
 
 bool NGLayoutInputNode::IsSvgText() const {
-  return box_ && box_->IsNGSVGText();
+  return box_ && box_->IsSVGText();
 }
 
 bool NGLayoutInputNode::IsEmptyTableSection() const {

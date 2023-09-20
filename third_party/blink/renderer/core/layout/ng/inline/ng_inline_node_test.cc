@@ -1646,7 +1646,7 @@ TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash1) {
       "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>"
       "</text></svg>");
 
-  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  auto* block_flow = To<LayoutSVGText>(GetLayoutObjectByElementId("text"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   EXPECT_TRUE(data);
   // Pass if no null pointer dereferences.
@@ -1662,7 +1662,7 @@ TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash2) {
       "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>\n"
       "</text></svg>");
 
-  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  auto* block_flow = To<LayoutSVGText>(GetLayoutObjectByElementId("text"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   EXPECT_TRUE(data);
   // Pass if no DCHECK() failures.

@@ -506,13 +506,13 @@ bool LayoutSVGRoot::IsInSelfHitTestingPhase(HitTestPhase phase) const {
   return phase == HitTestPhase::kSelfBlockBackground;
 }
 
-void LayoutSVGRoot::AddSvgTextDescendant(LayoutNGSVGText& svg_text) {
+void LayoutSVGRoot::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(!text_set_.Contains(&svg_text));
   text_set_.insert(&svg_text);
 }
 
-void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutNGSVGText& svg_text) {
+void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(text_set_.Contains(&svg_text));
   text_set_.erase(&svg_text);

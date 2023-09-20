@@ -137,7 +137,7 @@ LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
         ancestor->GetLayoutObject()->IsSVGHiddenContainer())
       return nullptr;
   }
-  return MakeGarbageCollected<LayoutNGSVGForeignObject>(this);
+  return MakeGarbageCollected<LayoutSVGForeignObject>(this);
 }
 
 bool SVGForeignObjectElement::SelfHasRelativeLengths() const {

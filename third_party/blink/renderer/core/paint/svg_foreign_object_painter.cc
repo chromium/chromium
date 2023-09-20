@@ -13,7 +13,7 @@
 namespace blink {
 
 SVGForeignObjectPainter::SVGForeignObjectPainter(
-    const LayoutNGSVGForeignObject& layout_svg_foreign_object)
+    const LayoutSVGForeignObject& layout_svg_foreign_object)
     : layout_svg_foreign_object_(layout_svg_foreign_object) {}
 
 void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
