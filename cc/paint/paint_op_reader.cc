@@ -34,6 +34,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -554,8 +555,17 @@ void PaintOpReader::Read(sk_sp<sktext::gpu::Slug>* slug) {
     return;
   }
 
+  SkDeserialProcs procs;
+  procs.fImageProc = [](const void* bytes, size_t length,
+                        void*) -> sk_sp<SkImage> {
+    auto data = SkData::MakeWithoutCopy(bytes, length);
+    auto codec = SkPngDecoder::Decode(data, nullptr);
+    DCHECK(codec);
+    return std::get<0>(codec->getImage());
+  };
   *slug = sktext::gpu::Slug::Deserialize(const_cast<const char*>(memory_),
-                                         data_bytes, options_->strike_client);
+                                         data_bytes, options_->strike_client,
+                                         procs);
   DidRead(data_bytes);
 
   if (!*slug) {
