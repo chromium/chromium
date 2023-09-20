@@ -326,52 +326,6 @@ class ShowPopupWidgetWaiter
 #endif
 };
 
-// A BrowserMessageFilter that drops a pre-specified message.
-class DropMessageFilter : public BrowserMessageFilter {
- public:
-  DropMessageFilter(uint32_t message_class, uint32_t drop_message_id);
-
-  DropMessageFilter(const DropMessageFilter&) = delete;
-  DropMessageFilter& operator=(const DropMessageFilter&) = delete;
-
- protected:
-  ~DropMessageFilter() override;
-
- private:
-  // BrowserMessageFilter:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  const uint32_t drop_message_id_;
-};
-
-// A BrowserMessageFilter that observes a message without handling it, and
-// reports when it was seen.
-class ObserveMessageFilter : public BrowserMessageFilter {
- public:
-  ObserveMessageFilter(uint32_t message_class, uint32_t watch_message_id);
-
-  ObserveMessageFilter(const ObserveMessageFilter&) = delete;
-  ObserveMessageFilter& operator=(const ObserveMessageFilter&) = delete;
-
-  bool has_received_message() { return received_; }
-
-  // Spins a RunLoop until the message is observed.
-  void Wait();
-
- protected:
-  ~ObserveMessageFilter() override;
-
-  // BrowserMessageFilter:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
- private:
-  void QuitWait();
-
-  const uint32_t watch_message_id_;
-  bool received_ = false;
-  base::OnceClosure quit_closure_;
-};
-
 // This observer waits until WebContentsObserver::OnRendererUnresponsive
 // notification.
 class UnresponsiveRendererObserver : public WebContentsObserver {

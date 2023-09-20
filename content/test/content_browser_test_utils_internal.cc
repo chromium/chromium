@@ -591,46 +591,6 @@ void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
 }
 #endif
 
-DropMessageFilter::DropMessageFilter(uint32_t message_class,
-                                     uint32_t drop_message_id)
-    : BrowserMessageFilter(message_class), drop_message_id_(drop_message_id) {}
-
-DropMessageFilter::~DropMessageFilter() = default;
-
-bool DropMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  return message.type() == drop_message_id_;
-}
-
-ObserveMessageFilter::ObserveMessageFilter(uint32_t message_class,
-                                           uint32_t watch_message_id)
-    : BrowserMessageFilter(message_class),
-      watch_message_id_(watch_message_id) {}
-
-ObserveMessageFilter::~ObserveMessageFilter() = default;
-
-void ObserveMessageFilter::Wait() {
-  base::RunLoop loop;
-  quit_closure_ = loop.QuitClosure();
-  loop.Run();
-}
-
-bool ObserveMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  if (message.type() == watch_message_id_) {
-    // Exit the Wait() method if it's being used, but in a fresh stack once the
-    // message is actually handled.
-    if (quit_closure_ && !received_) {
-      base::ThreadPool::PostTask(
-          FROM_HERE, base::BindOnce(&ObserveMessageFilter::QuitWait, this));
-    }
-    received_ = true;
-  }
-  return false;
-}
-
-void ObserveMessageFilter::QuitWait() {
-  std::move(quit_closure_).Run();
-}
-
 UnresponsiveRendererObserver::UnresponsiveRendererObserver(
     WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
