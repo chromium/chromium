@@ -121,7 +121,8 @@ TEST_F(UnifiedSliderViewPixelTest, RadioActiveSlider) {
       /*revision_number=*/0, widget_.get()));
 }
 
-TEST_F(UnifiedSliderViewPixelTest, RadioActiveSliderMuted) {
+// Flaky. See https://crbug.com/1484867
+TEST_F(UnifiedSliderViewPixelTest, DISABLED_RadioActiveSliderMuted) {
   // Creates a `UnifiedVolumeView` that's on the audio subpage. This slider is
   // in the `QuickSettingsSlider::Style::kRadioActive` style.
   auto radio_active_slider = std::make_unique<UnifiedVolumeView>(
