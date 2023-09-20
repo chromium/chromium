@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -31,10 +32,18 @@ const char kProdPaymentsManageCardsUrl[] =
     "https://pay.google.com/payments/"
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
     "paymentMethods";
+const char kProdPaymentsManageCardsUrlForGPayWeb[] =
+    "https://pay.google.com/"
+    "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+    "payment_methods";
 const char kSandboxPaymentsManageCardsUrl[] =
     "https://pay.sandbox.google.com/payments/"
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
     "paymentMethods";
+const char kSandboxPaymentsManageCardsUrlForGPayWeb[] =
+    "https://pay.sandbox.google.com/"
+    "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+    "payment_methods";
 // LINT.IfChange
 const char kVirtualCardEnrollmentSupportUrl[] =
     "https://support.google.com/googlepay/answer/11234179";
@@ -58,8 +67,13 @@ GURL GetBaseSecureUrl() {
 }
 
 GURL GetManageInstrumentsUrl() {
-  return GURL(IsPaymentsProductionEnabled() ? kProdPaymentsManageCardsUrl
-                                            : kSandboxPaymentsManageCardsUrl);
+  bool use_gpay_url = base::FeatureList::IsEnabled(
+      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
+  return GURL(IsPaymentsProductionEnabled()
+                  ? (use_gpay_url ? kProdPaymentsManageCardsUrlForGPayWeb
+                                  : kProdPaymentsManageCardsUrl)
+                  : (use_gpay_url ? kSandboxPaymentsManageCardsUrlForGPayWeb
+                                  : kSandboxPaymentsManageCardsUrl));
 }
 
 GURL GetManageAddressesUrl() {
