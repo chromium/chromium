@@ -176,8 +176,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return GetPreNavigationSurfaceId();
   }
 
-  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
-
  private:
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
