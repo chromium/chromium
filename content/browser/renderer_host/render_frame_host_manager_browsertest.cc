@@ -5488,8 +5488,7 @@ class RenderFrameHostManagerUnloadBrowserTest
   // Since the `visibilitychange` event is fired at the document and it
   // may bubble up to the window, we should test the cases where the event
   // listener is registered on both the document and the window.
-  std::vector<const std::string> EventTargetsForEvent(
-      const std::string& event_name) {
+  std::vector<std::string> EventTargetsForEvent(const std::string& event_name) {
     if (event_name == "unload" || event_name == "beforeunload" ||
         event_name == "pagehide") {
       return {"window"};
