@@ -14167,9 +14167,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH" desc="User option displaying a human-readable name for a serial port with the device path in parenthesis">
         <ph name="FRIENDLY_NAME">$1<ex>Virtual COM Port</ex></ph> (<ph name="DEVICE_PATH">$2<ex>COM1</ex></ph>)
       </message>
-      <message name="IDS_SERIAL_PORT_CHOOSER_PATH_ONLY" desc="User option displaying only the device path for a serial port">
-        <ph name="DEVICE_PATH">$1<ex>COM1</ex></ph>
-      </message>
       <message name="IDS_SERIAL_PORT_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the serial port chooser popup and allows the requesting site access to the selected port.">
         Connect
       </message>
