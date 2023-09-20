@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -34,8 +33,6 @@
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -301,126 +298,6 @@ DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
 
   Frame* child = GetFrame()->Tree().ScopedChild(index);
   return child ? child->DomWindow() : nullptr;
-}
-
-v8::Local<v8::Value> DOMWindow::AnonymousNamedGetter(const AtomicString& name) {
-  if (!GetFrame()) {
-    return v8::Local<v8::Value>();
-  }
-
-  // Verify that COOP: restrict-properties does not prevent this access.
-  // TODO(https://crbug.com/1467216): This will block all same-origin only
-  // properties accesses with a "Named property" access failure, because the
-  // properties will be tried here as part of the algorithm. See if we need to
-  // have a custom message in that case, possibly by actually printing the
-  // passed name.
-  v8::Isolate* isolate = window_proxy_manager_->GetIsolate();
-  if (UNLIKELY(IsAccessBlockedByCoopRestrictProperties(isolate))) {
-    // We need to not throw an exception if we're dealing with the special
-    // "then" property but return undefined instead. See
-    // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
-    // makes sure WindowProxy is thenable, see the original discussion here:
-    // https://github.com/whatwg/dom/issues/536.
-    if (name == "then") {
-      return v8::Local<v8::Value>();
-    }
-    ExceptionState exception_state(isolate, ExceptionState::kNamedGetterContext,
-                                   "Window", name,
-                                   ExceptionState::kForInterceptor);
-    exception_state.ThrowSecurityError(
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
-        "access.");
-    return v8::Null(isolate);
-  }
-
-  // Note that named access on WindowProxy is allowed in the cross-origin case.
-  // 7.4.5 [[GetOwnProperty]] (P), step 6.
-  // https://html.spec.whatwg.org/C/#windowproxy-getownproperty
-  //
-  // 7.3.3 Named access on the Window object
-  // The document-tree child browsing context name property set
-  // https://html.spec.whatwg.org/C/#document-tree-child-browsing-context-name-property-set
-  Frame* child = GetFrame()->Tree().ScopedChild(name);
-  if (child) {
-    ReportCoopAccess("named");
-    RecordWindowProxyAccessMetrics(
-        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
-    UseCounter::Count(CurrentExecutionContext(isolate),
-                      WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
-
-    // step 3. Remove each browsing context from childBrowsingContexts whose
-    // active document's origin is not same origin with activeDocument's origin
-    // and whose browsing context name does not match the name of its browsing
-    // context container's name content attribute value.
-    if (GetFrame()->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            child->GetSecurityContext()->GetSecurityOrigin()) ||
-        name == child->Owner()->BrowsingContextContainerName()) {
-      return ToV8Traits<DOMWindow>::ToV8(
-                 ScriptState::From(isolate->GetCurrentContext()),
-                 child->DomWindow())
-          .ToLocalChecked();
-    }
-
-    UseCounter::Count(
-        CurrentExecutionContext(isolate),
-        WebFeature::
-            kNamedAccessOnWindow_ChildBrowsingContext_CrossOriginNameMismatch);
-  }
-
-  // This is a cross-origin interceptor. Check that the caller has access to the
-  // named results.
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          blink::ToLocalDOMWindow(isolate->GetCurrentContext()), this)) {
-    return v8::Local<v8::Value>();
-  }
-
-  // Search named items in the document.
-  auto* doc = DynamicTo<HTMLDocument>(To<LocalDOMWindow>(this)->document());
-  if (!doc) {
-    return v8::Local<v8::Value>();
-  }
-
-  bool has_named_item = doc->HasNamedItem(name);
-  bool has_id_item = doc->HasElementWithId(name);
-
-  if (!has_named_item && !has_id_item) {
-    return v8::Local<v8::Value>();
-  }
-  ReportCoopAccess("named");
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
-
-  // If we've reached this point, we know that we're accessing an element (or
-  // collection of elements) in this window, and that this window is local. Wrap
-  // the return value in this window's relevant context, with the current
-  // wrapper world.
-  ScriptState* script_state = ToScriptState(To<LocalDOMWindow>(this),
-                                            DOMWrapperWorld::Current(isolate));
-  if (!has_named_item && has_id_item &&
-      !doc->ContainsMultipleElementsWithId(name)) {
-    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-    return ToV8Traits<Element>::ToV8(script_state, doc->getElementById(name))
-        .ToLocalChecked();
-  }
-
-  HTMLCollection* items = doc->WindowNamedItems(name);
-  if (!items->IsEmpty()) {
-    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-
-    // TODO(esprehn): Firefox doesn't return an HTMLCollection here if there's
-    // multiple with the same name, but Chrome and Safari does. What's the
-    // right behavior?
-    if (items->HasExactlyOneItem()) {
-      return ToV8Traits<Element>::ToV8(script_state, items->item(0))
-          .ToLocalChecked();
-    }
-    return ToV8Traits<HTMLCollection>::ToV8(script_state, items)
-        .ToLocalChecked();
-  }
-  return v8::Local<v8::Value>();
 }
 
 bool DOMWindow::IsCurrentlyDisplayedInFrame() const {

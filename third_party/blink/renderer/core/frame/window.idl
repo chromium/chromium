@@ -27,11 +27,13 @@
 // https://html.spec.whatwg.org/C/#the-window-object
 
 // FIXME: explain all uses of [CrossOrigin]
+// NOTE: In the spec, Window inherits from EventTarget. We inject an additional
+// layer to implement window's named properties object.
 [
     ImplementedAs=DOMWindow,
     Global=Window,
     Exposed=Window
-] interface Window : EventTarget {
+] interface Window : WindowProperties {
     // the current browsing context
     // FIXME: The spec uses the WindowProxy type for this and many other attributes.
     [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window window;
@@ -74,7 +76,10 @@
     [NotEnumerable, CrossOrigin] getter Window (unsigned long index);
 
     // named properties
-    [NotEnumerable, CrossOrigin] getter object (DOMString name);
+    // The spec defines the named getter on the Window interface, but we inject
+    // the named properties object as its own interface that Window inherits
+    // from.
+    // getter object (DOMString name);
 
     // the user agent
     [LogActivity=GetterOnly] readonly attribute Navigator navigator;

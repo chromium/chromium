@@ -235,6 +235,8 @@ blink_core_sources_frame = [
   "web_remote_frame_impl.cc",
   "web_remote_frame_impl.h",
   "window_event_handlers.h",
+  "window_properties.cc",
+  "window_properties.h",
   "window_or_worker_global_scope.cc",
   "window_or_worker_global_scope.h",
 ]

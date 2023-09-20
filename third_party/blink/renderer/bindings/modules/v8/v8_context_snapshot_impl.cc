@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_window_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_window.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -123,6 +124,10 @@ const struct {
     {V8Window::GetWrapperTypeInfo(),
      bindings::v8_context_snapshot::InstallPropsOfV8Window,
      bindings::v8_context_snapshot::InstallPropsOfV8Window,
+     {true, true}},
+    {V8WindowProperties::GetWrapperTypeInfo(),
+     bindings::v8_context_snapshot::InstallPropsOfV8WindowProperties,
+     bindings::v8_context_snapshot::InstallPropsOfV8WindowProperties,
      {true, true}},
     {V8HTMLDocument::GetWrapperTypeInfo(),
      bindings::v8_context_snapshot::InstallPropsOfV8HTMLDocument,
@@ -474,6 +479,7 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
       bindings::v8_context_snapshot::GetRefTableOfV8HTMLDocument(),
       bindings::v8_context_snapshot::GetRefTableOfV8Node(),
       bindings::v8_context_snapshot::GetRefTableOfV8Window(),
+      bindings::v8_context_snapshot::GetRefTableOfV8WindowProperties(),
       last_table,
   };
   DCHECK_EQ(std::size(tables), std::size(type_info_table) + 1);

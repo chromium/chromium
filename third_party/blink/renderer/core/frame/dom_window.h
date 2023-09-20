@@ -13,8 +13,8 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/window_properties.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -42,7 +42,7 @@ struct BlinkTransferableMessage;
 // TODO(tkent): Rename DOMWindow to Window. The class was named as 'DOMWindow'
 // because WebKit already had KJS::Window.  We have no reasons to avoid
 // blink::Window now.
-class CORE_EXPORT DOMWindow : public EventTarget {
+class CORE_EXPORT DOMWindow : public WindowProperties {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -116,8 +116,6 @@ class CORE_EXPORT DOMWindow : public EventTarget {
 
   // Indexed properties
   DOMWindow* AnonymousIndexedGetter(uint32_t index);
-
-  v8::Local<v8::Value> AnonymousNamedGetter(const AtomicString&);
 
   // Returns the opener and collects cross-origin access metrics.
   ScriptValue openerForBindings(v8::Isolate*) const;

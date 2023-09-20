@@ -163,6 +163,13 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   unsigned                              // ActiveScriptWrappableInheritance
       active_script_wrappable_inheritance : 1;
   unsigned idl_definition_kind : 3;  // IdlDefinitionKind
+
+  // This is a special case only used by V8WindowProperties::WrapperTypeInfo().
+  // WindowProperties is part of Window's prototype object's prototype chain,
+  // but not part of Window's interface object prototype chain. When this bit is
+  // set, V8PerContextData::ConstructorForTypeSlowCase() skips over this type
+  // when constructing the interface object's prototype chain.
+  bool is_skipped_in_interface_object_prototype_chain : 1;
 };
 
 template <typename T, int offset>
