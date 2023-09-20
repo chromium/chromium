@@ -3362,6 +3362,11 @@ fuzzer_test("net_der_parser_fuzzer") {
   ]
 }
 
+fuzzer_test("host_port_pair_fuzzer") {
+  sources = [ "base/host_port_pair_fuzzer.cc" ]
+  deps = [ "//net" ]
+}
+
 proto_library("disk_cache_lpm_fuzzer_proto") {
   sources = [ "disk_cache/disk_cache_fuzzer.proto" ]
 }
