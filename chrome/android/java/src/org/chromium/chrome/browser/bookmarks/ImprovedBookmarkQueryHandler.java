@@ -136,7 +136,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private boolean isPriceTracked(BookmarkListEntry bookmarkListEntry) {
         PowerBookmarkMeta meta = bookmarkListEntry.getPowerBookmarkMeta();
-        if (meta == null || !meta.hasShoppingSpecifics()) return false;
+        if (!PowerBookmarkUtils.isShoppingListItem(meta)) return false;
         return mShoppingService.isSubscribedFromCache(
                 PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
                         meta.getShoppingSpecifics()));
