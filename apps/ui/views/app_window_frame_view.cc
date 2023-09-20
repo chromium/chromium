@@ -221,11 +221,6 @@ int AppWindowFrameView::NonClientHitTest(const gfx::Point& point) {
   return HTCAPTION;
 }
 
-void AppWindowFrameView::GetWindowMask(const gfx::Size& size,
-                                       SkPath* window_mask) {
-  // We got nothing to say about no window mask.
-}
-
 void AppWindowFrameView::SizeConstraintsChanged() {
   if (draw_frame_) {
     maximize_button_->SetEnabled(widget_->widget_delegate() &&
