@@ -11,7 +11,7 @@ namespace enterprise_auth {
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kCloudApAuthAttachAsHeader,
              "CloudApAuthAttachAsHeader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace enterprise_auth

@@ -166,6 +166,10 @@ TEST_F(CloudApProviderWinTest, Platform) {
 
 // Tests that cookie info is correctly parsed into the cookie header.
 TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      enterprise_auth::kCloudApAuthAttachAsHeader);
+
   CloudApProviderWin provider;
   net::HttpRequestHeaders auth_headers;
   DWORD cookie_info_count = 2;
@@ -205,10 +209,6 @@ TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
 
 // Tests that cookie info is correctly parsed into the corresponding headers.
 TEST_F(CloudApProviderWinTest, ParseCookieInfo_HeaderFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_auth::kCloudApAuthAttachAsHeader);
-
   CloudApProviderWin provider;
   net::HttpRequestHeaders auth_headers;
   DWORD cookie_info_count = 2;
