@@ -9,4 +9,5 @@
     [CallWith=ScriptState] readonly attribute unsigned long long deliveredFrames;
     [CallWith=ScriptState] readonly attribute unsigned long long discardedFrames;
     [CallWith=ScriptState] readonly attribute unsigned long long totalFrames;
+    [CallWith=ScriptState] object toJSON();
 };

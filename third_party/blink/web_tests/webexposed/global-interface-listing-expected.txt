@@ -6124,6 +6124,7 @@ interface MediaStreamTrackVideoStats
     getter discardedFrames
     getter totalFrames
     method constructor
+    method toJSON
 interface MerchantValidationEvent : Event
     attribute @@toStringTag
     getter methodName

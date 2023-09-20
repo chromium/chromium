@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -31,6 +32,14 @@ uint64_t MediaStreamTrackVideoStats::totalFrames(ScriptState* script_state) {
   PopulateStatsCache(script_state);
   return stats_.deliverable_frames + stats_.discarded_frames +
          stats_.dropped_frames;
+}
+
+ScriptValue MediaStreamTrackVideoStats::toJSON(ScriptState* script_state) {
+  V8ObjectBuilder result(script_state);
+  result.AddNumber("deliveredFrames", deliveredFrames(script_state));
+  result.AddNumber("discardedFrames", discardedFrames(script_state));
+  result.AddNumber("totalFrames", totalFrames(script_state));
+  return result.GetScriptValue();
 }
 
 void MediaStreamTrackVideoStats::Trace(Visitor* visitor) const {

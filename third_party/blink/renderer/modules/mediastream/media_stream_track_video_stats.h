@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_VIDEO_STATS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_VIDEO_STATS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -23,6 +24,8 @@ class MODULES_EXPORT MediaStreamTrackVideoStats : public ScriptWrappable {
   uint64_t deliveredFrames(ScriptState*);
   uint64_t discardedFrames(ScriptState*);
   uint64_t totalFrames(ScriptState*);
+
+  ScriptValue toJSON(ScriptState*);
 
   void Trace(Visitor*) const override;
 
