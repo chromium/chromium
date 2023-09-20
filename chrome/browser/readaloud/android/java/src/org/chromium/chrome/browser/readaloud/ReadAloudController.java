@@ -84,7 +84,7 @@ public class ReadAloudController {
         mTabModel = tabModel;
         mReadabilityHooks = sReadabilityHooksForTesting != null
                 ? sReadabilityHooksForTesting
-                : new ReadAloudReadabilityHooksImpl(context, /* apiKeyOverride= */ null);
+                : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
         mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub);
         mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
         mPlayerController = new PlayerController(mMiniPlayer, mExpandedPlayer);
