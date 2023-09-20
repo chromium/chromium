@@ -43,6 +43,14 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "mac-arm64-clobber-rel",
+    mirrors = [
+        "ci/mac-arm64-archive-rel",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "mac-arm64-on-arm64-rel",
     mirrors = [
         "ci/mac-arm64-on-arm64-rel",
@@ -50,6 +58,14 @@ try_.builder(
     builderless = False,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "mac-clobber-rel",
+    mirrors = [
+        "ci/mac-archive-rel",
+    ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -304,14 +320,6 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac13 Tests",
     ],
-)
-
-try_.builder(
-    name = "mac_chromium_archive_rel_ng",
-    mirrors = [
-        "ci/mac-archive-rel",
-    ],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(

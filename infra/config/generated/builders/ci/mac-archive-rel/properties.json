@@ -45,7 +45,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "mac_chromium_archive_rel_ng",
+          "builder": "mac-clobber-rel",
           "group": "tryserver.chromium.mac"
         }
       ]

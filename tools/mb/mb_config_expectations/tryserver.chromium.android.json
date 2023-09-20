@@ -297,6 +297,20 @@
       "use_remoteexec": true
     }
   },
+  "android-clobber-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 0,
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
   "android-code-coverage": {
     "gn_args": {
       "android_static_analysis": "off",
@@ -1301,20 +1315,6 @@
       "is_component_build": false,
       "is_debug": true,
       "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_os": "android",
-      "use_remoteexec": true
-    }
-  },
-  "android_archive_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
       "use_remoteexec": true

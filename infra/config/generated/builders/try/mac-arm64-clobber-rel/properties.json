@@ -1,12 +1,4 @@
 {
-  "$build/archive": {
-    "source_side_spec_path": [
-      "src",
-      "infra",
-      "archive_config",
-      "linux-archive-rel.json"
-    ]
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -14,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-archive-rel",
+              "builder": "mac-arm64-archive-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -39,25 +31,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-archive-rel",
+          "builder": "mac-arm64-archive-rel",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-clobber-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_archive_rel_ng",
-          "group": "tryserver.chromium.linux"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -68,9 +50,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot"
 }

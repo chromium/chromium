@@ -42,6 +42,12 @@
           "builder": "mac-arm64-archive-rel",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac-arm64-clobber-rel",
+          "group": "tryserver.chromium.mac"
+        }
       ]
     }
   },

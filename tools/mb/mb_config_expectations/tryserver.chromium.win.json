@@ -138,6 +138,15 @@
       "use_remoteexec": true
     }
   },
+  "win-clobber-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "win-cr23-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -294,7 +303,7 @@
       "use_remoteexec": true
     }
   },
-  "win_archive": {
+  "win32-clobber-rel": {
     "gn_args": {
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -357,15 +366,6 @@
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
-    }
-  },
-  "win_x64_archive": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_remoteexec": true
     }
   }
 }

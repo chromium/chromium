@@ -59,6 +59,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win-clobber-rel",
+    mirrors = [
+        "ci/win-archive-rel",
+    ],
+)
+
+try_.builder(
     name = "win-libfuzzer-asan-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     executable = "recipe:chromium/fuzz",
@@ -131,7 +138,7 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "win_archive",
+    name = "win32-clobber-rel",
     mirrors = [
         "ci/win32-archive-rel",
     ],
@@ -195,13 +202,6 @@ try_.builder(
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
     reclient_instance = None,
-)
-
-try_.builder(
-    name = "win_x64_archive",
-    mirrors = [
-        "ci/win-archive-rel",
-    ],
 )
 
 try_.builder(

@@ -221,6 +221,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-clobber-rel",
+    mirrors = [
+        "ci/android-archive-rel",
+    ],
+)
+
+try_.builder(
     name = "android-cronet-arm-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
@@ -643,13 +650,6 @@ try_.builder(
         "ci/Android WebView P (dbg)",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android_archive_rel_ng",
-    mirrors = [
-        "ci/android-archive-rel",
-    ],
 )
 
 try_.builder(

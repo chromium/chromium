@@ -485,6 +485,17 @@
       "use_remoteexec": true
     }
   },
+  "mac-arm64-clobber-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "mac-arm64-on-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -505,6 +516,16 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
+  "mac-clobber-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
       "use_remoteexec": true
     }
   },
@@ -768,16 +789,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_remoteexec": true
-    }
-  },
-  "mac_chromium_archive_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_stripping": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
       "use_remoteexec": true
     }
   },
