@@ -268,8 +268,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
+// Flaky on ChromiumOS MSan. See https://crbug.com/1484869
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_PdfAccessibilityWordBoundaries \
+  DISABLED_PdfAccessibilityWordBoundaries
+#else
+#define MAYBE_PdfAccessibilityWordBoundaries PdfAccessibilityWordBoundaries
+#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       PdfAccessibilityWordBoundaries) {
+                       MAYBE_PdfAccessibilityWordBoundaries) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
