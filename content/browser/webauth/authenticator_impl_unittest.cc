@@ -9332,7 +9332,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
 
   void OnInvalidatedPairing(
       std::unique_ptr<device::cablev2::Pairing> disabled_pairing) {
-    pairings_.erase(std::ranges::find_if(
+    pairings_.erase(base::ranges::find_if(
         pairings_, [&disabled_pairing](const auto& pairing) {
           return device::cablev2::Pairing::EqualPublicKeys(pairing,
                                                            disabled_pairing);

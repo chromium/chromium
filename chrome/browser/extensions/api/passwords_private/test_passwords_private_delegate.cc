@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -111,9 +112,9 @@ bool TestPasswordsPrivateDelegate::AddPassword(
 
 bool TestPasswordsPrivateDelegate::ChangeCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
-  const auto existing = std::ranges::find_if(
-      current_entries_,
-      [&credential](const auto& entry) { return entry.id == credential.id; });
+  const auto existing =
+      base::ranges::find(current_entries_, credential.id,
+                         &api::passwords_private::PasswordUiEntry::id);
   if (existing == current_entries_.end()) {
     return false;
   }
@@ -133,8 +134,8 @@ bool TestPasswordsPrivateDelegate::ChangeCredential(
 void TestPasswordsPrivateDelegate::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
-  const auto [removed, _] = std::ranges::remove_if(
-      current_entries_, [id](const auto& entry) { return entry.id == id; });
+  const auto removed = base::ranges::remove(
+      current_entries_, id, &api::passwords_private::PasswordUiEntry::id);
   if (removed != current_entries_.end()) {
     last_deleted_entry_ = std::move(*removed);
     current_entries_.erase(removed);

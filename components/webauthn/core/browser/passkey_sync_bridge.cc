@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/features.h"
@@ -258,7 +259,7 @@ PasskeySyncBridge::GetPasskeysForRelyingPartyId(
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
-      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+      base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {
@@ -309,7 +310,7 @@ bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
                                       PasskeyChange change) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
-      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+      base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {

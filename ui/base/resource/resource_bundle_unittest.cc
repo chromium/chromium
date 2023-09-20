@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -70,7 +71,7 @@ constexpr uint8_t kLottieExpected[] = {'t', 'e', 's', 't'};
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
 gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
-  CHECK(std::ranges::equal(data, kLottieExpected));
+  CHECK(base::ranges::equal(data, kLottieExpected));
 
   constexpr int kDimension = 16;
   return gfx::ImageSkia(
@@ -679,7 +680,7 @@ TEST_F(ResourceBundleImageTest, Lottie) {
 
   absl::optional<std::vector<uint8_t>> data = resource_bundle->GetLottieData(3);
   ASSERT_TRUE(data.has_value());
-  EXPECT_TRUE(std::ranges::equal(*data, kLottieExpected));
+  EXPECT_TRUE(base::ranges::equal(*data, kLottieExpected));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ResourceBundle::SetLottieParsingFunctions(

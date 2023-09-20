@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/sys_byteorder.h"
@@ -888,8 +889,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     if (data.has_platform_authenticator_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kHasRecognizedCredential &&
-        std::ranges::none_of(data.recognized_credentials,
-                             IsCredentialFromPlatformAuthenticator)) {
+        base::ranges::none_of(data.recognized_credentials,
+                              IsCredentialFromPlatformAuthenticator)) {
       data.has_platform_authenticator_credential = device::
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }

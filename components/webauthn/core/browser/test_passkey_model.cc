@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 
@@ -71,10 +72,9 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
 
 bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
                                      PasskeyChange change) {
-  const auto credential_it = std::ranges::find_if(
-      credentials_, [&credential_id](const auto& credential) {
-        return credential.credential_id() == credential_id;
-      });
+  const auto credential_it =
+      base::ranges::find(credentials_, credential_id,
+                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }

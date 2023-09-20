@@ -419,34 +419,31 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   // Test `nested_configs`.
   {
     FencedFrameConfig test_nested_config(GenerateUrnUuid(), test_url);
-    // Returns a lambda that compares two ranges using the given `pred`.
-    const auto eq = [](const auto& pred) {
+    // Returns a lambda that compares two ranges using the given `proj`.
+    const auto cmp = [](const auto& proj) {
       return [&](const auto& a, const auto& b) {
-        return std::ranges::equal(a, b, pred);
+        return base::ranges::equal(a, b, {}, proj, proj);
       };
     };
 
     {
       std::vector<FencedFrameConfig> test_nested_configs = {test_nested_config};
-      const auto pred = [](const auto& a, const auto& b) {
-        return Project(a) == Project(b);
-      };
+      const auto eq = cmp([](const auto& elem) { return Project(elem); });
       TestProperty(&FencedFrameConfig::nested_configs_,
                    &RedactedFencedFrameConfig::nested_configs,
-                   test_nested_configs, eq(pred), eq(pred));
+                   test_nested_configs, eq, eq);
     }
 
     {
       GURL test_urn("urn:uuid:abcd");
       std::vector<std::pair<GURL, FencedFrameConfig>>
           test_nested_urn_config_pairs = {{test_urn, test_nested_config}};
-      const auto pred = [](const auto& a, const auto& b) {
-        return std::make_pair(a.first, Project(a.second)) ==
-               std::make_pair(b.first, Project(b.second));
-      };
+      const auto eq = cmp([](const auto& elem) {
+        return std::make_pair(elem.first, Project(elem.second));
+      });
       TestProperty(&FencedFrameProperties::nested_urn_config_pairs_,
                    &RedactedFencedFrameProperties::nested_urn_config_pairs,
-                   test_nested_urn_config_pairs, eq(pred), eq(pred));
+                   test_nested_urn_config_pairs, eq, eq);
     }
   }
 

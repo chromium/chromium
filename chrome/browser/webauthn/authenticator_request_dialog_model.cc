@@ -511,7 +511,7 @@ void AuthenticatorRequestDialogModel::
     // extra step. Jump to Windows instead.
     if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
         transport_availability_.has_win_native_api_authenticator &&
-        std::ranges::all_of(mechanisms_, [](const auto& mech) {
+        base::ranges::all_of(mechanisms_, [](const auto& mech) {
           return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
                  (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
                   absl::get<Mechanism::Credential>(mech.type).value().source ==
