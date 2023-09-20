@@ -2954,8 +2954,9 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
 // Ensures audio-video playback with missing or negative timestamps fails
 // instead of crashing.  See http://crbug.com/396864.
 TEST_F(PipelineIntegrationTest, BasicPlaybackChainedOggVideo) {
-  ASSERT_EQ(DEMUXER_ERROR_COULD_NOT_PARSE,
-            Start("double-bear.ogv", kUnreliableDuration));
+  ASSERT_EQ(PIPELINE_OK, Start("double-bear.ogv", kUnreliableDuration));
+  Play();
+  EXPECT_EQ(PIPELINE_ERROR_DECODE, WaitUntilEndedOrError());
 }
 
 // Tests that we signal ended even when audio runs longer than video track.
@@ -2979,6 +2980,15 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(PipelineIntegrationTest, NegativeVideoTimestamps) {
+  ASSERT_EQ(PIPELINE_OK,
+            Start("sync2-trimmed.mp4", kHashed | kUnreliableDuration));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ("aa56bcbc674d2e7a60bbecb77c55bb1e", GetVideoHash());
+  EXPECT_AUDIO_HASH("89.10,30.04,90.81,29.89,89.55,29.20,");
+}
+
 TEST_F(PipelineIntegrationTest, Rotated_Metadata_0) {
   ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_0.mp4"));
   ASSERT_EQ(VIDEO_ROTATION_0,

@@ -67,6 +67,15 @@ ffmpeg -fflags nofillin -i noise_1ch_29_4khz_aot42_19_lufs_drc_config_change_mp4
 ffmpeg -fflags nofillin -i noise_2ch_44_1khz_aot42_19_lufs_config_change_mp4.m4a -acodec copy -t 1 -movflags frag_keyframe+empty_moov+default_base_moof noise-xhe-aac-44kHz.mp4
 ```
 
+#### sync2-trimmed.mp4
+Special mp4 created with audio/video offset by 3 seconds. sync2.mp4 is an
+internal higher resolution version of sync2.ogv.
+```
+ffmpeg -ss 83.482733 -i sync2.mp4 -an -vcodec copy -t 5 out_vid.mp4
+ffmpeg -ss 80.482733 -i sync2.mp4 -vn -acodec copy -t 8 out_audio.mp4
+ffmpeg -i out_vid.mp4 -itsoffset -3 -i out_audio.mp4 -c copy sync2-trimmed.mp4
+```
+
 ### FLAC
 
 #### bear-flac.mp4

@@ -20,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -856,6 +857,44 @@ TEST_F(FFmpegDemuxerTest,
     demuxer_->Seek(base::TimeDelta(), event.GetPipelineStatusCB());
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
+}
+// Similar to the above cases, but with mixed audio/video trimming.
+TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
+  CreateDemuxer("sync2-trimmed.mp4");
+  InitializeDemuxer();
+
+  // Attempt a read from the video stream and run the message loop until done.
+  DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
+  DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
+
+  Read(audio, FROM_HERE, 10, 0, true, DemuxerStream::Status::kOk,
+       base::Microseconds(1005464));  // ~ 43 * 23220
+  Read(audio, FROM_HERE, 10, 23220, true, DemuxerStream::Status::kOk,
+       kInfiniteDuration);
+
+  // The rest are all similar, just verify that discard padding is correct.
+  base::RunLoop run_loop;
+  audio->Read(41, base::BindLambdaForTesting(
+                      [&](DemuxerStream::Status status,
+                          DemuxerStream::DecoderBufferVector buffers) {
+                        for (const auto& buffer : buffers) {
+                          EXPECT_EQ(buffer->discard_padding().first,
+                                    kInfiniteDuration);
+                        }
+                        run_loop.QuitWhenIdle();
+                      }));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+  Read(audio, FROM_HERE, 10, 998458, true);  // First audible audio.
+
+  // Note: Frames are in decode (not presentation) order at this point.
+  Read(video, FROM_HERE, 26791, -66733, true, DemuxerStream::Status::kOk,
+       kInfiniteDuration);
+  Read(video, FROM_HERE, 4233, 33367, false);
+  Read(video, FROM_HERE, 3257, 0, false);
+  Read(video, FROM_HERE, 2467, -33367, false, DemuxerStream::Status::kOk,
+       kInfiniteDuration);
+  Read(video, FROM_HERE, 4049, 133467, false);
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

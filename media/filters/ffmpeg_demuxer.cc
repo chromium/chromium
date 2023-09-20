@@ -516,7 +516,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // If this file has negative timestamps don't rebase any other stream types
   // against the negative starting time.
   base::TimeDelta start_time = demuxer_->start_time();
-  if (fixup_negative_timestamps_ && !is_audio && start_time.is_negative()) {
+  if (!is_audio && start_time.is_negative()) {
     start_time = base::TimeDelta();
   }
 
@@ -536,57 +536,57 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       buffer->discard_padding() == DecoderBuffer::DiscardPadding()) {
     buffer->set_discard_padding(
         std::make_pair(kInfiniteDuration, base::TimeDelta()));
-    // These timestamps should never be used, but to ensure they are dropped
-    // correctly give them unique timestamps.
-    buffer->set_timestamp(last_packet_timestamp_ == kNoTimestamp
-                              ? base::TimeDelta()
-                              : last_packet_timestamp_ + base::Microseconds(1));
   }
 
-  // Fixup negative timestamps where the before-zero portion is completely
-  // discarded after decoding.
-  if (buffer->timestamp().is_negative()) {
-    // Discard padding may also remove samples after zero.
-    auto fixed_ts = buffer->discard_padding().first + buffer->timestamp();
+  if (is_audio) {
+    // Fixup negative timestamps where the before-zero portion is completely
+    // discarded after decoding.
+    if (buffer->timestamp().is_negative()) {
+      // Discard padding may also remove samples after zero.
+      auto fixed_ts = buffer->discard_padding().first + buffer->timestamp();
 
-    // Allow for rounding error in the discard padding calculations.
-    if (fixed_ts == base::Microseconds(-1))
-      fixed_ts = base::TimeDelta();
-
-    if (fixed_ts >= base::TimeDelta())
-      buffer->set_timestamp(fixed_ts);
-  }
-
-  // Only allow negative timestamps past if we know they'll be fixed up by the
-  // code paths below; otherwise they should be treated as a parse error.
-  if ((!fixup_chained_ogg_ || last_packet_timestamp_ == kNoTimestamp) &&
-      buffer->timestamp().is_negative()) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "FFmpegDemuxer: unfixable negative timestamp.";
-    demuxer_->NotifyDemuxerError(DEMUXER_ERROR_COULD_NOT_PARSE);
-    return;
-  }
-
-  // If enabled, and no codec delay is present, mark audio packets with negative
-  // timestamps for post-decode discard. If codec delay is present, discard is
-  // handled by the decoder using that value.
-  if (fixup_negative_timestamps_ && is_audio &&
-      stream_timestamp.is_negative() && buffer->duration() != kNoTimestamp &&
-      !audio_decoder_config().codec_delay()) {
-    if ((stream_timestamp + buffer->duration()).is_negative()) {
-      DCHECK_EQ(buffer->discard_padding().second, base::TimeDelta());
-
-      // Discard the entire packet if it's entirely before zero, but don't
-      // override the discard padding if it refers to frames beyond this packet.
-      if (buffer->discard_padding().first <= buffer->duration()) {
-        buffer->set_discard_padding(
-            std::make_pair(kInfiniteDuration, base::TimeDelta()));
+      // Allow for rounding error in the discard padding calculations.
+      if (fixed_ts == base::Microseconds(-1)) {
+        fixed_ts = base::TimeDelta();
       }
-    } else {
-      // Only discard part of the frame if it overlaps zero.
-      buffer->set_discard_padding(std::make_pair(
-          std::max(-stream_timestamp, buffer->discard_padding().first),
-          buffer->discard_padding().second));
+
+      if (fixed_ts >= base::TimeDelta()) {
+        buffer->set_timestamp(fixed_ts);
+      }
+    }
+
+    // Only allow negative timestamps past if we know they'll be fixed up by the
+    // code paths below; otherwise they should be treated as a parse error.
+    if ((!fixup_chained_ogg_ || last_packet_timestamp_ == kNoTimestamp) &&
+        buffer->timestamp().is_negative()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "FFmpegDemuxer: unfixable negative timestamp.";
+      demuxer_->NotifyDemuxerError(DEMUXER_ERROR_COULD_NOT_PARSE);
+      return;
+    }
+
+    // If enabled, and no codec delay is present, mark audio packets with
+    // negative timestamps for post-decode discard. If codec delay is present,
+    // discard is handled by the decoder using that value.
+    if (fixup_negative_timestamps_ && stream_timestamp.is_negative() &&
+        buffer->duration() != kNoTimestamp &&
+        !audio_decoder_config().codec_delay()) {
+      if ((stream_timestamp + buffer->duration()).is_negative()) {
+        DCHECK_EQ(buffer->discard_padding().second, base::TimeDelta());
+
+        // Discard the entire packet if it's entirely before zero, but don't
+        // override the discard padding if it refers to frames beyond this
+        // packet.
+        if (buffer->discard_padding().first <= buffer->duration()) {
+          buffer->set_discard_padding(
+              std::make_pair(kInfiniteDuration, base::TimeDelta()));
+        }
+      } else {
+        // Only discard part of the frame if it overlaps zero.
+        buffer->set_discard_padding(std::make_pair(
+            std::max(-stream_timestamp, buffer->discard_padding().first),
+            buffer->discard_padding().second));
+      }
     }
   }
 
@@ -613,8 +613,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
                                  : base::Microseconds(1)));
     }
 
-    // The demuxer should always output positive timestamps.
-    DCHECK_GE(buffer->timestamp(), base::TimeDelta());
+    if (is_audio) {
+      // The demuxer should always output positive timestamps.
+      DCHECK_GE(buffer->timestamp(), base::TimeDelta());
+    }
 
     if (last_packet_timestamp_ < buffer->timestamp()) {
       buffered_ranges_.Add(last_packet_timestamp_, buffer->timestamp());
