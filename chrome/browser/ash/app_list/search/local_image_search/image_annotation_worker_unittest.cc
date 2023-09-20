@@ -20,6 +20,33 @@
 namespace app_list {
 namespace {
 
+constexpr uint8_t kBad_image[] = {
+    0x40,
+    0x22,
+    0x23,
+    0x25,
+};
+
+constexpr uint8_t kJpeg_image[] = {0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10,
+                                   0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
+                                   0x01, 0x00, 0x00, 0x01};
+
+constexpr uint8_t kPng_image[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A,
+                                  0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+                                  0x49, 0x48, 0x44, 0x52};
+
+constexpr uint8_t kWebp_image[] = {
+    0x52, 0x49, 0x46, 0x46, 0x6c, 0x32, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+    0x56, 0x50, 0x38, 0x58, 0x0a, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00};
+
+constexpr uint8_t kWebp_image1[] = {
+    0x52, 0x49, 0x46, 0x46, 0x74, 0x69, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+    0x56, 0x50, 0x38, 0x20, 0x68, 0x69, 0x00, 0x00, 0x90, 0x35, 0x03, 0x9d};
+
+constexpr uint8_t kWebp_animation[] = {
+    0x52, 0x49, 0x46, 0x46, 0xa6, 0x2f, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+    0x56, 0x50, 0x38, 0x58, 0x0a, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00};
+
 class ImageAnnotationWorkerTest : public testing::Test {
  protected:
   // testing::Test overrides:
@@ -56,21 +83,29 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   base::CreateDirectory(test_directory_.AppendASCII("TrashBin"));
 
   auto jpg_path = test_directory_.AppendASCII("bar.jpg");
+  base::WriteFile(jpg_path, kJpeg_image);
   auto jpeg_path =
       test_directory_.AppendASCII("Images").AppendASCII("bar1.jpeg");
+  base::WriteFile(jpeg_path, kJpeg_image);
   auto png_path = test_directory_.AppendASCII("bar2.png");
+  base::WriteFile(png_path, kPng_image);
   auto jng_path = test_directory_.AppendASCII("bar3.jng");
+  base::WriteFile(jng_path, kJpeg_image);
   auto tjng_path = test_directory_.AppendASCII("bar4.tjng");
+  base::WriteFile(tjng_path, kJpeg_image);
   auto JPG_path = test_directory_.AppendASCII("bar5.JPG");
+  base::WriteFile(JPG_path, kJpeg_image);
   auto webp_path = test_directory_.AppendASCII("bar6.webp");
+  base::WriteFile(webp_path, kWebp_image);
   auto WEBP_path = test_directory_.AppendASCII("bar7.WEBP");
+  base::WriteFile(WEBP_path, kWebp_image1);
   auto bin_path =
       test_directory_.AppendASCII("TrashBin").AppendASCII("bar8.jpg");
+  base::WriteFile(bin_path, kJpeg_image);
 
   auto image_time = base::Time::Now();
   for (const auto& path : {jpg_path, jpeg_path, png_path, jng_path, tjng_path,
                            JPG_path, webp_path, WEBP_path, bin_path}) {
-    base::WriteFile(path, "test");
     base::TouchFile(path, image_time, image_time);
   }
 
@@ -93,12 +128,44 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(ImageAnnotationWorkerTest, MustIgnoreBadFiles) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  auto image_time = base::Time::Now();
+
+  auto webp_animation_path = test_directory_.AppendASCII("bar.webp");
+  base::WriteFile(webp_animation_path, kWebp_animation);
+
+  auto bad_image_path = test_directory_.AppendASCII("bar.png");
+  base::WriteFile(bad_image_path, kBad_image);
+
+  auto jng_path = test_directory_.AppendASCII("bar.jng");
+  base::WriteFile(jng_path, kJpeg_image);
+
+  auto txt_path = test_directory_.AppendASCII("bar.txt");
+  base::WriteFile(jng_path, kJpeg_image);
+
+  for (const auto& path :
+       {webp_animation_path, bad_image_path, jng_path, txt_path}) {
+    base::TouchFile(path, image_time, image_time);
+    annotation_worker_->TriggerOnFileChangeForTests(path,
+                                                    /*error=*/false);
+  }
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
   storage_->Initialize();
   annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
-  base::WriteFile(bar_image_path_, "test");
+  base::WriteFile(bar_image_path_, kJpeg_image);
   auto bar_image_time = base::Time::Now();
   base::TouchFile(bar_image_path_, bar_image_time, bar_image_time);
 
@@ -119,13 +186,13 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
   annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
-  base::WriteFile(bar_image_path_, "test");
+  base::WriteFile(bar_image_path_, kJpeg_image);
 
   annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  base::WriteFile(bar_image_path_, "test123");
+  base::WriteFile(bar_image_path_, kJpeg_image);
   auto bar_image_time_updated = base::Time::Now();
   base::TouchFile(bar_image_path_, bar_image_time_updated,
                   bar_image_time_updated);
@@ -146,7 +213,7 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
   annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
-  base::WriteFile(bar_image_path_, "test");
+  base::WriteFile(bar_image_path_, kJpeg_image);
 
   annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
                                                   /*error=*/false);

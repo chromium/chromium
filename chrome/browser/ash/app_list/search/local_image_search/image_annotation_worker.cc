@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/image_util.h"
@@ -42,14 +45,98 @@ constexpr int kMaxFileSizeBytes = 2e+7;
 constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 
+// Exclude animated WebPs.
+bool IsStaticWebp(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  char buffer[30];
+  file.read(buffer, sizeof(buffer));
+  file.close();
+
+  // Checking for RIFF header and WebP identifier as in the
+  // https://developers.google.com/speed/webp/docs/riff_container
+  if (std::string(buffer, 4) == "RIFF" &&
+      std::string(buffer + 8, 4) == "WEBP") {
+    // Checking the VP8X chunk for animation
+    if (std::string(buffer + 12, 4) == "VP8X") {
+      // VP8X header is 8 bytes then the flags byte.
+      const char flags = buffer[20];
+      // The second bit indicates if it's animated.
+      return !static_cast<bool>(flags & 0x02);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool IsJpeg(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  char buffer[4];
+  file.read(buffer, sizeof(buffer));
+  file.close();
+
+  // Check for JPEG magic numbers
+  return (buffer[0] == (char)0xFF && buffer[1] == (char)0xD8 &&
+          buffer[2] == (char)0xFF &&
+          (buffer[3] == (char)0xE0 || buffer[3] == (char)0xE1));
+}
+
+bool IsPng(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  uint8_t buffer[8];
+  file.read(reinterpret_cast<char*>(buffer), sizeof(buffer));
+  file.close();
+
+  const uint8_t pngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
+                                   0x0D, 0x0A, 0x1A, 0x0A};
+  for (int i = 0; i < 8; ++i) {
+    if (buffer[i] != pngSignature[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Checks for supported extensions.
 bool IsImage(const base::FilePath& path) {
   DVLOG(1) << "IsImage? " << path.Extension();
-  const std::string extension = path.Extension();
+  const std::string extension = base::ToLowerASCII(path.Extension());
   // Note: The UI design stipulates jpg, png, gif, and svg, but we use
-  // the subset that ICA can handle.
+  // the subset that ICA can handle
   return extension == ".jpeg" || extension == ".jpg" || extension == ".png" ||
-         extension == ".webp" || extension == ".JPEG" || extension == ".JPG" ||
-         extension == ".PNG" || extension == ".WEBP";
+         extension == ".webp";
+}
+
+// Check headers for correctness.
+bool IsSupportedImage(const base::FilePath& path) {
+  DVLOG(1) << "IsSupportedImage? " << path.Extension();
+  const std::string extension = base::ToLowerASCII(path.Extension());
+  if (extension == ".jpeg" || extension == ".jpg") {
+    return IsJpeg(path);
+  } else if (extension == ".png") {
+    return IsPng(path);
+  } else if (extension == ".webp") {
+    return IsStaticWebp(path);
+  } else {
+    return false;
+  }
 }
 
 bool IsPathExcluded(const base::FilePath& path,
@@ -277,7 +364,7 @@ void ImageAnnotationWorker::ProcessNextImage() {
 
   auto file_info = std::make_unique<base::File::Info>();
   if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
-      file_info->size > kMaxFileSizeBytes) {
+      file_info->size > kMaxFileSizeBytes || !IsSupportedImage(image_path)) {
     annotation_storage_->Remove(image_path);
     images_being_processed_.pop();
     return ProcessNextImage();
