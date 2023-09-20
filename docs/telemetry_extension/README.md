@@ -56,12 +56,15 @@ launch icon, UI, and access to web APIs.
 
 ## DPSL.js
 
+*The Company Products defined in Exhibit A will be granted the ability to call
+the Chrome OS Telemetry Extension APIs using the methods defined here.*
+
+**(Update: Google provides clients with the ability to query the API by calling
+chrome.os.\* directly. Migration guide can be found [here](dpsl_migration.md).)**
 DPSL.js stands for Diagnostic Processor Support Library for Javascript, it’s a
 JS wrapper around the underlying Telemetry Extensions APIs. It offers an
-abstracted way for querying the API and is supported and updated by Google to
-always support the latest APIs. DPSL.js is Google’s recommended way to interact
-with the telemetry extension APIs. The library is hosted on
-[Github](https://github.com/GoogleChromeLabs/telemetry-support-extension-for-chromeos)
+abstracted way for querying the API and is developed by Google. The library is
+hosted on [Github](https://github.com/GoogleChromeLabs/telemetry-support-extension-for-chromeos)
 and published to [npm](https://www.npmjs.com/package/cros-dpsl-js), please refer
 to the documentation.
 [These tables](https://github.com/GoogleChromeLabs/telemetry-support-extension-for-chromeos/tree/main/src#functions)
