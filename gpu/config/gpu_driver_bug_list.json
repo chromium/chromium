@@ -36,18 +36,6 @@
       ]
     },
     {
-      "id": 7,
-      "cr_bugs": [89557],
-      "description": "Work around a bug in offscreen buffers on NVIDIA GPUs on Macs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "needs_offscreen_buffer_workaround"
-      ]
-    },
-    {
       "id": 17,
       "description": "Some drivers are unable to reset the D3D device in the GPU process sandbox",
       "os": {
@@ -347,19 +335,6 @@
       ]
     },
     {
-      "id": 65,
-      "description": "Linux NVIDIA drivers don't have the correct defaults for vertex attributes",
-      "cr_bugs": [351528],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "init_vertex_attributes"
-      ]
-    },
-    {
       "id": 68,
       "description": "Disable partial swaps on Mesa drivers (detected with GL_RENDERER)",
       "cr_bugs": [339493],
@@ -458,29 +433,6 @@
       },
       "features": [
         "scalarize_vec_and_mat_constructor_args"
-      ]
-    },
-    {
-      "id": 89,
-      "description": "Mac drivers handle struct scopes incorrectly",
-      "cr_bugs": [403957],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "regenerate_struct_names"
-      ]
-    },
-    {
-      "id": 90,
-      "description": "Linux AMD drivers handle struct scopes incorrectly",
-      "cr_bugs": [403957],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "regenerate_struct_names"
       ]
     },
     {
@@ -973,17 +925,6 @@
       ]
     },
     {
-      "id": 136,
-      "description": "glGenerateMipmap fails if the zero texture level is not set on some Mac drivers",
-      "cr_bugs": [560499],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "set_zero_level_before_generating_mipmap"
-      ]
-    },
-    {
       "id": 137,
       "description": "NVIDIA fails glReadPixels from incomplete cube map texture",
       "cr_bugs": [518889],
@@ -1103,30 +1044,6 @@
       },
       "features": [
         "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 150,
-      "cr_bugs": [563714],
-      "description": "Alignment works incorrectly with unpack buffer bound",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "unpack_alignment_workaround_with_unpack_buffer"
-      ]
-    },
-    {
-      "id": 151,
-      "cr_bugs": [563714],
-      "description": "Alignment works incorrectly with unpack buffer bound",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "unpack_alignment_workaround_with_unpack_buffer"
       ]
     },
     {
@@ -1337,18 +1254,6 @@
       ]
     },
     {
-      "id": 179,
-      "description": "glResumeTransformFeedback works incorrectly on Intel GPUs",
-      "cr_bugs": [638514],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rebind_transform_feedback_before_resume"
-      ]
-    },
-    {
       "id": 180,
       "cr_bugs": [579060,632461],
       "description": "eglCreateImageKHR fails for one component textures on PowerVR",
@@ -1359,21 +1264,6 @@
       "gl_renderer": "PowerVR .*",
       "features": [
         "avoid_one_component_egl_images"
-      ]
-    },
-    {
-      "id": 181,
-      "description": "glTexStorage* are buggy when base mipmap level is not 0",
-      "cr_bugs": [640506],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12.4"
-        }
-      },
-      "features": [
-        "reset_base_mipmap_level_before_texstorage"
       ]
     },
     {
@@ -1390,18 +1280,6 @@
       "gl_renderer": ".*Mali-T7.*",
       "features": [
         "gl_clear_broken"
-      ]
-    },
-    {
-      "id": 184,
-      "description": "Rewrite texelFetchOffset to texelFetch for Intel Mac",
-      "cr_bugs": [642605],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rewrite_texelfetchoffset_to_texelfetch"
       ]
     },
     {
@@ -1492,29 +1370,6 @@
       ]
     },
     {
-      "id": 195,
-      "description": "Insert statements to reference all members in unused std140/shared blocks on Mac",
-      "cr_bugs": [618464],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "use_unused_standard_shared_blocks"
-      ]
-    },
-    {
-      "id": 196,
-      "description": "Tex(Sub)Image3D performs incorrectly when uploading from unpack buffer with GL_UNPACK_IMAGE_HEIGHT greater than zero on Intel Macs",
-      "cr_bugs": [654258],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "unpack_image_height_workaround_with_unpack_buffer"
-      ]
-    },
-    {
       "id": 197,
       "description": "adjust src/dst region if blitting pixels outside framebuffer on Mac",
       "cr_bugs": [644740],
@@ -1547,33 +1402,6 @@
       "vendor_id": "0x1002",
       "features": [
         "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 202,
-      "cr_bugs": [639760,641129],
-      "description": "Mac driver GL 4.1 requires invariant and centroid to match between shaders",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "remove_invariant_and_centroid_for_essl3"
-      ]
-    },
-    {
-      "id": 203,
-      "cr_bugs": [639760,641129],
-      "description": "Mesa driver GL 3.3 requires invariant and centroid to match between shaders",
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "gl_version": {
-        "op": "=",
-        "value": "3.3"
-      },
-      "features": [
-        "remove_invariant_and_centroid_for_essl3"
       ]
     },
     {
@@ -1647,22 +1475,6 @@
       "vendor_id": "0x1002",
       "features": [
         "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 211,
-      "description": "Rewrite -float to 0.0 - float for Intel Mac",
-      "cr_bugs": [672380],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.11"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rewrite_float_unary_minus_operator"
       ]
     },
     {
@@ -2295,19 +2107,6 @@
       ]
     },
     {
-      "id": 274,
-      "description": "glTexStorage* are buggy when base mipmap level is not 0",
-      "cr_bugs": [877874],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "reset_base_mipmap_level_before_texstorage"
-      ]
-    },
-    {
       "id": 277,
       "description": "Direct composition path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
@@ -2731,17 +2530,6 @@
       ]
     },
     {
-      "id": 319,
-      "cr_bugs": [709351],
-      "description": "Remove dynamic indexing for swizzled vectors on Mac",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "remove_dynamic_indexing_of_swizzled_vector"
-      ]
-    },
-    {
       "id": 320,
       "cr_bugs": [709351],
       "description": "Remove dynamic indexing for swizzled vectors on Android",
@@ -2979,34 +2767,6 @@
       },
       "features": [
         "disable_dxgi_zero_copy_video"
-      ]
-    },
-    {
-      "id": 341,
-      "description": "Driver crash deleting FBOs on Mac Intel Broadwell",
-      "cr_bugs": [1090584],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "broadwell"
-      ],
-      "features": [
-        "unbind_attachments_on_bound_render_fbo_delete"
-      ]
-    },
-    {
-      "id": 342,
-      "description": "Driver crash deleting FBOs on Mac nVidia 600/700 series",
-      "cr_bugs": [1090584],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fe9", "0x0fd5", "0x0fd8", "0x119e", "0x0fea", "0x11a2"],
-      "features": [
-        "unbind_attachments_on_bound_render_fbo_delete"
       ]
     },
     {

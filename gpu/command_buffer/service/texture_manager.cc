@@ -449,9 +449,7 @@ DecoderTextureState::DecoderTextureState(
       unpack_alignment_workaround_with_unpack_buffer(
           workarounds.unpack_alignment_workaround_with_unpack_buffer),
       unpack_overlapping_rows_separately_unpack_buffer(
-          workarounds.unpack_overlapping_rows_separately_unpack_buffer),
-      unpack_image_height_workaround_with_unpack_buffer(
-          workarounds.unpack_image_height_workaround_with_unpack_buffer) {}
+          workarounds.unpack_overlapping_rows_separately_unpack_buffer) {}
 
 TextureManager::DestructionObserver::DestructionObserver() = default;
 
@@ -2809,40 +2807,6 @@ void TextureManager::ValidateAndDoTexImage(
     }
   }
 
-  if (args.command_type == DoTexImageArguments::CommandType::kTexImage3D &&
-      texture_state->unpack_image_height_workaround_with_unpack_buffer &&
-      buffer) {
-    ContextState::Dimension dimension = ContextState::k3D;
-    const PixelStoreParams unpack_params(state->GetUnpackParams(dimension));
-    if (unpack_params.image_height != 0 &&
-        unpack_params.image_height != args.height) {
-      ReserveTexImageToBeFilled(texture_state, state, error_state,
-                                framebuffer_state, function_name, texture_ref,
-                                args);
-
-      DoTexSubImageArguments sub_args = {
-          args.target,
-          args.level,
-          0,
-          0,
-          0,
-          args.width,
-          args.height,
-          args.depth,
-          args.format,
-          args.type,
-          args.pixels,
-          args.pixels_size,
-          args.padding,
-          DoTexSubImageArguments::CommandType::kTexSubImage3D};
-      DoTexSubImageLayerByLayerWorkaround(texture_state, state, sub_args,
-                                          unpack_params);
-
-      SetLevelCleared(texture_ref, args.target, args.level, true);
-      return;
-    }
-  }
-
   if (texture_state->unpack_alignment_workaround_with_unpack_buffer && buffer &&
       args.width && args.height && args.depth) {
     uint32_t buffer_size = static_cast<uint32_t>(buffer->size());
@@ -3082,21 +3046,6 @@ void TextureManager::ValidateAndDoTexSubImage(
       // work around driver bug.
       DoTexSubImageRowByRowWorkaround(texture_state, state, args,
                                       unpack_params);
-      return;
-    }
-  }
-
-  if (args.command_type ==
-          DoTexSubImageArguments::CommandType::kTexSubImage3D &&
-      texture_state->unpack_image_height_workaround_with_unpack_buffer &&
-      buffer) {
-    ContextState::Dimension dimension = ContextState::k3D;
-    const PixelStoreParams unpack_params(state->GetUnpackParams(dimension));
-    if (unpack_params.image_height != 0 &&
-        unpack_params.image_height != args.height) {
-      TRACE_EVENT0("gpu", "LayerByLayerWorkaround");
-      DoTexSubImageLayerByLayerWorkaround(texture_state, state, args,
-                                          unpack_params);
       return;
     }
   }

@@ -753,7 +753,6 @@ struct DecoderTextureState {
   bool force_int_or_srgb_cube_texture_complete;
   bool unpack_alignment_workaround_with_unpack_buffer;
   bool unpack_overlapping_rows_separately_unpack_buffer;
-  bool unpack_image_height_workaround_with_unpack_buffer;
 };
 
 // This class keeps track of the textures and their sizes so we can do NPOT and
