@@ -16850,6 +16850,7 @@
                     "enable_features": [
                         "ConsistencyNewAccountInterface",
                         "FeedBottomSyncStringRemoval",
+                        "IOSPasswordSettingsBulkUploadLocalPasswords",
                         "ReplaceSyncPromosWithSignInPromos",
                         "SyncEnableBatchUploadLocalData",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",

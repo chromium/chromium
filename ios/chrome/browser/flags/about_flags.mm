@@ -677,7 +677,8 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "SyncEnableBatchUploadLocalData,"
      "EnablePreferencesAccountStorage,"
      "SyncEnableWalletMetadataInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode"},
+     "SyncEnableWalletOfferInTransportMode,"
+     "IOSPasswordSettingsBulkUploadLocalPasswords"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
