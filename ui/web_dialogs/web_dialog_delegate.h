@@ -39,22 +39,36 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
     kNonClient,  // Includes a non client frame view with title & buttons.
   };
 
+  WebDialogDelegate();
+  virtual ~WebDialogDelegate();
+
   // Returns the modal type for this dialog. Only called once, during
-  // WebDialogView creation.
-  virtual ModalType GetDialogModalType() const = 0;
+  // WebDialogView creation. If you can, prefer using set_modal_type() to
+  // overriding GetDialogModalType().
+  virtual ModalType GetDialogModalType() const;
+  void set_dialog_modal_type(ModalType modal_type) { modal_type_ = modal_type; }
 
-  // Returns the title of the dialog.
-  virtual std::u16string GetDialogTitle() const = 0;
+  // Returns the title of the dialog. If you can, prefer to use set_title()
+  // rather than overriding GetDialogTitle().
+  virtual std::u16string GetDialogTitle() const;
+  void set_dialog_title(std::u16string title) { title_ = title; }
 
-  // Returns the title to be read with screen readers.
+  // Returns the title to be read with screen readers. If you can, prefer to use
+  // set_accessible_title() rather than overriding GetAccessibleDialogTitle().
   virtual std::u16string GetAccessibleDialogTitle() const;
+  void set_accessible_dialog_title(std::u16string accessible_title) {
+    accessible_title_ = accessible_title;
+  }
 
   // Returns the dialog's name identifier. Used to identify this dialog for
-  // state restoration.
+  // state restoration. If you can, prefer to use set_dialog_name() rather than
+  // overriding GetDialogName().
   virtual std::string GetDialogName() const;
+  void set_dialog_name(std::string dialog_name) { name_ = dialog_name; }
 
   // Get the HTML file path for the content to load in the dialog.
-  virtual GURL GetDialogContentURL() const = 0;
+  virtual GURL GetDialogContentURL() const;
+  void set_dialog_content_url(GURL content_url) { content_url_ = content_url; }
 
   // Get WebUIMessageHandler objects to handle messages from the HTML/JS page.
   // The handlers are used to send and receive messages from the page while it
@@ -71,21 +85,25 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Get the minimum size of the dialog. The default implementation just calls
   // GetDialogSize().
   virtual void GetMinimumDialogSize(gfx::Size* size) const;
+  void set_minimum_dialog_size(gfx::Size minimum_size) {
+    minimum_size_ = minimum_size;
+  }
 
   // Gets the JSON string input to use when showing the dialog.
+  // TODO: should this just be a base::Value representing the JSON value
+  // directly?
   virtual std::string GetDialogArgs() const = 0;
+  void set_dialog_args(std::string dialog_args) { args_ = dialog_args; }
 
-  // Returns true if the dialog can ever be resized. Default implementation
-  // returns true.
+  // Returns true if the dialog can ever be resized.
   bool can_resize() const { return can_resize_; }
   void set_can_resize(bool can_resize) { can_resize_ = can_resize; }
 
-  // Returns true if the dialog can ever be maximized. Default implementation
-  // returns false.
+  // Returns true if the dialog can ever be maximized.
   virtual bool CanMaximizeDialog() const;
+  void set_can_maximize(bool can_maximize) { can_maximize_ = can_maximize; }
 
-  // Returns true if the dialog can ever be minimized. Default implementation
-  // returns false.
+  // Returns true if the dialog can ever be minimized.
   bool can_minimize() const { return can_minimize_; }
   void set_can_minimize(bool can_minimize) { can_minimize_ = can_minimize; }
 
@@ -134,18 +152,30 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns true if escape should immediately close the dialog. Default is
   // true.
   virtual bool ShouldCloseDialogOnEscape() const;
+  void set_close_dialog_on_escape(bool close_dialog_on_escape) {
+    close_on_escape_ = close_dialog_on_escape;
+  }
 
   // A callback to allow the delegate to dictate that the window should not
   // have a title bar.  This is useful when presenting branded interfaces.
-  virtual bool ShouldShowDialogTitle() const = 0;
+  virtual bool ShouldShowDialogTitle() const;
+  void set_show_dialog_title(bool show_dialog_title) {
+    show_title_ = show_dialog_title;
+  }
 
   // A callback to allow the delegate to center title text. Default is
   // false.
   virtual bool ShouldCenterDialogTitleText() const;
+  void set_center_dialog_title_text(bool center_dialog_title_text) {
+    center_title_text_ = center_dialog_title_text;
+  }
 
   // Returns true if the dialog should show a close button in the title bar.
   // Default implementation returns true.
   virtual bool ShouldShowCloseButton() const;
+  void set_show_close_button(bool show_close_button) {
+    show_close_button_ = show_close_button;
+  }
 
   // A callback to allow the delegate to inhibit context menu or show
   // customized menu.
@@ -193,12 +223,24 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // Whether to use dialog frame view for non client frame view.
   virtual FrameKind GetWebDialogFrameKind() const;
-
-  virtual ~WebDialogDelegate() = default;
+  void set_dialog_frame_kind(FrameKind frame_kind) { frame_kind_ = frame_kind; }
 
  private:
+  absl::optional<std::u16string> accessible_title_;
+  std::string args_;
+  bool can_maximize_ = false;
   bool can_minimize_ = false;
   bool can_resize_ = true;
+  bool center_title_text_ = false;
+  GURL content_url_;
+  bool close_on_escape_ = true;
+  FrameKind frame_kind_ = FrameKind::kNonClient;
+  absl::optional<gfx::Size> minimum_size_;
+  ModalType modal_type_ = ui::MODAL_TYPE_NONE;
+  std::string name_;
+  bool show_close_button_ = true;
+  bool show_title_ = true;
+  std::u16string title_;
 };
 
 }  // namespace ui

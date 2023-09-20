@@ -8,20 +8,39 @@
 
 namespace ui {
 
+WebDialogDelegate::WebDialogDelegate() = default;
+WebDialogDelegate::~WebDialogDelegate() = default;
+
+ModalType WebDialogDelegate::GetDialogModalType() const {
+  return modal_type_;
+}
+
+std::u16string WebDialogDelegate::GetDialogTitle() const {
+  return title_;
+}
+
 std::u16string WebDialogDelegate::GetAccessibleDialogTitle() const {
-  return GetDialogTitle();
+  return accessible_title_.value_or(GetDialogTitle());
 }
 
 std::string WebDialogDelegate::GetDialogName() const {
-  return std::string();
+  return name_;
+}
+
+GURL WebDialogDelegate::GetDialogContentURL() const {
+  return content_url_;
 }
 
 void WebDialogDelegate::GetMinimumDialogSize(gfx::Size* size) const {
-  GetDialogSize(size);
+  if (minimum_size_.has_value()) {
+    *size = minimum_size_.value();
+  } else {
+    GetDialogSize(size);
+  }
 }
 
 bool WebDialogDelegate::CanMaximizeDialog() const {
-  return false;
+  return can_maximize_;
 }
 
 bool WebDialogDelegate::OnDialogCloseRequested() {
@@ -29,15 +48,19 @@ bool WebDialogDelegate::OnDialogCloseRequested() {
 }
 
 bool WebDialogDelegate::ShouldCenterDialogTitleText() const {
-  return false;
+  return center_title_text_;
 }
 
 bool WebDialogDelegate::ShouldCloseDialogOnEscape() const {
-  return true;
+  return close_on_escape_;
 }
 
 bool WebDialogDelegate::ShouldShowCloseButton() const {
-  return true;
+  return show_close_button_;
+}
+
+bool WebDialogDelegate::ShouldShowDialogTitle() const {
+  return show_title_;
 }
 
 void WebDialogDelegate::OnDialogCloseFromWebUI(
@@ -78,7 +101,7 @@ bool WebDialogDelegate::CheckMediaAccessPermission(
 }
 
 WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
-  return WebDialogDelegate::FrameKind::kNonClient;
+  return frame_kind_;
 }
 
 }  // namespace ui
