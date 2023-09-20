@@ -1213,15 +1213,10 @@ void HTMLSelectListElement::UpdateSelectedValuePartContents() {
       for (Node& child : NodeTraversal::ChildrenOf(*clone)) {
         nodes.push_back(child);
       }
-      // TODO(crbug.com/1121840): Instead of using RemoveChildren and
-      // AppendChild, we should be using replaceChildren. replaceChildren is
-      // currently only called from V8 code and uses V8 unions which makes it
-      // hard to call from here but we should make a new ReplaceChildren method
-      // that takes normal nodes.
-      selected_value_part_->RemoveChildren();
-      for (Member<Node> child : nodes) {
-        selected_value_part_->AppendChild(child);
-      }
+      // TODO(crbug.com/1121840): This can likely throw an exception due to
+      // custom element constructors, script elements, etc. What should we do
+      // about it?
+      selected_value_part_->ReplaceChildren(nodes, ASSERT_NO_EXCEPTION);
     } else {
       selected_value_part_->setTextContent(
           selected_option_ ? selected_option_->innerText() : "");

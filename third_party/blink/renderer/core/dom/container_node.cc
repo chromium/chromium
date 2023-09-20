@@ -1720,4 +1720,32 @@ Element* ContainerNode::GetAutofocusDelegate() const {
   return nullptr;
 }
 
+// https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
+void ContainerNode::ReplaceChildren(const VectorOf<Node>& nodes,
+                                    ExceptionState& exception_state) {
+  // 1. Let node be the result of converting nodes into a node given nodes and
+  // this’s node document.
+  Node* node =
+      ConvertNodesIntoNode(this, nodes, GetDocument(), exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // 2. Ensure pre-insertion validity of node into this before null.
+  if (!EnsurePreInsertionValidity(*node, nullptr, nullptr, exception_state)) {
+    return;
+  }
+
+  // 3. Replace all with node within this.
+  ChildListMutationScope mutation(*this);
+  while (Node* first_child = firstChild()) {
+    RemoveChild(first_child, exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+
+  AppendChild(node, exception_state);
+}
+
 }  // namespace blink
