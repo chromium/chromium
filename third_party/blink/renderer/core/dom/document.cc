@@ -36,6 +36,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -6203,12 +6204,8 @@ absl::optional<base::Time> Document::lastModifiedTime() const {
 
 // https://html.spec.whatwg.org/C#dom-document-lastmodified
 String Document::lastModified() const {
-  const base::Time time = lastModifiedTime().value_or(base::Time::Now());
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return String::Format("%02d/%02d/%04d %02d:%02d:%02d", exploded.month,
-                        exploded.day_of_month, exploded.year, exploded.hour,
-                        exploded.minute, exploded.second);
+  return String(base::UnlocalizedTimeFormatWithPattern(
+      lastModifiedTime().value_or(base::Time::Now()), "MM/dd/yyyy HH:mm:ss"));
 }
 
 scoped_refptr<const SecurityOrigin> Document::TopFrameOrigin() const {

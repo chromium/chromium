@@ -130,6 +130,7 @@ _CONFIG = [
             'base::Token',
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
+            'base::UnlocalizedTimeFormatWithPattern',
             'base::UnsafeSharedMemoryRegion',
             'base::Uuid',
             'base::WeakPtr',

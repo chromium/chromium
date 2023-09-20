@@ -24,6 +24,7 @@ include_rules = [
     "+base/gtest_prod_util.h",
     "+base/hash/hash.h",
     "+base/i18n/rtl.h",
+    "+base/i18n/time_formatting.h",
     "+base/location.h",
     "+base/logging.h",
     "+base/memory/ptr_util.h",

@@ -33,6 +33,7 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -311,18 +312,6 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
   DCHECK(!boundary.empty());
   DCHECK(!mime_type.empty());
 
-  // See http://tools.ietf.org/html/rfc2822#section-3.3.
-  std::string date_string;
-  base::Time::Exploded exploded;
-  date.UTCExplode(&exploded);
-  if (exploded.HasValidValues()) {
-    date_string = base::StringPrintf(
-        "%s, %d %s %d %02d:%02d:%02d -0000",
-        WTF::kWeekdayName[exploded.day_of_week], exploded.day_of_month,
-        WTF::kMonthName[exploded.month - 1], exploded.year, exploded.hour,
-        exploded.minute, exploded.second);
-  }
-
   StringBuilder string_builder;
   string_builder.Append("From: <Saved by Blink>\r\n");
 
@@ -333,10 +322,11 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   string_builder.Append("\r\nSubject: ");
   string_builder.Append(ConvertToPrintableCharacters(title));
-  if (!date_string.empty()) {
-    string_builder.Append("\r\nDate: ");
-    string_builder.Append(String(date_string));
-  }
+  string_builder.Append("\r\nDate: ");
+  string_builder.Append(
+      // See http://tools.ietf.org/html/rfc2822#section-3.3.
+      String(base::UnlocalizedTimeFormatWithPattern(date,
+                                                    "E, d MMM y HH:mm:ss xx")));
   string_builder.Append("\r\nMIME-Version: 1.0\r\n");
   string_builder.Append("Content-Type: multipart/related;\r\n");
   string_builder.Append("\ttype=\"");
