@@ -149,6 +149,29 @@ dependencies](dependencies.md).
 NOTE: setdep for chromium/src is always prefixed with src/. For example, if you
 are updating v8, the command would be `gclient setdep -r src/v8@<hash>.
 
+## BETA: Install a hook to help detect unintentional submodule commits
+
+depot_tools provides an opt-in pre-commit hook to detect unintentional submodule
+ changes during `git commit` and remove them from the commit.
+
+To install the hook: `gclient installhooks`
+
+If there is an existing pre-commit hook, gclient will instruct you how to update
+it. If you have already installed this hook, gclient will do nothing.
+
+To uninstall the hook, in `chromium/src` `rm .git/hooks/pre-commit` if you have
+no other hooks. Otherwise update `.git/hooks/pre-commit` to remove the gclient
+provided hook.
+
+To bypass this hook run `git commit --no-verify` (which bypasses all hooks you
+ may have) OR set the following environment variable: `SKIP_GITLINK_PRECOMMIT=1`
+(which bypasses this specific hook).
+
+Note that this is currently and best effort solution and does not guarantee
+that unintentional commits will always be detected. The team will iterate
+quickly on this hook to fill in other gaps and behavior is subject to change.
+Please file an [issue](https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ESDK&labels=submodules-feedback&cc=sokcevic@chromium.org,jojwang@chromium.org&description=Please%20steps%20to%20reproduce%20the%20problem:%0A%0ADo%20you%20have%20any%20custom%20environment%20setups%20like%20git%20hooks%20or%20git%20configs%20that%20you%20have%20set%20yourself%0A%0APlease%20attach%20output%20of:%0Agit%20config%20-l%0Agit%20map-branches%20-vv%0A%0AIf%20this%20is%20an%20issue%20with%20git%20cl%20upload%20please%20include%20the%20git%20trace%20file%20for%20the%20problematic%20run%20found%20in:%0A%3Cdepot_tools_path%3E/traces/%3Clatest%20trace%3E) for any feedback.
+
 ## FAQ
 
 ### Why do we have Git dependencies in both DEPS and Git submodules?
