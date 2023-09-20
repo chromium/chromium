@@ -36,6 +36,9 @@ test((t) => {
 
     // Make the 2nd button hidden. All 3 children should still be present.
     document.getElementById("button2").setAttribute("aria-hidden", "true");
+    // Get button2 again, because although the hierarchy hasn't really changed,
+    // the underlying object may be new.
+    button2 = axElementById("button2");
 
     // Verify that the 3 children are present.
     assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
@@ -47,6 +50,9 @@ test((t) => {
 
     // Make the 1st button hidden. All 3 children should still be present.
     document.getElementById("button1").setAttribute("aria-hidden", "true");
+    // Get button1 again, because although the hierarchy hasn't really changed,
+    // the underlying object may be new.
+    button1 = axElementById("button1");
 
     // Verify that the 3 children are present.
     assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
@@ -58,6 +64,9 @@ test((t) => {
 
     // Make the 2nd button not hidden. All 3 children should still be present.
     document.getElementById("button2").setAttribute("aria-hidden", "false");
+    // Get button2 again, because although the hierarchy hasn't really changed,
+    // the underlying object may be new.
+    button2 = axElementById("button2");
 
     // Verify that the 3 children are present.
     assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
