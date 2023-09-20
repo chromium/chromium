@@ -6,9 +6,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,11 @@ class AecdumpRecordingManagerTest : public ::testing::Test {
             &AecdumpRecordingManagerTest::AsyncCreateFileCallback,
             base::Unretained(this))) {}
 
-  void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    temp_dir_path_ = base::CreateUniqueTempDirectoryScopedToTest();
+  }
+
+  void TearDown() override { task_environment_.RunUntilIdle(); }
 
  protected:
   // Simulates async file creation by posting the reply to the main thread.
@@ -43,17 +47,17 @@ class AecdumpRecordingManagerTest : public ::testing::Test {
       uint32_t /*id*/,
       base::OnceCallback<void(base::File)> reply_callback) {
     base::FilePath temp_file_path;
-    base::File file = base::CreateAndOpenTemporaryFileInDir(
-        temp_directory_.GetPath(), &temp_file_path);
+    base::File file =
+        base::CreateAndOpenTemporaryFileInDir(temp_dir_path_, &temp_file_path);
     ASSERT_TRUE(file.IsValid());
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(reply_callback), std::move(file)));
   }
 
+  base::FilePath temp_dir_path_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AecdumpRecordingManager> manager_;
   AecdumpRecordingManager::CreateFileCallback create_file_callback_;
-  base::ScopedTempDir temp_directory_;
 };
 
 TEST_F(AecdumpRecordingManagerTest, EnableDisableDoesNotCrash) {
