@@ -211,7 +211,7 @@ public class RestoreTabsTest {
         int tabSwitcherParentViewId =
                 TabUiTestHelper.getTabSwitcherParentId(mActivityTestRule.getActivity());
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
+        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
                        withParent(withId(tabSwitcherParentViewId))))
                 .check((v, noMatchException) -> {
                     if (noMatchException != null) throw noMatchException;

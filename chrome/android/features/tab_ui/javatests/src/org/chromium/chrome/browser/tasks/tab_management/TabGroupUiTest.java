@@ -152,7 +152,8 @@ public class TabGroupUiTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView = bottomToolbar.findViewById(R.id.tab_list_view);
+            RecyclerView stripRecyclerView =
+                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
             recyclerViewReference.set(stripRecyclerView);
         });
         mRenderTestRule.render(recyclerViewReference.get(), "5th_tab_selected");
@@ -176,7 +177,8 @@ public class TabGroupUiTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView = bottomToolbar.findViewById(R.id.tab_list_view);
+            RecyclerView stripRecyclerView =
+                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
             recyclerViewReference.set(stripRecyclerView);
         });
         mRenderTestRule.render(recyclerViewReference.get(), "10th_tab_selected");
@@ -199,7 +201,8 @@ public class TabGroupUiTest {
         clickNthTabInDialog(cta, 0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView = bottomToolbar.findViewById(R.id.tab_list_view);
+            RecyclerView stripRecyclerView =
+                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
             recyclerViewReference.set(stripRecyclerView);
             // Disable animation to reduce flakiness.
             stripRecyclerView.setItemAnimator(null);
@@ -226,12 +229,13 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_recycler_view),
                 isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
         onView(withId(R.id.url_bar)).perform(click());
-        onView(allOf(withId(R.id.tab_list_view), isDescendantOfA(withId(R.id.bottom_controls))))
+        onView(allOf(withId(R.id.tab_list_recycler_view),
+                       isDescendantOfA(withId(R.id.bottom_controls))))
                 .check(matches(withEffectiveVisibility((INVISIBLE))));
     }
 
@@ -264,7 +268,7 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_recycler_view),
                 isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
         assertTrue(isTabStripIphShowing(cta));
 

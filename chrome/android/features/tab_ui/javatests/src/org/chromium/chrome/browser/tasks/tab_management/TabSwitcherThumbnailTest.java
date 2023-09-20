@@ -124,7 +124,7 @@ public class TabSwitcherThumbnailTest {
         for (int i = tabCounts - 1; i >= 0; i--) {
             onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                         mActivityTestRule.getActivity()))),
-                                  withId(R.id.tab_list_view)))
+                                  withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))
                     .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));

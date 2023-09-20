@@ -563,7 +563,7 @@ public class TabSelectionEditorTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     TabListRecyclerView recyclerView =
                             ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                                    R.id.tab_list_view));
+                                    R.id.tab_list_recycler_view));
                     recyclerView.scrollToPosition(4);
                     return recyclerView;
                 });
@@ -1086,7 +1086,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1122,7 +1122,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1157,7 +1157,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1192,7 +1192,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1227,7 +1227,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1271,7 +1271,7 @@ public class TabSelectionEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
                     return ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(
-                            R.id.tab_list_view));
+                            R.id.tab_list_recycler_view));
                 });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 

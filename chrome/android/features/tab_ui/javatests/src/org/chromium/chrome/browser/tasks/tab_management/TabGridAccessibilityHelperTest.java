@@ -95,11 +95,12 @@ public class TabGridAccessibilityHelperTest {
 
     @Before
     public void setUp() {
+        CriteriaHelper.pollUiThread(
+                sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+
         Layout layout =
                 sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
         assertTrue(layout instanceof TabSwitcherLayout);
-        CriteriaHelper.pollUiThread(
-                sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @After
@@ -126,13 +127,14 @@ public class TabGridAccessibilityHelperTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
 
-        View view = cta.findViewById(R.id.tab_list_view);
+        View view = cta.findViewById(R.id.tab_list_recycler_view);
         assertTrue(view instanceof TabListMediator.TabGridAccessibilityHelper);
         TabListMediator.TabGridAccessibilityHelper helper =
                 (TabListMediator.TabGridAccessibilityHelper) view;
 
         // Verify action list in portrait mode with span count = 2.
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)),
+                       withId(R.id.tab_list_recycler_view)))
                 .check((v, noMatchingViewException) -> {
                     if (noMatchingViewException != null) {
                         throw noMatchingViewException;
@@ -185,7 +187,8 @@ public class TabGridAccessibilityHelperTest {
         callbackHelper.waitForCallback(callCount);
 
         // Verify action list in landscape mode with span count = 3.
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)),
+                       withId(R.id.tab_list_recycler_view)))
                 .check((v, noMatchingViewException) -> {
                     if (noMatchingViewException != null) {
                         throw noMatchingViewException;
@@ -246,13 +249,14 @@ public class TabGridAccessibilityHelperTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
 
-        View view = cta.findViewById(R.id.tab_list_view);
+        View view = cta.findViewById(R.id.tab_list_recycler_view);
         assertTrue(view instanceof TabListMediator.TabGridAccessibilityHelper);
         TabListMediator.TabGridAccessibilityHelper helper =
                 (TabListMediator.TabGridAccessibilityHelper) view;
 
         // Span count 2.
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)),
+                       withId(R.id.tab_list_recycler_view)))
                 .check((v, noMatchingViewException) -> {
                     if (noMatchingViewException != null) {
                         throw noMatchingViewException;
@@ -296,7 +300,8 @@ public class TabGridAccessibilityHelperTest {
         callbackHelper.waitForCallback(callCount);
 
         // Span count 3.
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)),
+                       withId(R.id.tab_list_recycler_view)))
                 .check((v, noMatchingViewException) -> {
                     if (noMatchingViewException != null) {
                         throw noMatchingViewException;

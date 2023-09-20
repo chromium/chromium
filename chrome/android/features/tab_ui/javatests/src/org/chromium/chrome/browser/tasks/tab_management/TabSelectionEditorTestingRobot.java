@@ -117,7 +117,7 @@ public class TabSelectionEditorTestingRobot {
      */
     public static class Action {
         public TabSelectionEditorTestingRobot.Action clickItemAtAdapterPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(actionOnItemAtPosition(position, click()));
             return this;
         }
@@ -149,26 +149,28 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public TabSelectionEditorTestingRobot.Action clickEndButtonAtAdapterPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view))).perform(new ViewAction() {
-                @Override
-                public Matcher<View> getConstraints() {
-                    return isDisplayed();
-                }
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+                    .perform(new ViewAction() {
+                        @Override
+                        public Matcher<View> getConstraints() {
+                            return isDisplayed();
+                        }
 
-                @Override
-                public String getDescription() {
-                    return "click on end button of item with index " + String.valueOf(position);
-                }
+                        @Override
+                        public String getDescription() {
+                            return "click on end button of item with index "
+                                    + String.valueOf(position);
+                        }
 
-                @Override
-                public void perform(UiController uiController, View view) {
-                    RecyclerView recyclerView = (RecyclerView) view;
-                    RecyclerView.ViewHolder viewHolder =
-                            recyclerView.findViewHolderForAdapterPosition(position);
-                    if (viewHolder.itemView == null) return;
-                    viewHolder.itemView.findViewById(R.id.end_button).performClick();
-                }
-            });
+                        @Override
+                        public void perform(UiController uiController, View view) {
+                            RecyclerView recyclerView = (RecyclerView) view;
+                            RecyclerView.ViewHolder viewHolder =
+                                    recyclerView.findViewHolderForAdapterPosition(position);
+                            if (viewHolder.itemView == null) return;
+                            viewHolder.itemView.findViewById(R.id.end_button).performClick();
+                        }
+                    });
             return this;
         }
     }
@@ -238,7 +240,7 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public TabSelectionEditorTestingRobot.Result verifyHasAtLeastNItemVisible(int count) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .check((v, noMatchException) -> {
                         if (noMatchException != null) throw noMatchException;
 
@@ -249,14 +251,14 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public TabSelectionEditorTestingRobot.Result verifyAdapterHasItemCount(int count) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .check(matches(RecyclerViewMatcherUtils.adapterHasItemCount(count)));
             return this;
         }
 
         public TabSelectionEditorTestingRobot.Result verifyItemNotSelectedAtAdapterPosition(
                 int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .check(matches(
                             not(RecyclerViewMatcherUtils.atPosition(position, itemIsSelected()))));
             return this;
@@ -264,7 +266,7 @@ public class TabSelectionEditorTestingRobot {
 
         public TabSelectionEditorTestingRobot.Result verifyItemSelectedAtAdapterPosition(
                 int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .check(matches(
                             RecyclerViewMatcherUtils.atPosition(position, itemIsSelected())));
             return this;
@@ -277,7 +279,8 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public Result verifyDividerAlwaysStartsAtTheEdgeOfScreen() {
-            onView(inTabSelectionEditor(allOf(isDivider(), withParent(withId(R.id.tab_list_view)))))
+            onView(inTabSelectionEditor(
+                           allOf(isDivider(), withParent(withId(R.id.tab_list_recycler_view)))))
                     .check(matches(isDisplayed()))
                     .check((v, noMatchException) -> {
                         if (noMatchException != null) throw noMatchException;
@@ -289,7 +292,7 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public Result verifyDividerAlwaysStartsAtTheEdgeOfScreenAtPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(position));
 
             onView(inTabSelectionEditor(atPosition(position, isDivider())))
@@ -305,7 +308,8 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public Result verifyDividerNotClickableNotFocusable() {
-            onView(inTabSelectionEditor(allOf(isDivider(), withParent(withId(R.id.tab_list_view)))))
+            onView(inTabSelectionEditor(
+                           allOf(isDivider(), withParent(withId(R.id.tab_list_recycler_view)))))
                     .check(matches(not(isClickable())))
                     .check(matches(not(isFocusable())));
             return this;
@@ -323,7 +327,7 @@ public class TabSelectionEditorTestingRobot {
          * @return {@link Result} to do chain verification.
          */
         public Result verifyHasItemViewTypeAtAdapterPosition(int position, int targetItemViewType) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_view)))
+            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(position));
             onView(inTabSelectionEditor(
                            atPositionWithViewHolder(position, withItemType(targetItemViewType))))

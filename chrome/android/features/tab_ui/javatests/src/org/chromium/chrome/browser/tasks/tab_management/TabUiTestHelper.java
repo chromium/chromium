@@ -167,7 +167,7 @@ public class TabUiTestHelper {
     private static void clickTabSwitcherCardWithParent(
             ChromeTabbedActivity cta, int index, int parentId) {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
     }
 
@@ -185,7 +185,8 @@ public class TabUiTestHelper {
      * @param index The index of the target tab.
      */
     static void clickNthTabInDialog(ChromeTabbedActivity cta, int index) {
-        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
+        onView(allOf(withId(R.id.tab_list_recycler_view),
+                       withParent(withId(R.id.dialog_container_view))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
@@ -203,7 +204,8 @@ public class TabUiTestHelper {
      * @param index The index of the target tab to close.
      */
     static void closeNthTabInDialog(int index) {
-        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
+        onView(allOf(withId(R.id.tab_list_recycler_view),
+                       withParent(withId(R.id.dialog_container_view))))
                 .perform(new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -238,7 +240,7 @@ public class TabUiTestHelper {
      */
     static void closeNthTabInTabSwitcher(Context context, int index) {
         onView(allOf(withParent(withId(getTabSwitcherParentId(context))),
-                       withId(R.id.tab_list_view)))
+                       withId(R.id.tab_list_recycler_view)))
                 .perform(new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -270,7 +272,7 @@ public class TabUiTestHelper {
     static boolean isPopupTabListCompletelyShowing(ChromeTabbedActivity cta) {
         boolean isShowing = true;
         try {
-            onView(withId(R.id.tab_list_view))
+            onView(withId(R.id.tab_list_recycler_view))
                     .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                     .check(matches(isCompletelyDisplayed()))
                     .check((v, e) -> assertEquals(1f, v.getAlpha(), 0.0));
@@ -291,7 +293,7 @@ public class TabUiTestHelper {
     static boolean isPopupTabListCompletelyHidden(ChromeTabbedActivity cta) {
         boolean isHidden = false;
         try {
-            onView(withId(R.id.tab_list_view))
+            onView(withId(R.id.tab_list_recycler_view))
                     .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                     .check(matches(isDisplayed()));
         } catch (NoMatchingRootException e) {
@@ -308,7 +310,7 @@ public class TabUiTestHelper {
      * @param count The count of the tabs in the tab list.
      */
     static void verifyShowingPopupTabList(ChromeTabbedActivity cta, int count) {
-        onView(withId(R.id.tab_list_view))
+        onView(withId(R.id.tab_list_recycler_view))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .check(ChildrenCountAssertion.havingTabCount(count));
     }
@@ -375,7 +377,7 @@ public class TabUiTestHelper {
     public static void verifyTabSwitcherCardCount(ChromeTabbedActivity cta, int count) {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         int viewHolder = getTabSwitcherParentId(cta);
-        onView(allOf(withParent(withId(viewHolder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(viewHolder)), withId(R.id.tab_list_recycler_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
     }
 
@@ -420,7 +422,8 @@ public class TabUiTestHelper {
      */
     static void verifyTabStripFaviconCount(ChromeTabbedActivity cta, int count) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(allOf(withParent(withId(R.id.toolbar_container_view)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(R.id.toolbar_container_view)),
+                       withId(R.id.tab_list_recycler_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
     }
 
@@ -674,7 +677,7 @@ public class TabUiTestHelper {
             Criteria.checkThat(cta.getTabModelSelector().isIncognitoSelected(), is(isIncognito));
         });
         // Wait for tab list recyclerView to finish animation after tab model switch.
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
+        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
         waitForStableRecyclerView(recyclerView);
     }
 

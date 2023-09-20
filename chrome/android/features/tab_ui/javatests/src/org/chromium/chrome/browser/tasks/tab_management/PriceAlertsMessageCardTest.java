@@ -257,11 +257,12 @@ public class PriceAlertsMessageCardTest {
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
 
-        RecyclerView.ViewHolder viewHolder = ((RecyclerView) cta.findViewById(R.id.tab_list_view))
-                                                     .findViewHolderForAdapterPosition(1);
+        RecyclerView.ViewHolder viewHolder =
+                ((RecyclerView) cta.findViewById(R.id.tab_list_recycler_view))
+                        .findViewHolderForAdapterPosition(1);
         assertEquals(TabProperties.UiType.LARGE_MESSAGE, viewHolder.getItemViewType());
 
-        onView(allOf(withId(R.id.tab_list_view),
+        onView(allOf(withId(R.id.tab_list_recycler_view),
                        withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta)))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         1, getSwipeToDismissAction(true)));

@@ -393,7 +393,7 @@ public class ToolbarPhoneTest {
         }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
@@ -435,7 +435,7 @@ public class ToolbarPhoneTest {
         }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
@@ -471,7 +471,7 @@ public class ToolbarPhoneTest {
         CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
@@ -511,7 +511,7 @@ public class ToolbarPhoneTest {
         CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
@@ -565,7 +565,7 @@ public class ToolbarPhoneTest {
         CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
@@ -618,7 +618,7 @@ public class ToolbarPhoneTest {
         CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         CriteriaHelper.pollUiThread(() -> {
-            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
             RecyclerView.ViewHolder viewHolder =
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {

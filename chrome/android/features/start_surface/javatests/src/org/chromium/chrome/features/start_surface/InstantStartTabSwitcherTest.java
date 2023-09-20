@@ -184,7 +184,7 @@ public class InstantStartTabSwitcherTest {
 
         onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                     mActivityTestRule.getActivity()))),
-                withId(org.chromium.chrome.test.R.id.tab_list_view)));
+                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)));
         Assert.assertFalse(cta.findViewById(org.chromium.chrome.test.R.id.url_bar).isFocused());
     }
 
@@ -338,7 +338,7 @@ public class InstantStartTabSwitcherTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         onView(allOf(withParent(
                              withId(org.chromium.chrome.test.R.id.tab_switcher_module_container)),
-                       withId(org.chromium.chrome.test.R.id.tab_list_view)))
+                       withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)))
                 .check(matches(isDisplayed()));
         RecyclerView tabListView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
@@ -374,7 +374,7 @@ public class InstantStartTabSwitcherTest {
 
         int tabSwitcherParentViewId = TabUiTestHelper.getTabSwitcherParentId(cta);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
+        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
                        withParent(withId(tabSwitcherParentViewId))))
                 .check((v, noMatchException) -> {
                     if (noMatchException != null) throw noMatchException;
@@ -393,7 +393,7 @@ public class InstantStartTabSwitcherTest {
                 .check(matches(not(isDisplayed())));
 
         // Scroll the tab list a little bit and shadow should show.
-        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
+        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
                        withParent(withId(tabSwitcherParentViewId))))
                 .perform(swipeUp());
         onView(allOf(withTagValue(is(SHADOW_VIEW_TAG)),

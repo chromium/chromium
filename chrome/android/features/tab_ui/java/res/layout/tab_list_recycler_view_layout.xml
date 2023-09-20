@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tab_list_view"
+    android:id="@+id/tab_list_recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"

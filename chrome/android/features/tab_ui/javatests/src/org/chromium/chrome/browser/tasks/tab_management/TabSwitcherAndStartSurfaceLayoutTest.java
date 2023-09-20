@@ -262,7 +262,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_web_tabs");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_web_tabs");
     }
 
     @Test
@@ -283,8 +283,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterGTSWithThumbnailRetry();
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_view), "3_web_tabs_thumbnail_cache_refactor");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view),
+                "3_web_tabs_thumbnail_cache_refactor");
     }
 
     @Test
@@ -305,7 +305,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "10_web_tabs");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs");
     }
 
     @Test
@@ -323,7 +323,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertEquals(9, cta.getTabModelSelector().getCurrentModel().index());
         enterGTSWithThumbnailRetry();
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "10_web_tabs-select_last");
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs-select_last");
     }
 
     @Test
@@ -371,8 +372,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
-        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_list_view));
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_incognito_web_tabs");
+        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_list_recycler_view));
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_web_tabs");
     }
 
     @Test
@@ -400,7 +402,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_incognito_ntps");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_ntps");
     }
 
     @Test
@@ -429,8 +431,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_view), "3_incognito_ntps_thumbnail_cache_refactor");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view),
+                "3_incognito_ntps_thumbnail_cache_refactor");
     }
 
     @Test
@@ -2309,6 +2311,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     private Matcher<View> tabSwitcherViewMatcher() {
         return allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                              mActivityTestRule.getActivity()))),
-                withId(R.id.tab_list_view));
+                withId(R.id.tab_list_recycler_view));
     }
 }

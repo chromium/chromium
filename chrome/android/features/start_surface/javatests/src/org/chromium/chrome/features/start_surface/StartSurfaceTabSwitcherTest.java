@@ -177,7 +177,7 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                              withId(R.id.tab_list_view)))
+                              withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
@@ -232,8 +232,8 @@ public class StartSurfaceTabSwitcherTest {
                                   isDescendantOfA(withId(R.id.bottom_controls))))
                     .perform(click());
         }
-        onViewWaiting(
-                allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
+        onViewWaiting(allOf(withId(R.id.tab_list_recycler_view),
+                              withParent(withId(R.id.dialog_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(2));
 
         // Show start surface through tab grid dialog toolbar plus button and create a new tab by
@@ -246,8 +246,9 @@ public class StartSurfaceTabSwitcherTest {
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
                 .check(ViewUtils.isEventuallyVisible(
-                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
-        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
+                        allOf(withId(R.id.tab_list_recycler_view), isCompletelyDisplayed())));
+        onView(allOf(withId(R.id.tab_list_recycler_view),
+                       withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
         assertEquals(1, filter.getTabGroupCount());
 
@@ -264,8 +265,9 @@ public class StartSurfaceTabSwitcherTest {
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
                 .check(ViewUtils.isEventuallyVisible(
-                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
-        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
+                        allOf(withId(R.id.tab_list_recycler_view), isCompletelyDisplayed())));
+        onView(allOf(withId(R.id.tab_list_recycler_view),
+                       withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
         assertEquals(1, filter.getTabGroupCount());
@@ -298,7 +300,7 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         ViewUtils.waitForVisibleView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
-                withId(R.id.tab_list_view)));
+                withId(R.id.tab_list_recycler_view)));
 
         RecyclerView recyclerView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
@@ -371,9 +373,10 @@ public class StartSurfaceTabSwitcherTest {
                 : R.id.secondary_tasks_surface_view;
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
-                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_view)));
+                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_recycler_view)));
 
-        RecyclerView recyclerView = cta.findViewById(parentViewId).findViewById(R.id.tab_list_view);
+        RecyclerView recyclerView =
+                cta.findViewById(parentViewId).findViewById(R.id.tab_list_recycler_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the Tab switcher is the
         // last created Tab by tapping the MV tile; the second card is the Tab created or restored

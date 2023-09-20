@@ -262,7 +262,7 @@ public class TabListCoordinator
             } else {
                 LayoutInflater.from(context).inflate(
                         R.layout.tab_list_recycler_view_layout, parentView, true);
-                mRecyclerView = parentView.findViewById(R.id.tab_list_view);
+                mRecyclerView = parentView.findViewById(R.id.tab_list_recycler_view);
             }
 
             if (mode == TabListMode.CAROUSEL) {

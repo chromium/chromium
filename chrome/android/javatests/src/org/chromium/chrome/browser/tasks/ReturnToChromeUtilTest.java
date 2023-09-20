@@ -213,7 +213,8 @@ public class ReturnToChromeUtilTest {
         assertEquals(10, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         assertEquals(9, mActivityTestRule.getActivity().getCurrentTabModel().index());
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.tab_list_view),
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.tab_list_recycler_view),
                 "10_web_tabs-select_last");
     }
 

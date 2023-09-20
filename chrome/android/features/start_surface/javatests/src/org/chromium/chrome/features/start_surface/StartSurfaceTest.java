@@ -217,7 +217,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         ViewUtils.waitForVisibleView(
                 allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                        withId(R.id.tab_list_view)));
+                        withId(R.id.tab_list_recycler_view)));
 
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));

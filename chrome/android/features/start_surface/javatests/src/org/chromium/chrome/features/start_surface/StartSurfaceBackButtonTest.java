@@ -208,7 +208,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
         StartSurfaceTestUtils.pressHomePageButton(cta);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(allOf(withId(R.id.tab_list_view), isDisplayed()));
+        onView(allOf(withId(R.id.tab_list_recycler_view), isDisplayed()));
 
         // Launches the new tab from the carousel tab switcher, and press back button.
         StartSurfaceTestUtils.clickTabInCarousel(/* position = */ 1);
@@ -268,9 +268,9 @@ public class StartSurfaceBackButtonTest {
         TabUiTestHelper.enterTabSwitcher(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(withId(R.id.tab_list_view));
+        ViewUtils.isEventuallyVisible(withId(R.id.tab_list_recycler_view));
         onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                       withId(R.id.tab_list_view)))
+                       withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE,

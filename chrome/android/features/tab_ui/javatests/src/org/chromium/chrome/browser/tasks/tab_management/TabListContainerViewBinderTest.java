@@ -128,7 +128,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mRecyclerView = getActivity().findViewById(R.id.tab_list_view); });
+                () -> { mRecyclerView = getActivity().findViewById(R.id.tab_list_recycler_view); });
 
         mStartedShowingCallback = new CallbackHelper();
         mFinishedShowingCallback = new CallbackHelper();

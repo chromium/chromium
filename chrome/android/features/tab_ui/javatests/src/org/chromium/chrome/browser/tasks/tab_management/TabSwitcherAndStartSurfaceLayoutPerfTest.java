@@ -624,7 +624,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             Thread.sleep(mWaitingTime);
             Espresso.onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                           mActivityTestRule.getActivity()))),
-                                    withId(R.id.tab_list_view)))
+                                    withId(R.id.tab_list_recycler_view)))
                     .perform(RecyclerViewActions.actionOnItemAtPosition(
                             targetIndex, ViewActions.click()));
 

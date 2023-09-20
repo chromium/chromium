@@ -48,7 +48,7 @@ public class ChromeTabSwitcherTest {
     private IUi2Locator mTabSwitcherToolbar =
             Ui2Locators.withAnyResEntry(R.id.tab_switcher_toolbar);
 
-    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_view);
+    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
 
     private FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
 
