@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {CrSettingsPrefs, OsSettingsUiElement, Router, routes, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
 
 suite('User action recorder', () => {
-  let ui;
-  let fakeUserActionRecorder;
-  let fakeNearbySettings;
+  let ui: OsSettingsUiElement;
+  let fakeUserActionRecorder: FakeUserActionRecorder;
+  let fakeNearbySettings: FakeNearbyShareSettings;
 
-  async function createElement() {
+  async function createElement(): Promise<OsSettingsUiElement> {
     const element = document.createElement('os-settings-ui');
     document.body.appendChild(element);
     await CrSettingsPrefs.initialized;
@@ -22,7 +24,7 @@ suite('User action recorder', () => {
     return element;
   }
 
-  suiteSetup(async () => {
+  suiteSetup(() => {
     fakeNearbySettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbySettings);
   });
@@ -69,7 +71,8 @@ suite('User action recorder', () => {
 
   test('Records settings changes', () => {
     assertEquals(0, fakeUserActionRecorder.settingChangeCount);
-    const prefsEl = ui.shadowRoot.querySelector('#prefs');
+    const prefsEl = ui.shadowRoot!.querySelector('#prefs');
+    assertTrue(!!prefsEl);
     prefsEl.dispatchEvent(new CustomEvent('user-action-setting-change', {
       bubbles: true,
       composed: true,
