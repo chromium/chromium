@@ -65,6 +65,39 @@ promise_test(async t => {
 }, `discardedFrames increases when frameRate decimation is happening`);
 
 promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // Hold a reference directly to the [SameObject] videoStats, bypassing the
+  // track.videoStats getter in the subsequent getting of totalFrames.
+  const videoStats = track.videoStats;
+  const firstTotalFrames = videoStats.totalFrames;
+  while (videoStats.totalFrames == firstTotalFrames) {
+    await Promise.resolve();
+  }
+  assert_greater_than(videoStats.totalFrames, firstTotalFrames);
+}, `Counters increase even if we don't call the track.videoStats getter`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  const resolvedPromise = Promise.resolve();
+  const firstTotalFrames = track.videoStats.totalFrames;
+  // Busy-loop for 100 ms, all within the same task execution cycle.
+  const firstTimeMs = performance.now();
+  while (performance.now() - firstTimeMs < 100) {}
+  // The frame counter should not have changed.
+  assert_equals(track.videoStats.totalFrames, firstTotalFrames);
+  // Even though this promise resolved before we got the stats the first time,
+  // it still takes us to the next task execution cycle.
+  await resolvedPromise;
+  assert_not_equals(track.videoStats.totalFrames, firstTotalFrames);
+}, `Counters do not increase in the same task execution cycle`);
+
+promise_test(async t => {
   const stream = await navigator.mediaDevices.getUserMedia({
           video:{frameRate:{ideal:20}}
       });

@@ -6,7 +6,7 @@
     Exposed=Window,
     RuntimeEnabled=MediaStreamTrackGetFrameStats
 ] interface MediaStreamTrackVideoStats {
-    readonly attribute unsigned long long deliveredFrames;
-    readonly attribute unsigned long long discardedFrames;
-    readonly attribute unsigned long long totalFrames;
+    [CallWith=ScriptState] readonly attribute unsigned long long deliveredFrames;
+    [CallWith=ScriptState] readonly attribute unsigned long long discardedFrames;
+    [CallWith=ScriptState] readonly attribute unsigned long long totalFrames;
 };

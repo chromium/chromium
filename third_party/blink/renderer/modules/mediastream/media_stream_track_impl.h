@@ -132,6 +132,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate) override;
 
+  MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
+
   ImageCapture* GetImageCapture() override { return image_capture_; }
 
   absl::optional<const MediaStreamDevice> device() const override;

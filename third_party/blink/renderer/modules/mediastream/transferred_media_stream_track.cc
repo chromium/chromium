@@ -177,7 +177,7 @@ MediaStreamTrackVideoStats* TransferredMediaStreamTrack::videoStats(
     return track_->videoStats(exception_state);
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
-  return MakeGarbageCollected<MediaStreamTrackVideoStats>();
+  return MakeGarbageCollected<MediaStreamTrackVideoStats>(nullptr);
 }
 
 CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {

@@ -675,14 +675,16 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::videoStats(
       return nullptr;
     case MediaStreamSource::kTypeVideo:
       if (!video_stats_) {
-        video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>();
+        video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>(this);
       }
-      // TODO(https://crbug.com/1472978): Only update the result if this is a
-      // new task execution cycle to preserve JS run-to-completion policy.
-      video_stats_->setStats(
-          component_->GetPlatformTrack()->GetVideoFrameStats());
       return video_stats_;
   }
+}
+
+MediaStreamTrackPlatform::VideoFrameStats
+MediaStreamTrackImpl::GetVideoFrameStats() const {
+  CHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeVideo);
+  return component_->GetPlatformTrack()->GetVideoFrameStats();
 }
 
 CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {
