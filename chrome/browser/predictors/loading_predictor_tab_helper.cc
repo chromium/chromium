@@ -159,12 +159,16 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   if (base::FeatureList::IsEnabled(
           blink::features::kLCPCriticalPathPredictor)) {
     const GURL& navigation_url = navigation_handle.GetURL();
+    absl::optional<LcppData> lcpp_data =
+        predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
+    if (!lcpp_data) {
+      return;
+    }
+
     std::vector<std::string> lcp_element_locators =
-        predictor.resource_prefetch_predictor()->PredictLcpElementLocators(
-            navigation_url);
+        ResourcePrefetchPredictor::PredictLcpElementLocators(*lcpp_data);
     std::vector<GURL> lcp_influencer_scripts =
-        predictor.resource_prefetch_predictor()->PredictLcpInfluencerScripts(
-            navigation_url);
+        ResourcePrefetchPredictor::PredictLcpInfluencerScripts(*lcpp_data);
     if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty()) {
       navigation_handle.SetLCPPNavigationHint(
           blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(

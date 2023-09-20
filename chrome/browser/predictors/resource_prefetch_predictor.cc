@@ -644,25 +644,29 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
+absl::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The `initialization_state_` can be not `INITIALIZED` in the very first
   // navigation on browser startup. Because this object is initialized on the
   // first navigation.
   if (initialization_state_ != INITIALIZED) {
-    return {};
+    return absl::nullopt;
   }
 
   if (!url.is_valid() || url.host().empty()) {
-    return {};
+    return absl::nullopt;
   }
-
   LcppData data;
   if (!lcpp_data_->TryGetData(url.host(), &data)) {
-    return {};
+    return absl::nullopt;
   }
+  return data;
+}
 
+// static
+std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
+    const LcppData& data) {
   const auto& buckets =
       data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
   std::vector<std::pair<double, std::string>>
@@ -684,29 +688,9 @@ std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
   return lcp_element_locators;
 }
 
+// static
 std::vector<GURL> ResourcePrefetchPredictor::PredictLcpInfluencerScripts(
-    const GURL& url) const {
-  // TODO(crbug.com/1419756): PredictLcp* functions can be refactored into
-  // a unified read path.
-
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The `initialization_state_` can be not `INITIALIZED` in the very first
-  // navigation on browser startup. Because this object is initialized on the
-  // first navigation.
-
-  if (initialization_state_ != INITIALIZED) {
-    return {};
-  }
-
-  if (!url.is_valid() || url.host().empty()) {
-    return {};
-  }
-
-  LcppData data;
-  if (!lcpp_data_->TryGetData(url.host(), &data)) {
-    return {};
-  }
-
+    const LcppData& data) {
   const auto& buckets = data.lcpp_stat().lcp_script_url_stat().main_buckets();
   std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency;
   lcp_script_urls_with_frequency.reserve(buckets.size());

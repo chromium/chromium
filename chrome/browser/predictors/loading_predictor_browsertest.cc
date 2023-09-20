@@ -902,9 +902,13 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
       const base::Location& from_here,
       const GURL& url,
       size_t expected_locator_count) {
-    std::vector<std::string> locators = loading_predictor()
-                                            ->resource_prefetch_predictor()
-                                            ->PredictLcpElementLocators(url);
+    auto lcpp_data =
+        loading_predictor()->resource_prefetch_predictor()->GetLcppData(url);
+    std::vector<std::string> locators;
+    if (lcpp_data) {
+      locators =
+          ResourcePrefetchPredictor::PredictLcpElementLocators(*lcpp_data);
+    }
     EXPECT_EQ(expected_locator_count, locators.size()) << from_here.ToString();
     return locators;
   }

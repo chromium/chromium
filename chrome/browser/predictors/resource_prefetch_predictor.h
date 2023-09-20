@@ -195,15 +195,18 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   virtual bool PredictPreconnectOrigins(const GURL& url,
                                         PreconnectPrediction* prediction) const;
 
-  // Returns LCP element locators in the past loads for a given `url`.  The
-  // returned LCP element locators are ordered by descending frequency (the most
-  // frequent one comes first). If there is no data, it returns an empty vector.
-  std::vector<std::string> PredictLcpElementLocators(const GURL& url) const;
+  // Returns LCP element locators in the past loads for a given `data`.  The
+  // returned LCP element locators are ordered by descending frequency (the
+  // most frequent one comes first). If there is no data, it returns an empty
+  // vector.
+  static std::vector<std::string> PredictLcpElementLocators(
+      const LcppData& data);
 
-  // Returns LCP influencer scripts from past loads for a given `url`.
+  // Returns LCP influencer scripts from past loads for a given `data`.
   // The returned script urls are ordered by descending frequency (the most
-  // frequent one comes first). If there is no data, it returns an empty vector.
-  std::vector<GURL> PredictLcpInfluencerScripts(const GURL& url) const;
+  // frequent one comes first). If there is no data, it returns an empty
+  // vector.
+  static std::vector<GURL> PredictLcpInfluencerScripts(const LcppData& data);
 
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
@@ -218,6 +221,9 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();
+
+  // Returns LcppData for the `url`, or absl::nullopt on failure.
+  absl::optional<LcppData> GetLcppData(const GURL& url) const;
 
  private:
   friend class LoadingPredictor;
