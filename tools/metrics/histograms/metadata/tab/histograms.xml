@@ -1248,18 +1248,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2023-10-08">
-  <owner>gogerald@chromium.org</owner>
-  <owner>nasims@google.com</owner>
+<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2024-10-08">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>sugoi@chromium.org</owner>
   <summary>
     [iOS] The number of NTP tabs open when the app comes out of the background.
   </summary>
 </histogram>
 
 <histogram name="Tabs.NTPCountAtStartup" units="tabs"
-    expires_after="2024-01-28">
-  <owner>gogerald@chromium.org</owner>
-  <owner>nasims@google.com</owner>
+    expires_after="2024-10-08">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>sugoi@chromium.org</owner>
   <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
 </histogram>
 
