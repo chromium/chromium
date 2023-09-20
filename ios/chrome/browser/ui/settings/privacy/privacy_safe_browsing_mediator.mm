@@ -230,10 +230,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // If Safe Browsing is controlled by enterprise, make non-selected options
   // greyed out.
   if (self.enterpriseEnabled && ![self shouldItemTypeHaveCheckmark:type]) {
-    infoButtonItem.textColor =
-        [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
-    infoButtonItem.detailTextColor =
-        [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
+    // This item is not controllable; set to lighter colors.
+    infoButtonItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    infoButtonItem.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
     infoButtonItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   } else {
