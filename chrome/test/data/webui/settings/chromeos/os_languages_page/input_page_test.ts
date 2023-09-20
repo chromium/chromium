@@ -16,8 +16,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {FakeSettingsPrivate} from '../fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
-import {TestLanguagesMetricsProxy} from '../test_os_languages_metrics_proxy.js';
+
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
 
 suite('<os-settings-input-page>', () => {
   let inputPage: OsSettingsInputPageElement;

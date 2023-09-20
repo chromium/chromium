@@ -12,7 +12,8 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 
 import {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
 import {FakeSettingsPrivate} from '../fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
+
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
 
 suite('<os-settings-edit-dictionary-page>', () => {
   function getFakePrefs() {

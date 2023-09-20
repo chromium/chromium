@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesPageInteraction} from 'chrome://os-settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * A test version of LanguagesMetricsProxy.
- */
-// This class implements LanguagesMetricsProxy from
-// c/b/r/ash/settings/os_languages_page/languages_metrics_proxy.ts.
-export class TestLanguagesMetricsProxy extends TestBrowserProxy {
+export class TestLanguagesMetricsProxy extends TestBrowserProxy implements
+    LanguagesMetricsProxy {
   constructor() {
     super([
       'recordInteraction',
@@ -24,48 +21,39 @@ export class TestLanguagesMetricsProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  recordInteraction(interaction) {
+  recordInteraction(interaction: LanguagesPageInteraction): void {
     this.methodCalled('recordInteraction', interaction);
   }
 
-  /** @override */
-  recordAddLanguages() {
+  recordAddLanguages(): void {
     this.methodCalled('recordAddLanguages');
   }
 
-  /** @override */
-  recordManageInputMethods() {
+  recordManageInputMethods(): void {
     this.methodCalled('recordManageInputMethods');
   }
 
-  /** @override */
-  recordToggleShowInputOptionsOnShelf(value) {
+  recordToggleShowInputOptionsOnShelf(value: boolean): void {
     this.methodCalled('recordToggleShowInputOptionsOnShelf', value);
   }
 
-  /** @override */
-  recordToggleSpellCheck(value) {
+  recordToggleSpellCheck(value: boolean): void {
     this.methodCalled('recordToggleSpellCheck', value);
   }
 
-  /** @override */
-  recordToggleTranslate(value) {
+  recordToggleTranslate(value: boolean): void {
     this.methodCalled('recordToggleTranslate', value);
   }
 
-  /** @override */
-  recordAddInputMethod(value) {
-    this.methodCalled('recordAddInputMethod', value);
+  recordAddInputMethod(): void {
+    this.methodCalled('recordAddInputMethod');
   }
 
-  /** @override */
-  recordTranslateCheckboxChanged(value) {
+  recordTranslateCheckboxChanged(value: boolean): void {
     this.methodCalled('recordTranslateCheckboxChanged', value);
   }
 
-  /** @override */
-  recordShortcutReminderDismissed(value) {
+  recordShortcutReminderDismissed(value: InputsShortcutReminderState): void {
     this.methodCalled('recordShortcutReminderDismissed', value);
   }
 }

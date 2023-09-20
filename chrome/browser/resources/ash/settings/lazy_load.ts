@@ -231,7 +231,7 @@ export {OsSettingsInputPageElement} from './os_languages_page/input_page.js';
 export {LanguageSettingsCardElement} from './os_languages_page/language_settings_card.js';
 export {SettingsLanguagesElement} from './os_languages_page/languages.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
-export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
+export {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
 export {LanguageHelper, LanguageState} from './os_languages_page/languages_types.js';
 export {OsSettingsEditDictionaryPageElement} from './os_languages_page/os_edit_dictionary_page.js';
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';

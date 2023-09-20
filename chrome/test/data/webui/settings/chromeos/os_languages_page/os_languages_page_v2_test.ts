@@ -14,9 +14,10 @@ import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_tes
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {FakeSettingsPrivate} from '../fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
-import {TestLanguagesMetricsProxy} from '../test_os_languages_metrics_proxy.js';
 import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
+
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
 
 suite('<os-settings-languages-page-v2>', () => {
   let languageHelper: LanguageHelper;
