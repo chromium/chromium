@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/util.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -69,11 +70,14 @@ bool AreConfigVersionsCompatible(int preexisting, int current) {
     return true;
   }
 
-  // Currently only version 1 is supported. Update this logic when more versions
-  // are introduced.
-  CHECK_EQ(preexisting, 1);
-  CHECK_EQ(current, 1);
-  return true;
+  if ((preexisting == ConfigVersion::kInitial &&
+       current == ConfigVersion::kUsePrioritizedTopicsList) ||
+      (preexisting == ConfigVersion::kUsePrioritizedTopicsList &&
+       current == ConfigVersion::kInitial)) {
+    // Versions 1 and 2 are forward and backward compatible.
+    return true;
+  }
+  return false;
 }
 
 }  // namespace

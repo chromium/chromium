@@ -395,6 +395,11 @@ const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
 const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
     &kBrowsingTopicsParameters, "disabled_topics_list", ""};
 
+// Comma separated list of Topic IDs. Prioritize these topics and their
+// descendants during top topic selection.
+const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
+    &kBrowsingTopicsParameters, "prioritized_topics_list", ""};
+
 // Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
 // effect, the main Topics feature has to be enabled first (i.e.
 // `kBrowsingTopics` is enabled, and, either a valid Origin Trial token exists

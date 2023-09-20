@@ -198,6 +198,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsTaxonomyVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsDisabledTopicsList;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kBrowsingTopicsPrioritizedTopicsList;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsXHR);
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
 

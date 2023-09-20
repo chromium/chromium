@@ -902,6 +902,50 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlockedByFinch) {
   EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
 }
 
+TEST_F(BrowsingTopicsCalculatorTest, TopicsPrioritizedByFinch) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries({kHost1, kHost2, kHost3, kHost4, kHost5, kHost6},
+                    begin_time);
+
+  AddApiUsageContextEntries(
+      {{kHost1, {}},
+       {kHost2, {}},
+       {kHost3, {HashedDomain(2)}},
+       {kHost4, {HashedDomain(3)}},
+       {kHost5, {HashedDomain(1), HashedDomain(2), HashedDomain(3)}}});
+
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+  test_annotator_.UseAnnotations({
+      {kHost1, {74, 2, 3, 4, 5, 6}},
+      {kHost2, {2, 3, 4, 5, 6}},
+      {kHost3, {3, 4, 5, 6}},
+      {kHost4, {4, 5, 6}},
+      {kHost5, {5, 6}},
+      {kHost6, {6}},
+  });
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", "4,57"}});  // 74 is descended from 57.
+
+  EpochTopics result = CalculateTopics();
+  ExpectResultTopicsEqual(
+      result.top_topics_and_observing_domains(),
+      {{Topic(4), {HashedDomain(2), HashedDomain(3)}},
+       {Topic(74), {}},
+       {Topic(6), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {Topic(3), {HashedDomain(2)}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
+  EXPECT_EQ(result.config_version(), 2);
+}
+
 TEST_F(BrowsingTopicsCalculatorTest, PaddedTopicsDoNotDuplicate) {
   base::Time begin_time = base::Time::Now();
 

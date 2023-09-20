@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
+#include "components/browsing_topics/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/interest_group_api_operation.h"
 
@@ -116,6 +117,9 @@ class PrivacySandboxSettings : public KeyedService {
   // current epoch, or provided to a website as a previous / current epochs
   // site assigned topic.
   virtual bool IsTopicAllowed(const CanonicalTopic& topic) = 0;
+
+  // Returns whether |topic| is prioritized by Finch settings.
+  virtual bool IsTopicPrioritized(const CanonicalTopic& topic) = 0;
 
   // Sets |topic| to |allowed|. Whether a topic is allowed or not is made
   // available through IsTopicAllowed().

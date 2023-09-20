@@ -576,6 +576,68 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
 }
 
 TEST_F(BrowsingTopicsStateTest,
+       InitFromPreexistingFile_ForwardCompatibleConfigVersion) {
+  base::HistogramTester histograms;
+
+  std::vector<EpochTopics> epochs;
+  // Current version is 1 but it's forward compatible with 2.
+  EXPECT_EQ(CurrentConfigVersion(), 1);
+  epochs.emplace_back(CreateTestEpochTopics(
+      kTime1, /*from_manually_triggered_calculation=*/false,
+      /*config_version=*/2));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_FALSE(state.epochs()[0].empty());
+  EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
+  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsStateTest,
+       InitFromPreexistingFile_BackwardCompatibleConfigVersion) {
+  base::HistogramTester histograms;
+
+  std::vector<EpochTopics> epochs;
+  // Current version is 2 but it's backward compatible with 1.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", "4,57"}});
+  EXPECT_EQ(CurrentConfigVersion(), 2);
+  epochs.emplace_back(CreateTestEpochTopics(
+      kTime1, /*from_manually_triggered_calculation=*/false,
+      /*config_version=*/1));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_FALSE(state.epochs()[0].empty());
+  EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
+  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsStateTest,
        InitFromPreexistingFile_IncompatibleConfigVersion) {
   base::HistogramTester histograms;
 

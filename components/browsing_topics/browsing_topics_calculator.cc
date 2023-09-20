@@ -241,18 +241,30 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
   history_topics_count = topics_count.size();
 
+  std::map<Topic, std::pair<bool, size_t>> topics_priorities_and_counts;
+  for (const auto& [topic, count] : topics_count) {
+    bool priority = privacy_sandbox_settings_->IsTopicPrioritized(
+        privacy_sandbox::CanonicalTopic(
+            topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get()));
+    topics_priorities_and_counts[topic] = {priority, count};
+  }
+
   // Get the top up to `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics,
   // sorted by decreasing count.
-  using TopicsCountValue = std::pair<Topic, size_t>;
+  using TopicsCountValue = std::pair<Topic, std::pair<bool, size_t>>;
   std::vector<TopicsCountValue> top_topics_count(std::min(
       static_cast<size_t>(
           blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get()),
-      topics_count.size()));
+      topics_priorities_and_counts.size()));
 
-  std::partial_sort_copy(
-      topics_count.begin(), topics_count.end(), top_topics_count.begin(),
-      top_topics_count.end(),
-      [](auto& left, auto& right) { return left.second > right.second; });
+  std::partial_sort_copy(topics_priorities_and_counts.begin(),
+                         topics_priorities_and_counts.end(),
+                         top_topics_count.begin(), top_topics_count.end(),
+                         [](auto& left, auto& right) {
+                           return (left.second.first > right.second.first) ||
+                                  (left.second.first == right.second.first &&
+                                   left.second.second > right.second.second);
+                         });
 
   base::ranges::transform(top_topics_count, std::back_inserter(top_topics),
                           &TopicsCountValue::first);

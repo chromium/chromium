@@ -8,6 +8,8 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include <set>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -50,6 +52,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsTopicAllowed(const CanonicalTopic& topic) override;
   void SetTopicAllowed(const CanonicalTopic& topic, bool allowed) override;
+  bool IsTopicPrioritized(const CanonicalTopic& topic) override;
   void ClearTopicSettings(base::Time start_time, base::Time end_time) override;
   base::Time TopicsDataAccessibleSince() const override;
   bool IsAttributionReportingEverAllowed() const override;
@@ -160,7 +163,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       Status status);
 
   // Get the Topics that are disabled by Finch.
-  const std::vector<browsing_topics::Topic>& GetFinchDisabledTopics();
+  const std::set<browsing_topics::Topic>& GetFinchDisabledTopics();
+
+  // Get the Topics that are prioritized for top topic selection by Finch.
+  const std::set<browsing_topics::Topic>& GetFinchPrioritizedTopics();
 
   // Whether the site associated with the URL is allowed to access privacy
   // sandbox APIs within the context of |top_frame_origin|.
@@ -216,7 +222,11 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
 
   // Which topics are disabled by Finch; This is set and read by
   // GetFinchDisabledTopics.
-  std::vector<browsing_topics::Topic> finch_disabled_topics_;
+  std::set<browsing_topics::Topic> finch_disabled_topics_;
+
+  // Which topics are prioritized in top topic selection by Finch. This is set
+  // and read by GetFinchPrioritizedTopics.
+  std::set<browsing_topics::Topic> finch_prioritized_topics_;
 };
 
 }  // namespace privacy_sandbox
