@@ -148,7 +148,12 @@ class BluetoothFlossTest : public testing::Test {
         base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
           observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/true);
         }));
-    GetFakeAdapterClient()->SetAddress1Connected(true);
+    GetFakeAdapterClient()->SetConnected(
+        FakeFlossAdapterClient::kBondedAddress1, true);
+    GetFakeAdapterClient()->SetConnected(
+        FakeFlossAdapterClient::kPairedAddressBrEdr, true);
+    GetFakeAdapterClient()->SetConnected(
+        FakeFlossAdapterClient::kPairedAddressLE, true);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -240,13 +245,8 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
-  ASSERT_TRUE(device->IsConnecting());
-
-  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
-  run_loop.Run();
-
-  ASSERT_FALSE(device->IsConnecting());
   EXPECT_TRUE(device->IsPaired());
+  EXPECT_TRUE(device->IsConnected());
 }
 
 TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
@@ -283,7 +283,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
   DiscoverDevices();
 
   BluetoothDevice* device =
-      adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+      adapter_->GetDevice(FakeFlossAdapterClient::kPasskeyDisplayAddress);
   ASSERT_TRUE(device != nullptr);
   ASSERT_FALSE(device->IsPaired());
 
@@ -318,7 +318,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
   DiscoverDevices();
 
   BluetoothDevice* device =
-      adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+      adapter_->GetDevice(FakeFlossAdapterClient::kPasskeyDisplayAddress);
   ASSERT_TRUE(device != nullptr);
   ASSERT_FALSE(device->IsPaired());
 
@@ -355,7 +355,7 @@ TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
   DiscoverDevices();
 
   BluetoothDevice* device =
-      adapter_->GetDevice(FakeFlossAdapterClient::kOldDeviceAddress);
+      adapter_->GetDevice(FakeFlossAdapterClient::kPasskeyRequestAddress);
   ASSERT_TRUE(device != nullptr);
   ASSERT_FALSE(device->IsPaired());
 
@@ -588,9 +588,9 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   EXPECT_TRUE(device1->IsConnected());
   EXPECT_FALSE(device2->IsConnected());
   EXPECT_EQ(device1->GetBluetoothClass(),
-            FakeFlossAdapterClient::kHeadsetClassOfDevice);
+            FakeFlossAdapterClient::kDefaultClassOfDevice);
   EXPECT_EQ(device2->GetBluetoothClass(),
-            FakeFlossAdapterClient::kHeadsetClassOfDevice);
+            FakeFlossAdapterClient::kDefaultClassOfDevice);
   EXPECT_EQ(device1->GetType(),
             device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
   EXPECT_EQ(device2->GetType(),
@@ -624,7 +624,7 @@ TEST_F(BluetoothFlossTest, TestIsConnectable) {
   ASSERT_TRUE(device->IsConnectable());
 
   // HID devices shouldn't be connectable
-  device = adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+  device = adapter_->GetDevice(FakeFlossAdapterClient::kPasskeyDisplayAddress);
   ASSERT_TRUE(device != nullptr);
   ASSERT_FALSE(device->IsConnectable());
 }

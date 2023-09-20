@@ -92,7 +92,8 @@ class BluetoothGattFlossTest : public testing::Test {
           observer->AdapterEnabledChanged(kUseThisAdapter,
                                           /*enabled=*/true);
         }));
-    GetFakeAdapterClient()->SetAddress1Connected(true);
+    GetFakeAdapterClient()->SetConnected(
+        FakeFlossAdapterClient::kBondedAddress1, true);
     base::RunLoop().RunUntilIdle();
   }
 

@@ -5,6 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_FAKE_FLOSS_ADAPTER_CLIENT_H_
 #define DEVICE_BLUETOOTH_FLOSS_FAKE_FLOSS_ADAPTER_CLIENT_H_
 
+#include <string>
+#include <unordered_set>
+
 #include "base/logging.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
@@ -17,24 +20,38 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   FakeFlossAdapterClient();
   ~FakeFlossAdapterClient() override;
 
+  // Addresses used by unit tests.
   static const char kBondedAddress1[];
   static const char kBondedAddress2[];
   static const char kPairedAddressBrEdr[];
   static const char kPairedAddressLE[];
-  // The address of a device without Keyboard nor Display IO capability,
-  // triggering Just Works pairing when used in tests.
-  static const char kJustWorksAddress[];
-  static const char kKeyboardAddress[];
-  static const char kPhoneAddress[];
-  static const char kOldDeviceAddress[];
-  static const char kClassicAddress[];
-  static const char kPinCodeDisplayAddress[];
-  static const char kPinCodeRequestAddress[];
+  static const uint32_t kDefaultClassOfDevice;
+
+  // Addresses used by unit tests and emulator.
   static const char kClassicName[];
+  static const char kClassicAddress[];
+  static const uint32_t kClassicClassOfDevice;
+  static const char kPinCodeDisplayName[];
+  static const char kPinCodeDisplayAddress[];
+  static const uint32_t kPinCodeDisplayClassOfDevice;
+  static const char kPasskeyDisplayName[];
+  static const char kPasskeyDisplayAddress[];
+  static const uint32_t kPasskeyDisplayClassOfDevice;
+  static const char kPinCodeRequestName[];
+  static const char kPinCodeRequestAddress[];
+  static const uint32_t kPinCodeRequestClassOfDevice;
+  static const char kPhoneName[];
+  static const char kPhoneAddress[];
+  static const uint32_t kPhoneClassOfDevice;
+  static const char kPasskeyRequestName[];
+  static const char kPasskeyRequestAddress[];
+  static const uint32_t kPasskeyRequestClassOfDevice;
+  static const char kJustWorksName[];
+  static const char kJustWorksAddress[];
+  static const uint32_t kJustWorksClassOfDevice;
+
   static const uint32_t kPasskey;
   static const char kPinCode[];
-  static const uint32_t kHeadsetClassOfDevice;
-  static const uint32_t kKeyboardClassofDevice;
 
   // Fake overrides.
   void Init(dbus::Bus* bus,
@@ -48,6 +65,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void CreateBond(ResponseCallback<bool> callback,
                   FlossDeviceId device,
                   BluetoothTransport transport) override;
+  void CancelBondProcess(ResponseCallback<bool> callback,
+                         FlossDeviceId device) override;
   void RemoveBond(ResponseCallback<bool> callback,
                   FlossDeviceId device) override;
   void GetRemoteType(ResponseCallback<BluetoothDeviceType> callback,
@@ -83,8 +102,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);
 
-  // Helper for setting the connection state for kBondedAddress1.
-  void SetAddress1Connected(bool connected);
+  // Helper for setting the connection state.
+  void SetConnected(const std::string& address, bool connected);
 
   // Test utility to do fake notification to observers.
   void NotifyObservers(
@@ -94,7 +113,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void FailNextDiscovery();
 
  private:
-  bool is_address1_connected_;
+  std::unordered_set<std::string> bonded_addresses_;
+  std::unordered_set<std::string> connected_addresses_;
   absl::optional<bool> fail_discovery_;
   base::WeakPtrFactory<FakeFlossAdapterClient> weak_ptr_factory_{this};
 };
