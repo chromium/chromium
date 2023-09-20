@@ -447,10 +447,6 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
-
-    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
-    # Remove below once the issue is fixed.
-    xcode = xcode.x14main,
 )
 
 ios_builder(
