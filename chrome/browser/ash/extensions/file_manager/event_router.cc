@@ -658,15 +658,14 @@ void EventRouter::Shutdown() {
 
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
-  DriveIntegrationService* const integration_service =
-      DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (integration_service) {
-    integration_service->RemoveObserver(this);
-    integration_service->RemoveObserver(drivefs_event_router_.get());
-    integration_service->GetDriveFsHost()->RemoveObserver(
-        drivefs_event_router_.get());
-    integration_service->GetDriveFsHost()->set_dialog_handler({});
+  if (DriveIntegrationService* const service =
+          DriveIntegrationServiceFactory::FindForProfile(profile_)) {
+    drivefs::DriveFsHost* const host = service->GetDriveFsHost();
+    host->set_dialog_handler({});
+    host->RemoveObserver(drivefs_event_router_.get());
   }
+  drive_observer2_.Reset();
+  drive_observer1_.Reset();
 
   VolumeManager* const volume_manager = VolumeManager::Get(profile_);
   if (volume_manager) {
@@ -736,16 +735,14 @@ void EventRouter::ObserveEvents() {
       chromeos::PowerManagerClient::Get();
   power_manager_client->AddObserver(device_event_router_.get());
 
-  DriveIntegrationService* const integration_service =
-      DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (integration_service) {
-    integration_service->AddObserver(this);
-    integration_service->AddObserver(drivefs_event_router_.get());
-    integration_service->GetDriveFsHost()->AddObserver(
-        drivefs_event_router_.get());
-    integration_service->GetDriveFsHost()->set_dialog_handler(
-        base::BindRepeating(&EventRouter::DisplayDriveConfirmDialog,
-                            weak_factory_.GetWeakPtr()));
+  if (DriveIntegrationService* const service =
+          DriveIntegrationServiceFactory::FindForProfile(profile_)) {
+    drive_observer1_.Observe(service);
+    drive_observer2_.Observe(service);
+    drivefs::DriveFsHost* const host = service->GetDriveFsHost();
+    host->AddObserver(drivefs_event_router_.get());
+    host->set_dialog_handler(base::BindRepeating(
+        &EventRouter::DisplayDriveConfirmDialog, weak_factory_.GetWeakPtr()));
   }
 
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);

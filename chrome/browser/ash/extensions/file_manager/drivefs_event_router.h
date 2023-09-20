@@ -45,7 +45,7 @@ using IndividualFileTransferStatus =
 
 // Files app's event router handling DriveFS-related events.
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
-                           public drive::DriveIntegrationServiceObserver {
+                           public drive::DriveIntegrationService::Observer {
  public:
   DriveFsEventRouter(Profile* profile,
                      SystemNotificationManager* notification_manager);
