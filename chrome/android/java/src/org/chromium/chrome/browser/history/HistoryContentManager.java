@@ -109,6 +109,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final Observer mObserver;
     private final boolean mIsSeparateActivity;
     private final boolean mIsIncognito;
+    private final Profile mProfile;
     private final boolean mIsScrollToLoadDisabled;
     private final boolean mShouldShowClearDataIfAvailable;
     private final String mHostName;
@@ -126,7 +127,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param observer The Observer to receive updates from this manager.
      * @param isSeparateActivity Whether the history UI will be shown in a separate activity than
      *                           the main Chrome activity.
-     * @param isIncognito Whether the incognito tab model is currently selected.
+     * @param profile The Profile associated with this history.
      * @param shouldShowPrivacyDisclaimers Whether the privacy disclaimers should be shown, if
      *         available.
      * @param shouldShowClearDataIfAvailable Whether the the clear history data button should be
@@ -144,7 +145,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param historyProvider Provider of methods for querying and managing browsing history.
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
-            boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
+            boolean isSeparateActivity, Profile profile, boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearDataIfAvailable, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<Tab> tabSupplier,
@@ -153,7 +154,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
-        mIsIncognito = isIncognito;
+        mIsIncognito = profile.isOffTheRecord();
+        mProfile = profile;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
@@ -181,7 +183,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
         // explicitly redirects to use regular profile for Incognito case.
-        Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(this,
                 sProviderForTests != null ? sProviderForTests : historyProvider,
                 showHistoryToggleSupplier, toggleViewFactory);
@@ -230,9 +231,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.generateFooterItems();
 
         // Listen to changes in sign in state.
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .addSignInStateObserver(this);
+        IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(this);
 
         // Create PrefChangeRegistrar to receive notifications on preference changes.
         mPrefChangeRegistrar = new PrefChangeRegistrar();
@@ -267,9 +266,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.onDestroyed();
         mLargeIconBridge.destroy();
         mLargeIconBridge = null;
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .removeSignInStateObserver(this);
+        IdentityServicesProvider.get().getSigninManager(mProfile).removeSignInStateObserver(this);
         mPrefChangeRegistrar.destroy();
     }
 
@@ -299,9 +296,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         selectableHolder.displayItem(item);
     }
 
-    /** @return Whether to show the remove button in a HistoryItemView. */
-    boolean shouldShowRemoveItemButton() {
-        return !mSelectionDelegate.isSelectionEnabled();
+    /**
+     * @return Whether to show the remove button in a HistoryItemView.
+     */
+    int getRemoveItemButtonVisibility() {
+        if (!UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
+            return View.GONE;
+        }
+        return !mSelectionDelegate.isSelectionEnabled() ? View.VISIBLE : View.INVISIBLE;
     }
 
     /**
@@ -355,8 +357,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     boolean getShouldShowClearData() {
         return mShouldShowClearDataIfAvailable
-                && UserPrefs.get(Profile.getLastUsedRegularProfile())
-                           .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+                && UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
     }
 
     /**

@@ -165,7 +165,6 @@ public class HistoryUITest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         doReturn(1L).when(mMockLargeIconBridgeJni).init();
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
-        Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mPrefService).when(mUserPrefsJni).get(mProfile);
         doReturn(true).when(mPrefService).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
         doReturn(true).when(mPrefService).getBoolean(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
@@ -180,7 +179,7 @@ public class HistoryUITest {
             mOnBackPressedDispatcher = activity.getOnBackPressedDispatcher();
             mLifecycleOwner = activity;
         });
-        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
+        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, mProfile,
                 /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
@@ -845,7 +844,7 @@ public class HistoryUITest {
                 .when(mPrefService)
                 .isManagedPreference(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
 
-        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
+        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, mProfile,
                 /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
 
         Assert.assertNull(mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout));

@@ -31,9 +31,11 @@ public class HistoryActivity extends SnackbarActivity {
                 getIntent(), HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false);
         String historyClustersQuery = IntentUtils.safeGetStringExtra(
                 getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
-        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(), isIncognito,
+        Profile profile = Profile.getLastUsedRegularProfile();
+        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(),
+                isIncognito ? profile.getPrimaryOTRProfile(true) : profile,
                 /* Supplier<Tab>= */ null, showHistoryClustersImmediately, historyClustersQuery,
-                new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+                new BrowsingHistoryBridge(profile));
         setContentView(mHistoryManager.getView());
         if (BackPressManager.isSecondaryActivityEnabled()) {
             BackPressHelper.create(

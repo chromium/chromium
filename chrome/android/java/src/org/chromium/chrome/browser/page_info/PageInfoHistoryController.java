@@ -79,12 +79,13 @@ public class PageInfoHistoryController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert !mDelegate.isIncognito();
+        Profile profile = Profile.getLastUsedRegularProfile();
         mContentManager = new HistoryContentManager(mMainController.getActivity(), this,
                 /* isSeparateActivity */ false,
-                /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
+                /* profile */ profile, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
                 /* selectionDelegate */ null, mTabSupplier, new ObservableSupplierImpl<>(),
-                vg -> null, new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+                vg -> null, new BrowsingHistoryBridge(profile));
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }

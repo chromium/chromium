@@ -184,7 +184,7 @@ public class NativePageFactory {
         protected NativePage buildHistoryPage(Tab tab, String url) {
             return new HistoryPage(mActivity,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    mSnackbarManagerSupplier.get(), mTabModelSelector.isIncognitoSelected(),
+                    mSnackbarManagerSupplier.get(), Profile.fromWebContents(tab.getWebContents()),
                     mCurrentTabSupplier, url);
         }
 
