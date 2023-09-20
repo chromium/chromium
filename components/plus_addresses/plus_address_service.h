@@ -85,12 +85,21 @@ class PlusAddressService : public KeyedService {
   std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
       PrefService* pref_service);
 
+  // Gets the up-to-date mapping from the remote server via the
+  // PlusAddressClient and calling UpdatePlusAddressMap.
+  // This is only intended to be called by the `repeating_timer_`.
+  void SyncPlusAddressMapping();
+
+  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
+  void UpdatePlusAddressMap(const PlusAddressMap& map);
+
   // The user's existing set of plus addresses, scoped to sites.
-  PlusAddressMap plus_address_by_site_;
+  PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles`.
-  std::unordered_set<std::string> plus_addresses_;
+  std::unordered_set<std::string> plus_addresses_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores pointer to IdentityManager instance. It must outlive the
   // PlusAddressService and can be null during tests.
@@ -106,6 +115,8 @@ class PlusAddressService : public KeyedService {
 
   // Handles requests to a remote server that this service uses.
   PlusAddressClient plus_address_client_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace plus_addresses

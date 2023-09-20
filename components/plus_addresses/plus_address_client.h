@@ -45,8 +45,6 @@ class PlusAddressClient {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~PlusAddressClient();
 
-  absl::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
-
   // Initiates a request to get a plus address for use on `site` and only
   // runs `callback` with a plus address if the request to the server
   // completes successfully and returns the expected response.
@@ -65,6 +63,8 @@ class PlusAddressClient {
     access_token_info_ = info;
   }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+
+  absl::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
 
  private:
   // Initiates a network request for an OAuth token, and may only be

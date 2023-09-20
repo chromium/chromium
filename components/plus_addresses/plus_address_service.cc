@@ -4,11 +4,11 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -76,7 +76,12 @@ PlusAddressService::PlusAddressService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
       repeating_timer_(CreateTimer(pref_service)),
-      plus_address_client_(identity_manager, std::move(url_loader_factory)) {}
+      plus_address_client_(identity_manager, std::move(url_loader_factory)) {
+  // Begin PlusAddress periodic actions at construction.
+  if (repeating_timer_) {
+    repeating_timer_->Start();
+  }
+}
 
 bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
   // TODO(b/295187452): Also check `origin` here.
@@ -85,6 +90,7 @@ bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
 
 absl::optional<std::string> PlusAddressService::GetPlusAddress(
     url::Origin origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
   auto it = plus_address_by_site_.find(etld_plus_one);
   if (it == plus_address_by_site_.end()) {
@@ -95,12 +101,14 @@ absl::optional<std::string> PlusAddressService::GetPlusAddress(
 
 void PlusAddressService::SavePlusAddress(url::Origin origin,
                                          std::string plus_address) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
   plus_address_by_site_[etld_plus_one] = plus_address;
   plus_addresses_.insert(plus_address);
 }
 
 bool PlusAddressService::IsPlusAddress(std::string potential_plus_address) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_addresses_.contains(potential_plus_address);
 }
 
@@ -180,13 +188,33 @@ PlusAddressService::CreateTimer(PrefService* pref_service) {
       !kSyncWithEnterprisePlusAddressServer.Get()) {
     return nullptr;
   }
-  // TODO(b/297366364):
-  // - Make delay configurable via a Finch parameter.
-  // - Replace task with a RepeatingCallback to fetch plus addresses and update
-  //   the structures in this class.
   return std::make_unique<signin::PersistentRepeatingTimer>(
       pref_service, prefs::kPlusAddressLastFetchedTime,
       /*delay=*/kEnterprisePlusAddressTimerDelay.Get(),
-      /*task=*/base::DoNothing());
+      /*task=*/
+      base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
+                          // base::Unretained(this) is safe here since the timer
+                          // that is created has same lifetime as this service.
+                          base::Unretained(this)));
 }
+
+void PlusAddressService::SyncPlusAddressMapping() {
+  plus_address_client_.GetAllPlusAddresses(base::BindOnce(
+      &PlusAddressService::UpdatePlusAddressMap,
+      // base::Unretained is safe here since PlusAddressService owns
+      // the PlusAddressClient and they have the same lifetime.
+      base::Unretained(this)));
+}
+
+void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_enabled()) {
+    return;
+  }
+  plus_address_by_site_ = map;
+  for (const auto& [unusedKey, value] : map) {
+    plus_addresses_.insert(value);
+  }
+}
+
 }  // namespace plus_addresses
