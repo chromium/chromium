@@ -83,6 +83,30 @@ GREYElementInteraction* RequestDesktopButton() {
                                kPopupMenuToolsMenuTableViewId)];
 }
 
+void LongPressAndDragTab(NSString* moving_tab_identifier,
+                         NSString* destination_tab_identifier) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElementQuery* tab_strip =
+      [[app descendantsMatchingType:XCUIElementTypeScrollView]
+          matchingIdentifier:@"kRegularTabStripId"];
+  XCUIElement* moving_tab =
+      [[[tab_strip descendantsMatchingType:XCUIElementTypeStaticText]
+          matchingIdentifier:moving_tab_identifier] elementBoundByIndex:0];
+  XCUIElement* destination_tab =
+      [[[tab_strip descendantsMatchingType:XCUIElementTypeStaticText]
+          matchingIdentifier:destination_tab_identifier] elementBoundByIndex:0];
+
+  XCUICoordinate* start_point =
+      [moving_tab coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  XCUICoordinate* end_point =
+      [destination_tab coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+}
+
 }  // namespace
 
 // Test case for the prerender.
@@ -144,7 +168,7 @@ GREYElementInteraction* RequestDesktopButton() {
 
   static int visitCountBeforePrerender = _visitCounter;
 
-  // Type the begining of the address to have the autocomplete suggestion.
+  // Type the beginning of the address to have the autocomplete suggestion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -195,7 +219,7 @@ GREYElementInteraction* RequestDesktopButton() {
   [ChromeEarlGrey loadURL:userAgentPageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
-  // Type the begining of the address to have the autocomplete suggestion.
+  // Type the beginning of the address to have the autocomplete suggestion.
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(
@@ -239,6 +263,63 @@ GREYElementInteraction* RequestDesktopButton() {
   // The content of the page can be cached, check the button also.
   [ChromeEarlGreyUI openToolsMenu];
   [RequestDesktopButton() assertWithMatcher:grey_notNil()];
+}
+
+// Regression test for crbug.com/1477499. Tests that a pre-rendered tab doesn't
+// lead to an incorrect data source, as can be seen after moving it in the tab
+// strip.
+- (void)testMovePrerenderedTabInTabStrip {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPhone. The test makes use of the tab strip.");
+  }
+
+  // Do the steps to add a URL to the history to make it available via inline
+  // autocomplete.
+  [self addURLToHistory];
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+  NSString* pageString = base::SysUTF8ToNSString(pageURL.GetContent());
+
+  static int visitCountBeforePrerender = _visitCounter;
+
+  // Load the UserAgent page.
+  const GURL userAgentPageURL = self.testServer->GetURL(kUserAgentPageURL);
+  [ChromeEarlGrey loadURL:userAgentPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
+
+  // Type the beginning of the address to have the autocomplete suggestion.
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(
+                        [pageString substringToIndex:[pageString length] - 6])];
+
+  // Wait until prerender request reaches the server.
+  bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return self->_visitCounter == visitCountBeforePrerender + 1;
+  });
+  GREYAssertTrue(prerendered, @"Prerender did not happen");
+
+  // Open the suggestion. The suggestion needs to be the first suggestion to
+  // have the prerenderer activated.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(pageString),
+                                   grey_kindOfClassName(@"FadeTruncatingLabel"),
+                                   grey_ancestor(grey_accessibilityID(
+                                       @"omnibox suggestion 0 0")),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+
+  GREYAssertEqual(visitCountBeforePrerender + 1, _visitCounter,
+                  @"Prerender should have been the last load");
+
+  // Open another tab.
+  [ChromeEarlGrey openNewTab];
+
+  // Then move the tab that got prerendered to a different position.
+  LongPressAndDragTab([NSString stringWithUTF8String:kPageTitle], @"New Tab");
 }
 
 @end
