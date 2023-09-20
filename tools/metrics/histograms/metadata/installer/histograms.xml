@@ -69,8 +69,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Installer.Postinstall.EfiBootFailedLoad" units="entries"
-    expires_after="2023-10-01">
+<histogram name="Installer.Postinstall.EfiBootEntryFailedLoad" units="entries"
+    expires_after="2024-03-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
