@@ -635,7 +635,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   const auto output_tensor_desc =
       GetOutputTensorDesc(operation, id_to_operand_map);
 
-  absl::optional<TensorDesc> input_c_tensor_desc = absl::nullopt;
+  absl::optional<TensorDesc> input_c_tensor_desc;
   CHECK(operation->attributes);
   auto& gemm_attributes = operation->attributes->get_gemm();
   CHECK(gemm_attributes);
@@ -656,29 +656,16 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
     // Ensure the graph edge for c operand will be created.
     input_node_output_infos.push_back(input_c_node_output_info);
 
-    // TODO(crbug.com/1471201): Support broadcasting for C.
-    auto input_c_shape = input_c_tensor_desc->GetDimensions();
-    if (input_c_shape.size() < 2) {
-      return base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kNotSupportedError,
-          "Broadcasting is not supported for gemm operator."));
-    }
-
-    auto output_shape = output_tensor_desc.GetDimensions();
-    CHECK_EQ(output_shape.size(), input_c_shape.size());
-
-    if (output_shape[0] != input_c_shape[0] ||
-        output_shape[1] != input_c_shape[1]) {
-      return base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kNotSupportedError,
-          "Broadcasting is not supported for gemm operator."));
+    auto output_dimensions = output_tensor_desc.GetDimensions();
+    if (input_c_tensor_desc->GetDimensions() != output_dimensions) {
+      input_c_tensor_desc->BroadcastTo(output_dimensions);
     }
   }
 
   DML_GEMM_OPERATOR_DESC gemm_operator_desc{
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
-      .CTensor = (input_c_tensor_desc.has_value())
+      .CTensor = input_c_tensor_desc.has_value()
                      ? &input_c_tensor_desc->GetDMLTensorDesc()
                      : nullptr,
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),

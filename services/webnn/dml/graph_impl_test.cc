@@ -541,52 +541,128 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoOutputs) {
   EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
 }
 
+struct GemmTester {
+  mojom::Operator::Kind kind;
+  OperandInfo input_a;
+  OperandInfo input_b;
+  struct GemmAttributes {
+    absl::optional<OperandInfo> input_c;
+    float alpha = 1.0;
+    float beta = 1.0;
+    bool a_transpose = false;
+    bool b_transpose = false;
+  };
+  GemmAttributes attributes;
+  OperandInfo output;
+
+  void Test(WebNNGraphDMLImplTest& helper) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_a_operand_id =
+        builder.BuildInput("input_a", input_a.dimensions, input_a.type);
+    uint64_t input_b_operand_id =
+        builder.BuildInput("input_b", input_b.dimensions, input_b.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    mojom::GemmAttributesPtr mojom_attributes = mojom::GemmAttributes::New();
+    if (attributes.input_c.has_value()) {
+      mojom_attributes->c_operand_id = builder.BuildInput(
+          "input_c", attributes.input_c->dimensions, attributes.input_c->type);
+    }
+    mojom_attributes->alpha = attributes.alpha;
+    mojom_attributes->beta = attributes.beta;
+    mojom_attributes->a_transpose = attributes.a_transpose;
+    mojom_attributes->b_transpose = attributes.b_transpose;
+
+    builder.BuildOperator(
+        mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
+        {output_operand_id},
+        mojom::OperatorAttributes::NewGemm(std::move(mojom_attributes)));
+    EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+    EXPECT_TRUE(helper.CreateAndBuildGraph(builder.GetGraphInfo()));
+  }
+};
+
 // Test building a DML graph with single operator gemm.
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
   // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
   // DML_FEATURE_LEVEL_4_0.
   SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
-  // Build the mojom graph info.
-  GraphInfoBuilder builder;
-  uint64_t input_a_operand_id =
-      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
-  uint64_t input_b_operand_id =
-      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
-  uint64_t output_operand_id =
-      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
-  mojom::GemmAttributesPtr attributes = mojom::GemmAttributes::New();
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
-      {output_operand_id},
-      mojom::OperatorAttributes::NewGemm(std::move(attributes)));
-  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
-}
 
-// Test building a DML graph with single operator gemm but with a third input.
-TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemmWithThirdInput) {
-  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-  // DML_FEATURE_LEVEL_4_0.
-  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
-  // Build the mojom graph info.
-  GraphInfoBuilder builder;
-  uint64_t input_a_operand_id =
-      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat16);
-  uint64_t input_b_operand_id =
-      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat16);
-  uint64_t output_operand_id =
-      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat16);
-  mojom::GemmAttributesPtr attributes = mojom::GemmAttributes::New();
-  attributes->c_operand_id =
-      builder.BuildInput("c", {2, 2}, mojom::Operand::DataType::kFloat16);
-  attributes->alpha = 1.0f;
-  attributes->beta = 0.0f;
-  attributes->a_transpose = true;
-  attributes->b_transpose = true;
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {input_a_operand_id, input_b_operand_id},
-      {output_operand_id},
-      mojom::OperatorAttributes::NewGemm(std::move(attributes)));
-  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+  // Test building a DML graph with single operator gemm.
+  {
+    GemmTester{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 2}},
+               .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 2}},
+               .output = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 2}}}
+        .Test(*this);
+  }
+
+  // Test gemm with a third input.
+  {
+    GemmTester{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .attributes = {.input_c =
+                           OperandInfo{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 2}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2}}}
+        .Test(*this);
+  }
+
+  // Test broadcasting the third input's dimensions from  {1,2} to {2,2}.
+  {
+    GemmTester{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .attributes = {.input_c =
+                           OperandInfo{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 2}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2}}}
+        .Test(*this);
+  }
+
+  // Test broadcasting the third input's dimensions from  {2,1} to {2,2}.
+  {
+    GemmTester{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .attributes = {.input_c =
+                           OperandInfo{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2}}}
+        .Test(*this);
+  }
+
+  // Test gemm with a third input which is a scalar.
+  {
+    GemmTester{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2}},
+        .attributes = {.input_c =
+                           OperandInfo{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2}}}
+        .Test(*this);
+  }
 }
 
 // Test building a DML graph with three gemm operations.
