@@ -71,4 +71,42 @@ void {{class_name}}::{{method.name}}(
 {%- endfor %});
 }
 
+  // AddBinder() methods:
+{%- for method in webui_js_bridge.methods -%}
+{%-  if method|is_receiver_and_remote_binder %}
+{%-    set receiver_interface = method.parameters[0].kind|interface_name  -%}
+{%-    set remote_interface = method.parameters[1].kind|interface_name  -%}
+{%-    set binder_name = method|binder_variable_name %}
+  template <>
+  {{binder_initializer_name}}& {{binder_initializer_name}}::AddBinder<
+    {{-receiver_interface}}, {{remote_interface}}>(
+      ReceiverAndRemoteBinder<{{receiver_interface}}, {{remote_interface}}>
+      {{binder_name}}) {
+    CHECK(!{{binder_name}}_);
+    {{binder_name}}_ = {{binder_name}};
+    return *this;
+  }
+{%   elif method|is_receiver_only_binder %}
+{%-    set receiver_interface = method.parameters[0].kind|interface_name  -%}
+{%-    set binder_name = method|binder_variable_name %}
+  template <>
+  {{binder_initializer_name}}& {{binder_initializer_name}}::AddBinder<{{receiver_interface}}>(
+      ReceiverBinder<{{receiver_interface}}> {{binder_name}}) {
+    CHECK(!{{binder_name}}_);
+    {{binder_name}}_ = {{binder_name}};
+    return *this;
+  }
+{%   else %}
+{%-    set remote_interface = method.parameters[0].kind|interface_name  -%}
+{%-    set binder_name = method|binder_variable_name %}
+  template <>
+  {{binder_initializer_name}}& {{binder_initializer_name}}::AddBinder<{{remote_interface}}>(
+      RemoteBinder<{{remote_interface}}> {{binder_name}}) {
+    CHECK(!{{binder_name}}_);
+    {{binder_name}}_ = {{binder_name}};
+    return *this;
+  }
+{%-  endif %}
+{%- endfor %}
+
 }  // {{module.namespace}}
