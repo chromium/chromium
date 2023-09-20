@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -162,7 +161,6 @@ std::unique_ptr<AnimationWorkletOutput> AnimationWorkletProxyClient::Mutate(
   if (state_ == RunState::kDisposed)
     return output;
 
-  base::ElapsedTimer timer;
   DCHECK(input);
 #if DCHECK_IS_ON()
   DCHECK(input->ValidateId(worklet_id_))
@@ -178,11 +176,6 @@ std::unique_ptr<AnimationWorkletOutput> AnimationWorkletProxyClient::Mutate(
 
   global_scope->UpdateAnimators(*input, output.get(),
                                 [](Animator* animator) { return true; });
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Animation.AnimationWorklet.MutateDuration", timer.Elapsed(),
-      base::Microseconds(1), base::Seconds(10), 50);
-
   return output;
 }
 

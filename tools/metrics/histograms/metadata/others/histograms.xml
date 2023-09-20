@@ -1192,23 +1192,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Animation.AnimationWorklet.MutateDuration"
-    units="microseconds" expires_after="2021-01-01">
-  <owner>majidvp@chromium.org</owner>
-  <owner>kevers@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
-  <summary>
-    The time it takes for an AnimationWorklet to produce a mutation update. This
-    includes all V8 script execution cost.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="AsyncDNS.ConfigChange" enum="BooleanSuccess"
     expires_after="M77">
   <obsolete>
