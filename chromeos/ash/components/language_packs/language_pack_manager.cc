@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/language_packs/handwriting.h"
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -409,7 +410,9 @@ void LanguagePackManager::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
   // As of now, we only have Handwriting as a client.
   // We will check the full list once we have more than one DLC.
-  if (dlc_state.id() != kHandwritingFeatureId) {
+  const absl::optional<std::string> handwriting_locale =
+      DlcToHandwritingLocale(dlc_state.id());
+  if (!handwriting_locale.has_value()) {
     return;
   }
 

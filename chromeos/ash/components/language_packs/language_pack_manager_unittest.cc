@@ -71,11 +71,11 @@ class MockObserver : public LanguagePackManager::Observer {
 };
 
 // Utility function that creates a DlcState with no error, populated with id
-// and path.
+// corresponding to German handwriting recognition and path.
 DlcState CreateInstalledState() {
   DlcState output;
   output.set_state(dlcservice::DlcState_State_INSTALLED);
-  output.set_id(kHandwritingFeatureId);
+  output.set_id("handwriting-de");
   output.set_root_path("/path");
   return output;
 }
