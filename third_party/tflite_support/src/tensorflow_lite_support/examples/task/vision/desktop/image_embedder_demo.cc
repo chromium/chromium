@@ -106,22 +106,22 @@ StatusOr<std::unique_ptr<FrameBuffer>> BuildFrameBufferFromImageData(
 absl::Status ComputeCosineSimilarity() {
   // Build ImageEmbedder.
   const ImageEmbedderOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageEmbedder> image_embedder,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageEmbedder> image_embedder,
                    ImageEmbedder::CreateFromOptions(options));
 
   // Load images into FrameBuffer objects.
-  ASSIGN_OR_RETURN(ImageData first_image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData first_image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_first_image_path)));
-  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> first_frame_buffer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> first_frame_buffer,
                    BuildFrameBufferFromImageData(first_image));
-  ASSIGN_OR_RETURN(ImageData second_image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData second_image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_second_image_path)));
-  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> second_frame_buffer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> second_frame_buffer,
                    BuildFrameBufferFromImageData(second_image));
 
   // Extract feature vectors.
   auto start_embed = steady_clock::now();
-  ASSIGN_OR_RETURN(const EmbeddingResult& first_embedding_result,
+  TFLITE_ASSIGN_OR_RETURN(const EmbeddingResult& first_embedding_result,
                    image_embedder->Embed(*first_frame_buffer));
   auto end_embed = steady_clock::now();
   std::string delegate =
@@ -131,10 +131,10 @@ absl::Status ComputeCosineSimilarity() {
                    .count()
             << " ms" << std::endl;
 
-  ASSIGN_OR_RETURN(const EmbeddingResult& second_embedding_result,
+  TFLITE_ASSIGN_OR_RETURN(const EmbeddingResult& second_embedding_result,
                    image_embedder->Embed(*second_frame_buffer));
   // Compute cosine similarity.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       double cosine_similarity,
       ImageEmbedder::CosineSimilarity(
           image_embedder->GetEmbeddingByIndex(first_embedding_result, 0)

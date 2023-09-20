@@ -399,16 +399,16 @@ class PostprocessTest : public tflite::testing::Test {
 
     static StatusOr<std::unique_ptr<TestObjectDetector>> CreateFromOptions(
         const ObjectDetectorOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto object_detector,
           TaskAPIFactory::CreateFromExternalFileProto<TestObjectDetector>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
 
       return object_detector;
     }
@@ -459,7 +459,7 @@ class PostprocessTest : public tflite::testing::Test {
         /*left=*/0.2, /*top=*/0.4, /*right=*/0.4, /*bottom=*/0.8};
     // Pad with zeros to fill the 10 locations.
     locations_data.resize(4 * 10);
-    RETURN_IF_ERROR(PopulateTensor(locations_data, locations));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(locations_data, locations));
     result.push_back(locations);
 
     TfLiteTensor* classes = output_tensors[1];
@@ -467,19 +467,19 @@ class PostprocessTest : public tflite::testing::Test {
                                        /*motorcycle*/ 3};
     // Pad with zeros to fill the 10 classes.
     classes_data.resize(10);
-    RETURN_IF_ERROR(PopulateTensor(classes_data, classes));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(classes_data, classes));
     result.push_back(classes);
 
     TfLiteTensor* scores = output_tensors[2];
     std::vector<float> scores_data = {0.8, 0.6, 0.4};
     // Pad with zeros to fill the 10 scores.
     scores_data.resize(10);
-    RETURN_IF_ERROR(PopulateTensor(scores_data, scores));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(scores_data, scores));
     result.push_back(scores);
 
     TfLiteTensor* num_results = output_tensors[3];
     std::vector<float> num_results_data = {10};
-    RETURN_IF_ERROR(PopulateTensor(num_results_data, num_results));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(num_results_data, num_results));
     result.push_back(num_results);
 
     return result;

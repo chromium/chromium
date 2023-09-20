@@ -51,7 +51,7 @@ absl::Status Classify() {
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
 
-  ASSIGN_OR_RETURN(std::unique_ptr<NLClassifier> classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<NLClassifier> classifier,
                    NLClassifier::CreateFromOptions(options));
 
   auto start_classify = steady_clock::now();

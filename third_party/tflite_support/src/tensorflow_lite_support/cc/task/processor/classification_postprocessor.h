@@ -107,7 +107,7 @@ absl::Status ClassificationPostprocessor::Postprocess(T* classifications) {
 
   const TfLiteTensor* output_tensor = GetTensor();
   if (output_tensor->type == kTfLiteUInt8) {
-    ASSIGN_OR_RETURN(const uint8* output_data,
+    TFLITE_ASSIGN_OR_RETURN(const uint8* output_data,
                      core::AssertAndReturnTypedTensor<uint8>(output_tensor));
     for (int j = 0; j < head.label_map_items.size(); ++j) {
       score_pairs.emplace_back(
@@ -115,7 +115,7 @@ absl::Status ClassificationPostprocessor::Postprocess(T* classifications) {
                                             output_tensor->params.zero_point));
     }
   } else {
-    ASSIGN_OR_RETURN(const float* output_data,
+    TFLITE_ASSIGN_OR_RETURN(const float* output_data,
                      core::AssertAndReturnTypedTensor<float>(output_tensor));
     for (int j = 0; j < head.label_map_items.size(); ++j) {
       score_pairs.emplace_back(j, output_data[j]);

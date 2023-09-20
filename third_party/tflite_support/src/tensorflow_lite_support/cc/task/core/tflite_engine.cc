@@ -111,7 +111,7 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
     }
   }
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       model_metadata_extractor_,
       tflite::metadata::ModelMetadataExtractor::CreateFromModelBuffer(
           buffer_data, buffer_size));
@@ -128,7 +128,7 @@ absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
   }
   external_file_ = std::make_unique<ExternalFile>();
   external_file_->set_file_content(std::string(buffer_data, buffer_size));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       model_file_handler_,
       ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
   return InitializeFromModelFileHandler(compute_settings);
@@ -145,7 +145,7 @@ absl::Status TfLiteEngine::BuildModelFromFile(
     external_file_ = std::make_unique<ExternalFile>();
   }
   external_file_->set_file_name(file_name);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       model_file_handler_,
       ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
   return InitializeFromModelFileHandler(compute_settings);
@@ -162,7 +162,7 @@ absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
     external_file_ = std::make_unique<ExternalFile>();
   }
   external_file_->mutable_file_descriptor_meta()->set_fd(file_descriptor);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       model_file_handler_,
       ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
   return InitializeFromModelFileHandler(compute_settings);
@@ -175,7 +175,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
     return CreateStatusWithPayload(StatusCode::kInternal,
                                    "Model already built");
   }
-  ASSIGN_OR_RETURN(model_file_handler_,
+  TFLITE_ASSIGN_OR_RETURN(model_file_handler_,
                    ExternalFileHandler::CreateFromExternalFile(external_file));
   return InitializeFromModelFileHandler(compute_settings);
 }
@@ -187,7 +187,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
                                    "Model already built");
   }
   external_file_ = std::move(external_file);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       model_file_handler_,
       ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
   // Dummy proto. InitializeFromModelFileHandler doesn't use this proto.

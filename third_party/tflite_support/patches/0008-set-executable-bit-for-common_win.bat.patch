@@ -1,7 +1,7 @@
-From 88e68a455e4b389465945f289e6f1509776585fd Mon Sep 17 00:00:00 2001
+From f87f7f918768199d2a7ce09f35832bd1e47a99f5 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:39 -0800
-Subject: [PATCH 8/9] set executable bit for common_win.bat
+Subject: [PATCH 08/10] set executable bit for common_win.bat
 
 ---
  .../src/tensorflow_lite_support/tools/ci_build/common_win.bat     | 0

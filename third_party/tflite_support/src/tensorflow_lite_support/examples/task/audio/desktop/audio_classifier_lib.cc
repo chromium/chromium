@@ -41,7 +41,7 @@ tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
   uint32 decoded_sample_count;
   uint16 decoded_channel_count;
   uint32 decoded_sample_rate;
-  RETURN_IF_ERROR(DecodeLin16WaveAsFloatVector(
+  TFLITE_RETURN_IF_ERROR(DecodeLin16WaveAsFloatVector(
       contents, wav_data, offset, &decoded_sample_count, &decoded_channel_count,
       &decoded_sample_rate));
 
@@ -66,19 +66,19 @@ tflite::support::StatusOr<ClassificationResult> Classify(
         ->mutable_tflite_settings()
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
-  ASSIGN_OR_RETURN(std::unique_ptr<AudioClassifier> classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<AudioClassifier> classifier,
                    AudioClassifier::CreateFromOptions(options));
 
   // `wav_data` holds data loaded from the file and needs to outlive `buffer`.
   std::vector<float> wav_data;
   uint32_t offset = 0;
   uint32_t buffer_size = classifier->GetRequiredInputBufferSize();
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       AudioBuffer buffer,
       LoadAudioBufferFromFile(wav_file, &buffer_size, &offset, &wav_data));
 
   auto start_classify = std::chrono::steady_clock::now();
-  ASSIGN_OR_RETURN(ClassificationResult result, classifier->Classify(buffer));
+  TFLITE_ASSIGN_OR_RETURN(ClassificationResult result, classifier->Classify(buffer));
   auto end_classify = std::chrono::steady_clock::now();
   std::string delegate = use_coral ? "Coral Edge TPU" : "CPU";
   const auto duration_ms =

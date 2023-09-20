@@ -47,7 +47,7 @@ namespace {
 // Supported output format includes RGB24 and YV21.
 absl::Status ConvertFromNv12(const FrameBuffer& buffer,
                              FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   switch (output_buffer->format()) {
     case FrameBuffer::Format::kRGB: {
@@ -83,7 +83,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::NV12ToI420(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
@@ -100,13 +100,13 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
                         const_cast<uint8*>(output_data.y_buffer),
                         output_data.y_row_stride, buffer.dimension().width,
                         buffer.dimension().height);
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::SwapUVPlane(yuv_data.u_buffer, yuv_data.uv_row_stride,
@@ -134,7 +134,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
 // Supported output format includes RGB24 and YV21.
 absl::Status ConvertFromNv21(const FrameBuffer& buffer,
                              FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   switch (output_buffer->format()) {
     case FrameBuffer::Format::kRGB: {
@@ -170,7 +170,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::NV21ToI420(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.v_buffer,
@@ -187,13 +187,13 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV12: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
                         const_cast<uint8*>(output_data.y_buffer),
                         output_data.y_row_stride, buffer.dimension().width,
                         buffer.dimension().height);
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::SwapUVPlane(yuv_data.v_buffer, yuv_data.uv_row_stride,
@@ -224,7 +224,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
 // Supported output format includes RGB24, NV12, and NV21.
 absl::Status ConvertFromYv(const FrameBuffer& buffer,
                            FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   switch (output_buffer->format()) {
     case FrameBuffer::Format::kRGB: {
@@ -259,7 +259,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV12: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::I420ToNV12(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
@@ -275,7 +275,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::I420ToNV21(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
@@ -300,9 +300,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_yuv_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_yuv_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
@@ -333,9 +333,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
 absl::Status ResizeYv(
     const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // TODO(b/151217096): Choose the optimal image resizing filter to optimize
   // the model inference performance.
@@ -360,9 +360,9 @@ absl::Status ResizeYv(
 absl::Status ResizeNv(
     const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   const uint8* src_uv = input_data.u_buffer;
   const uint8* dst_uv = output_data.u_buffer;
@@ -391,7 +391,7 @@ absl::Status ResizeNv(
 // in `dest_argb`.
 absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
                               int dest_stride_argb) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGB) {
     return CreateStatusWithPayload(StatusCode::kInternal,
                                    "RGB input format is expected.",
@@ -428,7 +428,7 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
 // stores the conversion result in `output_buffer`.
 absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
                               FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
   if (output_buffer->format() != FrameBuffer::Format::kRGB) {
     return absl::InternalError("RGB input format is expected.");
   }
@@ -464,7 +464,7 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
 // memory) format and stores the conversion result in `dest_argb`.
 absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8* dest_argb,
                                int dest_stride_argb) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGBA) {
     return CreateStatusWithPayload(
         StatusCode::kInternal, "RGBA input format is expected.",
@@ -529,15 +529,15 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
         output_buffer->format() == FrameBuffer::Format::kNV21) {
       tmp_yuv_buffer = absl::make_unique<uint8[]>(
           GetFrameBufferByteSize(buffer.dimension(), output_buffer->format()));
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           yuv_frame_buffer,
           CreateFromRawBuffer(tmp_yuv_buffer.get(), buffer.dimension(),
                               FrameBuffer::Format::kYV21,
                               output_buffer->orientation()));
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           yuv_data, FrameBuffer::GetYuvDataFromFrameBuffer(*yuv_frame_buffer));
     } else {
-      ASSIGN_OR_RETURN(yuv_data,
+      TFLITE_ASSIGN_OR_RETURN(yuv_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
     }
     int ret = libyuv::RAWToI420(
@@ -592,7 +592,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                                                     FrameBuffer::Format::kRGBA);
       auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
       const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           ConvertRgbaToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
       // Convert ARGB to kGRAY
@@ -609,7 +609,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV12: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToNV12(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
@@ -624,7 +624,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       break;
     }
     case FrameBuffer::Format::kNV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToNV21(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
@@ -640,7 +640,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToI420(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
@@ -729,7 +729,7 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
   auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
-  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
+  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
   // Rotate ARGB
   auto argb_rotated_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
@@ -776,9 +776,9 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
 // Rotates YV12/YV21 frame buffer.
 absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
                       FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   int ret = libyuv::I420Rotate(
       input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
@@ -807,19 +807,19 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
                                    "kNV12 or kNV21 input formats are expected.",
                                    TfLiteSupportStatus::kImageProcessingError);
   }
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   const int rotated_buffer_size = GetFrameBufferByteSize(
       output_buffer->dimension(), FrameBuffer::Format::kYV21);
   auto rotated_yuv_raw_buffer = absl::make_unique<uint8[]>(rotated_buffer_size);
-  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
                    CreateFromRawBuffer(
                        rotated_yuv_raw_buffer.get(), output_buffer->dimension(),
                        /*target_format=*/FrameBuffer::Format::kYV21,
                        output_buffer->orientation()));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData rotated_yuv_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData rotated_yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*rotated_yuv_buffer));
   // Get the first chroma plane and use it as the u plane. This is a workaround
   // for optimizing NV21 rotation. For NV12, the implementation is logical
@@ -875,7 +875,7 @@ absl::Status FlipPlaneVertically(const FrameBuffer& buffer,
         TfLiteSupportStatus::kImageProcessingError);
   }
 
-  ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
+  TFLITE_ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
 
   // Flip vertically is achieved by passing in negative height.
   libyuv::CopyPlane(buffer.plane(0).buffer,
@@ -899,7 +899,7 @@ absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
         TfLiteSupportStatus::kImageProcessingError);
   }
 
-  ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
+  TFLITE_ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
   FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
 
   // Cropping is achieved by adjusting origin to (x0, y0).
@@ -919,9 +919,9 @@ absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
 // position (x0, y0) and the bottom right pixel position (x1, y1).
 absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // Crop Y plane by copying the buffer with the origin offset to (x0, y0).
   int crop_offset_y = input_data.y_row_stride * y0 + x0;
@@ -937,8 +937,8 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
   // bounding box with odd X or Y starting positions.
   int crop_offset_chroma = input_data.uv_row_stride * (y0 / 2) +
                            input_data.uv_pixel_stride * (x0 / 2);
-  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
   libyuv::CopyPlane(
       input_chroma_buffer + crop_offset_chroma, input_data.uv_row_stride,
@@ -951,9 +951,9 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
 // position (x0, y0) and the bottom right pixel position (x1, y1).
 absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // Crop Y plane by copying the buffer with the origin offset to (x0, y0).
   int crop_offset_y = input_data.y_row_stride * y0 + x0;
@@ -964,7 +964,7 @@ absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
       crop_dimension.width, crop_dimension.height);
   // Crop U plane by copying the buffer with the origin offset to
   // (x0 / 2, y0 / 2).
-  ASSIGN_OR_RETURN(const FrameBuffer::Dimension crop_uv_dimension,
+  TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension crop_uv_dimension,
                    GetUvPlaneDimension(crop_dimension, buffer.format()));
   // TODO(b/152629712): Investigate the impact of color shifting caused by the
   // bounding box with odd X or Y starting positions.
@@ -1002,7 +1002,7 @@ absl::Status CropResizeYuv(const FrameBuffer& buffer, int x0, int y0, int x1,
             TfLiteSupportStatus::kImageProcessingError);
     }
   }
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   // Cropping YUV planes by offsetting the origins of each plane.
   // TODO(b/152629712): Investigate the impact of color shifting caused by the
@@ -1119,7 +1119,7 @@ absl::Status ResizeRgb(
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
   auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
-  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
+  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
   // Resize ARGB
   int resized_argb_buffer_size = GetFrameBufferByteSize(
@@ -1201,12 +1201,12 @@ absl::Status ResizeRgba(
 // Flips NV12/NV21 FrameBuffer horizontally.
 absl::Status FlipHorizontallyNv(const FrameBuffer& buffer,
                                 FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
-  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
 
   int ret = libyuv::NV12Mirror(
@@ -1228,9 +1228,9 @@ absl::Status FlipHorizontallyNv(const FrameBuffer& buffer,
 // Flips YV12/YV21 FrameBuffer horizontally.
 absl::Status FlipHorizontallyYv(const FrameBuffer& buffer,
                                 FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   int ret = libyuv::I420Mirror(
       input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
@@ -1251,9 +1251,9 @@ absl::Status FlipHorizontallyYv(const FrameBuffer& buffer,
 // Flips NV12/NV21 FrameBuffer vertically.
 absl::Status FlipVerticallyNv(const FrameBuffer& buffer,
                               FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // Flip Y plane vertically by passing a negative height.
   libyuv::CopyPlane(input_data.y_buffer, input_data.y_row_stride,
@@ -1261,10 +1261,10 @@ absl::Status FlipVerticallyNv(const FrameBuffer& buffer,
                     output_data.y_row_stride, buffer.dimension().width,
                     -output_buffer->dimension().height);
   // Flip UV plane vertically by passing a negative height.
-  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
-  ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_plane_dimension,
+  TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_plane_dimension,
                    GetUvPlaneDimension(buffer.dimension(), buffer.format()));
   libyuv::CopyPlane(
       input_chroma_buffer, input_data.uv_row_stride,
@@ -1276,9 +1276,9 @@ absl::Status FlipVerticallyNv(const FrameBuffer& buffer,
 // Flips NV12/NV21 FrameBuffer vertically.
 absl::Status FlipVerticallyYv(const FrameBuffer& buffer,
                               FrameBuffer* output_buffer) {
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // Flip buffer vertically by passing a negative height.
   int ret = libyuv::I420Copy(
@@ -1326,7 +1326,7 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
     return CropPlane(buffer, x0, y0, x1, y1, output_buffer);
   }
 
-  ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
+  TFLITE_ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
   // Cropping is achieved by adjusting origin to (x0, y0).
   int adjusted_offset =
       buffer.plane(0).stride.row_stride_bytes * y0 + x0 * pixel_stride;
@@ -1357,11 +1357,11 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
 absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
                                           int y0, int x1, int y1,
                                           FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
+  TFLITE_RETURN_IF_ERROR(
       ValidateCropBufferInputs(buffer, *output_buffer, x0, y0, x1, y1));
-  RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
 
   switch (buffer.format()) {
     case FrameBuffer::Format::kRGBA:
@@ -1383,7 +1383,7 @@ absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
 
 absl::Status LibyuvFrameBufferUtils::Resize(const FrameBuffer& buffer,
                                             FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
   switch (buffer.format()) {
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21:
@@ -1407,7 +1407,7 @@ absl::Status LibyuvFrameBufferUtils::Resize(const FrameBuffer& buffer,
 
 absl::Status LibyuvFrameBufferUtils::ResizeNearestNeighbor(
     const FrameBuffer& buffer, FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
   switch (buffer.format()) {
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21:
@@ -1432,11 +1432,11 @@ absl::Status LibyuvFrameBufferUtils::ResizeNearestNeighbor(
 absl::Status LibyuvFrameBufferUtils::Rotate(const FrameBuffer& buffer,
                                             int angle_deg,
                                             FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       ValidateRotateBufferInputs(buffer, *output_buffer, angle_deg));
-  RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
 
   switch (buffer.format()) {
     case FrameBuffer::Format::kGRAY:
@@ -1461,10 +1461,10 @@ absl::Status LibyuvFrameBufferUtils::Rotate(const FrameBuffer& buffer,
 
 absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
     const FrameBuffer& buffer, FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
-  RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
-  RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
 
   switch (buffer.format()) {
     case FrameBuffer::Format::kRGBA:
@@ -1489,10 +1489,10 @@ absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
 
 absl::Status LibyuvFrameBufferUtils::FlipVertically(
     const FrameBuffer& buffer, FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
-  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
-  RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
-  RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormats(buffer, *output_buffer));
 
   switch (buffer.format()) {
     case FrameBuffer::Format::kRGBA:
@@ -1515,7 +1515,7 @@ absl::Status LibyuvFrameBufferUtils::FlipVertically(
 
 absl::Status LibyuvFrameBufferUtils::Convert(const FrameBuffer& buffer,
                                              FrameBuffer* output_buffer) {
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       ValidateConvertFormats(buffer.format(), output_buffer->format()));
   switch (buffer.format()) {
     case FrameBuffer::Format::kNV12:

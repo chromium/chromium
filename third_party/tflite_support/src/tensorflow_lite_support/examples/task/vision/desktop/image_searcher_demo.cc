@@ -106,11 +106,11 @@ void DisplayResult(const processor::SearchResult& result) {
 absl::Status Search() {
   // Build ImageSearcher.
   const ImageSearcherOptions options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageSearcher> image_searcher,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageSearcher> image_searcher,
                    ImageSearcher::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -127,7 +127,7 @@ absl::Status Search() {
 
   // Run search and display results.
   auto start_search = steady_clock::now();
-  ASSIGN_OR_RETURN(processor::SearchResult result,
+  TFLITE_ASSIGN_OR_RETURN(processor::SearchResult result,
                    image_searcher->Search(*frame_buffer));
   auto end_search = steady_clock::now();
   std::string delegate =

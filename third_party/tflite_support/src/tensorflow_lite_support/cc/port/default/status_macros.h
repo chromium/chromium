@@ -25,11 +25,11 @@ limitations under the License.
 //
 // For example:
 //   absl::Status MultiStepFunction() {
-//      RETURN_IF_ERROR(Function(args...));
-//      RETURN_IF_ERROR(foo.Method(args...));
+//      TFLITE_RETURN_IF_ERROR(Function(args...));
+//      TFLITE_RETURN_IF_ERROR(foo.Method(args...));
 //     return absl::OkStatus();
 //   }
-#define RETURN_IF_ERROR(expr)                                          \
+#define TFLITE_RETURN_IF_ERROR(expr)                                          \
   TFLITE_STATUS_MACROS_IMPL_ELSE_BLOCKER_                              \
   if (::tflite::support::status_macro_internal::StatusAdaptorForMacros \
           status_macro_internal_adaptor = {(expr)}) {                  \
@@ -49,8 +49,8 @@ limitations under the License.
 //
 // Interface:
 //
-//   ASSIGN_OR_RETURN(lhs, rexpr)
-//   ASSIGN_OR_RETURN(lhs, rexpr, error_expression);
+//   TFLITE_ASSIGN_OR_RETURN(lhs, rexpr)
+//   TFLITE_ASSIGN_OR_RETURN(lhs, rexpr, error_expression);
 //
 // WARNING: if lhs is parenthesized, the parentheses are removed. See examples
 // for more details.
@@ -60,35 +60,35 @@ limitations under the License.
 //
 // Example: Declaring and initializing a new variable (ValueType can be anything
 //          that can be initialized with assignment, including references):
-//   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(arg));
+//   TFLITE_ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(arg));
 //
 // Example: Assigning to an existing variable:
 //   ValueType value;
-//   ASSIGN_OR_RETURN(value, MaybeGetValue(arg));
+//   TFLITE_ASSIGN_OR_RETURN(value, MaybeGetValue(arg));
 //
 // Example: Assigning to an expression with side effects:
 //   MyProto data;
-//   ASSIGN_OR_RETURN(*data.mutable_str(), MaybeGetValue(arg));
+//   TFLITE_ASSIGN_OR_RETURN(*data.mutable_str(), MaybeGetValue(arg));
 //   // No field "str" is added on error.
 //
 // Example: Assigning to a std::unique_ptr.
-//   ASSIGN_OR_RETURN(std::unique_ptr<T> ptr, MaybeGetPtr(arg));
+//   TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<T> ptr, MaybeGetPtr(arg));
 //
 // Example: Assigning to a map. Because of C preprocessor
 // limitation, the type used in ASSIGN_OR_RETURN cannot contain comma, so
 // wrap lhs in parentheses:
-//   ASSIGN_OR_RETURN((absl::flat_hash_map<Foo, Bar> my_map), GetMap());
+//   TFLITE_ASSIGN_OR_RETURN((absl::flat_hash_map<Foo, Bar> my_map), GetMap());
 // Or use auto if the type is obvious enough:
-//   ASSIGN_OR_RETURN(const auto& my_map, GetMapRef());
+//   TFLITE_ASSIGN_OR_RETURN(const auto& my_map, GetMapRef());
 //
 // Example: Assigning to structured bindings. The same situation with comma as
 // in map, so wrap the statement in parentheses.
-//   ASSIGN_OR_RETURN((const auto& [first, second]), GetPair());
+//   TFLITE_ASSIGN_OR_RETURN((const auto& [first, second]), GetPair());
 
 #if defined(_WIN32)
-#define ASSIGN_OR_RETURN(_1, _2, ...) TFLITE_ASSIGN_OR_RETURN_IMPL_2(_1, _2)
+#define TFLITE_ASSIGN_OR_RETURN(_1, _2, ...) TFLITE_ASSIGN_OR_RETURN_IMPL_2(_1, _2)
 #else
-#define ASSIGN_OR_RETURN(...)                                      \
+#define TFLITE_ASSIGN_OR_RETURN(...)                                      \
   TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_(                         \
       (__VA_ARGS__, TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_, \
        TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_))             \
@@ -203,7 +203,7 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
 // because it thinks you might want the else to bind to the first if.  This
 // leads to problems with code like:
 //
-//   if (do_expr)  RETURN_IF_ERROR(expr) << "Some message";
+//   if (do_expr)  TFLITE_RETURN_IF_ERROR(expr) << "Some message";
 //
 // The "switch (0) case 0:" idiom is used to suppress this.
 #define TFLITE_STATUS_MACROS_IMPL_ELSE_BLOCKER_ \

@@ -398,22 +398,22 @@ absl::Status FrameBufferUtils::Execute(const FrameBuffer& buffer,
                                        FrameBuffer* output_buffer) {
   if (absl::holds_alternative<CropResizeOperation>(operation)) {
     const auto& params = absl::get<CropResizeOperation>(operation);
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         Crop(buffer, params.crop_origin_x, params.crop_origin_y,
              (params.crop_dimension.width + params.crop_origin_x - 1),
              (params.crop_dimension.height + params.crop_origin_y - 1),
              output_buffer));
   } else if (absl::holds_alternative<UniformCropResizeOperation>(operation)) {
     const auto& params = absl::get<UniformCropResizeOperation>(operation);
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         Crop(buffer, params.crop_origin_x, params.crop_origin_y,
              (params.crop_dimension.width + params.crop_origin_x - 1),
              (params.crop_dimension.height + params.crop_origin_y - 1),
              output_buffer));
   } else if (absl::holds_alternative<ConvertOperation>(operation)) {
-    RETURN_IF_ERROR(Convert(buffer, output_buffer));
+    TFLITE_RETURN_IF_ERROR(Convert(buffer, output_buffer));
   } else if (absl::holds_alternative<OrientOperation>(operation)) {
-    RETURN_IF_ERROR(Orient(buffer, output_buffer));
+    TFLITE_RETURN_IF_ERROR(Orient(buffer, output_buffer));
   } else {
     return absl::UnimplementedError(absl::StrFormat(
         "FrameBufferOperation %i is not supported.", operation.index()));
@@ -494,7 +494,7 @@ absl::Status FrameBufferUtils::Orient(const FrameBuffer& buffer,
                 output_buffer->format()),
       output_buffer->dimension(), buffer.format(), buffer.orientation());
 
-  RETURN_IF_ERROR(utils_->Rotate(buffer, params.rotation_angle_deg,
+  TFLITE_RETURN_IF_ERROR(utils_->Rotate(buffer, params.rotation_angle_deg,
                                  tmp_frame_buffer.get()));
   if (params.flip == OrientParams::FlipType::kHorizontal) {
     return utils_->FlipHorizontally(*tmp_frame_buffer, output_buffer);
@@ -578,7 +578,7 @@ absl::Status FrameBufferUtils::Execute(
       temp_frame_buffer = FrameBuffer(planes, new_size, new_format,
                                       new_orientation, buffer.timestamp());
     }
-    RETURN_IF_ERROR(Execute(input_frame_buffer, operation, &temp_frame_buffer));
+    TFLITE_RETURN_IF_ERROR(Execute(input_frame_buffer, operation, &temp_frame_buffer));
   }
   return absl::OkStatus();
 }
@@ -652,9 +652,9 @@ absl::Status FrameBufferUtils::Preprocess(
   // Execute the processing pipeline.
   if (frame_buffer_operations.empty()) {
     // Using resize to perform copy.
-    RETURN_IF_ERROR(Resize(buffer, output_buffer));
+    TFLITE_RETURN_IF_ERROR(Resize(buffer, output_buffer));
   } else {
-    RETURN_IF_ERROR(Execute(buffer, frame_buffer_operations, output_buffer));
+    TFLITE_RETURN_IF_ERROR(Execute(buffer, frame_buffer_operations, output_buffer));
   }
   return absl::OkStatus();
 }

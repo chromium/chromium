@@ -77,7 +77,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
   std::unique_ptr<ExternalFileHandler> handler =
       absl::WrapUnique(new ExternalFileHandler(external_file));
 
-  RETURN_IF_ERROR(handler->MapExternalFile());
+  TFLITE_RETURN_IF_ERROR(handler->MapExternalFile());
 
   return handler;
 }

@@ -104,7 +104,7 @@ absl::StatusOr<std::string> CreateIndexBufferImpl(
   }
 
   std::string buffer;
-  ASSIGN_OR_RETURN(auto mem_writable_file, MemWritableFile::Create(&buffer));
+  TFLITE_ASSIGN_OR_RETURN(auto mem_writable_file, MemWritableFile::Create(&buffer));
 
   leveldb::Options options;
   options.compression =

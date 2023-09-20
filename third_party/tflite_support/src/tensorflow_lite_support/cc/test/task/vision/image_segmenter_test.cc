@@ -386,16 +386,16 @@ class PostprocessTest : public tflite::testing::Test {
 
     static StatusOr<std::unique_ptr<TestImageSegmenter>> CreateFromOptions(
         const ImageSegmenterOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto image_segmenter,
           TaskAPIFactory::CreateFromExternalFileProto<TestImageSegmenter>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
 
       return image_segmenter;
     }
@@ -429,7 +429,7 @@ class PostprocessTest : public tflite::testing::Test {
     confidence_scores.resize(/*width*/ 257 *
                              /*height*/ 257 *
                              /*classes*/ 21);
-    RETURN_IF_ERROR(PopulateTensor(confidence_scores, output_tensor));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(confidence_scores, output_tensor));
 
     return output_tensor;
   }

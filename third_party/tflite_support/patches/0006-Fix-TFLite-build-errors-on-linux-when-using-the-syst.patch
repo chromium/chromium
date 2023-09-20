@@ -1,7 +1,7 @@
-From 2479a184514e7d84bb32bb117628c6ec5446cb9d Mon Sep 17 00:00:00 2001
+From 9c6cd102e67a650a4c0803695fb30db7a4dca672 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:21 -0800
-Subject: [PATCH 6/9] Fix TFLite build errors on linux when using the system
+Subject: [PATCH 06/10] Fix TFLite build errors on linux when using the system
 
 ---
  .../metadata/cc/metadata_extractor.cc                        | 5 +++--

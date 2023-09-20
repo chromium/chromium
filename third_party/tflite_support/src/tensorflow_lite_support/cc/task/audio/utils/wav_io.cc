@@ -88,7 +88,7 @@ absl::Status IncrementOffset(uint32_t old_offset, size_t increment,
 absl::Status ExpectText(const std::string& data,
                         const std::string& expected_text, uint32_t* offset) {
   uint32_t new_offset;
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       IncrementOffset(*offset, expected_text.size(), data.size(), &new_offset));
   const std::string found_text(data.begin() + *offset,
                                data.begin() + new_offset);
@@ -103,7 +103,7 @@ absl::Status ExpectText(const std::string& data,
 absl::Status ReadString(const std::string& data, size_t expected_length,
                         std::string* value, uint32_t* offset) {
   uint32_t new_offset;
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       IncrementOffset(*offset, expected_length, data.size(), &new_offset));
   *value = std::string(data.begin() + *offset, data.begin() + new_offset);
   *offset = new_offset;
@@ -116,42 +116,42 @@ absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
                                           uint32_t* sample_count,
                                           uint16_t* channel_count,
                                           uint32_t* sample_rate) {
-  RETURN_IF_ERROR(ExpectText(wav_string, kRiffChunkId, offset));
+  TFLITE_RETURN_IF_ERROR(ExpectText(wav_string, kRiffChunkId, offset));
   uint32_t total_file_size;
-  RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &total_file_size, offset));
-  RETURN_IF_ERROR(ExpectText(wav_string, kRiffType, offset));
-  RETURN_IF_ERROR(ExpectText(wav_string, kFormatChunkId, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &total_file_size, offset));
+  TFLITE_RETURN_IF_ERROR(ExpectText(wav_string, kRiffType, offset));
+  TFLITE_RETURN_IF_ERROR(ExpectText(wav_string, kFormatChunkId, offset));
   uint32_t format_chunk_size;
-  RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &format_chunk_size, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &format_chunk_size, offset));
   if ((format_chunk_size != 16) && (format_chunk_size != 18)) {
     return absl::InvalidArgumentError(absl::StrFormat(
         "Bad format chunk size for WAV: Expected 16 or 18, but got %" PRIu32,
         format_chunk_size));
   }
   uint16_t audio_format;
-  RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &audio_format, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &audio_format, offset));
   if (audio_format != 1) {
     return absl::InvalidArgumentError(absl::StrFormat(
         "Bad audio format for WAV: Expected 1 (PCM), but got %" PRIu16,
         audio_format));
   }
-  RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, channel_count, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, channel_count, offset));
   if (*channel_count < 1) {
     return absl::InvalidArgumentError(absl::StrFormat(
         "Bad number of channels for WAV: Expected at least 1, but got %" PRIu16,
         *channel_count));
   }
-  RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, sample_rate, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, sample_rate, offset));
   uint32_t bytes_per_second;
-  RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &bytes_per_second, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &bytes_per_second, offset));
   uint16_t bytes_per_sample;
-  RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &bytes_per_sample, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &bytes_per_sample, offset));
   // Confusingly, bits per sample is defined as holding the number of bits for
   // one channel, unlike the definition of sample used elsewhere in the WAV
   // spec. For example, bytes per sample is the memory needed for all channels
   // for one point in time.
   uint16_t bits_per_sample;
-  RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &bits_per_sample, offset));
+  TFLITE_RETURN_IF_ERROR(ReadValue<uint16_t>(wav_string, &bits_per_sample, offset));
   if (bits_per_sample != 16) {
     return absl::InvalidArgumentError(
         absl::StrFormat("Can only read 16-bit WAV files, but received %" PRIu16,
@@ -182,9 +182,9 @@ absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
   bool was_data_found = false;
   while (*offset < wav_string.size()) {
     std::string chunk_id;
-    RETURN_IF_ERROR(ReadString(wav_string, 4, &chunk_id, offset));
+    TFLITE_RETURN_IF_ERROR(ReadString(wav_string, 4, &chunk_id, offset));
     uint32_t chunk_size;
-    RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &chunk_size, offset));
+    TFLITE_RETURN_IF_ERROR(ReadValue<uint32_t>(wav_string, &chunk_size, offset));
     if (chunk_size > std::numeric_limits<int32_t>::max()) {
       return absl::InvalidArgumentError(absl::StrFormat(
           "WAV data chunk '%s' is too large: %" PRIu32
@@ -202,12 +202,12 @@ absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
       uint32_t unused_new_offset = 0;
       // Validate that the data exists before allocating space for it
       // (prevent easy OOM errors).
-      RETURN_IF_ERROR(IncrementOffset(*offset, sizeof(int16_t) * data_count,
+      TFLITE_RETURN_IF_ERROR(IncrementOffset(*offset, sizeof(int16_t) * data_count,
                                       wav_string.size(), &unused_new_offset));
       float_values->resize(data_count);
       for (int i = 0; i < data_count; ++i) {
         int16_t single_channel_value = 0;
-        RETURN_IF_ERROR(
+        TFLITE_RETURN_IF_ERROR(
             ReadValue<int16_t>(wav_string, &single_channel_value, offset));
         (*float_values)[i] = Int16SampleToFloat(single_channel_value);
       }

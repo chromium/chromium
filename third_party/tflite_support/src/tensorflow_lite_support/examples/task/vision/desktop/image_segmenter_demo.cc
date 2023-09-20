@@ -104,7 +104,7 @@ absl::Status EncodeMaskToPngFile(const SegmentationResult& result) {
   }
 
   // Encode mask as PNG.
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       EncodeImageToPngFile(mask, absl::GetFlag(FLAGS_output_mask_png)));
   std::cout << absl::StrFormat("Category mask saved to: %s\n",
                                absl::GetFlag(FLAGS_output_mask_png));
@@ -149,11 +149,11 @@ absl::Status DisplayColorLegend(const SegmentationResult& result) {
 absl::Status Segment() {
   // Build ImageClassifier.
   const ImageSegmenterOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageSegmenter> image_segmenter,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageSegmenter> image_segmenter,
                    ImageSegmenter::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -170,7 +170,7 @@ absl::Status Segment() {
 
   // Run segmentation and save category mask.
   auto start_segment = steady_clock::now();
-  ASSIGN_OR_RETURN(SegmentationResult result,
+  TFLITE_ASSIGN_OR_RETURN(SegmentationResult result,
                    image_segmenter->Segment(*frame_buffer));
   auto end_segment = steady_clock::now();
   std::string delegate =
@@ -181,10 +181,10 @@ absl::Status Segment() {
                    .count()
             << " ms" << std::endl;
 
-  RETURN_IF_ERROR(EncodeMaskToPngFile(result));
+  TFLITE_RETURN_IF_ERROR(EncodeMaskToPngFile(result));
 
   // Display the legend.
-  RETURN_IF_ERROR(DisplayColorLegend(result));
+  TFLITE_RETURN_IF_ERROR(DisplayColorLegend(result));
 
   // Cleanup and return.
   ImageDataFree(&image);

@@ -1,7 +1,7 @@
-From 548104b338d9f4c8d650e26791e3a5bbd123cefc Mon Sep 17 00:00:00 2001
+From 27562d0c269d3e0c83f76e47c9944e19f95c6353 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:02 -0800
-Subject: [PATCH 1/9] sentencepiece tokenization not supported
+Subject: [PATCH 01/10] sentencepiece tokenization not supported
 
 ---
  .../cc/text/tokenizers/tokenizer_utils.cc          | 14 ++++----------

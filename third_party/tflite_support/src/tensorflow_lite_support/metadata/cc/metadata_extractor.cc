@@ -78,7 +78,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
     const unzFile& zf) {
   // Open file in raw mode, as data is expected to be uncompressed.
   int method;
-  RETURN_IF_ERROR(UnzipErrorToStatus(
+  TFLITE_RETURN_IF_ERROR(UnzipErrorToStatus(
       unzOpenCurrentFile2(zf, &method, /*level=*/nullptr, /*raw=*/1)));
   if (method != Z_NO_COMPRESSION) {
     return CreateStatusWithPayload(
@@ -88,7 +88,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
 
   // Get file info a first time to get filename size.
   unz_file_info64 file_info;
-  RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
+  TFLITE_RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
       zf, &file_info, /*szFileName=*/nullptr, /*szFileNameBufferSize=*/0,
       /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
       /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
@@ -96,7 +96,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
   // Second call to get file name.
   auto file_name_size = file_info.size_filename;
   char* c_file_name = (char*)malloc(file_name_size);
-  RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
+  TFLITE_RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
       zf, &file_info, c_file_name, file_name_size,
       /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
       /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
@@ -112,7 +112,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
   }
 
   // Close file and return.
-  RETURN_IF_ERROR(UnzipErrorToStatus(unzCloseCurrentFile(zf)));
+  TFLITE_RETURN_IF_ERROR(UnzipErrorToStatus(unzCloseCurrentFile(zf)));
 
   ZipFileInfo result{};
   result.name = file_name;
@@ -130,7 +130,7 @@ ModelMetadataExtractor::CreateFromModelBuffer(const char* buffer_data,
   // https://abseil.io/tips/126.
   std::unique_ptr<ModelMetadataExtractor> extractor =
       absl::WrapUnique(new ModelMetadataExtractor());
-  RETURN_IF_ERROR(extractor->InitFromModelBuffer(buffer_data, buffer_size));
+  TFLITE_RETURN_IF_ERROR(extractor->InitFromModelBuffer(buffer_data, buffer_size));
   return extractor;
 }
 
@@ -260,7 +260,7 @@ absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
   if (global_info.number_entry > 0) {
     int error = unzGoToFirstFile(zf);
     while (error == UNZ_OK) {
-      ASSIGN_OR_RETURN(auto zip_file_info, GetCurrentZipFileInfo(zf));
+      TFLITE_ASSIGN_OR_RETURN(auto zip_file_info, GetCurrentZipFileInfo(zf));
       // Store result in map.
       associated_files_[zip_file_info.name] = absl::string_view(
           buffer_data + zip_file_info.position, zip_file_info.size);

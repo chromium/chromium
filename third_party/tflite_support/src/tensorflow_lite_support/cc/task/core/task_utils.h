@@ -71,7 +71,7 @@ template <typename T, typename = std::enable_if_t<
 inline absl::Status PopulateTensor(const T* data, int num_elements,
                                    TfLiteTensor* tensor) {
   T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t bytes = num_elements * sizeof(T);
   if (tensor->bytes != bytes) {
     return tflite::support::CreateStatusWithPayload(
@@ -113,7 +113,7 @@ inline absl::Status PopulateTensor<std::string>(
 template <typename T>
 inline absl::Status PopulateTensor(const T& data, TfLiteTensor* tensor) {
   T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   *v = data;
   return absl::OkStatus();
 }
@@ -133,7 +133,7 @@ template <typename T>
 inline absl::Status PopulateVector(const TfLiteTensor* tensor,
                                    std::vector<T>* data) {
   const T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t num = tensor->bytes / sizeof(tensor->type);
   data->reserve(num);
   for (size_t i = 0; i < num; i++) {
@@ -146,7 +146,7 @@ template <>
 inline absl::Status PopulateVector<std::string>(
     const TfLiteTensor* tensor, std::vector<std::string>* data) {
   std::string* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
   (void)v;
   int num = GetStringCount(tensor);
   data->reserve(num);
@@ -166,7 +166,7 @@ template <
 inline absl::Status PopulateVectorToRepeated(const TfLiteTensor* tensor,
                                              TRepeatedField* data) {
   const T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t num = tensor->bytes / sizeof(tensor->type);
   data->Resize(num, T());
   T* pdata = data->mutable_data();

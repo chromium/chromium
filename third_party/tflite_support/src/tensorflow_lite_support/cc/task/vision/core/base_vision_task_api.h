@@ -73,7 +73,7 @@ class BaseVisionTaskApi
   // already successfully initialized before calling this method.
   virtual absl::Status CheckAndSetInputs() {
     // BaseTaskApi always assume having a single input.
-    ASSIGN_OR_RETURN(preprocessor_,
+    TFLITE_ASSIGN_OR_RETURN(preprocessor_,
                      ::tflite::task::processor::ImagePreprocessor::Create(
                          this->GetTfLiteEngine(), {0}, process_engine_));
     return absl::OkStatus();

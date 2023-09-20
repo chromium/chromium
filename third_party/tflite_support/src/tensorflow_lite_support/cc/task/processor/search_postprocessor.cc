@@ -91,16 +91,16 @@ StatusOr<std::unique_ptr<SearchPostprocessor>> SearchPostprocessor::Create(
     TfLiteEngine* engine, int output_index,
     std::unique_ptr<SearchOptions> search_options,
     std::unique_ptr<EmbeddingOptions> embedding_options) {
-  ASSIGN_OR_RETURN(auto embedding_postprocessor,
+  TFLITE_ASSIGN_OR_RETURN(auto embedding_postprocessor,
                    CreateEmbeddingPostprocessor(engine, {output_index},
                                                 std::move(embedding_options)));
 
-  ASSIGN_OR_RETURN(auto search_processor,
+  TFLITE_ASSIGN_OR_RETURN(auto search_processor,
                    Processor::Create<SearchPostprocessor>(
                        /* num_expected_tensors =*/1, engine, {output_index},
                        /* requires_metadata =*/false));
 
-  RETURN_IF_ERROR(search_processor->Init(std::move(embedding_postprocessor),
+  TFLITE_RETURN_IF_ERROR(search_processor->Init(std::move(embedding_postprocessor),
                                          std::move(search_options)));
   return search_processor;
 }
@@ -108,10 +108,10 @@ StatusOr<std::unique_ptr<SearchPostprocessor>> SearchPostprocessor::Create(
 StatusOr<SearchResult> SearchPostprocessor::Postprocess() {
   // Extract embedding.
   Embedding embedding;
-  RETURN_IF_ERROR(embedding_postprocessor_->Postprocess(&embedding));
+  TFLITE_RETURN_IF_ERROR(embedding_postprocessor_->Postprocess(&embedding));
 
   // Search the nearest-neighbor embedding.
-  ASSIGN_OR_RETURN(SearchResult search_result,
+  TFLITE_ASSIGN_OR_RETURN(SearchResult search_result,
                    embedding_searcher_->Search(embedding));
   return search_result;
 }
@@ -126,14 +126,14 @@ absl::Status SearchPostprocessor::Init(
   embedding_postprocessor_ = std::move(embedding_postprocessor);
 
   if (options->has_index_file()) {
-    ASSIGN_OR_RETURN(embedding_searcher_,
+    TFLITE_ASSIGN_OR_RETURN(embedding_searcher_,
                      EmbeddingSearcher::Create(std::move(options)));
   } else {
     // Index File is expected in the metadata if not provided in the options.
-    ASSIGN_OR_RETURN(absl::string_view index_file_content,
+    TFLITE_ASSIGN_OR_RETURN(absl::string_view index_file_content,
                      GetIndexFileContentFromMetadata(*GetMetadataExtractor(),
                                                      *GetTensorMetadata()));
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         embedding_searcher_,
         EmbeddingSearcher::Create(std::move(options), index_file_content));
   }

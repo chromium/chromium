@@ -51,7 +51,7 @@ absl::Status Answer() {
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
 
-  ASSIGN_OR_RETURN(std::unique_ptr<QuestionAnswerer> answerer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<QuestionAnswerer> answerer,
                    BertQuestionAnswerer::CreateFromOptions(options));
 
   auto start_answer = steady_clock::now();

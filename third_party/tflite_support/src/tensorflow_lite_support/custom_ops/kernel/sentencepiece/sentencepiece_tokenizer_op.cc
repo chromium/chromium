@@ -42,19 +42,19 @@ REGISTER_OP("TFSentencepieceTokenizeOp")
     .Output("output_splits: Tsplits")
     .SetShapeFn([](tensorflow::shape_inference::InferenceContext* c) {
       tensorflow::shape_inference::ShapeHandle unused;
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(2), 0, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(3), 0, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(4), 0, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(5), 0, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(6), 0, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(2), 0, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(3), 0, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(4), 0, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(5), 0, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(6), 0, &unused));
 
       c->set_output(
           0, c->Vector(
                  tensorflow::shape_inference::InferenceContext::kUnknownDim));
 
       tensorflow::shape_inference::DimensionHandle num_splits;
-      TF_RETURN_IF_ERROR(c->Add(c->NumElements(c->input(1)), 1, &num_splits));
+      TF_TFLITE_RETURN_IF_ERROR(c->Add(c->NumElements(c->input(1)), 1, &num_splits));
       c->set_output(1, c->Vector(num_splits));
       return tensorflow::OkStatus();
     });

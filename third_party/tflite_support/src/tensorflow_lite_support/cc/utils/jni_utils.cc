@@ -99,7 +99,7 @@ tflite::support::StatusOr<Delegate> ConvertToProtoDelegate(jint delegate) {
     case 1:
       return Delegate::NNAPI;
     case 2:
-      RETURN_IF_ERROR(loadDelegatePluginLibrary("gpu"));
+      TFLITE_RETURN_IF_ERROR(loadDelegatePluginLibrary("gpu"));
       return Delegate::GPU;
     default:
       break;

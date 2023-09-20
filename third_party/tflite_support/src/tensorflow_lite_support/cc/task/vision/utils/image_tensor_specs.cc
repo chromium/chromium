@@ -87,7 +87,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
 
 StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
     const TensorMetadata& tensor_metadata) {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const tflite::ProcessUnit* normalization_process_unit,
       ModelMetadataExtractor::FindFirstProcessUnit(
           tensor_metadata, tflite::ProcessUnitOptions_NormalizationOptions));
@@ -137,14 +137,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
 StatusOr<ImageTensorSpecs> BuildInputImageTensorSpecs(
     const TfLiteEngine::Interpreter& interpreter,
     const tflite::metadata::ModelMetadataExtractor& metadata_extractor) {
-  ASSIGN_OR_RETURN(const TensorMetadata* metadata,
+  TFLITE_ASSIGN_OR_RETURN(const TensorMetadata* metadata,
                    GetInputTensorMetadataIfAny(metadata_extractor));
 
   const ImageProperties* props = nullptr;
   absl::optional<NormalizationOptions> normalization_options;
   if (metadata != nullptr) {
-    ASSIGN_OR_RETURN(props, GetImagePropertiesIfAny(*metadata));
-    ASSIGN_OR_RETURN(normalization_options,
+    TFLITE_ASSIGN_OR_RETURN(props, GetImagePropertiesIfAny(*metadata));
+    TFLITE_ASSIGN_OR_RETURN(normalization_options,
                      GetNormalizationOptionsIfAny(*metadata));
   }
 

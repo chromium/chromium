@@ -1,7 +1,7 @@
-From c2425417757f1723e6fb92629319324b1791c5e1 Mon Sep 17 00:00:00 2001
+From a688fa77bf20e93a9dbd9b19b15dcf784e13cf36 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:12 -0800
-Subject: [PATCH 4/9] rm stdio static init
+Subject: [PATCH 04/10] rm stdio static init
 
 ---
  .../cc/task/core/tflite_engine.cc                 | 15 ---------------

@@ -65,10 +65,10 @@ StatusOr<std::unique_ptr<TextSearcher>> TextSearcher::CreateFromOptions(
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
   auto options_copy = absl::make_unique<TextSearcherOptions>(options);
 
-  ASSIGN_OR_RETURN(auto text_searcher,
+  TFLITE_ASSIGN_OR_RETURN(auto text_searcher,
                    TaskAPIFactory::CreateFromBaseOptions<TextSearcher>(
                        &options_copy->base_options(), std::move(resolver)));
-  RETURN_IF_ERROR(text_searcher->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(text_searcher->Init(std::move(options_copy)));
 
   return text_searcher;
 }
@@ -87,7 +87,7 @@ absl::Status TextSearcher::Init(std::unique_ptr<TextSearcherOptions> options) {
           absl::StrFormat("Expected exactly 1 output tensor, got %d.",
                           output_count));
     }
-    ASSIGN_OR_RETURN(preprocessor_, processor::RegexPreprocessor::Create(
+    TFLITE_ASSIGN_OR_RETURN(preprocessor_, processor::RegexPreprocessor::Create(
                                         GetTfLiteEngine(), 0));
     output_tensor_index = 0;
   } else if (input_count == 3) {
@@ -100,22 +100,22 @@ absl::Status TextSearcher::Init(std::unique_ptr<TextSearcherOptions> options) {
             absl::StrFormat("Expected exactly 1 output tensor, got %d.",
                             output_count));
       }
-      ASSIGN_OR_RETURN(auto input_indices,
+      TFLITE_ASSIGN_OR_RETURN(auto input_indices,
                        GetBertInputTensorIndices(GetTfLiteEngine()));
-      ASSIGN_OR_RETURN(preprocessor_, processor::BertPreprocessor::Create(
+      TFLITE_ASSIGN_OR_RETURN(preprocessor_, processor::BertPreprocessor::Create(
                                           GetTfLiteEngine(),
                                           {input_indices[0], input_indices[1],
                                            input_indices[2]}));
       output_tensor_index = 0;
     } else {
       // Assume Universal Sentence Encoder-based model.
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto input_indices,
           GetUniversalSentenceEncoderInputTensorIndices(GetTfLiteEngine()));
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto output_indices,
           GetUniversalSentenceEncoderOutputTensorIndices(GetTfLiteEngine()));
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           preprocessor_,
           processor::UniversalSentenceEncoderPreprocessor::Create(
               GetTfLiteEngine(),
@@ -129,7 +129,7 @@ absl::Status TextSearcher::Init(std::unique_ptr<TextSearcherOptions> options) {
         absl::StrFormat("Expected 1 or 3 input tensors, got %d.", input_count));
   }
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       postprocessor_,
       SearchPostprocessor::Create(
           GetTfLiteEngine(), output_tensor_index,

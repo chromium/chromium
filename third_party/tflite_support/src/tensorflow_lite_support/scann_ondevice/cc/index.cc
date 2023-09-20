@@ -64,13 +64,13 @@ absl::StatusOr<std::unique_ptr<Index>> Index::CreateFromIndexBuffer(
   // Use absl::WrapUnique() to call private constructor:
   // https://abseil.io/tips/126.
   std::unique_ptr<Index> index = absl::WrapUnique(new Index());
-  RETURN_IF_ERROR(index->InitFromBuffer(buffer_data, buffer_size));
+  TFLITE_RETURN_IF_ERROR(index->InitFromBuffer(buffer_data, buffer_size));
   return index;
 }
 
 absl::StatusOr<IndexConfig> Index::GetIndexConfig() const {
   std::string key(kIndexConfigKey);
-  ASSIGN_OR_RETURN(absl::string_view value,
+  TFLITE_ASSIGN_OR_RETURN(absl::string_view value,
                    GetValueForKey(config_iterator_.get(), key));
   IndexConfig config;
   if (!config.ParseFromString(std::string(value))) {

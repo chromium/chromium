@@ -80,13 +80,13 @@ TextEmbedderOptions BuildOptions() {
 absl::Status ComputeCosineSimilarity() {
   // Build TextEmbedder.
   const TextEmbedderOptions options = BuildOptions();
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       std::unique_ptr<TextEmbedder> text_embedder,
       TextEmbedder::CreateFromOptions(options, CreateTextOpResolver()));
 
   // Run search and display results.
   auto start_embed = steady_clock::now();
-  ASSIGN_OR_RETURN(processor::EmbeddingResult first_embedding,
+  TFLITE_ASSIGN_OR_RETURN(processor::EmbeddingResult first_embedding,
                    text_embedder->Embed(absl::GetFlag(FLAGS_first_sentence)));
   auto end_embed = steady_clock::now();
   std::string delegate =
@@ -97,10 +97,10 @@ absl::Status ComputeCosineSimilarity() {
                    .count()
             << " ms" << std::endl;
 
-  ASSIGN_OR_RETURN(processor::EmbeddingResult second_embedding,
+  TFLITE_ASSIGN_OR_RETURN(processor::EmbeddingResult second_embedding,
                    text_embedder->Embed(absl::GetFlag(FLAGS_second_sentence)));
   // Compute cosine similarity.
-  ASSIGN_OR_RETURN(double cosine_similarity,
+  TFLITE_ASSIGN_OR_RETURN(double cosine_similarity,
                    TextEmbedder::CosineSimilarity(
                        first_embedding.embeddings(0).feature_vector(),
                        second_embedding.embeddings(0).feature_vector()));

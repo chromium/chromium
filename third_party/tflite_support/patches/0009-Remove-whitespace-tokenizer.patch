@@ -1,7 +1,7 @@
-From a4efca62cf500cc6139958d7fa810aba5140fcfe Mon Sep 17 00:00:00 2001
+From c1736b5905a8e04d7ab83c8f690c57038b37ad3c Mon Sep 17 00:00:00 2001
 From: Daniel Cheng <dcheng@chromium.org>
 Date: Mon, 11 Sep 2023 00:22:25 -0700
-Subject: [PATCH 9/9] Remove whitespace tokenizer.
+Subject: [PATCH 09/10] Remove whitespace tokenizer.
 
 It uses the unsafe function `chartorune` and is not needed in Chrome. If
 this patch does not apply, it can be regenerated with:

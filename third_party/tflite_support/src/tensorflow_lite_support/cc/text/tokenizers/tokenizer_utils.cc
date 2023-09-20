@@ -45,7 +45,7 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
         "Invalid vocab_file from input process unit.",
         TfLiteSupportStatus::kMetadataInvalidTokenizerError);
   }
-  ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
+  TFLITE_ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
                    metadata_extractor->GetAssociatedFile(
                        associated_files->Get(0)->name()->str()));
   return vocab_buffer;
@@ -65,7 +65,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
     case ProcessUnitOptions_BertTokenizerOptions: {
       const tflite::BertTokenizerOptions* options =
           tokenizer_process_unit->options_as<tflite::BertTokenizerOptions>();
-      ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
+      TFLITE_ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
                        CheckAndLoadFirstAssociatedFile(options->vocab_file(),
                                                        metadata_extractor));
       return absl::make_unique<BertTokenizer>(vocab_buffer.data(),
@@ -80,7 +80,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
     case ProcessUnitOptions_RegexTokenizerOptions: {
       const tflite::RegexTokenizerOptions* options =
           tokenizer_process_unit->options_as<RegexTokenizerOptions>();
-      ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
+      TFLITE_ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
                        CheckAndLoadFirstAssociatedFile(options->vocab_file(),
                                                        metadata_extractor));
       if (options->delim_regex_pattern() == nullptr) {

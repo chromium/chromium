@@ -151,7 +151,7 @@ absl::Status EncodeResultToPngFile(const DetectionResult& result,
     }
   }
   // Encode to PNG and return.
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       EncodeImageToPngFile(*image, absl::GetFlag(FLAGS_output_png)));
   std::cout << absl::StrFormat("Results saved to: %s\n",
                                absl::GetFlag(FLAGS_output_png));
@@ -192,11 +192,11 @@ void DisplayResult(const DetectionResult& result) {
 absl::Status Detect() {
   // Build ObjectDetector.
   const ObjectDetectorOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ObjectDetector> object_detector,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ObjectDetector> object_detector,
                    ObjectDetector::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -213,7 +213,7 @@ absl::Status Detect() {
 
   // Run object detection and draw results on input image.
   auto start_detect = steady_clock::now();
-  ASSIGN_OR_RETURN(DetectionResult result,
+  TFLITE_ASSIGN_OR_RETURN(DetectionResult result,
                    object_detector->Detect(*frame_buffer));
   auto end_detect = steady_clock::now();
   std::string delegate =
@@ -224,7 +224,7 @@ absl::Status Detect() {
                    .count()
             << " ms" << std::endl;
 
-  RETURN_IF_ERROR(EncodeResultToPngFile(result, &image));
+  TFLITE_RETURN_IF_ERROR(EncodeResultToPngFile(result, &image));
 
   // Display results as text.
   DisplayResult(result);

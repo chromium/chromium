@@ -556,16 +556,16 @@ class PostprocessTest : public tflite::testing::Test {
 
     static StatusOr<std::unique_ptr<TestImageClassifier>> CreateFromOptions(
         const ImageClassifierOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto image_classifier,
           TaskAPIFactory::CreateFromExternalFileProto<TestImageClassifier>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
 
       return image_classifier;
     }

@@ -120,7 +120,7 @@ StatusOr<const uint8*> GetUvRawBuffer(const FrameBuffer& buffer) {
     return absl::InvalidArgumentError(
         "Only support getting biplanar UV buffer from NV12/NV21 frame buffer.");
   }
-  ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
+  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   const uint8* uv_buffer = buffer.format() == FrameBuffer::Format::kNV12
                                ? yuv_data.u_buffer
@@ -192,8 +192,8 @@ absl::Status ValidateBufferFormat(const FrameBuffer& buffer) {
 
 absl::Status ValidateBufferFormats(const FrameBuffer& buffer1,
                                    const FrameBuffer& buffer2) {
-  RETURN_IF_ERROR(ValidateBufferFormat(buffer1));
-  RETURN_IF_ERROR(ValidateBufferFormat(buffer2));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormat(buffer1));
+  TFLITE_RETURN_IF_ERROR(ValidateBufferFormat(buffer2));
   return absl::OkStatus();
 }
 
@@ -391,7 +391,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
       return CreateFromOnePlaneNVRawBuffer(buffer, dimension, target_format,
                                            orientation, timestamp);
     case FrameBuffer::Format::kYV12: {
-      ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_dimension,
+      TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_dimension,
                        GetUvPlaneDimension(dimension, target_format));
       return CreateFromYuvRawBuffer(
           /*y_plane=*/buffer,
@@ -401,7 +401,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
           /*pixel_stride_uv=*/1, orientation, timestamp);
     }
     case FrameBuffer::Format::kYV21: {
-      ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_dimension,
+      TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_dimension,
                        GetUvPlaneDimension(dimension, target_format));
       return CreateFromYuvRawBuffer(
           /*y_plane=*/buffer, /*u_plane=*/buffer + dimension.Size(),

@@ -101,13 +101,13 @@ void DisplayResults(const processor::SearchResult& result) {
 absl::Status Search() {
   // Build TextSearcher.
   const TextSearcherOptions options = BuildOptions();
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       std::unique_ptr<TextSearcher> text_searcher,
       TextSearcher::CreateFromOptions(options, CreateTextOpResolver()));
 
   // Run search and display results.
   auto start_search = steady_clock::now();
-  ASSIGN_OR_RETURN(processor::SearchResult result,
+  TFLITE_ASSIGN_OR_RETURN(processor::SearchResult result,
                    text_searcher->Search(absl::GetFlag(FLAGS_input_sentence)));
   auto end_search = steady_clock::now();
   std::string delegate =

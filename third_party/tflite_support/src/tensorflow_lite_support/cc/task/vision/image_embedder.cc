@@ -62,13 +62,13 @@ ImageEmbedder::CreateFromOptions(const ImageEmbedderOptions& options,
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
   auto options_copy = absl::make_unique<ImageEmbedderOptions>(options);
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto image_embedder,
       TaskAPIFactory::CreateFromExternalFileProto<ImageEmbedder>(
           &options_copy->model_file_with_metadata(), std::move(resolver),
           options_copy->num_threads(), options_copy->compute_settings()));
 
-  RETURN_IF_ERROR(image_embedder->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(image_embedder->Init(std::move(options_copy)));
 
   return image_embedder;
 }
@@ -89,19 +89,19 @@ absl::Status ImageEmbedder::Init(
   options_ = std::move(options);
 
   // Perform pre-initialization actions.
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs and outputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
 
   // Perform post-initialization actions.
-  RETURN_IF_ERROR(PostInit());
+  TFLITE_RETURN_IF_ERROR(PostInit());
 
   // ImageEmbedder assumes that all output tensors share the same
   // embedding option.
   postprocessors_.reserve(GetTfLiteEngine()->interpreter()->outputs().size());
   for (int i = 0; i < GetTfLiteEngine()->interpreter()->outputs().size(); i++) {
-    ASSIGN_OR_RETURN(auto processor,
+    TFLITE_ASSIGN_OR_RETURN(auto processor,
                      CreatePostprocessor(GetTfLiteEngine(), {i}, *options_));
     postprocessors_.emplace_back(std::move(processor));
   }
@@ -127,7 +127,7 @@ tflite::support::StatusOr<EmbeddingResult> ImageEmbedder::Postprocess(
     const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   EmbeddingResult result;
   for (int i = 0; i < postprocessors_.size(); ++i) {
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         postprocessors_.at(i)->Postprocess(result.add_embeddings()));
   }
 

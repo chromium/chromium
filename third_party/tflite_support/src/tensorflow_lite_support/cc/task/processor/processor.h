@@ -56,7 +56,7 @@ class Processor {
       const std::initializer_list<int> tensor_indices,
       bool requires_metadata = true) {
     auto processor = absl::make_unique<T>(engine, tensor_indices);
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         processor->SanityCheck(num_expected_tensors, requires_metadata));
     return processor;
   }

@@ -1,7 +1,7 @@
-From b4b3fef34878487e82ecfa6a9d3bcff919fc3f31 Mon Sep 17 00:00:00 2001
+From 27c5fcdc324e92ede53befa5bcc9642917d1dbdf Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:35 -0800
-Subject: [PATCH 7/9] Use SysNSStringToUTF8 to convert NSString
+Subject: [PATCH 07/10] Use SysNSStringToUTF8 to convert NSString
 
 ---
  .../tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm  | 2 +-

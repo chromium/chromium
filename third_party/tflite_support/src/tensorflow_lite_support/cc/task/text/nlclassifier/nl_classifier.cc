@@ -191,7 +191,7 @@ absl::Status NLClassifier::Initialize(
     std::unique_ptr<tflite::task::text::NLClassifierOptions> options) {
   proto_options_ = std::move(options);
 
-  RETURN_IF_ERROR(Initialize(NLClassifierOptions{
+  TFLITE_RETURN_IF_ERROR(Initialize(NLClassifierOptions{
       /* input_tensor_index= */ proto_options_->input_tensor_index(),
       /* output_score_tensor_index= */
       proto_options_->output_score_tensor_index(),
@@ -222,7 +222,7 @@ absl::Status NLClassifier::Initialize(const NLClassifierOptions& options) {
   }
 
   // Create preprocessor.
-  ASSIGN_OR_RETURN(preprocessor_, processor::RegexPreprocessor::Create(
+  TFLITE_ASSIGN_OR_RETURN(preprocessor_, processor::RegexPreprocessor::Create(
                                       GetTfLiteEngine(), input_index));
 
   // output score tensor should be type
@@ -295,16 +295,16 @@ absl::Status NLClassifier::Initialize(const NLClassifierOptions& options) {
 StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromOptions(
     const NLClassifierProtoOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the duration of this
   // created NLClassifier object.
   auto options_copy = absl::make_unique<NLClassifierProtoOptions>(options);
 
-  ASSIGN_OR_RETURN(auto nl_classifier,
+  TFLITE_ASSIGN_OR_RETURN(auto nl_classifier,
                    TaskAPIFactory::CreateFromBaseOptions<NLClassifier>(
                        &options_copy->base_options(), std::move(resolver)));
-  RETURN_IF_ERROR(nl_classifier->Initialize(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(nl_classifier->Initialize(std::move(options_copy)));
 
   return nl_classifier;
 }
@@ -315,11 +315,11 @@ NLClassifier::CreateFromBufferAndOptions(
     const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       nl_classifier,
       core::TaskAPIFactory::CreateFromBuffer<NLClassifier>(
           model_buffer_data, model_buffer_size, std::move(resolver)));
-  RETURN_IF_ERROR(nl_classifier->Initialize(options));
+  TFLITE_RETURN_IF_ERROR(nl_classifier->Initialize(options));
   return std::move(nl_classifier);
 }
 
@@ -327,10 +327,10 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
     const std::string& path_to_model, const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
-  ASSIGN_OR_RETURN(nl_classifier,
+  TFLITE_ASSIGN_OR_RETURN(nl_classifier,
                    core::TaskAPIFactory::CreateFromFile<NLClassifier>(
                        path_to_model, std::move(resolver)));
-  RETURN_IF_ERROR(nl_classifier->Initialize(options));
+  TFLITE_RETURN_IF_ERROR(nl_classifier->Initialize(options));
   return std::move(nl_classifier);
 }
 
@@ -338,10 +338,10 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFdAndOptions(
     int fd, const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
-  ASSIGN_OR_RETURN(nl_classifier,
+  TFLITE_ASSIGN_OR_RETURN(nl_classifier,
                    core::TaskAPIFactory::CreateFromFileDescriptor<NLClassifier>(
                        fd, std::move(resolver)));
-  RETURN_IF_ERROR(nl_classifier->Initialize(options));
+  TFLITE_RETURN_IF_ERROR(nl_classifier->Initialize(options));
   return std::move(nl_classifier);
 }
 

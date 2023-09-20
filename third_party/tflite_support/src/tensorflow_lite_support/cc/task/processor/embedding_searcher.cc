@@ -176,7 +176,7 @@ StatusOr<std::unique_ptr<EmbeddingSearcher>> EmbeddingSearcher::Create(
     std::optional<absl::string_view> optional_index_file_content) {
   auto embedding_searcher = std::make_unique<EmbeddingSearcher>();
 
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       embedding_searcher->Init(
           std::move(search_options), optional_index_file_content));
   return embedding_searcher;
@@ -185,7 +185,7 @@ StatusOr<std::unique_ptr<EmbeddingSearcher>> EmbeddingSearcher::Create(
 StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
   // Convert embedding to Eigen matrix, as expected by ScaNN.
   Eigen::MatrixXf query;
-  RETURN_IF_ERROR(ConvertEmbeddingToEigenMatrix(embedding, &query));
+  TFLITE_RETURN_IF_ERROR(ConvertEmbeddingToEigenMatrix(embedding, &query));
 
   // Identify partitions to search.
   std::vector<std::vector<int>> leaves_to_search(
@@ -203,10 +203,10 @@ StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
       std::make_pair(std::numeric_limits<float>::max(), kNoNeighborId));
   // Perform search.
   if (quantizer_) {
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         QuantizedSearch(query, leaves_to_search[0], absl::MakeSpan(top_n)));
   } else {
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         LinearSearch(query, leaves_to_search[0], absl::MakeSpan(top_n)));
   }
 
@@ -216,7 +216,7 @@ StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
     if (id == kNoNeighborId) {
       break;
     }
-    ASSIGN_OR_RETURN(auto metadata, index_->GetMetadataAtIndex(id));
+    TFLITE_ASSIGN_OR_RETURN(auto metadata, index_->GetMetadataAtIndex(id));
     NearestNeighbor* nearest_neighbor = search_result.add_nearest_neighbors();
     nearest_neighbor->set_distance(distance);
     nearest_neighbor->set_metadata(std::string(metadata));
@@ -231,13 +231,13 @@ StatusOr<absl::string_view> EmbeddingSearcher::GetUserInfo() {
 absl::Status EmbeddingSearcher::Init(
     std::unique_ptr<SearchOptions> options,
     std::optional<absl::string_view> optional_index_file_content) {
-  RETURN_IF_ERROR(SanityCheckOptions(*options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(*options));
   options_ = std::move(options);
 
   // Initialize index.
   absl::string_view index_file_content;
   if (options_->has_index_file()) {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         index_file_handler_,
         ExternalFileHandler::CreateFromExternalFile(&options_->index_file()));
     index_file_content = index_file_handler_->GetFileContent();
@@ -251,13 +251,13 @@ absl::Status EmbeddingSearcher::Init(
     }
     index_file_content = *optional_index_file_content;
   }
-  ASSIGN_OR_RETURN(index_,
+  TFLITE_ASSIGN_OR_RETURN(index_,
                    Index::CreateFromIndexBuffer(index_file_content.data(),
                                                 index_file_content.size()));
-  ASSIGN_OR_RETURN(index_config_, index_->GetIndexConfig());
-  RETURN_IF_ERROR(SanityCheckIndexConfig(index_config_));
+  TFLITE_ASSIGN_OR_RETURN(index_config_, index_->GetIndexConfig());
+  TFLITE_RETURN_IF_ERROR(SanityCheckIndexConfig(index_config_));
   // Get distance measure once and for all.
-  ASSIGN_OR_RETURN(distance_measure_,
+  TFLITE_ASSIGN_OR_RETURN(distance_measure_,
                    GetDistanceMeasure(index_config_.scann_config()));
 
   // Initialize partitioner.
@@ -296,7 +296,7 @@ absl::Status EmbeddingSearcher::QuantizedSearch(
   }
   for (int leaf_id : leaves_to_search) {
     // Load partition into Eigen matrix.
-    ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
+    TFLITE_ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
     int partition_size = partition.size() / dim;
     Eigen::Map<const Matrix8u> database(
         reinterpret_cast<const uint8_t*>(partition.data()), dim,
@@ -319,7 +319,7 @@ absl::Status EmbeddingSearcher::LinearSearch(Eigen::Ref<Eigen::MatrixXf> query,
   int dim = index_config_.embedding_dim();
   for (int leaf_id : leaves_to_search) {
     // Load partition into Eigen matrix.
-    ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
+    TFLITE_ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
     int partition_size = partition.size() / (dim * sizeof(float));
     Eigen::Map<const Eigen::MatrixXf> database(
         reinterpret_cast<const float*>(partition.data()), dim, partition_size);

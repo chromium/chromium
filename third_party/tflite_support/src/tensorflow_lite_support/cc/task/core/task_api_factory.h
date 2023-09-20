@@ -56,7 +56,7 @@ class TaskAPIFactory {
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFlatBuffer(buffer_data, buffer_size,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFlatBuffer(buffer_data, buffer_size,
                                                      compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -74,7 +74,7 @@ class TaskAPIFactory {
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
   }
@@ -91,7 +91,7 @@ class TaskAPIFactory {
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
                                                          compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -110,7 +110,7 @@ class TaskAPIFactory {
           const tflite::proto::ComputeSettings& compute_settings =
               tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(external_file,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(external_file,
                                                             compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -146,10 +146,10 @@ class TaskAPIFactory {
     tflite::proto::ComputeSettings compute_settings(
         base_options->compute_settings());
     if (compute_settings.has_settings_to_test_locally()) {
-      RETURN_IF_ERROR(SetMiniBenchmarkFileNameFromBaseOptions(compute_settings,
+      TFLITE_RETURN_IF_ERROR(SetMiniBenchmarkFileNameFromBaseOptions(compute_settings,
                                                               base_options));
     }
-    RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(
         &base_options->model_file(), compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), compute_settings);
   }
@@ -173,7 +173,7 @@ class TaskAPIFactory {
       std::unique_ptr<TfLiteEngine> engine,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
-    RETURN_IF_ERROR(engine->InitInterpreter(compute_settings));
+    TFLITE_RETURN_IF_ERROR(engine->InitInterpreter(compute_settings));
     return absl::make_unique<T>(std::move(engine));
   }
 

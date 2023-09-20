@@ -179,7 +179,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromYuvPlanes(
       reinterpret_cast<const uint8*>(GetMappedFileBuffer(env, jv_plane).data());
 
   FrameBuffer::Format format;
-  ASSIGN_OR_RETURN(format,
+  TFLITE_ASSIGN_OR_RETURN(format,
                    GetYUVImageFormat(u_plane, v_plane, pixel_stride_uv));
 
   return CreateFromYuvRawBuffer(

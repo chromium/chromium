@@ -84,13 +84,13 @@ StatusOr<absl::string_view> GetIndexFileContentFromMetadata(
 StatusOr<std::string> GetIndexFileContentFromModelFile(
     const std::string& model_path) {
   auto engine = std::make_unique<core::TfLiteEngine>();
-  RETURN_IF_ERROR(engine->BuildModelFromFile(model_path));
+  TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFile(model_path));
 
   const tflite::metadata::ModelMetadataExtractor* metadata_extractor =
       engine->metadata_extractor();
   const TensorMetadata* tensor_metadata =
       metadata_extractor->GetOutputTensorMetadata(0);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       absl::string_view index_file_content,
       GetIndexFileContentFromMetadata(*metadata_extractor, *tensor_metadata));
 
@@ -103,7 +103,7 @@ StatusOr<std::string> GetIndexFileContentFromModelFile(
 StatusOr<std::string> GetFileContent(const std::string& file_path) {
   tflite::task::core::ExternalFile external_file;
   external_file.set_file_name(file_path);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto handler,
       core::ExternalFileHandler::CreateFromExternalFile(&external_file));
   absl::string_view file_content = handler->GetFileContent();

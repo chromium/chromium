@@ -125,11 +125,11 @@ void DisplayResult(const ClassificationResult& result) {
 absl::Status Classify() {
   // Build ImageClassifier.
   const ImageClassifierOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageClassifier> image_classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageClassifier> image_classifier,
                    ImageClassifier::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -146,7 +146,7 @@ absl::Status Classify() {
 
   // Run classification and display results.
   auto start_classify = steady_clock::now();
-  ASSIGN_OR_RETURN(ClassificationResult result,
+  TFLITE_ASSIGN_OR_RETURN(ClassificationResult result,
                    image_classifier->Classify(*frame_buffer));
   auto end_classify = steady_clock::now();
   std::string delegate =

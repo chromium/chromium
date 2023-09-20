@@ -119,13 +119,13 @@ StatusOr<RetrievalOutput> UniversalSentenceEncoderQA::Retrieve(
 
       // Only encode query for the first time.
       if (i == 0) {
-        RETURN_IF_ERROR(
+        TFLITE_RETURN_IF_ERROR(
             CopyVector(out.query_encoding, output.mutable_query_encoding()));
       }
 
       // For each answer, set the response result.
       auto r = output.mutable_response_results()->Add();
-      RETURN_IF_ERROR(CopyVector(out.response_encoding, r->mutable_encoding()));
+      TFLITE_RETURN_IF_ERROR(CopyVector(out.response_encoding, r->mutable_encoding()));
     } else {
       // If response is already encoded, encode query only and keep response
       // encoding.
@@ -164,7 +164,7 @@ StatusOr<FeatureVector> UniversalSentenceEncoderQA::EncodeQuery(
 
   const auto& output = Run(query_text, "", "");
   FeatureVector v;
-  RETURN_IF_ERROR(CopyVector(output.query_encoding, &v));
+  TFLITE_RETURN_IF_ERROR(CopyVector(output.query_encoding, &v));
   return v;
 }
 
@@ -178,7 +178,7 @@ StatusOr<FeatureVector> UniversalSentenceEncoderQA::EncodeResponse(
 
   const auto& output = Run("", response_text, response_context);
   FeatureVector v;
-  RETURN_IF_ERROR(CopyVector(output.response_encoding, &v));
+  TFLITE_RETURN_IF_ERROR(CopyVector(output.response_encoding, &v));
   return v;
 }
 
@@ -215,11 +215,11 @@ std::vector<size_t> UniversalSentenceEncoderQA::Top(
 
 Status UniversalSentenceEncoderQA::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors, const QAInput& input) {
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       PopulateTensor(input.query_text, input_tensors[input_indices_[0]]));
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       PopulateTensor(input.response_context, input_tensors[input_indices_[1]]));
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       PopulateTensor(input.response_text, input_tensors[input_indices_[2]]));
 
   return absl::OkStatus();
@@ -248,10 +248,10 @@ absl::Status UniversalSentenceEncoderQA::Init(
     std::unique_ptr<RetrievalOptions> options) {
   options_ = std::move(options);
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       input_indices_,
       GetUniversalSentenceEncoderInputTensorIndices(GetTfLiteEngine()));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       output_indices_,
       GetUniversalSentenceEncoderOutputTensorIndices(GetTfLiteEngine()));
 
@@ -262,18 +262,18 @@ StatusOr<std::unique_ptr<UniversalSentenceEncoderQA>>
 UniversalSentenceEncoderQA::CreateFromOption(
     const RetrievalOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the duration of this
   // created object.
   auto options_copy = absl::make_unique<RetrievalOptions>(options);
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto encoder,
       TaskAPIFactory::CreateFromBaseOptions<UniversalSentenceEncoderQA>(
           &options_copy->base_options(), std::move(resolver)));
 
-  RETURN_IF_ERROR(encoder->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(encoder->Init(std::move(options_copy)));
   return encoder;
 }
 

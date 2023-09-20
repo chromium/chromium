@@ -74,7 +74,7 @@ absl::Status IncrementOffset(uint32_t old_offset, size_t increment,
 template <class T>
 absl::Status ReadValue(const std::string& data, T* value, uint32_t* offset) {
   uint32_t new_offset;
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       IncrementOffset(*offset, sizeof(T), data.size(), &new_offset));
   if (port::kLittleEndian) {
     memcpy(value, data.data() + *offset, sizeof(T));

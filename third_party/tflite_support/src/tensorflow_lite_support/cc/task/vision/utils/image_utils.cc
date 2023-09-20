@@ -63,7 +63,7 @@ StatusOr<ImageData> DecodeImageFromFile(const std::string& file_name) {
   image_data.pixel_data = stbi_load(file_name.c_str(), &image_data.width,
                                     &image_data.height, &image_data.channels,
                                     /*desired_channels=*/0);
-  RETURN_IF_ERROR(CheckImageData(image_data));
+  TFLITE_RETURN_IF_ERROR(CheckImageData(image_data));
   return image_data;
 }
 
@@ -73,7 +73,7 @@ tflite::support::StatusOr<ImageData> DecodeImageFromBuffer(
   image_data.pixel_data = stbi_load_from_memory(
       buffer, len, &image_data.width, &image_data.height, &image_data.channels,
       /*desired_channels=*/0);
-  RETURN_IF_ERROR(CheckImageData(image_data));
+  TFLITE_RETURN_IF_ERROR(CheckImageData(image_data));
   return image_data;
 }
 

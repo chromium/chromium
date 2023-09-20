@@ -211,7 +211,7 @@ StatusOr<SigmoidCalibrationParameters> BuildSigmoidCalibrationParams(
     if (lines[i].empty()) {
       continue;
     }
-    ASSIGN_OR_RETURN(Sigmoid sigmoid, SigmoidFromLabelAndLine(
+    TFLITE_ASSIGN_OR_RETURN(Sigmoid sigmoid, SigmoidFromLabelAndLine(
                                           label_map_items[i].name, lines[i]));
     sigmoid_vector.emplace_back(std::move(sigmoid));
   }

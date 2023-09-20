@@ -70,7 +70,7 @@ StatusOr<SlotRepr> SlotRepr::CreateFromIob(const absl::string_view repr) {
                                             kSlotBTagPrefix, " or ",
                                             kSlotITagPrefix, ": ", repr));
   }
-  ASSIGN_OR_RETURN(const auto domain_name_pair, SplitDomainAndName(full_name));
+  TFLITE_ASSIGN_OR_RETURN(const auto domain_name_pair, SplitDomainAndName(full_name));
   ret.domain_ = std::string(std::get<0>(domain_name_pair));
   ret.name_ = std::string(std::get<1>(domain_name_pair));
   return ret;
@@ -117,12 +117,12 @@ absl::Status ResolveInconsistentIobTagSeq(std::vector<std::string>* tag_names) {
   for (size_t i = 0; i < tag_names->size(); ++i) {
     const auto& tag = tag_names->at(i);
     if (SlotRepr::IsI(tag)) {
-      ASSIGN_OR_RETURN(const SlotRepr repr, SlotRepr::CreateFromIob(tag));
+      TFLITE_ASSIGN_OR_RETURN(const SlotRepr repr, SlotRepr::CreateFromIob(tag));
       if (SlotRepr::IsO(prev_tag)) {
         // inconsistent case. eg.   O I-time
         (*tag_names)[i] = repr.BTag();
       } else {
-        ASSIGN_OR_RETURN(const SlotRepr prev_repr,
+        TFLITE_ASSIGN_OR_RETURN(const SlotRepr prev_repr,
                          SlotRepr::CreateFromIob(prev_tag));
         if (prev_repr.FullName() != repr.FullName()) {
           // inconsistent case. eg.   B-time I-per    I-time I-per
@@ -151,7 +151,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
   // Make a copy since the input is constant while still modifications are
   // needed.
   std::vector<std::string> tag_names_fixed(tag_names.begin(), tag_names.end());
-  RETURN_IF_ERROR(ResolveInconsistentIobTagSeq(&tag_names_fixed));
+  TFLITE_RETURN_IF_ERROR(ResolveInconsistentIobTagSeq(&tag_names_fixed));
 
   std::vector<SlotMentionStruct> result;
   // Compute slot tag spans
@@ -165,7 +165,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
     // I tag
     if (SlotRepr::IsI(tag_str_i)) {
       SlotRepr slot_tag_i;
-      ASSIGN_OR_RETURN(slot_tag_i, SlotRepr::CreateFromIob(tag_str_i));
+      TFLITE_ASSIGN_OR_RETURN(slot_tag_i, SlotRepr::CreateFromIob(tag_str_i));
       if (cur_slot == slot_tag_i) {
         cur_slot_exclusive_end = token_i + 1;
         // Compute the phrase level confidence by taking min(tag confidences).
@@ -194,7 +194,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
       cur_slot_start = token_i;
       cur_slot_exclusive_end = token_i + 1;
       cur_slot_confidence = tag_probs[token_i];
-      ASSIGN_OR_RETURN(cur_slot, SlotRepr::CreateFromIob(tag_str_i));
+      TFLITE_ASSIGN_OR_RETURN(cur_slot, SlotRepr::CreateFromIob(tag_str_i));
     } else {
       // O tag
       if (!SlotRepr::IsO(tag_str_i)) {

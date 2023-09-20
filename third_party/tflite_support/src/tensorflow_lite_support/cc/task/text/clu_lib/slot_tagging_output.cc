@@ -64,7 +64,7 @@ DecodeSlotChunksPredictOnFirstSubword(
   const int last_exclusive_end = whole_word_token_alignments.back().second;
   whole_word_token_alignments.emplace_back(last_exclusive_end,
                                            last_exclusive_end);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto slot_mentions,
       DecodeSlotChunks(first_subword_tag_names, first_subword_tag_probs,
                        whole_word_token_alignments));
@@ -105,7 +105,7 @@ absl::Status SlotModulePopulateResponse(
     // Prepare the data and decode slot chunks.
     std::vector<SlotMentionStruct> cur_turn_slot_mentions;
       // Decode slot chunks based on first subword tokens in the turn.
-    ASSIGN_OR_RETURN(cur_turn_slot_mentions,
+    TFLITE_ASSIGN_OR_RETURN(cur_turn_slot_mentions,
                      DecodeSlotChunksPredictOnFirstSubword(
                          cur_turn_start, cur_turn_end, seq_len, tags_as_span,
                          confidences_as_span, token_alignments_as_span,

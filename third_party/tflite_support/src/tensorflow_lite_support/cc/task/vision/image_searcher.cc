@@ -56,11 +56,11 @@ StatusOr<std::unique_ptr<ImageSearcher>> ImageSearcher::CreateFromOptions(
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
   auto options_copy = absl::make_unique<ImageSearcherOptions>(options);
 
-  ASSIGN_OR_RETURN(auto image_searcher,
+  TFLITE_ASSIGN_OR_RETURN(auto image_searcher,
                    TaskAPIFactory::CreateFromBaseOptions<ImageSearcher>(
                        &options_copy->base_options(), std::move(resolver)));
 
-  RETURN_IF_ERROR(image_searcher->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(image_searcher->Init(std::move(options_copy)));
 
   return image_searcher;
 }
@@ -75,13 +75,13 @@ absl::Status ImageSearcher::Init(
   options_ = std::move(options);
 
   // Perform pre-initialization actions.
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
 
   // Create post-processor.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       postprocessor_,
       SearchPostprocessor::Create(GetTfLiteEngine(), 0,
                                   std::make_unique<processor::SearchOptions>(

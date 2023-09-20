@@ -117,7 +117,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
   if (labels_filename.empty()) {
     return std::vector<LabelMapItem>();
   }
-  ASSIGN_OR_RETURN(absl::string_view labels_file,
+  TFLITE_ASSIGN_OR_RETURN(absl::string_view labels_file,
                    metadata_extractor.GetAssociatedFile(labels_filename));
   const std::string display_names_filename =
       ModelMetadataExtractor::FindFirstAssociatedFileName(
@@ -125,7 +125,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
           locale);
   absl::string_view display_names_file = {};
   if (!display_names_filename.empty()) {
-    ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
+    TFLITE_ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
                                              display_names_filename));
   }
   return BuildLabelMapFromFiles(labels_file, display_names_file);
@@ -164,20 +164,20 @@ absl::Status ImageSegmenter::SanityCheckOptions(
 StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
     const ImageSegmenterOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
   auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
 
   std::unique_ptr<ImageSegmenter> image_segmenter;
   if (options_copy->has_model_file_with_metadata()) {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         image_segmenter,
         TaskAPIFactory::CreateFromExternalFileProto<ImageSegmenter>(
             &options_copy->model_file_with_metadata(), std::move(resolver),
             options_copy->num_threads(), options_copy->compute_settings()));
   } else if (options_copy->base_options().has_model_file()) {
-    ASSIGN_OR_RETURN(image_segmenter,
+    TFLITE_ASSIGN_OR_RETURN(image_segmenter,
                      TaskAPIFactory::CreateFromBaseOptions<ImageSegmenter>(
                          &options_copy->base_options(), std::move(resolver)));
   } else {
@@ -189,7 +189,7 @@ StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
         TfLiteSupportStatus::kInvalidArgumentError);
   }
 
-  RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
 
   return image_segmenter;
 }
@@ -201,14 +201,14 @@ absl::Status ImageSegmenter::Init(
 
   // Perform pre-initialization actions (by default, sets the process engine for
   // image pre-processing to kLibyuv as a sane default).
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs and outputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
-  RETURN_IF_ERROR(CheckAndSetOutputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetOutputs());
 
   // Initialize colored_labels_ once and for all.
-  RETURN_IF_ERROR(InitColoredLabels());
+  TFLITE_RETURN_IF_ERROR(InitColoredLabels());
 
   return absl::OkStatus();
 }
@@ -288,7 +288,7 @@ absl::Status ImageSegmenter::CheckAndSetOutputs() {
                           output_tensor_metadata->size()),
           TfLiteSupportStatus::kMetadataInconsistencyError);
     }
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         label_map_,
         GetLabelMapIfAny(*metadata_extractor, *output_tensor_metadata->Get(0),
                          options_->display_names_locale()));
@@ -391,7 +391,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
         int class_index = 0;
         float max_confidence = 0.0f;
         for (int d = 0; d < output_depth_; ++d) {
-          ASSIGN_OR_RETURN(
+          TFLITE_ASSIGN_OR_RETURN(
               const float confidence,
               GetOutputConfidence(*output_tensor, tensor_x, tensor_y, d));
           if (confidence > max_confidence) {
@@ -419,7 +419,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
                           /*to_x=*/&tensor_x,
                           /*to_y=*/&tensor_y);
         for (int d = 0; d < output_depth_; ++d) {
-          ASSIGN_OR_RETURN(
+          TFLITE_ASSIGN_OR_RETURN(
               float confidence,
               GetOutputConfidence(*output_tensor, tensor_x, tensor_y, d));
           confidence_masks->mutable_confidence_mask(d)->add_value(confidence);
@@ -435,12 +435,12 @@ StatusOr<float> ImageSegmenter::GetOutputConfidence(
     const TfLiteTensor& output_tensor, int x, int y, int depth) {
   int index = output_width_ * output_depth_ * y + output_depth_ * x + depth;
   if (has_uint8_outputs_) {
-    ASSIGN_OR_RETURN(const uint8* data,
+    TFLITE_ASSIGN_OR_RETURN(const uint8* data,
                      AssertAndReturnTypedTensor<uint8>(&output_tensor));
     return output_tensor.params.scale *
            (static_cast<int>(data[index]) - output_tensor.params.zero_point);
   } else {
-    ASSIGN_OR_RETURN(const float* data,
+    TFLITE_ASSIGN_OR_RETURN(const float* data,
                      AssertAndReturnTypedTensor<float>(&output_tensor));
     return data[index];
   }

@@ -1,7 +1,7 @@
-From 7f0ceed51d46990dc968a529d90dcab724e30339 Mon Sep 17 00:00:00 2001
+From 4d2fba622f7479079c9b2dbb2d0fc56926560190 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:06 -0800
-Subject: [PATCH 2/9] rm noop deprecated attribute
+Subject: [PATCH 02/10] rm noop deprecated attribute
 
 ---
  .../cc/task/text/nlclassifier/nl_classifier.h                  | 3 ---

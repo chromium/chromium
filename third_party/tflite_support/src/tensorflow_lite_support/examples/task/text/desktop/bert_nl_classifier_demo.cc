@@ -50,7 +50,7 @@ absl::Status Classify() {
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
 
-  ASSIGN_OR_RETURN(std::unique_ptr<BertNLClassifier> classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<BertNLClassifier> classifier,
                    BertNLClassifier::CreateFromOptions(options));
 
   auto start_classify = steady_clock::now();
