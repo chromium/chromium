@@ -8536,14 +8536,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "webui-tab-strip-ntb-in-tab-strip",
-    "owners": [
-      "yuhengh",
-      "tluk"
-    ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "webui-tab-strip-tab-drag-integration",
     "owners": [
       "yuhengh",
