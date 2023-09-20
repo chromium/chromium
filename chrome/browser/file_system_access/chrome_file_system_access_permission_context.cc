@@ -1927,6 +1927,66 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
 #endif
 }
 
+void ChromeFileSystemAccessPermissionContext::OnRestorePromptAllowEveryTime(
+    const url::Origin& origin) {
+  UpdateGrantsOnRestorePromptAllow(origin);
+  extended_permissions_settings_map_[origin] =
+      ContentSetting::CONTENT_SETTING_ALLOW;
+}
+
+void ChromeFileSystemAccessPermissionContext::OnRestorePromptAllowThisTime(
+    const url::Origin& origin) {
+  UpdateGrantsOnRestorePromptAllow(origin);
+}
+
+void ChromeFileSystemAccessPermissionContext::UpdateGrantsOnRestorePromptAllow(
+    const url::Origin& origin) {
+  if (OriginHasExtendedPermission(origin)) {
+    // TODO(crbug.com/1011533): In this code path, the user has enabled
+    // Extended Permission via the page info UI, while the restore prompt is
+    // shown. Update this logic to grant the requested handle by hooking into
+    // the restore prompt callback function, once implemented.
+    return;
+  }
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it != active_permissions_map_.end()) {
+    OriginState& origin_state = origin_it->second;
+    if (origin_state.grant_status == GrantStatus::kCurrent) {
+      // TODO(crbug.com/1011533): In this code path, a new permission has been
+      // granted while the restore prompt is being shown to the user. This is
+      // an invalid state, and should return
+      // `PermissionRequestOutcome::kRequestAborted` via the restore prompt
+      // callback function, once implemented.
+      return;
+    }
+    origin_state.grant_status = GrantStatus::kCurrent;
+    // Persisted grants are now updated from dormant grants to extended/shadow
+    // grants. Use the persisted grants to find the matching active permission,
+    // and set it to `granted`.
+    auto persisted_grants = ConvertObjectsToGrants(
+        ObjectPermissionContextBase::GetGrantedObjects(origin));
+    for (auto& read_grant : origin_state.read_grants) {
+      if (base::Contains(persisted_grants.file_read_grants, read_grant.first) ||
+          base::Contains(persisted_grants.directory_read_grants,
+                         read_grant.first)) {
+        read_grant.second->SetStatus(
+            PermissionStatus::GRANTED,
+            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+      }
+    }
+    for (auto& write_grant : origin_state.write_grants) {
+      if (base::Contains(persisted_grants.file_write_grants,
+                         write_grant.first) ||
+          base::Contains(persisted_grants.directory_write_grants,
+                         write_grant.first)) {
+        write_grant.second->SetStatus(
+            PermissionStatus::GRANTED,
+            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+      }
+    }
+  }
+}
+
 void ChromeFileSystemAccessPermissionContext::OnDontAllowRestorePrompt(
     const url::Origin& origin) {
   // Both denying and dismissing the restore prompt count as a `dismiss`

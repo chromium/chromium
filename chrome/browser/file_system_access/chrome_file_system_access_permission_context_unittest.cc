@@ -1329,6 +1329,92 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             permission_request_outcome);
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       AcceptRestorePrompt_AllowEveryTime) {
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  auto read_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto read_grant2 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  auto write_grant2 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  EXPECT_EQ(PermissionStatus::ASK, read_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, write_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, read_grant2->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, write_grant2->GetStatus());
+
+  // TODO(crbug.com/1011533): Trigger the restore prompt via by calling into
+  // `RequestPermission` once implementation is ready, and remove the
+  // `*ForTesting` method in this test.
+  // Select 'Allow every time' from the restore prompt options.
+  permission_context()->OnRestorePromptAllowEveryTimeForTesting(kTestOrigin);
+
+  // The permission grant status is now `GRANTED` the dormant grants are now
+  // extended grants.
+  EXPECT_EQ(PermissionStatus::GRANTED, read_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, write_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, read_grant2->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, write_grant2->GetStatus());
+  EXPECT_EQ(2UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  // The granted permission objects remain, even after navigating away from the
+  // page.
+  EXPECT_EQ(2UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       AcceptRestorePrompt_AllowThisTime) {
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto read_grant2 = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  auto write_grant2 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  EXPECT_EQ(PermissionStatus::ASK, read_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, write_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, read_grant2->GetStatus());
+  EXPECT_EQ(PermissionStatus::ASK, write_grant2->GetStatus());
+
+  // TODO(crbug.com/1011533): Trigger the restore prompt via by calling into
+  // `RequestPermission` once implementation is ready, and remove the
+  // `*ForTesting` method in this test.
+  // Select 'Allow this time' from the restore prompt options.
+  permission_context()->OnRestorePromptAllowThisTimeForTesting(kTestOrigin);
+
+  // The permission grant status for all dormant grants is now `GRANTED`.
+  EXPECT_EQ(PermissionStatus::GRANTED, read_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, write_grant->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, read_grant2->GetStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, write_grant2->GetStatus());
+  EXPECT_EQ(2UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grants.
+  // The granted permissions are cleared after navigating away from the page.
+  EXPECT_EQ(0UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+}
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest, RejectRestorePrompt) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);

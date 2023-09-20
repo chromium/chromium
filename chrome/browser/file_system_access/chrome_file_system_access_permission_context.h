@@ -160,8 +160,26 @@ class ChromeFileSystemAccessPermissionContext
         features::kFileSystemAccessPersistentPermissions));
     OnDontAllowRestorePrompt(origin);
   }
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
   void OnIgnoreRestorePromptForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
     OnIgnoreRestorePrompt(origin);
+  }
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
+  void OnRestorePromptAllowEveryTimeForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
+    OnRestorePromptAllowEveryTime(origin);
+  }
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
+  void OnRestorePromptAllowThisTimeForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
+    OnRestorePromptAllowThisTime(origin);
   }
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
@@ -305,6 +323,19 @@ class ChromeFileSystemAccessPermissionContext
   // Checks if any tabs are open for |origin|, and if not revokes all active
   // permissions for that origin.
   void MaybeCleanupActivePermissions(const url::Origin& origin);
+
+  // Called when the restore prompt is accepted as a result of the user
+  // selecting the 'Allow every time' option.
+  void OnRestorePromptAllowEveryTime(const url::Origin& origin);
+
+  // Called when the restore prompt is accepted as a result of the user
+  // selecting the 'Allow this time' option.
+  void OnRestorePromptAllowThisTime(const url::Origin& origin);
+
+  // Updates the grant status and the active / persistent permissions grant sets
+  // when the user selects either the 'Allow this time' or 'Allow every time'
+  // option from the restore prompt.
+  void UpdateGrantsOnRestorePromptAllow(const url::Origin& origin);
 
   // Called when the restore prompt is dismissed or denied.
   void OnDontAllowRestorePrompt(const url::Origin& origin);
