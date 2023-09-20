@@ -117,7 +117,7 @@ void EditingList::Init() {
   auto* main_container =
       AddChildView(std::make_unique<ash::RoundedContainer>());
   main_container->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque));
   main_container->SetBorderInsets(
       gfx::Insets::VH(kInsideBorderInsets, kInsideBorderInsets));
   main_container

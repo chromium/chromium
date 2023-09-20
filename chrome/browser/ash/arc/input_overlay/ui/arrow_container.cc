@@ -138,7 +138,7 @@ void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   ui::ColorProvider* color_provider = GetColorProvider();
   flags.setColor(
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 
   int height = GetHeightForWidth(kMenuWidth);
   canvas->DrawPath(
