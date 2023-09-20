@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -71,6 +72,15 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
 
     CHECK_EQ(default_search_provider->prepopulate_id(), 0);
   }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Log that the choice was made during the FRE.
+  if (FirstRunService* first_run_service =
+          FirstRunServiceFactory::GetForBrowserContextIfExists(
+              &profile_.get())) {
+    choice_made_in_fre_ = true;
+  }
+#endif
 
   // Closes the dialogs that are open on other browser windows that
   // have the same profile as the one on which the choice was made.
@@ -150,6 +160,10 @@ bool SearchEngineChoiceService::HasUserMadeChoice() const {
   PrefService* pref_service = profile_->GetPrefs();
   return pref_service->GetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
+}
+
+bool SearchEngineChoiceService::WasChoiceMadeInFRE() const {
+  return choice_made_in_fre_;
 }
 
 bool SearchEngineChoiceService::HasPendingDialog(Browser& browser) {

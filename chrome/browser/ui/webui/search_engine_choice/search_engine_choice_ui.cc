@@ -59,8 +59,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
 
   // TODO(b/280753567): Differentiate new from existing users. For new users use
   // IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE if
-  // FirstRunServiceFactory::GetForBrowserContext(profile_.get()) is present
-  // indicating it's part of FRE.
+  // FirstRunServiceFactory::GetForBrowserContextIfExists(profile_.get()) is
+  // present indicating it's part of FRE.
   source->AddLocalizedString("title",
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_EXISTING_USER_TITLE);
   source->AddLocalizedString("subtitle",

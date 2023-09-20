@@ -10,6 +10,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -146,6 +148,24 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       return;
     }
   }
+
+// Defer the prompt to the next Chrome run if the Search Engine Choice
+// dialog will be or has been displayed in the current run.
+// The build flag check is needed because we don't build the Search Engine
+// Choice dialog on Fuchsia.
+// TODO(b/301061968): Add a test for when the user makes the search engine
+// choice in the FRE and then opens a browser where the prompt should be shown.
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+  if (search_engine_choice_service &&
+      !search_engine_choice_service->WasChoiceMadeInFRE()) {
+    base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
+                                  SettingsPrivacySandboxPromptHelperEvent::
+                                      kSearchEngineChoiceDialogShown);
+    return;
+  }
+#endif
 
   auto* browser =
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());

@@ -55,6 +55,9 @@ class PrivacySandboxPromptHelper
                            SinglePromptPerBrowser);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
                            MultipleBrowserWindows);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
+      NoPromptWhenSearchEngineChoiceDialogIsDisplayed);
 
   // Contains all the events that the helper goes through when attempting to
   // show a Privacy Sandbox prompt. Must be kept in sync with the
@@ -70,9 +73,10 @@ class PrivacySandboxPromptHelper
     kPromptAlreadyExistsForBrowser = 7,
     kWindowTooSmall = 8,
     kPromptShown = 9,
+    kSearchEngineChoiceDialogShown = 10,
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kPromptShown,
+    kMaxValue = kSearchEngineChoiceDialogShown,
   };
 
   explicit PrivacySandboxPromptHelper(content::WebContents* web_contents);

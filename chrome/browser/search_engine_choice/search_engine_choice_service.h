@@ -63,6 +63,10 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether the user has already made a choice or not.
   bool HasUserMadeChoice() const;
 
+  // Returns whether the user made the search engine choice during the first run
+  // experience.
+  bool WasChoiceMadeInFRE() const;
+
   // Returns the list of search engines.
   // Virtual to be able to mock in tests.
   virtual std::vector<std::unique_ptr<TemplateURLData>> GetSearchEngines();
@@ -98,6 +102,9 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Observes the browser list for closed browsers.
   BrowserObserver browser_observer_{*this};
+
+  // To know whether the choice was made during the FRE or not.
+  bool choice_made_in_fre_ = false;
 
   // The `KeyedService` lifetime is expected to exceed the profile's.
   const raw_ref<Profile> profile_;
