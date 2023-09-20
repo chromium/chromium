@@ -331,8 +331,16 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ElementsAre(Pair("HoursSinceLastInteraction", 3)));
 }
 
+// TODO(crbug.com/1485029): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopupPastInteractionIsReported_ClientRedirect \
+  DISABLED_PopupPastInteractionIsReported_ClientRedirect
+#else
+#define MAYBE_PopupPastInteractionIsReported_ClientRedirect \
+  PopupPastInteractionIsReported_ClientRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupPastInteractionIsReported_ClientRedirect) {
+                       MAYBE_PopupPastInteractionIsReported_ClientRedirect) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL popup_url =
       embedded_test_server()->GetURL("a.test", "/client-redirect?title1.html");
