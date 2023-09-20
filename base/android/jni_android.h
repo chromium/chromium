@@ -52,6 +52,12 @@ BASE_EXPORT bool IsVMInitialized();
 // Returns the global JVM, or nullptr if it has not been initialized.
 BASE_EXPORT JavaVM* GetVM();
 
+// Do not allow any future native->java calls.
+// This is necessary in gtest DEATH_TESTS to prevent
+// GetJavaStackTraceIfPresent() from accessing a defunct JVM (due to fork()).
+// https://crbug.com/1484834
+BASE_EXPORT void DisableJvmForTesting();
+
 // Initializes the global ClassLoader used by the GetClass and LazyGetClass
 // methods. This is needed because JNI will use the base ClassLoader when there
 // is no Java code on the stack. The base ClassLoader doesn't know about any of
@@ -123,8 +129,11 @@ BASE_EXPORT bool ClearException(JNIEnv* env);
 BASE_EXPORT void CheckException(JNIEnv* env);
 
 // This returns a string representation of the java stack trace.
-BASE_EXPORT std::string GetJavaExceptionInfo(JNIEnv* env,
-                                             jthrowable java_throwable);
+BASE_EXPORT std::string GetJavaExceptionInfo(
+    JNIEnv* env,
+    const JavaRef<jthrowable>& throwable);
+// This returns a string representation of the java stack trace.
+BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
 }  // namespace android
 }  // namespace base

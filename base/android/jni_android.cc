@@ -10,6 +10,7 @@
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
+#include "base/android_runtime_jni_headers/Throwable_jni.h"
 #include "base/base_jni/PiiElider_jni.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/logging.h"
@@ -123,6 +124,10 @@ bool IsVMInitialized() {
 
 JavaVM* GetVM() {
   return g_jvm;
+}
+
+void DisableJvmForTesting() {
+  g_jvm = nullptr;
 }
 
 void InitGlobalClassLoader(JNIEnv* env) {
@@ -263,8 +268,8 @@ void CheckException(JNIEnv* env) {
   if (!HasException(env))
     return;
 
-  jthrowable java_throwable = env->ExceptionOccurred();
-  if (java_throwable) {
+  ScopedJavaLocalRef<jthrowable> throwable(env, env->ExceptionOccurred());
+  if (throwable) {
     // Clear the pending exception, since a local reference is now held.
     env->ExceptionDescribe();
     env->ExceptionClear();
@@ -277,7 +282,7 @@ void CheckException(JNIEnv* env) {
       g_fatal_exception_occurred = true;
       // RVO should avoid any extra copies of the exception string.
       base::android::SetJavaException(
-          GetJavaExceptionInfo(env, java_throwable).c_str());
+          GetJavaExceptionInfo(env, throwable).c_str());
     }
   }
 
@@ -285,12 +290,36 @@ void CheckException(JNIEnv* env) {
   LOG(FATAL) << "Please include Java exception stack in crash report";
 }
 
-std::string GetJavaExceptionInfo(JNIEnv* env, jthrowable java_throwable) {
+std::string GetJavaExceptionInfo(JNIEnv* env,
+                                 const JavaRef<jthrowable>& throwable) {
   ScopedJavaLocalRef<jstring> sanitized_exception_string =
-      Java_PiiElider_getSanitizedStacktrace(
-          env, ScopedJavaLocalRef(env, java_throwable));
+      Java_PiiElider_getSanitizedStacktrace(env, throwable);
 
   return ConvertJavaStringToUTF8(sanitized_exception_string);
+}
+
+std::string GetJavaStackTraceIfPresent() {
+  JNIEnv* env = nullptr;
+  if (g_jvm) {
+    g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
+  }
+  if (!env) {
+    // JNI has not been initialized on this thread.
+    return {};
+  }
+  ScopedJavaLocalRef<jthrowable> throwable =
+      JNI_Throwable::Java_Throwable_Constructor(env);
+  std::string ret = GetJavaExceptionInfo(env, throwable);
+  // Strip the exception message and leave only the "at" lines. Example:
+  // java.lang.Throwable:
+  // {tab}at Clazz.method(Clazz.java:111)
+  // {tab}at ...
+  size_t newline_idx = ret.find('\n');
+  if (newline_idx == std::string::npos) {
+    // There are no java frames.
+    return {};
+  }
+  return ret.substr(newline_idx + 1);
 }
 
 }  // namespace android
