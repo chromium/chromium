@@ -573,7 +573,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return 'red';
     }
     if (!this.useFileIcon_) {
-      return 'paper-grey';
+      return 'light-grey';
     }
     return '';
   }

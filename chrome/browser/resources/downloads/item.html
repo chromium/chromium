@@ -128,8 +128,8 @@
     opacity: .5;
   }
 
-  #file-icon-wrapper iron-icon[icon-color='paper-grey'] {
-    color: var(--paper-grey-400);
+  #file-icon-wrapper iron-icon[icon-color='light-grey'] {
+    color: var(--google-grey-400);
   }
 
   #file-icon-wrapper iron-icon[icon-color='red'] {
@@ -314,9 +314,9 @@
   -->
   <div id="file-icon-wrapper" class="icon-wrapper" aria-hidden="true">
     <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
-    icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-    useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
-    displayType_)]]">
+        icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
+        useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
+        displayType_)]]">
     <iron-icon class="icon" hidden="[[useFileIcon_]]"
         icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
             updateDeepScanningUx_, improvedDownloadWarningsUx_, displayType_)]]"
