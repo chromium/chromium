@@ -1222,7 +1222,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#aggregatableReportTable')
         .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 1) {
+      if (table.children.length === 1 &&
+          table.children[0].children[0]?.innerText !== 'No sent or pending reports.') {
         obs.disconnect();
         document.title = $1;
       }
