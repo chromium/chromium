@@ -14,8 +14,13 @@
 namespace commerce {
 
 DiscountsStorage::DiscountsStorage(
-    SessionProtoStorage<DiscountsContent>* discounts_proto_db)
-    : proto_db_(discounts_proto_db) {}
+    SessionProtoStorage<DiscountsContent>* discounts_proto_db,
+    history::HistoryService* history_service)
+    : proto_db_(discounts_proto_db) {
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
+}
 DiscountsStorage::~DiscountsStorage() = default;
 
 void DiscountsStorage::HandleServerDiscounts(
@@ -140,6 +145,19 @@ std::vector<DiscountInfo> DiscountsStorage::GetUnexpiredDiscountsFromProto(
   }
 
   return infos;
+}
+
+void DiscountsStorage::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (deletion_info.IsAllHistory()) {
+    proto_db_->DeleteAllContent(base::BindOnce([](bool succeeded) {}));
+    return;
+  }
+
+  for (const history::URLRow& row : deletion_info.deleted_rows()) {
+    DeleteDiscountsForUrl(row.url().spec());
+  }
 }
 
 }  // namespace commerce

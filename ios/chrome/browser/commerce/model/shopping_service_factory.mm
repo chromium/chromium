@@ -8,11 +8,13 @@
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -60,6 +62,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SessionProtoDBFactory<
             parcel_tracking_db::ParcelTrackingContent>::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -84,7 +87,9 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr,
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
-          ->GetForBrowserState(chrome_state));
+          ->GetForBrowserState(chrome_state),
+      ios::HistoryServiceFactory::GetForBrowserState(
+          chrome_state, ServiceAccessType::EXPLICIT_ACCESS));
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {

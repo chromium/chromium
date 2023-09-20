@@ -216,6 +216,7 @@ static_library("shopping_service") {
     "//base",
     "//components/bookmarks/browser",
     "//components/commerce/core/parcel:parcel",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
@@ -319,6 +320,7 @@ source_set("shopping_service_unit_tests") {
     "parcel:unit_tests",
     "subscriptions:test_support",
     "webui:unit_tests",
+    "//components/history/core/browser",
     "//components/search",
   ]
 }

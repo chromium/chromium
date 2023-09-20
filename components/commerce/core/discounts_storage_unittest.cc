@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +36,8 @@ const int64_t kDiscountIdFromServer = 111;
 const int64_t kDiscountIdInDb1 = 333;
 const int64_t kDiscountIdInDb2 = 444;
 const int64_t kDiscountOfferId = 123456;
+const char kDeleteUrl1[] = "http://example.com/delete1";
+const char kDeleteUrl2[] = "http://example.com/delete2";
 
 commerce::DiscountsMap MockServerResults() {
   commerce::DiscountInfo info;
@@ -215,7 +218,7 @@ class DiscountsStorageTest : public testing::Test {
 
   void SetUp() override {
     proto_db_ = std::make_unique<MockProtoStorage>();
-    storage_ = std::make_unique<DiscountsStorage>(proto_db_.get());
+    storage_ = std::make_unique<DiscountsStorage>(proto_db_.get(), nullptr);
   }
 
  protected:
@@ -407,6 +410,24 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteAll) {
+  EXPECT_CALL(*proto_db_, DeleteAllContent).Times(1);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry).Times(0);
+
+  storage_->OnURLsDeleted(nullptr, history::DeletionInfo::ForAllHistory());
+}
+
+TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteUrls) {
+  EXPECT_CALL(*proto_db_, DeleteAllContent).Times(0);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kDeleteUrl1, _)).Times(1);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kDeleteUrl2, _)).Times(1);
+
+  storage_->OnURLsDeleted(nullptr, history::DeletionInfo::ForUrls(
+                                       {history::URLRow(GURL(kDeleteUrl1)),
+                                        history::URLRow(GURL(kDeleteUrl2))},
+                                       {}));
 }
 
 }  // namespace commerce

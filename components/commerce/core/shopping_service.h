@@ -28,6 +28,7 @@
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -236,7 +237,8 @@ class ShoppingService : public KeyedService,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
           discounts_proto_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
-          parcel_tracking_proto_db);
+          parcel_tracking_proto_db,
+      history::HistoryService* history_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
