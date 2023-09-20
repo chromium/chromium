@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/manta/manta_service_callbacks.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -23,8 +24,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace manta {
-
-using OrcaProviderCallback = base::OnceCallback<void(base::Value::Dict)>;
 
 // The Orca provider for the Manta project. Provides a method for clients to
 // call the relevant google API, handling OAuth and http fetching.
@@ -56,20 +55,15 @@ class OrcaProvider {
 
   // Calls the google service endpoint with the http POST request payload
   // populated with the `input` parameters.
-  // The fetched response is returned to the caller via an
-  // `OrcaProviderCallback` callback.
+  // The fetched response is processed and returned to the caller via an
+  // `MantaGenericCallback` callback.
   //
   // NOTE: This methods internally depends on a valid `IdentityManager`.
   void Call(const std::map<std::string, std::string>& input,
-            OrcaProviderCallback done_callback);
+            MantaGenericCallback done_callback);
 
  private:
   friend class FakeOrcaProvider;
-
-  // Handles and sends response from the endpoint to the user provided callback.
-  void HandleResponse(EndpointFetcherCallback done_callback,
-                      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-                      std::unique_ptr<EndpointResponse> response);
 
   // Creates and returns unique pointer to an `EndpointFetcher` initialized with
   // the provided parameters and defaults relevant to `OrcaProvider`. Virtual

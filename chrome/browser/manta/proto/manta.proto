@@ -9,9 +9,10 @@ package manta.proto;
 
 enum FeatureName {
   reserved 1 to 4;
-  reserved 6 to 303;
+  reserved 6 to 301, 303;
 
   IMAGE_TEST = 5;
+  TEXT_TEST = 302;
 }
 
 enum ImageResolution {
@@ -23,16 +24,28 @@ enum ImageResolution {
 }
 
 message RequestConfig {
-  reserved 1, 4, 5;
+  reserved 1, 4;
 
   optional ImageResolution image_resolution = 2;
   optional uint32 num_outputs = 3;
+
+  enum Tone {
+    UNSPECIFIED = 0;
+    SHORTEN = 1;
+    ELABORATE = 2;
+    REPHRASE = 3;
+    FORMALIZE = 4;
+    EMOJIFY = 5;
+  }
+
+  optional Tone tone = 5;
 }
 
 message InputData {
-  reserved 2, 3, 4;
+  reserved 2, 3;
 
   required string text = 1;
+  optional string tag = 4;
 }
 
 message Request {
@@ -48,9 +61,11 @@ message Image {
 }
 
 message OutputData {
-  reserved 1, 3, 4;
-
-  optional Image image = 2;
+  reserved 3, 4;
+  oneof output_data {
+    string text = 1;
+    Image image = 2;
+  }
 }
 
 message Response {

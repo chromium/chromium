@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/manta/manta_status.h"
 
 namespace ash::input_method {
 
@@ -39,11 +40,11 @@ orca::mojom::TextQueryResponsePtr ParseResponse(
     base::Value::Dict& raw_response) {
   if (raw_response.FindBool("error").value_or(false)) {
     // TODO: b:300557202 - use the right error code
-    auto * error_message = raw_response.FindString("error_message");
+    auto* error_message = raw_response.FindString("error_message");
     return orca::mojom::TextQueryResponse::NewError(
         orca::mojom::TextQueryError::New(
             orca::mojom::TextQueryErrorCode::kInvalidArgument,
-            error_message != nullptr ? *error_message : ""));
+            error_message != nullptr ? *error_message : std::string()));
   }
 
   std::vector<orca::mojom::TextQueryResultPtr> results;
@@ -88,7 +89,10 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
-          [](ProcessCallback process_callback, base::Value::Dict dict) {
+          [](ProcessCallback process_callback, base::Value::Dict dict,
+             manta::MantaStatus manta_status) {
+            // TODO(b:298285960): Deal with manta_status to obtain the errors
+            // properly.
             auto response = ParseResponse(dict);
             std::move(process_callback).Run(std::move(response));
           },

@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/manta/manta_status.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
@@ -88,16 +89,16 @@ class OrcaProviderTest : public testing::Test {
 
   void SetEndpointMockResponse(const GURL& request_url,
                                const std::string& response_data,
-                               net::HttpStatusCode status_code,
-                               net::Error error_code) {
+                               net::HttpStatusCode response_code,
+                               net::Error error) {
     auto head = network::mojom::URLResponseHead::New();
     std::string headers(base::StringPrintf(
-        "HTTP/1.1 %d %s\nContent-type: application/json\n\n",
-        static_cast<int>(status_code), GetHttpReasonPhrase(status_code)));
+        "HTTP/1.1 %d %s\nContent-type: application/x-protobuf\n\n",
+        static_cast<int>(response_code), GetHttpReasonPhrase(response_code)));
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
-    head->mime_type = "application/json";
-    network::URLLoaderCompletionStatus status(error_code);
+    head->mime_type = "application/x-protobuf";
+    network::URLLoaderCompletionStatus status(error);
     status.decoded_body_length = response_data.size();
     test_url_loader_factory_.AddResponse(request_url, std::move(head),
                                          response_data, status);
@@ -130,15 +131,14 @@ TEST_F(OrcaProviderTest, PrepareRequestFailure) {
   SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/"",
                           net::HTTP_OK, net::OK);
 
-  orca_provider->Call(input,
-                      base::BindLambdaForTesting(
-                          [quit_closure = task_environment_.QuitClosure()](
-                              base::Value::Dict response) {
-                            EXPECT_TRUE(response.FindBool("error").value());
-                            EXPECT_EQ(*response.FindString("error_message"),
-                                      "Fail to prepare request");
-                            quit_closure.Run();
-                          }));
+  orca_provider->Call(
+      input, base::BindLambdaForTesting(
+                 [quit_closure = task_environment_.QuitClosure()](
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kInvalidInput);
+                   quit_closure.Run();
+                 }));
 
   task_environment_.RunUntilQuit();
 }
@@ -155,32 +155,9 @@ TEST_F(OrcaProviderTest, CaptureUnexcpetedStatusCode) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response) {
-                   EXPECT_TRUE(response.FindBool("error").value());
-                   EXPECT_EQ(response.FindInt("http_status_code").value(),
-                             static_cast<int32_t>(net::HTTP_BAD_REQUEST));
-                   quit_closure.Run();
-                 }));
-  task_environment_.RunUntilQuit();
-}
-
-// Test that responses with error_type are captured properly.
-TEST_F(OrcaProviderTest, CaptureAuthError) {
-  std::map<std::string, std::string> input = {{"data", "simple post data"},
-                                              {"tone", "SHORTEN"}};
-  std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
-
-  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/"",
-                          net::HTTP_UNAUTHORIZED, net::OK);
-
-  orca_provider->Call(
-      input, base::BindLambdaForTesting(
-                 [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response) {
-                   EXPECT_TRUE(response.FindBool("error").value());
-                   EXPECT_TRUE(response.FindInt("error_type").has_value());
-                   // kAuthError
-                   EXPECT_EQ(response.FindInt("error_type").value(), 0);
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kBackendFailure);
                    quit_closure.Run();
                  }));
   task_environment_.RunUntilQuit();
@@ -195,22 +172,20 @@ TEST_F(OrcaProviderTest, CaptureNetError) {
                           net::HTTP_OK, net::ERR_FAILED);
 
   orca_provider->Call(
-      input, base::BindLambdaForTesting(
-                 [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response) {
-                   EXPECT_TRUE(response.FindBool("error").value());
-                   EXPECT_TRUE(response.FindInt("error_type").has_value());
-                   // kNetError
-                   EXPECT_EQ(response.FindInt("error_type").value(), 1);
-                   quit_closure.Run();
-                 }));
+      input, base::BindLambdaForTesting([quit_closure =
+                                             task_environment_.QuitClosure()](
+                                            base::Value::Dict response,
+                                            MantaStatus manta_status) {
+        EXPECT_EQ(manta_status.status_code, MantaStatusCode::kBackendFailure);
+        EXPECT_EQ(manta_status.message, "There was a response error");
+        quit_closure.Run();
+      }));
   task_environment_.RunUntilQuit();
 }
 
-// Test that malformed response JSON string can be captured with proper
-// error_type.
-TEST_F(OrcaProviderTest, ParseMalformedJson) {
-  std::string post_data = "{invalid json string";
+// Test that malformed proto data can be captured with proper error.
+TEST_F(OrcaProviderTest, ParseMalformedSerializedProto) {
+  std::string post_data = "{invalid proto";
 
   std::map<std::string, std::string> input = {{"data", "simple post data"},
                                               {"tone", "SHORTEN"}};
@@ -222,36 +197,48 @@ TEST_F(OrcaProviderTest, ParseMalformedJson) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response) {
-                   EXPECT_TRUE(response.FindBool("error").value());
-                   EXPECT_TRUE(response.FindInt("error_type").has_value());
-                   // kResultParseError
-                   EXPECT_EQ(response.FindInt("error_type").value(), 2);
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kMalformedResponse);
                    quit_closure.Run();
                  }));
+
   task_environment_.RunUntilQuit();
 }
 
 // Test a successful response can be parsed as base::Value::Dict.
 TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
-  std::string post_data = "{\"data\":\"simple post data\"}";
+  proto::Response response;
+  proto::OutputData& output_data = *response.add_output_data();
+  output_data.set_text("foo");
+  std::string response_data;
+  response.SerializeToString(&response_data);
 
   std::map<std::string, std::string> input = {{"data", "simple post data"},
                                               {"tone", "SHORTEN"}};
   std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
 
-  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/post_data,
+  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/response_data,
                           net::HTTP_OK, net::OK);
 
   orca_provider->Call(
-      input, base::BindLambdaForTesting(
-                 [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response) {
-                   EXPECT_FALSE(response.contains("error"));
-                   EXPECT_TRUE(response.contains("data"));
-                   EXPECT_EQ(*response.FindString("data"), "simple post data");
-                   quit_closure.Run();
-                 }));
+      input,
+      base::BindLambdaForTesting(
+          [quit_closure = task_environment_.QuitClosure()](
+              base::Value::Dict response, MantaStatus manta_status) {
+            EXPECT_EQ(manta_status.status_code, MantaStatusCode::kOk);
+
+            EXPECT_TRUE(response.contains("outputData"));
+
+            const auto* output_data_list = response.FindList("outputData");
+            EXPECT_EQ(output_data_list->size(), 1u);
+
+            const base::Value& front_element = output_data_list->front();
+            EXPECT_TRUE(front_element.is_dict());
+            EXPECT_EQ(*(front_element.GetDict().FindString("text")), "foo");
+
+            quit_closure.Run();
+          }));
   task_environment_.RunUntilQuit();
 }
 
