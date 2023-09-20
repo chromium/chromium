@@ -8,9 +8,12 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -38,14 +41,15 @@ public class DeviceLockBridge {
      * TODO(crbug/1474036): Handle edge case where Chrome is killed when switching to OS PIN flow.
      */
     @CalledByNative
-    private void launchDeviceLockUiBeforeSavingPassword(WindowAndroid windowAndroid) {
+    private void launchDeviceLockUiBeforeSavingPassword(@NonNull WindowAndroid windowAndroid) {
         if (mNativeDeviceLockBridge == 0) {
             return;
         }
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
-            DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(context, null, true,
-                    windowAndroid,
+            DeviceLockActivityLauncher deviceLockActivityLauncher =
+                    DeviceLockActivityLauncherSupplier.from(windowAndroid).get();
+            deviceLockActivityLauncher.launchDeviceLockActivity(context, null, true, windowAndroid,
                     (resultCode, unused)
                             -> DeviceLockBridgeJni.get().onDeviceLockUiFinished(
                                     mNativeDeviceLockBridge, resultCode == Activity.RESULT_OK));
