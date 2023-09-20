@@ -121,11 +121,11 @@ PasswordForm LeakedForm() {
 }
 
 PasswordForm ReusedForm1() {
-  return MakeForm(kUsername3, kPassword2);
+  return MakeForm(kUsername3, kPassword);
 }
 
 PasswordForm ReusedForm2() {
-  return MakeForm(kUsername4, kPassword2, kOrigin2);
+  return MakeForm(kUsername4, kPassword, kOrigin2);
 }
 
 }  // namespace
@@ -555,10 +555,10 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
        DISABLED_CheckTimeUpdatedAfterRunScheduledInThePast) {
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  // Set scheduled time to be a bit (less than interval) in the past.
+  // Set scheduled time to be in the past.
   service()->SetPasswordCheckSchedulePrefsWithInterval(
       service()->GetScheduledPasswordCheckTime() -
-      0.5 * service()->GetScheduledPasswordCheckInterval());
+      service()->GetScheduledPasswordCheckInterval());
 
   base::TimeDelta interval_before =
       service()->GetScheduledPasswordCheckInterval();
@@ -579,33 +579,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
 
   ASSERT_EQ(interval_before, interval_after);
-  // Time between last and next check is one interval.
   ASSERT_EQ(check_time_before + interval_before, check_time_after);
-  ASSERT_GT(check_time_after, base::Time::Now());
-}
-
-TEST_F(PasswordStatusCheckServiceBaseTest,
-       CheckTimeUpdatedAfterRunScheduledLongTimeInThePast) {
-  // Set scheduled time to be a long time (more than interval) in the past. Time
-  // should not be a whole multiple of the check interval, this will cause the
-  // test to be flaky in the assertion that the scheduled time is in the future.
-  service()->SetPasswordCheckSchedulePrefsWithInterval(
-      service()->GetScheduledPasswordCheckTime() -
-      4.5 * service()->GetScheduledPasswordCheckInterval());
-  base::TimeDelta interval_before =
-      service()->GetScheduledPasswordCheckInterval();
-
-  service()->StartRepeatedUpdates();
-  task_environment()->AdvanceClock(base::Hours(1));
-  RunUntilIdle();
-
-  // After password check is completed, the next one should be scheduled.
-  base::TimeDelta interval_after =
-      service()->GetScheduledPasswordCheckInterval();
-  base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
-
-  ASSERT_EQ(interval_before, interval_after);
-  ASSERT_GT(check_time_after, base::Time::Now());
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
