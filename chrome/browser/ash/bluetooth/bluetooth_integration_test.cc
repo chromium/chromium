@@ -65,7 +65,6 @@ class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                     kBluetoothPowerState);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonToggled);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 
 constexpr char kBluetoothDevicesSubpagePath[] = "bluetoothDevices";
 constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
@@ -111,15 +110,6 @@ class BluetoothIntegrationTest : public InteractiveAshTest {
     bluez_dbus_manager_ = nullptr;
 
     InteractiveAshTest::TearDownOnMainThread();
-  }
-
-  // Waits for an element to exist in the DOM.
-  auto WaitForElementExists(const ui::ElementIdentifier& element_id,
-                            const DeepQuery& query) {
-    StateChange element_exists;
-    element_exists.event = kElementExists;
-    element_exists.where = query;
-    return WaitForStateChange(element_id, element_exists);
   }
 
   // Waits for a toggle element to be toggled (which is represented as "checked"

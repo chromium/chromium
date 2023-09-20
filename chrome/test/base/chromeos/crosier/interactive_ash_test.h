@@ -102,6 +102,18 @@ class InteractiveAshTest
       aura::Env* env,
       std::u16string title);
 
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementExists(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& query);
+
+  // Waits for an element identified by `query` to not exist in the DOM of an
+  // instrumented WebUI identified by `element_id`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
+                             const DeepQuery& query);
+
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in

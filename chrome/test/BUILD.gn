@@ -10668,6 +10668,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/ash/quick_settings_integration_test.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
+          "../browser/ui/webui/settings/ash/privacy_hub_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
           # These cannot live in ":test_support" because they use
