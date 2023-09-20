@@ -17,12 +17,15 @@ public interface DeviceLockActivityLauncher {
      *
      * @param context The context to launch the {@link DeviceLockActivity} with.
      * @param selectedAccount The account that will be used for the reauthentication challenge, or
-     *                null if reauthentication is not needed.
+     *        null if reauthentication is not needed.
+     * @param requireDeviceLockReauthentication Whether or not the reauthentication of the device
+     *        lock credentials should be required (if a device lock is already present).
      * @param windowAndroid The host activity's {@link WindowAndroid}.
      * @param callback A callback to run after the {@link DeviceLockActivity} finishes.
      */
     void launchDeviceLockActivity(Context context, @Nullable String selectedAccount,
-            WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback);
+            boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
+            WindowAndroid.IntentCallback callback);
 
     /**
      * Ensures that the device has a device lock set up to protect the user's data privacy and that
@@ -31,9 +34,11 @@ public interface DeviceLockActivityLauncher {
      * and existing device lock.
      *
      * @param context The context to launch the {@link DeviceLockActivity} with.
+     * @param requireDeviceLockReauthentication Whether or not the reauthentication of the device
+     *        lock credentials should be required (if a device lock is already present).
      * @param windowAndroid The host activity's {@link WindowAndroid}.
      * @param callback A callback to run after the {@link DeviceLockActivity} finishes.
      */
-    void presentDeviceLockChallenge(
-            Context context, WindowAndroid windowAndroid, Runnable callback);
+    void presentDeviceLockChallenge(Context context, boolean requireDeviceLockReauthentication,
+            WindowAndroid windowAndroid, Runnable callback);
 }

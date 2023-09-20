@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -119,18 +120,18 @@ public class SettingsLauncherHelperTest {
         AtomicReference<Runnable> callback = new AtomicReference<>();
 
         doAnswer((invocation) -> {
-            Runnable ensureDeviceLockSecureCallback = invocation.getArgument(2);
+            Runnable ensureDeviceLockSecureCallback = invocation.getArgument(3);
             callback.set(ensureDeviceLockSecureCallback);
             return null;
         })
                 .when(mDeviceLockActivityLauncherImpl)
-                .presentDeviceLockChallenge(any(), any(), any());
+                .presentDeviceLockChallenge(any(), anyBoolean(), any(), any());
 
         SettingsLauncherHelper.showAutofillCreditCardSettings(mMockContext, mWindowAndroid);
         verify(mMockLauncher, never())
                 .launchSettingsActivity(mMockContext, AutofillPaymentMethodsFragment.class);
         verify(mDeviceLockActivityLauncherImpl, times(1))
-                .presentDeviceLockChallenge(eq(mMockContext), eq(mWindowAndroid), any());
+                .presentDeviceLockChallenge(eq(mMockContext), eq(true), eq(mWindowAndroid), any());
 
         callback.get().run();
         verify(mMockLauncher, times(1))

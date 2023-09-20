@@ -56,19 +56,22 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
 
     @Override
     public void launchDeviceLockActivity(Context context, @Nullable String selectedAccount,
-            WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback) {
-        Intent intent = DeviceLockActivity.createIntent(context, selectedAccount);
+            boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
+            WindowAndroid.IntentCallback callback) {
+        Intent intent = DeviceLockActivity.createIntent(
+                context, selectedAccount, requireDeviceLockReauthentication);
         windowAndroid.showIntent(intent, callback, null);
     }
 
     // TODO(crbug.com/1482534)
     // Refactor to use DeviceLockDialogController rather than #launchDeviceLockActivity.
     @Override
-    public void presentDeviceLockChallenge(
-            Context context, WindowAndroid windowAndroid, Runnable callback) {
+    public void presentDeviceLockChallenge(Context context,
+            boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
+            Runnable callback) {
         if (shouldShowDeviceLockPage(context)) {
-            launchDeviceLockActivity(
-                    context, null, windowAndroid, (int resultCode, Intent data) -> {
+            launchDeviceLockActivity(context, null, requireDeviceLockReauthentication,
+                    windowAndroid, (int resultCode, Intent data) -> {
                         if (resultCode == Activity.RESULT_OK) {
                             callback.run();
                         }

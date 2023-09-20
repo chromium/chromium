@@ -44,7 +44,7 @@ public class DeviceLockBridge {
         }
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
-            DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(context, null,
+            DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(context, null, true,
                     windowAndroid,
                     (resultCode, unused)
                             -> DeviceLockBridgeJni.get().onDeviceLockUiFinished(

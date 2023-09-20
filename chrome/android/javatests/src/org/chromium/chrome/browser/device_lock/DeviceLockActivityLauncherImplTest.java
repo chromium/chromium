@@ -83,7 +83,7 @@ public class DeviceLockActivityLauncherImplTest {
     @MediumTest
     public void testLaunchDeviceLockActivity_launchesIntent() {
         DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, "testSelectedAccount", mWindowAndroid, mIntentCallback);
+                mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
         verify(mWindowAndroid, times(1))
                 .showIntent(any(Intent.class), eq(mIntentCallback), isNull());
     }
@@ -99,7 +99,7 @@ public class DeviceLockActivityLauncherImplTest {
                 .when(mWindowAndroid)
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
         DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, "testSelectedAccount", mWindowAndroid, mIntentCallback);
+                mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class DeviceLockActivityLauncherImplTest {
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
-                mContext, mWindowAndroid, () -> mCallbackCalled.set(true));
+                mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, times(1)).showIntent(any(Intent.class), any(), any());
         verify(mReauthenticatorBridge, never()).reauthenticate(any(), anyBoolean());
         assertTrue("The callback should have been called if the activity ends with RESULT_OK.",
@@ -147,7 +147,7 @@ public class DeviceLockActivityLauncherImplTest {
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
-                mContext, mWindowAndroid, () -> mCallbackCalled.set(true));
+                mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, times(1)).showIntent(any(Intent.class), any(), any());
         verify(mReauthenticatorBridge, never()).reauthenticate(any(), anyBoolean());
         assertFalse("The callback should not have been called if the activity ends with "
@@ -173,7 +173,7 @@ public class DeviceLockActivityLauncherImplTest {
                 .reauthenticate(any(), anyBoolean());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
-                mContext, mWindowAndroid, () -> mCallbackCalled.set(true));
+                mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
         verify(mReauthenticatorBridge, times(1)).reauthenticate(any(), anyBoolean());
         assertTrue("The callback should be called after a successful reauthentication.",
@@ -197,7 +197,7 @@ public class DeviceLockActivityLauncherImplTest {
                 .reauthenticate(any(), anyBoolean());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
-                mContext, mWindowAndroid, () -> mCallbackCalled.set(true));
+                mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
         verify(mReauthenticatorBridge, times(1)).reauthenticate(any(), anyBoolean());
         assertFalse("The callback should be not called after a failed reauthentication.",

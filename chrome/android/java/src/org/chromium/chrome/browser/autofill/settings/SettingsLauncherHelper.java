@@ -51,8 +51,9 @@ public class SettingsLauncherHelper {
             return false;
         }
         if (BuildInfo.getInstance().isAutomotive) {
-            DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
-                    context, windowAndroid, () -> launchSettingsActivity(context));
+            DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(context,
+                    /* requireDeviceLockReauthentication */ true, windowAndroid,
+                    () -> launchSettingsActivity(context));
         } else {
             launchSettingsActivity(context);
         }

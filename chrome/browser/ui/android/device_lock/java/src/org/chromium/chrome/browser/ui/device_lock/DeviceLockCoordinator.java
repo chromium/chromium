@@ -64,7 +64,18 @@ public class DeviceLockCoordinator {
         this(delegate, windowAndroid, createDeviceLockAuthenticatorBridge(), activity, account);
     }
 
-    protected DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid,
+    /**
+     * Constructs a coordinator for the Device Lock page.
+     *
+     * @param delegate The delegate invoked to interact with classes outside the module.
+     * @param windowAndroid Used to launch Intents with callbacks.
+     * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm
+     *         device lock credentials.
+     * @param activity The activity hosting this page.
+     * @param account The account that will be used for the reauthentication challenge, or null
+     *        if reauthentication is not needed.
+     */
+    public DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid,
             @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
             @Nullable Account account) {
         mView = DeviceLockView.create(LayoutInflater.from(activity));

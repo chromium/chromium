@@ -920,14 +920,16 @@ public class AccountPickerBottomSheetTest {
 
         @Override
         public void launchDeviceLockActivity(Context context, String selectedAccount,
-                WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback) {
+                boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
+                WindowAndroid.IntentCallback callback) {
             mCallback = callback;
             mLaunched = true;
         }
 
         @Override
-        public void presentDeviceLockChallenge(
-                Context context, WindowAndroid windowAndroid, Runnable callback) {}
+        public void presentDeviceLockChallenge(Context context,
+                boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
+                Runnable callback) {}
 
         boolean isLaunched() {
             return mLaunched;

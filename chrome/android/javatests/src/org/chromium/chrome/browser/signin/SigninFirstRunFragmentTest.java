@@ -909,7 +909,7 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
+        verify(mFirstRunPageDelegateMock, timeout(2000)).advanceToNextPage();
     }
 
     @Test
