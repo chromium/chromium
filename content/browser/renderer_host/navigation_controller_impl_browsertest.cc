@@ -111,6 +111,23 @@ const char kAddFrameWithSrcScript[] =
     "iframe.src = $1;"
     "document.body.appendChild(iframe);";
 
+class DataURLOriginToCommitObserver : public WebContentsObserver {
+ public:
+  explicit DataURLOriginToCommitObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  absl::optional<url::Origin> origin_to_commit() { return origin_to_commit_; }
+
+ private:
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    origin_to_commit_ = static_cast<NavigationRequest*>(navigation_handle)
+                            ->commit_params()
+                            .origin_to_commit;
+  }
+
+  absl::optional<url::Origin> origin_to_commit_;
+};
+
 }  // namespace
 
 class NavigationControllerBrowserTestBase : public ContentBrowserTest {
@@ -467,6 +484,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
       use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
+  DataURLOriginToCommitObserver data_observer(shell()->web_contents());
 
   // 1) Load data, but don't commit yet.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
@@ -510,6 +528,13 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
 
   // data: URL loads always have HTTP status code 200.
   EXPECT_EQ(200, current_rfh->last_http_status_code());
+  // If there is no base URL, then the URL is loaded like a regular data: URL,
+  // for which origin_to_commit should be set.
+  if (base_url_empty()) {
+    EXPECT_TRUE(data_observer.origin_to_commit().has_value());
+  } else {
+    EXPECT_FALSE(data_observer.origin_to_commit().has_value());
+  }
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
@@ -22064,6 +22089,25 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(url_webui, contents()->GetLastCommittedURL());
   EXPECT_EQ(created_webui, current_main_frame_host()->web_ui());
   EXPECT_EQ(created_webui->GetRenderFrameHost(), current_main_frame_host());
+}
+
+// Ensure that we use the browser-calculated origin_to_commit for data: URLs.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DataURLHasCommittedOrigin) {
+  const std::string data = "<html><title>One</title><body>foo</body></html>";
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  TestNavigationObserver navigation_observer(contents());
+  DataURLOriginToCommitObserver observer(contents());
+  shell()->LoadURL(data_url);
+  navigation_observer.Wait();
+
+  // Check that the browser-calculated origin_to_commit is used and matches the
+  // committed origin.
+  absl::optional<url::Origin> origin_to_commit = observer.origin_to_commit();
+  EXPECT_TRUE(origin_to_commit.has_value());
+  url::Origin committed_origin =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_EQ(origin_to_commit.value(), committed_origin);
 }
 
 INSTANTIATE_TEST_SUITE_P(

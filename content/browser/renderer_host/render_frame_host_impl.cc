@@ -13549,8 +13549,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
-  // `origin_to_commit` is currently only set only on failed navigations.
-  DCHECK(!commit_params->origin_to_commit);
+  // `origin_to_commit` is currently only set only on failed navigations or
+  // data: URL navigations.
+  DCHECK(!commit_params->origin_to_commit ||
+         common_params->url.SchemeIs(url::kDataScheme));
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojom::CookieManagerInfoPtr cookie_manager_info;

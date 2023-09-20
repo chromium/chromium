@@ -7292,8 +7292,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   }
 
   // TODO(https://crbug.com/888079) Take sandbox into account.
+  absl::optional<url::Origin> origin_to_commit = GetOriginToCommit();
   same_origin_ = (previous_render_frame_host->GetLastCommittedOrigin() ==
-                  GetOriginToCommit());
+                  origin_to_commit);
 
   SetExpectedProcess(GetRenderFrameHost()->GetProcess());
 
@@ -7304,6 +7305,22 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // process at commit time.
   browser_side_origin_to_commit_with_debug_info_ =
       GetOriginToCommitWithDebugInfo();
+
+  // Set origin_to_commit for data: URLs. Set it here because otherwise the
+  // origin (and hence the nonce) is separately calculated on the renderer side
+  // and sent with DidCommit. At that point the origin used to create the
+  // SiteInstance will differ from the one committed in the renderer. A
+  // consistent nonce across the browser and renderer can be used to determine
+  // which data: URL SiteInstance should be used in
+  // RenderFrameProxyHost::OpenURL.
+  // We do not need to set it for LoadDataWithBaseURL cases, because it will not
+  // lead to ambiguous cases where multiple data: SiteInstances will be in the
+  // same group. However, when the base URL is empty, LoadDataWithBaseURL is
+  // treated like a regular data: URL.
+  if (common_params_->url.SchemeIs(url::kDataScheme) &&
+      !IsLoadDataWithBaseURL()) {
+    commit_params_->origin_to_commit = origin_to_commit;
+  }
 
   if (!IsSameDocument()) {
 #if DCHECK_IS_ON()

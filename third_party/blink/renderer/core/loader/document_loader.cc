@@ -2025,8 +2025,9 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   scoped_refptr<SecurityOrigin> origin;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
-    // and used directly. It is currently supplied only for failed navigations.
-    CHECK(is_error_page_for_failed_navigation_);
+    // and used directly. It is currently supplied only for failed navigations
+    // and data: URL navigations.
+    CHECK(is_error_page_for_failed_navigation_ || url_.ProtocolIsData());
     CHECK(origin_to_commit_->IsOpaque());
     origin = origin_to_commit_;
     origin_calculation_debug_info_ = AtomicString("use_origin_to_commit");
