@@ -70,6 +70,9 @@ class DummyMainThreadScheduler : public MainThreadScheduler {
   void AddRAILModeObserver(RAILModeObserver*) override {}
   void RemoveRAILModeObserver(RAILModeObserver const* observer) override {}
 
+  void ForEachMainThreadIsolate(
+      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override {}
+
   v8::Isolate* Isolate() override { return nullptr; }
 
   void Shutdown() override {}

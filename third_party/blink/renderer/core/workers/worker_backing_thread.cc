@@ -18,8 +18,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -81,12 +82,22 @@ void MemoryPressureNotificationToWorkerThreadIsolates(
 }
 
 void IsolateInBackgroundNotification() {
-  V8PerIsolateData::MainThreadIsolate()->IsolateInBackgroundNotification();
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+        isolate->IsolateInBackgroundNotification();
+      }));
   WorkerBackingThread::IsolateInBackgroundNotificationToWorkerThreadIsolates();
 }
 
 void IsolateInForegroundNotification() {
-  V8PerIsolateData::MainThreadIsolate()->IsolateInForegroundNotification();
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+        isolate->IsolateInForegroundNotification();
+      }));
   WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 

@@ -2095,6 +2095,14 @@ void MainThreadSchedulerImpl::RemoveRAILModeObserver(
   main_thread_only().rail_mode_observers.RemoveObserver(observer);
 }
 
+void MainThreadSchedulerImpl::ForEachMainThreadIsolate(
+    base::RepeatingCallback<void(v8::Isolate* isolate)> callback) {
+  // TODO(dtapuska): For each AgentGroupScheduler's isolate invoke the callback.
+  if (v8::Isolate* isolate = Isolate()) {
+    callback.Run(isolate);
+  }
+}
+
 void MainThreadSchedulerImpl::SetRendererProcessType(
     WebRendererProcessType type) {
   main_thread_only().process_type = type;

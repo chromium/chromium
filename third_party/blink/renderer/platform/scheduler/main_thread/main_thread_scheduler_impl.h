@@ -182,6 +182,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   void AddRAILModeObserver(RAILModeObserver* observer) override;
   void RemoveRAILModeObserver(RAILModeObserver const* observer) override;
+  void ForEachMainThreadIsolate(
+      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override;
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
   void StartIdlePeriodForTesting() override;

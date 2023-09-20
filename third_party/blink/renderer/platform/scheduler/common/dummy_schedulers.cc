@@ -299,6 +299,13 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
   void StartIdlePeriodForTesting() override {}
 
+  void ForEachMainThreadIsolate(
+      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override {
+    if (isolate_) {
+      callback.Run(isolate_);
+    }
+  }
+
  private:
   v8::Isolate* isolate_ = nullptr;
 };

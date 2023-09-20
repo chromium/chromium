@@ -63,6 +63,10 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
 
   virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
 
+  // Calls the callback for each unique isolate that bound to the main thread.
+  virtual void ForEachMainThreadIsolate(
+      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) = 0;
+
   // Returns a list of all unique attributions that are marked for event
   // dispatch. If |include_continuous| is true, include event types from
   // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
