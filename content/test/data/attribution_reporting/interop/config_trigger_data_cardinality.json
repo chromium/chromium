@@ -53,13 +53,13 @@
 	  // (3 * 4 + 3) choose 3 = 455
 	  // 455 / (455 - 1 + exp(14)) = .0003782
           "randomized_trigger_rate": 0.0003782,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "1643408373000"
       }
     ]
   }
