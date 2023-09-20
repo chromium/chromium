@@ -19,13 +19,16 @@ namespace password_manager {
 class PasswordStoreInterface;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace web {
 class WebState;
 }  // namespace web
 
 class FaviconLoader;
 class GURL;
-class SyncSetupService;
 
 namespace manual_fill {
 
@@ -75,7 +78,7 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
                     accountPasswordStore
                    faviconLoader:(FaviconLoader*)faviconLoader
                         webState:(web::WebState*)webState
-                     syncService:(SyncSetupService*)syncService
+                     syncService:(syncer::SyncService*)syncService
                              URL:(const GURL&)URL
           invokedOnPasswordField:(BOOL)invokedOnPasswordField
     NS_DESIGNATED_INITIALIZER;

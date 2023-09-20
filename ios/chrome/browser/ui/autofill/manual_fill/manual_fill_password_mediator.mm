@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/model_type.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
@@ -90,8 +90,8 @@ BOOL AreCredentialsAtIndexesConnected(
 // The relevant active web state.
 @property(nonatomic, assign) web::WebState* webState;
 
-// Sync setup service.
-@property(nonatomic, assign) SyncSetupService* syncService;
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -116,7 +116,7 @@ BOOL AreCredentialsAtIndexesConnected(
                     accountPasswordStore
                    faviconLoader:(FaviconLoader*)faviconLoader
                         webState:(web::WebState*)webState
-                     syncService:(SyncSetupService*)syncService
+                     syncService:(syncer::SyncService*)syncService
                              URL:(const GURL&)URL
           invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   self = [super init];
@@ -254,7 +254,8 @@ BOOL AreCredentialsAtIndexesConnected(
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
                   : nullptr;
-    if (_syncService && _syncService->IsDataTypeActive(syncer::PASSWORDS) &&
+    if (_syncService &&
+        _syncService->GetActiveDataTypes().Has(syncer::PASSWORDS) &&
         passwordManagerClient &&
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {

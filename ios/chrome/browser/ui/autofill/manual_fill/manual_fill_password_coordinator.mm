@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
@@ -64,8 +64,8 @@
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());
-    SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState());
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
         initWithProfilePasswordStore:profilePasswordStore
