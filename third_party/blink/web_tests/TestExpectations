@@ -2843,7 +2843,6 @@ crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-02
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-025.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-026.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-027.html [ Failure ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=RelativeUrlForSpeculationRulesSet [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/css/motion/offset-path-url-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/offset-path-url-008.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/offset-path-url-009.html [ Failure ]
@@ -2939,7 +2938,6 @@ crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/page-visibility/visibility-state-entry.tentative.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=FollowRedirect [ Timeout ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-radial-gradient.html [ Failure ]
@@ -3027,10 +3025,7 @@ crbug.com/626703 [ Mac12 ] external/wpt/font-access/font_access_query_select.ten
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=StatusCode199 [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=StatusCode199 [ Timeout ]
 # TODO(crbug.com/1476931): Deflake and re-enable.
-crbug.com/1476931 [ Mac11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=UseNonUTF8EncodingForSpeculationRulesSet [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-004.html [ Failure ]
@@ -6662,11 +6657,12 @@ crbug.com/1411760 [ Mac ] virtual/composite-clip-path-animation/external/wpt/css
 
 # Gardener 2023-07-26
 crbug.com/1364187 http/tests/misc/scroll-cross-origin-iframes.html [ Failure Pass ]
-crbug.com/1467800 [ Mac11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=StatusCode404 [ Failure Pass ]
 crbug.com/1467833 [ Mac12 ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-page-zoom.html [ Crash Failure Pass Timeout ]
 crbug.com/1467833 [ Mac12 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-rtl.html [ Crash Failure Pass Timeout ]
 crbug.com/1467833 [ Mac12 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb.html [ Crash Failure Pass Timeout ]
 crbug.com/1467833 [ Mac12 ] virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Crash Failure Pass Timeout ]
+
+crbug.com/1430516 virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Timeout Failure Pass ]
 
 # Gardener 2023-07-27
 crbug.com/1468169 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math.html [ Failure Pass ]
