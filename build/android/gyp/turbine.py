@@ -115,7 +115,7 @@ def main(argv):
     # Use jar_path to ensure paths are relative (needed for goma).
     files_rsp_path = options.jar_path + '.java_files_list.txt'
     with open(files_rsp_path, 'w') as f:
-      f.write(' '.join(java_files))
+      f.write('\n'.join(java_files))
     # Pass source paths as response files to avoid extremely long command
     # lines that are tedius to debug.
     cmd += ['--sources']
