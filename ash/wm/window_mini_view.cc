@@ -19,7 +19,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -242,9 +241,10 @@ gfx::RoundedCornersF WindowMiniView::GetRoundedCorners() const {
     return gfx::RoundedCornersF();
   }
 
-  auto header_rounded_corners =
+  const gfx::RoundedCornersF header_rounded_corners =
       header_view_->GetHeaderRoundedCorners(source_window_);
-  auto preview_rounded_corners = preview_view_->layer()->rounded_corner_radii();
+  const gfx::RoundedCornersF preview_rounded_corners =
+      preview_view_->layer()->rounded_corner_radii();
   return gfx::RoundedCornersF(header_rounded_corners.upper_left(),
                               header_rounded_corners.upper_right(),
                               preview_rounded_corners.lower_right(),
