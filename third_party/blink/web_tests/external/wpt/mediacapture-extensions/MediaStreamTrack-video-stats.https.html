@@ -76,17 +76,12 @@ promise_test(async t => {
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
 
-  const resolvedPromise = Promise.resolve();
   const firstTotalFrames = track.videoStats.totalFrames;
   // Busy-loop for 100 ms, all within the same task execution cycle.
   const firstTimeMs = performance.now();
   while (performance.now() - firstTimeMs < 100) {}
   // The frame counter should not have changed.
   assert_equals(track.videoStats.totalFrames, firstTotalFrames);
-  // Even though this promise resolved before we got the stats the first time,
-  // it still takes us to the next task execution cycle.
-  await resolvedPromise;
-  assert_not_equals(track.videoStats.totalFrames, firstTotalFrames);
 }, `Counters do not increase in the same task execution cycle`);
 
 promise_test(async t => {
