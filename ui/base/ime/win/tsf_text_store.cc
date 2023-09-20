@@ -584,6 +584,11 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (is_empty_text_store_) {
     return E_FAIL;
   }
+  // If the text input type has already switched to NONE in the text input
+  // client, then do nothing. See crbug.com/1483978.
+  if (text_input_client_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE) {
+    return E_FAIL;
+  }
 
   if (!text_store_acp_sink_.Get())
     return E_FAIL;
