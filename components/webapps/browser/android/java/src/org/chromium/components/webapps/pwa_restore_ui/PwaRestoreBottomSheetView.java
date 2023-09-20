@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.components.webapps.R;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * The view portion of the PWA Install bottom sheet.
@@ -32,6 +33,10 @@ public class PwaRestoreBottomSheetView {
                 R.layout.pwa_restore_bottom_sheet_preview, /* root= */ null);
         mContentView = LayoutInflater.from(mContext).inflate(
                 R.layout.pwa_restore_bottom_sheet_content, /* root= */ null);
+
+        mPreviewView.findViewById(R.id.icon).setBackgroundResource(ColorUtils.inNightMode(mContext)
+                        ? R.drawable.pwa_restore_icon_dark
+                        : R.drawable.pwa_restore_icon_light);
     }
 
     public View getContentView() {
