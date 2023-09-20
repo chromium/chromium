@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots module.\n`);
   await TestRunner.showPanel('heap_profiler');
@@ -398,7 +400,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
     return result.join('\n');
   }
 
-  var proxy = new Profiler.HeapSnapshotWorkerProxy(function(eventName, arg) {
+  var proxy = new ProfilerModule.HeapSnapshotProxy.HeapSnapshotWorkerProxy(function(eventName, arg) {
     TestRunner.addResult('Unexpected event from worker: ' + eventName);
   });
   var source = '(' + createTestEnvironmentInWorker + ')();' +

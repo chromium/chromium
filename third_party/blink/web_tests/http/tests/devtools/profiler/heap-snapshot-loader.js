@@ -8,6 +8,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
@@ -22,7 +23,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     var panel = UI.panels.heap_profiler;
     panel.reset();
 
-    var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+    var profileType = ProfilerModule.ProfileTypeRegistry.instance.heapSnapshotProfileType;
 
     TestRunner.override(TestRunner.HeapProfilerAgent, 'invoke_takeHeapSnapshot', takeHeapSnapshotMock);
     function takeHeapSnapshotMock(reportProgress) {
@@ -43,7 +44,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       callback(this);
     }
     TestRunner.addSniffer(
-        Profiler.HeapProfileHeader.prototype, 'didWriteToTempFile',
+        ProfilerModule.HeapSnapshotView.HeapProfileHeader.prototype, 'didWriteToTempFile',
         tempFileReady);
     if (!UIModule.Context.Context.instance().flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
       await new Promise(resolve => UIModule.Context.Context.instance().addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
@@ -88,7 +89,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       var file = new File(
           [sourceStringified], 'mock.heapsnapshot', {type: 'text/plain'});
       TestRunner.addSniffer(
-          Profiler.HeapProfileHeader.prototype, 'snapshotReceived', next);
+          ProfilerModule.HeapSnapshotView.HeapProfileHeader.prototype, 'snapshotReceived', next);
       panel.loadFromFile(file);
     },
 
@@ -97,7 +98,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
         if (profileHeader.canSaveToFile())
           next();
         else
-          profileHeader.addEventListener(Profiler.ProfileHeader.Events.ProfileReceived, onCanSaveProfile, this);
+          profileHeader.addEventListener(ProfilerModule.ProfileHeader.Events.ProfileReceived, onCanSaveProfile, this);
         function onCanSaveProfile() {
           TestRunner.assertTrue(profileHeader.canSaveToFile());
           next();

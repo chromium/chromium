@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that resolving heap snapshot object to a JS object will not crash on DOM wrapper boilerplate. Test passes if it doesn't crash.\n`);
@@ -14,8 +16,8 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
       document.body.fieldOnDomWrapper = 2012;
   `);
 
-  var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
-  heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
+  var heapProfileType = ProfilerModule.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+  heapProfileType.addEventListener(ProfilerModule.HeapSnapshotView.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
   TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
   heapProfileType.takeHeapSnapshot();
 

@@ -7,6 +7,7 @@ import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);
@@ -57,7 +58,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       'endTime': nodesCount * 10e3 + 3e3
     })
   };
-  var view = new Profiler.CPUProfileView(profileAndExpectations);
+  var view = new ProfilerModule.CPUProfileView.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
   view.changeView();
   var tree = view.profileDataGridTree;

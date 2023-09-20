@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(
@@ -857,7 +858,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   profileAndExpectations.debuggerModel = () => null;
   profileAndExpectations.weakTarget = () => new WeakReference(null);
   profileAndExpectations.profileModel = () => new SDK.CPUProfileDataModel.CPUProfileDataModel(profile);
-  var cpuProfileView = new Profiler.CPUProfileView(profileAndExpectations);
+  var cpuProfileView = new ProfilerModule.CPUProfileView.CPUProfileView(profileAndExpectations);
   cpuProfileView.viewSelectComboBox.setSelectedIndex(0);
   cpuProfileView.changeView();
   var overviewPane = cpuProfileView.flameChart.overviewPane;

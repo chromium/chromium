@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.\n`);
@@ -48,7 +50,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
       return builder.generateSnapshot();
     }
 
-    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, 'retrieveStatistics', checkStatistics);
+    TestRunner.addSniffer(ProfilerModule.HeapSnapshotView.HeapSnapshotView.prototype, 'retrieveStatistics', checkStatistics);
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, step1);
 
     async function checkStatistics(arg, result) {
