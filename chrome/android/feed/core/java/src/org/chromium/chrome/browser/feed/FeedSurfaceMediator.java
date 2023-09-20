@@ -234,6 +234,7 @@ public class FeedSurfaceMediator
     // This avoids automatically binding the first stream when it's added.
     private boolean mSettingUpStreams;
     private boolean mIsNewTabSearchEngineUrlAndroidEnabled;
+    private boolean mIsPropertiesInitializedForStream;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
@@ -539,6 +540,8 @@ public class FeedSurfaceMediator
         mMemoryPressureCallback =
                 pressure -> mCoordinator.getRecyclerView().getRecycledViewPool().clear();
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
+
+        mIsPropertiesInitializedForStream = true;
     }
 
     private void updateStickyHeaderVisibility() {
@@ -801,6 +804,7 @@ public class FeedSurfaceMediator
         mSigninManager.getIdentityManager().removeObserver(this);
 
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
+        mIsPropertiesInitializedForStream = false;
 
         if (mCoordinator.getSurfaceScope() != null) {
             mCoordinator.getSurfaceScope().getLaunchReliabilityLogger().cancelPendingEvents();
@@ -857,6 +861,10 @@ public class FeedSurfaceMediator
      * Called when a settings change or update to this/another NTP caused the feed to show/hide.
      */
     void updateSectionHeader() {
+        // It is possible that updateSectionHeader() is called when the surface which contains the
+        // Feeds isn't visible, returns here. See https://crbug.com/1485070.
+        if (!mIsPropertiesInitializedForStream) return;
+
         boolean suggestionsVisible = isSuggestionsVisible();
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .get(INTEREST_FEED_HEADER_POSITION)
