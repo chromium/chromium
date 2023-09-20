@@ -896,10 +896,12 @@ IN_PROC_BROWSER_TEST_P(
   const std::string merchant_wide_domain_url = "www.merchantsite2.com";
   const GURL with_non_merchant_wide_offer_url =
       GetUrl(non_merchant_wide_domain_url,
-             "/first?utm_source=chrome-history-cluster-with-discount");
+             "/first?utm_source=chrome&utm_medium=app&utm_campaign=chrome-"
+             "history-cluster-with-discount");
   const GURL with_merchant_wide_offer_url =
       GetUrl(merchant_wide_domain_url,
-             "/first?utm_source=chrome-history-cluster-with-discount");
+             "/first?utm_source=chrome&utm_medium=app&utm_campaign=chrome-"
+             "history-cluster-with-discount");
   const std::string detail = "Discount description detail";
   const std::string discount_code = "freelisting-discount-code";
   const int64_t discount_id = 123;

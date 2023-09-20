@@ -28,4 +28,16 @@ const char kContentType[] = "application/json; charset=UTF-8";
 
 const char kEmptyPostData[] = "";
 
+const char kUTMSourceLabel[] = "utm_source";
+
+const char kUTMMediumLabel[] = "utm_medium";
+
+const char kUTMCampaignLabel[] = "utm_campaign";
+
+const char kUTMSourceValue[] = "chrome";
+
+const char kUTMMediumValue[] = "app";
+
+const char kUTMCampaignValueForDiscounts[] =
+    "chrome-history-cluster-with-discount";
 }  // namespace commerce

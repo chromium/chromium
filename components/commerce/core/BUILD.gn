@@ -423,5 +423,8 @@ source_set("utils") {
     "commerce_utils.cc",
     "commerce_utils.h",
   ]
-  deps = [ "//net:net" ]
+  deps = [
+    ":commerce_constants",
+    "//net:net",
+  ]
 }

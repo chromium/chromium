@@ -4,23 +4,30 @@
 
 #include "components/commerce/core/commerce_utils.h"
 
+#include "components/commerce/core/commerce_constants.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace commerce {
-
-namespace {
-// TODO(b:289242951): Update the utm tag and value once they are finalized.
-constexpr char kUtmSourceTag[] = "utm_source";
-constexpr char kUtmSourceValue[] = "chrome-history-cluster-with-discount";
-}  // namespace
-
 bool UrlContainsDiscountUtmTag(const GURL& url) {
-  std::string utm_name;
-  if (!net::GetValueForKeyInQuery(url, kUtmSourceTag, &utm_name)) {
+  std::string utm_source;
+  std::string utm_medium;
+  std::string utm_campaign;
+  if (!net::GetValueForKeyInQuery(url, commerce::kUTMSourceLabel,
+                                  &utm_source)) {
     return false;
   }
-  return utm_name == kUtmSourceValue;
+  if (!net::GetValueForKeyInQuery(url, commerce::kUTMMediumLabel,
+                                  &utm_medium)) {
+    return false;
+  }
+  if (!net::GetValueForKeyInQuery(url, commerce::kUTMCampaignLabel,
+                                  &utm_campaign)) {
+    return false;
+  }
+  return utm_source == commerce::kUTMSourceValue &&
+         utm_medium == commerce::kUTMMediumValue &&
+         utm_campaign == commerce::kUTMCampaignValueForDiscounts;
 }
 
 }  // namespace commerce
