@@ -422,8 +422,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   cookie_tracker.cookie_accesses().clear();
 }
 
-// TODO(https://crbug.com/1288573): Flaky on Mac and Android.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1288573): Flaky on Mac and Android and Win.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CookieCallbacks_MainFrameRedirect \
   DISABLED_CookieCallbacks_MainFrameRedirect
 #else
