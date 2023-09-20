@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
@@ -57,6 +58,9 @@ BoundSessionRegistrationFetcherImpl::~BoundSessionRegistrationFetcherImpl() =
 
 void BoundSessionRegistrationFetcherImpl::Start(
     RegistrationCompleteCallback callback) {
+  TRACE_EVENT("browser", "BoundSessionRegistrationFetcherImpl::Start",
+              perfetto::Flow::FromPointer(this), "endpoint",
+              registration_params_.RegistrationEndpoint());
   callback_ = std::move(callback);
   // base::Unretained() is safe since `this` owns
   // `registration_token_helper_`.
@@ -73,6 +77,9 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   const network::mojom::URLResponseHead* head = url_loader_->ResponseInfo();
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
+  TRACE_EVENT("browser",
+              "BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete",
+              perfetto::Flow::FromPointer(this), "net_error", net_error);
 
   absl::optional<int> http_response_code;
   if (head && head->headers) {
@@ -143,6 +150,9 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
     absl::optional<RegistrationTokenHelper::Result> result) {
+  TRACE_EVENT("browser",
+              "BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated",
+              perfetto::Flow::FromPointer(this), "success", result.has_value());
   if (!result.has_value()) {
     RunCallbackAndRecordMetrics(
         base::unexpected(RegistrationError::kGenerateRegistrationTokenFailed));
@@ -228,6 +238,10 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
 
   RegistrationError error_for_metrics =
       params_or_error.error_or(RegistrationError::kNone);
+  TRACE_EVENT(
+      "browser",
+      "BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics",
+      perfetto::TerminatingFlow::FromPointer(this), "error", error_for_metrics);
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.SessionRegistrationResult",
       error_for_metrics);

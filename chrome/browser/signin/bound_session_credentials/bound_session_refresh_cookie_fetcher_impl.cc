@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -65,6 +66,9 @@ BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
 
 void BoundSessionRefreshCookieFetcherImpl::Start(
     RefreshCookieCompleteCallback callback) {
+  TRACE_EVENT("browser", "BoundSessionRefreshCookieFetcherImpl::Start",
+              perfetto::Flow::FromPointer(this), "url",
+              expected_cookie_domain_);
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
@@ -75,6 +79,10 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     absl::optional<std::string> sec_session_challenge_response) {
+  TRACE_EVENT("browser",
+              "BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest",
+              perfetto::Flow::FromPointer(this), "has_challenge",
+              sec_session_challenge_response.has_value());
   if (!cookie_refresh_duration_.has_value()) {
     cookie_refresh_duration_ = base::TimeTicks::Now();
   }
@@ -156,6 +164,9 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
 void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
+  TRACE_EVENT("browser",
+              "BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete",
+              perfetto::Flow::FromPointer(this), "net_error", net_error);
 
   absl::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
@@ -221,6 +232,9 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   if (result_ == Result::kSuccess && !expected_cookies_set_) {
     result_ = Result::kServerUnexepectedResponse;
   }
+  TRACE_EVENT("browser",
+              "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",
+              perfetto::TerminatingFlow::FromPointer(this), "result", result_);
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.CookieRotationResult", result_);
 
@@ -294,6 +308,9 @@ void BoundSessionRefreshCookieFetcherImpl::
 
 void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
     const std::string& challenge) {
+  TRACE_EVENT("browser",
+              "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
+              perfetto::Flow::FromPointer(this));
   session_binding_helper_->GenerateBindingKeyAssertion(
       challenge, GaiaUrls::GetInstance()->rotate_bound_cookies_url(),
       base::BindOnce(
@@ -307,6 +324,10 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
+  TRACE_EVENT(
+      "browser",
+      "BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion",
+      perfetto::Flow::FromPointer(this), "success", !assertion.empty());
 
   if (assertion.empty()) {
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
@@ -320,6 +341,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
 
 void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  // TODO(b/296999000): record a trace event.
   for (const auto& cookie_details : details_vector) {
     if (cookie_details->type !=
         network::mojom::CookieAccessDetails::Type::kChange) {
