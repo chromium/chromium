@@ -154,6 +154,10 @@ DropData* WebContentsViewIOS::GetDropData() const {
   return nullptr;
 }
 
+void WebContentsViewIOS::CancelDragDropForPortalActivation() {
+  NOTIMPLEMENTED();
+}
+
 gfx::Rect WebContentsViewIOS::GetViewBounds() const {
   return gfx::Rect();
 }
