@@ -612,7 +612,9 @@ bool CrasAudioHandler::GetForceRespectUiGainsState() const {
 }
 
 void CrasAudioHandler::RefreshForceRespectUiGainsState() {
-  SetForceRespectUiGainsState(GetForceRespectUiGainsState());
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetForceRespectUiGains(GetForceRespectUiGainsState());
 }
 
 void CrasAudioHandler::SetForceRespectUiGainsState(bool state) {
