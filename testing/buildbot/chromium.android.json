@@ -195,6 +195,7 @@
       },
       {
         "args": [
+          "--use-apk-under-test-flags-file",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -560,6 +561,7 @@
       },
       {
         "args": [
+          "--use-apk-under-test-flags-file",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -925,6 +927,7 @@
       },
       {
         "args": [
+          "--use-apk-under-test-flags-file",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

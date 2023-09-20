@@ -8547,6 +8547,7 @@
       },
       {
         "args": [
+          "--use-apk-under-test-flags-file",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"

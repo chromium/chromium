@@ -5665,6 +5665,7 @@
 
     'webview_bot_instrumentation_test_apk_gtest': {
       'webview_instrumentation_test_apk': {
+        'args': ['--use-apk-under-test-flags-file'],
         'swarming': {
           'shards': 12,
         },
@@ -7150,6 +7151,8 @@
       'webview_bot_instrumentation_test_apk_gtest': {
         'variants': [
           'DISABLE_FIELD_TRIAL_CONFIG',
+          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
+          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
         ]
       },
       'webview_trichrome_64_cts_tests': {
