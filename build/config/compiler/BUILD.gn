@@ -1654,6 +1654,32 @@ config("runtime_library") {
   }
 }
 
+# treat_warnings_as_errors ----------------------------------------------------
+#
+# Adding this config causes the compiler to treat warnings as fatal errors.
+# This is used as a subconfig of both default_warnings and no_chromium_code, and
+# is broken out separately so nocompile tests can force-enable this setting
+# independently of the default warning flags.
+config("treat_warnings_as_errors") {
+  if (is_win) {
+    cflags = [ "/WX" ]
+  } else {
+    cflags = [ "-Werror" ]
+
+    # The compiler driver can sometimes (rarely) emit warnings before calling
+    # the actual linker.  Make sure these warnings are treated as errors as
+    # well.
+    ldflags = [ "-Werror" ]
+  }
+
+  # Turn rustc warnings into the "deny" lint level, which produce compiler
+  # errors. The equivalent of -Werror for clang/gcc.
+  #
+  # Note we apply the actual lint flags in config("compiler"). All warnings
+  # are suppressed in third-party crates.
+  rustflags = [ "-Dwarnings" ]
+}
+
 # default_warnings ------------------------------------------------------------
 #
 # Collects all warning flags that are used by default.  This is used as a
@@ -1664,11 +1690,13 @@ config("default_warnings") {
   cflags_c = []
   cflags_cc = []
   ldflags = []
+  configs = []
+
+  if (treat_warnings_as_errors) {
+    configs += [ ":treat_warnings_as_errors" ]
+  }
 
   if (is_win) {
-    if (treat_warnings_as_errors) {
-      cflags += [ "/WX" ]
-    }
     if (fatal_linker_warnings) {
       arflags = [ "/WX" ]
       ldflags = [ "/WX" ]
@@ -1881,26 +1909,9 @@ config("chromium_code") {
     }
   } else {
     cflags = [ "-Wall" ]
-    if (treat_warnings_as_errors) {
-      cflags += [ "-Werror" ]
-
-      # The compiler driver can sometimes (rarely) emit warnings before calling
-      # the actual linker.  Make sure these warnings are treated as errors as
-      # well.
-      ldflags = [ "-Werror" ]
-    }
     if (is_clang) {
       # Enable extra warnings for chromium_code when we control the compiler.
       cflags += [ "-Wextra" ]
-    }
-
-    if (treat_warnings_as_errors) {
-      # Turn rustc warnings into the "deny" lint level, which produce compiler
-      # errors. The equivalent of -Werror for clang/gcc.
-      #
-      # Note we apply the actual lint flags in config("compiler"). All warnings
-      # are suppressed in third-party crates.
-      rustflags = [ "-Dwarnings" ]
     }
 
     # In Chromium code, we define __STDC_foo_MACROS in order to get the
@@ -1982,12 +1993,6 @@ config("no_chromium_code") {
       "/wd4267",  # TODO(jschuh): size_t to int.
     ]
   } else {
-    # GCC may emit unsuppressible warnings so don't add -Werror for no chromium
-    # code. crbug.com/589724
-    if (treat_warnings_as_errors && is_clang) {
-      cflags += [ "-Werror" ]
-      ldflags = [ "-Werror" ]
-    }
     if (is_clang && !is_nacl) {
       # TODO(thakis): Remove !is_nacl once
       # https://codereview.webrtc.org/1552863002/ made its way into chromium.
@@ -2021,6 +2026,12 @@ config("no_chromium_code") {
   rustflags = [ "--cap-lints=allow" ]
 
   configs = [ ":default_warnings" ]
+
+  # GCC may emit unsuppressible warnings so only apply this config when
+  # building with clang. crbug.com/589724
+  if (treat_warnings_as_errors && is_clang) {
+    configs += [ ":treat_warnings_as_errors" ]
+  }
 }
 
 # noshadowing -----------------------------------------------------------------
