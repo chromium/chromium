@@ -2492,6 +2492,10 @@
       status: "stable",
     },
     {
+      name: "NonInheritedWebkitBoxDirection",
+      status: "stable",
+    },
+    {
       // Kill switch for crbug.com/1427047 fix.
       // TODO(xiaochengh): Remove in M117.
       name: "NonReentrantFieldSetDisable",

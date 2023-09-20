@@ -8963,6 +8963,14 @@ const CSSValue* WebkitBoxDirection::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.BoxDirection());
 }
 
+const CSSValue*
+WebkitBoxDirectionAlternative::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.BoxDirectionAlternative());
+}
+
 const CSSValue* WebkitBoxFlex::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

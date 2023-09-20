@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta name="assert" content="-webkit-box-direction is not inherited.">
+<link rel="help" href="https://www.w3.org/TR/2009/WD-css3-flexbox-20090723/#displayorder">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #outer { -webkit-box-direction: reverse; }
+</style>
+<div id="outer">
+  <div id="inner"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(outer).webkitBoxDirection, "reverse");
+    assert_equals(getComputedStyle(inner).webkitBoxDirection, "normal");
+  });
+</script>
+

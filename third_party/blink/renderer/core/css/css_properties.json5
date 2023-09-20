@@ -5578,6 +5578,17 @@
       field_template: "keyword",
       keywords: ["normal", "reverse"],
       default_value: "normal",
+      computed_style_protected_functions: ["getter"],
+    },
+    {
+      name: "-webkit-box-direction-alternative",
+      alternative_of: "-webkit-box-direction",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_template: "keyword",
+      keywords: ["normal", "reverse"],
+      default_value: "normal",
+      computed_style_protected_functions: ["getter"],
+      runtime_flag: "NonInheritedWebkitBoxDirection",
     },
     {
       name: "-webkit-box-flex",

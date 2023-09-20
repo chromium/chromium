@@ -1452,6 +1452,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kWebkitBoxDecorationBreak:
       return value_id == CSSValueID::kClone || value_id == CSSValueID::kSlice;
     case CSSPropertyID::kWebkitBoxDirection:
+    case CSSPropertyID::kWebkitBoxDirectionAlternative:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kReverse;
     case CSSPropertyID::kWebkitBoxOrient:
@@ -1742,6 +1743,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitBoxAlign,
     CSSPropertyID::kWebkitBoxDecorationBreak,
     CSSPropertyID::kWebkitBoxDirection,
+    CSSPropertyID::kWebkitBoxDirectionAlternative,
     CSSPropertyID::kWebkitBoxOrient,
     CSSPropertyID::kWebkitBoxPack,
     CSSPropertyID::kColumnFill,
