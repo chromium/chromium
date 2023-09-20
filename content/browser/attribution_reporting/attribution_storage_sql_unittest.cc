@@ -21,8 +21,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1133,6 +1136,71 @@ TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
     int64_t file_size_per_source =
         histograms.GetTotalSum("Conversions.Storage.Sql.FileSize.PerSource");
     EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
+  }
+}
+
+TEST_P(AttributionStorageSqlTest,
+       DBinitializationSucceeds_SourcesPerSourceOrginHistogramsRecorded) {
+  auto create_n_origins = [](size_t n) -> std::vector<SuitableOrigin> {
+    std::vector<SuitableOrigin> origins;
+    origins.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+      origins.push_back(
+          *SuitableOrigin::Create(url::Origin::Create(GURL(base::JoinString(
+              {"https://origin_", base::ToString(i), ".example"}, "")))));
+    }
+
+    return origins;
+  };
+  auto store_n_sources = [&](const SuitableOrigin& origin, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+      storage()->StoreSource(SourceBuilder().SetSourceOrigin(origin).Build());
+    }
+  };
+
+  {
+    base::HistogramTester histograms;
+
+    OpenDatabase();
+
+    std::vector<size_t> sizes = {8, 7, 6, 5, 5, 5, 4, 3, 3, 3, 3, 3, 3,
+                                 3, 3, 3, 3, 3, 3, 2, 1, 1, 1, 1, 1};
+    base::RandomShuffle(sizes.begin(), sizes.end());
+    std::vector<SuitableOrigin> origins = create_n_origins(sizes.size());
+    for (size_t i = 0; i < origins.size(); ++i) {
+      store_n_sources(origins.at(i), sizes.at(i));
+    }
+
+    CloseDatabase();
+
+    // The histograms should have been recorded even if there were no sources in
+    // the db when initialized.
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.1st", 0,
+                                  1);
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.3rd", 0,
+                                  1);
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.7th", 0,
+                                  1);
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.20th", 0,
+                                  1);
+  }
+  {
+    base::HistogramTester histograms;
+
+    OpenDatabase();
+    // Since the storage is initiated lazily, we need to execute an operation on
+    // the db for it to be initiated and histograms to be reported.
+    storage()->StoreSource(SourceBuilder().Build());
+    CloseDatabase();
+
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.1st"),
+              8u);
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.3rd"),
+              6u);
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.7th"),
+              4u);
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.20th"),
+              2u);
   }
 }
 

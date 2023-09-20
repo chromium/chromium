@@ -4,11 +4,13 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <functional>
 #include <iterator>
 #include <limits>
+#include <map>
 #include <set>
 #include <string>
 #include <tuple>
@@ -28,6 +30,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -2417,6 +2420,9 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
                                  file_size * 1024 / *number_of_sources);
     }
   }
+
+  RecordSourcesPerSourceOrigin();
+
   return true;
 }
 
@@ -2427,6 +2433,57 @@ absl::optional<int64_t> AttributionStorageSql::NumberOfSources() {
     return absl::nullopt;
   }
   return statement.ColumnInt64(0);
+}
+
+void AttributionStorageSql::RecordSourcesPerSourceOrigin() {
+  static constexpr const char kGetAllSourcesOrigins[] =
+      "SELECT source_origin FROM sources";
+  sql::Statement statement(db_.GetUniqueStatement(kGetAllSourcesOrigins));
+
+  // Count number of sources per source origin.
+  std::map<std::string, int64_t> map;
+  while (statement.Step()) {
+    std::string source_origin = statement.ColumnString(0);
+    if (auto it = map.find(source_origin); it != map.end()) {
+      it->second++;
+    } else {
+      map.insert({std::move(source_origin), 1u});
+    }
+  }
+  if (!statement.Succeeded()) {
+    return;
+  }
+
+  // Get the top k counts (up to 20).
+
+  // Workaround to use `base::ranges::partial_sort_copy` with a map<std:string,
+  // int64_t> input and vector<int64_t> output. Ideally, we'd use an iterator
+  // adaptor (e.g. std::ranges::views::values) but such utility is not
+  // available.
+  struct CountOnly {
+    CountOnly() : count(0) {}
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    CountOnly(const std::pair<const std::string, int64_t>& p)
+        : count(p.second) {}
+
+    int64_t count;
+  };
+
+  size_t k = map.size() < 20 ? map.size() : 20;
+  std::vector<CountOnly> top_k(/*count=*/k, /*value=*/CountOnly());
+  base::ranges::partial_sort_copy(
+      map, top_k, base::ranges::greater(),
+      &std::pair<const std::string, int64_t>::second, &CountOnly::count);
+
+  // Record sampled top counts.
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.1st",
+                                k >= 1 ? top_k[0].count : 0);
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.3rd",
+                                k >= 3 ? top_k[2].count : 0);
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.7th",
+                                k >= 7 ? top_k[6].count : 0);
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.20th",
+                                k >= 20 ? top_k[19].count : 0);
 }
 
 bool AttributionStorageSql::InitializeSchema(bool db_empty) {

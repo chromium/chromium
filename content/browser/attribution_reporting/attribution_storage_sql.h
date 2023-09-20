@@ -164,6 +164,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
+  void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   ReportAlreadyStoredStatus ReportAlreadyStored(
       StoredSource::Id source_id,
       absl::optional<uint64_t> dedup_key,
