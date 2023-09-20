@@ -32,9 +32,32 @@ __filegroups = {
             "libclang*.a",
         ],
     },
+    "third_party/fuchsia-sdk/sdk/arch/x64/lib:rustlink": {
+        "type": "glob",
+        "includes": [
+            "*",
+        ],
+    },
+    "third_party/fuchsia-sdk/sdk/arch/x64/sysroot:rustlink": {
+        "type": "glob",
+        "includes": [
+            "lib/*",
+        ],
+    },
 }
 
+def __rust_bin_handler(ctx, cmd):
+    inputs = []
+    for i, arg in enumerate(cmd.args):
+        if arg.startswith("--sysroot=../../third_party/fuchsia-sdk/sdk/arch/x64/sysroot"):
+            inputs.extend([
+                "third_party/fuchsia-sdk/sdk/arch/x64/lib:rustlink",
+                "third_party/fuchsia-sdk/sdk/arch/x64/sysroot:rustlink",
+            ])
+    ctx.actions.fix(inputs = cmd.inputs + inputs)
+
 __handlers = {
+    "rust_bin_handler": __rust_bin_handler,
 }
 
 def __step_config(ctx, step_config):
@@ -65,6 +88,7 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?rust_bin",
             "inputs": rust_inputs + clang_inputs,
             "indirect_inputs": rust_indirect_inputs,
+            "handler": "rust_bin_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_run,
             # "canonicalize_dir": True,  # TODO(b/300352286)
