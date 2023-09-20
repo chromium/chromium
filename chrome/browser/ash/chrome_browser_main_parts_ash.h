@@ -101,8 +101,8 @@ namespace cros_healthd::internal {
 class DataCollector;
 }
 
-namespace device_activity {
-class DeviceActivityController;
+namespace report {
+class ReportController;
 }
 
 namespace internal {
@@ -175,9 +175,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PostDestroyThreads() override;
 
  private:
-  // Helper which depends on device policies being loaded before initializing
-  // the |device_activity_controller_|.
-  void StartDeviceActivityController();
+  // Load device policies before initializing the |report_controller_|.
+  void StartReportController();
 
   std::unique_ptr<chromeos::default_app_order::ExternalLoader>
       app_order_loader_;
@@ -255,8 +254,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
 
-  std::unique_ptr<device_activity::DeviceActivityController>
-      device_activity_controller_;
+  std::unique_ptr<report::ReportController> report_controller_;
 
   std::unique_ptr<crostini::CrostiniUnsupportedActionNotifier>
       crostini_unsupported_action_notifier_;
