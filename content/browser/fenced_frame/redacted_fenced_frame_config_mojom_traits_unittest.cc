@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <functional>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -451,26 +452,24 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   {
     SharedStorageBudgetMetadata test_shared_storage_budget_metadata = {
         url::Origin::Create(test_url), 0.5, /*top_navigated=*/true};
-    auto eq_fn = [](const SharedStorageBudgetMetadata& a,
-                    const SharedStorageBudgetMetadata& b) {
-      return a.origin == b.origin && a.budget_to_charge == b.budget_to_charge &&
-             a.top_navigated == b.top_navigated;
+    const auto eq = [](const SharedStorageBudgetMetadata& a,
+                       const SharedStorageBudgetMetadata& b) {
+      return std::tie(a.origin, a.budget_to_charge, a.top_navigated) ==
+             std::tie(b.origin, b.budget_to_charge, b.top_navigated);
     };
     TestProperty(&FencedFrameConfig::shared_storage_budget_metadata_,
                  &RedactedFencedFrameConfig::shared_storage_budget_metadata,
-                 test_shared_storage_budget_metadata, eq_fn, eq_fn);
+                 test_shared_storage_budget_metadata, eq, eq);
 
-    auto pointer_value_eq_fn = [](const SharedStorageBudgetMetadata* a,
-                                  const SharedStorageBudgetMetadata& b) {
-      return a->origin == b.origin &&
-             a->budget_to_charge == b.budget_to_charge &&
-             a->top_navigated == b.top_navigated;
+    const auto ptr_eq = [&](const SharedStorageBudgetMetadata* a,
+                            const SharedStorageBudgetMetadata& b) {
+      return eq(*a, b);
     };
     TestProperty(&FencedFrameProperties::shared_storage_budget_metadata_,
                  &RedactedFencedFrameProperties::shared_storage_budget_metadata,
                  static_cast<raw_ptr<const SharedStorageBudgetMetadata>>(
                      &test_shared_storage_budget_metadata),
-                 pointer_value_eq_fn, eq_fn);
+                 ptr_eq, eq);
   }
 }
 
