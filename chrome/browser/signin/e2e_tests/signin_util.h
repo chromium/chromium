@@ -34,7 +34,7 @@ AccountReconcilor* account_reconcilor(Browser* browser);
 
 class SignInFunctions {
  public:
-  explicit SignInFunctions(
+  SignInFunctions(
       const base::RepeatingCallback<Browser*()> browser,
       const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
           add_tab_function);
