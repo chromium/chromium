@@ -195,7 +195,7 @@
   </if>
   <if expr="is_macosx">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
-      Turn on to navigate back and forward
+      Select the More Gestures tab, then turn on Swipe between pages to navigate back and forward
     </message>
   </if>
 
