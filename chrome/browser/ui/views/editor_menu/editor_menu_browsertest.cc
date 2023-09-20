@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -135,4 +136,17 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
   GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       PressingEscClosesEditorMenuWidget) {
+  ASSERT_NE(GetControllerImpl(), nullptr);
+
+  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
+  ASSERT_NE(GetEditorMenuView()->GetWidget(), nullptr);
+  GetEditorMenuView()->GetWidget()->GetFocusManager()->ProcessAccelerator(
+      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+
+  EXPECT_TRUE(GetEditorMenuView()->GetWidget()->IsClosed());
 }

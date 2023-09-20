@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -113,6 +114,7 @@ views::UniqueWidgetPtr EditorMenuPromoCardView::CreateWidget(
 
 void EditorMenuPromoCardView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 void EditorMenuPromoCardView::RequestFocus() {
@@ -148,6 +150,14 @@ void EditorMenuPromoCardView::OnWidgetActivationChanged(views::Widget* widget,
 
   // Close widget when it is deactivated.
   GetWidget()->Close();
+}
+
+bool EditorMenuPromoCardView::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  CHECK(GetWidget());
+  GetWidget()->Close();
+  return true;
 }
 
 void EditorMenuPromoCardView::UpdateBounds(
