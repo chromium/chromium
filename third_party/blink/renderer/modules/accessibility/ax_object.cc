@@ -3501,7 +3501,7 @@ bool AXObject::IsBlockedByAriaModalDialog(
     return false;
   }
 
-  if (!GetNode() || GetNode()->IsPseudoElement()) {
+  if ((!GetNode() || GetNode()->IsPseudoElement()) && ParentObject()) {
     return ParentObject()->IsBlockedByAriaModalDialog();
   }
 
@@ -5600,15 +5600,22 @@ AXObject* AXObject::UnignoredPreviousInPreOrder() const {
 }
 
 AXObject* AXObject::ParentObject() const {
-  if (IsDetached())
+  if (IsDetached()) {
     return nullptr;
+  }
 
   // This can happen when an object in the middle of the tree is suddenly
   // detached, but the children still exist. One example of this is when
   // a <select size="1"> changes to <select size="2">, where the
   // Role::kMenuListPopup is detached.
-  if (IsMissingParent())
+  if (IsMissingParent()) {
     RepairMissingParent();
+    // If the parent cannot be repaired, the entire subtree rooted at this node
+    // will be detached.
+    if (IsDetached()) {
+      return nullptr;
+    }
+  }
 
   return parent_;
 }
