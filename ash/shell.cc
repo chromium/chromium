@@ -36,6 +36,7 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
+#include "ash/clipboard/clipboard_history_controller_delegate.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
@@ -1394,7 +1395,8 @@ void Shell::Init(
       ash_accelerator_configuration_.get());
 
   clipboard_history_controller_ =
-      std::make_unique<ClipboardHistoryControllerImpl>();
+      std::make_unique<ClipboardHistoryControllerImpl>(
+          shell_delegate_->CreateClipboardHistoryControllerDelegate());
 
   // `HoldingSpaceController` must be instantiated before the shelf.
   holding_space_controller_ = std::make_unique<HoldingSpaceController>();

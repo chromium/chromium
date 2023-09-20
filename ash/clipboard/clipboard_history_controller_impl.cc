@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/clipboard/clipboard_history_controller_delegate.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
@@ -351,8 +352,10 @@ class ClipboardHistoryControllerImpl::MenuDelegate
 
 // ClipboardHistoryControllerImpl ----------------------------------------------
 
-ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
-    : clipboard_history_(std::make_unique<ClipboardHistory>()),
+ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl(
+    std::unique_ptr<ClipboardHistoryControllerDelegate> delegate)
+    : delegate_(std::move(delegate)),
+      clipboard_history_(std::make_unique<ClipboardHistory>()),
       resource_manager_(std::make_unique<ClipboardHistoryResourceManager>(
           clipboard_history_.get())),
       accelerator_target_(std::make_unique<AcceleratorTarget>(this)),

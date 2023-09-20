@@ -88,10 +88,12 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;
 
+  // TODO(http://b/301264185): Move ownership to clipboard history controller.
   // Clipboard history URL title fetcher for the primary user.
   std::unique_ptr<ClipboardHistoryUrlTitleFetcherImpl>
       clipboard_history_url_title_fetcher_impl_;
 
+  // TODO(http://b/301264185): Move ownership to clipboard history controller.
   // Clipboard html image generator for the primary user.
   std::unique_ptr<ClipboardImageModelFactoryImpl>
       clipboard_image_model_factory_impl_;

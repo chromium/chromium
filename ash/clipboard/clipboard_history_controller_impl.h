@@ -38,6 +38,7 @@ class Rect;
 
 namespace ash {
 
+class ClipboardHistoryControllerDelegate;
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
@@ -72,7 +73,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     kMaxValue = 11
   };
 
-  ClipboardHistoryControllerImpl();
+  explicit ClipboardHistoryControllerImpl(
+      std::unique_ptr<ClipboardHistoryControllerDelegate> delegate);
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
   ClipboardHistoryControllerImpl& operator=(
@@ -258,6 +260,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Called when the contextual menu is closed.
   void OnMenuClosed();
+
+  // Either the browser-implemented or test-implemented delegate depending on
+  // whether we are running in an Ash-only test context.
+  const std::unique_ptr<ClipboardHistoryControllerDelegate> delegate_;
 
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;

@@ -36,6 +36,7 @@ class AccessibilityDelegate;
 class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
+class ClipboardHistoryControllerDelegate;
 class GameDashboardDelegate;
 class MediaNotificationProvider;
 class NearbyShareController;
@@ -62,6 +63,10 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate of the Capture Mode feature.
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
       const = 0;
+
+  // Creates and returns the delegate of the clipboard history feature.
+  virtual std::unique_ptr<ClipboardHistoryControllerDelegate>
+  CreateClipboardHistoryControllerDelegate() const = 0;
 
   // Creates and returns the delegate of the Game Dashboard feature.
   virtual std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()
