@@ -45,6 +45,15 @@ export class PanelNodeMenuBackground {
     this.nodeCount_ = 0;
     /** @private {boolean} */
     this.isEmpty_ = true;
+    /** @private {function()} */
+    this.onFinish_;
+    /** @private {!Promise} */
+    this.finishPromise_ = new Promise(resolve => this.onFinish_ = resolve);
+  }
+
+  /** @return {!Promise} */
+  waitForFinish() {
+    return this.finishPromise_;
   }
 
   /**
@@ -128,6 +137,7 @@ export class PanelNodeMenuBackground {
         menuId: this.menuId_,
       });
     }
+    this.onFinish_();
   }
 
   /**
