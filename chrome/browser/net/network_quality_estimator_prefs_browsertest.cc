@@ -186,8 +186,15 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
 }
 
 // Verify that prefs are read at startup.
+// Flaky on ChromeOS. See https://crbug.com/1484891
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ReadPrefsAtStartupCustomPrefFile \
+  DISABLED_ReadPrefsAtStartupCustomPrefFile
+#else
+#define MAYBE_ReadPrefsAtStartupCustomPrefFile ReadPrefsAtStartupCustomPrefFile
+#endif
 IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
-                       ReadPrefsAtStartupCustomPrefFile) {
+                       MAYBE_ReadPrefsAtStartupCustomPrefFile) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   // The check below ensures that "NQE.Prefs.ReadSize" contains at least one
   // sample. This implies that NQE was notified of the read prefs.
