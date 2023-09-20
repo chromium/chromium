@@ -35,12 +35,14 @@ constexpr char kHistorySensitivePrefName[] = "sensitive.pref";
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kPref1, {0, syncer::PREFERENCES, false}},
-        {kPref2, {0, syncer::PREFERENCES, false}},
-        {kPref3, {0, syncer::PREFERENCES, false}},
-        {kPrefName, {0, syncer::PREFERENCES, false}},
-        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
-        {kHistorySensitivePrefName, {0, syncer::PREFERENCES, true}},
+        {kPref1, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kPref2, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kPref3, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kPrefName, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kPriorityPrefName,
+         {0, syncer::PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
+        {kHistorySensitivePrefName,
+         {0, syncer::PREFERENCES, true, MergeBehavior::kNone}},
 };
 
 base::Value MakeDict(

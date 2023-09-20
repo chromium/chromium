@@ -49,14 +49,20 @@ const char kStringOsPriorityPrefName[] = "os.priority.pref.string";
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kStringPrefName, {0, syncer::PREFERENCES, false}},
-        {kListPrefName, {0, syncer::PREFERENCES, false}},
-        {kDictionaryPrefName, {0, syncer::PREFERENCES, false}},
-        {kCustomMergePrefName, {0, syncer::PREFERENCES, false}},
-        {kStringPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
-        {kStringOsPrefName, {0, syncer::OS_PREFERENCES, false}},
+        {kStringPrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kListPrefName, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kDictionaryPrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kCustomMergePrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kStringPriorityPrefName,
+         {0, syncer::PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
+        {kStringOsPrefName,
+         {0, syncer::OS_PREFERENCES, false, MergeBehavior::kNone}},
         {kStringOsPriorityPrefName,
-         {0, syncer::OS_PRIORITY_PREFERENCES, false}}};
+         {0, syncer::OS_PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
+};
 
 // Creates SyncData for a remote pref change.
 syncer::SyncData CreateRemoteSyncData(const std::string& name,

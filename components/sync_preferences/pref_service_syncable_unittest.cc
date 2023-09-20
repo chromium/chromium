@@ -80,16 +80,22 @@ const char kOsPriorityPrefName[] = "os_priority_pref";
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kStringPrefName, {0, syncer::PREFERENCES, false}},
-        {kListPrefName, {0, syncer::PREFERENCES, false}},
-        {kDictPrefName, {0, syncer::PREFERENCES, false}},
-        {kDefaultCharsetPrefName, {0, syncer::PREFERENCES, false}},
-        {kBrowserPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
-        {kBrowserPrefName, {0, syncer::PREFERENCES, false}},
-        {kBrowserPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
+        {kStringPrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kListPrefName, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kDictPrefName, {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kDefaultCharsetPrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kBrowserPriorityPrefName,
+         {0, syncer::PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
+        {kBrowserPrefName,
+         {0, syncer::PREFERENCES, false, MergeBehavior::kNone}},
+        {kBrowserPriorityPrefName,
+         {0, syncer::PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {kOsPrefName, {0, syncer::OS_PREFERENCES, false}},
-        {kOsPriorityPrefName, {0, syncer::OS_PRIORITY_PREFERENCES, false}},
+        {kOsPrefName, {0, syncer::OS_PREFERENCES, false, MergeBehavior::kNone}},
+        {kOsPriorityPrefName,
+         {0, syncer::OS_PRIORITY_PREFERENCES, false, MergeBehavior::kNone}},
 #endif
 };
 

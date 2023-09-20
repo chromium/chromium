@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,11 +37,10 @@ enum class MergeBehavior {
 // This class represents the metadata corresponding to a syncable preference.
 class SyncablePrefMetadata {
  public:
-  constexpr SyncablePrefMetadata(
-      int syncable_pref_id,
-      syncer::ModelType model_type,
-      bool is_history_opt_in_required,
-      MergeBehavior merge_behavior = MergeBehavior::kNone)
+  constexpr SyncablePrefMetadata(int syncable_pref_id,
+                                 syncer::ModelType model_type,
+                                 bool is_history_opt_in_required,
+                                 MergeBehavior merge_behavior)
       : syncable_pref_id_(syncable_pref_id),
         model_type_(model_type),
         is_history_opt_in_required_(is_history_opt_in_required),
@@ -67,7 +67,10 @@ class SyncablePrefMetadata {
     return is_history_opt_in_required_;
   }
 
-  MergeBehavior merge_behavior() const { return merge_behaviour_; }
+  MergeBehavior merge_behavior() const {
+    NOTREACHED() << "The database has not been populated yet.";
+    return merge_behaviour_;
+  }
 
  private:
   int syncable_pref_id_;
