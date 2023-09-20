@@ -34,8 +34,8 @@ void DispatchWebNavigationEvent(content::BrowserContext* browser_context,
 // TODO(crbug.com/1467015): Combine with service_worker_apitest.cc
 // TestWorkerObserver?
 // Tracks when a worker finishes starting
-// (`blink::EmbeddedWorkerStatus::RUNNING) and is stopped
-// (`blink::EmbeddedWorkerStatus::STOPPING`).
+// (`blink::EmbeddedWorkerStatus::kRunning) and is stopped
+// (`blink::EmbeddedWorkerStatus::kStopping`).
 class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
  public:
   TestWorkerStatusObserver(content::BrowserContext* browser_context,
@@ -60,7 +60,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   // ServiceWorkerContextObserver:
 
   // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::STARTING` status. Used to indicate when our
+  // `blink::EmbeddedWorkerStatus::kStarting` status. Used to indicate when our
   // test extension is beginning to start.
   void OnVersionStartingRunning(int64_t version_id) override {
     test_worker_version_id = version_id;
@@ -68,8 +68,9 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
     starting_worker_run_loop_.Quit();
   }
 
-  // Called when a worker has entered the `blink::EmbeddedWorkerStatus::RUNNING`
-  // status. Used to indicate when our test extension is now running.
+  // Called when a worker has entered the
+  // `blink::EmbeddedWorkerStatus::kRunning` status. Used to indicate when our
+  // test extension is now running.
   void OnVersionStartedRunning(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& running_info) override {
@@ -83,7 +84,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   }
 
   // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::STOPPING` status. Used to indicate when our
+  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
   // test extension is beginning to stop.
   void OnVersionStoppingRunning(int64_t version_id) override {
     // `test_worker_version_id` is the previously running version's id.
@@ -94,7 +95,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   }
 
   // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::STOPPING` status. Used to indicate when our
+  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
   // test extension has stopped.
   void OnVersionStoppedRunning(int64_t version_id) override {
     // `test_worker_version_id` is the previously running version's id.
@@ -148,7 +149,7 @@ class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
 };
 
 // Tests that dispatching an event to a worker with status
-// `blink::EmbeddedWorkerStatus::RUNNING` succeeds.
+// `blink::EmbeddedWorkerStatus::kRunning` succeeds.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToRunningWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 }
 
 // Tests that dispatching an event to a worker with status
-// `blink::EmbeddedWorkerStatus::STOPPED` succeeds.
+// `blink::EmbeddedWorkerStatus::kStopped` succeeds.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppedWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
-  // Workers must be STARTING or RUNNING before being stopped.
+  // Workers must be kStarting or kRunning before being stopped.
   ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
       GetServiceWorkerContext(profile()),
       test_event_observer.test_worker_version_id));
@@ -225,9 +226,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 }
 
 // Tests that dispatching an event to a worker with status
-// `blink::EmbeddedWorkerStatus::STARTING` succeeds. This test first installs
+// `blink::EmbeddedWorkerStatus::kStarting` succeeds. This test first installs
 // the extensions and waits for the worker to fully start. Then stops it and
-// starts it again to catch the STARTING status. This is to avoid event
+// starts it again to catch the kStarting status. This is to avoid event
 // acknowledgments on install we aren't trying to test for.
 // TODO(jlulejian): If we suspect or see worker bugs that occur on extension
 // install then create test cases where we dispatch events immediately on
@@ -247,12 +248,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
-  // Workers must be STARTING or RUNNING before being stopped.
+  // Workers must be kStarting or kRunning before being stopped.
   ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
       GetServiceWorkerContext(profile()),
       start_worker_observer.test_worker_version_id));
 
-  // Stop the worker so that we may catch the STARTING afterwards.
+  // Stop the worker so that we may catch the kStarting afterwards.
   content::StopServiceWorkerForScope(sw_context_, extension->url(),
                                      base::DoNothing());
   start_worker_observer.WaitForWorkerStopped();
@@ -261,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       start_worker_observer.test_worker_version_id));
 
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
-  // Start the worker and wait until the worker is STARTING.
+  // Start the worker and wait until the worker is kStarting.
   sw_context_->StartWorkerForScope(/*scope=*/extension->url(),
                                    /*key=*/
                                    blink::StorageKey::CreateFirstParty(
@@ -273,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       GetServiceWorkerContext(profile()),
       test_event_observer.test_worker_version_id));
 
-  // Fire the test event with the worker in STARTING status.
+  // Fire the test event with the worker in kStarting status.
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener extension_event_listener_fired("listener fired");
   DispatchWebNavigationEvent(profile(), web_contents());
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 // content::StopServiceWorkerForScope(...).
 
 // Tests that dispatching an event to a
-// worker with status `blink::EmbeddedWorkerStatus::STOPPING` succeeds.
+// worker with status `blink::EmbeddedWorkerStatus::kStopping` succeeds.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DISABLED_DispatchToStoppingWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
-  // Workers must be STARTING or RUNNING before being stopped.
+  // Workers must be kStarting or kRunning before being stopped.
   ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
       GetServiceWorkerContext(profile()),
       test_event_observer.test_worker_version_id));
