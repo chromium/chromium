@@ -321,7 +321,6 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
     } else {
       // Off-thread case, see (2a) in function comment.
 
-      // TODO(crbug.com/1370013): Use CrossThreadHandle.
       worker_pool::PostTask(
           FROM_HERE, CrossThreadBindOnce(
                          &CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
