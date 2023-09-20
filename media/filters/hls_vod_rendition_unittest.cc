@@ -165,4 +165,14 @@ TEST_F(HlsVodRenditionUnittest, TestCheckStateWithTooLateBuffer) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsVodRenditionUnittest, TestStop) {
+  auto rendition = MakeVodRendition(kInitialFetchVodPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  rendition->Stop();
+
+  // Should always be kNoTimestamp after `Stop()` and no network requests.
+  rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
+}
+
 }  // namespace media

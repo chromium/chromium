@@ -35,6 +35,11 @@ void HlsLiveRendition::CheckState(
     double playback_rate,
     ManifestDemuxer::DelayCallback time_remaining_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_for_shutdown_) {
+    std::move(time_remaining_cb).Run(kNoTimestamp);
+    return;
+  }
+
   if (playback_rate != 1 && playback_rate != 0) {
     // TODO(crbug.com/1266991): What should be done about non-paused,
     // non-real-time playback? Anything above 1 would hit the end and constantly
@@ -128,6 +133,8 @@ void HlsLiveRendition::CheckState(
 }
 
 void HlsLiveRendition::ContinuePartialFetching(base::OnceClosure cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   if (partial_stream_) {
     FetchMoreDataFromPendingStream(std::move(cb));
     return;
@@ -143,11 +150,18 @@ bool HlsLiveRendition::Seek(base::TimeDelta time) {
 }
 
 void HlsLiveRendition::CancelPendingNetworkRequests() {
-  // TODO(crbug.com/1266991): Cancel requests.
+  partial_stream_ = nullptr;
+}
+
+void HlsLiveRendition::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CancelPendingNetworkRequests();
+  is_stopped_for_shutdown_ = true;
 }
 
 base::TimeDelta HlsLiveRendition::GetForwardBufferSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   // Try to keep a buffer of at least 5x fetch time, or 3 seconds, whichever
   // is longer. These numbers were picked based on trial and error to get a
   // smooth stream.
@@ -160,22 +174,23 @@ base::TimeDelta HlsLiveRendition::GetForwardBufferSize() const {
 void HlsLiveRendition::LoadSegment(const hls::MediaSegment& segment,
                                    base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   rendition_host_->ReadFromUrl(
       segment.GetUri(), /*read_chunked=*/true, segment.GetByteRange(),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsLiveRendition::OnSegmentData, weak_factory_.GetWeakPtr(),
-          std::move(cb), base::TimeTicks::Now())));
+      base::BindOnce(&HlsLiveRendition::OnSegmentData,
+                     weak_factory_.GetWeakPtr(), std::move(cb),
+                     base::TimeTicks::Now()));
 }
 
 void HlsLiveRendition::FetchMoreDataFromPendingStream(base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   CHECK(partial_stream_);
   auto stream = std::move(partial_stream_);
   rendition_host_->ReadStream(
-      std::move(stream),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsLiveRendition::OnSegmentData, weak_factory_.GetWeakPtr(),
-          std::move(cb), base::TimeTicks::Now())));
+      std::move(stream), base::BindOnce(&HlsLiveRendition::OnSegmentData,
+                                        weak_factory_.GetWeakPtr(),
+                                        std::move(cb), base::TimeTicks::Now()));
 }
 
 void HlsLiveRendition::OnSegmentData(
@@ -183,6 +198,12 @@ void HlsLiveRendition::OnSegmentData(
     base::TimeTicks net_req_start,
     HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_stopped_for_shutdown_) {
+    std::move(cb).Run();
+    return;
+  }
+
   if (!result.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
@@ -216,6 +237,7 @@ void HlsLiveRendition::OnSegmentData(
 
 void HlsLiveRendition::AppendSegments(hls::MediaPlaylist* playlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
   for (const auto& segment : playlist->GetSegments()) {
     if (first_sequence_number_ == 0) {
@@ -233,6 +255,7 @@ void HlsLiveRendition::MaybeFetchManifestUpdates(
     base::TimeDelta delay,
     ManifestDemuxer::DelayCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   // Section 6.3.4 of the spec states that:
   // the client MUST wait for at least the target duration before attempting
   // to reload the Playlist file again, measured from the last time the client
@@ -249,11 +272,12 @@ void HlsLiveRendition::MaybeFetchManifestUpdates(
 void HlsLiveRendition::FetchManifestUpdates(base::TimeDelta delay,
                                             ManifestDemuxer::DelayCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   rendition_host_->ReadFromUrl(
       media_playlist_uri_, /*read_chunked=*/false, absl::nullopt,
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsLiveRendition::OnManifestUpdates, weak_factory_.GetWeakPtr(),
-          base::TimeTicks::Now(), delay, std::move(cb))));
+      base::BindOnce(&HlsLiveRendition::OnManifestUpdates,
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), delay,
+                     std::move(cb)));
 }
 
 void HlsLiveRendition::OnManifestUpdates(
@@ -262,6 +286,12 @@ void HlsLiveRendition::OnManifestUpdates(
     ManifestDemuxer::DelayCallback cb,
     HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_stopped_for_shutdown_) {
+    std::move(cb).Run(base::Seconds(0));
+    return;
+  }
+
   if (!result.has_value()) {
     engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
@@ -273,9 +303,9 @@ void HlsLiveRendition::OnManifestUpdates(
     // TODO(crbug/1266991): Log a large manifest warning.
     rendition_host_->ReadStream(
         std::move(stream),
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &HlsLiveRendition::OnManifestUpdates, weak_factory_.GetWeakPtr(),
-            download_start_time, delay_time, std::move(cb))));
+        base::BindOnce(&HlsLiveRendition::OnManifestUpdates,
+                       weak_factory_.GetWeakPtr(), download_start_time,
+                       delay_time, std::move(cb)));
     return;
   }
   auto info = hls::Playlist::IdentifyPlaylist(stream->AsStringPiece());
@@ -302,6 +332,7 @@ void HlsLiveRendition::OnManifestUpdates(
 
 void HlsLiveRendition::ClearOldData(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   // 5 seconds chosen mostly arbitrarily to keep some prior buffer while not
   // keeping too much to cause memory issues.
   if (time <= base::Seconds(5)) {
@@ -311,6 +342,8 @@ void HlsLiveRendition::ClearOldData(base::TimeDelta time) {
 }
 
 void HlsLiveRendition::ResetForPause() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   segments_ = {};
   last_sequence_number_ = first_sequence_number_;
   partial_stream_ = nullptr;

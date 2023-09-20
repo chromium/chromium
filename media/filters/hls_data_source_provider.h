@@ -147,6 +147,9 @@ class MEDIA_EXPORT HlsDataSourceStreamManager {
   using ReadCb = base::OnceCallback<void(ReadResult)>;
 
   virtual ~HlsDataSourceStreamManager() = 0;
+
+  // `ReadCb` is bound and posted on to run on the thread where `ReadStream` is
+  // called.
   virtual void ReadStream(std::unique_ptr<HlsDataSourceStream>, ReadCb) = 0;
 };
 

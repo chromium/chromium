@@ -68,7 +68,7 @@ void HlsVodRendition::CheckState(
     double playback_rate,
     ManifestDemuxer::DelayCallback time_remaining_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (segments_.empty()) {
+  if (is_stopped_for_shutdown_ || segments_.empty()) {
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
   }
@@ -146,6 +146,11 @@ void HlsVodRendition::CheckState(
 
 bool HlsVodRendition::Seek(base::TimeDelta seek_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_stopped_for_shutdown_) {
+    return false;
+  }
+
   auto ranges = engine_host_->GetBufferedRanges(role_);
   if (!ranges.empty()) {
     if (ranges.contains(ranges.size() - 1, seek_time)) {
@@ -178,11 +183,18 @@ bool HlsVodRendition::Seek(base::TimeDelta seek_time) {
 
 void HlsVodRendition::CancelPendingNetworkRequests() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Nothing to do!
+  pending_stream_fetch_ = absl::nullopt;
+}
+
+void HlsVodRendition::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CancelPendingNetworkRequests();
+  is_stopped_for_shutdown_ = true;
 }
 
 base::TimeDelta HlsVodRendition::ClearOldSegments(base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   base::TimeTicks removal_start = base::TimeTicks::Now();
   // Keep 10 seconds of content before the current media time. `media_time` is
   // more accurately described as the highest timestamp yet seen in the current
@@ -205,6 +217,7 @@ base::TimeDelta HlsVodRendition::ClearOldSegments(base::TimeDelta media_time) {
 
 void HlsVodRendition::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   CHECK(pending_stream_fetch_.has_value() || fetch_queue_ != segments_.end());
   if (pending_stream_fetch_.has_value()) {
     FetchMoreDataFromPendingStream(std::move(cb), time);
@@ -220,6 +233,7 @@ void HlsVodRendition::LoadSegment(SegmentInfo* segment,
                                   base::TimeDelta fetch_required_time,
                                   base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   CHECK(segment);
   rendition_host_->ReadFromUrl(
       segment->segment->GetUri(), true, segment->segment->GetByteRange(),
@@ -233,16 +247,17 @@ void HlsVodRendition::FetchMoreDataFromPendingStream(
     base::OnceClosure cb,
     base::TimeDelta fetch_required_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_for_shutdown_);
   CHECK(pending_stream_fetch_.has_value());
   const SegmentInfo& segment = segments_[pending_stream_fetch_->index];
   auto stream = std::move(pending_stream_fetch_->stream);
   pending_stream_fetch_.reset();
   rendition_host_->ReadStream(
       std::move(stream),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsVodRendition::OnSegmentData, weak_factory_.GetWeakPtr(),
-          std::move(cb), std::move(fetch_required_time), segment.index,
-          base::TimeTicks::Now())));
+      base::BindOnce(&HlsVodRendition::OnSegmentData,
+                     weak_factory_.GetWeakPtr(), std::move(cb),
+                     std::move(fetch_required_time), segment.index,
+                     base::TimeTicks::Now()));
 }
 
 void HlsVodRendition::OnSegmentData(
@@ -252,6 +267,11 @@ void HlsVodRendition::OnSegmentData(
     base::TimeTicks net_req_start,
     HlsDataSourceStreamManager::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_for_shutdown_) {
+    std::move(cb).Run();
+    return;
+  }
+
   if (!result.has_value()) {
     // Drop |cb| here, and let the abort handler pick up the pieces.
     return engine_host_->OnError(

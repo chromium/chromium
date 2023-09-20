@@ -347,4 +347,40 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAbortMidDownload) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsManifestDemuxerEngineTest, TestStop) {
+  auto mock_data_source = std::make_unique<StrictMock<MockHlsDataSource>>();
+  auto* mock_ds_ptr = mock_data_source.get();
+  EXPECT_CALL(*mock_dsp_,
+              GetDataSource("http://media.example.com/manifest.m3u8"))
+      .Times(1)
+      .WillOnce(Return(ByMove(std::move(mock_data_source))));
+
+  HlsDataSource::ReadCb read_cb;
+  EXPECT_CALL(*mock_ds_ptr, Read(_, _, _, _))
+      .WillRepeatedly(
+          [&read_cb](uint64_t, size_t, uint8_t*, HlsDataSource::ReadCb cb) {
+            read_cb = std::move(cb);
+          });
+
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+  CHECK(read_cb);
+
+  auto rendition = std::make_unique<MockHlsRendition>();
+  auto* rend = rendition.get();
+  engine_->AddRenditionForTesting(std::move(rendition));
+
+  EXPECT_CALL(*mock_ds_ptr, Stop());
+  EXPECT_CALL(*rend, Stop());
+  engine_->Stop();
+  task_environment_.RunUntilIdle();
+
+  engine_->ReadFromUrl(
+      GURL("https://example.com"), true, absl::nullopt,
+      base::BindOnce([](HlsDataSourceStreamManager::ReadResult result) {
+        ASSERT_EQ(std::move(result).error(),
+                  HlsDataSource::ReadStatus::Codes::kAborted);
+      }));
+}
+
 }  // namespace media

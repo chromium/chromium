@@ -30,6 +30,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
                   ManifestDemuxer::DelayCallback time_remaining_cb) override;
   bool Seek(base::TimeDelta seek_time) override;
   void CancelPendingNetworkRequests() override;
+  void Stop() override;
 
  private:
   base::TimeDelta GetForwardBufferSize() const;
@@ -92,6 +93,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
 
   bool has_ever_played_ = false;
   bool require_seek_after_unpause_ = false;
+  bool is_stopped_for_shutdown_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

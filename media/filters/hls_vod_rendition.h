@@ -31,6 +31,7 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
                   ManifestDemuxer::DelayCallback time_remaining_cb) override;
   bool Seek(base::TimeDelta seek_time) override;
   void CancelPendingNetworkRequests() override;
+  void Stop() override;
 
  private:
   struct SegmentInfo {
@@ -102,6 +103,8 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
 
   // Fetch segments in order always.
   std::vector<SegmentInfo>::iterator fetch_queue_;
+
+  bool is_stopped_for_shutdown_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

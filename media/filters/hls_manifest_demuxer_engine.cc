@@ -264,6 +264,9 @@ int64_t HlsManifestDemuxerEngine::GetMemoryUsage() const {
 void HlsManifestDemuxerEngine::Stop() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   AbortPendingReads();
+  for (auto& rendition : renditions_) {
+    rendition->Stop();
+  }
 
   data_source_provider_.Reset();
 
@@ -334,6 +337,10 @@ void HlsManifestDemuxerEngine::ReadStream(
     std::unique_ptr<HlsDataSourceStream> stream,
     HlsDataSourceStreamManager::ReadCb cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (!data_source_provider_) {
+    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
+    return;
+  }
   auto ticket = stream_ticket_generator_.GenerateNextId();
   auto it = stream_map_.try_emplace(ticket, std::move(stream));
   it.first->second->ReadChunk(
@@ -400,6 +407,10 @@ void HlsManifestDemuxerEngine::ReadFromUrl(
     absl::optional<hls::types::ByteRange> range,
     HlsDataSourceStreamManager::ReadCb cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (!data_source_provider_) {
+    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
+    return;
+  }
   if (!read_chunked) {
     cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
                         weak_factory_.GetWeakPtr(), std::move(cb));

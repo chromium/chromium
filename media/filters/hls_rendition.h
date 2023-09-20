@@ -59,6 +59,10 @@ class MEDIA_EXPORT HlsRendition {
   // Live renditions should return a nullopt for duration.
   virtual absl::optional<base::TimeDelta> GetDuration() = 0;
 
+  // Stop the rendition, including canceling pending seeks. After stopping,
+  // `CheckState` and `Seek` should be no-ops.
+  virtual void Stop() = 0;
+
   static HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,
       HlsRenditionHost* rendition_host,

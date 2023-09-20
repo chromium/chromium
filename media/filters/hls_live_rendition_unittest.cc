@@ -342,4 +342,15 @@ TEST_F(HlsLiveRenditionUnittest, TestPauseAndUnpause) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsLiveRenditionUnittest, TestStop) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchLivePlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  rendition->Stop();
+
+  // Should always be kNoTimestamp after `Stop()` and no network requests.
+  rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
+}
+
 }  // namespace media

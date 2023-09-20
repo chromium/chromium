@@ -133,6 +133,7 @@ class MockHlsRendition : public HlsRendition {
   MOCK_METHOD(bool, Seek, (base::TimeDelta time), (override));
   MOCK_METHOD(void, CancelPendingNetworkRequests, (), (override));
   MOCK_METHOD(absl::optional<base::TimeDelta>, GetDuration, (), (override));
+  MOCK_METHOD(void, Stop, (), (override));
 };
 
 }  // namespace media
