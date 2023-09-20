@@ -59,4 +59,13 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   EXPECT_EQ(card_art_image.ToUIImage().scale, 7);
 }
 
+// Regression test for crbug.com/1484797, in which the server can return an
+// empty image that caused AutofillImageFetcherImpl::ResolveCardArtImage to
+// crash.
+TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage_EmptyImage) {
+  gfx::Image resolved_image = autofill_image_fetcher()->ResolveCardArtImage(
+      GURL("https://example.com/fake_image1"), gfx::Image());
+  EXPECT_TRUE(resolved_image.IsEmpty());
+}
+
 }  // namespace autofill
