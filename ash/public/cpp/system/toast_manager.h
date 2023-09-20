@@ -40,10 +40,15 @@ class ASH_PUBLIC_EXPORT ToastManager {
       const std::string& id) = 0;
 
   // Tells if the toast with the provided ID is running.
-  virtual bool IsRunning(const std::string& id) const = 0;
+  virtual bool IsRunning(std::string_view id) const = 0;
 
   // Creates a `ScopedToastPause`.
   virtual std::unique_ptr<ScopedToastPause> CreateScopedPause() = 0;
+
+  // Tells if the toast with the provided ID has a dismiss button that is
+  // currently being highlighted. Returns false if the toast is not running,
+  // does not have a dismiss button, or the dismiss button is not highlighted.
+  virtual bool IsHighlighted(std::string_view id) const = 0;
 
  protected:
   ToastManager();

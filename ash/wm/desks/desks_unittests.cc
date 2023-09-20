@@ -9041,38 +9041,6 @@ TEST_P(DesksCloseAllTest,
   EXPECT_TRUE(window.window()->transform().IsIdentity());
 }
 
-// Tests that we can undo close-all solely via keyboard navigation (tabbing to
-// the undo toast and pressing enter).
-TEST_P(DesksCloseAllTest, CanUndoDeskClosureThroughKeyboardNavigation) {
-  NewDesk();
-  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
-  EnterOverview();
-  OverviewSession* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
-  ASSERT_TRUE(overview_session);
-
-  // Tab to the first mini view and perform close-all on it.
-  SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(GetPrimaryRootDesksBarView()->mini_views()[0]->desk_preview(),
-            overview_session->focus_cycler()->focused_view());
-
-  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  ASSERT_EQ(1u, DesksController::Get()->desks().size());
-
-  // Tab to the undo toast.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-
-  // If the focus cycler returns a nullptr after tabbing, then the undo toast's
-  // button should be focused.
-  ASSERT_FALSE(overview_session->focus_cycler()->focused_view());
-
-  // Pressing enter should restore the desk.
-  SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(2u, DesksController::Get()->desks().size());
-}
-
 // Tests that we can create the maximum number of desks, remove one, and add one
 // before the toast asking if the user would like to undo goes away.
 TEST_P(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
@@ -10879,6 +10847,150 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
 TEST_P(DeskBarTest, BottomLockedShelf) {
   OpenDeskBar();
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
+}
+
+// Tests that we can undo close-all solely via keyboard navigation (tabbing to
+// the undo toast and pressing enter).
+TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
+  // Scenarios in which we can try to undo desk closure. If the active desk is
+  // removed, we close the desk bar and immediately focus the undo button.
+  enum class DeskRemovalMethod {
+    kInactiveDeskRemovedForwardTab,
+    kInactiveDeskRemovedReverseTab,
+    kActiveDeskRemoved,
+  };
+
+  struct {
+    const std::string scope_trace;
+    const DeskRemovalMethod desk_removal_method;
+    const int expected_tab_count;
+  } kTestCases[] = {
+      {base::StringPrintf("Forward tabbing to the undo button after removing "
+                          "an inactive desk %s",
+                          (bar_type_ == DeskBarViewBase::Type::kDeskButton
+                               ? "in desk button desk bar"
+                               : "in overview desk bar")),
+       DeskRemovalMethod::kInactiveDeskRemovedForwardTab,
+       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 8 : 4},
+      {base::StringPrintf("Reverse tabbing to the undo button after removing "
+                          "an inactive desk %s",
+                          (bar_type_ == DeskBarViewBase::Type::kDeskButton
+                               ? "in desk button desk bar"
+                               : "in overview desk bar")),
+       DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
+       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4},
+      {base::StringPrintf(
+           "Activating the undo button after removing the active desk %s",
+           (bar_type_ == DeskBarViewBase::Type::kDeskButton
+                ? "in desk button desk bar"
+                : "in overview desk bar")),
+       DeskRemovalMethod::kActiveDeskRemoved,
+       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 0 : 6},
+  };
+
+  NewDesk();
+  NewDesk();
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  OpenDeskBar();
+  auto* desk_bar = GetDeskBarView();
+  const auto& mini_views = desk_bar->mini_views();
+
+  DesksController* desks_controller = DesksController::Get();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+
+    // Tab to the first mini view.
+    SendKey(ui::VKEY_TAB);
+
+    // If we are not closing the active desk, close the next desk instead.
+    if (test_case.desk_removal_method !=
+        DeskRemovalMethod::kActiveDeskRemoved) {
+      SendKey(ui::VKEY_TAB);
+      SendKey(ui::VKEY_TAB);
+
+      // The desk button desk bar adds the close-all button to the tab order, so
+      // we need to include an extra tab for that.
+      if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+        SendKey(ui::VKEY_TAB);
+
+        ASSERT_EQ(mini_views[1]->desk_preview(),
+                  desk_bar->GetWidget()->GetFocusManager()->GetFocusedView());
+      } else {
+        ASSERT_EQ(mini_views[1]->desk_preview(), Shell::Get()
+                                                     ->overview_controller()
+                                                     ->overview_session()
+                                                     ->focus_cycler()
+                                                     ->focused_view());
+      }
+
+      SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    } else if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+        ASSERT_EQ(mini_views[0]->desk_preview(),
+                  desk_bar->GetWidget()->GetFocusManager()->GetFocusedView());
+      } else {
+        ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
+                                                     ->overview_controller()
+                                                     ->overview_session()
+                                                     ->focus_cycler()
+                                                     ->focused_view());
+      }
+
+      // In the desk button desk bar, we run the desk switch animation when
+      // removing the active desk.
+      DeskSwitchAnimationWaiter waiter;
+      SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+      waiter.Wait();
+    } else {
+      if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+        ASSERT_EQ(mini_views[0]->desk_preview(),
+                  desk_bar->GetWidget()->GetFocusManager()->GetFocusedView());
+      } else {
+        ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
+                                                     ->overview_controller()
+                                                     ->overview_session()
+                                                     ->focus_cycler()
+                                                     ->focused_view());
+      }
+
+      SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    }
+
+    ASSERT_EQ(2u, desks_controller->desks().size());
+
+    // Tab to the undo toast.
+    for (int i = 0; i < test_case.expected_tab_count; i++) {
+      SendKey(ui::VKEY_TAB,
+              test_case.desk_removal_method ==
+                      DeskRemovalMethod::kInactiveDeskRemovedReverseTab
+                  ? ui::EF_SHIFT_DOWN
+                  : ui::EF_NONE);
+    }
+
+    ASSERT_TRUE(bar_type_ == DeskBarViewBase::Type::kDeskButton
+                    ? desks_controller->IsUndoToastHighlighted()
+                    : !Shell::Get()
+                           ->overview_controller()
+                           ->overview_session()
+                           ->focus_cycler()
+                           ->focused_view());
+
+    // Pressing undo in the desk button desk bar after closing the active desk
+    // will switch us back to the removed desk.
+    if (test_case.desk_removal_method ==
+            DeskRemovalMethod::kActiveDeskRemoved &&
+        bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      DeskSwitchAnimationWaiter waiter;
+      SendKey(ui::VKEY_RETURN);
+      waiter.Wait();
+    } else {
+      SendKey(ui::VKEY_RETURN);
+    }
+
+    ASSERT_EQ(3u, desks_controller->desks().size());
+  }
 }
 
 namespace {

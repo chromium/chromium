@@ -5703,6 +5703,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED" desc="A desk is removed in virtual desks.">
         Desk <ph name="REMOVED_DESK">$1</ph> removed and merged with Desk <ph  name="RECEIVE_DESK">$2</ph>
       </message>
+      <message name="IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_CLOSED_WITH_WINDOWS" desc="The accessibility text read by screen readers when a desk is closed with its windows.">
+        Desk and windows have been removed. Press Control + Z to undo action.
+      </message>
       <message name="IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_ACTIVATED" desc="A desk in virtual desks is activated.">
         Desk <ph name="DESK_TITILE">$1<ex>1</ex></ph> activated
       </message>

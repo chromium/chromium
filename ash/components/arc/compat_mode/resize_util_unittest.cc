@@ -35,12 +35,13 @@ class FakeToastManager : public ash::ToastManager {
       const std::string& id) override {
     return false;
   }
-  bool IsRunning(const std::string& id) const override { return false; }
+  bool IsRunning(std::string_view id) const override { return false; }
   std::unique_ptr<ash::ScopedToastPause> CreateScopedPause() override {
     return nullptr;
   }
   void Pause() override {}
   void Resume() override {}
+  bool IsHighlighted(std::string_view id) const override { return false; }
 
   void ResetState() {
     called_show_ = false;

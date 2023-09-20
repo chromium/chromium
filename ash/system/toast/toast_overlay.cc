@@ -270,6 +270,10 @@ void ToastOverlay::OnSliderBubbleHeightChanged() {
   }
 }
 
+bool ToastOverlay::IsDismissButtonHighlighted() const {
+  return overlay_view_->is_dismiss_button_highlighted();
+}
+
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // If the native window has not been initialized, as in the first call, get
   // the default root window. Otherwise get the window for this `overlay_widget`

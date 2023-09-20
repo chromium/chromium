@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/desk_button_widget.h"
@@ -21,16 +22,19 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -66,28 +70,47 @@ bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
 void MoveFocus(const DeskBarController::BarWidgetAndView& desk_bar,
                bool reverse) {
   auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
+
+  // When ChromeVox is not enabled, we do not need to advance focus outside of
+  // the normal focus order (i.e. to a button on a toast that will undo the desk
+  // close operation). Therefore, in this case we can just advance focus
+  // normally.
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    focus_manager->AdvanceFocus(reverse);
+    return;
+  }
+
   views::View* focused_view = focus_manager->GetFocusedView();
 
   views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
   views::View* last_focusable_view = desk_bar.GetLastFocusableView();
 
+  // When a desk is removed and the undo desk removal toast is shown, we return
+  // focus back to the start of the cycling order.
   views::View* next_focusable_view;
+  DesksController* desks_controller = DesksController::Get();
   if (focused_view) {
     next_focusable_view = desk_bar.GetNextFocusableView(focused_view, reverse);
-  } else {
-    next_focusable_view = reverse ? last_focusable_view : first_focusable_view;
-  }
 
-  // If we are moving over either end of the list of traversible views and there
-  // is an active toast with an undo button for desk removal that can be
-  // focused, then we unfocus any traversible views while the dismiss button is
-  // focused.
-  if (((next_focusable_view == first_focusable_view && !reverse) ||
-       (next_focusable_view == last_focusable_view && reverse)) &&
-      DesksController::Get()
-          ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+    // If we are moving over either end of the list of traversible views and
+    // there is an active toast with an undo button for desk removal that can be
+    // focused, then we unfocus any traversible views while the dismiss button
+    // is focused.
+    if (((next_focusable_view == first_focusable_view && !reverse) ||
+         (next_focusable_view == last_focusable_view && reverse)) &&
+        desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+      focus_manager->ClearFocus();
+      return;
+    }
+  } else if (reverse &&
+             desks_controller
+                 ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
     focus_manager->ClearFocus();
     return;
+  }
+
+  if (desks_controller->IsUndoToastHighlighted()) {
+    desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
   }
 
   focus_manager->AdvanceFocus(reverse);
@@ -133,6 +156,8 @@ DeskBarController::DeskBarController() {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   DesksController::Get()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
+  // TODO(b/301274861): DeskBarController should only be doing pre-target
+  // handling when the desk bar is visible.
   Shell::Get()->AddPreTargetHandler(this);
   Shell::Get()->AddShellObserver(this);
 }
@@ -155,18 +180,65 @@ void DeskBarController::OnMouseEvent(ui::MouseEvent* event) {
   if (ShouldProcessLocatedEvent(*event)) {
     OnMaybePressOffBar(*event);
   }
+
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
+    DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
+  }
 }
 
 void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
   if (ShouldProcessLocatedEvent(*event)) {
     OnMaybePressOffBar(*event);
   }
+
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
+    DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
+  }
 }
 
 void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
-  if (!is_key_press || !IsShowingDeskBar()) {
+
+  // We return early if we are in an overview session because the overview desk
+  // bar has its own predefined key event handling logic. This will handle key
+  // events when the desk bar is not visible because the undo desk close toast
+  // can be visible without the desk bar being visible. But we still do not want
+  // to encroach on the logic that is established for the overview desk bar.
+  if (!is_key_press || IsInOverviewSession()) {
     return;
+  }
+
+  // TODO(b/301274861): Move toast highlighting logic outside of the desk bar
+  // controller.
+  // There are two scenarios in which we should handle the close all undo toast
+  // without the desk bar being open:
+  // 1) the user presses return. This can occur whether the desk bar is showing
+  //    or not, and in either case it should activate the undo toast.
+  // 2) the user presses any key other than return when the desk bar is not
+  //    showing. If this is the case, we should try to close the toast.
+  DesksController* desks_controller = DesksController::Get();
+  if (event->key_code() == ui::VKEY_RETURN) {
+    desks_controller->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast();
+    return;
+  }
+
+  if (!IsShowingDeskBar()) {
+    if (event->key_code() != ui::VKEY_RETURN) {
+      desks_controller->MaybeDismissPersistentDeskRemovalToast();
+    }
+
+    return;
+  }
+
+  // If the user is performing any non-traversal action (i.e. they do anything
+  // other than press tab or an arrow key) and is not trying to undo desk
+  // removal with Ctrl + Z, we should close the desk removal undo toast.
+  const ui::KeyboardCode traversal_keys[7] = {
+      ui::VKEY_TAB,   ui::VKEY_UP,    ui::VKEY_DOWN,   ui::VKEY_LEFT,
+      ui::VKEY_RIGHT, ui::VKEY_SHIFT, ui::VKEY_CONTROL};
+  if (!(event->IsControlDown() && event->key_code() == ui::VKEY_Z) &&
+      !base::Contains(traversal_keys, event->key_code())) {
+    desks_controller->MaybeDismissPersistentDeskRemovalToast();
   }
 
   const bool is_control_down = event->IsControlDown();
@@ -181,7 +253,6 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         views::AsViewClass<DeskPreviewView>(focused_view);
     DeskNameView* focused_name_view =
         views::AsViewClass<DeskNameView>(focused_view);
-    auto* desks_controller = DesksController::Get();
 
     // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
     switch (event->key_code()) {
@@ -194,8 +265,8 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         break;
       case ui::VKEY_UP:
       case ui::VKEY_DOWN:
-        focus_manager->AdvanceFocus(/*reverse=*/event->key_code() ==
-                                    ui::VKEY_UP);
+        MoveFocus(desk_bar,
+                  /*reverse=*/event->key_code() == ui::VKEY_UP);
         break;
       case ui::VKEY_TAB:
         // For alt+tab/alt+shift+tab, like other UIs on the shelf, it should
@@ -218,8 +289,8 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
             return;
           }
         } else {
-          focus_manager->AdvanceFocus(/*reverse=*/event->key_code() ==
-                                      ui::VKEY_LEFT);
+          MoveFocus(desk_bar,
+                    /*reverse=*/event->key_code() == ui::VKEY_LEFT);
         }
         break;
       case ui::VKEY_W:
@@ -244,12 +315,6 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         }
 
         desks_controller->MaybeCancelDeskRemoval();
-        break;
-      case ui::VKEY_RETURN:
-        if (!desks_controller
-                 ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
-          return;
-        }
         break;
       default:
         return;

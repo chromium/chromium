@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -1666,6 +1667,12 @@ void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
   DCHECK_EQ(animation_.get(), animation);
   metrics_helper_->OnAnimationFinished(animation->visible_desk_changes());
   animation_.reset();
+
+  // If we just switched desks due to removing the active desk, we immediately
+  // highlight the undo button.
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
+  }
 }
 
 bool DesksController::HasDeskWithName(const std::u16string& desk_name) const {
@@ -1977,12 +1984,17 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
 
   // We should only announce desks are being merged if we are combining desks.
+  // Otherwise, we tell the user that the desk has closed with its windows.
+  AccessibilityControllerImpl* accessibility_controller =
+      shell->accessibility_controller();
   if (close_type == DeskCloseType::kCombineDesks) {
-    Shell::Get()
-        ->accessibility_controller()
-        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
-            active_desk_->name()));
+    accessibility_controller->TriggerAccessibilityAlertWithMessage(
+        l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED,
+                                  removed_desk->name(), active_desk_->name()));
+  } else if (close_type == DeskCloseType::kCloseAllWindowsAndWait) {
+    accessibility_controller->TriggerAccessibilityAlertWithMessage(
+        l10n_util::GetStringUTF8(
+            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_CLOSED_WITH_WINDOWS));
   }
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
@@ -2178,6 +2190,11 @@ void DesksController::MaybeCommitPendingDeskRemoval(
                            temporary_removed_desk_->toast_id() == toast_id)) {
     temporary_removed_desk_.reset();
   }
+}
+
+bool DesksController::IsUndoToastHighlighted() const {
+  return temporary_removed_desk_ && ToastManager::Get()->IsHighlighted(
+                                        temporary_removed_desk_->toast_id());
 }
 
 void DesksController::CleanUpClosedAppWindowsTask(

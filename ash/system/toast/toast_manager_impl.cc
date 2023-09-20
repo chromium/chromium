@@ -160,9 +160,10 @@ void ToastManagerImpl::Cancel(const std::string& id) {
 bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
     const std::string& id) {
   DCHECK(IsRunning(id));
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second && iter.second->MaybeToggleA11yHighlightOnDismissButton())
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->MaybeToggleA11yHighlightOnDismissButton()) {
       return true;
+    }
   }
 
   return false;
@@ -171,21 +172,36 @@ bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
 bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
     const std::string& id) {
   DCHECK(IsRunning(id));
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second && iter.second->MaybeActivateHighlightedDismissButton())
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->MaybeActivateHighlightedDismissButton()) {
       return true;
+    }
   }
 
   return false;
 }
 
-bool ToastManagerImpl::IsRunning(const std::string& id) const {
+bool ToastManagerImpl::IsRunning(std::string_view id) const {
   return HasActiveToasts() && current_toast_data_ &&
          current_toast_data_->id == id;
 }
 
 std::unique_ptr<ScopedToastPause> ToastManagerImpl::CreateScopedPause() {
   return std::make_unique<ScopedToastPause>();
+}
+
+bool ToastManagerImpl::IsHighlighted(std::string_view id) const {
+  if (!IsRunning(id)) {
+    return false;
+  }
+
+  for (const auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->IsDismissButtonHighlighted()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void ToastManagerImpl::OnClosed() {
@@ -299,15 +315,17 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::CloseAllToastsWithAnimation() {
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second)
-      iter.second->Show(false);
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay) {
+      overlay->Show(false);
+    }
   }
 }
 
 void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
-  for (auto& iter : root_window_to_overlay_)
-    iter.second.reset();
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    overlay.reset();
+  }
 
   // `OnClosed` (the other place where we stop the
   // `current_toast_expiration_timer_`) is only called when the toast is being
@@ -317,9 +335,10 @@ void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
 }
 
 bool ToastManagerImpl::HasActiveToasts() const {
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second)
+  for (const auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay) {
       return true;
+    }
   }
 
   return false;

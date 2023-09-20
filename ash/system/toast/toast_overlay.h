@@ -94,6 +94,10 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // UnifiedSystemTray::Observer:
   void OnSliderBubbleHeightChanged() override;
 
+  // Returns if the dismiss button is highlighted in the toast. If the toast
+  // does not have a dismiss button, it returns false.
+  bool IsDismissButtonHighlighted() const;
+
  private:
   friend class ToastManagerImplTest;
   friend class DesksTestApi;
