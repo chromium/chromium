@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   PrimeForRenderingErrorOnPage(/*page_number=*/2);
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -2035,7 +2035,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =

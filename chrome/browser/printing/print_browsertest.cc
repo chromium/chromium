@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
 // TODO(crbug.com/1371776): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1680,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
 // TODO(crbug.com/1371776): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1702,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
 
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
@@ -1712,7 +1712,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        DISABLED_PDFPluginNotKeyboardFocusable) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
