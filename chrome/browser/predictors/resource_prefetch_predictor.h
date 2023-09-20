@@ -340,10 +340,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       LcppData& data,
       const std::string& host,
       const std::vector<GURL>& lcp_influencer_scripts);
-  bool RecordSingleLcpInfluencerScriptUrlHistogram(
-      LcppData& data,
-      const std::string& host,
-      const std::string& lcpp_script);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<TestObserver> observer_;
