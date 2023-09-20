@@ -1029,7 +1029,7 @@ deps = {
       'packages': [
             {
                 'package': 'chromium/third_party/android_toolchain/android_toolchain',
-                'version': '3vHltFqfgIw8wZ38ggGM9c7Eyw_AHZnwCgFIVtc9gngC',
+                'version': 'vD5FPvy1sIu7nXcWvm7PTF4yfBbjkyJJC-AgjYEdaYQC',
             },
       ],
       'condition': 'checkout_android_native_support',
