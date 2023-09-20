@@ -598,14 +598,14 @@ bool ContentBrowserClient::IsPrivateAggregationDebugModeAllowed(
 
 bool ContentBrowserClient::IsCookieDeprecationLabelAllowed(
     content::BrowserContext* browser_context) {
-  return true;
+  return false;
 }
 
 bool ContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
     const url::Origin& context_origin) {
-  return true;
+  return false;
 }
 
 bool ContentBrowserClient::CanSendSCTAuditingReport(

@@ -520,6 +520,21 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
             "label_test");
 }
 
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
+                       Incognito_LabelError) {
+  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server->Start());
+
+  auto* incognito_shell = CreateOffTheRecordBrowser();
+
+  EXPECT_TRUE(NavigateToURL(incognito_shell,
+                            https_server->GetURL("a.test", "/hello.html")));
+  EXPECT_EQ(EvalJs(incognito_shell, R"((async () => {
+        return await navigator.cookieDeprecationLabel.getValue()
+                       .catch(() => 'error'); })())"),
+            "error");
+}
+
 }  // namespace
 
 }  // namespace content

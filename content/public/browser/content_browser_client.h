@@ -985,12 +985,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& reporting_origin);
 
   // Returns whether cookie deprecation label should be allowed for the
-  // profile.
+  // profile. Defaults to false to ensure no traffic label is sent by default.
   virtual bool IsCookieDeprecationLabelAllowed(
       content::BrowserContext* browser_context);
 
   // Returns whether cookie deprecation label should be allowed for the
-  // profile in a given context.
+  // profile in a given context. Defaults to false to ensure no traffic label
+  // is sent by default.
   virtual bool IsCookieDeprecationLabelAllowedForContext(
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,

@@ -1452,8 +1452,10 @@ void StoragePartitionImpl::Initialize(
       std::make_unique<BluetoothAllowedDevicesMap>();
 
   // Must be initialized before the `url_loader_factory_getter_`.
+  // Cookie deprecation traffic labels should not be sent in incognito mode.
   if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
+          features::kCookieDeprecationFacilitatedTesting) &&
+      !is_in_memory()) {
     cookie_deprecation_label_manager_ =
         std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }
