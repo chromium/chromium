@@ -236,6 +236,7 @@ const CGFloat kSymbolSize = 22;
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
   item.accessibilityIdentifier = kAutofillAddressMigrateToAccountButtonId;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   return item;
 }
 
