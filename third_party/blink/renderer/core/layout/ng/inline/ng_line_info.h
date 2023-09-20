@@ -105,6 +105,18 @@ class CORE_EXPORT NGLineInfo {
     propagated_break_tokens_.push_back(token);
   }
 
+  absl::optional<LayoutUnit> MinimumSpaceShortage() const {
+    return minimum_space_shortage_;
+  }
+  void PropagateMinimumSpaceShortage(LayoutUnit shortage) {
+    DCHECK_GT(shortage, LayoutUnit());
+    if (minimum_space_shortage_) {
+      minimum_space_shortage_ = std::min(*minimum_space_shortage_, shortage);
+    } else {
+      minimum_space_shortage_ = shortage;
+    }
+  }
+
   void SetTextIndent(LayoutUnit indent) { text_indent_ = indent; }
   LayoutUnit TextIndent() const { return text_indent_; }
 
@@ -256,6 +268,8 @@ class CORE_EXPORT NGLineInfo {
   HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
 
   const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
+
+  absl::optional<LayoutUnit> minimum_space_shortage_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;

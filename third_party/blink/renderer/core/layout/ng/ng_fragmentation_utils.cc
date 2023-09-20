@@ -867,10 +867,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
   }
 #endif
 
-  // Report space shortage. Note that we're not doing this for line boxes here
-  // (only blocks), because line boxes need handle it in their own way (due to
-  // how we implement widows).
-  if (child.IsBlock() && space.HasKnownFragmentainerBlockSize()) {
+  if (space.HasKnownFragmentainerBlockSize()) {
     PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
                            builder, block_size_override);
   }
@@ -887,7 +884,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
 void PropagateSpaceShortage(const NGConstraintSpace& space,
                             const NGLayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
-                            NGBoxFragmentBuilder* builder,
+                            NGFragmentBuilder* builder,
                             absl::optional<LayoutUnit> block_size_override) {
   // Only multicol cares about space shortage.
   if (space.BlockFragmentationType() != kFragmentColumn)

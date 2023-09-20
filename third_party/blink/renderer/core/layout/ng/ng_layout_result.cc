@@ -78,17 +78,6 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   if (builder->has_block_fragmentation_) {
     RareData* rare_data = EnsureRareData();
 
-    if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
-      rare_data->tallest_unbreakable_block_size =
-          builder->tallest_unbreakable_block_size_;
-
-      // This field shares storage with "minimal space shortage", so both
-      // cannot be set at the same time.
-      DCHECK_EQ(builder->minimal_space_shortage_, kIndefiniteSize);
-    } else if (builder->minimal_space_shortage_ != kIndefiniteSize) {
-      rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
-    }
-
     rare_data->block_size_for_fragmentation =
         builder->block_size_for_fragmentation_;
 
@@ -253,6 +242,17 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
   }
   if (builder->lines_until_clamp_)
     EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
+
+  if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
+    EnsureRareData()->tallest_unbreakable_block_size =
+        builder->tallest_unbreakable_block_size_;
+
+    // This field shares storage with "minimal space shortage", so both cannot
+    // be set at the same time.
+    DCHECK_EQ(builder->minimal_space_shortage_, kIndefiniteSize);
+  } else if (builder->minimal_space_shortage_ != kIndefiniteSize) {
+    EnsureRareData()->minimal_space_shortage = builder->minimal_space_shortage_;
+  }
 
   // If we produced a fragment that we didn't break inside, provide the best
   // early possible breakpoint that we found inside. This early breakpoint will

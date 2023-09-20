@@ -21,11 +21,13 @@ struct CORE_EXPORT NGPositionedFloat {
  public:
   NGPositionedFloat() = default;
   NGPositionedFloat(const NGLayoutResult* layout_result,
+                    const NGBlockBreakToken* break_before_token,
                     const NGBfcOffset& bfc_offset,
-                    bool need_break_before = false)
+                    LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
+        break_before_token(break_before_token),
         bfc_offset(bfc_offset),
-        need_break_before(need_break_before) {}
+        minimum_space_shortage(minimum_space_shortage) {}
   NGPositionedFloat(NGPositionedFloat&&) noexcept = default;
   NGPositionedFloat(const NGPositionedFloat&) = default;
   NGPositionedFloat& operator=(NGPositionedFloat&&) = default;
@@ -33,9 +35,12 @@ struct CORE_EXPORT NGPositionedFloat {
 
   void Trace(Visitor*) const;
 
+  const NGBlockBreakToken* BreakToken() const;
+
   Member<const NGLayoutResult> layout_result;
+  Member<const NGBlockBreakToken> break_before_token;
   NGBfcOffset bfc_offset;
-  bool need_break_before = false;
+  LayoutUnit minimum_space_shortage;
 };
 
 }  // namespace blink

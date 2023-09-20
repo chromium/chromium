@@ -378,7 +378,7 @@ void PropagateSpaceShortage(
     const NGConstraintSpace&,
     const NGLayoutResult*,
     LayoutUnit fragmentainer_block_offset,
-    NGBoxFragmentBuilder*,
+    NGFragmentBuilder*,
     absl::optional<LayoutUnit> block_size_override = absl::nullopt);
 // Calculate how much we would need to stretch the column block-size to fit the
 // current result (if applicable). |block_size_override| should only be supplied

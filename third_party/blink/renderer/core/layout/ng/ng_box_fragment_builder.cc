@@ -313,17 +313,6 @@ void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
-void NGBoxFragmentBuilder::PropagateSpaceShortage(
-    absl::optional<LayoutUnit> space_shortage) {
-  // Space shortage should only be reported when we already have a tentative
-  // fragmentainer block-size. It's meaningless to talk about space shortage
-  // in the initial column balancing pass, because then we have no
-  // fragmentainer block-size at all, so who's to tell what's too short or
-  // not?
-  DCHECK(!IsInitialColumnBalancingPass());
-  UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
-}
-
 EBreakBetween NGBoxFragmentBuilder::JoinedBreakBetweenValue(
     EBreakBetween break_before) const {
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
@@ -417,9 +406,6 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     }
   }
 
-  if (!child_box_fragment)
-    return;
-
   if (IsBreakInside(token)) {
     if (child_is_in_same_flow) {
       has_inflow_child_break_inside_ = true;
@@ -441,6 +427,10 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     SetHasForcedBreak();
   else if (!IsInitialColumnBalancingPass())
     PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
+
+  if (!child_box_fragment) {
+    return;
+  }
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.

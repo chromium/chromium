@@ -1342,16 +1342,15 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   NGPositionedFloat positioned_float =
       PositionFloat(&unpositioned_float, &ExclusionSpace());
 
-  if (positioned_float.need_break_before) {
-    DCHECK(ConstraintSpace().HasBlockFragmentation());
-    LayoutUnit fragmentainer_block_offset =
-        FragmentainerOffsetAtBfc(ConstraintSpace()) +
-        positioned_float.bfc_offset.block_offset;
-    BreakBeforeChild(ConstraintSpace(), child, positioned_float.layout_result,
-                     fragmentainer_block_offset,
-                     /* appeal */ absl::nullopt,
-                     /* is_forced_break */ false, &container_builder_);
+  if (positioned_float.minimum_space_shortage > LayoutUnit()) {
+    container_builder_.PropagateSpaceShortage(
+        positioned_float.minimum_space_shortage);
+  }
 
+  if (positioned_float.break_before_token) {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    container_builder_.AddBreakToken(positioned_float.break_before_token,
+                                     /* is_in_parallel_flow */ true);
     // After breaking before the float, carry on with layout of this
     // container. The float constitutes a parallel flow, and there may be
     // siblings that could still fit in the current fragmentainer.

@@ -519,7 +519,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
       has_out_of_flow_positioned_items = true;
     } else if (item.Type() == NGInlineItem::kFloating) {
       if (item_result.positioned_float) {
-        if (!item_result.positioned_float->need_break_before) {
+        if (!item_result.positioned_float->break_before_token) {
           DCHECK(item_result.positioned_float->layout_result);
           line_box->AddChild(item_result.positioned_float->layout_result,
                              item_result.positioned_float->bfc_offset,
@@ -1045,22 +1045,15 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     if (child.unpositioned_float) {
       NGPositionedFloat positioned_float = PositionFloat(
           origin_bfc_block_offset, child.unpositioned_float, &ExclusionSpace());
-      if (positioned_float.need_break_before) {
-        // We decided to break before the float. No fragment here. Create a
-        // break token and propagate it to the block container.
-        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
-        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
-            float_node, /* is_forced_break */ false);
-        line_info->PropagateBreakToken(break_before);
-        continue;
-      } else {
-        // If the float broke inside, we need to propagate the break token to
-        // the block container, so that we'll resume in the next fragmentainer.
-        if (const NGBreakToken* token =
-                positioned_float.layout_result->PhysicalFragment()
-                    .BreakToken()) {
-          line_info->PropagateBreakToken(To<NGBlockBreakToken>(token));
+      const NGBlockBreakToken* break_token = positioned_float.BreakToken();
+      if (break_token) {
+        line_info->PropagateBreakToken(break_token);
+        if (positioned_float.minimum_space_shortage) {
+          line_info->PropagateMinimumSpaceShortage(
+              positioned_float.minimum_space_shortage);
         }
+      }
+      if (!break_token || !break_token->IsBreakBefore()) {
         child.layout_result = std::move(positioned_float.layout_result);
         child.bfc_offset = positioned_float.bfc_offset;
         child.unpositioned_float = nullptr;
@@ -1661,6 +1654,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
          line_info.PropagatedBreakTokens()) {
       context_->PropagateBreakToken(float_break_token);
     }
+    if (absl::optional<LayoutUnit> minimum_space_shortage =
+            line_info.MinimumSpaceShortage()) {
+      container_builder_.PropagateSpaceShortage(minimum_space_shortage);
+    }
 
     if (line_info.IsEmptyLine()) {
       DCHECK_EQ(container_builder_.BlockSize(), LayoutUnit());
@@ -1746,15 +1743,8 @@ void NGInlineLayoutAlgorithm::PositionLeadingFloats(
 
     if (ConstraintSpace().HasBlockFragmentation()) {
       // Propagate any breaks before or inside floats to the block container.
-      if (positioned_float.need_break_before) {
-        NGBlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
-        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
-            float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(break_before);
-      } else if (const NGBreakToken* token =
-                     positioned_float.layout_result->PhysicalFragment()
-                         .BreakToken()) {
-        context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
+      if (const auto* break_token = positioned_float.BreakToken()) {
+        context_->PropagateBreakToken(break_token);
       }
     }
 
@@ -1767,7 +1757,7 @@ void NGInlineLayoutAlgorithm::PositionLeadingFloats(
 NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
     LayoutUnit origin_bfc_block_offset,
     LayoutObject* floating_object,
-    NGExclusionSpace* exclusion_space) const {
+    NGExclusionSpace* exclusion_space) {
   NGBfcOffset origin_bfc_offset = {ConstraintSpace().BfcOffset().line_offset,
                                    origin_bfc_block_offset};
 
@@ -1778,7 +1768,15 @@ NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
       ConstraintSpace().ReplacedPercentageResolutionSize(), origin_bfc_offset,
       ConstraintSpace(), Style());
 
-  return ::blink::PositionFloat(&unpositioned_float, exclusion_space);
+  NGPositionedFloat positioned_float =
+      ::blink::PositionFloat(&unpositioned_float, exclusion_space);
+
+  if (positioned_float.minimum_space_shortage) {
+    container_builder_.PropagateSpaceShortage(
+        positioned_float.minimum_space_shortage);
+  }
+
+  return positioned_float;
 }
 
 void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,

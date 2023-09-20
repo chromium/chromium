@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -929,6 +930,17 @@ void NGFragmentBuilder::AdjustFixedposContainerInfo(
         *fixedpos_containing_block_fragment = box_fragment;
     }
   }
+}
+
+void NGFragmentBuilder::PropagateSpaceShortage(
+    absl::optional<LayoutUnit> space_shortage) {
+  // Space shortage should only be reported when we already have a tentative
+  // fragmentainer block-size. It's meaningless to talk about space shortage
+  // in the initial column balancing pass, because then we have no
+  // fragmentainer block-size at all, so who's to tell what's too short or
+  // not?
+  DCHECK(!IsInitialColumnBalancingPass());
+  UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
 }
 
 const NGLayoutResult* NGFragmentBuilder::Abort(NGLayoutResult::EStatus status) {

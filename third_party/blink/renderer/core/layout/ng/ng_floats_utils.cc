@@ -366,8 +366,10 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     }
   }
 
+  const auto& physical_fragment =
+      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
   NGFragment float_fragment(parent_space.GetWritingDirection(),
-                            layout_result->PhysicalFragment());
+                            physical_fragment);
 
   // Calculate the float's margin box BFC offset.
   NGBfcOffset float_margin_bfc_offset = opportunity.rect.start_offset;
@@ -410,8 +412,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // If the float broke inside and will continue to take up layout space in
     // the next fragmentainer, it means that we cannot fit any subsequent
     // content that wants clearance past this float.
-    if (const auto* break_token = To<NGBlockBreakToken>(
-            layout_result->PhysicalFragment().BreakToken())) {
+    if (const NGBlockBreakToken* break_token = physical_fragment.BreakToken()) {
       if (!break_token->IsAtBlockEnd())
         exclusion_space->SetHasBreakInsideFloat(float_type);
     }
@@ -423,7 +424,27 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
           fragment_margins.LineLeft(parent_space.Direction()),
       float_margin_bfc_offset.block_offset + fragment_margins.block_start);
 
-  return NGPositionedFloat(layout_result, float_bfc_offset, need_break_before);
+  const NGBlockBreakToken* break_before_token = nullptr;
+  if (need_break_before) {
+    break_before_token =
+        NGBlockBreakToken::CreateBreakBefore(node, /* is_forced_break */ false);
+  }
+
+  LayoutUnit minimum_space_shortage;
+  if (break_before_token || physical_fragment.BreakToken()) {
+    // Broke before or inside the float.
+    if (parent_space.HasKnownFragmentainerBlockSize() &&
+        parent_space.BlockFragmentationType() == kFragmentColumn) {
+      LayoutUnit fragmentainer_block_offset =
+          FragmentainerOffsetAtBfc(parent_space) +
+          float_bfc_offset.block_offset;
+      minimum_space_shortage = CalculateSpaceShortage(
+          parent_space, layout_result, fragmentainer_block_offset);
+    }
+  }
+
+  return NGPositionedFloat(layout_result, break_before_token, float_bfc_offset,
+                           minimum_space_shortage);
 }
 
 }  // namespace blink

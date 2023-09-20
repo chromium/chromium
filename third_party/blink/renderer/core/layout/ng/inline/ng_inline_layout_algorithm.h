@@ -67,7 +67,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void PositionLeadingFloats(NGExclusionSpace&, NGLeadingFloats&);
   NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                   LayoutObject* floating_object,
-                                  NGExclusionSpace*) const;
+                                  NGExclusionSpace*);
 
   void PrepareBoxStates(const NGLineInfo&, const NGInlineBreakToken*);
   void RebuildBoxStates(const NGLineInfo&,

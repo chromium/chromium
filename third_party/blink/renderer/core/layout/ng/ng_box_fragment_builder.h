@@ -371,39 +371,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     return has_inflow_child_break_inside_;
   }
 
-  // Report space shortage, i.e. how much more space would have been sufficient
-  // to prevent some piece of content from breaking. This information may be
-  // used by the column balancer to stretch columns.
-  void PropagateSpaceShortage(absl::optional<LayoutUnit> space_shortage);
-
-  absl::optional<LayoutUnit> MinimalSpaceShortage() const {
-    if (minimal_space_shortage_ == kIndefiniteSize)
-      return absl::nullopt;
-    return minimal_space_shortage_;
-  }
-
-  void PropagateTallestUnbreakableBlockSize(LayoutUnit unbreakable_block_size) {
-    // We should only calculate the block-size of the tallest piece of
-    // unbreakable content during the initial column balancing pass, when we
-    // haven't set a tentative fragmentainer block-size yet.
-    DCHECK(IsInitialColumnBalancingPass());
-
-    tallest_unbreakable_block_size_ =
-        std::max(tallest_unbreakable_block_size_, unbreakable_block_size);
-  }
-
-  void SetIsInitialColumnBalancingPass() {
-    // Note that we have no dedicated flag for being in the initial column
-    // balancing pass here. We'll just bump tallest_unbreakable_block_size_ to
-    // 0, so that NGLayoutResult knows that we need to store unbreakable
-    // block-size.
-    DCHECK_EQ(tallest_unbreakable_block_size_, LayoutUnit::Min());
-    tallest_unbreakable_block_size_ = LayoutUnit();
-  }
-  bool IsInitialColumnBalancingPass() const {
-    return tallest_unbreakable_block_size_ >= LayoutUnit();
-  }
-
   void SetInitialBreakBefore(EBreakBetween break_before) {
     initial_break_before_ = break_before;
   }
@@ -703,8 +670,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   bool use_last_baseline_for_inline_baseline_ = false;
   LayoutUnit block_offset_for_additional_columns_;
 
-  LayoutUnit minimal_space_shortage_ = kIndefiniteSize;
-  LayoutUnit tallest_unbreakable_block_size_ = LayoutUnit::Min();
   LayoutUnit block_size_for_fragmentation_;
 
   // The break-before value on the initial child we cannot honor. There's no
