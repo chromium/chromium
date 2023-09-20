@@ -8,9 +8,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/member_copy.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
@@ -48,8 +48,6 @@ class ComputedStyle;
 
 // Forward declaration for constructor.
 class ComputedStyleBuilderBase;
-
-struct ComputedStyleAccessFlags;
 
 // Forward declaration of friends:
 {% for property in longhands %}
@@ -104,6 +102,12 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endfor %}
 
  public:
+
+  // ComputedStyle sub-objects are heavily inlined, and on relatively hot
+  // codepaths. Disable pointer-compression.
+  template <typename T>
+  using DataMember = subtle::UncompressedMember<T>;
+
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -241,7 +245,7 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
   // Storage.
   {% for subgroup in computed_style.subgroups %}
-  DataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
+  DataMember<{{subgroup.type_name}}> {{subgroup.member_name}};
   {% endfor %}
 
   {# Members #}
@@ -250,14 +254,6 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endfor %}
 
   Data data_;
-};
-
-// Access flags. These are passed to DataRef::Access to ensure that we have
-// a private copy of the relevant DataRef before mutation.
-struct ComputedStyleAccessFlags {
-{% for group in computed_style.all_subgroups|sort(attribute='name') %}
-  bool {{group.member_name}} = false;
-{% endfor %}
 };
 
 class ComputedStyleBuilderBase {
@@ -295,17 +291,34 @@ class ComputedStyleBuilderBase {
     memset(&access_, 0, sizeof(access_));
   }
 
- protected:
-  // Used when constructing ComputedStyleBase, because the constructor may need
-  // to set access flags if allocating new subgroups.
-  ComputedStyleAccessFlags& GetAccessFlagsForConstructor() {
-    return access_;
-  }
-
  private:
   friend class ComputedStyleBase;
 
-  mutable ComputedStyleAccessFlags access_;
+  // Access flags. These are passed to Access to ensure that we have
+  // a private copy of the relevant group before mutation.
+  mutable struct {
+  {% for group in computed_style.all_subgroups|sort(attribute='name') %}
+    bool {{group.member_name}} = false;
+  {% endfor %}
+  } access_;
+
+  template <typename T>
+  static T* Access(T*& data, bool& access_flag) {
+    if (!access_flag) {
+      access_flag = true;
+      data = data->Copy();
+    }
+    return data;
+  }
+
+  template <typename T>
+  static T* Access(ComputedStyleBase::DataMember<T>& data, bool& access_flag) {
+    if (!access_flag) {
+      access_flag = true;
+      data = data->Copy();
+    }
+    return data.Get();
+  }
 
   {% for subgroup in computed_style.subgroups %}
   using {{subgroup.type_name}} = ComputedStyleBase::{{subgroup.type_name}};
@@ -313,7 +326,7 @@ class ComputedStyleBuilderBase {
 
   // Storage.
   {% for subgroup in computed_style.subgroups %}
-  RawDataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
+  {{subgroup.type_name}}* {{subgroup.member_name}};
   {% endfor %}
 
   {# Members #}

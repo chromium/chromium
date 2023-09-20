@@ -8,7 +8,6 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
-#include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {

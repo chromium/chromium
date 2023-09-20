@@ -38,7 +38,7 @@ ComputedStyleBase::ComputedStyleBase() :
 ComputedStyleBase::ComputedStyleBase(const ComputedStyleBuilderBase& builder) :
   {% set comma = joiner(", ") %}
   {% for subgroup in computed_style.subgroups %}
-    {{comma()}}{{subgroup.member_name}}(const_cast<{{subgroup.type_name}}*>(builder.{{subgroup.member_name}}.Get()))
+    {{comma()}}{{subgroup.member_name}}(const_cast<{{subgroup.type_name}}*>(builder.{{subgroup.member_name}}))
    {% endfor %}
   {% for field in computed_style.fields|selectattr('requires_tracing') %}
     {{comma()}}{{field.name}}(builder.{{field.name}})

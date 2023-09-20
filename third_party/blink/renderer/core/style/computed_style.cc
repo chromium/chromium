@@ -717,10 +717,6 @@ bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
 StyleDifference ComputedStyle::VisualInvalidationDiff(
     const Document& document,
     const ComputedStyle& other) const {
-  // Note, we use .Get() on each DataRef below because DataRef::operator== will
-  // do a deep compare, which is duplicate work when we're going to compare each
-  // property inside this function anyway.
-
   StyleDifference diff;
   if (DiffNeedsReshapeAndFullLayoutAndPaintInvalidation(*this, other)) {
     diff.SetNeedsReshape();
