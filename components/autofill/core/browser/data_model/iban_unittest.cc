@@ -156,10 +156,11 @@ TEST(IbanTest, SetRawData) {
   EXPECT_EQ(u"DE91100000000123456789", iban.GetRawInfo(IBAN_VALUE));
 }
 
-TEST(IbanTest, GetObfuscatedStringForValue_ValidIbanValue) {
+TEST(IbanTest, GetUserFacingValue) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
   Iban iban;
+  EXPECT_EQ(u"", GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
 
   iban.set_value(u"CH5604835012345678009");
 
