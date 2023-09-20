@@ -28,6 +28,7 @@ ANDROID_ALLOWED_LICENSES = [
   'Zlib',
 ]
 
+
 def LicenseIsCompatibleWithAndroid(input_api, license):
   regex = '^(%s)$' % '|'.join(ANDROID_ALLOWED_LICENSES)
   tokens = \
@@ -38,6 +39,43 @@ def LicenseIsCompatibleWithAndroid(input_api, license):
       has_compatible_license = True
       break
   return has_compatible_license
+
+
+def CheckThirdPartyMetadataFiles(input_api, output_api):
+  """Checks that third party metadata files are correctly formatted
+  and valid.
+  """
+  def readme_filter(f):
+    local_path = f.LocalPath()
+
+    # Limit to README.chromium files within //third_party/.
+    if (not local_path.endswith('README.chromium')
+        or not local_path.startswith('third_party' + input_api.os_path.sep)):
+      return False
+
+    # Some folders are currently exempt from being checked.
+    skip_dirs = (
+      ('third_party', 'blink'),
+      ('third_party', 'boringssl'),
+      ('third_party', 'closure_compiler', 'externs'),
+      ('third_party', 'closure_compiler', 'interfaces'),
+      ('third_party', 'feed_library'),
+      ('third_party', 'ipcz'),
+      # TODO(danakj): We should look for the README.chromium file in
+      # third_party/rust/CRATE_NAME/vVERSION/.
+      ('third_party', 'rust'),
+      ('third_party', 'webxr_test_pages'),
+    )
+    for path in skip_dirs:
+      prefix = ''.join([dir_name + input_api.os_path.sep for dir_name in path])
+      if local_path.startswith(prefix):
+        return False
+
+    return True
+
+  return input_api.canned_checks.CheckChromiumDependencyMetadata(
+      input_api, output_api, file_filter=readme_filter)
+
 
 def CheckThirdPartyReadmesUpdated(input_api, output_api):
   """
@@ -89,9 +127,6 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   shortname_pattern = input_api.re.compile(
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
-  url_pattern = input_api.re.compile(
-    r'^URL: (.+)\r?$',
-    input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
     r'^Version: [a-zA-Z0-9_\-\+\.:/]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
@@ -114,15 +149,21 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   shipped_pattern = input_api.re.compile(
     r'^Shipped(?: in Chromium)?: (yes|no)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
-  license_android_compatible_pattern = input_api.re.compile(
-    r'^License Android Compatible: (yes|no)\r?$',
-    input_api.re.IGNORECASE | input_api.re.MULTILINE)
-
   for f in readmes:
     if 'D' in f.Action():
       _IgnoreIfDeleting(input_api, output_api, f, errors)
       continue
 
+    # TODO(aredulla): Delete this rudimentary README.chromium checking
+    # once full metadata validation is enforced. The presubmit check
+    # above (CheckThirdPartyMetadataFiles) will return only warnings
+    # until all existing issues have been addressed. To prevent third
+    # party metadata degrading while the data quality is being uplifted,
+    # the below content checking for README.chromium files that return
+    # presubmit errors will be retained.
+    #
+    # Note: This may result in a presubmit error from below being
+    # repeated as a presubmit warning.
     contents = input_api.ReadFile(f)
     if (not shortname_pattern.search(contents)
         and not name_pattern.search(contents)):
@@ -131,20 +172,11 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'a \'Name\' which is the name under which the package is\n'
         'distributed. Check README.chromium.template for details.',
         [f]))
-    if not url_pattern.search(contents):
-      # TODO: This should be changed to `PresubmitError` once all existing
-      # README.chromium files contain a URL field. Until then it needs to be a
-      # warning to not make the linux-presubmit CI job fail.
-      errors.append(output_api.PresubmitPromptWarning(
-        'Third party README files should contain a \'URL\' field.\n'
-        'This field specifies the URL where the package lives. Check\n'
-        'README.chromium.template for details.',
-        [f]))
     if not version_pattern.search(contents):
       errors.append(output_api.PresubmitError(
         'Third party README files should contain a \'Version\' field.\n'
-        'If the package is not versioned or the version is not known\n'
-        'list the version as \'unknown\'.\n'
+        'If the package is not versioned, list the version as \'N/A\'\n'
+        'and provide at least the revision or package update date.\n'
         'Check README.chromium.template for details.',
         [f]))
     if not release_pattern.search(contents):
@@ -160,16 +192,8 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'This field specifies the license used by the package. Check\n'
         'README.chromium.template for details.',
         [f]))
-    # TODO: The check for this field should be upgraded to PresubmitError
-    # when the changes to all files transitioned away from NOT_SHIPPED
-    # to the new field.
+
     shipped_match = shipped_pattern.search(contents)
-    if not shipped_match:
-      errors.append(output_api.PresubmitPromptWarning(
-        'Third party README files should contain a \'Shipped\' field.\n'
-        'This field specifies whether the package is shipped as part of\n'
-        'a release. Check README.chromium.template for details.',
-        [f]))
     # Default to Shipped if not specified. This will flag a license check or
     # be overwritten if the README is still using the deprecated NOT_SHIPPED
     # value.
@@ -178,21 +202,6 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
     deprecated_not_shipped = old_shipped_pattern.search(contents)
     if deprecated_not_shipped:
         is_shipped = False
-        errors.append(output_api.PresubmitPromptWarning(
-          'Using NOT_SHIPPED in the \'License File:\' is deprecated\n'
-          'behavior. Please use the \'Shipped\' field instead. Refer to\n'
-          'README.chromium.template for more details.',
-          [f]))
-    android_compatible_match = (
-        license_android_compatible_pattern.search(contents))
-    if (is_shipped and not android_compatible_match and
-        not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1))):
-      errors.append(output_api.PresubmitPromptWarning(
-        'Cannot determine whether specified license is compatible with\n' +
-        'the Android licensing requirements. Please check that the license\n' +
-        'name is spelled according to third_party/PRESUBMIT.py. Please see\n' +
-        'README.chromium.template for details.',
-        [f]))
     license_file_match = license_file_pattern.search(contents)
     if is_shipped and not license_file_match:
       errors.append(output_api.PresubmitError(
