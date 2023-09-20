@@ -2427,7 +2427,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "BottomOmniboxDefaultSettingParam": "Bottom"
+                        "BottomOmniboxDefaultSettingParam": "Top"
                     },
                     "enable_features": [
                         "BottomOmniboxDefaultSetting",
