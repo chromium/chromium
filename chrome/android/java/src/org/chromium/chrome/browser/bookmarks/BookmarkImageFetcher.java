@@ -19,6 +19,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
 import java.util.Iterator;
@@ -48,7 +49,8 @@ public class BookmarkImageFetcher {
      */
     public BookmarkImageFetcher(Context context, BookmarkModel bookmarkModel,
             ImageFetcher imageFetcher, LargeIconBridge largeIconBridge,
-            RoundedIconGenerator roundedIconGenerator, int imageSize, int faviconSize) {
+            RoundedIconGenerator roundedIconGenerator, int imageSize, int faviconSize,
+            SyncService syncService) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mImageFetcher = imageFetcher;
@@ -58,7 +60,7 @@ public class BookmarkImageFetcher {
         mRoundedIconGenerator = roundedIconGenerator;
         mImageSize = imageSize;
         mFaviconSize = faviconSize;
-        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel);
+        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel, syncService);
     }
 
     /** Destroys this object. */

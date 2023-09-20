@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -165,7 +166,8 @@ public class BookmarkManagerCoordinator
                 new BookmarkImageFetcher(context, mBookmarkModel, mImageFetcher, largeIconBridge,
                         BookmarkUtils.getRoundedIconGenerator(context, displayPref),
                         BookmarkUtils.getImageIconSize(res, displayPref),
-                        BookmarkUtils.getFaviconDisplaySize(res, displayPref));
+                        BookmarkUtils.getFaviconDisplaySize(res, displayPref),
+                        SyncServiceFactory.getForProfile(profile));
 
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);

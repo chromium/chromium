@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -75,7 +76,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                 new LargeIconBridge(profile),
                 BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
                 BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL));
+                BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL),
+                SyncServiceFactory.getForProfile(profile));
         BookmarkAddNewFolderCoordinator addNewFolderCoordinator =
                 new BookmarkAddNewFolderCoordinator(this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),

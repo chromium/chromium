@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -160,8 +161,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                             BookmarkUtils.getRoundedIconGenerator(
                                     this, BookmarkRowDisplayPref.VISUAL),
                             BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                            BookmarkUtils.getFaviconDisplaySize(
-                                    res, BookmarkRowDisplayPref.VISUAL)),
+                            BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL),
+                            SyncServiceFactory.getForProfile(profile)),
                     mModel, mBookmarkUiPrefs, ShoppingServiceFactory.getForProfile(profile));
 
             mFolderPickerRowContainer = findViewById(R.id.improved_folder_row_container);
