@@ -72993,6 +72993,7 @@ Called by update_use_counter_css.py.-->
     happen on iOS 14+ when Chrome is set as the default browser and a system app
     (f.e. Messages) or an app from a 3rd party developer opens a URL.
   </int>
+  <int value="18" label="Chrome Open In Extension"/>
 </enum>
 
 <enum name="MobileSessionShutdownType">

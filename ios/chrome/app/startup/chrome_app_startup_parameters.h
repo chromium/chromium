@@ -35,6 +35,7 @@ enum MobileSessionCallerApp {
   // An application launched Chrome with an http/https URL as the default
   // browser.
   CALLER_APP_THIRD_PARTY = 17,
+  CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION = 18,
   MOBILE_SESSION_CALLER_APP_COUNT,
 };
 

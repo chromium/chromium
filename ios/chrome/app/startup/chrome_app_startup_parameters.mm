@@ -163,6 +163,7 @@ bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
     case CALLER_APP_GOOGLE_CHROME_SEARCH_EXTENSION:
     case CALLER_APP_GOOGLE_CHROME_CONTENT_EXTENSION:
     case CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION:
     case CALLER_APP_GOOGLE_CHROME:
       return true;
     case CALLER_APP_OTHER:
@@ -748,6 +749,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if ([_secureSourceApp
           isEqualToString:app_group::kOpenCommandSourceShareExtension])
     return CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION;
+  if ([_secureSourceApp
+          isEqualToString:app_group::kOpenCommandSourceOpenExtension]) {
+    return CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION;
+  }
 
   if (![_declaredSourceApp length]) {
     if (self.completeURL.SchemeIs(url::kHttpScheme) ||
