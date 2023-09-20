@@ -416,9 +416,10 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
-  if (context_lost_mode_ == kSyntheticLostContext) {
+  if (context_lost_mode_ == kSyntheticLostContext &&
+      GetOrCreateCanvasResourceProvider() &&
+      GetCanvasResourceProvider()->Canvas()) {
     try_restore_context_event_timer_.Stop();
-    GetOrCreateCanvasResourceProvider();
     DispatchContextRestoredEvent(nullptr);
     return;
   }
@@ -436,11 +437,15 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
 
   // It gets here if lost mode is |kRealLostContext| and it fails to create a
   // new PaintCanvas. Discard the old resource and allocating a new one here.
-  Host()->DiscardResourceProvider();
-  try_restore_context_event_timer_.Stop();
-  if (GetOrCreateCanvasResourceProvider() &&
-      GetCanvasResourceProvider()->Canvas()) {
-    DispatchContextRestoredEvent(nullptr);
+  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
+    if (Host()) {
+      Host()->DiscardResourceProvider();
+    }
+    try_restore_context_event_timer_.Stop();
+    if (GetOrCreateCanvasResourceProvider() &&
+        GetCanvasResourceProvider()->Canvas()) {
+      DispatchContextRestoredEvent(nullptr);
+    }
   }
 }
 

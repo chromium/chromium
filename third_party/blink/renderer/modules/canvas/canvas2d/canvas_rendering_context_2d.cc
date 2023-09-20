@@ -85,11 +85,6 @@
 
 namespace blink {
 
-// Try to restore context 4 times in the event that the context is lost. If the
-// context is unable to be restored after 4 attempts, we discard the backing
-// storage of the context and allocate a new one.
-static const unsigned kMaxTryRestoreContextAttempts = 4;
-
 static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
     HTMLCanvasElement* canvas) {
   if (canvas && canvas->isConnected()) {
@@ -245,13 +240,13 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   }
 
   // If it fails to restore the context, TryRestoreContextEvent again.
-  if (++try_restore_context_attempt_count_ < kMaxTryRestoreContextAttempts) {
-    TryRestoreContextEvent(nullptr);
-  } else {
+  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
     // After 4 tries, we start the final attempt, allocate a brand new image
     // buffer instead of restoring
-    Host()->DiscardResourceProvider();
     try_restore_context_event_timer_.Stop();
+    if (Host()) {
+      Host()->DiscardResourceProvider();
+    }
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
   }

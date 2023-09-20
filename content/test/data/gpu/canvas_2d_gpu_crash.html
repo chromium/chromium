@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+
+<title>Validates canvas 2D loss and restoration after GPU crash</title>
+<canvas id="canvas" width="300" height="300"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let lost = false;
+let restored = false;
+
+canvas.addEventListener('contextlost', evt => {
+  if (lost) {
+    return TestFailed('contextlost unexpectedly fired twice.');
+  }
+  if (restored) {
+    return TestFailed('contextlost fired after contextrestored.');
+  }
+  lost = true;
+});
+
+canvas.addEventListener('contextrestored', evt => {
+  if (!lost) {
+    return TestFailed('contextrestored event fired without contextlost.');
+  }
+  if (restored) {
+    return TestFailed('contextrestored unexpectedly fired twice.');
+  }
+  restored = true;
+  ctx.fillStyle = 'rgb(0, 255, 0)';
+  ctx.fillRect(0, 0, 300, 300);
+
+  var imgData = ctx.getImageData(150, 150, 1, 1);
+  if (imgData.data[0] == 0 && imgData.data[1] == 255 && imgData.data[2] == 0) {
+    window.domAutomationController.send('SUCCESS');
+  } else {
+    TestFailed('Expected canvas to contain green color.');
+  }
+});
+
+ctx.fillStyle = 'rgb(255, 0, 0)';
+ctx.fillRect(0, 0, 300, 300);
+
+window.domAutomationController.send('LOADED');
+
+function TestFailed(msg) {
+  console.log(msg);
+  window.domAutomationController.send('FAILED');
+}
+</script>

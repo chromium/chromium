@@ -1588,8 +1588,8 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
       (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
        context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext)) {
     try_restore_context_attempt_count_ = 0;
-    try_restore_context_event_timer_.StartOneShot(kTryRestoreContextInterval,
-                                                  FROM_HERE);
+    try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
+                                                    FROM_HERE);
   }
 }
 

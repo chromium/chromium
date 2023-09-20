@@ -49,6 +49,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
+  // Try to restore context 4 times in the event that the context is lost. If
+  // the context is unable to be restored after 4 attempts, we discard the
+  // backing storage of the context and allocate a new one.
+  static const unsigned kMaxTryRestoreContextAttempts = 4;
+
   BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
 

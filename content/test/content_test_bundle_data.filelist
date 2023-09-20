@@ -5750,6 +5750,7 @@ data/generic_sensor/ambient_light_sensor_unavailable_test.html
 data/generic_sensor/cross_origin_iframe.html
 data/google.mht
 data/gpu/canvas_uses_overlay.html
+data/gpu/canvas_2d_gpu_crash.html
 data/gpu/concave_paths.html
 data/gpu/core_animation_status_api.html
 data/gpu/empty.html
