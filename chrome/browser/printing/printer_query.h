@@ -177,6 +177,10 @@ class PrinterQuery {
       SettingsCallback callback);
 #endif
 
+  // Used by `TransferContextToNewWorker()`.  Virtual to support testing.
+  virtual std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
+      PrintJob* print_job);
+
   PrintingContext* printing_context() { return printing_context_.get(); }
 
   // Printing context delegate.

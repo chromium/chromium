@@ -167,9 +167,7 @@ std::unique_ptr<PrintJobWorker> PrinterQuery::TransferContextToNewWorker(
     PrintJob* print_job) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return std::make_unique<PrintJobWorker>(std::move(printing_context_delegate_),
-                                          std::move(printing_context_),
-                                          print_job);
+  return CreatePrintJobWorker(print_job);
 }
 
 const PrintSettings& PrinterQuery::settings() const {
@@ -378,6 +376,13 @@ void PrinterQuery::UpdatePrintSettingsFromPOD(
   InvokeSettingsCallback(std::move(callback), result);
 }
 #endif
+
+std::unique_ptr<PrintJobWorker> PrinterQuery::CreatePrintJobWorker(
+    PrintJob* print_job) {
+  return std::make_unique<PrintJobWorker>(std::move(printing_context_delegate_),
+                                          std::move(printing_context_),
+                                          print_job);
+}
 
 void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
                                      bool has_selection,
