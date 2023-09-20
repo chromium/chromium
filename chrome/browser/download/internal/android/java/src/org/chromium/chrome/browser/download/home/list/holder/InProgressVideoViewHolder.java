@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.download.home.list.ListItem;
+import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,6 +40,6 @@ public class InProgressVideoViewHolder extends InProgressViewHolder {
     @Override
     public void bind(PropertyModel properties, ListItem item) {
         super.bind(properties, item);
-        mTitle.setText(((ListItem.OfflineItemListItem) item).item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(((ListItem.OfflineItemListItem) item).item));
     }
 }

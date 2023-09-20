@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +85,7 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -147,9 +148,12 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> inv.getArgument(0));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> {
+                    GURL url = inv.getArgument(0);
+                    return url.getSpec();
+                });
 
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);

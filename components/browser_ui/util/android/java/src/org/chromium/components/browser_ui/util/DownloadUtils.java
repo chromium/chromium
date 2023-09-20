@@ -30,7 +30,8 @@ public class DownloadUtils {
 
     // Limit the origin length so that the eTLD+1 cannot be hidden. If the origin exceeds this
     // length the eTLD+1 is extracted and shown.
-    private static final int MAX_ORIGIN_LENGTH = 40;
+    public static final int MAX_ORIGIN_LENGTH_FOR_NOTIFICATION = 40;
+    public static final int MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION = 25;
 
     /**
      * Format the number of bytes into KB, MB, or GB and return the corresponding generated string.
@@ -114,17 +115,19 @@ public class DownloadUtils {
     }
 
     /**
-     * Adjusts a URL for display to the user in the subtext of an Android notification.
+     * Adjusts a URL for display to the user in a text view subject to char limits. Could elide
+     * parts the URL if it is too long as per readability and security aspects.
      *
      * @param url The full URL.
-     * @param return The URL that should be displayed, or null if the input was invalid.
+     * @param limit Character limit.
+     * @return The text to display, or null if the input was invalid.
      */
-    public static String formatUrlForDisplayInNotification(GURL url) {
+    public static String formatUrlForDisplayInNotification(GURL url, int limit) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        if (formattedUrl.length() <= MAX_ORIGIN_LENGTH) return formattedUrl;
+        if (formattedUrl.length() <= limit) return formattedUrl;
 
         // The origin is too long. Strip down to eTLD+1.
         return UrlUtilities.getDomainAndRegistry(

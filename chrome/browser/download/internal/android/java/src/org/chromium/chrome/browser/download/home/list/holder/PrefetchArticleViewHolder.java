@@ -44,7 +44,7 @@ public class PrefetchArticleViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         ListItem.OfflineItemListItem offlineItem = (ListItem.OfflineItemListItem) item;
 
-        mTitle.setText(offlineItem.item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(offlineItem.item));
         mCaption.setText(UiUtils.generatePrefetchCaption(offlineItem.item));
         mTimestamp.setText(UiUtils.generatePrefetchTimestamp(offlineItem.date));
     }

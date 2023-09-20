@@ -45,7 +45,7 @@ public class VideoViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;
 
-        mTitle.setText(offlineItem.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(offlineItem));
         mCaption.setText(UiUtils.generateGenericCaption(offlineItem));
         mThumbnail.setContentDescription(offlineItem.title);
     }

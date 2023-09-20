@@ -307,8 +307,9 @@ public final class DownloadNotificationFactory {
                     R.string.download_notification_incognito_subtext));
         } else if (downloadUpdate.getShouldPromoteOrigin()) {
             // Always show the origin URL if available (for normal profiles).
-            String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(
-                    downloadUpdate.getOriginalUrl());
+            String formattedUrl =
+                    DownloadUtils.formatUrlForDisplayInNotification(downloadUpdate.getOriginalUrl(),
+                            DownloadUtils.MAX_ORIGIN_LENGTH_FOR_NOTIFICATION);
             if (formattedUrl != null) builder.setSubText(formattedUrl);
         }
 

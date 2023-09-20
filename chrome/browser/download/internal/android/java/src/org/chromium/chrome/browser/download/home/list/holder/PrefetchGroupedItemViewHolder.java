@@ -45,7 +45,7 @@ public class PrefetchGroupedItemViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         ListItem.OfflineItemListItem listItem = (ListItem.OfflineItemListItem) item;
 
-        mTitle.setText(listItem.item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(listItem.item));
         mTimestamp.setText(UiUtils.generatePrefetchTimestamp(listItem.date));
 
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;

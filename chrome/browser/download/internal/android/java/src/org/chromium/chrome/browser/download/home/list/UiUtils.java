@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView.UiState;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -35,6 +36,9 @@ import java.util.Date;
 
 /** A set of helper utility methods for the UI. */
 public final class UiUtils {
+    // Limit file name to 25 characters.
+    public static final int MAX_FILE_NAME_LENGTH_FOR_TITLE = 33;
+
     private UiUtils() {}
 
     static {
@@ -43,6 +47,7 @@ public final class UiUtils {
 
     /**
      * Builds the accessibility text to be used for a given chip on the chips row.
+     *
      * @param resources The resources to use for lookup.
      * @param filter The filter type of the chip.
      * @param itemCount The number of items being shown on the given chip.
@@ -77,8 +82,9 @@ public final class UiUtils {
 
     /**
      * Converts {@code date} to a string meant to be used as a prefetched item timestamp.
+     *
      * @param date The {@link Date} to convert.
-     * @return     The {@link CharSequence} representing the timestamp.
+     * @return The {@link CharSequence} representing the timestamp.
      */
     public static CharSequence generatePrefetchTimestamp(Date date) {
         Context context = ContextUtils.getApplicationContext();
@@ -103,8 +109,9 @@ public final class UiUtils {
 
     /**
      * Generates a caption for a prefetched item.
+     *
      * @param item The {@link OfflineItem} to generate a caption for.
-     * @return     The {@link CharSequence} representing the caption.
+     * @return The {@link CharSequence} representing the caption.
      */
     public static CharSequence generatePrefetchCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
@@ -117,13 +124,14 @@ public final class UiUtils {
 
     /**
      * Generates a caption for a generic item.
+     *
      * @param item The {@link OfflineItem} to generate a caption for.
-     * @return     The {@link CharSequence} representing the caption.
+     * @return The {@link CharSequence} representing the caption.
      */
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
-        String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String displayUrl = DownloadUtils.formatUrlForDisplayInNotification(
+                item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
 
         if (item.totalSizeBytes == 0) {
             return context.getString(
@@ -133,6 +141,16 @@ public final class UiUtils {
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
         return context.getString(
                 R.string.download_manager_list_item_description, displaySize, displayUrl);
+    }
+
+    /**
+     * Formats the file name of the download with respect to the available file size.
+     *
+     * @param item The {@link OfflineItem} to generate a title for.
+     * @return The {@link CharSequence} representing the title.
+     */
+    public static CharSequence formatGenericItemTitle(OfflineItem item) {
+        return StringUtils.getAbbreviatedFileName(item.title, MAX_FILE_NAME_LENGTH_FOR_TITLE);
     }
 
     /** @return Whether or not {@code item} can show a thumbnail in the UI. */

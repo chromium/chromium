@@ -54,7 +54,7 @@ public class GenericViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         ListItem.OfflineItemListItem offlineItem = (ListItem.OfflineItemListItem) item;
 
-        mTitle.setText(offlineItem.item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(offlineItem.item));
         mCaption.setText(UiUtils.generateGenericCaption(offlineItem.item));
 
         // Build invalid icon.
