@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {CrSettingsPrefs, OsSettingsUiElement, Router, routes, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
 suite('<os-settings-ui> toolbar', () => {
-  let ui;
-  let fakeNearbySettings;
+  let ui: OsSettingsUiElement;
+  let fakeNearbySettings: FakeNearbyShareSettings;
 
   suiteSetup(() => {
     fakeNearbySettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbySettings);
   });
 
-  async function createElement() {
+  async function createElement(): Promise<OsSettingsUiElement> {
     const element = document.createElement('os-settings-ui');
     document.body.appendChild(element);
     await CrSettingsPrefs.initialized;
@@ -32,7 +34,7 @@ suite('<os-settings-ui> toolbar', () => {
 
   test('Toolbar shadow is always shown for subpages', async () => {
     ui = await createElement();
-    const shadowEl = ui.shadowRoot.querySelector('#cr-container-shadow-top');
+    const shadowEl = ui.shadowRoot!.querySelector('#cr-container-shadow-top');
     assertTrue(!!shadowEl, 'Shadow container element should exist');
 
     assertFalse(
@@ -50,7 +52,7 @@ suite('<os-settings-ui> toolbar', () => {
     ui = await createElement();
     flush();
 
-    const toolbar = ui.shadowRoot.querySelector('os-toolbar');
+    const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
     assertTrue(!!toolbar, 'Toolbar should exist');
 
     ui.isNarrow = true;
@@ -69,8 +71,8 @@ suite('<os-settings-ui> toolbar', () => {
 
     test('Toolbar is hidden in kiosk mode', async () => {
       ui = await createElement();
-      const toolbar = ui.shadowRoot.querySelector('os-toolbar');
-      assertEquals(null, toolbar);
+      const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
+      assertNull(toolbar);
     });
   });
 });
