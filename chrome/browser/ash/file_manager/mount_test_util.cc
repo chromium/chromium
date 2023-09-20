@@ -15,19 +15,16 @@ namespace {
 
 // Helper class used to wait for |OnFileSystemMounted| event from a drive file
 // system.
-class DriveMountPointWaiter : public drive::DriveIntegrationServiceObserver {
+class DriveMountPointWaiter : public drive::DriveIntegrationService::Observer {
  public:
-  explicit DriveMountPointWaiter(
-      drive::DriveIntegrationService* integration_service)
-      : integration_service_(integration_service) {
-    integration_service_->AddObserver(this);
+  explicit DriveMountPointWaiter(drive::DriveIntegrationService* service)
+      : service_(service) {
+    service_->AddObserver(this);
   }
 
-  ~DriveMountPointWaiter() override {
-    integration_service_->RemoveObserver(this);
-  }
+  ~DriveMountPointWaiter() override { service_->RemoveObserver(this); }
 
-  // DriveIntegrationServiceObserver override.
+  // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override {
     // Note that it is OK for |run_loop_.Quit| to be called before
     // |run_loop_.Run|. In this case |Run| will return immediately.
@@ -38,7 +35,7 @@ class DriveMountPointWaiter : public drive::DriveIntegrationServiceObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> integration_service_;
+  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> service_;
   base::RunLoop run_loop_;
 };
 
