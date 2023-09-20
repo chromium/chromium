@@ -129,6 +129,7 @@ def __rewrite_action_remote_py(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if i < 3:
             continue
+
         # TODO: b/300046750 - Fix GN args and/or implement input processor.
         if arg == "--custom_processor=mojom_parser":
             print("--custom_processor=mojom_parser is not supported. " +
@@ -243,6 +244,7 @@ def __step_config(ctx, step_config):
             # done on Reproxy side.
             "exec_strategy": "remote_local_fallback",
             "exec_timeout": rule.get("timeout", "10m"),
+            "reclient_timeout": rule.get("timeout", "10m"),
             "download_outputs": True,
         }
         new_rules.append(rule)
