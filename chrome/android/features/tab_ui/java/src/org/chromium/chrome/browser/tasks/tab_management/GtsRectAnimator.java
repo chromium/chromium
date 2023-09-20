@@ -122,7 +122,8 @@ public class GtsRectAnimator {
 
         // Center the image on the x-axis of the view. This is applied postTranslate because it is
         // affected by the scaling of the view.
-        final int xOffset = (int) ((mInitialRect.width() - (bitmap.getWidth() * xFactor)) / 2);
+        final int xOffset =
+                Math.round((mInitialRect.width() - (bitmap.getWidth() * xFactor)) / 2.0f);
         mImageMatrix.postTranslate(xOffset, 0);
 
         mView.setScaleType(ImageView.ScaleType.MATRIX);

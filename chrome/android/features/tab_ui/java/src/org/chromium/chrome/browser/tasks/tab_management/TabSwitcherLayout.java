@@ -194,8 +194,45 @@ public class TabSwitcherLayout extends Layout {
 
     private PerfListener mPerfListenerForTesting;
 
-    private ImageView mTabJavaView;
-    private Runnable mOnNextImageViewLayout;
+    /** Custom image view that can run code in response to next layout. */
+    private static class TabImageView extends ImageView {
+        private Runnable mOnNextImageViewLayout;
+
+        TabImageView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onLayout(boolean changed, int l, int t, int r, int b) {
+            super.onLayout(changed, l, t, r, b);
+            runOnNextLayoutRunnable();
+        }
+
+        /**
+         * Sets a runnable to run on the next layout or immediately if there is no layout planned.
+         * @param runnable to invoke now or on the next layout.
+         */
+        void setOnNextLayoutRunnable(Runnable runnable) {
+            mOnNextImageViewLayout = runnable;
+            if (!isAttachedToWindow() || !isLayoutRequested()) {
+                runOnNextLayoutRunnable();
+            }
+        }
+
+        /**
+         * Runs the on next layout runnable. Not private so that the outer class can invoke if
+         * needed to force animations to complete.
+         */
+        void runOnNextLayoutRunnable() {
+            if (mOnNextImageViewLayout != null) {
+                Runnable r = mOnNextImageViewLayout;
+                mOnNextImageViewLayout = null;
+                r.run();
+            }
+        }
+    };
+
+    private TabImageView mTabJavaView;
 
     public TabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
             LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
@@ -213,16 +250,7 @@ public class TabSwitcherLayout extends Layout {
         mScrimCoordinator = scrimCoordinator;
         mHandler = new Handler();
 
-        mTabJavaView = new ImageView(context) {
-            @Override
-            public void onLayout(boolean changed, int l, int t, int r, int b) {
-                super.onLayout(changed, l, t, r, b);
-                if (mOnNextImageViewLayout != null) {
-                    mOnNextImageViewLayout.run();
-                    mOnNextImageViewLayout = null;
-                }
-            }
-        };
+        mTabJavaView = new TabImageView(context);
         mTabJavaView.setVisibility(View.GONE);
         mController.getTabSwitcherContainer().addView(mTabJavaView,
                 new ViewGroup.LayoutParams(Math.round(getWidth()), Math.round(getHeight())));
@@ -649,13 +677,13 @@ public class TabSwitcherLayout extends Layout {
     @Override
     public void onTabCreated(long time, int id, int index, int sourceId, boolean newIsIncognito,
             boolean background, float originX, float originY) {
+        super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
+
         // Skip the new tab animation on tablets.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                 || !ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             return;
         }
-
-        super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
 
         clearFinishedShowingRunnable();
         forceAnimationToFinish();
@@ -703,12 +731,12 @@ public class TabSwitcherLayout extends Layout {
         });
 
         mRunningNewTabAnimation = true;
-        mOnNextImageViewLayout = () -> {
+        mTabJavaView.invalidate();
+        mTabJavaView.setOnNextLayoutRunnable(() -> {
             mTabJavaView.setVisibility(View.VISIBLE);
             mNewTabAnimation.start();
             mController.hideTabSwitcherView(true);
-        };
-        mTabJavaView.invalidate();
+        });
     }
 
     @Override
@@ -721,10 +749,7 @@ public class TabSwitcherLayout extends Layout {
             mConditionalAnimationRunnerRef.clear();
             mConditionalAnimationRunnerRef = null;
         }
-        if (mOnNextImageViewLayout != null) {
-            mOnNextImageViewLayout.run();
-            mOnNextImageViewLayout = null;
-        }
+        mTabJavaView.runOnNextLayoutRunnable();
         if (mNewTabAnimation != null) {
             if (mNewTabAnimation.isRunning()) {
                 mNewTabAnimation.end();
@@ -889,6 +914,7 @@ public class TabSwitcherLayout extends Layout {
         mTabJavaView.setVisibility(View.INVISIBLE);
 
         mRectAnimator = new GtsRectAnimator(mTabJavaView, fullscreenRect, targetRect);
+        mRectAnimator.setRect(fullscreenRect);
         ObjectAnimator animator = ObjectAnimator.ofObject(mRectAnimator, GtsRectAnimator.RECT,
                 new RectEvaluator(), fullscreenRect, targetRect);
         animator.addUpdateListener((valueAnimator) -> { updatePerfCounters(); });
@@ -919,12 +945,12 @@ public class TabSwitcherLayout extends Layout {
 
         // The animation needs to be deferred so that the TabImageView has been laid out before the
         // animation starts otherwise it might jank.
-        mOnNextImageViewLayout = () -> {
+        mTabJavaView.invalidate();
+        mTabJavaView.setOnNextLayoutRunnable(() -> {
             mTabJavaView.setVisibility(View.VISIBLE);
             resetPerfCounters();
             mTabToSwitcherAnimation.start();
-        };
-        mTabJavaView.invalidate();
+        });
     }
 
     /**
@@ -982,10 +1008,14 @@ public class TabSwitcherLayout extends Layout {
                     mTabJavaView.setBackgroundColor(
                             ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito()));
                     mTabJavaView.setImageBitmap(bitmap);
+                    mRectAnimator.setRect(source);
                     mTabJavaView.setVisibility(View.VISIBLE);
 
-                    resetPerfCounters();
-                    mTabToSwitcherAnimation.start();
+                    mTabJavaView.invalidate();
+                    mTabJavaView.setOnNextLayoutRunnable(() -> {
+                        resetPerfCounters();
+                        mTabToSwitcherAnimation.start();
+                    });
                 });
         // Quick and layout completed don't matter for expand, but set them so the animation will
         // trigger.
