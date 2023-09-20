@@ -213,6 +213,14 @@ jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
   return personal_data_manager_->IsEligibleForAddressAccountStorage();
 }
 
+base::android::ScopedJavaLocalRef<jstring>
+PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj) const {
+  return ConvertUTF8ToJavaString(
+      env, personal_data_manager_->GetDefaultCountryCodeForNewAddress());
+}
+
 bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj,

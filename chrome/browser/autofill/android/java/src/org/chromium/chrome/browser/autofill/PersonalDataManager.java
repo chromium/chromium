@@ -704,6 +704,14 @@ public class PersonalDataManager {
     }
 
     /**
+     * Determines the country code for a newly created address profile.
+     */
+    public String getDefaultCountryCodeForNewAddress() {
+        return PersonalDataManagerJni.get().getDefaultCountryCodeForNewAddress(
+                mPersonalDataManagerAndroid, PersonalDataManager.this);
+    }
+
+    /**
      * Users based in unsupported countries and profiles with a country value set
      * to an unsupported country are not eligible for account storage. This
      * function determines if the `country_code` is eligible.
@@ -887,6 +895,8 @@ public class PersonalDataManager {
         AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         boolean isEligibleForAddressAccountStorage(
+                long nativePersonalDataManagerAndroid, PersonalDataManager caller);
+        String getDefaultCountryCodeForNewAddress(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         boolean isCountryEligibleForAccountStorage(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String countryCode);

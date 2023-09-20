@@ -66,6 +66,11 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj);
 
+  // Determines the country for for the newly created address profile.
+  base::android::ScopedJavaLocalRef<jstring> GetDefaultCountryCodeForNewAddress(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj) const;
+
   // Users based in unsupported countries and profiles with a country value set
   // to an unsupported country are not eligible for account storage. This
   // function determines if the `country_code` is eligible.

@@ -92,6 +92,7 @@ public class SaveUpdateAddressProfilePromptTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
@@ -175,7 +176,6 @@ public class SaveUpdateAddressProfilePromptTest {
     public void dialogStrings() {
         createAndShowPrompt(false);
 
-        View dialog = mPrompt.getDialogViewForTesting();
         PropertyModel propertyModel = mModalDialogManager.getShownDialogModel();
 
         mPrompt.setDialogDetails("title", "positive button text", "negative button text");

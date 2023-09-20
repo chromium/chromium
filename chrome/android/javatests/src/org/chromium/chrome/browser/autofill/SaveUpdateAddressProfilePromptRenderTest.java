@@ -102,6 +102,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         MockitoAnnotations.initMocks(this);
         runOnUiThreadBlocking(() -> {
             PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+            when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
             SyncServiceFactory.setInstanceForTesting(mSyncService);
             IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
             when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);

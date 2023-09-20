@@ -235,6 +235,7 @@ public class AddressEditorTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString())).thenReturn(true);
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
 
         setUpSupportedCountries(mSupportedCountries);

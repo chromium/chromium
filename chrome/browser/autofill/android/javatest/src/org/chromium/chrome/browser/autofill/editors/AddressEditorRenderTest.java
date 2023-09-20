@@ -184,6 +184,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
             SyncServiceFactory.setInstanceForTesting(mSyncService);
 
+            when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
             when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString()))
                     .thenReturn(true);
             PersonalDataManager.setInstanceForTesting(mPersonalDataManager);

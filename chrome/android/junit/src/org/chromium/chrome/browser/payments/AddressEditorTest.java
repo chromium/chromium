@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
@@ -140,6 +141,8 @@ public class AddressEditorTest {
     private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
 
     @Mock
+    private PersonalDataManager mPersonalDataManager;
+    @Mock
     private EditorDialogView mEditorDialog;
     @Mock
     private SubKeyRequester mSubKeyRequester;
@@ -165,6 +168,8 @@ public class AddressEditorTest {
         MockitoAnnotations.initMocks(this);
         Locale.setDefault(Locale.US);
 
+        PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
         doAnswer(invocation -> {
             List<Integer> requiredFields = (List<Integer>) invocation.getArguments()[1];
