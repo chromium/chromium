@@ -14,6 +14,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 
 struct CoreAccountInfo;
+class Profile;
 class ProfilePickerSignedInFlowController;
 
 class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
@@ -27,6 +28,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   void SwitchToDiceSignIn(absl::optional<SkColor> profile_color,
                           StepSwitchFinishedCallback switch_finished_callback);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void SwitchToReauth(Profile* profile);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToPostSignIn(Profile* signed_in_profile,
@@ -45,6 +50,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
+
+  void OnReauthCompleted(Profile* profile, bool success);
 #endif
 
   std::unique_ptr<ProfilePickerSignedInFlowController>

@@ -190,6 +190,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void OnProfileForDiceForcedSigninCreated(
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
+  // Switches the profile picker layout to display the reauth page to the main
+  // account of the given `profile` if needed. On success the `profile` is
+  // unlocked and a browser is opend. On failure the user is redirected to the
+  // profile picker main page.
+  void SwitchToReauth(Profile* profile);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

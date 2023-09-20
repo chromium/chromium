@@ -6,7 +6,11 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,6 +28,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
@@ -87,8 +92,9 @@ void ShowCustomizationBubble(absl::optional<SkColor> new_profile_color,
                              Browser* browser) {
   DCHECK(browser);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view || !browser_view->toolbar_button_provider())
+  if (!browser_view || !browser_view->toolbar_button_provider()) {
     return;
+  }
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
   CHECK(anchor_view);
@@ -261,6 +267,46 @@ class ProfileCreationSignedInFlowController
   base::OnceCallback<void(PostHostClearedCallback)> finish_flow_callback_;
 };
 
+class ReauthFlowStepController : public ProfileManagementStepController {
+ public:
+  explicit ReauthFlowStepController(
+      ProfilePickerWebContentsHost* host,
+      std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider,
+      Profile* profile)
+      : ProfileManagementStepController(host),
+        reauth_provider_(std::move(reauth_provider)) {}
+
+  ~ReauthFlowStepController() override = default;
+
+  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+            bool reset_state) override {
+    reauth_provider_->SwitchToReauth();
+  }
+
+  void OnNavigateBackRequested() override{};
+
+ private:
+  std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider_;
+};
+
+std::unique_ptr<ProfileManagementStepController> CreateReauthReauthStep(
+    ProfilePickerWebContentsHost* host,
+    Profile* profile,
+    base::OnceCallback<void(bool)> on_reauth_completed) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+
+  return std::make_unique<ReauthFlowStepController>(
+      host,
+      std::make_unique<ProfilePickerDiceReauthProvider>(
+          host, profile, entry->GetGAIAId(),
+          base::UTF16ToUTF8(entry->GetUserName()),
+          std::move(on_reauth_completed)),
+      profile);
+}
+
 }  // namespace
 
 ProfilePickerFlowController::ProfilePickerFlowController(
@@ -290,6 +336,41 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
   suggested_profile_color_ = profile_color;
   SwitchToIdentityStepsFromAccountSelection(
       std::move(switch_finished_callback));
+}
+
+void ProfilePickerFlowController::SwitchToReauth(Profile* profile) {
+  DCHECK_EQ(Step::kProfilePicker, current_step());
+  DCHECK(!IsStepInitialized(Step::kReauth));
+
+  RegisterStep(
+      Step::kReauth,
+      CreateReauthReauthStep(
+          host(), profile,
+          base::BindOnce(&ProfilePickerFlowController::OnReauthCompleted,
+                         base::Unretained(this), profile)));
+  SwitchToStep(Step::kReauth, true);
+}
+
+void ProfilePickerFlowController::OnReauthCompleted(Profile* profile,
+                                                    bool success) {
+  // Unregister to make sure the next reauth is properly initialised and the
+  // current step is cleaned.
+  UnregisterStep(Step::kReauth);
+
+  // TODO(https://crbug.com/1478217): handle success=false where we need to sign
+  // out the wrongly signed in account (maybe in the reauth provider?) and
+  // redirect to the Profile Picker Main page with an error message.
+  if (!success) {
+    SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
+    return;
+  }
+
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile->GetPath())
+      ->LockForceSigninProfile(false);
+
+  FinishFlowAndRunInBrowser(profile, PostHostClearedCallback());
 }
 #endif
 

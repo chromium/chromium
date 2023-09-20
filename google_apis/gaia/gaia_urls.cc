@@ -46,6 +46,8 @@ const char kEmbeddedSetupWindowsUrlSuffix[] = "embedded/setup/windows";
 // signs in to Chrome. Note that Gaia will pass this client specified parameter
 // to all URLs that are loaded as part of thi sign-in flow.
 const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
+// Opens the "Verify it's you" reauth gaia page.
+const char kAccountChooser[] = "AccountChooser";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/android";
@@ -219,6 +221,10 @@ const GURL& GaiaUrls::signin_chrome_sync_dice() const {
   return signin_chrome_sync_dice_;
 }
 
+const GURL& GaiaUrls::reauth_chrome_dice() const {
+  return reauth_chrome_dice_;
+}
+
 const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
   return signin_chrome_sync_keys_retrieval_url_;
 }
@@ -376,6 +382,7 @@ void GaiaUrls::InitializeDefault() {
                       kEmbeddedReauthChromeOsUrlSuffix);
   ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url,
                       kSigninChromeSyncDice);
+  ResolveURLIfInvalid(&reauth_chrome_dice_, gaia_url, kAccountChooser);
   ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url,
                       kSigninChromeSyncKeysRetrievalUrl);
   ResolveURLIfInvalid(
@@ -445,6 +452,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_windows_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_reauth_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
+  config->GetURLIfExists(URL_KEY_AND_PTR(reauth_chrome_dice));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_retrieval_url));
   config->GetURLIfExists(

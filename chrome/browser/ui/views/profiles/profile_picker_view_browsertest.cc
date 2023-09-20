@@ -861,6 +861,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 class ForceSigninProfilePickerCreationFlowBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
+ public:
+  void SimulateSuccesfulSignin(signin::IdentityManager* identity_manager,
+                               const std::string& email) {
+    // Simulate a successful reauth by making the account available.
+    signin::MakeAccountAvailable(identity_manager, email);
+  }
+
+ private:
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_{true};
   base::test::ScopedFeatureList scoped_feature_list_{
       kForceSigninFlowInProfilePicker};
@@ -947,6 +955,54 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Makes sure that the only profile that exist is the default one and not the
   // one we attempted to create.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count);
+}
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninReauthSuccessful) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(initial_browser_count, 0u);
+
+  const std::vector<Profile*> profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  ASSERT_GE(profiles.size(), 1u);
+  Profile* profile = profiles[0];
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+
+  ASSERT_TRUE(entry->IsSigninRequired());
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  const std::string email("test@managedchrome.com");
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSignin);
+  // Only managed accounts are allowed to reauth.
+  entry->SetUserAcceptedAccountManagement(true);
+
+  CoreAccountId primary_account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.empty());
+
+  // Simulate an invalid account.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Opening the locked profile from the profile picker should trigger the
+  // reauth.
+  OpenProfileFromPicker(entry->GetPath(), false);
+  WaitForLoadStop(GetChromeReauthURL(email));
+
+  // Simulate a successful reauth with the existing email.
+  SimulateSuccesfulSignin(identity_manager, email);
+
+  // A browser should open and the profile should now be unlocked.
+  Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
+  EXPECT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->profile(), profile);
+  EXPECT_FALSE(entry->IsSigninRequired());
 }
 #endif
 

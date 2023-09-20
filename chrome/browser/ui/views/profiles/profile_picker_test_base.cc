@@ -91,3 +91,8 @@ GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
       .flow = signin_flow,
   });
 }
+
+GURL WithProfilePickerTestHelpers::GetChromeReauthURL(
+    const std::string& email) {
+  return signin::GetChromeReauthURL(email);
+}

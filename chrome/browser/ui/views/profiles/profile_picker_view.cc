@@ -196,6 +196,13 @@ void ProfilePicker::SwitchToDiceSignIn(
         profile_color, std::move(switch_finished_callback));
   }
 }
+
+// static
+void ProfilePicker::SwitchToReauth(Profile* profile) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->SwitchToReauth(profile);
+  }
+}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -749,6 +756,9 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
   ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
 }
 
+void ProfilePickerView::SwitchToReauth(Profile* profile) {
+  GetProfilePickerFlowController()->SwitchToReauth(profile);
+}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -557,6 +557,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
   if (!profile)
     return;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -565,8 +566,12 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
   if (entry->IsSigninRequired()) {
     DCHECK(signin_util::IsForceSigninEnabled());
     if (entry->CanBeManaged()) {
-      ProfilePickerForceSigninDialog::ShowReauthDialog(
-          profile, base::UTF16ToUTF8(entry->GetUserName()));
+      if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+        ProfilePicker::SwitchToReauth(profile);
+      } else {
+        ProfilePickerForceSigninDialog::ShowReauthDialog(
+            profile, base::UTF16ToUTF8(entry->GetUserName()));
+      }
     } else if (entry->GetActiveTime() != base::Time()) {
       // If force-sign-in is enabled, do not allow users to sign in to a
       // pre-existing locked profile, as this may force unexpected profile data
@@ -581,14 +586,16 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       // Fresh sign in via profile picker without existing email address.
       ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
     }
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  } else if (!profiles::AreSecondaryProfilesAllowed() &&
-             !Profile::IsMainProfilePath(profile->GetPath())) {
+  if (!profiles::AreSecondaryProfilesAllowed() &&
+      !Profile::IsMainProfilePath(profile->GetPath())) {
     LoginUIServiceFactory::GetForProfile(profile)
         ->SetProfileBlockingErrorMessage();
     ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

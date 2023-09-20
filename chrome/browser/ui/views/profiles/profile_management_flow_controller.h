@@ -45,6 +45,8 @@ class ProfileManagementFlowController {
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.
     kFinishSamlSignin,
+    // Renders the reauth page.
+    kReauth,
 #endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.

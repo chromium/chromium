@@ -83,6 +83,19 @@ struct ChromeSyncUrlArgs {
 // See `ChromeSyncUrlArgs` docs for details on the arguments.
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args);
 
+// Returns the URL to be used to reauth.
+// The `email` is used to be able to preview the URL with the appropriate email:
+// - if the value is empty: the regular sign in page is opened with no prefill.
+// - if the value is set and correspond to an existing account used within the
+// profile previously: the "Verify it's you" page is opened with the preselected
+// account on the next page requesting the authentication. Note: the email can
+// still be modified by the user and does not guarantee that the reauth attempt
+// will be done on this email/account.
+// - if the value is set but the email does not correspond to an account
+// previously used within the profile: the regular sign in gaia page is
+// displayed with the prefilled email.
+GURL GetChromeReauthURL(const std::string& email = std::string());
+
 // Returns the URL to be used to add (secondary) account when DICE is enabled.
 // If email is not empty, then it will pass email as hint to the page so that it
 // will be autofilled by Gaia.

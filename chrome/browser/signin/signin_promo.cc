@@ -97,6 +97,14 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   return url;
 }
 
+GURL GetChromeReauthURL(const std::string& email) {
+  GURL url = GaiaUrls::GetInstance()->reauth_chrome_dice();
+  if (!email.empty()) {
+    url = net::AppendQueryParameter(url, "Email", email);
+  }
+  return url;
+}
+
 GURL GetAddAccountURLForDice(const std::string& email,
                              const std::string& continue_url) {
   GURL url = GaiaUrls::GetInstance()->add_account_url();

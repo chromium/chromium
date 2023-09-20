@@ -220,6 +220,16 @@ class ProfilePicker {
   static void SwitchToDiceSignIn(
       absl::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
+
+  // Starts the reauth for the existing primary account in the given `profile`.
+  // The flow will remain within the profile picker. The reauth is expected to
+  // be done only on the primary account, if done on another one (the UI may
+  // allow it), the reauth will fail and the signed in account will be signed
+  // out.
+  // On successful reauth, the profile is unlocked and a browser associated with
+  // the `profile` will be opened. On unsuccessful reauth, the user will be
+  // redirected to the profile picker main page.
+  static void SwitchToReauth(Profile* profile);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
