@@ -1987,9 +1987,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  // Disconnect the sign-in mediator.
-  DCHECK(!self.isSigninInProgress);
-
   // Stop children coordinators.
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
