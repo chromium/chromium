@@ -1387,21 +1387,12 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxPrefBasedDataCollectionConsentHelperName[];
 extern const char kOmniboxPrefBasedDataCollectionConsentHelperDescription[];
 
-extern const char kOmniboxRedoCurrentMatchName[];
-extern const char kOmniboxRedoCurrentMatchDescription[];
-
 extern const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[];
 extern const char
     kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[];
 
 extern const char kOmniboxWarmRecycledViewPoolName[];
 extern const char kOmniboxWarmRecycledViewPoolDescription[];
-
-extern const char kOmniboxRevertModelBeforeClosingPopupName[];
-extern const char kOmniboxRevertModelBeforeClosingPopupDescription[];
-
-extern const char kOmniboxUseExistingAutocompleteClientName[];
-extern const char kOmniboxUseExistingAutocompleteClientDescription[];
 
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];

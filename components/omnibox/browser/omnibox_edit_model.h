@@ -640,9 +640,6 @@ class OmniboxEditModel {
   // Used to know what should be displayed. Updated when e.g. the popup
   // selection changes, the results change, on navigation, on tab switch etc; it
   // should always be up-to-date.
-  // TODO(manukh): When `kRedoCurrentMatch` is disabled, this is unused and
-  //   replaced by `OmniboxController::current_match_` which serves the same
-  //   purpose but is less often correctly set to a valid match.
   AutocompleteMatch current_match_;
 
   // We keep track of when the user last focused on the omnibox.
@@ -772,11 +769,6 @@ class OmniboxEditModel {
   // suggestion whose tab switch button was focused, so that we may compare
   // if equal.
   GURL old_focused_url_;
-
-  // Whether an existing `AutocompleteClient` should be used or a new one
-  // generated in some cases. This is related to a performance optimization and
-  // all new calls to an `AutocompleteClient` should use the existing client.
-  bool use_existing_autocomplete_client_;
 
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };

@@ -2383,11 +2383,6 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
 
-const char kOmniboxRedoCurrentMatchName[] = "Omnibox redo current match";
-const char kOmniboxRedoCurrentMatchDescription[] =
-    "Use an alternative implementation of calculating the cached omnibox "
-    "current match that is valid more often.";
-
 const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[] =
     "Suppress clipboard suggestion after first used";
 const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[] =
@@ -2411,18 +2406,6 @@ const char kOmniboxReportSearchboxStatsName[] =
 const char kOmniboxReportSearchboxStatsDescription[] =
     "Enables reporting the serialized Searchbox Stats proto param in search "
     "destination URLs originated from the Omnibox.";
-
-const char kOmniboxRevertModelBeforeClosingPopupName[] =
-    "Omnibox revert model before closing popup";
-const char kOmniboxRevertModelBeforeClosingPopupDescription[] =
-    "When reverting the omnibox view, revert the model before closing the "
-    "popup to avoid some extra calculations.";
-
-const char kOmniboxUseExistingAutocompleteClientName[] =
-    "Omnibox use exisitng autocomplete client";
-const char kOmniboxUseExistingAutocompleteClientDescription[] =
-    "When querying autocomplete client from the omnibox edit model, use the "
-    "existing one instead of creating a new one.";
 
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";

@@ -114,10 +114,6 @@ BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextColor);
 
-BASE_DECLARE_FEATURE(kRedoCurrentMatch);
-BASE_DECLARE_FEATURE(kRevertModelBeforeClosingPopup);
-BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);
-
 // Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
 // popup.
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);

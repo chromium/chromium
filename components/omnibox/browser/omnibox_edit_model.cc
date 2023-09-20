@@ -270,9 +270,7 @@ OmniboxEditModel::OmniboxEditModel(OmniboxController* controller,
       is_keyword_hint_(false),
       keyword_mode_entry_method_(OmniboxEventProto::INVALID),
       in_revert_(false),
-      allow_exact_keyword_match_(false),
-      use_existing_autocomplete_client_(base::FeatureList::IsEnabled(
-          omnibox::kUseExistingAutocompleteClient)) {}
+      allow_exact_keyword_match_(false) {}
 
 OmniboxEditModel::~OmniboxEditModel() = default;
 
@@ -375,27 +373,13 @@ void OmniboxEditModel::RestoreState(const State* state) {
 
 AutocompleteMatch OmniboxEditModel::CurrentMatch(
     GURL* alternate_nav_url) const {
-  bool redo = base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch);
   // If we have a valid match use it. Otherwise get one for the current text.
-  AutocompleteMatch match =
-      redo ? current_match_ : controller_->current_match();
+  AutocompleteMatch match = current_match_;
   if (!match.destination_url.is_valid()) {
     GetInfoForCurrentText(&match, alternate_nav_url);
   } else if (alternate_nav_url) {
-    // Use the existing provider client in the experiment arm, otherwise create
-    // a new one.
-    AutocompleteProviderClient* provider_client;
-    std::unique_ptr<AutocompleteProviderClient> new_provider_client;
-    if (!use_existing_autocomplete_client_) {
-      // Create a new client.
-      new_provider_client =
-          controller_->client()->CreateAutocompleteProviderClient();
-      provider_client = new_provider_client.get();
-    } else {
-      // Use the existing client.
-      provider_client = controller_->autocomplete_controller()
-                            ->autocomplete_provider_client();
-    }
+    AutocompleteProviderClient* provider_client =
+        controller_->autocomplete_controller()->autocomplete_provider_client();
     *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
         input_, match, provider_client);
   }
@@ -442,11 +426,7 @@ void OmniboxEditModel::SetUserText(const std::u16string& text) {
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   InternalSetUserText(text);
-  if (base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)) {
-    GetInfoForCurrentText(&current_match_, nullptr);
-  } else {
-    controller_->InvalidateCurrentMatch();
-  }
+  GetInfoForCurrentText(&current_match_, nullptr);
   paste_state_ = NONE;
   has_temporary_text_ = false;
 }
@@ -953,39 +933,11 @@ bool OmniboxEditModel::AcceptKeyword(
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
 
-  // TODO(manukh): Remove this comment and `match` if no bugs arise. It's wrong
-  //   to try to use `CurrentMatch()`, as entering keyword mode shouldn't change
-  //   the omnibox text (other than stripping the keyword). E.g.:
-  //   1) User has keyword 'g' for searching 'google.com'.
-  //   2) User types 'g'.
-  //   3) There's a suggestion for 'github.com is awesome' with a keyword hint
-  //      for 'google.com'.
-  //   4) User activates the keyword hint (via tab, space, or chip click).
-  //   -  Using `CurrentMatch()`, the omnibox ends up with 'Search google | is
-  //      awesome', a corruption of 'github.com is awesome', and 'google.com'.
-  //   -  Using an empty match, the omnibox ends up with 'Search google |' ,
-  //      which seems more correct.
-  //   Even when the keyword hint is consistent with the suggestion text,
-  //   inserting 'Search google | is awesome' when the user simply typed
-  //   'g<tab>' doesn't seem right and probably breaks muscle memory.
-  const AutocompleteMatch& match =
-      base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)
-          ? AutocompleteMatch{}
-          : CurrentMatch(nullptr);
-
   if (view_) {
-    if (user_text_.empty()) {
-      // Ensure the current selection is saved before showing keyword mode
-      // so that moving to another line and then reverting the text will restore
-      // the current state properly.
-      view_->OnTemporaryTextMaybeChanged(
-          MaybeStripKeyword(match.fill_into_edit), match, !has_temporary_text_,
-          true);
-    } else {
-      view_->OnTemporaryTextMaybeChanged(user_text_, match,
-                                         !has_temporary_text_, true);
+    view_->OnTemporaryTextMaybeChanged(user_text_, {}, !has_temporary_text_,
+                                       true);
+    if (!user_text_.empty())
       view_->UpdatePopup();
-    }
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
@@ -1381,9 +1333,6 @@ void OmniboxEditModel::OnPopupDataChanged(
     original_user_text_with_keyword_.clear();
   }
 
-  // The popup changed its data, the match in the controller is no longer valid.
-  controller_->InvalidateCurrentMatch();
-
   // Update keyword/hint-related local state.
   bool keyword_state_changed =
       (keyword_ != keyword) ||
@@ -1427,13 +1376,9 @@ void OmniboxEditModel::OnPopupDataChanged(
     // pressed, even though maybe it isn't any more.  There is no obvious
     // right answer here :(
 
-    const AutocompleteMatch& match =
-        base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)
-            ? current_match_
-            : CurrentMatch(nullptr);
     if (view_) {
       view_->OnTemporaryTextMaybeChanged(
-          MaybeStripKeyword(temporary_text), match,
+          MaybeStripKeyword(temporary_text), current_match_,
           save_original_selection && original_user_text_with_keyword_.empty(),
           true);
     }
@@ -1639,15 +1584,10 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // OnPopupDataChanged() resets OmniboxController's |current_match_| early
   // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
   // its value across the entire call.
-  // TODO(manukh): If we launch `kRedoCurrentMatch`, `OnPopupDataChanged()` will
-  //   no longer reset `current_match_`, and we can avoid these temps.
-  const std::u16string inline_autocompletion(match.inline_autocompletion);
-  const std::u16string prefix_autocompletion(match.prefix_autocompletion);
-  const std::u16string additional_text(match.additional_text);
   OnPopupDataChanged(std::u16string(),
-                     /*is_temporary_text=*/false, inline_autocompletion,
-                     prefix_autocompletion, keyword, is_keyword_hint,
-                     additional_text, match);
+                     /*is_temporary_text=*/false, match.inline_autocompletion,
+                     match.prefix_autocompletion, keyword, is_keyword_hint,
+                     match.additional_text, match);
 }
 
 // static
@@ -1709,20 +1649,9 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     }
     if (found_match_for_text && alternate_nav_url &&
         (!popup_view_ || IsPopupSelectionOnInitialLine())) {
-      // Use the existing provider client in the experiment arm, otherwise
-      // create a new one.
-      AutocompleteProviderClient* provider_client;
-      std::unique_ptr<AutocompleteProviderClient> new_provider_client;
-      if (!use_existing_autocomplete_client_) {
-        // Create a new client.
-        new_provider_client =
-            controller_->client()->CreateAutocompleteProviderClient();
-        provider_client = new_provider_client.get();
-      } else {
-        // Use the existing client.
-        provider_client = controller_->autocomplete_controller()
-                              ->autocomplete_provider_client();
-      }
+      AutocompleteProviderClient* provider_client =
+          controller_->autocomplete_controller()
+              ->autocomplete_provider_client();
       *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
           input_, *match, provider_client);
     }
@@ -1732,11 +1661,7 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     // For match generation, we use the unelided |url_for_editing_|, unless the
     // user input is in progress.
     std::u16string text_for_match_generation =
-        user_input_in_progress()
-            ? (base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)
-                   ? user_text_
-                   : GetText())
-            : url_for_editing_;
+        user_input_in_progress() ? user_text_ : url_for_editing_;
 
     controller_->client()->GetAutocompleteClassifier()->Classify(
         MaybePrependKeyword(text_for_match_generation), is_keyword_selected(),
@@ -2320,10 +2245,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     return;
   }
 
-  // TODO(manukh): Remove this histogram when `kRedoCurrentMatch` &
-  //   `kRevertModelBeforeClosingPopup` launch or are abandoned.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.OmniboxEditModelOpenMatchTime");
-
   // Switch the window disposition to SWITCH_TO_TAB for open tab matches that
   // originated while in keyword mode.  This is to support the keyword mode
   // starter pack's tab search (@tabs) feature, which should open all
@@ -2564,16 +2485,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
             match.destination_url)) {
       base::RecordAction(
           base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
-
-      // Re-use the result of the incognito check above in the experiment arm,
-      // otherwise re-compute the off the record state.
-      bool is_off_the_record = use_existing_autocomplete_client_
-                                   ? is_incognito
-                                   : controller_->client()
-                                         ->CreateAutocompleteProviderClient()
-                                         ->IsOffTheRecord();
-      base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord",
-                                is_off_the_record);
+      base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_incognito);
     }
 
     if (destination_url.is_valid()) {

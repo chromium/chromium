@@ -9,14 +9,12 @@
 
 #include "base/compiler_specific.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AutocompleteResult;
 class OmniboxClient;
 class OmniboxView;
-struct AutocompleteMatch;
 
 // This class controls the various services that can modify the content of the
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
@@ -58,12 +56,6 @@ class OmniboxController : public AutocompleteController::Observer {
   // Returns whether `AutocompleteController` is currently processing a query.
   bool query_in_progress() const { return !autocomplete_controller_->done(); }
 
-  // Set |current_match_| to an invalid value, indicating that we do not yet
-  // have a valid match for the current text in the omnibox.
-  void InvalidateCurrentMatch();
-
-  const AutocompleteMatch& current_match() const { return current_match_; }
-
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
 
@@ -96,16 +88,6 @@ class OmniboxController : public AutocompleteController::Observer {
   std::unique_ptr<OmniboxEditModel> edit_model_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
-
-  // TODO(beaudoin): This AutocompleteMatch is used to let the OmniboxEditModel
-  // know what it should display. Not every field is required for that purpose,
-  // but the ones specifically needed are unclear. We should therefore spend
-  // some time to extract these fields and use a tighter structure here.
-  // TODO(manukh): When `kRedoCurrentMatch` is enabled, this is unused and
-  //   replaced by `OmniboxEditModel::current_match_` which serves the same
-  //   purpose but is hopefully more often correctly set (`current_match_` here
-  //   is almost always invalid).
-  AutocompleteMatch current_match_;
 
   // Observes changes to the prefs for the visibility of groups.
   PrefChangeRegistrar pref_change_registrar_;

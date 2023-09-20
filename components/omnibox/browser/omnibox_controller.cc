@@ -71,10 +71,8 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
     if (auto* match = result().default_match()) {
-      current_match_ = *match;
       edit_model_->OnCurrentMatchChanged();
     } else {
-      InvalidateCurrentMatch();
       edit_model_->OnPopupResultChanged();
       edit_model_->OnPopupDataChanged(
           std::u16string(),
@@ -106,10 +104,6 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       result(), default_match_changed, /*should_preload=*/controller->done(),
       base::BindRepeating(&OmniboxController::SetRichSuggestionBitmap,
                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void OmniboxController::InvalidateCurrentMatch() {
-  current_match_ = AutocompleteMatch();
 }
 
 void OmniboxController::ClearPopupKeywordMode() const {

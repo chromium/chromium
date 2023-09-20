@@ -6203,11 +6203,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "omnibox-redo-current-match",
-    "owners": [ "manukh", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-report-assisted-query-stats",
     "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
@@ -6215,11 +6210,6 @@
   {
     "name": "omnibox-report-searchbox-stats",
     "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "omnibox-revert-model-before-closing-popup",
-    "owners": [ "manukh", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -6305,11 +6295,6 @@
     "name": "omnibox-updated-connection-security-indicators",
     "owners": [ "meacer", "chrome-trusty-transport@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "omnibox-use-existing-autocomplete-client",
-    "owners": [ "ryansturm", "manukh", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
   },
   {
     "name": "omnibox-warm-recycled-view-pool",
