@@ -11,6 +11,14 @@
   top: 100px;
 }
 </style>
+<script>
+  let iframeLoadCount = 0;
+
+  function onIframeLoad(){
+    // Increment the count each time iframe is loaded.
+    iframeLoadCount = iframeLoadCount+1;
+  }
+</script>
 <body>
   PASS if no crash.
 <div id="container" style="height: 400px; width: 400px; overflow: auto">
@@ -23,9 +31,7 @@
 </html>
 <script src='/js-test-resources/gesture-util.js'></script>
 <script>
-  var container;
-  var iframeScrolled = false;
-  var iframeLoadCount = 0;
+  let iframeScrolled = false;
 
   async function runTest() {
     // On document load, perform middle click on the iframe to start the
@@ -33,10 +39,10 @@
     // navigate iframe to another cross-domain url and perform mouse move
     // on root frame. If the bug (crbug.com/1007983) repros, it will crash
     // the process.
-    container = document.getElementById('container');
-    var subFrame = document.getElementsByTagName('iframe')[0];
-    var startx = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
-    var starty = subFrame.offsetTop;
+    const container = document.getElementById('container');
+    const subFrame = document.getElementsByTagName('iframe')[0];
+    const startx = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
+    const starty = subFrame.offsetTop;
 
     // move the mouse inside the iframe.
     await mouseMoveTo(startx + 10 , starty + 10);
@@ -85,11 +91,6 @@
     if(event.data.scrollTop > 0) {
       iframeScrolled = true;
     }
-  }
-
-  function onIframeLoad(){
-    // Increment the count each time iframe is loaded.
-    iframeLoadCount = iframeLoadCount+1;
   }
 </script>
 
