@@ -10,9 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkClipOp.h"
@@ -32,9 +30,9 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/resources/grit/ui_resources.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/shadow_controller.h"
 
 namespace views {
 
@@ -45,40 +43,44 @@ namespace {
 // tuple to key the cache.
 using ShadowCacheKey = std::tuple<int, SkColor, BubbleBorder::Shadow>;
 
-SkColor GetKeyShadowColor(int elevation,
-                          const ui::ColorProvider* color_provider) {
-  switch (elevation) {
-    case 3: {
-      return color_provider->GetColor(
-          ui::kColorShadowValueKeyShadowElevationThree);
-    }
-    case 16: {
-      return color_provider->GetColor(
-          ui::kColorShadowValueKeyShadowElevationSixteen);
-    }
-    default:
-      // This surface has not been updated for Refresh. Fall back to the
-      // deprecated style.
-      return color_provider->GetColor(ui::kColorShadowBase);
-  }
-}
+// The shadow type for default shadow colors.
+constexpr int kDefaultShadowType = -1;
 
-SkColor GetAmbientShadowColor(int elevation,
-                              const ui::ColorProvider* color_provider) {
-  switch (elevation) {
-    case 3: {
-      return color_provider->GetColor(
-          ui::kColorShadowValueAmbientShadowElevationThree);
+ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
+    BubbleBorder::Shadow shadow,
+    const ui::ColorProvider* color_provider) {
+  ui::Shadow::ElevationToColorsMap colors_map;
+  if (color_provider) {
+    switch (shadow) {
+      case BubbleBorder::Shadow::STANDARD_SHADOW:
+        colors_map[3] = std::make_pair(
+            color_provider->GetColor(
+                ui::kColorShadowValueKeyShadowElevationThree),
+            color_provider->GetColor(
+                ui::kColorShadowValueAmbientShadowElevationThree));
+        colors_map[16] = std::make_pair(
+            color_provider->GetColor(
+                ui::kColorShadowValueKeyShadowElevationSixteen),
+            color_provider->GetColor(
+                ui::kColorShadowValueAmbientShadowElevationSixteen));
+        break;
+#if BUILDFLAG(IS_CHROMEOS)
+      case BubbleBorder::Shadow::CHROMEOS_SYSTEM_UI_SHADOW:
+        colors_map =
+            wm::ShadowController::GenerateShadowColorsMap(color_provider);
+        break;
+#endif
+      default:
+        NOTREACHED() << "Invalid bubble border shadow type.";
+        break;
     }
-    case 16: {
-      return color_provider->GetColor(
-          ui::kColorShadowValueAmbientShadowElevationSixteen);
-    }
-    default:
-      // This surface has not been updated for Refresh. Fall back to the
-      // deprecated style.
-      return color_provider->GetColor(ui::kColorShadowBase);
   }
+
+  const SkColor default_color =
+      color_provider ? color_provider->GetColor(ui::kColorShadowBase)
+                     : gfx::kPlaceholderColor;
+  colors_map[kDefaultShadowType] = std::make_pair(default_color, default_color);
+  return colors_map;
 }
 
 enum BubbleArrowPart { kFill, kBorder };
@@ -145,27 +147,41 @@ const gfx::ShadowValues& GetShadowValues(
       shadow_map;
   ShadowCacheKey key(elevation.value_or(-1), color, shadow_type);
 
-  if (shadow_map->find(key) != shadow_map->end())
+  if (shadow_map->find(key) != shadow_map->end()) {
     return shadow_map->find(key)->second;
+  }
 
   gfx::ShadowValues shadows;
   if (elevation.has_value()) {
     DCHECK_GE(elevation.value(), 0);
-    SkColor key_shadow_color =
-        color_provider ? GetKeyShadowColor(elevation.value(), color_provider)
-                       : gfx::kPlaceholderColor;
-    SkColor ambient_shadow_color =
-        color_provider
-            ? GetAmbientShadowColor(elevation.value(), color_provider)
-            : gfx::kPlaceholderColor;
-    shadows = gfx::ShadowValue::MakeShadowValues(
-        elevation.value(), key_shadow_color, ambient_shadow_color);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (shadow_type == BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW) {
-      shadows = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-          elevation.value(), key_shadow_color);
-    }
+    auto shadow_colors_map =
+        ShadowElevationToColorsMap(shadow_type, color_provider);
+    const auto iter = shadow_colors_map.find(elevation.value());
+    const auto key_ambient_colors = (iter != shadow_colors_map.end())
+                                        ? iter->second
+                                        : shadow_colors_map[kDefaultShadowType];
+    switch (shadow_type) {
+      case BubbleBorder::Shadow::STANDARD_SHADOW:
+        shadows = gfx::ShadowValue::MakeShadowValues(elevation.value(),
+                                                     key_ambient_colors.first,
+                                                     key_ambient_colors.second);
+        break;
+#if BUILDFLAG(IS_CHROMEOS)
+      case BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW:
+        if (key_ambient_colors.first == key_ambient_colors.second) {
+          shadows = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+              elevation.value(), key_ambient_colors.first);
+        } else {
+          shadows = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+              elevation.value(), key_ambient_colors.first,
+              key_ambient_colors.second);
+        }
+        break;
 #endif
+      default:
+        NOTREACHED() << "Invalid bubble border shadow type";
+        break;
+    }
   } else {
     constexpr gfx::Vector2d kOffset(0, 2);
     constexpr int kSmallShadowBlur = 4;
@@ -455,7 +471,7 @@ gfx::Insets BubbleBorder::GetInsets() const {
 
   switch (shadow_) {
     case STANDARD_SHADOW:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case CHROMEOS_SYSTEM_UI_SHADOW:
 #endif
       insets = GetBorderAndShadowInsets(md_shadow_elevation_,
