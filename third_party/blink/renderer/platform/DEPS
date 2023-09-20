@@ -15,6 +15,7 @@ include_rules = [
     "+base/feature_list.h",
     "+base/files",
     "+base/functional/bind.h",
+    "+base/functional/bind_internal.h",
     "+base/functional/callback_helpers.h",
     "+base/i18n/icu_util.h",
     "+base/json",

@@ -56,6 +56,7 @@ blink_platform_sources("heap") {
     "thread_state_storage.h",
     "trace_traits.h",
     "visitor.h",
+    "weak_cell.h",
     "write_barrier.h",
   ]
 
@@ -149,6 +150,7 @@ source_set("blink_heap_unittests_sources") {
     "test/heap_traits_test.cc",
     "test/incremental_marking_test.cc",
     "test/persistent_test.cc",
+    "test/weak_cell_test.cc",
     "test/weakness_marking_test.cc",
   ]
 
