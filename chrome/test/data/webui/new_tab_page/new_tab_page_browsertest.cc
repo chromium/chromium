@@ -146,7 +146,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, RecipesModule) {
   RunTest("new_tab_page/modules/recipes/module_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ChromeCartModule) {
+// TODO(crbug.com/1485080): Fails on Linux Debug bots.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ChromeCartModule DISABLED_ChromeCartModule
+#else
+#define MAYBE_ChromeCartModule ChromeCartModule
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MAYBE_ChromeCartModule) {
   RunTest("new_tab_page/modules/cart/module_test.js", "mocha.run()");
 }
 
