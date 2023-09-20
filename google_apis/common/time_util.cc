@@ -19,7 +19,7 @@ namespace util {
 
 namespace {
 
-const char kNullTimeString[] = "null";
+constexpr char kNullTimeString[] = "null";
 
 // Sugar for calling the base:: method with the handling we always desire.
 std::vector<base::StringPiece> SplitStringPiece(base::StringPiece input,
@@ -31,37 +31,35 @@ std::vector<base::StringPiece> SplitStringPiece(base::StringPiece input,
 }  // namespace
 
 bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
+  // Split the input into "date" and "time" parts.
   base::StringPiece date;
   base::StringPiece time;
-  base::Time::Exploded exploded = {0};
-  bool has_timezone = false;
-  base::TimeDelta offset_to_utc;
-
-  // Splits the string into "date" part and "time" part.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "T");
-    if (parts.size() != 2)
+    if (parts.size() != 2) {
       return false;
+    }
     date = parts[0];
     time = parts[1];
   }
 
-  // Parses timezone suffix on the time part if available.
+  // Parse timezone suffix, if available.
+  bool has_timezone = false;
+  base::TimeDelta timezone_offset;
   {
-    std::vector<base::StringPiece> parts;
     if (time.back() == 'Z') {
-      // Timezone is 'Z' (UTC)
+      // Timezone is 'Z' (UTC).
       has_timezone = true;
       time.remove_suffix(1);
     } else {
       bool ahead = true;
-      parts = SplitStringPiece(time, "+");
+      std::vector<base::StringPiece> parts = SplitStringPiece(time, "+");
       if (parts.size() != 2) {
         ahead = false;
         parts = SplitStringPiece(time, "-");
       }
       if (parts.size() == 2) {
-        // Timezone is "+/-hh:mm"
+        // Timezone is "+/-hh:mm".
         std::vector<base::StringPiece> tz_parts =
             SplitStringPiece(parts[1], ":");
         int hour = 0, minute = 0;
@@ -71,13 +69,14 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
         }
         has_timezone = true;
         time = parts[0];
-        offset_to_utc =
+        timezone_offset =
             (base::Hours(hour) + base::Minutes(minute)) * (ahead ? +1 : -1);
       }
     }
   }
 
-  // Parses the date part.
+  // Parse the date.
+  base::Time::Exploded exploded = {0};
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(date, "-");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
@@ -87,7 +86,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
     }
   }
 
-  // Parses the time part.
+  // Parse the time.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(time, ":");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.hour) ||
@@ -112,16 +111,14 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
                      : base::Time::FromLocalExploded(exploded, parsed_time))) {
     return false;
   }
-  *parsed_time -= offset_to_utc;
+  *parsed_time -= timezone_offset;
   return true;
 }
 
 bool GetDateOnlyFromString(base::StringPiece raw_value,
                            base::Time* parsed_time) {
+  // Parse the date part.
   base::Time::Exploded exploded = {0};
-  base::Time time;
-
-  // Parses the date part only.
   {
     std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "-");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
@@ -131,13 +128,14 @@ bool GetDateOnlyFromString(base::StringPiece raw_value,
     }
   }
 
-  if (!base::Time::FromUTCExploded(exploded, &time))
+  // Convert back to a `base::Time`.
+  base::Time time;
+  if (!base::Time::FromUTCExploded(exploded, &time)) {
     return false;
+  }
 
-  // Ensure that the time section (everything after the "yyyy-mm-dd" date) is
-  // zeros.
+  // Zero the time part.
   *parsed_time = time.UTCMidnight();
-
   return true;
 }
 

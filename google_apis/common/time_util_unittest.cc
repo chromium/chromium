@@ -9,8 +9,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace google_apis {
-namespace util {
+namespace google_apis::util {
 namespace {
 
 std::string FormatTime(const base::Time& time) {
@@ -41,12 +40,12 @@ TEST(TimeUtilTest, GetTimeFromStringLocalTimezone) {
 }
 
 TEST(TimeUtilTest, GetTimeFromStringNonTrivialTimezones) {
-  base::Time target_time;
-  base::Time test_time;
   // Creates the target time.
+  base::Time target_time;
   EXPECT_TRUE(GetTimeFromString("2012-07-14T01:03:21.151Z", &target_time));
 
   // Tests positive offset (hour only).
+  base::Time test_time;
   EXPECT_TRUE(GetTimeFromString("2012-07-14T02:03:21.151+01", &test_time));
   EXPECT_EQ(FormatTime(target_time), FormatTime(test_time));
 
@@ -60,22 +59,21 @@ TEST(TimeUtilTest, GetTimeFromStringNonTrivialTimezones) {
 }
 
 TEST(TimeUtilTest, GetTimeFromStringBasic) {
-  base::Time test_time;
-  base::Time out_time;
-
   // Test that the special timezone "Z" (UTC) is handled.
   static constexpr base::Time::Exploded kExploded1 = {
       .year = 2005, .month = 1, .day_of_month = 7, .hour = 8, .minute = 2};
-  EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00Z", &test_time));
+  base::Time out_time;
   EXPECT_TRUE(base::Time::FromUTCExploded(kExploded1, &out_time));
+  base::Time test_time;
+  EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00Z", &test_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 
   // Test that a simple timezone "-08:00" is handled
   // 17:57 - 8 hours = 09:57
   static constexpr base::Time::Exploded kExploded2 = {
       .year = 2005, .month = 8, .day_of_month = 9, .hour = 17, .minute = 57};
-  EXPECT_TRUE(GetTimeFromString("2005-08-09T09:57:00-08:00", &test_time));
   EXPECT_TRUE(base::Time::FromUTCExploded(kExploded2, &out_time));
+  EXPECT_TRUE(GetTimeFromString("2005-08-09T09:57:00-08:00", &test_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 
   // Test that milliseconds (.123) are handled.
@@ -85,19 +83,18 @@ TEST(TimeUtilTest, GetTimeFromStringBasic) {
                                                       .hour = 8,
                                                       .minute = 2,
                                                       .millisecond = 123};
-  EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00.123Z", &test_time));
   EXPECT_TRUE(base::Time::FromUTCExploded(kExploded3, &out_time));
+  EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00.123Z", &test_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 
 TEST(TimeUtilTest, GetDateOnlyFromStringBasic) {
-  base::Time test_time;
-  base::Time out_time;
-
   static constexpr base::Time::Exploded kExploded = {
       .year = 2009, .month = 10, .day_of_month = 23};
-  EXPECT_TRUE(GetDateOnlyFromString("2009-10-23", &test_time));
+  base::Time out_time;
   EXPECT_TRUE(base::Time::FromUTCExploded(kExploded, &out_time));
+  base::Time test_time;
+  EXPECT_TRUE(GetDateOnlyFromString("2009-10-23", &test_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 
@@ -131,5 +128,4 @@ TEST(TimeUtilTest, FormatTimeAsStringLocalTime) {
   EXPECT_EQ("null", FormatTimeAsStringLocaltime(base::Time()));
 }
 
-}  // namespace util
-}  // namespace google_apis
+}  // namespace google_apis::util
