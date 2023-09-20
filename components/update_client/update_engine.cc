@@ -191,6 +191,10 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
                               : base::BindRepeating(
                                     [](scoped_refptr<UpdateContext> context) {
                                       context->is_cancelled = true;
+                                      for (const auto& entry :
+                                           context->components) {
+                                        entry.second->Cancel();
+                                      }
                                     },
                                     update_context);
 }

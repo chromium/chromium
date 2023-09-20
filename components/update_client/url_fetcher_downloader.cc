@@ -9,6 +9,8 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,12 +30,13 @@ UrlFetcherDownloader::UrlFetcherDownloader(
 
 UrlFetcherDownloader::~UrlFetcherDownloader() = default;
 
-void UrlFetcherDownloader::DoStartDownload(const GURL& url) {
+base::OnceClosure UrlFetcherDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&UrlFetcherDownloader::CreateDownloadDir, this),
       base::BindOnce(&UrlFetcherDownloader::StartURLFetch, this, url));
+  return base::BindOnce(&UrlFetcherDownloader::Cancel, this);
 }
 
 void UrlFetcherDownloader::CreateDownloadDir() {
@@ -44,7 +47,7 @@ void UrlFetcherDownloader::CreateDownloadDir() {
 void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (download_dir_.empty()) {
+  if (cancelled_ || download_dir_.empty()) {
     Result result;
     result.error = -1;
 
@@ -64,13 +67,21 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
 
   file_path_ = download_dir_.AppendASCII(url.ExtractFileName());
   network_fetcher_ = network_fetcher_factory_->Create();
-  network_fetcher_->DownloadToFile(
+  cancel_callback_ = network_fetcher_->DownloadToFile(
       url, file_path_,
       base::BindOnce(&UrlFetcherDownloader::OnResponseStarted, this),
       base::BindRepeating(&UrlFetcherDownloader::OnDownloadProgress, this),
       base::BindOnce(&UrlFetcherDownloader::OnNetworkFetcherComplete, this));
 
   download_start_time_ = base::TimeTicks::Now();
+}
+
+void UrlFetcherDownloader::Cancel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cancelled_ = true;
+  if (cancel_callback_) {
+    std::move(cancel_callback_).Run();
+  }
 }
 
 void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,

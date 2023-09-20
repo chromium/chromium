@@ -984,7 +984,7 @@ void Component::StateDownloadingDiff::DoHandle() {
   crx_downloader_->set_progress_callback(
       base::BindRepeating(&Component::StateDownloadingDiff::DownloadProgress,
                           base::Unretained(this)));
-  crx_downloader_->StartDownload(
+  cancel_callback_ = crx_downloader_->StartDownload(
       component.crx_diffurls_, component.hashdiff_sha256_,
       base::BindOnce(&Component::StateDownloadingDiff::DownloadComplete,
                      base::Unretained(this)));
@@ -1057,7 +1057,7 @@ void Component::StateDownloading::DoHandle() {
           component.CanDoBackgroundDownload());
   crx_downloader_->set_progress_callback(base::BindRepeating(
       &Component::StateDownloading::DownloadProgress, base::Unretained(this)));
-  crx_downloader_->StartDownload(
+  cancel_callback_ = crx_downloader_->StartDownload(
       component.crx_urls_, component.hash_sha256_,
       base::BindOnce(&Component::StateDownloading::DownloadComplete,
                      base::Unretained(this)));

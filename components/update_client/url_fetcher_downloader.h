@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -32,13 +33,14 @@ class UrlFetcherDownloader : public CrxDownloader {
  private:
   // Overrides for CrxDownloader.
   ~UrlFetcherDownloader() override;
-  void DoStartDownload(const GURL& url) override;
+  base::OnceClosure DoStartDownload(const GURL& url) override;
 
   void CreateDownloadDir();
   void StartURLFetch(const GURL& url);
   void OnNetworkFetcherComplete(int net_error, int64_t content_size);
   void OnResponseStarted(int response_code, int64_t content_length);
   void OnDownloadProgress(int64_t content_length);
+  void Cancel();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -52,6 +54,9 @@ class UrlFetcherDownloader : public CrxDownloader {
   base::FilePath file_path_;
 
   base::TimeTicks download_start_time_;
+
+  base::OnceClosure cancel_callback_;
+  bool cancelled_ = false;
 
   int response_code_ = -1;
   int64_t total_bytes_ = -1;

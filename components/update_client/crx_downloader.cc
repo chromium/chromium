@@ -10,6 +10,8 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -58,17 +60,19 @@ CrxDownloader::download_metrics() const {
   return retval;
 }
 
-void CrxDownloader::StartDownloadFromUrl(const GURL& url,
-                                         const std::string& expected_hash,
-                                         DownloadCallback download_callback) {
+base::OnceClosure CrxDownloader::StartDownloadFromUrl(
+    const GURL& url,
+    const std::string& expected_hash,
+    DownloadCallback download_callback) {
   std::vector<GURL> urls;
   urls.push_back(url);
-  StartDownload(urls, expected_hash, std::move(download_callback));
+  return StartDownload(urls, expected_hash, std::move(download_callback));
 }
 
-void CrxDownloader::StartDownload(const std::vector<GURL>& urls,
-                                  const std::string& expected_hash,
-                                  DownloadCallback download_callback) {
+base::OnceClosure CrxDownloader::StartDownload(
+    const std::vector<GURL>& urls,
+    const std::string& expected_hash,
+    DownloadCallback download_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto error = CrxDownloaderError::NONE;
@@ -83,7 +87,7 @@ void CrxDownloader::StartDownload(const std::vector<GURL>& urls,
     result.error = static_cast<int>(error);
     main_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(download_callback), result));
-    return;
+    return base::DoNothing();
   }
 
   urls_ = urls;
@@ -91,7 +95,7 @@ void CrxDownloader::StartDownload(const std::vector<GURL>& urls,
   current_url_ = urls_.begin();
   download_callback_ = std::move(download_callback);
 
-  DoStartDownload(*current_url_);
+  return DoStartDownload(*current_url_);
 }
 
 void CrxDownloader::OnDownloadComplete(

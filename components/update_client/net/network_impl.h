@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/network.h"
@@ -42,12 +43,13 @@ class NetworkFetcherImpl : public NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override;
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override;
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override;
 
  private:
   void OnResponseStartedCallback(

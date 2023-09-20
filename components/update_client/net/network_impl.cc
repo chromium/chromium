@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/update_client/net/network_chromium.h"
 #include "net/base/load_flags.h"
@@ -148,7 +150,7 @@ void NetworkFetcherImpl::PostRequest(
       kMaxResponseSize);
 }
 
-void NetworkFetcherImpl::DownloadToFile(
+base::OnceClosure NetworkFetcherImpl::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -190,6 +192,7 @@ void NetworkFetcherImpl::DownloadToFile(
           simple_url_loader_.get(),
           std::move(download_to_file_complete_callback)),
       file_path);
+  return base::DoNothing();
 }
 
 void NetworkFetcherImpl::OnResponseStartedCallback(

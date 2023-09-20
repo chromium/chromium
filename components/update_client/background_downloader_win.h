@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -41,7 +42,7 @@ class BackgroundDownloader : public CrxDownloader {
  private:
   // Overrides for CrxDownloader.
   ~BackgroundDownloader() override;
-  void DoStartDownload(const GURL& url) override;
+  base::OnceClosure DoStartDownload(const GURL& url) override;
 
   // Called asynchronously on the |com_task_runner_| at different stages during
   // the download. |OnDownloading| can be called multiple times.

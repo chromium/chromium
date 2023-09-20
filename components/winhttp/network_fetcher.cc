@@ -99,6 +99,9 @@ void NetworkFetcher::CompleteFetch() {
 HRESULT NetworkFetcher::QueryHeaderString(const std::wstring& name,
                                           std::wstring* value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_handle_.is_valid()) {
+    return HRESULT_FROM_WIN32(ERROR_CANCELLED);
+  }
   return QueryHeadersString(request_handle_.get(), WINHTTP_QUERY_CUSTOM,
                             name.c_str(), value);
 }
@@ -106,6 +109,9 @@ HRESULT NetworkFetcher::QueryHeaderString(const std::wstring& name,
 HRESULT NetworkFetcher::QueryHeaderInt(const std::wstring& name,
                                        int* value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_handle_.is_valid()) {
+    return HRESULT_FROM_WIN32(ERROR_CANCELLED);
+  }
   return QueryHeadersInt(request_handle_.get(), WINHTTP_QUERY_CUSTOM,
                          name.c_str(), value);
 }
@@ -158,7 +164,7 @@ void NetworkFetcher::PostRequest(
     CompleteFetch();
 }
 
-void NetworkFetcher::DownloadToFile(
+base::OnceClosure NetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     FetchStartedCallback fetch_started_callback,
@@ -182,6 +188,8 @@ void NetworkFetcher::DownloadToFile(
 
   if (FAILED(net_error_))
     CompleteFetch();
+
+  return base::BindOnce(&NetworkFetcher::Close, this);
 }
 
 HRESULT NetworkFetcher::BeginFetch(
@@ -293,6 +301,9 @@ void NetworkFetcher::SendRequestComplete() {
 
 HRESULT NetworkFetcher::ReceiveResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_handle_.is_valid()) {
+    return HRESULT_FROM_WIN32(ERROR_CANCELLED);
+  }
   if (!::WinHttpReceiveResponse(request_handle_.get(), nullptr))
     return HRESULTFromLastError();
   return S_OK;
@@ -300,6 +311,11 @@ HRESULT NetworkFetcher::ReceiveResponse() {
 
 void NetworkFetcher::HeadersAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!request_handle_.is_valid()) {
+    CompleteFetch();
+    return;
+  }
 
   std::wstring request_headers;
   QueryHeadersString(
@@ -334,6 +350,10 @@ void NetworkFetcher::HeadersAvailable() {
 
 HRESULT NetworkFetcher::ReadData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!request_handle_.is_valid()) {
+    return HRESULT_FROM_WIN32(ERROR_CANCELLED);
+  }
 
   // Use a fixed buffer size, larger than the internal WinHTTP buffer size (8K),
   // according to the documentation for WinHttpReadData.

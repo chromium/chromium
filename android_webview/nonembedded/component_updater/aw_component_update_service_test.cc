@@ -103,16 +103,18 @@ class FailingNetworkFetcher : public update_client::NetworkFetcher {
              /* x_header_retry_after_sec= */ 0ll);
   }
 
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override {
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override {
     std::move(download_to_file_complete_callback)
         .Run(
             /* network_error= */ -2,
             /* content_size= */ 0);
+    return base::DoNothing();
   }
 };
 
@@ -142,16 +144,18 @@ class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
              /* x_header_retry_after_sec= */ 0ll);
   }
 
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override {
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override {
     std::move(download_to_file_complete_callback)
         .Run(
             /* network_error= */ -2,
             /* content_size= */ 0);
+    return base::DoNothing();
   }
 };
 
@@ -196,19 +200,21 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
              /* x_header_retry_after_sec= */ 0ll);
   }
 
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override {
-    ASSERT_TRUE(base::CopyFile(GetTestFile("fake_component.crx"), file_path));
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override {
+    EXPECT_TRUE(base::CopyFile(GetTestFile("fake_component.crx"), file_path));
     std::move(response_started_callback)
         .Run(/* responseCode= */ 200, /* content_size= */ kCrxContentLength);
     std::move(download_to_file_complete_callback)
         .Run(
             /* network_error= */ 0,
             /* content_size= */ kCrxContentLength);
+    return base::DoNothing();
   }
 };
 

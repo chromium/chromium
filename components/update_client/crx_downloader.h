@@ -81,13 +81,14 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // One instance of CrxDownloader can only be started once, otherwise the
   // behavior is undefined. The callback gets invoked if the download can't
   // be started. |expected_hash| represents the SHA256 cryptographic hash of
-  // the download payload, represented as a hexadecimal string.
-  void StartDownloadFromUrl(const GURL& url,
-                            const std::string& expected_hash,
-                            DownloadCallback download_callback);
-  void StartDownload(const std::vector<GURL>& urls,
-                     const std::string& expected_hash,
-                     DownloadCallback download_callback);
+  // the download payload, represented as a hexadecimal string. Returns a
+  // callback that can be run to cancel the download.
+  base::OnceClosure StartDownloadFromUrl(const GURL& url,
+                                         const std::string& expected_hash,
+                                         DownloadCallback download_callback);
+  base::OnceClosure StartDownload(const std::vector<GURL>& urls,
+                                  const std::string& expected_hash,
+                                  DownloadCallback download_callback);
 
   void set_progress_callback(const ProgressCallback& progress_callback);
 
@@ -122,7 +123,8 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
  private:
   friend class base::RefCountedThreadSafe<CrxDownloader>;
 
-  virtual void DoStartDownload(const GURL& url) = 0;
+  // Returns a callback that can be run to cancel the download.
+  virtual base::OnceClosure DoStartDownload(const GURL& url) = 0;
 
   void HandleDownloadError(bool is_handled,
                            const Result& result,

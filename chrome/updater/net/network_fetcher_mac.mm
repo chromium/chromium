@@ -299,7 +299,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
       update_client::NetworkFetcher::PostRequestCompleteCallback
           post_request_complete_callback) override;
 
-  void DownloadToFile(
+  base::OnceClosure DownloadToFile(
       const GURL& url,
       const base::FilePath& file_path,
       update_client::NetworkFetcher::ResponseStartedCallback
@@ -361,7 +361,7 @@ void NetworkFetcher::PostRequest(
   [dataTask resume];
 }
 
-void NetworkFetcher::DownloadToFile(
+base::OnceClosure NetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -389,6 +389,7 @@ void NetworkFetcher::DownloadToFile(
   NSURLSessionDownloadTask* downloadTask =
       [session downloadTaskWithRequest:urlRequest];
   [downloadTask resume];
+  return base::DoNothing();
 }
 
 }  // namespace

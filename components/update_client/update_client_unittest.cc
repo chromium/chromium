@@ -328,7 +328,10 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -505,7 +508,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -538,6 +541,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -745,7 +749,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -772,6 +776,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -974,7 +979,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -1005,6 +1010,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -1130,7 +1136,10 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { NOTREACHED(); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      NOTREACHED();
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -1330,7 +1339,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -1372,6 +1381,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -1658,7 +1668,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -1710,6 +1720,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -2018,7 +2029,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -2069,6 +2080,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -2409,7 +2421,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -2436,6 +2448,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -2679,7 +2692,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -2734,6 +2747,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -3015,7 +3029,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -3061,6 +3075,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -3293,7 +3308,10 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -3470,7 +3488,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -3501,6 +3519,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -3648,7 +3667,10 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { NOTREACHED(); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      NOTREACHED();
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -3787,7 +3809,10 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -3891,7 +3916,10 @@ TEST_F(UpdateClientTest, EmptyIdList) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -3953,7 +3981,9 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {}
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -4026,7 +4056,9 @@ TEST_F(UpdateClientTest, SendInstallPing) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {}
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -4156,7 +4188,10 @@ TEST_F(UpdateClientTest, RetryAfter) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -4394,7 +4429,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -4425,6 +4460,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -4582,7 +4618,10 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -4749,7 +4788,10 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -4927,7 +4969,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -4952,6 +4994,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -5096,7 +5139,10 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -5266,7 +5312,10 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -5450,7 +5499,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -5481,6 +5530,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -5594,7 +5644,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -5625,6 +5675,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -5775,7 +5826,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override {
+    base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       FilePath path;
       Result result;
@@ -5806,6 +5857,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
+      return base::DoNothing();
     }
   };
 
@@ -5933,7 +5985,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -6072,7 +6127,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -6192,7 +6250,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { EXPECT_TRUE(false); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_TRUE(false);
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -6323,7 +6384,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { NOTREACHED(); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      NOTREACHED();
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -6411,7 +6475,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { NOTREACHED(); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      NOTREACHED();
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -6576,7 +6643,10 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
    private:
     ~MockCrxDownloader() override = default;
 
-    void DoStartDownload(const GURL& url) override { NOTREACHED(); }
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      NOTREACHED();
+      return base::DoNothing();
+    }
   };
 
   class MockPingManager : public MockPingManagerImpl {

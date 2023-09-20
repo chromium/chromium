@@ -20,6 +20,8 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -433,11 +435,12 @@ void BackgroundDownloader::OnTimer() {
       FROM_HERE, base::BindOnce(&BackgroundDownloader::OnDownloading, this));
 }
 
-void BackgroundDownloader::DoStartDownload(const GURL& url) {
+base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BackgroundDownloader::BeginDownload, this, url));
+  return base::DoNothing();
 }
 
 // Called one time when this class is asked to do a download.

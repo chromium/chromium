@@ -78,12 +78,13 @@ class NetworkFetcher : public update_client::NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override;
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override;
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -126,7 +127,7 @@ void NetworkFetcher::PostRequest(
                      base::Unretained(this)));
 }
 
-void NetworkFetcher::DownloadToFile(
+base::OnceClosure NetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -136,7 +137,7 @@ void NetworkFetcher::DownloadToFile(
   VLOG(2) << __func__;
   download_to_file_complete_callback_ =
       std::move(download_to_file_complete_callback);
-  winhttp_network_fetcher_->DownloadToFile(
+  return winhttp_network_fetcher_->DownloadToFile(
       url, file_path, std::move(response_started_callback),
       std::move(progress_callback),
       base::BindOnce(&NetworkFetcher::DownloadToFileComplete,

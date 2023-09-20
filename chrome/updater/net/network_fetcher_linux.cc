@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -405,12 +406,13 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override;
 
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override;
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override;
 
  private:
   base::SequenceBound<LibcurlNetworkFetcherImpl> impl_;
@@ -436,7 +438,7 @@ void LibcurlNetworkFetcher::PostRequest(
                 std::move(post_request_complete_callback));
 }
 
-void LibcurlNetworkFetcher::DownloadToFile(
+base::OnceClosure LibcurlNetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -446,6 +448,7 @@ void LibcurlNetworkFetcher::DownloadToFile(
       .WithArgs(url, file_path, std::move(response_started_callback),
                 std::move(progress_callback),
                 std::move(download_to_file_complete_callback));
+  return base::DoNothing();
 }
 
 }  // namespace

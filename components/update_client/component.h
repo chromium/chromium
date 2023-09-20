@@ -77,6 +77,8 @@ class Component {
   // the update server has return a response containing an update.
   bool IsUpdateAvailable() const { return is_update_available_; }
 
+  void Cancel() { state_->Cancel(); }
+
   base::TimeDelta GetUpdateDuration() const;
 
   ComponentState state() const { return state_->state(); }
@@ -161,6 +163,12 @@ class Component {
 
     ComponentState state() const { return state_; }
 
+    void Cancel() {
+      if (cancel_callback_) {
+        std::move(cancel_callback_).Run();
+      }
+    }
+
    protected:
     // Initiates the transition to the new state.
     void TransitionState(std::unique_ptr<State> new_state);
@@ -175,6 +183,7 @@ class Component {
     SEQUENCE_CHECKER(sequence_checker_);
 
     const ComponentState state_;
+    base::OnceClosure cancel_callback_;
 
    private:
     virtual void DoHandle() = 0;
