@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -98,6 +99,21 @@ class ProxyImplBase {
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
+      [&]() {
+        if (hr != E_NOINTERFACE) {
+          return;
+        }
+        static bool dumped_once = false;
+        if (dumped_once) {
+          return;
+        }
+        HRESULT local_hr = hr;
+        base::debug::Alias(&local_hr);
+        IID local_iid = iid;
+        base::debug::Alias(&local_iid);
+        DUMP_WILL_BE_CHECK(false);
+        dumped_once = true;
+      }();
       return base::unexpected(hr);
     }
 
