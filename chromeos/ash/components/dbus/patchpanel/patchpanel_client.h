@@ -56,6 +56,10 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   // to not held or vice versa.
   virtual void NotifyAndroidWifiMulticastLockChange(bool is_held) = 0;
 
+  // Called when notified of a new socket connection event.
+  virtual void NotifySocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) = 0;
+
   // Called when sending feature enabled flag to patchpanel.
   virtual void SetFeatureFlag(
       patchpanel::SetFeatureFlagRequest::FeatureFlag flag,

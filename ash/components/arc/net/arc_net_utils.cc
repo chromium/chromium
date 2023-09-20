@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/net/arc_net_utils.h"
 
+#include <netinet/in.h>
+
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -163,6 +165,54 @@ std::string KeyManagementMethodToString(arc::mojom::KeyManagement management) {
       return "None";
   }
   return "unknown";
+}
+
+patchpanel::SocketConnectionEvent::IpProtocol TranslateIpProtocol(
+    arc::mojom::IpProtocol proto) {
+  switch (proto) {
+    case arc::mojom::IpProtocol::kTcp:
+      return patchpanel::SocketConnectionEvent::IpProtocol::
+          SocketConnectionEvent_IpProtocol_TCP;
+    case arc::mojom::IpProtocol::kUdp:
+      return patchpanel::SocketConnectionEvent::IpProtocol::
+          SocketConnectionEvent_IpProtocol_UDP;
+    case arc::mojom::IpProtocol::kUnknown:
+      NET_LOG(ERROR) << "Unknown IP protocol";
+      return patchpanel::SocketConnectionEvent::IpProtocol::
+          SocketConnectionEvent_IpProtocol_UNKNOWN_PROTO;
+  }
+}
+
+patchpanel::SocketConnectionEvent::SocketEvent TranslateSocketEvent(
+    arc::mojom::SocketEvent event) {
+  switch (event) {
+    case arc::mojom::SocketEvent::kOpen:
+      return patchpanel::SocketConnectionEvent::SocketEvent::
+          SocketConnectionEvent_SocketEvent_OPEN;
+    case arc::mojom::SocketEvent::kClose:
+      return patchpanel::SocketConnectionEvent::SocketEvent::
+          SocketConnectionEvent_SocketEvent_CLOSE;
+    case arc::mojom::SocketEvent::kUnknown:
+      NET_LOG(ERROR) << "Unknown socket event";
+      return patchpanel::SocketConnectionEvent::SocketEvent::
+          SocketConnectionEvent_SocketEvent_UNKNOWN_EVENT;
+  }
+}
+
+patchpanel::SocketConnectionEvent::QosCategory TranslateQosCategory(
+    arc::mojom::QosCategory category) {
+  switch (category) {
+    case arc::mojom::QosCategory::kRealtimeInteractive:
+      return patchpanel::SocketConnectionEvent::QosCategory::
+          SocketConnectionEvent_QosCategory_REALTIME_INTERACTIVE;
+    case arc::mojom::QosCategory::kMultimediaConferencing:
+      return patchpanel::SocketConnectionEvent::QosCategory::
+          SocketConnectionEvent_QosCategory_MULTIMEDIA_CONFERENCING;
+    case arc::mojom::QosCategory::kUnknown:
+      NET_LOG(ERROR) << "Unknown QoS category";
+      return patchpanel::SocketConnectionEvent::QosCategory::
+          SocketConnectionEvent_QosCategory_UNKNOWN_CATEGORY;
+  }
 }
 
 }  // namespace
@@ -514,4 +564,53 @@ base::Value::List TranslateSubjectNameMatchListToValue(
   return result;
 }
 
+std::unique_ptr<patchpanel::SocketConnectionEvent>
+TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom) {
+  std::unique_ptr<patchpanel::SocketConnectionEvent> msg =
+      std::make_unique<patchpanel::SocketConnectionEvent>();
+
+  msg->set_saddr(
+      std::string{reinterpret_cast<const char*>(mojom->src_addr.bytes().data()),
+                  mojom->src_addr.size()});
+  msg->set_daddr(reinterpret_cast<const char*>(mojom->dst_addr.bytes().data()),
+                 mojom->dst_addr.size());
+
+  msg->set_sport(mojom->src_port);
+  msg->set_dport(mojom->dst_port);
+
+  if (const auto protocol = TranslateIpProtocol(mojom->proto);
+      protocol != patchpanel::SocketConnectionEvent::IpProtocol::
+                      SocketConnectionEvent_IpProtocol_UNKNOWN_PROTO) {
+    msg->set_proto(protocol);
+  } else {
+    NET_LOG(ERROR) << "IP protocol is unknown, translate socket connection "
+                      "event failed. IP protocol is: "
+                   << mojom->proto;
+    return nullptr;
+  }
+
+  if (const auto event = TranslateSocketEvent(mojom->event);
+      event != patchpanel::SocketConnectionEvent::SocketEvent::
+                   SocketConnectionEvent_SocketEvent_UNKNOWN_EVENT) {
+    msg->set_event(event);
+  } else {
+    NET_LOG(ERROR) << "Socket event is unknown, translate socket connection "
+                      "event failed. Socket event is: "
+                   << mojom->event;
+    return nullptr;
+  }
+
+  if (const auto category = TranslateQosCategory(mojom->qos_category);
+      category != patchpanel::SocketConnectionEvent::QosCategory::
+                      SocketConnectionEvent_QosCategory_UNKNOWN_CATEGORY) {
+    msg->set_category(category);
+  } else {
+    NET_LOG(ERROR) << "QoS category is unknown, translate socket connection "
+                      "event failed. QoS category is: "
+                   << mojom->qos_category;
+    return nullptr;
+  }
+
+  return msg;
+}
 }  // namespace arc::net_utils

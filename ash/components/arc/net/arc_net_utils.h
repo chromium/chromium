@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_
 #define ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_
 
+#include <netinet/in.h>
 #include <sys/socket.h>
 
 #include <map>
@@ -71,6 +72,11 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
 // to a base::Value::List format that is accepted by ONC.
 base::Value::List TranslateSubjectNameMatchListToValue(
     const std::vector<std::string>& string_list);
+
+// Translate a mojom socket connection event into a patchpanel socket connection
+// event.
+std::unique_ptr<patchpanel::SocketConnectionEvent>
+TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom);
 }  // namespace arc::net_utils
 
 #endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_

@@ -52,6 +52,9 @@ int FakePatchPanelClient::GetAndroidWifiMulticastLockChangeNotifyCount() {
   return notify_android_wifi_multicast_lock_change_count_;
 }
 
+void FakePatchPanelClient::NotifySocketConnectionEvent(
+    const patchpanel::SocketConnectionEvent& msg) {}
+
 void FakePatchPanelClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

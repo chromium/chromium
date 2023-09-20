@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -26,7 +27,8 @@ constexpr char kTestCellularDeviceGuestInterface[] = "guest_interface";
 constexpr char kGuid[] = "guid";
 constexpr char kBssid[] = "bssid";
 constexpr char kHexSsid[] = "123456";
-constexpr char kAddress[] = "8.8.8.8";
+constexpr char kAddress1[] = "8.8.8.8";
+constexpr char kAddress2[] = "8.8.8.9";
 constexpr char kGateway[] = "8.8.8.4";
 constexpr char kNameServer1[] = "1.1.1.1";
 constexpr char kNameServer2[] = "2.2.2.2";
@@ -36,6 +38,11 @@ constexpr int kHostMtu = 32;
 constexpr int kFrequency = 100;
 constexpr int kSignalStrength = 80;
 constexpr int kRssi = 50;
+constexpr int kPort1 = 20000;
+constexpr int kPort2 = 30000;
+// kAddress1 and kAddress2 converted to long.
+constexpr long kLongFormatAddress1 = 134744072L;
+constexpr long kLongFormatAddress2 = 151521288L;
 
 class ArcNetUtilsTest : public testing::Test {
  public:
@@ -85,7 +92,7 @@ class ArcNetUtilsTest : public testing::Test {
     name_servers.Append(kNameServer2);
     name_servers.Append("0.0.0.0");
 
-    static_ip_config.Set(shill::kAddressProperty, kAddress);
+    static_ip_config.Set(shill::kAddressProperty, kAddress1);
     static_ip_config.Set(shill::kGatewayProperty, kGateway);
     static_ip_config.Set(shill::kPrefixlenProperty, kPrefixLen);
     static_ip_config.Set(shill::kNameServersProperty, std::move(name_servers));
@@ -94,6 +101,19 @@ class ArcNetUtilsTest : public testing::Test {
     shill_dict.Set(shill::kMeteredProperty, true);
     shill_dict.Set(shill::kStaticIPConfigProperty, std::move(static_ip_config));
     return shill_dict;
+  }
+
+  mojom::SocketConnectionEventPtr GetMojomSocketConnectionEvent() {
+    mojom::SocketConnectionEventPtr mojom =
+        arc::mojom::SocketConnectionEvent::New();
+    mojom->src_addr = net::IPAddress::FromIPLiteral(kAddress1).value();
+    mojom->dst_addr = net::IPAddress::FromIPLiteral(kAddress2).value();
+    mojom->src_port = kPort1;
+    mojom->dst_port = kPort2;
+    mojom->proto = arc::mojom::IpProtocol::kTcp;
+    mojom->event = arc::mojom::SocketEvent::kOpen;
+    mojom->qos_category = arc::mojom::QosCategory::kRealtimeInteractive;
+    return mojom;
   }
 
  private:
@@ -341,7 +361,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
   EXPECT_EQ(kTestCellularDeviceInterface, mojo->network_interface);
 
   EXPECT_EQ(16u, mojo->host_ipv4_prefix_length);
-  EXPECT_EQ(kAddress, mojo->host_ipv4_address);
+  EXPECT_EQ(kAddress1, mojo->host_ipv4_address);
   EXPECT_EQ(kGateway, mojo->host_ipv4_gateway);
   EXPECT_EQ(2u, mojo->host_dns_addresses.value().size());
   EXPECT_EQ(kNameServer1, mojo->host_dns_addresses.value()[0]);
@@ -365,7 +385,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   device.set_phys_ifname(kTestCellularDeviceInterface);
   device.set_guest_ifname(kTestCellularDeviceGuestInterface);
   // Set binary form of IP address.
-  device.set_ipv4_addr(StringToIPv4Address(kAddress).s_addr);
+  device.set_ipv4_addr(StringToIPv4Address(kAddress1).s_addr);
   device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
   device.mutable_ipv4_subnet()->set_prefix_len(kPrefixLen);
   auto ipv4_addr = StringToIPv4Address(kNameServer1);
@@ -390,7 +410,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   EXPECT_EQ(1u, network_states.size());
   EXPECT_EQ(kNetworkStatePath, res[0]->service_name);
   EXPECT_EQ(kTestCellularDeviceGuestInterface, res[0]->arc_network_interface);
-  EXPECT_EQ(kAddress, res[0]->arc_ipv4_address);
+  EXPECT_EQ(kAddress1, res[0]->arc_ipv4_address);
   EXPECT_EQ(kGateway, res[0]->arc_ipv4_gateway);
   EXPECT_EQ(16u, res[0]->arc_ipv4_prefix_length);
   EXPECT_EQ(kNameServer1, res[0]->dns_proxy_addresses.value()[0]);
@@ -423,5 +443,28 @@ TEST_F(ArcNetUtilsTest, TranslateSubjectNameMatchListToValue) {
             "example@domain.com");
 }
 
+TEST_F(ArcNetUtilsTest, TranslateSocketConnectionEvent) {
+  mojom::SocketConnectionEventPtr mojom = GetMojomSocketConnectionEvent();
+  const auto msg = net_utils::TranslateSocketConnectionEvent(mojom);
+  EXPECT_NE(msg, nullptr);
+  struct in_addr addr = {};
+  addr.s_addr = kLongFormatAddress1;
+  EXPECT_EQ(0,
+            memcmp((void*)&addr, (void*)msg->saddr().c_str(), sizeof(in_addr)));
+  addr.s_addr = kLongFormatAddress2;
+  EXPECT_EQ(0,
+            memcmp((void*)&addr, (void*)msg->daddr().c_str(), sizeof(in_addr)));
+  EXPECT_EQ(kPort1, msg->sport());
+  EXPECT_EQ(kPort2, msg->dport());
+  EXPECT_EQ(patchpanel::SocketConnectionEvent::QosCategory::
+                SocketConnectionEvent_QosCategory_REALTIME_INTERACTIVE,
+            msg->category());
+  EXPECT_EQ(patchpanel::SocketConnectionEvent::SocketEvent::
+                SocketConnectionEvent_SocketEvent_OPEN,
+            msg->event());
+  EXPECT_EQ(patchpanel::SocketConnectionEvent::IpProtocol::
+                SocketConnectionEvent_IpProtocol_TCP,
+            msg->proto());
+}
 }  // namespace
 }  // namespace arc

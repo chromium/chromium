@@ -1403,5 +1403,13 @@ void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {
 }
 
 void ArcNetHostImpl::NotifySocketConnectionEvent(
-    mojom::SocketConnectionEventPtr msg) {}
+    mojom::SocketConnectionEventPtr msg) {
+  auto notification = net_utils::TranslateSocketConnectionEvent(msg);
+  if (!notification) {
+    NET_LOG(ERROR) << "Translate socket connection event failed, not sending "
+                      "notification.";
+    return;
+  }
+  ash::PatchPanelClient::Get()->NotifySocketConnectionEvent(*notification);
+}
 }  // namespace arc
