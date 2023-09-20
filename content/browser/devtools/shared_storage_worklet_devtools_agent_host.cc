@@ -35,7 +35,7 @@ SharedStorageWorkletDevToolsAgentHost::
     ~SharedStorageWorkletDevToolsAgentHost() = default;
 
 BrowserContext* SharedStorageWorkletDevToolsAgentHost::GetBrowserContext() {
-  if (!worklet_host_->GetProcessHost()) {
+  if (!worklet_host_ || !worklet_host_->GetProcessHost()) {
     return nullptr;
   }
 
@@ -47,12 +47,16 @@ std::string SharedStorageWorkletDevToolsAgentHost::GetType() {
 }
 
 std::string SharedStorageWorkletDevToolsAgentHost::GetTitle() {
+  if (!worklet_host_) {
+    return std::string();
+  }
+
   return base::StrCat({"Shared storage worklet for ",
                        worklet_host_->script_source_url().spec()});
 }
 
 GURL SharedStorageWorkletDevToolsAgentHost::GetURL() {
-  return worklet_host_->script_source_url();
+  return worklet_host_ ? worklet_host_->script_source_url() : GURL();
 }
 
 bool SharedStorageWorkletDevToolsAgentHost::Activate() {
