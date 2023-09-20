@@ -78,7 +78,7 @@ enum class PrerenderFinalStatus {
   // kFailToGetMemoryUsage = 37,
 
   kDataSaverEnabled = 38,
-  kHasEffectiveUrl = 39,
+  kTriggerUrlHasEffectiveUrl = 39,
   kActivatedBeforeStarted = 40,
   kInactivePageRestriction = 41,
   kStartFailed = 42,
@@ -148,7 +148,11 @@ enum class PrerenderFinalStatus {
   kMaxNumOfRunningNonEagerPrerendersExceeded = 74,
   kMaxNumOfRunningEmbedderPrerendersExceeded = 75,
 
-  kMaxValue = kMaxNumOfRunningEmbedderPrerendersExceeded,
+  kPrerenderingUrlHasEffectiveUrl = 76,
+  kRedirectedPrerenderingUrlHasEffectiveUrl = 77,
+  kActivationUrlHasEffectiveUrl = 78,
+
+  kMaxValue = kActivationUrlHasEffectiveUrl,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

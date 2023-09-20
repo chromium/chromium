@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,6 +70,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -500,6 +502,145 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {
   EXPECT_EQ(app_browser_->app_controller()->GetTitle(), u"Hosted App");
   EXPECT_EQ(app_browser_->app_controller()->GetDefaultBounds(), gfx::Rect());
   EXPECT_TRUE(app_browser_->app_controller()->HasReloadButton());
+}
+
+class HostedAppTestWithPrerendering : public HostedOrWebAppTest {
+ public:
+  HostedAppTestWithPrerendering()
+      : prerender_helper_(base::BindRepeating(
+            &HostedAppTestWithPrerendering::GetNonAppWebContents,
+            base::Unretained(this))) {
+    EXPECT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* GetAppWebContents() {
+    return app_browser_->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::WebContents* GetNonAppWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ protected:
+  // Copied from content/browser/preloading/prerender/prerender_final_status.h.
+  enum PrerenderFinalStatus {
+    kTriggerUrlHasEffectiveUrl = 39,
+    kPrerenderingUrlHasEffectiveUrl = 76,
+    kRedirectedPrerenderingUrlHasEffectiveUrl = 77,
+    kActivationUrlHasEffectiveUrl = 78,
+  };
+
+ private:
+  base::HistogramTester histogram_tester_;
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
+  GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
+  GURL prerendering_url =
+      embedded_test_server()->GetURL("app.com", "/title2.html");
+
+  // Start a hosted app. This makes the app URL have an effective URL.
+  SetupAppWithURL(app_url);
+
+  // Start prerendering on the app's context. This should fail as the app's
+  // context has the effective URL.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetAppWebContents()->StartPrerendering(
+          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_FALSE(prerender_handle);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kTriggerUrlHasEffectiveUrl, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
+                       EffectiveUrlOnPrerendering) {
+  GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
+
+  // Start a hosted app. This makes the app URL have an effective URL.
+  SetupAppWithURL(app_url);
+
+  // Start prerendering for the app URL on the non-app's context. This should
+  // fail as the app URL has the effective URL.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetNonAppWebContents()->StartPrerendering(
+          app_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_FALSE(prerender_handle);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kPrerenderingUrlHasEffectiveUrl, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
+                       EffectiveUrlOnRedirectedPrerendering) {
+  GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
+  GURL prerendering_url = embedded_test_server()->GetURL(
+      "nonapp.com", "/server-redirect?" + app_url.spec());
+
+  // Start a hosted app. This makes the app URL have an effective URL.
+  SetupAppWithURL(app_url);
+
+  // Start prerendering for the URL that redirected to the app URL on the
+  // non-app's context. This should fail as the final URL has the effective URL.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetNonAppWebContents()->StartPrerendering(
+          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_TRUE(prerender_handle);
+  int host_id = prerender_helper().GetHostForUrl(prerendering_url);
+  content::test::PrerenderHostObserver host_observer(*GetNonAppWebContents(),
+                                                     host_id);
+  host_observer.WaitForDestroyed();
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kRedirectedPrerenderingUrlHasEffectiveUrl, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
+                       EffectiveUrlOnActivation) {
+  GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
+
+  // Start prerendering for the app URL on the non-app's context.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetNonAppWebContents()->StartPrerendering(
+          app_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_TRUE(prerender_handle);
+
+  // Start a hosted app. This makes the app URL have an effective URL.
+  SetupAppWithURL(app_url);
+
+  // Navigate the primary page to the app URL that has the effective URL. This
+  // should fail to activate the prerendered page.
+  ASSERT_TRUE(content::NavigateToURL(GetNonAppWebContents(), app_url));
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kActivationUrlHasEffectiveUrl, 1);
 }
 
 // TODO(crbug.com/1411344): Flaky test.
@@ -2212,6 +2353,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppTest,
+                         ::testing::Values(AppType::HOSTED_APP));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppTestWithPrerendering,
                          ::testing::Values(AppType::HOSTED_APP));
 
 INSTANTIATE_TEST_SUITE_P(All,

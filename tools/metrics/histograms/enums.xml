@@ -88499,7 +88499,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="36" label="kMemoryLimitExceeded"/>
   <int value="37" label="kFailToGetMemoryUsage (obsoleted)"/>
   <int value="38" label="kDataSaverEnabled"/>
-  <int value="39" label="kHasEffectiveUrl"/>
+  <int value="39" label="kTriggerUrlHasEffectiveUrl"/>
   <int value="40" label="kActivatedBeforeStarted"/>
   <int value="41" label="kInactivePageRestriction"/>
   <int value="42" label="kStartFailed"/>
@@ -88542,6 +88542,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="73" label="kMaxNumOfRunningEagerPrerendersExceeded"/>
   <int value="74" label="kMaxNumOfRunningNonEagerPrerendersExceeded"/>
   <int value="75" label="kMaxNumOfRunningEmbedderPrerendersExceeded"/>
+  <int value="76" label="kPrerenderingUrlHasEffectiveUrl"/>
+  <int value="77" label="kRedirectedPrerenderingUrlHasEffectiveUrl"/>
+  <int value="78" label="kActivationUrlHasEffectiveUrl"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

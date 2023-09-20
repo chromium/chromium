@@ -165,6 +165,17 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return CANCEL;
   }
 
+  // Disallow all pages that have an effective URL like hosted apps and NTP.
+  auto* browser_context =
+      navigation_handle()->GetStartingSiteInstance()->GetBrowserContext();
+  if (SiteInstanceImpl::HasEffectiveURL(browser_context, navigation_url)) {
+    CancelPrerendering(
+        is_redirection
+            ? PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl
+            : PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl);
+    return CANCEL;
+  }
+
   // Origin checks for the navigation (redirection), which varies depending on
   // whether the navigation is initial one or not.
   if (IsInitialNavigation()) {

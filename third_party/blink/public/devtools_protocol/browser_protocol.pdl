@@ -11324,7 +11324,7 @@ experimental domain Preload
       TriggerBackgrounded
       MemoryLimitExceeded
       DataSaverEnabled
-      HasEffectiveUrl
+      TriggerUrlHasEffectiveUrl
       ActivatedBeforeStarted
       InactivePageRestriction
       StartFailed
@@ -11359,6 +11359,9 @@ experimental domain Preload
       MaxNumOfRunningEagerPrerendersExceeded
       MaxNumOfRunningNonEagerPrerendersExceeded
       MaxNumOfRunningEmbedderPrerendersExceeded
+      PrerenderingUrlHasEffectiveUrl
+      RedirectedPrerenderingUrlHasEffectiveUrl
+      ActivationUrlHasEffectiveUrl
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

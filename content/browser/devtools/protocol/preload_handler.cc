@@ -79,8 +79,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::TriggerDestroyed;
     case PrerenderFinalStatus::kUaChangeRequiresReload:
       return Preload::PrerenderFinalStatusEnum::UaChangeRequiresReload;
-    case PrerenderFinalStatus::kHasEffectiveUrl:
-      return Preload::PrerenderFinalStatusEnum::HasEffectiveUrl;
+    case PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::TriggerUrlHasEffectiveUrl;
     case PrerenderFinalStatus::kActivatedBeforeStarted:
       return Preload::PrerenderFinalStatusEnum::ActivatedBeforeStarted;
     case PrerenderFinalStatus::kInactivePageRestriction:
@@ -172,6 +172,13 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
       return Preload::PrerenderFinalStatusEnum::
           MaxNumOfRunningEmbedderPrerendersExceeded;
+    case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::PrerenderingUrlHasEffectiveUrl;
+    case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::
+          RedirectedPrerenderingUrlHasEffectiveUrl;
+    case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::ActivationUrlHasEffectiveUrl;
   }
 }
 

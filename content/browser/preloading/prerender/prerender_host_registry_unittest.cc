@@ -1223,17 +1223,22 @@ TEST_F(PrerenderHostRegistryTest,
                   .has_potentially_trustworthy_unique_origin);
 }
 
-TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl) {
+// End replication state matching tests ------------
+
+TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl_TriggerUrl) {
   const GURL original_url = contents()->GetLastCommittedURL();
   const GURL kModifiedSiteUrl("custom-scheme://custom");
 
+  // Let the trigger's URL have the effective URL.
   EffectiveURLContentBrowserClient modified_client(
       original_url, kModifiedSiteUrl,
-      /* requires_dedicated_process */ false);
+      /*requires_dedicated_process=*/false);
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&modified_client);
 
-  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  // Start prerendering. This should fail as the initiator's URL has the
+  // effective URL.
+  const GURL kPrerenderingUrl("https://example.com/empty.html");
   const int prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
@@ -1244,12 +1249,74 @@ TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl) {
       registry().FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kHasEffectiveUrl);
+      PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl);
 
   SetBrowserClientForTesting(old_client);
 }
 
-// End replication state matching tests ------------
+TEST_F(PrerenderHostRegistryTest,
+       DisallowPageHavingEffectiveUrl_PrerenderingUrl) {
+  const GURL original_url = contents()->GetLastCommittedURL();
+  const GURL kPrerenderingUrl("https://example.com/empty.html");
+  const GURL kModifiedSiteUrl("custom-scheme://custom");
+
+  // Let the prerendering URL have the effective URL.
+  EffectiveURLContentBrowserClient modified_client(
+      kPrerenderingUrl, kModifiedSiteUrl,
+      /*requires_dedicated_process=*/false);
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  // Start prerendering. This should fail as the prerendering URL has the
+  // effective URL.
+  const int prerender_frame_tree_node_id =
+      registry().CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          blink::mojom::SpeculationEagerness::kEager,
+          contents()->GetPrimaryMainFrame()));
+  EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry().FindNonReservedHostById(prerender_frame_tree_node_id);
+  EXPECT_EQ(prerender_host, nullptr);
+  ExpectUniqueSampleOfSpeculationRuleFinalStatus(
+      PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl);
+
+  SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       DisallowPageHavingEffectiveUrl_ActivationUrl) {
+  const GURL original_url = contents()->GetLastCommittedURL();
+  const GURL kPrerenderingUrl("https://example.com/empty.html");
+  const GURL kModifiedSiteUrl("custom-scheme://custom");
+
+  // Start prerendering.
+  const int prerender_frame_tree_node_id =
+      registry().CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          blink::mojom::SpeculationEagerness::kEager,
+          contents()->GetPrimaryMainFrame()));
+  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry().FindHostByUrlForTesting(kPrerenderingUrl);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Let the prerendering URL have the effective URL after prerendering.
+  EffectiveURLContentBrowserClient modified_client(
+      kPrerenderingUrl, kModifiedSiteUrl,
+      /*requires_dedicated_process=*/false);
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  // Navigate the primary page to the prerendering URL that has the effective
+  // URL. This should fail to activate the prerendered page.
+  contents()->NavigateAndCommit(kPrerenderingUrl);
+
+  ExpectUniqueSampleOfSpeculationRuleFinalStatus(
+      PrerenderFinalStatus::kActivationUrlHasEffectiveUrl);
+
+  SetBrowserClientForTesting(old_client);
+}
 
 }  // namespace
 }  // namespace content

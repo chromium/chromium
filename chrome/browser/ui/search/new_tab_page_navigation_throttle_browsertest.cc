@@ -233,12 +233,15 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottlePrerenderTest,
   // Prerendering should not change the title of the web contents.
   EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
 
-  // Activate the prerender page.
   SetNewTabPage(ntp_url.spec());
-  prerender_test_helper().NavigatePrimaryPage(ntp_url);
-  EXPECT_TRUE(host_observer.was_activated());
 
-  // The title should be changed after activating.
+  // Now `ntp_url` has an effective URL
+  // (chrome-search://remote-ntp/instant_extended.html), so this navigation
+  // should not activate the prerendered page.
+  prerender_test_helper().NavigatePrimaryPage(ntp_url);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // The title should be changed after navigation.
   EXPECT_NE(u"Title Of Awesomeness", web_contents()->GetTitle());
 }
 
