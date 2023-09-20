@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -112,7 +113,8 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
   if (!account.IsEmpty()) {
-    if (identity_manager_->GetPrimaryAccountInfo(
+    if (!base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+        identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
