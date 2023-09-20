@@ -282,6 +282,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private hasSomeActiveFilter_: boolean;
   private hasShownBookmarks_: boolean;
   private sectionVisibility_: SectionVisibility = {};
+  private shoppingCollectionFolderId_: string;
 
   constructor() {
     super();
@@ -306,6 +307,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });
+    this.updateShoppingCollectionFolderId_();
     const callbackRouter = this.shoppingListApi_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
@@ -371,6 +373,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
     if (this.bookmarkShouldShow_(bookmark)) {
+      this.updateShoppingCollectionFolderId_();
+
       const scrollTop = this.$.bookmarks.scrollTop;
       this.updateDisplayLists_();
       if (bookmark.url) {
@@ -438,6 +442,11 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.$.bookmarks.scrollTop = scrollTop;
       });
     }
+
+    if (this.shoppingCollectionFolderId_ === bookmark.id) {
+      this.shoppingCollectionFolderId_ = '';
+    }
+
     this.set(`trackedProductInfos_.${bookmark.id}`, null);
     this.availableProductInfos_.delete(bookmark.id);
 
@@ -716,6 +725,17 @@ export class PowerBookmarksListElement extends PolymerElement {
     return description;
   }
 
+  private updateShoppingCollectionFolderId_(): void {
+    this.shoppingListApi_.getShoppingCollectionBookmarkFolderId().then(res => {
+      this.shoppingCollectionFolderId_ = res.collectionId.toString();
+    });
+  }
+
+  private isShoppingCollection_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return bookmark.id === this.shoppingCollectionFolderId_;
+  }
+
   private getBookmarkImageUrls_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string[] {
     const imageUrls: string[] = [];
@@ -724,7 +744,9 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (imageUrl) {
         imageUrls.push(imageUrl);
       }
-    } else if (this.canEdit_(bookmark) && bookmark.children) {
+    } else if (
+        this.canEdit_(bookmark) && bookmark.children &&
+        !this.isShoppingCollection_(bookmark)) {
       bookmark.children.forEach((child) => {
         const childImageUrl: string =
             this.get(`imageUrls_.${child.id.toString()}`);

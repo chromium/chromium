@@ -88,6 +88,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       GetPriceInsightsInfoForCurrentUrlCallback callback) override;
   void ShowInsightsSidePanelUI() override;
   void IsShoppingListEligible(IsShoppingListEligibleCallback callback) override;
+  void GetShoppingCollectionBookmarkFolderId(
+      GetShoppingCollectionBookmarkFolderIdCallback callback) override;
   void GetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SetPriceTrackingStatusForCurrentUrl(bool track) override;
