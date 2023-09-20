@@ -3574,12 +3574,6 @@ const char kWebPaymentsExperimentalFeaturesName[] =
 const char kWebPaymentsExperimentalFeaturesDescription[] =
     "Enable experimental Web Payments API features";
 
-const char kIgnoreCSPInWebPaymentAPIName[] = "Ignore CSP in Web Payment API";
-const char kIgnoreCSPInWebPaymentAPIDescription[] =
-    "Temporarily disable enforcing Content Security Policy connect-src "
-    "directive for Web Payment API when fetching manifest files, app icons, "
-    "and service worker JavaScript files.";
-
 const char kAddIdentityInCanMakePaymentEventName[] =
     "Add identity to canmakepayment event";
 const char kAddIdentityInCanMakePaymentEventDescription[] =

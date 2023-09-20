@@ -3,30 +3,18 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace payments {
 
-class IframeCspTest : public PaymentRequestPlatformBrowserTestBase,
-                      public ::testing::WithParamInterface<bool> {
+class IframeCspTest : public PaymentRequestPlatformBrowserTestBase {
  public:
-  IframeCspTest() {
-    if (WebPaymentAPICSPEnabled()) {
-      features_.InitAndDisableFeature(
-          blink::features::kIgnoreCSPInWebPaymentAPI);
-    } else {
-      features_.InitAndEnableFeature(
-          blink::features::kIgnoreCSPInWebPaymentAPI);
-    }
-  }
-
+  IframeCspTest() = default;
   ~IframeCspTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -38,16 +26,11 @@ class IframeCspTest : public PaymentRequestPlatformBrowserTestBase,
     ASSERT_TRUE(app_server_.Start());
   }
 
-  bool WebPaymentAPICSPEnabled() const { return GetParam(); }
-
  protected:
   net::EmbeddedTestServer app_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(IframeCspTest, Show) {
+IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
   NavigateTo("/csp_test_main.html");
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
@@ -71,23 +54,18 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, Show) {
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
       {{method_name, &app_server_}}, iframe);
 
-  if (WebPaymentAPICSPEnabled()) {
-    EXPECT_EQ(
-        "RangeError: Failed to construct 'PaymentRequest': "
-        "https://kylepay.test/webpay payment method identifier violates "
-        "Content Security Policy.",
-        content::EvalJs(iframe, "checkCanMakePayment()"));
-  } else {
-    // CSP is disabled.
-    EXPECT_EQ(true, content::EvalJs(iframe, "checkCanMakePayment()"));
-  }
+  EXPECT_EQ(
+      "RangeError: Failed to construct 'PaymentRequest': "
+      "https://kylepay.test/webpay payment method identifier violates "
+      "Content Security Policy.",
+      content::EvalJs(iframe, "checkCanMakePayment()"));
 
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
 // Verify that a page's CSP can deny connections to a payment app's manifest
 // files.
-IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesPayments) {
+IN_PROC_BROWSER_TEST_F(IframeCspTest, PageCSPDeniesPayments) {
   NavigateTo("/csp/deny_csp.html");
 
   // The payment method identifier for an app that can be installed just in time
@@ -95,25 +73,17 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesPayments) {
   std::string payment_method =
       https_server()->GetURL("nickpay.test", "/nickpay.test/pay").spec();
 
-  if (WebPaymentAPICSPEnabled()) {
-    // The test page's CSP denies connections to all payment manifests.
-    EXPECT_EQ(
-        "RangeError: Failed to construct 'PaymentRequest': " + payment_method +
-            " payment method identifier violates Content Security Policy.",
-        content::EvalJs(
-            GetActiveWebContents(),
-            content::JsReplace("checkCanMakePayment($1)", payment_method)));
-  } else {
-    // CSP is not being enforced.
-    EXPECT_EQ(true,
-              content::EvalJs(GetActiveWebContents(),
-                              content::JsReplace("checkCanMakePayment($1)",
-                                                 payment_method)));
-  }
+  // The test page's CSP denies connections to all payment manifests.
+  EXPECT_EQ(
+      "RangeError: Failed to construct 'PaymentRequest': " + payment_method +
+          " payment method identifier violates Content Security Policy.",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("checkCanMakePayment($1)", payment_method)));
 }
 
 // Verify that CSP can deny redirects for payment method manifests.
-IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesRedirectedPaymentDownloads) {
+IN_PROC_BROWSER_TEST_F(IframeCspTest, PageCSPDeniesRedirectedPaymentDownloads) {
   NavigateTo("/csp/deny_csp_after_redirect.html");
 
   // "https://test.example/redirect/pay" redirects to
@@ -125,23 +95,12 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesRedirectedPaymentDownloads) {
       {{domain, https_server()}, {subdomain, https_server()}});
   std::string payment_method = "https://" + domain + "/redirect/pay";
 
-  if (WebPaymentAPICSPEnabled()) {
-    // The test page's CSP denies connections to the redirect destination.
-    EXPECT_EQ(false,
-              content::EvalJs(GetActiveWebContents(),
-                              content::JsReplace("checkCanMakePayment($1)",
-                                                 payment_method)))
-        << "Expected canMakePayment to fail due to CSP connect-src directive, "
-           "but it succeeded.";
-  } else {
-    // CSP is not being enforced.
-    EXPECT_EQ(true,
-              content::EvalJs(GetActiveWebContents(),
-                              content::JsReplace("checkCanMakePayment($1)",
-                                                 payment_method)));
-  }
+  // The test page's CSP denies connections to the redirect destination.
+  EXPECT_EQ(false, content::EvalJs(GetActiveWebContents(),
+                                   content::JsReplace("checkCanMakePayment($1)",
+                                                      payment_method)))
+      << "Expected canMakePayment to fail due to CSP connect-src directive, "
+         "but it succeeded.";
 }
-
-INSTANTIATE_TEST_SUITE_P(All, IframeCspTest, ::testing::Bool());
 
 }  // namespace payments

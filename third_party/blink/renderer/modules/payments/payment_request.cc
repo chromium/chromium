@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -684,39 +683,18 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
   }
 }
 
-// Checks whether Content Securituy Policy (CSP) allows a connection to the
-// given `url`.
-//
-// If CSP is being enforced, then a CSP violation will be reported in the
+// Checks whether Content Security Policy (CSP) allows a connection to the
+// given `url`. If it does not, then a CSP violation will be reported in the
 // developer console.
-//
-// If CSP is not being enforced, then a CSP violation will be counted, but not
-// reported to the web developer.
 bool CSPAllowsConnectToSource(const KURL& url,
                               const KURL& url_before_redirects,
                               bool did_follow_redirect,
                               ExecutionContext& context) {
-  const bool enforce_csp =
-      !RuntimeEnabledFeatures::IgnoreCSPInWebPaymentAPIEnabled(&context);
-
-  if (context.GetContentSecurityPolicy()->AllowConnectToSource(
-          url, url_before_redirects,
-          did_follow_redirect ? RedirectStatus::kFollowedRedirect
-                              : RedirectStatus::kNoRedirect,
-          enforce_csp ? ReportingDisposition::kReport
-                      : ReportingDisposition::kSuppressReporting)) {
-    return true;  // Allow request.
-  }
-
-  if (enforce_csp) {
-    return false;  // Block request.
-  }
-
-  // CSP has been bypassed, so warn web developers that CSP bypass has been
-  // deprecated and will be removed.
-  Deprecation::CountDeprecation(&context,
-                                WebFeature::kPaymentRequestCSPViolation);
-  return true;  // Allow request.
+  return context.GetContentSecurityPolicy()->AllowConnectToSource(
+      url, url_before_redirects,
+      did_follow_redirect ? RedirectStatus::kFollowedRedirect
+                          : RedirectStatus::kNoRedirect,
+      ReportingDisposition::kReport);
 }
 
 void ValidateAndConvertPaymentMethodData(

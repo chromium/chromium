@@ -2053,13 +2053,6 @@
       base_feature: "none",
     },
     {
-      // TODO(crbug.com/1406358): Remove after the origin trial ends in M113.
-      name: "IgnoreCSPInWebPaymentAPI",
-      origin_trial_feature_name: "IgnoreCSPInWebPaymentAPI",
-      origin_trial_allows_third_party: true,
-      public: true,
-    },
-    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,
