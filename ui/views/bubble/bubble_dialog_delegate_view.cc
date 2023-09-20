@@ -495,11 +495,6 @@ Widget* BubbleDialogDelegate::CreateBubble(
   return bubble_widget;
 }
 
-Widget* BubbleDialogDelegateView::CreateBubble(
-    std::unique_ptr<BubbleDialogDelegateView> delegate) {
-  return BubbleDialogDelegate::CreateBubble(std::move(delegate));
-}
-
 Widget* BubbleDialogDelegateView::CreateBubble(BubbleDialogDelegateView* view) {
   return CreateBubble(base::WrapUnique(view));
 }

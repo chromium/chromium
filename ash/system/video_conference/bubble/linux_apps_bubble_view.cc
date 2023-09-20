@@ -89,7 +89,7 @@ gfx::Size LinuxAppsBubbleView::CalculatePreferredSize() const {
   return views::View::CalculatePreferredSize();
 }
 
-BEGIN_METADATA(LinuxAppsBubbleView, views::View);
+BEGIN_METADATA(LinuxAppsBubbleView, TrayBubbleView);
 END_METADATA
 
 }  // namespace ash::video_conference

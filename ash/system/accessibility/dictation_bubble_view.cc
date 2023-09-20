@@ -275,7 +275,7 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   return hints;
 }
 
-BEGIN_METADATA(DictationBubbleView, views::View)
+BEGIN_METADATA(DictationBubbleView, views::BubbleDialogDelegateView)
 END_METADATA
 
 DictationHintView::DictationHintView() {

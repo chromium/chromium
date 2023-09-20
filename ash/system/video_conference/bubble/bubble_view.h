@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -27,6 +28,7 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // and for easy navigation to apps performing video/audio capture.
 class ASH_EXPORT BubbleView : public TrayBubbleView {
  public:
+  METADATA_HEADER(BubbleView);
   explicit BubbleView(const InitParams& init_params,
                       const MediaApps& media_apps,
                       VideoConferenceTrayController* controller);

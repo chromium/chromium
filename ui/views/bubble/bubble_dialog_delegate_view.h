@@ -16,10 +16,12 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -468,8 +470,11 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   METADATA_HEADER(BubbleDialogDelegateView);
 
   // Create and initialize the bubble Widget(s) with proper bounds.
-  static Widget* CreateBubble(
-      std::unique_ptr<BubbleDialogDelegateView> delegate);
+  template <typename T>
+  static Widget* CreateBubble(std::unique_ptr<T> delegate) {
+    CHECK(IsViewClass<BubbleDialogDelegateView>(delegate.get()));
+    return BubbleDialogDelegate::CreateBubble(std::move(delegate));
+  }
   static Widget* CreateBubble(BubbleDialogDelegateView* bubble_delegate);
 
   BubbleDialogDelegateView();

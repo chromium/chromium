@@ -175,4 +175,7 @@ bool BubbleView::CanActivate() const {
   return true;
 }
 
+BEGIN_METADATA(BubbleView, TrayBubbleView)
+END_METADATA
+
 }  // namespace ash::video_conference
