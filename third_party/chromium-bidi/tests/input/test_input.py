@@ -41,6 +41,7 @@ SCRIPT = """
                         buttons: event.buttons,
                         clientX: event.clientX,
                         clientY: event.clientY,
+                        clickCount: event.detail,
                     });
                     break;
                 case "keydown":
@@ -495,6 +496,49 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
                         "y": 0,
                         "deltaX": 0,
                         "deltaY": 5,
+                    }]
+                }]
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_performActionsEmitsClickCountsByButton(
+        websocket, context_id, html, activate_main_tab, snapshot):
+    await goto_url(websocket, context_id, html(SCRIPT))
+    await activate_main_tab()
+    await reset_mouse(websocket, context_id)
+
+    await execute_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "main_mouse",
+                    "actions": [{
+                        "type": "pointerDown",
+                        "button": 0,
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0,
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0,
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0,
+                    }, {
+                        "type": "pointerDown",
+                        "button": 1,
+                    }, {
+                        "type": "pointerUp",
+                        "button": 1,
                     }]
                 }]
             }

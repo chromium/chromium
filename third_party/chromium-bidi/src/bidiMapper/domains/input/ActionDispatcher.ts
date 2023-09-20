@@ -26,7 +26,11 @@ import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 
 import type {ActionOption} from './ActionOption.js';
-import type {KeySource, PointerSource, WheelSource} from './InputSource.js';
+import {
+  type KeySource,
+  PointerSource,
+  type WheelSource,
+} from './InputSource.js';
 import type {InputState} from './InputState.js';
 import {KeyToKeyCode} from './USKeyboardLayout.js';
 import {getKeyCode, getKeyLocation, getNormalizedKey} from './keyUtils.js';
@@ -229,7 +233,6 @@ export class ActionDispatcher {
     switch (pointerType) {
       case Input.PointerType.Mouse:
       case Input.PointerType.Pen:
-        source.setClickCount({x, y, timeStamp: performance.now()});
         // TODO: Implement width and height when available.
         return this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchMouseEvent',
@@ -240,7 +243,10 @@ export class ActionDispatcher {
             modifiers,
             button: getCdpButton(button),
             buttons: source.buttons,
-            clickCount: source.clickCount,
+            clickCount: source.setClickCount(
+              button,
+              new PointerSource.ClickContext(x, y, performance.now())
+            ),
             pointerType,
             tangentialPressure,
             tiltX,
@@ -302,7 +308,7 @@ export class ActionDispatcher {
             modifiers,
             button: getCdpButton(button),
             buttons: source.buttons,
-            clickCount: source.clickCount,
+            clickCount: source.getClickCount(button),
             pointerType,
           }
         );

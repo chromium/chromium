@@ -659,6 +659,298 @@
     'type': 'success',
   })
 # ---
+# name: test_input_performActionsEmitsClickCountsByButton
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mousedown',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mouseup',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mousedown',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 2,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mouseup',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 2,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mousedown',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 4,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mouseup',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
 # name: test_input_performActionsEmitsDragging
   dict({
     'result': dict({
@@ -1202,6 +1494,13 @@
                 'value': 0,
               }),
             ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
           ]),
         }),
         dict({
@@ -1242,6 +1541,13 @@
                 'value': 1,
               }),
             ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
           ]),
         }),
         dict({
@@ -1277,6 +1583,13 @@
             ]),
             list([
               'clientY',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'clickCount',
               dict({
                 'type': 'number',
                 'value': 1,
@@ -1330,6 +1643,13 @@
               dict({
                 'type': 'number',
                 'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
               }),
             ]),
           ]),
@@ -1403,6 +1723,13 @@
               dict({
                 'type': 'number',
                 'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 1,
               }),
             ]),
           ]),

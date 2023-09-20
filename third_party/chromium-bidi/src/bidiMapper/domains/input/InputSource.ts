@@ -71,12 +71,6 @@ export class KeySource {
   }
 }
 
-interface ClickContext {
-  x: number;
-  y: number;
-  timeStamp: number;
-}
-
 export class PointerSource {
   type = SourceType.Pointer as const;
   subtype: Input.PointerType;
@@ -116,35 +110,57 @@ export class PointerSource {
     return buttons;
   }
 
-  // --- Platform-specific state starts here ---
-
+  // --- Platform-specific code starts here ---
   // Input.dispatchMouseEvent doesn't know the concept of double click, so we
-  // need to create it like for OSes:
+  // need to create the logic, similar to how it's done for OSes:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:ui/events/event.cc;l=479
-  static #DOUBLE_CLICK_TIME_MS = 500;
-  static #MAX_DOUBLE_CLICK_RADIUS = 2;
-  #clickCount = 0;
-  #lastClick?: ClickContext;
-  setClickCount(context: ClickContext) {
-    if (
-      !this.#lastClick ||
-      // The click needs to be within a certain amount of ms.
-      context.timeStamp - this.#lastClick.timeStamp >
-        PointerSource.#DOUBLE_CLICK_TIME_MS ||
-      // The click needs to be within a square radius.
-      Math.abs(this.#lastClick.x - context.x) >
-        PointerSource.#MAX_DOUBLE_CLICK_RADIUS ||
-      Math.abs(this.#lastClick.y - context.y) >
-        PointerSource.#MAX_DOUBLE_CLICK_RADIUS
-    ) {
-      this.#clickCount = 0;
+  static ClickContext = class ClickContext {
+    static #DOUBLE_CLICK_TIME_MS = 500;
+    static #MAX_DOUBLE_CLICK_RADIUS = 2;
+
+    count = 0;
+
+    #x;
+    #y;
+    #time;
+    constructor(x: number, y: number, time: number) {
+      this.#x = x;
+      this.#y = y;
+      this.#time = time;
     }
-    ++this.#clickCount;
-    this.#lastClick = context;
+
+    compare(context: ClickContext) {
+      return (
+        // The click needs to be within a certain amount of ms.
+        context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
+        // The click needs to be within a certain square radius.
+        Math.abs(context.#x - this.#x) >
+          ClickContext.#MAX_DOUBLE_CLICK_RADIUS ||
+        Math.abs(context.#y - this.#y) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS
+      );
+    }
+  };
+
+  #clickContexts = new Map<
+    number,
+    InstanceType<typeof PointerSource.ClickContext>
+  >();
+
+  setClickCount(
+    button: number,
+    context: InstanceType<typeof PointerSource.ClickContext>
+  ) {
+    let storedContext = this.#clickContexts.get(button);
+    if (!storedContext || storedContext.compare(context)) {
+      storedContext = context;
+    }
+    ++storedContext.count;
+    this.#clickContexts.set(button, storedContext);
+    return storedContext.count;
   }
 
-  get clickCount(): number {
-    return this.#clickCount;
+  getClickCount(button: number) {
+    return this.#clickContexts.get(button)?.count ?? 0;
   }
   // --- Platform-specific state ends here ---
 }
