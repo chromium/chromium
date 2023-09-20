@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/cups_printers_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 
 #include <set>
 #include <utility>
@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/webui/settings/ash/server_printer_url_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -148,8 +148,9 @@ std::unique_ptr<chromeos::Printer> DictToPrinter(
     if (const std::string* ptr = printer_dict.FindString("printerQueue")) {
       printer_queue = *ptr;
       // Path must start from '/' character.
-      if (!printer_queue.empty() && printer_queue.front() != '/')
+      if (!printer_queue.empty() && printer_queue.front() != '/') {
         printer_queue.insert(0, "/");
+      }
     }
   }
 
@@ -273,8 +274,9 @@ std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
 }
 
 CupsPrintersHandler::~CupsPrintersHandler() {
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void CupsPrintersHandler::RegisterMessages() {
@@ -589,8 +591,9 @@ void CupsPrintersHandler::HandleRemoveCupsPrinter(
   // Printer name also expected in 2nd parameter.
   const std::string& printer_id = args[0].GetString();
   auto printer = printers_manager_->GetPrinter(printer_id);
-  if (!printer)
+  if (!printer) {
     return;
+  }
 
   // Record removal before the printer is deleted.
   PrinterEventTrackerFactory::GetForBrowserContext(profile_)
@@ -632,8 +635,9 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
   if (const std::string* ptr = printer_dict.FindString("printerQueue")) {
     printer_queue = *ptr;
     // Path must start from '/' character.
-    if (!printer_queue.empty() && printer_queue.front() != '/')
+    if (!printer_queue.empty() && printer_queue.front() != '/') {
       printer_queue = "/" + printer_queue;
+    }
   }
 
   const std::string* printer_protocol =
@@ -1035,8 +1039,9 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
 
 void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   CHECK_EQ(1U, args.size());
   webui_callback_id_ = args[0].GetString();
@@ -1122,8 +1127,10 @@ void CupsPrintersHandler::FileSelectionCanceled(void* params) {
 void CupsPrintersHandler::VerifyPpdContents(const base::FilePath& path,
                                             const std::string& contents) {
   std::string result;
-  if (chromeos::PpdLineReader::ContainsMagicNumber(contents, kPpdMaxLineLength))
+  if (chromeos::PpdLineReader::ContainsMagicNumber(contents,
+                                                   kPpdMaxLineLength)) {
     result = path.value();
+  }
 
   ResolveJavascriptCallback(base::Value(webui_callback_id_),
                             base::Value(result));
@@ -1204,12 +1211,14 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
   }
 
   base::Value::List automatic_printers_list;
-  for (const Printer& printer : automatic_printers_)
+  for (const Printer& printer : automatic_printers_) {
     automatic_printers_list.Append(GetCupsPrinterInfo(printer));
+  }
 
   base::Value::List discovered_printers_list;
-  for (const Printer& printer : discovered_printers_)
+  for (const Printer& printer : discovered_printers_) {
     discovered_printers_list.Append(GetCupsPrinterInfo(printer));
+  }
 
   PRINTER_LOG(DEBUG) << "Discovered printers updating. Automatic: "
                      << automatic_printers_list.size()
@@ -1451,8 +1460,9 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
   for (const Printer& printer : saved_printers) {
     absl::optional<GURL> gurl =
         GenerateServerPrinterUrlWithValidScheme(printer.uri().GetNormalized());
-    if (gurl)
+    if (gurl) {
       known_printers.insert(gurl.value());
+    }
   }
 
   // Built final list of printers and a list of current names. If "current name"
@@ -1464,8 +1474,9 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
     printers.push_back(std::move(printer.printer));
     absl::optional<GURL> printer_gurl = GenerateServerPrinterUrlWithValidScheme(
         printers.back().uri().GetNormalized());
-    if (printer_gurl && known_printers.count(printer_gurl.value()))
+    if (printer_gurl && known_printers.count(printer_gurl.value())) {
       printers.pop_back();
+    }
   }
 
   // Delete fetcher object.

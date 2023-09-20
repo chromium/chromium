@@ -9371,8 +9371,8 @@ test("unit_tests") {
 
       if (is_chromeos_ash) {
         sources += [
-          "../browser/ui/webui/settings/ash/cups_printers_handler_unittest.cc",
-          "../browser/ui/webui/settings/ash/server_printer_url_util_unittest.cc",
+          "../browser/ui/webui/ash/settings/pages/printing/cups_printers_handler_unittest.cc",
+          "../browser/ui/webui/ash/settings/pages/printing/server_printer_url_util_unittest.cc",
         ]
       }
     } else {

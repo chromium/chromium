@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/server_printer_url_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 
 #include "url/gurl.h"
 
@@ -16,10 +16,12 @@ GURL UpdateServerPrinterGURL(const GURL& gurl,
                              const std::string& scheme,
                              bool replace_ipp_port) {
   GURL::Replacements replacement;
-  if (!scheme.empty())
+  if (!scheme.empty()) {
     replacement.SetSchemeStr(scheme);
-  if (replace_ipp_port)
+  }
+  if (replace_ipp_port) {
     replacement.SetPortStr("631");
+  }
   return gurl.ReplaceComponents(replacement);
 }
 
@@ -40,8 +42,9 @@ absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
     gurl = GURL("ipps://" + url);
   }
 
-  if (!gurl->is_valid())
+  if (!gurl->is_valid()) {
     return absl::nullopt;
+  }
 
   // Replaces IPP/IPPS by HTTP/HTTPS. IPP standard describes protocol built
   // on top of HTTP, so both types of addresses have the same meaning in the

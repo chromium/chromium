@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/server_printer_url_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 
 #include <string>
 
