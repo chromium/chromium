@@ -10,13 +10,13 @@ Testing 'null':
     type : null
 }
 
-Testing ''some_string'':
+Testing '"some_string"':
 {
     type : string
     value : some_string
 }
 
-Testing ''2'':
+Testing '"2"':
 {
     type : string
     value : 2
@@ -76,12 +76,12 @@ Testing '42n':
     value : 42
 }
 
-Testing '(Symbol('foo'))':
+Testing 'Symbol("foo")':
 {
     type : symbol
 }
 
-Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]':
+Testing '[1, "foo", true, new RegExp(/foo/g), [1]]':
 {
     type : array
     value : [
@@ -110,7 +110,7 @@ Testing '[1, 'foo', true, new RegExp(/foo/g), [1]]':
     ]
 }
 
-Testing '({'foo': {'bar': 'baz'}, 'qux': 'quux'})':
+Testing '({"foo": {"bar": "baz"}, "qux": "quux"})':
 {
     type : object
     value : [
@@ -165,7 +165,7 @@ Testing 'new Date(1654004849000)':
     value : 2022-05-31T13:47:29.000Z
 }
 
-Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])':
+Testing 'new Map([[1, 2], ["foo", "bar"], [true, false], ["baz", [1]]])':
 {
     type : map
     value : [
@@ -205,7 +205,7 @@ Testing 'new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])':
     ]
 }
 
-Testing 'new Set([1, 'foo', true, [1], new Map([[1,2]])])':
+Testing 'new Set([1, "foo", true, [1], new Map([[1,2]])])':
 {
     type : set
     value : [
@@ -240,7 +240,7 @@ Testing 'new WeakSet()':
     type : weakset
 }
 
-Testing 'new Error('SOME_ERROR_TEXT')':
+Testing 'new Error("SOME_ERROR_TEXT")':
 {
     type : error
 }
@@ -283,7 +283,7 @@ Testing 'window':
     }
 }
 
-Testing 'document.querySelector('body > div')':
+Testing 'document.querySelector("body > div")':
 {
     type : node
     value : {
@@ -299,7 +299,7 @@ Testing 'document.querySelector('body > div')':
     }
 }
 
-Testing 'new URL('http://example.com')':
+Testing 'new URL("http://example.com")':
 {
     type : platformobject
 }

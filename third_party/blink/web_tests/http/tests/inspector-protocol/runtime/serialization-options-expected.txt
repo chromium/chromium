@@ -251,19 +251,19 @@ Testing `42n` with {"serialization":"deep","maxDepth":99}
     type : bigint
     value : 42
 }
-Testing `(Symbol("foo"))` with {"serialization":"deep"}
+Testing `Symbol("foo")` with {"serialization":"deep"}
 {
     type : symbol
 }
-Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":0}
+Testing `Symbol("foo")` with {"serialization":"deep","maxDepth":0}
 {
     type : symbol
 }
-Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":1}
+Testing `Symbol("foo")` with {"serialization":"deep","maxDepth":1}
 {
     type : symbol
 }
-Testing `(Symbol("foo"))` with {"serialization":"deep","maxDepth":99}
+Testing `Symbol("foo")` with {"serialization":"deep","maxDepth":99}
 {
     type : symbol
 }

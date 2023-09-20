@@ -23,13 +23,48 @@
 
   const ALL_TEST_LOGS = [];
 
+  function testExpression(expression) {
+    scheduleTest(expression);
+    scheduleTest(expression, { UNKNOWN_PARAMETER_NAME: 'SOME_VALUE' });
+    scheduleTest(expression, { maxNodeDepth: 'STRING_INSTEAD_OF_INT' });
+    scheduleTest(expression, { INVALID_PARAMETER_TYPE: {} });
+    scheduleTest(expression, { maxNodeDepth: 0 });
+    scheduleTest(expression, { maxNodeDepth: 1 });
+    scheduleTest(expression, { maxNodeDepth: 99 });
+    scheduleTest(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: 'none'
+    }
+    );
+    scheduleTest(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: 'open'
+    });
+    scheduleTest(expression, {
+      includeShadowTree: 'all'
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 0,
+      includeShadowTree: 'all'
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 1,
+      includeShadowTree: 'all'
+
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: 'all'
+    });
+  }
+
   function scheduleTest(expression, additionalParameters) {
     ALL_TEST_LOGS.push(runTest(expression, additionalParameters));
   }
 
   async function runTest(expression, additionalParameters) {
     const serializationOptions = {
-      serialization: "deep",
+      serialization: 'deep',
       additionalParameters
     }
 
@@ -43,7 +78,7 @@
       evalResult?.result?.result?.deepSerializedValue ?? evalResult]
   }
 
-  async function runTests() {
+  async function waitTestsDone() {
     for await (const logs of ALL_TEST_LOGS) {
       const [description, result] = logs;
       testRunner.log(description);
@@ -58,53 +93,16 @@
   await dp.Runtime.enable();
 
   // Node.
-  testExpression("document.querySelector('body > div')")
+  testExpression('document.querySelector("body > div")')
   // NodeList.
-  testExpression("document.querySelector('body > div').childNodes")
+  testExpression('document.querySelector("body > div").childNodes')
   // HTMLCollection.
-  testExpression("document.getElementsByTagName('div')")
-  testExpression("window")
-  testExpression("new URL('http://example.com')");
-  testExpression("window.openShadowContainer")
-  testExpression("window.closedShadowContainer")
+  testExpression('document.getElementsByTagName("div")')
+  testExpression('window')
+  testExpression('new URL("http://example.com")');
+  testExpression('window.openShadowContainer')
+  testExpression('window.closedShadowContainer')
 
-  await runTests();
-
+  await waitTestsDone();
   testRunner.completeTest();
-
-  function testExpression(expression) {
-    scheduleTest(expression);
-    scheduleTest(expression, { UNKNOWN_PARAMETER_NAME: 'SOME_VALUE' });
-    scheduleTest(expression, { maxNodeDepth: 'STRING_INSTEAD_OF_INT' });
-    scheduleTest(expression, { INVALID_PARAMETER_TYPE: {} });
-    scheduleTest(expression, { maxNodeDepth:0 });
-    scheduleTest(expression, { maxNodeDepth:1 });
-    scheduleTest(expression, { maxNodeDepth:99 });
-    scheduleTest(expression, {
-      maxNodeDepth: 99,
-      includeShadowTree: "none"
-    }
-    );
-    scheduleTest(expression, {
-      maxNodeDepth:99 ,
-      includeShadowTree:"open"
-    });
-    scheduleTest(expression, {
-      includeShadowTree: "all"
-    }    );
-    scheduleTest(expression, {
-      maxNodeDepth: 0,
-      includeShadowTree: "all"
-
-    }    );
-    scheduleTest(expression, {
-      maxNodeDepth: 1,
-      includeShadowTree: "all"
-
-    });
-    scheduleTest(expression, {
-      maxNodeDepth: 99,
-      includeShadowTree: "all"
-    });
-  }
 })

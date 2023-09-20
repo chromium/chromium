@@ -1,10 +1,29 @@
-(async function(testRunner) {
-  const {dp} = await testRunner.startHTML(
+(async function (testRunner) {
+  const { dp } = await testRunner.startHTML(
     '<div some_attr_name="some_attr_value">some text<h2>some another text</h2></div>',
     'Tests `serialization` options.');
 
   const ALL_TEST_LOGS = [];
-  function test(expression, serializationOptions) {
+
+  function testExpression(expression) {
+    scheduleTest(expression, {
+      serialization: 'deep',
+    });
+    scheduleTest(expression, {
+      serialization: 'deep',
+      maxDepth: 0,
+    });
+    scheduleTest(expression, {
+      serialization: 'deep',
+      maxDepth: 1,
+    });
+    scheduleTest(expression, {
+      serialization: 'deep',
+      maxDepth: 99,
+    });
+  }
+
+  function scheduleTest(expression, serializationOptions) {
     ALL_TEST_LOGS.push(runTest(expression, serializationOptions));
   }
 
@@ -20,7 +39,7 @@
     return logs;
   }
 
-  async function runTests() {
+  async function waitTestsDone() {
     for await (const logs of ALL_TEST_LOGS) {
       const [description, result] = logs;
       testRunner.log(description);
@@ -48,8 +67,8 @@
   testExpression('true');
   testExpression('false');
   testExpression('42n');
+  testExpression('Symbol("foo")');
   // Test ECMAScript non-primitives.
-  testExpression('(Symbol("foo"))');
   testExpression('[1, "foo", true, new RegExp(/foo/g), [1]]',);
   testExpression('({"foo": {"bar": "baz"}, "qux": "quux"})',);
   testExpression('(()=>{})');
@@ -73,25 +92,6 @@
   testExpression('document.querySelector("body > div").attributes[0]')
   testExpression('new URL("http://example.com/")')
 
-  function testExpression(expression) {
-    test(expression, {
-      serialization: 'deep',
-    });
-    test(expression, {
-      serialization: 'deep',
-      maxDepth: 0,
-    });
-    test(expression, {
-      serialization: 'deep',
-      maxDepth: 1,
-    });
-    test(expression, {
-      serialization: 'deep',
-      maxDepth: 99,
-    });
-  }
-
-  await runTests();
-
+  await waitTestsDone();
   testRunner.completeTest();
 });
