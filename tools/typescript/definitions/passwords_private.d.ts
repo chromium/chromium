@@ -98,7 +98,7 @@ declare global {
 
       export interface FamilyFetchResults {
         status: FamilyFetchStatus;
-        members: RecipientInfo[];
+        familyMembers: RecipientInfo[];
       }
 
       export interface ImportEntry {

@@ -27,7 +27,7 @@ export function makeFamilyFetchResults(
     chrome.passwordsPrivate.FamilyFetchResults {
   return {
     status: status || chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS,
-    members: members || [],
+    familyMembers: members || [],
   };
 }
 
