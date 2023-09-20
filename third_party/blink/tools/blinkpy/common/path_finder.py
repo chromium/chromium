@@ -36,7 +36,10 @@ from blinkpy.common.memoized import memoized
 def add_typ_dir_to_sys_path():
     path_to_typ = get_typ_dir()
     if path_to_typ not in sys.path:
-        sys.path.insert(0, path_to_typ)
+        # `//third_party/catapult/third_party/typ/` has a `tools/` module that
+        # conflicts with `wpt/tools/`. Always place `typ/` last in the path to
+        # ensure WPT always takes precedence.
+        sys.path.append(path_to_typ)
 
 
 def add_bindings_scripts_dir_to_sys_path():
@@ -78,7 +81,13 @@ def add_build_ios_to_sys_path():
 def bootstrap_wpt_imports():
     """Bootstrap the availability of all wpt-vended packages."""
     path = get_wpt_tools_wpt_dir()
-    if path not in sys.path:
+    # Do not add the Chromium-vended version of WPT to the path if there's
+    # already a WPT root there.
+    #
+    # This WPT detection is admittedly crude, but it's meant to detect
+    # `/tmp/wpt` created by `LocalWPT`.
+    if path not in sys.path and not any(
+            os.path.basename(path).lower() == 'wpt' for path in sys.path):
         sys.path.insert(0, path)
     # This module is under `//third_party/wpt_tools/wpt/tools`, and has the side
     # effect of inserting wpt-related directories into `sys.path`.

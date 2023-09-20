@@ -51,6 +51,7 @@ class LocalRepo(object):
         self.default_committer_name = default_committer_name
         self.relative_tests = relative_tests
         self.host = host
+        # TODO(crbug.com/1473716): Support non-Unix temporary paths.
         self.path = path or f'/tmp/{self.name.lower()}'
         self.gh_token = gh_token
         self.main_branch = main_branch or LEGACY_MAIN_BRANCH_NAME
