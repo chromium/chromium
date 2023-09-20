@@ -1682,7 +1682,7 @@ if (!is_android) {
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/performance_manager",
-      "//components/plus_addresses:features",
+      "//components/plus_addresses",
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
       "//components/policy/test_support",

@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -21,12 +22,27 @@ namespace plus_addresses {
 // TODO(crbug.com/1467623): Flesh out the modal content, etc.
 void ShowPlusAddressCreationDialogView(
     content::WebContents* web_contents,
-    base::WeakPtr<PlusAddressCreationController> controller) {
+    base::WeakPtr<PlusAddressCreationController> controller,
+    const std::string& primary_email_address) {
   CHECK(controller);
 
   auto dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
           .SetTitle(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE))
+          .AddParagraph(ui::DialogModelLabel(
+              ui::DialogModelLabel(l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LABEL))))
+          .AddParagraph(ui::DialogModelLabel(
+              ui::DialogModelLabel(l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER))))
+          .AddParagraph(ui::DialogModelLabel(
+                            ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+                                IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL,
+                                base::UTF8ToUTF16(primary_email_address))))
+                            .set_is_secondary())
+          .AddParagraph(ui::DialogModelLabel(
+              ui::DialogModelLabel(l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION))))
           .AddOkButton(
               base::BindOnce(&PlusAddressCreationController::OnConfirmed,
                              controller),

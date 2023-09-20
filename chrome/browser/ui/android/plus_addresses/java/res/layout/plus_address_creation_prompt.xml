@@ -41,26 +41,13 @@ found in the LICENSE file.
       android:layout_marginBottom="@dimen/list_item_default_margin"
       android:text="@string/plus_address_modal_proposed_plus_address_placeholder"
       android:textAppearance="@style/TextAppearance.TextLarge.Secondary"/>
-  <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <TextView
-        android:id="@+id/plus_address_modal_primary_email_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/list_item_default_margin"
-        android:layout_marginEnd="8dp"
-        android:text="@string/plus_address_modal_regular_address_label"
-        android:textAppearance="@style/TextAppearance.TextLarge.Secondary"/>
-    <TextView
-        android:id="@+id/plus_address_modal_primary_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/list_item_default_margin"
-        android:textAppearance="@style/TextAppearance.TextLarge.Secondary"/>
 
-  </LinearLayout>
+  <TextView
+      android:id="@+id/plus_address_modal_primary_email"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/plus_address_modal_explanation"

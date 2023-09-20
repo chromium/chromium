@@ -26,10 +26,26 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
   if (!ui_modal_showing_) {
+    PlusAddressService* plus_address_service =
+        PlusAddressServiceFactory::GetForBrowserContext(
+            GetWebContents().GetBrowserContext());
+    if (!plus_address_service) {
+      // TODO(crbug.com/1467623): Verify expected behavior in this case and the
+      // missing email case below.
+      return;
+    }
+    absl::optional<std::string> maybe_email =
+        plus_address_service->GetPrimaryEmail();
+    if (maybe_email == absl::nullopt) {
+      // TODO(b/295075403): Validate that early return is desired behavior for
+      // the optional not-present case.
+      return;
+    }
     relevant_origin_ = main_frame_origin;
     callback_ = std::move(callback);
     if (!suppress_ui_for_testing_) {
-      ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr());
+      ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr(),
+                                        maybe_email.value());
       ui_modal_showing_ = true;
     }
   }

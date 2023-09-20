@@ -39,7 +39,8 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
         // some project exigencies.
         Context context = ContextUtils.getApplicationContext();
         TextView primaryEmailView = mDialogView.findViewById(R.id.plus_address_modal_primary_email);
-        primaryEmailView.setText(primaryEmailAddress);
+        primaryEmailView.setText(context.getString(
+                R.string.plus_address_modal_regular_address_label, primaryEmailAddress));
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

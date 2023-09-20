@@ -67,9 +67,9 @@ public class PlusAddressCreationPromptTest {
     @SmallTest
     public void dialogShown() {
         createAndShowPrompt();
-        TextView descriptionView = mPrompt.getDialogViewForTesting().findViewById(
+        TextView primaryEmailView = mPrompt.getDialogViewForTesting().findViewById(
                 R.id.plus_address_modal_primary_email);
-        Assert.assertEquals(descriptionView.getText(), DUMMY_EMAIL);
+        Assert.assertTrue(primaryEmailView.getText().toString().contains(DUMMY_EMAIL));
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 

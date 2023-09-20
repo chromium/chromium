@@ -36,6 +36,11 @@ class MockPlusAddressService : public PlusAddressService {
                                 PlusAddressCallback callback) override {
     std::move(callback).Run("plus+plus@plus.plus");
   }
+
+  absl::optional<std::string> GetPrimaryEmail() override {
+    // Ensure the value is present without requiring identity setup.
+    return "plus+plus@plus.plus";
+  }
 };
 }  // namespace
 

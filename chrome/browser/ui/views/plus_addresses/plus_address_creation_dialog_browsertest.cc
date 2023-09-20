@@ -5,11 +5,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,9 +20,46 @@
 
 namespace plus_addresses {
 
+namespace {
+// Used to control the behavior of the controller's `plus_address_service_`
+// (though mocking would also be fine). Most importantly, this avoids the
+// requirement to mock the identity portions of the `PlusAddressService`.
+class MockPlusAddressService : public PlusAddressService {
+ public:
+  MockPlusAddressService() = default;
+
+  void OfferPlusAddressCreation(const url::Origin& origin,
+                                PlusAddressCallback callback) override {
+    std::move(callback).Run("plus+plus@plus.plus");
+  }
+
+  absl::optional<std::string> GetPrimaryEmail() override {
+    return "plus+plus@plus.plus";
+  }
+};
+}  // namespace
+
 class PlusAddressCreationDialogTest : public DialogBrowserTest {
  public:
+  PlusAddressCreationDialogTest()
+      : override_profile_selections_(
+            PlusAddressServiceFactory::GetInstance(),
+            PlusAddressServiceFactory::CreateProfileSelections()) {}
+
   void ShowUi(const std::string& name) override {
+    // Ensure the `PlusAddressService` will behave as needed. As this is
+    // checking the dialog, the identity service integration, etc. is less
+    // critical. This setup done here to ensure `GetActiveWebContents()` is
+    // ready.
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetBrowserContext(),
+        base::BindRepeating(
+            &PlusAddressCreationDialogTest::PlusAddressServiceTestFactory,
+            base::Unretained(this)));
+
     PlusAddressCreationController* controller =
         PlusAddressCreationController::GetOrCreate(
             browser()->tab_strip_model()->GetActiveWebContents());
@@ -27,8 +67,15 @@ class PlusAddressCreationDialogTest : public DialogBrowserTest {
                               base::DoNothing());
   }
 
+  std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
+      content::BrowserContext* context) {
+    return std::make_unique<MockPlusAddressService>();
+  }
+
  protected:
   base::test::ScopedFeatureList features_{kFeature};
+  profiles::testing::ScopedProfileSelectionsForFactoryTesting
+      override_profile_selections_;
 };
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, BasicUiVerify) {
