@@ -413,16 +413,6 @@ class PersonalDataManager : public KeyedService,
   // settings.
   std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
-  // Returns profiles to be displayed by suggestions, corresponding to the
-  // focused field's |type| and |field_contents|, i.e. what the user has typed.
-  // |field_types| stores the types of all the form's input fields, including
-  // the field with which the user is interacting.
-  std::vector<AutofillProfile*> GetProfilesForSuggestions(
-      const AutofillType& type,
-      const std::u16string& field_contents,
-      bool field_is_autofilled,
-      const ServerFieldTypeSet& field_types);
-
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
   // vector.

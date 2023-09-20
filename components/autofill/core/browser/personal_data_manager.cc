@@ -1576,46 +1576,6 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
-std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSuggestions(
-    const AutofillType& type,
-    const std::u16string& field_contents,
-    bool field_is_autofilled,
-    const ServerFieldTypeSet& field_types) {
-  if (IsInAutofillSuggestionsDisabledExperiment()) {
-    return {};
-  }
-
-  std::u16string field_contents_canon =
-      suggestion_selection::NormalizeForComparisonForType(
-          field_contents, type.GetStorableType());
-
-  // Get the profiles to suggest, which are already sorted.
-  std::vector<AutofillProfile*> sorted_profiles = GetProfilesToSuggest();
-
-  // When suggesting with no prefix to match, suppress disused address
-  // suggestions as well as those based on invalid profile data.
-  if (field_contents_canon.empty()) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(min_last_used,
-                                                              &sorted_profiles);
-  }
-
-  std::vector<AutofillProfile*> matched_profiles =
-      suggestion_selection::GetPrefixMatchedProfiles(
-          type, field_contents, field_contents_canon, app_locale_,
-          field_is_autofilled, sorted_profiles);
-
-  const AutofillProfileComparator comparator(app_locale_);
-  // Don't show two suggestions if one is a subset of the other.
-  // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<AutofillProfile*> unique_matched_profiles =
-      suggestion_selection::DeduplicatedProfilesForSuggestions(
-          type, field_types, comparator, matched_profiles);
-
-  return unique_matched_profiles;
-}
-
 const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
     const {
   if (!IsAutofillCreditCardEnabled())

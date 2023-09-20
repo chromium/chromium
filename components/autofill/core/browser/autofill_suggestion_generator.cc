@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -245,8 +246,36 @@ std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
     const std::u16string& field_contents,
     bool field_is_autofilled,
     const ServerFieldTypeSet& field_types) {
-  return personal_data_->GetProfilesForSuggestions(
-      type, field_contents, field_is_autofilled, field_types);
+  std::u16string field_contents_canon =
+      suggestion_selection::NormalizeForComparisonForType(
+          field_contents, type.GetStorableType());
+
+  // Get the profiles to suggest, which are already sorted.
+  std::vector<AutofillProfile*> sorted_profiles =
+      personal_data_->GetProfilesToSuggest();
+
+  // When suggesting with no prefix to match, suppress disused address
+  // suggestions as well as those based on invalid profile data.
+  if (field_contents_canon.empty()) {
+    const base::Time min_last_used =
+        AutofillClock::Now() - kDisusedDataModelTimeDelta;
+    suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(min_last_used,
+                                                              &sorted_profiles);
+  }
+
+  std::vector<AutofillProfile*> matched_profiles =
+      suggestion_selection::GetPrefixMatchedProfiles(
+          type, field_contents, field_contents_canon,
+          personal_data_->app_locale(), field_is_autofilled, sorted_profiles);
+
+  const AutofillProfileComparator comparator(personal_data_->app_locale());
+  // Don't show two suggestions if one is a subset of the other.
+  // Duplicates across sources are resolved in favour of `kAccount` profiles.
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      suggestion_selection::DeduplicatedProfilesForSuggestions(
+          type, field_types, comparator, matched_profiles);
+
+  return unique_matched_profiles;
 }
 
 std::vector<Suggestion>
