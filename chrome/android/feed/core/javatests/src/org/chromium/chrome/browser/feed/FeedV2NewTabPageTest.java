@@ -66,6 +66,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -87,12 +88,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
@@ -114,6 +113,7 @@ import java.util.concurrent.Callable;
  * {@link org.chromium.chrome.browser.ntp.NewTabPageTest}.
  * TODO(https://crbug.com/1069183): Combine test suites.
  */
+@DoNotBatch(reason = "Complex tests, need to start fresh")
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
@@ -212,7 +212,6 @@ public class FeedV2NewTabPageTest {
 
         SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
         FeatureList.setTestValues(testValuesOverride);
@@ -270,59 +269,6 @@ public class FeedV2NewTabPageTest {
                     Matchers.hasEntry("kLoadedFromNetwork", 1));
         });
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, getRecyclerView());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
-    @DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
-    @DisabledTest(message = "Flaky -- crbug.com/1136923")
-    public void testSignInPromo() {
-        openNewTabPage();
-        SignInPromo.SigninObserver signinObserver = mNtp.getCoordinatorForTesting()
-                                                            .getMediatorForTesting()
-                                                            .getSignInPromoForTesting()
-                                                            .getSigninObserverForTesting();
-        RecyclerView recyclerView =
-                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
-
-        // Prioritize RecyclerView's focusability so that the sign-in promo button and the action
-        // button don't get focused initially to avoid flakiness.
-        int descendantFocusability = recyclerView.getDescendantFocusability();
-        TestThreadUtils.runOnUiThreadBlocking((() -> {
-            recyclerView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-            recyclerView.requestFocus();
-        }));
-
-        // Simulate sign in, scroll to the position where sign-in promo could be placed, and verify
-        // that sign-in promo is not shown.
-        TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedIn);
-        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-
-        // Simulate sign out, scroll to the position where sign-in promo could be placed, and verify
-        // that sign-in promo is shown.
-        TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedOut);
-        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-
-        // Hide articles and verify that the sign-in promo is not shown.
-        toggleHeader(false);
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-
-        // Show articles and verify that the sign-in promo is shown.
-        toggleHeader(true);
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-
-        // Reset states.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mNtp.getCoordinatorForTesting().getMediatorForTesting().destroyForTesting();
-            recyclerView.setDescendantFocusability(descendantFocusability);
-        });
     }
 
     @Test

@@ -16,9 +16,6 @@
 
 namespace feed {
 
-BASE_FEATURE(kInterestFeedContentSuggestions,
-             "InterestFeedContentSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // InterestFeedV2 takes precedence over InterestFeedContentSuggestions.
 // InterestFeedV2 is cached in ChromeCachedFlags. If the default value here is
 // changed, please update the cached one's default value in CachedFeatureFlags.
@@ -37,16 +34,6 @@ BASE_FEATURE(kInterestFeedV2Hearts,
 BASE_FEATURE(kInterestFeedV2Scrolling,
              "InterestFeedV2Scrolling",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kDisableTriggerTypes{
-    &kInterestFeedContentSuggestions, "disable_trigger_types", ""};
-const base::FeatureParam<int> kTimeoutDurationSeconds{
-    &kInterestFeedContentSuggestions, "timeout_duration_seconds", 30};
-const base::FeatureParam<bool> kThrottleBackgroundFetches{
-    &kInterestFeedContentSuggestions, "throttle_background_fetches", true};
-const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess{
-    &kInterestFeedContentSuggestions,
-    "only_set_last_refresh_attempt_on_success", true};
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kInterestFeedNoticeCardAutoDismiss,
@@ -106,12 +93,7 @@ const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy{
     &kWebUiFeed, "disableCsp", false};
 
 std::string GetFeedReferrerUrl() {
-  const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)
-                                     ? &kInterestFeedV2
-                                     : &kInterestFeedContentSuggestions;
-  std::string referrer =
-      base::GetFieldTrialParamValueByFeature(*feature, "referrer_url");
-  return referrer.empty() ? kDefaultReferrerUrl : referrer;
+  return kDefaultReferrerUrl;
 }
 
 BASE_FEATURE(kPersonalizeFeedUnsignedUsers,

@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 import java.lang.annotation.Retention;
@@ -26,14 +23,8 @@ public final class SuggestionsConfig {
     }
 
     /**
-     * Field trial parameter for referrer URL.
-     * It must be kept in sync with //components/ntp_suggestions/features.cc
-     */
-    private static final String REFERRER_URL_PARAM = "referrer_url";
-
-    /**
      * Default value of referrer URL for content suggestions.
-     * It must be kept in sync with //components/ntp_suggestions/features.cc
+     * It must be kept in sync with //components/feed/feed_feature_list.cc.
      */
     private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
             "https://www.google.com/";
@@ -48,32 +39,10 @@ public final class SuggestionsConfig {
                                                            : TileStyle.MODERN;
     }
 
-    private static boolean useCondensedTileLayout(boolean isScreenSmall) {
-        if (isScreenSmall) return true;
-
-        return false;
-    }
-
     /**
-     * @param featureName The feature from {@link ChromeFeatureList}, which provides the referrer
-     *                    URL parameter.
      * @return The value of referrer URL to use with content suggestions.
      */
-    public static String getReferrerUrl(String featureName) {
-        assert ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS.equals(featureName)
-                || ChromeFeatureList.INTEREST_FEED_V2.equals(featureName);
-
-        return getReferrerUrlParamOrDefault(featureName, DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL);
-    }
-
-    private static String getReferrerUrlParamOrDefault(String featureName, String defaultValue) {
-        String referrerParamValue =
-                ChromeFeatureList.getFieldTrialParamByFeature(featureName, REFERRER_URL_PARAM);
-
-        if (!TextUtils.isEmpty(referrerParamValue)) {
-            return referrerParamValue;
-        }
-
-        return defaultValue;
+    public static String getReferrerUrl() {
+        return DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL;
     }
 }
