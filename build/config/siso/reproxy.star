@@ -129,6 +129,11 @@ def __rewrite_action_remote_py(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if i < 3:
             continue
+        # TODO: b/300046750 - Fix GN args and/or implement input processor.
+        if arg == "--custom_processor=mojom_parser":
+            print("--custom_processor=mojom_parser is not supported. " +
+                  "Running locally. cmd=%s" % " ".join(cmd.args))
+            return
         if arg.startswith("--cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("--cfg="))
             continue
@@ -177,22 +182,11 @@ def __step_config(ctx, step_config):
             "name": "action_remote",
             "command_prefix": platform.python_bin + " ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
             "handler": "rewrite_action_remote_py",
+            "remote_command": "python3",
         },
     ]
 
     for rule in step_config["rules"]:
-        # mojo/mojom_parser will always have rewrapper config when use_remoteexec=true.
-        # Mutate the original step rule to rewrite rewrapper and convert its rewrapper config to reproxy config.
-        # Stop handling the rule so that it's not modified below.
-        # TODO(b/292838933): Implement mojom_parser processor in Starlark?
-        if rule["name"] == "mojo/mojom_parser":
-            rule.update({
-                "command_prefix": platform.python_bin + " ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
-                "handler": "rewrite_action_remote_py",
-            })
-            new_rules.insert(0, rule)
-            continue
-
         # Replace nacl-clang/clang++ rules without command_prefix, because they will incorrectly match rewrapper.
         # Replace the original step rule with one that only rewrites rewrapper and convert its rewrapper config to reproxy config.
         if rule["name"].find("nacl-clang") >= 0 and not rule.get("command_prefix"):
