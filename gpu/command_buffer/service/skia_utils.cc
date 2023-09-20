@@ -129,6 +129,12 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
     options.fInternalMultisampleCount = 1;
   }
 
+  // Disable use of cached text uploads in Recordings to improve performance.
+  // NOTE: Currently Recordings are played back in the order they were
+  // created so use of this option is safe. Once Recordings are replayed or
+  // are played out of sequence this option should no longer be used.
+  options.fDisableCachedGlyphUploads = true;
+
   return options;
 }
 
