@@ -38,6 +38,8 @@ BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
 BASE_DECLARE_FEATURE(kWebViewReportFrameMetrics);
 BASE_DECLARE_FEATURE(kWebViewRestrictSensitiveContent);
 BASE_DECLARE_FEATURE(kWebViewSafeBrowsingSafeMode);
+BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteDetection);
+BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteBlock);
 BASE_DECLARE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);

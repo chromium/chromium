@@ -532,6 +532,12 @@ public final class ProductionSupportedFlagList {
                             + "usage < 0.001% and shows a deprecation warning."),
             Flag.baseFeature(ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
                     "Enables Service Worker static routing API."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
+                    "Enable detection of the loading of mature sites on "
+                            + "WebViews running on supervised user accounts"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK,
+                    "Enable blocking the loading of mature sites on "
+                            + "WebViews running on supervised user accounts"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

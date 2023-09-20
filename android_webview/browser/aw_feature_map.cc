@@ -36,6 +36,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewZoomKeyboardShortcuts,
     &features::kWebViewClearFunctorInBackground,
     &features::kWebViewReportFrameMetrics,
+    &features::kWebViewSupervisedUserSiteDetection,
+    &features::kWebViewSupervisedUserSiteBlock,
 };
 
 // static
