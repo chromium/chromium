@@ -39,11 +39,15 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
   }
 
   if (features::IsTabOrganization()) {
+    // TODO(1469126): Consider hiding the button when the request has started,
+    // vs. when the button as clicked.
     tab_organization_button_ =
         AddChildView(std::make_unique<TabOrganizationButton>(
-            tab_strip, features::IsTabOrganization()
-                           ? GetFlatEdge(false, before_tab_strip)
-                           : Edge::kNone));
+            tab_strip,
+            base::BindRepeating(&TabSearchContainer::HideTabOrganization,
+                                base::Unretained(this)),
+            features::IsTabOrganization() ? GetFlatEdge(false, before_tab_strip)
+                                          : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
     const int space_between_buttons = 4;

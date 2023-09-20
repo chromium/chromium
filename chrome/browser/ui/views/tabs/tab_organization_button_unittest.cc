@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 
+#include "base/time/time.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "fake_base_tab_strip_controller.h"
@@ -16,12 +18,18 @@ class TabOrganizationButtonTest : public ChromeViewsTestBase {
 
     auto controller = std::make_unique<FakeBaseTabStripController>();
     auto tab_strip = std::make_unique<TabStrip>(std::move(controller));
-    button_ =
-        std::make_unique<TabOrganizationButton>(tab_strip.get(), Edge::kRight);
+    button_ = std::make_unique<TabOrganizationButton>(
+        tab_strip.get(),
+        base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
+                            base::Unretained(this)),
+        Edge::kRight);
   }
+
+  void MockButtonCallback() { button_callback_count_++; }
 
  protected:
   std::unique_ptr<TabOrganizationButton> button_;
+  int button_callback_count_ = 0;
 };
 
 TEST_F(TabOrganizationButtonTest, AppliesWidthFactor) {
@@ -39,4 +47,19 @@ TEST_F(TabOrganizationButtonTest, AppliesWidthFactor) {
   const int half_full_width = full_width / 2;
   ASSERT_LT(0, full_width);
   ASSERT_EQ(half_width, half_full_width);
+}
+
+TEST_F(TabOrganizationButtonTest, ClickStartsRequestAndInvokesCallback) {
+  ASSERT_EQ(TabOrganizationRequest::State::NOT_STARTED,
+            button_->session_for_testing()->request()->state());
+  ASSERT_EQ(0, button_callback_count_);
+
+  const gfx::Point origin(0, 0);
+  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, origin, origin,
+                       base::TimeTicks::Now(), 0, 0);
+  button_->ButtonPressed(event);
+
+  ASSERT_EQ(TabOrganizationRequest::State::STARTED,
+            button_->session_for_testing()->request()->state());
+  ASSERT_EQ(1, button_callback_count_);
 }

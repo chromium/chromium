@@ -7,6 +7,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,11 +18,15 @@ constexpr int kTabOrganizeCornerRadius = 10;
 }
 
 TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
+                                             PressedCallback pressed_callback,
                                              Edge flat_edge)
-    : TabStripControlButton(tab_strip,
-                            PressedCallback(),  // Tab organize callback
-                            l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-                            flat_edge) {
+    : TabStripControlButton(
+          tab_strip,
+          base::BindRepeating(&TabOrganizationButton::ButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
+          flat_edge),
+      pressed_callback_(std::move(pressed_callback)) {
   SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
@@ -37,6 +42,9 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
   SetPaintTransparentForCustomImageTheme(false);
 
   UpdateColors();
+
+  // TODO(emshack): Populate session_ via triggering instead.
+  SetSession(placeholder_session_.get());
 }
 
 TabOrganizationButton::~TabOrganizationButton() = default;
@@ -53,6 +61,15 @@ gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
   const int width = full_width * width_factor_;
   const int height = TabStripControlButton::CalculatePreferredSize().height();
   return gfx::Size(width, height);
+}
+
+void TabOrganizationButton::ButtonPressed(const ui::Event& event) {
+  CHECK(session_);
+  if (session_->request()->state() ==
+      TabOrganizationRequest::State::NOT_STARTED) {
+    session_->StartRequest();
+  }
+  pressed_callback_.Run(event);
 }
 
 int TabOrganizationButton::GetCornerRadius() const {

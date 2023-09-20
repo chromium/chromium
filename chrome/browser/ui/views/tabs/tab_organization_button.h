@@ -8,12 +8,15 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+class TabOrganizationSession;
 class TabStrip;
 
 class TabOrganizationButton : public TabStripControlButton {
  public:
   METADATA_HEADER(TabOrganizationButton);
-  TabOrganizationButton(TabStrip* tab_strip, Edge flat_edge);
+  TabOrganizationButton(TabStrip* tab_strip,
+                        PressedCallback pressed_callback,
+                        Edge flat_edge);
   TabOrganizationButton(const TabOrganizationButton&) = delete;
   TabOrganizationButton& operator=(const TabOrganizationButton&) = delete;
   ~TabOrganizationButton() override;
@@ -21,8 +24,13 @@ class TabOrganizationButton : public TabStripControlButton {
   void SetWidthFactor(float factor);
   float width_factor_for_testing() { return width_factor_; }
 
+  void SetSession(TabOrganizationSession* session) { session_ = session; }
+  TabOrganizationSession* session_for_testing() { return session_; }
+
   // views::View
   gfx::Size CalculatePreferredSize() const override;
+
+  void ButtonPressed(const ui::Event& event);
 
  protected:
   int GetCornerRadius() const override;
@@ -30,6 +38,12 @@ class TabOrganizationButton : public TabStripControlButton {
  private:
   // Preferred width multiplier, between 0-1. Used to animate button size.
   float width_factor_ = 0;
+  raw_ptr<TabOrganizationSession, DanglingUntriaged> session_;
+  PressedCallback pressed_callback_;
+
+  // TODO(emshack): Remove when session_ is populated via triggering.
+  const std::unique_ptr<TabOrganizationSession> placeholder_session_ =
+      std::make_unique<TabOrganizationSession>();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_
