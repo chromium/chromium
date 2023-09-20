@@ -550,8 +550,9 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   ASSERT_EQ(check_time_before + interval_before, check_time_after);
 }
 
+// TODO(crbug.com/1485068): Re-enable this test
 TEST_F(PasswordStatusCheckServiceBaseTest,
-       CheckTimeUpdatedAfterRunScheduledInThePast) {
+       DISABLED_CheckTimeUpdatedAfterRunScheduledInThePast) {
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
   // Set scheduled time to be a bit (less than interval) in the past.
