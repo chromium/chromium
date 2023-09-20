@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is rolled to Perfetto so this relative path is intended to
+# work in the Perfetto repository but does not make sense here.
+import("../../../../../gn/perfetto_sql.gni")
+perfetto_sql_source_set("chrome_sql") {
+  deps = [ "scroll_jank" ]
+  sources = [
+    "chrome_scrolls.sql",
+    "cpu_powerups.sql",
+    "histograms.sql",
+    "metadata.sql",
+    "speedometer.sql",
+    "tasks.sql",
+    "vsync_intervals.sql",
+  ]
+}

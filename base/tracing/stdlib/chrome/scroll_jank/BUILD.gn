@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is rolled to Perfetto so this relative path is intended to
+# work in the Perfetto repository but does not make sense here.
+import("../../../../../../gn/perfetto_sql.gni")
+perfetto_sql_source_set("scroll_jank") {
+  sources = [
+    "event_latency_scroll_jank.sql",
+    "event_latency_scroll_jank_cause.sql",
+    "event_latency_to_breakdowns.sql",
+    "scroll_jank_intervals.sql",
+    "scroll_jank_v3.sql",
+    "utils.sql",
+  ]
+}
