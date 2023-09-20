@@ -69,7 +69,7 @@ class PrivateNetworkDeviceChooserControllerTest
 // The new added device will overwrite the device list because PNA chooser only
 // have one device at a time.
 TEST_F(PrivateNetworkDeviceChooserControllerTest, AddDevice) {
-  EXPECT_CALL(*mock_chooser_view_, OnOptionAdded(0)).Times(3);
+  EXPECT_CALL(*mock_chooser_view_, OnOptionAdded(0)).Times(1);
   CreateAndAddFakePrivateNetworkDevice("a", "001",
                                        net::IPAddress(192, 168, 1, 1));
   base::RunLoop().RunUntilIdle();
@@ -77,6 +77,7 @@ TEST_F(PrivateNetworkDeviceChooserControllerTest, AddDevice) {
   EXPECT_EQ(u"001 (a)",
             private_network_device_chooser_controller_->GetOption(0));
 
+  EXPECT_CALL(*mock_chooser_view_, OnOptionAdded(0)).Times(1);
   CreateAndAddFakePrivateNetworkDevice("b", "002",
                                        net::IPAddress(192, 168, 0, 1));
   base::RunLoop().RunUntilIdle();
@@ -84,6 +85,7 @@ TEST_F(PrivateNetworkDeviceChooserControllerTest, AddDevice) {
   EXPECT_EQ(u"002 (b)",
             private_network_device_chooser_controller_->GetOption(0));
 
+  EXPECT_CALL(*mock_chooser_view_, OnOptionAdded(0)).Times(1);
   CreateAndAddFakePrivateNetworkDevice("c", "003",
                                        net::IPAddress(127, 0, 0, 1));
   base::RunLoop().RunUntilIdle();
