@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <deque>
 #include <utility>
 #include <vector>
 
@@ -37,6 +38,8 @@ struct ExpectedTryGetAuthTokensCall {
 class MockIpProtectionConfigGetter
     : public network::mojom::IpProtectionConfigGetter {
  public:
+  ~MockIpProtectionConfigGetter() override { CHECK(GotAllExpectedMockCalls()); }
+
   // Register an expectation of a call to `TryGetAuthTokens()` returning the
   // given tokens.
   void ExpectTryGetAuthTokensCall(
@@ -75,45 +78,38 @@ class MockIpProtectionConfigGetter
 
   // True if all expected `TryGetAuthTokens` calls have occurred.
   bool GotAllExpectedMockCalls() {
-    return num_try_get_auth_token_calls_ ==
-               expected_try_get_auth_token_calls_.size() &&
-           num_get_proxy_list_calls_ == expected_get_proxy_list_calls_.size();
+    return expected_try_get_auth_token_calls_.empty() &&
+           expected_get_proxy_list_calls_.empty();
   }
 
   // Reset all test expectations.
   void Reset() {
-    num_try_get_auth_token_calls_ = 0;
     expected_try_get_auth_token_calls_.clear();
-    num_get_proxy_list_calls_ = 0;
     expected_get_proxy_list_calls_.clear();
   }
 
   void TryGetAuthTokens(uint32_t batch_size,
                         TryGetAuthTokensCallback callback) override {
-    ASSERT_LT(num_try_get_auth_token_calls_,
-              expected_try_get_auth_token_calls_.size())
+    ASSERT_FALSE(expected_try_get_auth_token_calls_.empty())
         << "Unexpected call to TryGetAuthTokens";
-    auto exp = std::move(
-        expected_try_get_auth_token_calls_[num_try_get_auth_token_calls_++]);
+    auto& exp = expected_try_get_auth_token_calls_.front();
     EXPECT_EQ(batch_size, exp.batch_size);
-
     std::move(callback).Run(std::move(exp.bsa_tokens), exp.try_again_after);
+    expected_try_get_auth_token_calls_.pop_front();
   }
 
   void GetProxyList(GetProxyListCallback callback) override {
-    ASSERT_LT(num_get_proxy_list_calls_, expected_get_proxy_list_calls_.size())
+    ASSERT_FALSE(expected_get_proxy_list_calls_.empty())
         << "Unexpected call to GetProxyList";
-    auto exp =
-        std::move(expected_get_proxy_list_calls_[num_get_proxy_list_calls_++]);
+    auto& exp = expected_get_proxy_list_calls_.front();
     std::move(callback).Run(std::move(exp));
+    expected_get_proxy_list_calls_.pop_front();
   }
 
  protected:
-  std::vector<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
-  size_t num_try_get_auth_token_calls_ = 0;
-  std::vector<absl::optional<std::vector<std::string>>>
+  std::deque<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
+  std::deque<absl::optional<std::vector<std::string>>>
       expected_get_proxy_list_calls_;
-  size_t num_get_proxy_list_calls_ = 0;
 };
 
 }  // namespace
