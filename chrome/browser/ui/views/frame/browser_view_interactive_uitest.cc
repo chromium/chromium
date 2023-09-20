@@ -230,7 +230,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   // The top view should not show up.
-  EXPECT_FALSE(browser_view->GetTabStripVisible());
+  EXPECT_TRUE(views::test::PropertyWaiter(
+                  base::BindRepeating(&BrowserView::GetTabStripVisible,
+                                      base::Unretained(browser_view)),
+                  false)
+                  .Wait());
 
   // After exiting the fullscreen mode, the top view should show up again.
   controller->ExitFullscreenModeForTab(web_contents);
