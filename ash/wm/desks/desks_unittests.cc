@@ -27,6 +27,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/public/cpp/window_finder.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -11487,6 +11488,24 @@ TEST_P(DeskButtonTest, TabOrder) {
   // Focus should have been passed to the hotseat widget now that the next desk
   // button isn't visible.
   ASSERT_FALSE(GetDeskButton()->next_desk_button()->GetEnabled());
+}
+
+// Tests that desk bar is on top of floated window.
+TEST_P(DeskButtonTest, BarAboveFloatWindow) {
+  // Create a floated window.
+  std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Open desk bar, set the floated window to be the same bounds, then check if
+  // the bar is above the floated window.
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  floated_window->SetBounds(desk_bar_view->GetBoundsInScreen());
+  EXPECT_EQ(
+      GetTopmostWindowAtPoint(desk_bar_view->GetBoundsInScreen().CenterPoint(),
+                              /*ignore=*/{}),
+      desk_bar_view->GetWidget()->GetNativeWindow());
 }
 
 // TODO(afakhry): Add more tests:

@@ -730,42 +730,42 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
     Type type) {
   CHECK(root && root->IsRootWindow());
 
-  std::unique_ptr<views::Widget> widget;
-  switch (type) {
-    case Type::kOverview:
-    case Type::kDeskButton: {
-      widget = std::make_unique<views::Widget>();
-      views::Widget::InitParams params(
-          views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-      params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-      params.activatable = views::Widget::InitParams::Activatable::kYes;
-      params.accept_events = true;
-      params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-      // This widget will be parented to the currently-active desk container on
-      // `root`.
-      params.context = root;
-      params.bounds = bounds;
-      params.name = type == Type::kOverview ? "OverviewDeskBarWidget"
-                                            : "DeskButtonDeskBarWidget";
-      // The contents of this widget will have a textured layer, so we can mark
-      // the widget's layer as not drawn.
-      params.layer_type = ui::LAYER_NOT_DRAWN;
+  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.accept_events = true;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.bounds = bounds;
 
-      // Even though this widget exists on the active desk container, it should
-      // not show up in the MRU list, and it should not be mirrored in the desks
-      // mini_views.
-      params.init_properties_container.SetProperty(kExcludeInMruKey, true);
-      params.init_properties_container.SetProperty(kHideInDeskMiniViewKey,
-                                                   true);
-      widget->Init(std::move(params));
+  // The contents of this widget will have a textured layer, so we can mark
+  // the widget's layer as not drawn.
+  params.layer_type = ui::LAYER_NOT_DRAWN;
 
-      auto* window = widget->GetNativeWindow();
-      window->SetId(kShellWindowId_DesksBarWindow);
-      ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
-
-      break;
-    }
+  if (type == Type::kOverview) {
+    // Overview desk bar should live under the currently-active desk container
+    // on `root`.
+    params.context = root;
+    params.name = "OverviewDeskBarWidget";
+    // Even though this widget exists on the active desk container, it should
+    // not show up in the MRU list, and it should not be mirrored in the desks
+    // mini_views.
+    params.init_properties_container.SetProperty(kExcludeInMruKey, true);
+    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  } else {
+    // Desk button desk bar should live under the shelf bubble container on
+    // `root`.
+    params.parent =
+        Shell::GetContainer(root, kShellWindowId_ShelfBubbleContainer);
+    params.name = "DeskButtonDeskBarWidget";
   }
+
+  widget->Init(std::move(params));
+
+  auto* window = widget->GetNativeWindow();
+  window->SetId(kShellWindowId_DesksBarWindow);
+  ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
 
   return widget;
 }
