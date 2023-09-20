@@ -620,6 +620,27 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
   }
 }
 
+@end
+
+#pragma mark - Bottom omnibox enabled tests
+
+// AdaptiveToolbarTestCase with a bottom default omnibox position.
+@interface AdaptiveToolbarBottomOmniboxTestCase : AdaptiveToolbarTestCase
+@end
+
+@implementation AdaptiveToolbarBottomOmniboxTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kBottomOmniboxSteadyState);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+}
+
 // Verifies that the address bar can be moved from the location bar context
 // menu.
 - (void)testMoveAddressBarContextAction {
@@ -630,9 +651,6 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
       ensureAppLaunchedWithFeaturesEnabled:{kBottomOmniboxSteadyState}
                                   disabled:{}
                             relaunchPolicy:NoForceRelaunchAndResetState];
-
-  // Ensures the test start with a preferred omnibox position set to bottom.
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
 
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
