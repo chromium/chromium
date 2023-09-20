@@ -1883,7 +1883,7 @@
       // Allow these form controls to have vertical writing mode: select, meter,
       // progress, button and non-text-based input types.
       name: "FormControlsVerticalWritingModeSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/484651): Allow text-based form controls to have vertical
