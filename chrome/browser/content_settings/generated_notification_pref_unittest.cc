@@ -5,9 +5,11 @@
 #include "chrome/browser/content_settings/generated_notification_pref.h"
 
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -30,7 +32,7 @@ void ValidateGeneratedPrefSetting(
     HostContentSettingsMap* map,
     sync_preferences::TestingPrefServiceSyncable* prefs,
     GeneratedNotificationPref* generated_pref,
-    NotificationSetting pref_value,
+    SettingsState pref_value,
     ContentSetting expected_content_setting,
     bool expected_quieter_ui) {
   EXPECT_EQ(
@@ -43,13 +45,12 @@ void ValidateGeneratedPrefSetting(
   EXPECT_EQ(prefs->GetUserPref(prefs::kEnableQuietNotificationPermissionUi)
                 ->GetBool(),
             expected_quieter_ui);
-  EXPECT_EQ(static_cast<NotificationSetting>(
+  EXPECT_EQ(static_cast<SettingsState>(
                 generated_pref->GetPrefObject().value->GetInt()),
             pref_value);
 }
 
-const NotificationSetting kNoRecommendedValue =
-    static_cast<NotificationSetting>(-1);
+const SettingsState kNoRecommendedValue = static_cast<SettingsState>(-1);
 
 // Represents a set of settings, preferences and the associated expected
 // fields for the returned preference object.
@@ -60,8 +61,8 @@ struct NotificationSettingManagedTestCase {
   settings_private::PrefSource quieter_ui_source;
   settings_api::ControlledBy expected_controlled_by;
   settings_api::Enforcement expected_enforcement;
-  NotificationSetting expected_recommended_value;
-  std::vector<NotificationSetting> expected_user_selectable_values;
+  SettingsState expected_recommended_value;
+  std::vector<SettingsState> expected_user_selectable_values;
 };
 
 static const std::vector<NotificationSettingManagedTestCase> managed_test_cases{
@@ -80,7 +81,8 @@ static const std::vector<NotificationSettingManagedTestCase> managed_test_cases{
      settings_api::ControlledBy::CONTROLLED_BY_EXTENSION,
      settings_api::Enforcement::ENFORCEMENT_ENFORCED,
      kNoRecommendedValue,
-     {NotificationSetting::ASK, NotificationSetting::QUIETER_MESSAGING}},
+     {SettingsState::kCanPromptWithAlwaysLoudUI,
+      SettingsState::kCanPromptWithAlwaysQuietUI}},
     {CONTENT_SETTING_ASK,
      SETTING_SOURCE_USER,
      settings_private::PrefSetting::kEnforcedOn,
@@ -88,7 +90,7 @@ static const std::vector<NotificationSettingManagedTestCase> managed_test_cases{
      settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY,
      settings_api::Enforcement::ENFORCEMENT_ENFORCED,
      kNoRecommendedValue,
-     {NotificationSetting::QUIETER_MESSAGING, NotificationSetting::BLOCK}},
+     {SettingsState::kCanPromptWithAlwaysQuietUI, SettingsState::kBlocked}},
     {CONTENT_SETTING_ASK,
      SETTING_SOURCE_USER,
      settings_private::PrefSetting::kEnforcedOff,
@@ -96,7 +98,7 @@ static const std::vector<NotificationSettingManagedTestCase> managed_test_cases{
      settings_api::ControlledBy::CONTROLLED_BY_EXTENSION,
      settings_api::Enforcement::ENFORCEMENT_ENFORCED,
      kNoRecommendedValue,
-     {NotificationSetting::ASK, NotificationSetting::BLOCK}},
+     {SettingsState::kCanPromptWithAlwaysLoudUI, SettingsState::kBlocked}},
     {CONTENT_SETTING_ASK,
      SETTING_SOURCE_POLICY,
      settings_private::PrefSetting::kEnforcedOn,
@@ -111,16 +113,18 @@ static const std::vector<NotificationSettingManagedTestCase> managed_test_cases{
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION,
      settings_api::Enforcement::ENFORCEMENT_ENFORCED,
-     NotificationSetting::QUIETER_MESSAGING,
-     {NotificationSetting::ASK, NotificationSetting::QUIETER_MESSAGING}},
+     SettingsState::kCanPromptWithAlwaysQuietUI,
+     {SettingsState::kCanPromptWithAlwaysLoudUI,
+      SettingsState::kCanPromptWithAlwaysQuietUI}},
     {CONTENT_SETTING_ASK,
      SETTING_SOURCE_EXTENSION,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::CONTROLLED_BY_EXTENSION,
      settings_api::Enforcement::ENFORCEMENT_ENFORCED,
-     NotificationSetting::ASK,
-     {NotificationSetting::ASK, NotificationSetting::QUIETER_MESSAGING}},
+     SettingsState::kCanPromptWithAlwaysLoudUI,
+     {SettingsState::kCanPromptWithAlwaysLoudUI,
+      SettingsState::kCanPromptWithAlwaysQuietUI}},
     {CONTENT_SETTING_BLOCK,
      SETTING_SOURCE_EXTENSION,
      settings_private::PrefSetting::kRecommendedOn,
@@ -211,20 +215,19 @@ void ValidateManagedPreference(
   }
 
   if (test_case.expected_recommended_value != kNoRecommendedValue) {
-    EXPECT_EQ(
-        static_cast<NotificationSetting>(pref.recommended_value->GetInt()),
-        test_case.expected_recommended_value);
+    EXPECT_EQ(static_cast<SettingsState>(pref.recommended_value->GetInt()),
+              test_case.expected_recommended_value);
   }
 
   // Ensure user selectable values are as expected. Ordering is enforced here
   // despite not being required by the SettingsPrivate API.
   // First convert std::vector<std::unique_ptr<base::value(T)>> to
   // std::vector<T> for easier comparison.
-  std::vector<NotificationSetting> pref_user_selectable_values;
+  std::vector<SettingsState> pref_user_selectable_values;
   if (pref.user_selectable_values) {
     for (const auto& value : *pref.user_selectable_values) {
       pref_user_selectable_values.push_back(
-          static_cast<NotificationSetting>(value.GetInt()));
+          static_cast<SettingsState>(value.GetInt()));
     }
   }
 
@@ -250,19 +253,19 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreference) {
   // Check that each of the three possible preference values sets the correct
   // state and is correctly reflected in a newly returned PrefObject.
   ValidateGeneratedPrefSetting(map, prefs(), pref.get(),
-                               NotificationSetting::BLOCK,
+                               SettingsState::kBlocked,
                                ContentSetting::CONTENT_SETTING_BLOCK, false);
   ValidateGeneratedPrefSetting(map, prefs(), pref.get(),
-                               NotificationSetting::ASK,
+                               SettingsState::kCanPromptWithAlwaysLoudUI,
                                ContentSetting::CONTENT_SETTING_ASK, false);
   ValidateGeneratedPrefSetting(map, prefs(), pref.get(),
-                               NotificationSetting::QUIETER_MESSAGING,
+                               SettingsState::kCanPromptWithAlwaysQuietUI,
                                ContentSetting::CONTENT_SETTING_ASK, true);
   // Setting notification content setting to
   // |ContentSetting::CONTENT_SETTING_BLOCK| should not change the quieter UI
   // pref.
   ValidateGeneratedPrefSetting(map, prefs(), pref.get(),
-                               NotificationSetting::BLOCK,
+                               SettingsState::kBlocked,
                                ContentSetting::CONTENT_SETTING_BLOCK, true);
 }
 
@@ -282,7 +285,7 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
             settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
   // Check a numerical value outside of the acceptable range.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
-                              static_cast<int>(NotificationSetting::BLOCK) + 1)
+                              static_cast<int>(SettingsState::kBlocked) + 1)
                               .get()),
             settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 
@@ -293,10 +296,10 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
       settings_private::PrefSource::kDevicePolicy);
 
   // Confirm that quieter UI preference isn't modified when it's enforced.
-  EXPECT_EQ(pref->SetPref(
-                std::make_unique<base::Value>(
-                    static_cast<int>(NotificationSetting::QUIETER_MESSAGING))
-                    .get()),
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
+                              static_cast<int>(
+                                  SettingsState::kCanPromptWithAlwaysQuietUI))
+                              .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 
   // Confirm the neither value was modified.
@@ -319,10 +322,10 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
 
   // Confirm that notification content setting isn't modified when it's
   // enforced.
-  EXPECT_EQ(pref->SetPref(
-                std::make_unique<base::Value>(
-                    static_cast<int>(NotificationSetting::QUIETER_MESSAGING))
-                    .get()),
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
+                              static_cast<int>(
+                                  SettingsState::kCanPromptWithAlwaysQuietUI))
+                              .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 
   // Confirm the neither value was modified.
@@ -336,7 +339,7 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
   // Confirm that notification content setting isn't modified when it's
   // enforced.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
-                              static_cast<int>(NotificationSetting::BLOCK))
+                              static_cast<int>(SettingsState::kBlocked))
                               .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 

@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, Router, routes, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -27,11 +27,15 @@ suite('SiteSettingsPage', function() {
       generated: {
         notification: {
           type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: NotificationSetting.ASK,
+          value: SettingsState.LOUD,
         },
         cookie_default_content_setting: {
           type: chrome.settingsPrivate.PrefType.STRING,
           value: ContentSetting.ALLOW,
+        },
+        geolocation: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SettingsState.LOUD,
         },
       },
       profile: {
@@ -130,24 +134,22 @@ suite('SiteSettingsPage', function() {
         page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
             .querySelector<CrLinkRowElement>('#notifications')!;
 
-    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    page.set('prefs.generated.notification.value', SettingsState.BLOCK);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsBlocked'),
         notificationsLinkRow.subLabel);
 
-    page.set(
-        'prefs.generated.notification.value',
-        NotificationSetting.QUIETER_MESSAGING);
+    page.set('prefs.generated.notification.value', SettingsState.QUIET);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsPartial'),
+        loadTimeData.getString('siteSettingsNotificationsAskQuiet'),
         notificationsLinkRow.subLabel);
 
-    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
+    page.set('prefs.generated.notification.value', SettingsState.LOUD);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsAllowed'),
+        loadTimeData.getString('siteSettingsNotificationsAskLoud'),
         notificationsLinkRow.subLabel);
   });
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/content_settings/generated_notification_pref.h"
 
+#include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -14,8 +15,6 @@ namespace settings_api = extensions::api::settings_private;
 typedef extensions::settings_private::GeneratedPref GeneratedPref;
 
 namespace content_settings {
-
-const char kGeneratedNotificationPref[] = "generated.notification";
 
 namespace {
 
@@ -63,21 +62,22 @@ void GeneratedNotificationPref::OnNotificationPreferencesChanged() {
 
 extensions::settings_private::SetPrefResult GeneratedNotificationPref::SetPref(
     const base::Value* value) {
-  if (!value->is_int())
+  if (!value->is_int()) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
-  auto selection = static_cast<NotificationSetting>(value->GetInt());
+  auto selection = static_cast<SettingsState>(value->GetInt());
 
-  if (selection != NotificationSetting::ASK &&
-      selection != NotificationSetting::QUIETER_MESSAGING &&
-      selection != NotificationSetting::BLOCK) {
+  if (selection != SettingsState::kCanPromptWithAlwaysLoudUI &&
+      selection != SettingsState::kCanPromptWithAlwaysQuietUI &&
+      selection != SettingsState::kBlocked) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
   auto current_content_setting =
       host_content_settings_map_->GetDefaultContentSetting(
           ContentSettingsType::NOTIFICATIONS);
-  auto new_content_setting = selection == NotificationSetting::BLOCK
+  auto new_content_setting = selection == SettingsState::kBlocked
                                  ? ContentSetting::CONTENT_SETTING_BLOCK
                                  : ContentSetting::CONTENT_SETTING_ASK;
 
@@ -88,12 +88,13 @@ extensions::settings_private::SetPrefResult GeneratedNotificationPref::SetPref(
           host_content_settings_map_)) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
-  if (selection != NotificationSetting::BLOCK) {
+  if (selection != SettingsState::kBlocked) {
     const PrefService::Preference* quieter_pref =
         profile_->GetPrefs()->FindPreference(
             prefs::kEnableQuietNotificationPermissionUi);
     bool quieter_value = quieter_pref->GetValue()->GetBool();
-    bool new_quieter_value = selection != NotificationSetting::ASK;
+    bool new_quieter_value =
+        selection != SettingsState::kCanPromptWithAlwaysLoudUI;
 
     // Do not modify the preference value if the user is unable to change its
     // value. If there's no actual change, this check doesn't apply.
@@ -127,15 +128,15 @@ settings_api::PrefObject GeneratedNotificationPref::GetPrefObject() const {
       notification_content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
 
   if (notification_content_setting_enabled && quieter_pref_enabled) {
-    pref_object.value =
-        base::Value(static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
+    pref_object.value = base::Value(
+        static_cast<int>(SettingsState::kCanPromptWithAlwaysQuietUI));
   } else if (notification_content_setting_enabled) {
-    pref_object.value = base::Value(static_cast<int>(NotificationSetting::ASK));
+    pref_object.value = base::Value(
+        static_cast<int>(SettingsState::kCanPromptWithAlwaysLoudUI));
   } else {
     DCHECK_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
               notification_content_setting);
-    pref_object.value =
-        base::Value(static_cast<int>(NotificationSetting::BLOCK));
+    pref_object.value = base::Value(static_cast<int>(SettingsState::kBlocked));
   }
 
   ApplyNotificationManagementState(*profile_, pref_object);
@@ -196,14 +197,17 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
     // Since content setting is enforced but the quieter ui pref is not,
     // user can choose from 2 options.
     GeneratedPref::AddUserSelectableValue(
-        &pref_object, static_cast<int>(NotificationSetting::ASK));
+        &pref_object,
+        static_cast<int>(SettingsState::kCanPromptWithAlwaysLoudUI));
     GeneratedPref::AddUserSelectableValue(
-        &pref_object, static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
+        &pref_object,
+        static_cast<int>(SettingsState::kCanPromptWithAlwaysQuietUI));
 
     if (quieter_ui_recommended) {
-      pref_object.recommended_value = base::Value(static_cast<int>(
-          quieter_ui_recommended_on ? NotificationSetting::QUIETER_MESSAGING
-                                    : NotificationSetting::ASK));
+      pref_object.recommended_value = base::Value(
+          static_cast<int>(quieter_ui_recommended_on
+                               ? SettingsState::kCanPromptWithAlwaysQuietUI
+                               : SettingsState::kCanPromptWithAlwaysLoudUI));
     }
     return;
   }
@@ -215,10 +219,11 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
     GeneratedPref::ApplyControlledByFromPref(&pref_object, quieter_ui_pref);
     GeneratedPref::AddUserSelectableValue(
         &pref_object,
-        static_cast<int>(quieter_ui_on ? NotificationSetting::QUIETER_MESSAGING
-                                       : NotificationSetting::ASK));
+        static_cast<int>(quieter_ui_on
+                             ? SettingsState::kCanPromptWithAlwaysQuietUI
+                             : SettingsState::kCanPromptWithAlwaysLoudUI));
     GeneratedPref::AddUserSelectableValue(
-        &pref_object, static_cast<int>(NotificationSetting::BLOCK));
+        &pref_object, static_cast<int>(SettingsState::kBlocked));
   }
   // If neither of notification content setting nor quieter ui preference is
   // enforced, but quieter ui preference is recommended, then recommended value

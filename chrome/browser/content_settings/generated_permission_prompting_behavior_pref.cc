@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 
 #include "base/check.h"
-#include "chrome/browser/content_settings/generated_notification_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -18,8 +17,8 @@ typedef extensions::settings_private::GeneratedPref GeneratedPref;
 
 namespace content_settings {
 
-const char kGeneratedGeolocationPref[] =
-    "generated.prompting_behavior.geolocation";
+const char kGeneratedGeolocationPref[] = "generated.geolocation";
+const char kGeneratedNotificationPref[] = "generated.notification";
 
 GeneratedPermissionPromptingBehaviorPref::
     GeneratedPermissionPromptingBehaviorPref(

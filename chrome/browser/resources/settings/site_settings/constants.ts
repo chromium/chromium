@@ -114,14 +114,15 @@ export enum SiteSettingSource {
 }
 
 /**
- * Enumeration of states for the notification default setting generated pref.
- * Must be kept in sync with the enum of the same name located in:
- * chrome/browser/content_settings/generated_notification_pref.h
+ * Enumeration of states for the notification and geolocation default setting
+ * generated pref. Must be kept in sync with the SettingsState enum in:
+ * chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h
  */
-export enum NotificationSetting {
-  ASK = 0,
-  QUIETER_MESSAGING = 1,
-  BLOCK = 2,
+export enum SettingsState {
+  LOUD = 0,
+  QUIET = 1,
+  CPSS = 2,
+  BLOCK = 3,
 }
 
 /**

@@ -76,6 +76,7 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
@@ -252,7 +253,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
               crosapi::mojom::SessionType::kPublicSession ||
           profile->IsGuestSession());
 #else
-                          profile->IsGuestSession());
+                           profile->IsGuestSession());
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
@@ -3069,6 +3070,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION},
     {"siteSettingsLocationAllowed",
      IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED},
+    {"siteSettingsLocationAskQuiet",
+     IDS_SETTINGS_SITE_SETTINGS_PERMISSION_QUIET},
+    {"siteSettingsLocationAskCPSS", IDS_SETTINGS_SITE_SETTINGS_PERMISSION_CPSS},
+    {"siteSettingsLocationAskLoud", IDS_SETTINGS_SITE_SETTINGS_PERMISSION_LOUD},
     {"siteSettingsLocationBlocked",
      IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED},
     {"siteSettingsLocationBlockedSubLabel",
@@ -3114,6 +3119,14 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL},
     {"siteSettingsNotificationsPartialSubLabel",
      IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL_SUB_LABEL},
+    {"siteSettingsNotificationsAskState",
+     IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ASK_STATE},
+    {"siteSettingsNotificationsAskQuiet",
+     IDS_SETTINGS_SITE_SETTINGS_PERMISSION_QUIET},
+    {"siteSettingsNotificationsAskCPSS",
+     IDS_SETTINGS_SITE_SETTINGS_PERMISSION_CPSS},
+    {"siteSettingsNotificationsAskLoud",
+     IDS_SETTINGS_SITE_SETTINGS_PERMISSION_LOUD},
     {"siteSettingsNotificationsBlocked",
      IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED},
     {"siteSettingsNotificationsBlockedSubLabel",
@@ -3296,10 +3309,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "enableExperimentalWebPlatformFeatures",
       cmd.HasSwitch(::switches::kEnableExperimentalWebPlatformFeatures));
 
-  html_source->AddBoolean(
-      "enableQuietNotificationPromptsSetting",
-      base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
-
   html_source->AddBoolean("enableWebBluetoothNewPermissionsBackend",
                           base::FeatureList::IsEnabled(
                               features::kWebBluetoothNewPermissionsBackend));
@@ -3309,7 +3318,13 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions));
 
-  // The exception placeholder should not be translated. See crbug.com/1095878.
+  html_source->AddBoolean(
+      "permissionDedicatedCpssSettings",
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionDedicatedCpssSetting));
+
+  // The exception placeholder should not be translated. See
+  // crbug.com/1095878.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 

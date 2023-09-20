@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
@@ -38,7 +39,7 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} 
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
@@ -145,12 +146,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableQuietNotificationPromptsSetting_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableQuietNotificationPromptsSetting'),
-      },
-
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
         value: () =>
@@ -247,11 +242,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       /**
-       * Expose NotificationSetting enum to HTML bindings.
+       * Expose the Permissions SettingsState enum to HTML bindings.
        */
-      notificationSettingEnum_: {
+      settingsStateEnum_: {
         type: Object,
-        value: NotificationSetting,
+        value: SettingsState,
       },
 
       searchFilter_: String,
@@ -307,6 +302,16 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => !loadTimeData.getBoolean(
             'isPerformanceSettingsPreloadingSubpageEnabled'),
       },
+
+      showDedicatedCpssSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('permissionDedicatedCpssSettings');
+        },
+      },
+
+      isNotificationAllowed_: Boolean,
+      isLocationAllowed_: Boolean,
     };
   }
 
@@ -322,7 +327,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enablePaymentHandlerContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
-  private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
@@ -345,6 +349,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
+  private isNotificationAllowed_: boolean;
+  private isLocationAllowed_: boolean;
+  private showDedicatedCpssSetting_: boolean;
 
   override ready() {
     super.ready();
@@ -380,6 +387,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           (sites: NotificationPermission[]) =>
               this.onReviewNotificationPermissionListChanged_(sites));
     }
+
+    this.updateLocationAndNotificationState_();
   }
 
   override currentRouteChanged() {
@@ -466,6 +475,37 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
         .dispatchEvent(new MouseEvent('click'));
+  }
+
+  private async updateLocationAndNotificationState_() {
+    const [notificationDefaultValue, locationDefaultValue] = await Promise.all([
+      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
+          ContentSettingsTypes.NOTIFICATIONS),
+      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
+          ContentSettingsTypes.GEOLOCATION),
+    ]);
+    this.isNotificationAllowed_ =
+        (notificationDefaultValue.setting === ContentSetting.ASK);
+    this.isLocationAllowed_ =
+        (locationDefaultValue.setting === ContentSetting.ASK);
+  }
+
+  private onLocationAskClicked_() {
+    this.isLocationAllowed_ = true;
+    this.setPrefValue('generated.geolocation', SettingsState.CPSS);
+  }
+
+  private onNotificationAskClicked_() {
+    this.isNotificationAllowed_ = true;
+    this.setPrefValue('generated.notification', SettingsState.CPSS);
+  }
+
+  private onLocationBlockClicked_() {
+    this.isLocationAllowed_ = false;
+  }
+
+  private onNotificationBlockClicked_() {
+    this.isNotificationAllowed_ = false;
   }
 
   private onPrivacyGuideClick_() {

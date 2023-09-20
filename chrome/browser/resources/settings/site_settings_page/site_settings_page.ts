@@ -239,8 +239,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
       icon: 'settings:notifications',
-      enabledLabel: 'siteSettingsAskBeforeSending',
-      disabledLabel: 'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
