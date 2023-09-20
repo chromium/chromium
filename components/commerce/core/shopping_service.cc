@@ -1549,6 +1549,12 @@ base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
 
 void ShoppingService::Shutdown() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  // SyncService requires all observer to unregister themselves before its
+  // shutdown is called, which can be done either in OnSyncShutdown() or
+  // for a KeyedService in their Shutdown() method. Opt for this option as
+  // ShoppingService is a KeyedService.
+  sync_service_observation_.Reset();
 }
 
 ShoppingService::~ShoppingService() = default;
