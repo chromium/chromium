@@ -28,12 +28,11 @@ found in the LICENSE file.
     <!-- List menu button used for contextual options. -->
     <include layout="@layout/list_menu_button" />
 
-    <!-- TODO(crbug.com/1424835): Move drag handle to a vector drawable. -->
     <!-- TODO(crbug.com/1424837): Support dynamic colors for drag handle. -->
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/drag_handle"
         android:visibility="gone"
-        android:src="@drawable/ic_drag_handle_grey600_24dp"
+        android:src="@drawable/ic_drag_handle_24dp"
         android:tint="@color/default_icon_color_tint_list"
         style="@style/ListItemEndIcon" />
 </LinearLayout>

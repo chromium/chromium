@@ -304,7 +304,7 @@ public abstract class BookmarkRow
             } else if (textId == R.string.menu_item_move_down) {
                 mDelegate.moveDownOne(mBookmarkId);
                 RecordUserAction.record("MobileBookmarkManagerMoveDown");
-            };
+            }
         };
         return new BasicListMenu(getContext(), listItems, delegate);
     }

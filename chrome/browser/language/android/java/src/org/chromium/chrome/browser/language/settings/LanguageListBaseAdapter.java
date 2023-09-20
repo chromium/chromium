@@ -160,7 +160,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         if (getItemCount() <= 1 || !mDragStateDelegate.getDragEnabled()) return;
 
         assert mItemTouchHelper != null;
-        holder.setStartIcon(R.drawable.ic_drag_handle_grey600_24dp);
+        holder.setStartIcon(R.drawable.ic_drag_handle_24dp);
         holder.mStartIcon.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mItemTouchHelper.startDrag(holder);
