@@ -33,6 +33,7 @@ export class CdpTarget {
   readonly #cdpClient: ICdpClient;
   readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
+
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #networkStorage: NetworkStorage;
 

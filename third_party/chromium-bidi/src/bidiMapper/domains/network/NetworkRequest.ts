@@ -31,6 +31,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
@@ -70,13 +71,17 @@ export class NetworkRequest {
   #beforeRequestSentDeferred = new Deferred<Result<void>>();
   #responseCompletedDeferred = new Deferred<Result<void>>();
 
+  #cdpTarget: CdpTarget;
+
   constructor(
     requestId: Network.Request,
     eventManager: EventManager,
+    cdpTarget: CdpTarget,
     redirectCount = 0
   ) {
     this.requestId = requestId;
     this.#eventManager = eventManager;
+    this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
   }
 
@@ -86,6 +91,10 @@ export class NetworkRequest {
 
   get redirectCount() {
     return this.#redirectCount;
+  }
+
+  get cdpTarget() {
+    return this.#cdpTarget;
   }
 
   isRedirecting(): boolean {
@@ -191,6 +200,16 @@ export class NetworkRequest {
   /** Fired whenever a network request interception is hit. */
   onRequestPaused(_event: Protocol.Fetch.RequestPausedEvent) {
     this.#isBlocked = true;
+  }
+
+  async failRequest(
+    fetchRequestId: Protocol.Fetch.RequestId,
+    errorReason: Protocol.Network.ErrorReason
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
+      requestId: fetchRequestId,
+      errorReason,
+    });
   }
 
   dispose() {

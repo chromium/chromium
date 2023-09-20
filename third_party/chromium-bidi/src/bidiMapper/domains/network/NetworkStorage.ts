@@ -25,7 +25,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {EventManager} from '../events/EventManager.js';
 
-import {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkRequest} from './NetworkRequest.js';
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
@@ -49,7 +49,8 @@ export class NetworkStorage {
   readonly #blockedRequestMap = new Map<
     Network.Request,
     {
-      request: Protocol.Fetch.RequestId; // form: 'interception-job-1.0'
+      // intercept request id; form: 'interception-job-1.0'
+      request: Protocol.Fetch.RequestId;
       phase?: Network.InterceptPhase; // TODO: make non-optional.
       response?: Network.ResponseData; // TODO: make non-optional.
     }
@@ -57,6 +58,10 @@ export class NetworkStorage {
 
   constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
+  }
+
+  get eventManager() {
+    return this.#eventManager;
   }
 
   disposeRequestMap() {
@@ -131,14 +136,12 @@ export class NetworkStorage {
     };
   }
 
-  getRequest(id: Network.Request) {
+  getRequest(id: Network.Request): NetworkRequest | undefined {
     return this.#requestMap.get(id);
   }
 
-  createRequest(id: Network.Request, redirectCount?: number) {
-    const request = new NetworkRequest(id, this.#eventManager, redirectCount);
-    this.#requestMap.set(id, request);
-    return request;
+  addRequest(request: NetworkRequest) {
+    this.#requestMap.set(request.requestId, request);
   }
 
   deleteRequest(id: Network.Request) {
@@ -253,6 +256,19 @@ export class NetworkStorage {
 
   removeBlockedRequest(requestId: Network.Request) {
     this.#blockedRequestMap.delete(requestId);
+  }
+
+  /**
+   * Returns the blocked request associated with the given network ID, if any.
+   */
+  getBlockedRequest(networkId: Network.Request):
+    | {
+        request: Protocol.Fetch.RequestId;
+        phase?: Network.InterceptPhase; // TODO: make non-optional.
+        response?: Network.ResponseData; // TODO: make non-optional.
+      }
+    | undefined {
+    return this.#blockedRequestMap.get(networkId);
   }
 
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */

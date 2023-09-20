@@ -25,7 +25,7 @@ import type Protocol from 'devtools-protocol';
 import type {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
-import type {NetworkRequest} from './NetworkRequest.js';
+import {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 
 /** Maps 1:1 to CdpTarget. */
@@ -43,12 +43,29 @@ export class NetworkManager {
     return this.#cdpTarget;
   }
 
-  #getOrCreateNetworkRequest(id: Network.Request): NetworkRequest {
-    const request = this.#networkStorage.getRequest(id);
+  /**
+   * Gets the network request with the given ID, if any.
+   * Otherwise, creates a new network request with the given ID and cdp target.
+   */
+  #getOrCreateNetworkRequest(
+    id: Network.Request,
+    redirectCount?: number
+  ): NetworkRequest {
+    let request = this.#networkStorage.getRequest(id);
     if (request) {
       return request;
     }
-    return this.#networkStorage.createRequest(id);
+
+    request = new NetworkRequest(
+      id,
+      this.#networkStorage.eventManager,
+      this.#cdpTarget,
+      redirectCount
+    );
+
+    this.#networkStorage.addRequest(request);
+
+    return request;
   }
 
   static create(
@@ -77,14 +94,17 @@ export class NetworkManager {
         if (request && request.isRedirecting()) {
           request.handleRedirect(params);
           networkManager.#networkStorage.deleteRequest(params.requestId);
-          networkManager.#networkStorage
-            .createRequest(params.requestId, request.redirectCount + 1)
+          networkManager
+            .#getOrCreateNetworkRequest(
+              params.requestId,
+              request.redirectCount + 1
+            )
             .onRequestWillBeSentEvent(params);
         } else if (request) {
           request.onRequestWillBeSentEvent(params);
         } else {
-          networkManager.#networkStorage
-            .createRequest(params.requestId)
+          networkManager
+            .#getOrCreateNetworkRequest(params.requestId)
             .onRequestWillBeSentEvent(params);
         }
       }
@@ -140,7 +160,7 @@ export class NetworkManager {
       (params: Protocol.Fetch.RequestPausedEvent) => {
         if (params.networkId) {
           networkManager.#networkStorage.addBlockedRequest(params.networkId, {
-            request: params.requestId,
+            request: params.requestId, // intercept request id
             // TODO: Populate phase.
             // TODO: Populate response / ResponseData.
           });
