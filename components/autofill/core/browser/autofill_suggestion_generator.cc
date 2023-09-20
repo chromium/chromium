@@ -339,7 +339,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
       suggestion_selection::AddGranularFillingChildSuggestions(
-          trigger_field_type, *profile, app_locale, suggestions.back());
+          trigger_field_type, last_targeted_fields, *profile, app_locale,
+          suggestions.back());
       suggestion_selection::AddSuggestionDetailsForCurrentFillingGranularity(
           last_targeted_fields, trigger_field_type, suggestions.back());
     } else {

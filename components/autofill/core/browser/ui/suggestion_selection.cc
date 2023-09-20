@@ -87,8 +87,6 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
 // suggestion is displayed once the users is on group filling level or field by
 // field level. It is used as a way to allow users to go back to filling the
 // whole form.
-// TODO(crbug.com/1459990): Use this once the new popup with submenus
-// implementation is complete.
 Suggestion GetFillEverythingFromAddressProfileSuggestion(
     Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
@@ -263,11 +261,18 @@ void AddContactChildSuggestions(const AutofillType& type,
 }
 
 // Adds footer child suggestions to build autofill popup submenu.
-void AddFooterChildSuggestions(const AutofillProfile& profile,
-                               Suggestion& suggestion) {
-  // TODO(crbug.com/1459990): Add fill everything option if current filling is
-  // not in the form filling granularity level. This would mean that an user
-  // just filled specifics groups or fields.
+void AddFooterChildSuggestions(
+    const AutofillProfile& profile,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    Suggestion& suggestion) {
+  // If the last filling granularity was not full form, add the
+  // `PopupItemId::kFillEverythingFromAddressProfile` suggestion. This allows
+  // the user to go back to filling the whole form once in a more fine grained
+  // filling experience.
+  if (!last_targeted_fields || *last_targeted_fields != kAllServerFieldTypes) {
+    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
+        Suggestion::BackendId(profile.guid())));
+  }
   suggestion.children.push_back(
       GetEditAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
   suggestion.children.push_back(
@@ -362,14 +367,16 @@ void AddSuggestionDetailsForCurrentFillingGranularity(
   }
 }
 
-void AddGranularFillingChildSuggestions(const AutofillType& type,
-                                        const AutofillProfile& profile,
-                                        const std::string& app_locale,
-                                        Suggestion& suggestion) {
+void AddGranularFillingChildSuggestions(
+    const AutofillType& type,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    Suggestion& suggestion) {
   AddNameChildSuggestions(type, profile, app_locale, suggestion);
   AddAddressChildSuggestions(type, profile, app_locale, suggestion);
   AddContactChildSuggestions(type, profile, app_locale, suggestion);
-  AddFooterChildSuggestions(profile, suggestion);
+  AddFooterChildSuggestions(profile, last_targeted_fields, suggestion);
 }
 
 std::u16string NormalizeForComparisonForType(const std::u16string& text,

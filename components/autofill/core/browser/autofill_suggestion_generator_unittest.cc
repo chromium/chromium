@@ -930,7 +930,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
       {&profile}, /*field_types=*/{NAME_FIRST},
-      /*last_targeted_fields=*/absl::nullopt, AutofillType(NAME_FIRST),
+      /*last_targeted_fields=*/kAllServerFieldTypes, AutofillType(NAME_FIRST),
       /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(1U, suggestions.size());
@@ -1097,7 +1097,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
       {&profile}, {PHONE_HOME_WHOLE_NUMBER},
-      /*last_targeted_fields=*/absl::nullopt,
+      /*last_targeted_fields=*/kAllServerFieldTypes,
       AutofillType(PHONE_HOME_WHOLE_NUMBER),
       /*trigger_field_max_length=*/0);
 
@@ -1130,7 +1130,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
       {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
-      /*last_targeted_fields=*/absl::nullopt, AutofillType(ADDRESS_HOME_LINE1),
+      /*last_targeted_fields=*/kAllServerFieldTypes,
+      AutofillType(ADDRESS_HOME_LINE1),
       /*trigger_field_max_length=*/0);
 
   // The child suggestions should be:
@@ -1291,6 +1292,27 @@ TEST_F(AutofillSuggestionGeneratorTest,
                                          Suggestion::Text::IsPrimary(true))),
                   Field(&Suggestion::labels,
                         std::vector<std::vector<Suggestion::Text>>{}))));
+}
+
+TEST_F(
+    AutofillSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillGranularFillingAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+
+  // We set only a name field as `last_targeted_fields` to denote that the user
+  // chose field by field filling.
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
+      /*last_targeted_fields=*/absl::optional<ServerFieldTypeSet>({NAME_FIRST}),
+      AutofillType(ADDRESS_HOME_LINE1),
+      /*trigger_field_max_length=*/0);
+
+  EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
+    return child.popup_item_id ==
+           PopupItemId::kFillEverythingFromAddressProfile;
+  }));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,

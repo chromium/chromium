@@ -43,10 +43,12 @@ void AddSuggestionDetailsForCurrentFillingGranularity(
 // the autofill popup will have submenus.
 // `last_targeted_fields` specified the last set of fields target by the user.
 // When not present, we default to full form.
-void AddGranularFillingChildSuggestions(const AutofillType& type,
-                                        const AutofillProfile& profile,
-                                        const std::string& app_locale,
-                                        Suggestion& suggestion);
+void AddGranularFillingChildSuggestions(
+    const AutofillType& type,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    Suggestion& suggestion);
 
 // In addition to just getting the values out of the autocomplete profile, this
 // function handles formatting of the street addresses and phone numbers.
