@@ -219,6 +219,7 @@ class CORE_EXPORT NGLineBreaker {
 
   bool ShouldPushFloatAfterLine(NGUnpositionedFloat*, NGLineInfo*);
   void HandleFloat(const NGInlineItem&,
+                   const NGBlockBreakToken* float_break_token,
                    NGLineInfo*);
 
   void HandleInitialLetter(const NGInlineItem&, NGLineInfo*);
@@ -280,7 +281,7 @@ class CORE_EXPORT NGLineBreaker {
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
-  WhitespaceState trailing_whitespace_;
+  WhitespaceState trailing_whitespace_ = WhitespaceState::kUnknown;
 
   // The current position from inline_start. Unlike NGInlineLayoutAlgorithm
   // that computes position in visual order, this position in logical order.

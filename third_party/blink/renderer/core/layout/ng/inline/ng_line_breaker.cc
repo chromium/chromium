@@ -729,7 +729,23 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
 
 void NGLineBreaker::NextLine(NGLineInfo* line_info) {
   PrepareNextLine(line_info);
+
+  if (break_token_ && break_token_->IsInParallelBlockFlow()) {
+    const auto* block_break_token = break_token_->BlockBreakToken();
+    DCHECK(block_break_token);
+    const NGInlineItem& item = Items()[break_token_->StartItemIndex()];
+    DCHECK_EQ(item.GetLayoutObject(),
+              block_break_token->InputNode().GetLayoutBox());
+    DCHECK(block_break_token->InputNode().IsFloating());
+    HandleFloat(item, block_break_token, line_info);
+
+    state_ = LineBreakState::kDone;
+    line_info->SetIsEmptyLine();
+    return;
+  }
+
   BreakLine(line_info);
+
   if (UNLIKELY(HasHyphen()))
     FinalizeHyphen(line_info->MutableResults());
   RemoveTrailingCollapsibleSpace(line_info);
@@ -843,7 +859,7 @@ void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
       continue;
     }
     if (item.Type() == NGInlineItem::kFloating) {
-      HandleFloat(item, line_info);
+      HandleFloat(item, /* float_break_token */ nullptr, line_info);
       continue;
     }
     if (item.Type() == NGInlineItem::kBidiControl) {
@@ -2668,7 +2684,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
 
   NGInlineItemResult* item_result = AddItem(item, line_info);
   const NGBlockBreakToken* incoming_block_break_token =
-      break_token_ ? break_token_->BlockInInlineBreakToken() : nullptr;
+      break_token_ ? break_token_->BlockBreakToken() : nullptr;
   if (mode_ == NGLineBreakerMode::kContent) {
     // The exclusion spaces *must* match. If they don't we'll have an incorrect
     // layout (as it will potentially won't consider some preceeding floats).
@@ -2709,7 +2725,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   line_info->SetHasForcedBreak();
   is_after_forced_break_ = true;
   trailing_whitespace_ = WhitespaceState::kNone;
-  if (const NGBlockBreakToken* outgoing_block_break_token =
+  if (const auto* outgoing_block_break_token =
           line_info->BlockInInlineBreakToken()) {
     // The block broke inside. If the block itself fits, but some content inside
     // overflowed, and this happened for the first time, we now need to enter a
@@ -2726,10 +2742,17 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   state_ = LineBreakState::kDone;
 }
 
-// Figure out if the float should be pushed after the current line.
+// Figure out if the float should be pushed after the current line. This
+// should only be considered if we're not resuming the float, after having
+// broken inside or before it in the previous fragmentainer. Otherwise we must
+// attempt to place it.
 bool NGLineBreaker::ShouldPushFloatAfterLine(
     NGUnpositionedFloat* unpositioned_float,
     NGLineInfo* line_info) {
+  if (unpositioned_float->token) {
+    return false;
+  }
+
   LayoutUnit inline_margin_size =
       ComputeMarginBoxInlineSizeForUnpositionedFloat(unpositioned_float);
 
@@ -2778,6 +2801,7 @@ bool NGLineBreaker::ShouldPushFloatAfterLine(
 // allowed to position a float "above" another float which has come before us
 // in the document.
 void NGLineBreaker::HandleFloat(const NGInlineItem& item,
+                                const NGBlockBreakToken* float_break_token,
                                 NGLineInfo* line_info) {
   // When rewind occurs, an item may be handled multiple times.
   // Since floats are put into a separate list, avoid handling same floats
@@ -2789,6 +2813,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
   // fragmentainer break. In that case the floats associated with this line will
   // already have been processed.
   NGInlineItemResult* item_result = AddItem(item, line_info);
+  auto index_before_float = current_;
   item_result->can_break_after = auto_wrap_;
   MoveToNextOf(item);
 
@@ -2812,8 +2837,8 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
   LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
   NGUnpositionedFloat unpositioned_float(
-      NGBlockNode(To<LayoutBox>(item.GetLayoutObject())),
-      /* break_token */ nullptr, constraint_space_.AvailableSize(),
+      NGBlockNode(To<LayoutBox>(item.GetLayoutObject())), float_break_token,
+      constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),
       constraint_space_.ReplacedPercentageResolutionSize(),
       {constraint_space_.BfcOffset().line_offset, bfc_block_offset},
@@ -2834,7 +2859,10 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
   if (constraint_space_.HasBlockFragmentation()) {
     if (const auto* break_token = item_result->positioned_float->BreakToken()) {
-      line_info->PropagateBreakToken(break_token);
+      const auto* parallel_token =
+          NGInlineBreakToken::CreateForParallelBlockFlow(
+              node_, index_before_float, *break_token);
+      line_info->PropagateParallelFlowBreakToken(parallel_token);
       if (item_result->positioned_float->minimum_space_shortage) {
         line_info->PropagateMinimumSpaceShortage(
             item_result->positioned_float->minimum_space_shortage);
@@ -3602,10 +3630,10 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
     }
     sub_break_token = block_in_inline->PhysicalFragment().BreakToken();
   }
-  if (UNLIKELY(break_token_ && break_token_->BlockInInlineBreakToken())) {
-    if (break_token_->BlockInInlineBreakToken()->IsAtBlockEnd() &&
-        !sub_break_token)
+  if (UNLIKELY(break_token_ && break_token_->BlockBreakToken())) {
+    if (break_token_->BlockBreakToken()->IsAtBlockEnd() && !sub_break_token) {
       return nullptr;
+    }
   }
 
   DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);

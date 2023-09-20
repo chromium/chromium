@@ -27,7 +27,7 @@ const Member<const NGBreakToken>* NGInlineBreakToken::SubBreakTokenAddress()
   return sub_break_token_;
 }
 
-const NGBlockBreakToken* NGInlineBreakToken::BlockInInlineBreakToken() const {
+const NGBlockBreakToken* NGInlineBreakToken::BlockBreakToken() const {
   if (!(flags_ & kHasSubBreakToken))
     return nullptr;
   const Member<const NGBreakToken>* ptr = SubBreakTokenAddress();
@@ -72,6 +72,15 @@ NGInlineBreakToken* NGInlineBreakToken::Create(
                                                   flags, sub_break_token);
 }
 
+// static
+NGInlineBreakToken* NGInlineBreakToken::CreateForParallelBlockFlow(
+    NGInlineNode node,
+    const NGInlineItemTextIndex& start,
+    const NGBlockBreakToken& child_break_token) {
+  return Create(node, &node.Style(), start, kIsInParallelBlockFlow,
+                &child_break_token);
+}
+
 NGInlineBreakToken::NGInlineBreakToken(
     PassKey key,
     NGInlineNode node,
@@ -86,7 +95,7 @@ NGInlineBreakToken::NGInlineBreakToken(
 #if DCHECK_IS_ON()
     // Only one level of inline break token nesting is expected.
     DCHECK(!sub_break_token->IsInlineType() ||
-           To<NGInlineBreakToken>(sub_break_token)->BlockInInlineBreakToken());
+           To<NGInlineBreakToken>(sub_break_token)->BlockBreakToken());
 #endif
     const Member<const NGBreakToken>* ptr = SubBreakTokenAddress();
     *const_cast<Member<const NGBreakToken>*>(ptr) = sub_break_token;

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -131,8 +132,12 @@ struct NGLogicalLineItem {
         bidi_level(bidi_level),
         container_direction(container_direction) {}
   // Create an unpositioned float.
-  NGLogicalLineItem(LayoutObject* unpositioned_float, UBiDiLevel bidi_level)
-      : unpositioned_float(unpositioned_float), bidi_level(bidi_level) {}
+  NGLogicalLineItem(LayoutObject* unpositioned_float,
+                    UBiDiLevel bidi_level,
+                    NGInlineItemTextIndex item_index)
+      : unpositioned_float(unpositioned_float),
+        item_index(item_index),
+        bidi_level(bidi_level) {}
   // Create a positioned float.
   NGLogicalLineItem(const NGLayoutResult* layout_result,
                     NGBfcOffset bfc_offset,
@@ -229,6 +234,7 @@ struct NGLogicalLineItem {
 
   Member<LayoutObject> out_of_flow_positioned_box;
   Member<LayoutObject> unpositioned_float;
+  NGInlineItemTextIndex item_index;
 
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.

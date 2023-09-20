@@ -2116,7 +2116,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     }
 
     if (inline_child_layout_context) {
-      for (auto token : inline_child_layout_context->PropagatedBreakTokens()) {
+      for (auto token :
+           inline_child_layout_context->ParallelFlowBreakTokens()) {
         container_builder_.AddBreakToken(std::move(token),
                                          /* is_in_parallel_flow */ true);
       }
@@ -2194,9 +2195,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   if (child.IsInline()) {
     const auto* inline_break_token =
         To<NGInlineBreakToken>(physical_fragment.BreakToken());
-    if (UNLIKELY(inline_break_token &&
-                 inline_break_token->BlockInInlineBreakToken())) {
-      if (inline_break_token->BlockInInlineBreakToken()->IsAtBlockEnd()) {
+    if (UNLIKELY(inline_break_token && inline_break_token->BlockBreakToken())) {
+      if (inline_break_token->BlockBreakToken()->IsAtBlockEnd()) {
         // We resumed a block in inline in a parallel flow, and broke
         // again. This will have to wait until we get to the next
         // fragmentainer. The break token has already been added to the fragment

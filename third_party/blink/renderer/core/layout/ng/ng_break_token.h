@@ -93,7 +93,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // The following bitfields are only to be used by NGInlineBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
-  const unsigned flags_ : 4;  // NGInlineBreakTokenFlags
+  const unsigned flags_ : 5;  // NGInlineBreakTokenFlags
 
   // The following bitfields are only to be used by NGBlockBreakToken (it's
   // defined here to save memory, since that class has no bitfields).

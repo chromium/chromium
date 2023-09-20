@@ -1761,13 +1761,13 @@ TEST_F(NGColumnLayoutAlgorithmTest, LinesAndFloatsMulticol) {
           offset:21,40 size:0x20
       offset:110,0 size:100x70
         offset:0,0 size:100x40
-          offset:0,0 size:10x70
-          offset:10,0 size:11x70
+          offset:0,0 size:0x0
+          offset:0,0 size:0x0
           offset:21,0 size:0x20
           offset:21,20 size:0x20
       offset:220,0 size:100x70
         offset:0,0 size:100x0
-          offset:0,0 size:11x20
+          offset:0,0 size:0x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1813,7 +1813,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, FloatBelowLastLineInColumn) {
           offset:11,20 size:0x20
       offset:220,0 size:100x70
         offset:0,0 size:100x0
-          offset:0,0 size:11x50
+          offset:0,0 size:0x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

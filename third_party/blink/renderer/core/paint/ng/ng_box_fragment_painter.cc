@@ -946,10 +946,12 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     }
   }
 
-  // Now process the inline formatting context, if any. Note that even if this
-  // is an inline formatting context, we still need to walk the box fragment
-  // children (like we did above). If a float is block-fragmented, it is resumed
-  // as a regular box fragment child, rather than becoming a fragment item.
+  // Now process the inline formatting context, if any.
+  //
+  // TODO(mstensho): Clean up this. Now that floats no longer escape their
+  // inline formatting context when fragmented, we should only have to one of
+  // these things; either walk the inline items, OR walk the box fragment
+  // children (above).
   if (const NGPhysicalBoxFragment* box =
           DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {

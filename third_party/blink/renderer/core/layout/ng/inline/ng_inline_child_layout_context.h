@@ -63,12 +63,12 @@ class CORE_EXPORT NGInlineChildLayoutContext {
     item_index_ = item_index;
   }
 
-  const HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens()
+  const HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens()
       const {
-    return propagated_float_break_tokens_;
+    return parallel_flow_break_tokens_;
   }
-  void ClearPropagatedBreakTokens();
-  void PropagateBreakToken(const NGBlockBreakToken*);
+  void ClearParallelFlowBreakTokens();
+  void PropagateParallelFlowBreakToken(const NGBreakToken*);
 
   const absl::optional<LayoutUnit>& BalancedAvailableWidth() const {
     return balanced_available_width_;
@@ -100,7 +100,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   const HeapVector<NGInlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
-  HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
+  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
 
   // Used by `NGParagraphLineBreaker`.
   absl::optional<LayoutUnit> balanced_available_width_;

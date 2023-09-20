@@ -98,11 +98,11 @@ class CORE_EXPORT NGLineInfo {
   // break.
   bool IsEndParagraph() const { return !BreakToken() || HasForcedBreak(); }
 
-  HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
-    return propagated_break_tokens_;
+  HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens() {
+    return parallel_flow_break_tokens_;
   }
-  void PropagateBreakToken(const NGBlockBreakToken* token) {
-    propagated_break_tokens_.push_back(token);
+  void PropagateParallelFlowBreakToken(const NGBreakToken* token) {
+    parallel_flow_break_tokens_.push_back(token);
   }
 
   absl::optional<LayoutUnit> MinimumSpaceShortage() const {
@@ -265,7 +265,7 @@ class CORE_EXPORT NGLineInfo {
   NGBfcOffset bfc_offset_;
 
   const NGInlineBreakToken* break_token_ = nullptr;
-  HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
+  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
 
   const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
 

@@ -20,7 +20,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
   absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[5];
   unsigned number;
-  HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
+  HeapVector<Member<const NGBlockBreakToken>> tokens_;
 };
 
 static_assert(
@@ -68,7 +68,7 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
 
 NGInlineChildLayoutContext::~NGInlineChildLayoutContext() {
   container_builder_->SetItemsBuilder(nullptr);
-  propagated_float_break_tokens_.clear();
+  parallel_flow_break_tokens_.clear();
 }
 
 NGInlineLayoutStateStack*
@@ -80,13 +80,13 @@ NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
   return nullptr;
 }
 
-void NGInlineChildLayoutContext::ClearPropagatedBreakTokens() {
-  propagated_float_break_tokens_.Shrink(0);
+void NGInlineChildLayoutContext::ClearParallelFlowBreakTokens() {
+  parallel_flow_break_tokens_.Shrink(0);
 }
 
-void NGInlineChildLayoutContext::PropagateBreakToken(
-    const NGBlockBreakToken* token) {
-  propagated_float_break_tokens_.push_back(token);
+void NGInlineChildLayoutContext::PropagateParallelFlowBreakToken(
+    const NGBreakToken* token) {
+  parallel_flow_break_tokens_.push_back(token);
 }
 
 }  // namespace blink

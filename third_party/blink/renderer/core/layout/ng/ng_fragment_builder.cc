@@ -330,8 +330,8 @@ void NGFragmentBuilder::PropagateFromFragment(
           // TODO(mstensho): Orphans / widows calculation is wrong when regular
           // inline layout gets interrupted by a block-in-inline. We need to
           // reset line_count_ when this happens.
-          if (UNLIKELY(inline_break_token->BlockInInlineBreakToken())) {
-            if (inline_break_token->BlockInInlineBreakToken()->IsAtBlockEnd()) {
+          if (UNLIKELY(inline_break_token->BlockBreakToken())) {
+            if (inline_break_token->BlockBreakToken()->IsAtBlockEnd()) {
               // We were resuming a block in inline, and we broke again, and
               // we're in a parallel flow. To be resumed in the next
               // fragmentainer.
@@ -351,7 +351,7 @@ void NGFragmentBuilder::PropagateFromFragment(
             // gets resumed in the next fragmentainer.
             const auto* sub_break_token =
                 inline_break_token->SubBreakTokenInParallelFlow();
-            DCHECK(sub_break_token->BlockInInlineBreakToken());
+            DCHECK(sub_break_token->BlockBreakToken());
             child_break_tokens_.push_back(sub_break_token);
           }
         }

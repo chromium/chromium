@@ -543,22 +543,16 @@ bool PrePaintTreeWalk::CollectMissableChildren(
   for (const NGLink& child : parent.Children()) {
     if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
       continue;
-    if ((child->IsOutOfFlowPositioned() &&
-         (context.current_container.fragment || child->IsFixedPositioned())) ||
-        (child->IsFloating() && parent.IsInlineFormattingContext() &&
-         context.current_container.fragment)) {
-      // We'll add resumed floats (or floats that couldn't fit a fragment in the
-      // fragmentainer where it was discovered) that have escaped their inline
-      // formatting context.
-      //
-      // We'll also add all out-of-flow positioned fragments inside a
-      // fragmentation context. If a fragment is fixed-positioned, we even need
-      // to add those that aren't inside a fragmentation context, because they
-      // may have an ancestor LayoutObject inside one, and one of those
-      // ancestors may be out-of-flow positioned, which may be missed, in which
-      // case we'll miss this fixed-positioned one as well (since we don't enter
-      // descendant OOFs when walking missed children) (example: fixedpos inside
-      // missed abspos in relpos in multicol).
+    if (child->IsOutOfFlowPositioned() &&
+        (context.current_container.fragment || child->IsFixedPositioned())) {
+      // Add all out-of-flow positioned fragments inside a fragmentation
+      // context. If a fragment is fixed-positioned, we even need to add those
+      // that aren't inside a fragmentation context, because they may have an
+      // ancestor LayoutObject inside one, and one of those ancestors may be
+      // out-of-flow positioned, which may be missed, in which case we'll miss
+      // this fixed-positioned one as well (since we don't enter descendant OOFs
+      // when walking missed children) (example: fixedpos inside missed abspos
+      // in relpos in multicol).
       pending_missables_.insert(child.fragment);
       has_missable_children = true;
     }
@@ -706,8 +700,9 @@ void PrePaintTreeWalk::WalkMissedChildren(
   for (const NGLink& child : fragment.Children()) {
     if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
       continue;
-    if (!child->IsOutOfFlowPositioned() && !child->IsFloating())
+    if (!child->IsOutOfFlowPositioned()) {
       continue;
+    }
     if (!pending_missables_.Contains(child.fragment))
       continue;
     const LayoutObject& descendant_object = *child->GetLayoutObject();
@@ -962,8 +957,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       // The cursor will be missing if the child has no fragment representation,
       // or if the container has no fragment items (which may happen if there's
       // only collapsed text / culled inlines, or if we had to insert a break in
-      // a block before we got to any inline content, or if the container only
-      // has resumed floats).
+      // a block before we got to any inline content).
 
       // If the child has a fragment representation, we're going to find it in
       // the fragmentainer(s) where it occurs.
@@ -1197,14 +1191,10 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   }
 
   // If we're visiting a missable fragment, remove it from the list.
-  if (physical_fragment) {
-    // If we're doing fragment traversal, both OOFs and floats are missable.
-    if (physical_fragment->IsOutOfFlowPositioned() ||
-        physical_fragment->IsFloating())
+  if (object.IsOutOfFlowPositioned()) {
+    if (physical_fragment) {
       pending_missables_.erase(physical_fragment);
-  } else {
-    // If we're not doing fragment traversal, only OOFs are missable.
-    if (object.IsOutOfFlowPositioned()) {
+    } else {
       const auto& box = To<LayoutBox>(object);
       if (box.PhysicalFragmentCount()) {
         DCHECK_EQ(box.PhysicalFragmentCount(), 1u);
