@@ -344,6 +344,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
+    attempt_previous_ukm_entry_builder_ =
+        std::make_unique<PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder>(
+            content_preloading_predictor::kSpeculationRules);
     prediction_ukm_entry_builder_ =
         std::make_unique<test::PreloadingPredictionUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
@@ -513,9 +516,25 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return *attempt_ukm_entry_builder_;
   }
 
+  const PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder&
+  attempt_previous_ukm_entry_builder() {
+    return *attempt_previous_ukm_entry_builder_;
+  }
+
   const test::PreloadingPredictionUkmEntryBuilder&
   prediction_ukm_entry_builder() {
     return *prediction_ukm_entry_builder_;
+  }
+
+  void ExpectPreloadingAttemptPreviousPrimaryPageUkm(
+      const UkmEntry& attempt_expected_entry) {
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt_PreviousPrimaryPage::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
   }
 
   void TestHostPrerenderingState(const GURL& prerender_url) {
@@ -689,6 +708,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_ukm_entry_builder_;
+  std::unique_ptr<PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder>
+      attempt_previous_ukm_entry_builder_;
   std::unique_ptr<test::PreloadingPredictionUkmEntryBuilder>
       prediction_ukm_entry_builder_;
   base::test::ScopedFeatureList feature_list_;
@@ -1200,31 +1221,18 @@ IN_PROC_BROWSER_TEST_F(
   // RunUntilIdle().
   base::RunLoop().RunUntilIdle();
 
-  {
-    // The prerender WebContents doesn't have the primary page that can record
-    // UKM on destruction. Instead, it asks the primary page hosted on the
-    // primary WebContents to record UKM.
-    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt_PreviousPrimaryPage::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
-    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
-
-    PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder
-        attempt_ukm_entry_builder(
-            content_preloading_predictor::kSpeculationRules);
-    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder.BuildEntry(
-        triggering_primary_page_source_id, PreloadingType::kPrerender,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        PreloadingTriggeringOutcome::kReady,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/false,
-        /*ready_time=*/kMockElapsedTime,
-        blink::mojom::SpeculationEagerness::kEager);
-
-    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
-                                                  attempt_expected_entry);
-  }
+  // The prerender WebContents doesn't have the primary page that can record UKM
+  // on destruction. Instead, it asks the primary page hosted on the primary
+  // WebContents to record UKM.
+  ExpectPreloadingAttemptPreviousPrimaryPageUkm(
+      attempt_previous_ukm_entry_builder().BuildEntry(
+          triggering_primary_page_source_id, PreloadingType::kPrerender,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kReady,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/false,
+          /*ready_time=*/kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kEager));
 }
 
 // TODO(crbug.com/1350676): Add more test cases for prerender-in-new-tab:
@@ -1677,31 +1685,18 @@ IN_PROC_BROWSER_TEST_F(
   ukm::SourceId triggering_primary_page_source_id =
       web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
-  {
-    // The prerender WebContents doesn't have the primary page that can record
-    // UKM on destruction. Instead, it asks the primary page hosted on the
-    // primary WebContents to record UKM.
-    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt_PreviousPrimaryPage::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
-    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
-
-    PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder
-        attempt_ukm_entry_builder(
-            content_preloading_predictor::kSpeculationRules);
-    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder.BuildEntry(
-        triggering_primary_page_source_id, PreloadingType::kPrerender,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        PreloadingTriggeringOutcome::kReady,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/false,
-        /*ready_time=*/kMockElapsedTime,
-        blink::mojom::SpeculationEagerness::kEager);
-
-    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
-                                                  attempt_expected_entry);
-  }
+  // The prerender WebContents doesn't have the primary page that can record UKM
+  // on destruction. Instead, it asks the primary page hosted on the primary
+  // WebContents to record UKM.
+  ExpectPreloadingAttemptPreviousPrimaryPageUkm(
+      attempt_previous_ukm_entry_builder().BuildEntry(
+          triggering_primary_page_source_id, PreloadingType::kPrerender,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kReady,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/false,
+          /*ready_time=*/kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kEager));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
