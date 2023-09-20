@@ -30,6 +30,12 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+// This class implements the Chromium interface to a deprecated API. It is in
+// the process of being replaced, and warnings about its deprecation are not
+// helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 // Make dynamic properties accessible for OCMock.
 @implementation NSUserNotificationCenter (Testing)
 - (id<NSUserNotificationCenterDelegate>)delegate {
@@ -375,3 +381,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kNotificationActionParams));
 
 }  // namespace mac_notifications
+
+#pragma clang diagnostic pop

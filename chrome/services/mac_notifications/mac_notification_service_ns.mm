@@ -21,6 +21,12 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 
+// This class implements the Chromium interface to a deprecated API. It is in
+// the process of being replaced, and warnings about its deprecation are not
+// helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @interface AlertNSNotificationCenterDelegate
     : NSObject <NSUserNotificationCenterDelegate>
 - (instancetype)initWithActionHandler:
@@ -357,3 +363,5 @@ void MacNotificationServiceNS::OkayToTerminateService(
 }
 
 @end
+
+#pragma clang diagnostic pop
