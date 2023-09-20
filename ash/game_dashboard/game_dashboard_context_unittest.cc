@@ -1028,6 +1028,7 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaTouch) {
 TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaArrowKeys) {
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
+  test_api_->SetFocusOnToolbar();
 
   // Verify that be default the snap position should be `kTopRight` and
   // toolbar is placed in the top right quadrant.

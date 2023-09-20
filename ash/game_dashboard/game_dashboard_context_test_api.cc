@@ -11,6 +11,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
+#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -204,6 +205,13 @@ void GameDashboardContextTestApi::OpenTheToolbar() {
   ClickOnView(main_menu_toolbar_tile, event_generator_);
   ASSERT_TRUE(GetToolbarView());
   ASSERT_TRUE(GetToolbarWidget());
+}
+
+void GameDashboardContextTestApi::SetFocusOnToolbar() {
+  GameDashboardWidget* toolbar_widget = GetToolbarWidget();
+  ASSERT_TRUE(toolbar_widget)
+      << "The toolbar view must be opened before trying to place focus on it.";
+  toolbar_widget->Activate();
 }
 
 void GameDashboardContextTestApi::CloseTheToolbar() {

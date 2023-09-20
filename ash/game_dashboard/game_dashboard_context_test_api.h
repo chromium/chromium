@@ -97,6 +97,9 @@ class GameDashboardContextTestApi {
   // is closed. After opening the toolbar, verifies it opened.
   void OpenTheToolbar();
 
+  // Places focus on the toolbar without clicking on any buttons.
+  void SetFocusOnToolbar();
+
   // Closes the toolbar.
   // Before closing the toolbar, verifies the main menu widget and toolbar
   // widget are not null. After closing the toolbar, verifies the toolbar widget

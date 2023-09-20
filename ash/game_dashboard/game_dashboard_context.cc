@@ -127,7 +127,18 @@ bool GameDashboardContext::ToggleToolbar() {
     DCHECK_EQ(game_window_,
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
-    toolbar_widget_->Show();
+
+    if (main_menu_widget_) {
+      // Display the toolbar behind the main menu view.
+      toolbar_widget_->ShowInactive();
+      auto* toolbar_window = toolbar_widget_->GetNativeWindow();
+      auto* main_menu_window = main_menu_widget_->GetNativeWindow();
+      CHECK_EQ(toolbar_window->parent(), main_menu_window->parent());
+      toolbar_window->parent()->StackChildBelow(toolbar_window,
+                                                main_menu_window);
+    } else {
+      toolbar_widget_->Show();
+    }
     return true;
   }
 
