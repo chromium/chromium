@@ -326,7 +326,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
   if (chromeos::features::IsJellyEnabled()) {
     delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1));
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
     // Add empty view for background blur.
     views::View* background_view = nullptr;
