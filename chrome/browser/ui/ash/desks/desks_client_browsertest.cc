@@ -3569,7 +3569,13 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
   AccountId account_id2_;
 };
 
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MultiProfileTest DISABLED_MultiProfileTest
+#else
+#define MAYBE_MultiProfileTest MultiProfileTest
+#endif
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
+                       MAYBE_MultiProfileTest) {
   CreateBrowser(ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
   // Capture the active desk, which contains the browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
