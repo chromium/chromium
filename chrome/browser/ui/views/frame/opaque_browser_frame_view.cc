@@ -418,8 +418,6 @@ void OpaqueBrowserFrameView::UpdateWindowTitle() {
   }
 }
 
-void OpaqueBrowserFrameView::SizeConstraintsChanged() {}
-
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, views::View overrides:
 

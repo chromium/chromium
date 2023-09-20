@@ -106,11 +106,6 @@ int AppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   return HTCAPTION;
 }
 
-void AppWindowFrameViewWin::GetWindowMask(const gfx::Size& size,
-                                          SkPath* window_mask) {
-  // We got nothing to say about no window mask.
-}
-
 gfx::Size AppWindowFrameViewWin::CalculatePreferredSize() const {
   gfx::Size pref = widget_->client_view()->GetPreferredSize();
   gfx::Rect bounds(0, 0, pref.width(), pref.height());

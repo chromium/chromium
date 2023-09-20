@@ -386,15 +386,6 @@ int BrowserNonClientFrameViewMac::NonClientHitTest(const gfx::Point& point) {
                                                               : component;
 }
 
-void BrowserNonClientFrameViewMac::GetWindowMask(const gfx::Size& size,
-                                                 SkPath* window_mask) {}
-
-void BrowserNonClientFrameViewMac::UpdateWindowIcon() {
-}
-
-void BrowserNonClientFrameViewMac::SizeConstraintsChanged() {
-}
-
 void BrowserNonClientFrameViewMac::UpdateMinimumSize() {
   GetWidget()->OnSizeConstraintsChanged();
 }

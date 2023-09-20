@@ -211,11 +211,6 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     // Allows for dragging and resizing the window.
     return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
   }
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
-  void ResetWindowControls() override {}
-  void UpdateWindowIcon() override {}
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,

@@ -80,7 +80,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void ResetWindowControls() override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
