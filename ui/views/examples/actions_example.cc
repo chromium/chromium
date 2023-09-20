@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,6 +45,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 
 namespace views::examples {
@@ -247,7 +249,7 @@ constexpr auto kActionIdStrings =
 #include "ui/actions/action_id_macros.inc"  // NOLINT(build/include)
 #undef STRINGIZE_ACTION_IDS
 
-class ViewsComboboxModel : public ui::ComboboxModel {
+class ViewsComboboxModel : public ui::ComboboxModel, public ViewObserver {
  public:
   explicit ViewsComboboxModel(View* container);
   ViewsComboboxModel(const ViewsComboboxModel&) = delete;
@@ -261,12 +263,19 @@ class ViewsComboboxModel : public ui::ComboboxModel {
 
   View* GetViewItemAt(size_t index) const;
 
+ protected:
+  // ViewObserver overrides
+  void OnViewIsDeleting(View* observed_view) override;
+
  private:
   raw_ptr<View> container_;
+  base::ScopedObservation<View, ViewObserver> container_observation_{this};
 };
 
 ViewsComboboxModel::ViewsComboboxModel(View* container)
-    : container_(container) {}
+    : container_(container) {
+  container_observation_.Observe(container_);
+}
 
 size_t ViewsComboboxModel::GetItemCount() const {
   size_t size = container_->children().size();
@@ -295,6 +304,13 @@ View* ViewsComboboxModel::GetViewItemAt(size_t index) const {
     return container_->children()[index];
   }
   return nullptr;
+}
+
+void ViewsComboboxModel::OnViewIsDeleting(View* observed_view) {
+  if (observed_view == container_.get()) {
+    container_observation_.Reset();
+    container_ = nullptr;
+  }
 }
 
 class ActionItemComboboxModel : public ui::ComboboxModel {
