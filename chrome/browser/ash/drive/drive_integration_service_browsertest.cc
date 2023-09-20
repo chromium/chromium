@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -303,18 +304,12 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   }
 }
 
-class DriveMirrorSyncStatusObserver : public DriveIntegrationServiceObserver {
+class DriveMirrorSyncStatusObserver : public DriveIntegrationService::Observer {
  public:
   explicit DriveMirrorSyncStatusObserver(bool expected_status)
       : expected_status_(expected_status) {
     quit_closure_ = run_loop_.QuitClosure();
   }
-
-  DriveMirrorSyncStatusObserver(const DriveMirrorSyncStatusObserver&) = delete;
-  DriveMirrorSyncStatusObserver& operator=(
-      const DriveMirrorSyncStatusObserver&) = delete;
-
-  ~DriveMirrorSyncStatusObserver() override {}
 
   void WaitForStatusChange() { run_loop_.Run(); }
 
@@ -350,19 +345,17 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override {}
 
   void ToggleMirrorSync(bool status) {
-    auto observer = std::make_unique<DriveMirrorSyncStatusObserver>(status);
-    auto* drive_service =
-        DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
-    drive_service->AddObserver(observer.get());
-
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kDriveFsEnableMirrorSync, status);
-    observer->WaitForStatusChange();
-    EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
-                  prefs::kDriveFsEnableMirrorSync),
-              status);
-
-    drive_service->RemoveObserver(observer.get());
+    DriveMirrorSyncStatusObserver observer(status);
+    base::ScopedObservation<DriveIntegrationService,
+                            DriveIntegrationService::Observer>
+        scoped_observer(&observer);
+    Profile* const profile = browser()->profile();
+    scoped_observer.Observe(
+        DriveIntegrationServiceFactory::FindForProfile(profile));
+    PrefService* const prefs = profile->GetPrefs();
+    prefs->SetBoolean(prefs::kDriveFsEnableMirrorSync, status);
+    observer.WaitForStatusChange();
+    EXPECT_EQ(prefs->GetBoolean(prefs::kDriveFsEnableMirrorSync), status);
   }
 
   void AddSyncingPath(const base::FilePath& path) {
