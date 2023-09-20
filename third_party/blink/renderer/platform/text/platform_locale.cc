@@ -312,39 +312,17 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
   if (!has_locale_data_ || input.empty())
     return input;
 
-  unsigned i = 0;
-  bool is_negative = false;
   StringBuilder builder;
   builder.ReserveCapacity(input.length());
 
-  if (input[0] == '-') {
-    ++i;
-    is_negative = true;
-    builder.Append(negative_prefix_);
-  } else {
-    builder.Append(positive_prefix_);
-  }
+  const bool is_negative = input[0] == '-';
+  builder.Append(is_negative ? negative_prefix_ : positive_prefix_);
 
-  for (; i < input.length(); ++i) {
-    switch (input[i]) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        builder.Append(decimal_symbols_[input[i] - '0']);
-        break;
-      case '.':
-        builder.Append(decimal_symbols_[kDecimalSeparatorIndex]);
-        break;
-      default:
-        NOTREACHED();
-    }
+  for (unsigned i = is_negative ? 1 : 0; i < input.length(); ++i) {
+    const UChar c = input[i];
+    CHECK(c == '.' || (c >= '0' && c <= '9'));
+    builder.Append(
+        decimal_symbols_[c == '.' ? kDecimalSeparatorIndex : (c - '0')]);
   }
 
   builder.Append(is_negative ? negative_suffix_ : positive_suffix_);
@@ -371,31 +349,32 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
   DCHECK_EQ(input.Find(IsASCIISpace), WTF::kNotFound);
   start_index = 0;
   end_index = input.length();
+  const auto adjust_for_affixes = [&](const String& prefix,
+                                      const String& suffix) {
+    if (!input.StartsWith(prefix) || !input.EndsWith(suffix)) {
+      return false;
+    }
+    start_index = prefix.length();
+    end_index -= suffix.length();
+    return true;
+  };
+
   const bool negative_empty =
       negative_prefix_.empty() && negative_suffix_.empty();
-  if (!negative_empty) {
-    // For some locales the negative prefix and/or suffix are preceded or
-    // followed by whitespace. Exclude that for the purposes of this search
-    // since the input string has already been stripped of whitespace.
-    const String negative_prefix_without_whitespace =
-        negative_prefix_.StripWhiteSpace();
-    const String negative_suffix_without_whitespace =
-        negative_suffix_.StripWhiteSpace();
-    if (input.StartsWith(negative_prefix_without_whitespace) &&
-        input.EndsWith(negative_suffix_without_whitespace)) {
-      is_negative = true;
-      start_index = negative_prefix_without_whitespace.length();
-      end_index -= negative_suffix_without_whitespace.length();
-      return true;
-    }
+  if (!negative_empty &&
+      // For some locales the negative prefix and/or suffix are preceded or
+      // followed by whitespace. Exclude that for the purposes of this search
+      // since the input string has already been stripped of whitespace.
+      adjust_for_affixes(negative_prefix_.StripWhiteSpace(),
+                         negative_suffix_.StripWhiteSpace())) {
+    is_negative = true;
+    return true;
   }
 
   // Note: Positive prefix and suffix may be empty, in which case this will
   // always succeed.
-  if (input.StartsWith(positive_prefix_) && input.EndsWith(positive_suffix_)) {
+  if (adjust_for_affixes(positive_prefix_, positive_suffix_)) {
     is_negative = false;
-    start_index = positive_prefix_.length();
-    end_index -= positive_suffix_.length();
     return true;
   }
 

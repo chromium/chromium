@@ -120,31 +120,34 @@ NSDateFormatter* LocaleMac::ShortDateFormatter() {
 }
 
 const Vector<String>& LocaleMac::MonthLabels() {
-  if (!month_labels_.empty())
-    return month_labels_;
-  month_labels_.reserve(12);
-  NSArray* array = ShortDateFormatter().monthSymbols;
-  if (array.count == 12) {
-    for (unsigned i = 0; i < 12; ++i)
-      month_labels_.push_back(String(array[i]));
-    return month_labels_;
+  if (month_labels_.empty()) {
+    month_labels_.reserve(12);
+    NSArray* array = ShortDateFormatter().monthSymbols;
+    if (array.count == 12) {
+      for (unsigned i = 0; i < 12; ++i) {
+        month_labels_.push_back(String(array[i]));
+      }
+    } else {
+      base::ranges::copy(WTF::kMonthFullName,
+                         std::back_inserter(month_labels_));
+    }
   }
-  base::ranges::copy(WTF::kMonthFullName, std::back_inserter(month_labels_));
   return month_labels_;
 }
 
 const Vector<String>& LocaleMac::WeekDayShortLabels() {
-  if (!week_day_short_labels_.empty())
-    return week_day_short_labels_;
-  week_day_short_labels_.reserve(7);
-  NSArray* array = ShortDateFormatter().veryShortWeekdaySymbols;
-  if (array.count == 7) {
-    for (unsigned i = 0; i < 7; ++i)
-      week_day_short_labels_.push_back(String(array[i]));
-    return week_day_short_labels_;
+  if (week_day_short_labels_.empty()) {
+    week_day_short_labels_.reserve(7);
+    NSArray* array = ShortDateFormatter().veryShortWeekdaySymbols;
+    if (array.count == 7) {
+      for (unsigned i = 0; i < 7; ++i) {
+        week_day_short_labels_.push_back(String(array[i]));
+      }
+    } else {
+      base::ranges::copy(WTF::kWeekdayName,
+                         std::back_inserter(week_day_short_labels_));
+    }
   }
-  base::ranges::copy(WTF::kWeekdayName,
-                     std::back_inserter(week_day_short_labels_));
   return week_day_short_labels_;
 }
 
@@ -243,16 +246,18 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
 }
 
 const Vector<String>& LocaleMac::ShortMonthLabels() {
-  if (!short_month_labels_.empty())
-    return short_month_labels_;
-  short_month_labels_.reserve(12);
-  NSArray* array = ShortDateFormatter().shortMonthSymbols;
-  if (array.count == 12) {
-    for (unsigned i = 0; i < 12; ++i)
-      short_month_labels_.push_back(array[i]);
-    return short_month_labels_;
+  if (short_month_labels_.empty()) {
+    short_month_labels_.reserve(12);
+    NSArray* array = ShortDateFormatter().shortMonthSymbols;
+    if (array.count == 12) {
+      for (unsigned i = 0; i < 12; ++i) {
+        short_month_labels_.push_back(array[i]);
+      }
+    } else {
+      base::ranges::copy(WTF::kMonthName,
+                         std::back_inserter(short_month_labels_));
+    }
   }
-  base::ranges::copy(WTF::kMonthName, std::back_inserter(short_month_labels_));
   return short_month_labels_;
 }
 

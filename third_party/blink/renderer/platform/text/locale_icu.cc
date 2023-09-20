@@ -57,7 +57,6 @@ LocaleICU::LocaleICU(const std::string& locale)
       short_date_format_(nullptr),
       did_create_decimal_format_(false),
       did_create_short_date_format_(false),
-      first_day_of_week_(0),
       medium_time_format_(nullptr),
       short_time_format_(nullptr),
       did_create_time_format_(false) {}
@@ -228,64 +227,46 @@ Vector<String> LocaleICU::CreateLabelVector(const UDateFormat* date_format,
   return labels;
 }
 
-static Vector<String> CreateFallbackWeekDayShortLabels() {
-  Vector<String> labels;
-  labels.reserve(std::size(WTF::kWeekdayName));
-  base::ranges::copy(WTF::kWeekdayName, std::back_inserter(labels));
-  return labels;
-}
-
-void LocaleICU::InitializeCalendar() {
-  if (!week_day_short_labels_.empty()) {
-    return;
-  }
-
-  if (!InitializeShortDateFormat()) {
-    first_day_of_week_ = 0;
-    week_day_short_labels_ = CreateFallbackWeekDayShortLabels();
-    return;
-  }
-  first_day_of_week_ = ucal_getAttribute(udat_getCalendar(short_date_format_),
-                                         UCAL_FIRST_DAY_OF_WEEK) -
-                       UCAL_SUNDAY;
-
-  week_day_short_labels_ = CreateLabelVector(
-      short_date_format_, UDAT_NARROW_WEEKDAYS, UCAL_SUNDAY, 7);
-  if (week_day_short_labels_.empty()) {
-    week_day_short_labels_ = CreateFallbackWeekDayShortLabels();
-  }
-}
-
-static Vector<String> CreateFallbackMonthLabels() {
-  Vector<String> labels;
-  labels.reserve(std::size(WTF::kMonthFullName));
-  base::ranges::copy(WTF::kMonthFullName, std::back_inserter(labels));
-  return labels;
-}
-
 const Vector<String>& LocaleICU::MonthLabels() {
-  if (!month_labels_.empty()) {
-    return month_labels_;
-  }
-  if (InitializeShortDateFormat()) {
-    month_labels_ =
-        CreateLabelVector(short_date_format_, UDAT_MONTHS, UCAL_JANUARY, 12);
-    if (!month_labels_.empty()) {
-      return month_labels_;
+  if (month_labels_.empty()) {
+    if (InitializeShortDateFormat()) {
+      month_labels_ =
+          CreateLabelVector(short_date_format_, UDAT_MONTHS, UCAL_JANUARY, 12);
+    }
+    if (month_labels_.empty()) {
+      month_labels_.reserve(std::size(WTF::kMonthFullName));
+      base::ranges::copy(WTF::kMonthFullName,
+                         std::back_inserter(month_labels_));
     }
   }
-  month_labels_ = CreateFallbackMonthLabels();
   return month_labels_;
 }
 
 const Vector<String>& LocaleICU::WeekDayShortLabels() {
-  InitializeCalendar();
+  if (week_day_short_labels_.empty()) {
+    if (InitializeShortDateFormat()) {
+      week_day_short_labels_ = CreateLabelVector(
+          short_date_format_, UDAT_NARROW_WEEKDAYS, UCAL_SUNDAY, 7);
+    }
+    if (week_day_short_labels_.empty()) {
+      week_day_short_labels_.reserve(std::size(WTF::kWeekdayName));
+      base::ranges::copy(WTF::kWeekdayName,
+                         std::back_inserter(week_day_short_labels_));
+    }
+  }
   return week_day_short_labels_;
 }
 
 unsigned LocaleICU::FirstDayOfWeek() {
-  InitializeCalendar();
-  return first_day_of_week_;
+  if (!first_day_of_week_.has_value()) {
+    first_day_of_week_ =
+        InitializeShortDateFormat()
+            ? ucal_getAttribute(udat_getCalendar(short_date_format_),
+                                UCAL_FIRST_DAY_OF_WEEK) -
+                  UCAL_SUNDAY
+            : 0;
+  }
+  return first_day_of_week_.value();
 }
 
 bool LocaleICU::IsRTL() {
@@ -399,51 +380,48 @@ String LocaleICU::DateTimeFormatWithoutSeconds() {
 }
 
 const Vector<String>& LocaleICU::ShortMonthLabels() {
-  if (!short_month_labels_.empty())
-    return short_month_labels_;
-  if (InitializeShortDateFormat()) {
-    short_month_labels_ = CreateLabelVector(
-        short_date_format_, UDAT_SHORT_MONTHS, UCAL_JANUARY, 12);
-    if (!short_month_labels_.empty()) {
-      return short_month_labels_;
+  if (short_month_labels_.empty()) {
+    if (InitializeShortDateFormat()) {
+      short_month_labels_ = CreateLabelVector(
+          short_date_format_, UDAT_SHORT_MONTHS, UCAL_JANUARY, 12);
+    }
+    if (short_month_labels_.empty()) {
+      short_month_labels_.reserve(std::size(WTF::kMonthName));
+      base::ranges::copy(WTF::kMonthName,
+                         std::back_inserter(short_month_labels_));
     }
   }
-  short_month_labels_.reserve(std::size(WTF::kMonthName));
-  base::ranges::copy(WTF::kMonthName, std::back_inserter(short_month_labels_));
   return short_month_labels_;
 }
 
 const Vector<String>& LocaleICU::StandAloneMonthLabels() {
-  if (!stand_alone_month_labels_.empty())
-    return stand_alone_month_labels_;
-  UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(false);
-  if (month_formatter) {
-    stand_alone_month_labels_ = CreateLabelVector(
-        month_formatter, UDAT_STANDALONE_MONTHS, UCAL_JANUARY, 12);
-    if (!stand_alone_month_labels_.empty()) {
+  if (stand_alone_month_labels_.empty()) {
+    UDateFormat* month_formatter =
+        OpenDateFormatForStandAloneMonthLabels(false);
+    if (month_formatter) {
+      stand_alone_month_labels_ = CreateLabelVector(
+          month_formatter, UDAT_STANDALONE_MONTHS, UCAL_JANUARY, 12);
       udat_close(month_formatter);
-      return stand_alone_month_labels_;
     }
-    udat_close(month_formatter);
+    if (stand_alone_month_labels_.empty()) {
+      stand_alone_month_labels_ = MonthLabels();
+    }
   }
-  stand_alone_month_labels_ = MonthLabels();
   return stand_alone_month_labels_;
 }
 
 const Vector<String>& LocaleICU::ShortStandAloneMonthLabels() {
-  if (!short_stand_alone_month_labels_.empty())
-    return short_stand_alone_month_labels_;
-  UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(true);
-  if (month_formatter) {
-    short_stand_alone_month_labels_ = CreateLabelVector(
-        month_formatter, UDAT_STANDALONE_SHORT_MONTHS, UCAL_JANUARY, 12);
-    if (!short_stand_alone_month_labels_.empty()) {
+  if (short_stand_alone_month_labels_.empty()) {
+    UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(true);
+    if (month_formatter) {
+      short_stand_alone_month_labels_ = CreateLabelVector(
+          month_formatter, UDAT_STANDALONE_SHORT_MONTHS, UCAL_JANUARY, 12);
       udat_close(month_formatter);
-      return short_stand_alone_month_labels_;
     }
-    udat_close(month_formatter);
+    if (short_stand_alone_month_labels_.empty()) {
+      short_stand_alone_month_labels_ = ShortMonthLabels();
+    }
   }
-  short_stand_alone_month_labels_ = ShortMonthLabels();
   return short_stand_alone_month_labels_;
 }
 
