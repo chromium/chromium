@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
-#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/do_not_disturb_controller.h"
 #include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
@@ -24,6 +23,7 @@
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager_impl.h"
@@ -171,6 +171,7 @@ FindMyDeviceController::Status ComputeFindMyDeviceStatus(
 }
 
 PhoneStatusModel CreatePhoneStatusModel(const proto::PhoneProperties& proto) {
+  PA_LOG(INFO) << "Creating PhoneStatusModel from PhoneProperties message.";
   return PhoneStatusModel(
       GetMobileStatusFromProto(proto.connection_state()),
       PhoneStatusModel::MobileConnectionMetadata{
@@ -230,7 +231,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     AppStreamManager* app_stream_manager,
     AppStreamLauncherDataModel* app_stream_launcher_data_model,
     IconDecoder* icon_decoder,
-    CrosStateMessageRecorder* cros_state_message_recorder)
+    PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
@@ -245,7 +246,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       app_stream_manager_(app_stream_manager),
       app_stream_launcher_data_model_(app_stream_launcher_data_model),
       icon_decoder_(icon_decoder),
-      cros_state_message_recorder_(cros_state_message_recorder) {
+      phone_hub_ui_readiness_recorder_(phone_hub_ui_readiness_recorder) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
@@ -257,7 +258,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(pref_service_);
   DCHECK(app_stream_manager_);
   DCHECK(icon_decoder_);
-  DCHECK(cros_state_message_recorder_);
+  DCHECK(phone_hub_ui_readiness_recorder_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -398,6 +399,8 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
                << " and GmsCore version "
                << phone_status_snapshot.properties().gmscore_version();
 
+  phone_hub_ui_readiness_recorder_->RecordPhoneStatusSnapShotReceived();
+
   if (features::IsEcheLauncherEnabled() && features::IsEcheSWAEnabled() &&
       !has_received_first_app_list_update_ &&
       connection_initialized_timestamp_ == base::TimeTicks()) {
@@ -412,7 +415,6 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
   }
   multidevice_feature_access_manager_
       ->UpdatedFeatureSetupConnectionStatusIfNeeded();
-  cros_state_message_recorder_->RecordPhoneStatusSnapShotReceived();
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(

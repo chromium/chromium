@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/ash/components/phonehub/camera_roll_manager_impl.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler_impl.h"
-#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/cros_state_sender.h"
 #include "chromeos/ash/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider_impl.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/phonehub/notification_processor.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_metrics_recorder.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_status_processor.h"
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
@@ -83,13 +83,15 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           chromeos::PowerManagerClient::Get())),
       user_action_recorder_(std::make_unique<UserActionRecorderImpl>(
           feature_status_provider_.get())),
-      cros_state_message_recorder_(std::make_unique<CrosStateMessageRecorder>(
-          feature_status_provider_.get())),
+      phone_hub_ui_readiness_recorder_(
+          std::make_unique<PhoneHubUiReadinessRecorder>(
+              feature_status_provider_.get(),
+              connection_manager_.get())),
       message_receiver_(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(std::make_unique<MessageSenderImpl>(
           connection_manager_.get(),
-          cros_state_message_recorder_.get())),
+          phone_hub_ui_readiness_recorder_.get())),
       phone_model_(std::make_unique<MutablePhoneModel>()),
       cros_state_sender_(std::make_unique<CrosStateSender>(
           message_sender_.get(),
@@ -157,7 +159,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           app_stream_manager_.get(),
           app_stream_launcher_data_model_.get(),
           icon_decoder_.get(),
-          cros_state_message_recorder_.get())),
+          phone_hub_ui_readiness_recorder_.get())),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
                                                  user_action_recorder_.get(),
@@ -281,6 +283,11 @@ AppStreamManager* PhoneHubManagerImpl::GetAppStreamManager() {
   return app_stream_manager_.get();
 }
 
+PhoneHubUiReadinessRecorder*
+PhoneHubManagerImpl::GetPhoneHubUiReadinessRecorder() {
+  return phone_hub_ui_readiness_recorder_.get();
+}
+
 void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
     base::OnceCallback<void(absl::optional<base::Time>)> callback) {
   connection_manager_->GetHostLastSeenTimestamp(std::move(callback));
@@ -333,7 +340,7 @@ void PhoneHubManagerImpl::Shutdown() {
   phone_model_.reset();
   message_sender_.reset();
   message_receiver_.reset();
-  cros_state_message_recorder_.reset();
+  phone_hub_ui_readiness_recorder_.reset();
   user_action_recorder_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();

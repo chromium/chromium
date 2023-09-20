@@ -38,6 +38,7 @@ class TetherController;
 class UserActionRecorder;
 class IconDecoder;
 class AppStreamManager;
+class PhoneHubUiReadinessRecorder;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -72,6 +73,7 @@ class PhoneHubManager {
   virtual AppStreamManager* GetAppStreamManager() = 0;
   virtual eche_app::EcheConnectionStatusHandler*
   GetEcheConnectionStatusHandler() = 0;
+  virtual PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() = 0;
   virtual void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler*
           eche_connection_status_handler) = 0;

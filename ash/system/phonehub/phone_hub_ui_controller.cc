@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/tether_controller.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
@@ -317,6 +318,7 @@ void PhoneHubUiController::OnShouldShowMiniLauncherChanged() {
 }
 
 void PhoneHubUiController::OnModelChanged() {
+  PA_LOG(INFO) << "Updating UI status as Phone Model has changed";
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
@@ -334,8 +336,16 @@ void PhoneHubUiController::UpdateUiState(
                   << ": old ui = " << PhoneHubUIStateToString(ui_state_)
                   << ", new ui = " << PhoneHubUIStateToString(new_state);
   ui_state_ = new_state;
-  for (auto& observer : observer_list_)
+
+  for (auto& observer : observer_list_) {
     observer.OnPhoneHubUiStateChanged();
+  }
+
+  if (ui_state_ == PhoneHubUiController::UiState::kPhoneConnected &&
+      phone_hub_manager_->GetPhoneHubUiReadinessRecorder()) {
+    phone_hub_manager_->GetPhoneHubUiReadinessRecorder()
+        ->RecordPhoneHubUiConnected();
+  }
 }
 
 PhoneHubUiController::UiState

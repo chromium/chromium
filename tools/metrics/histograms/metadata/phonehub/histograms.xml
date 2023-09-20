@@ -639,6 +639,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PhoneHub.UiReady.Latency" units="ms"
+    expires_after="2024-09-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Record the latency between secure channel connected and Phone Hub UI is
+    updated to connected state. Emitted when Phone Hub UI is updated to
+    connected state.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.UiReady.Result" enum="PhoneHubUiResult"
+    expires_after="2024-09-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Record the result of Phone Hub bubble UI state during an active session.
+    Emitted when Phone Hub UI is in connected state or Phone Hub is disconnected
+    but UI is not ready yet.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Usage.SentMessageTypeCount"
     enum="PhoneHubMessageType" expires_after="2023-12-31">
   <owner>jonmann@chromium.org</owner>

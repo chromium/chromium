@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,10 +33,12 @@ class MessageSenderImplTest : public testing::Test {
         std::make_unique<secure_channel::FakeConnectionManager>();
     fake_feature_status_provider_ =
         std::make_unique<FakeFeatureStatusProvider>();
-    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>(
-        fake_feature_status_provider_.get());
+    phone_hub_ui_readiness_recorder_ =
+        std::make_unique<PhoneHubUiReadinessRecorder>(
+            fake_feature_status_provider_.get(),
+            fake_connection_manager_.get());
     message_sender_ = std::make_unique<MessageSenderImpl>(
-        fake_connection_manager_.get(), cros_state_message_recorder_.get());
+        fake_connection_manager_.get(), phone_hub_ui_readiness_recorder_.get());
   }
 
   void VerifyMessage(proto::MessageType expected_message_type,
@@ -64,7 +67,7 @@ class MessageSenderImplTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
-  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
+  std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 
@@ -104,7 +107,7 @@ TEST_F(MessageSenderImplTest, SendUpdateNotificationModeRequest) {
   request.set_notification_mode(proto::NotificationMode::DO_NOT_DISTURB_ON);
 
   message_sender_->SendUpdateNotificationModeRequest(
-      /*do_not_disturbed_enabled=*/true);
+      /*do_not_disturb_enabled=*/true);
   VerifyMessage(proto::MessageType::UPDATE_NOTIFICATION_MODE_REQUEST, &request,
                 fake_connection_manager_->sent_messages().back());
 }

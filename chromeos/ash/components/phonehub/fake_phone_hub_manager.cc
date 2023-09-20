@@ -103,6 +103,11 @@ AppStreamManager* FakePhoneHubManager::GetAppStreamManager() {
   return &app_stream_manager_;
 }
 
+PhoneHubUiReadinessRecorder*
+FakePhoneHubManager::GetPhoneHubUiReadinessRecorder() {
+  return phone_hub_ui_readiness_recorder_;
+}
+
 eche_app::EcheConnectionStatusHandler*
 FakePhoneHubManager::GetEcheConnectionStatusHandler() {
   return eche_connection_status_handler_;

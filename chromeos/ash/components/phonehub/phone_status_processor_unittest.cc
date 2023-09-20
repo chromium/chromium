@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
-#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/fake_find_my_device_controller.h"
@@ -34,11 +33,13 @@
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/notification_manager.h"
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -168,8 +169,12 @@ class PhoneStatusProcessorTest : public testing::Test {
         icon_decoder_.get()->decoder_delegate_.get());
     app_stream_launcher_data_model_ =
         std::make_unique<AppStreamLauncherDataModel>();
-    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>(
-        fake_feature_status_provider_.get());
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
+    phone_hub_ui_readiness_recorder_ =
+        std::make_unique<PhoneHubUiReadinessRecorder>(
+            fake_feature_status_provider_.get(),
+            fake_connection_manager_.get());
 
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
   }
@@ -184,7 +189,7 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
         fake_recent_apps_interaction_handler_.get(), &pref_service_,
         &app_stream_manager_, app_stream_launcher_data_model_.get(),
-        icon_decoder_.get(), cros_state_message_recorder_.get());
+        icon_decoder_.get(), phone_hub_ui_readiness_recorder_.get());
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -238,7 +243,9 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<FakeRecentAppsInteractionHandler>
       fake_recent_apps_interaction_handler_;
   std::unique_ptr<IconDecoderImpl> icon_decoder_;
-  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
+  std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
   raw_ptr<TestDecoderDelegate, ExperimentalAsh> decoder_delegate_;
   TestingPrefServiceSimple pref_service_;
   AppStreamManager app_stream_manager_;

@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 
 namespace ash {
 namespace phonehub {
@@ -135,6 +136,7 @@ class FakePhoneHubManager : public PhoneHubManager {
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
   IconDecoder* GetIconDecoder() override;
   AppStreamManager* GetAppStreamManager() override;
+  PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() override;
   eche_app::EcheConnectionStatusHandler* GetEcheConnectionStatusHandler()
       override;
   void SetEcheConnectionStatusHandler(
@@ -163,6 +165,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakePingManager fake_ping_manager_;
   FakeIconDecoder fake_icon_decoder_;
   AppStreamManager app_stream_manager_;
+  raw_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_ =
+      nullptr;
   raw_ptr<eche_app::EcheConnectionStatusHandler,
           DanglingUntriaged | ExperimentalAsh>
       eche_connection_status_handler_ = nullptr;

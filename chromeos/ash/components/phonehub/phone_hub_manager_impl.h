@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
-#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/feature_setup_response_processor.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -89,6 +89,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   UserActionRecorder* GetUserActionRecorder() override;
   IconDecoder* GetIconDecoder() override;
   AppStreamManager* GetAppStreamManager() override;
+  PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() override;
 
   void GetHostLastSeenTimestamp(
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
@@ -110,7 +111,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<UserActionRecorder> user_action_recorder_;
-  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
+  std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
   std::unique_ptr<MessageReceiver> message_receiver_;
   std::unique_ptr<MessageSender> message_sender_;
   std::unique_ptr<MutablePhoneModel> phone_model_;

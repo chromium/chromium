@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {
@@ -22,9 +23,13 @@ void MutablePhoneModel::SetPhoneName(
 
 void MutablePhoneModel::SetPhoneStatusModel(
     const absl::optional<PhoneStatusModel>& phone_status_model) {
-  if (phone_status_model_ == phone_status_model)
+  if (phone_status_model_ == phone_status_model) {
+    PA_LOG(INFO) << "Skipping update PhoneStatusModel since new and old are "
+                    "same. They are "
+                 << (phone_status_model_.has_value() ? "not empty" : "empty");
     return;
-
+  }
+  PA_LOG(INFO) << "Updating phone status model";
   phone_status_model_ = phone_status_model;
   NotifyModelChanged();
 }

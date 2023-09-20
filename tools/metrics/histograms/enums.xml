@@ -85543,6 +85543,16 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Attempt was successful"/>
 </enum>
 
+<enum name="PhoneHubUiResult">
+  <int value="0" label="Secure Channel is not connected"/>
+  <int value="1" label="Secure channel connected"/>
+  <int value="2"
+      label="Secure channel connected and CrosState message is sent"/>
+  <int value="3"
+      label="PhoneStatusSnapshot is received but Phone Hub UI is not ready"/>
+  <int value="4" label="Connected Phone Hub UI is ready"/>
+</enum>
+
 <enum name="PhoneHubUserAction">
   <int value="0" label="UI opened while connected"/>
   <int value="1" label="Tether connection attempted"/>

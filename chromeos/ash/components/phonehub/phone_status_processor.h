@@ -30,7 +30,7 @@ class NotificationProcessor;
 class ScreenLockManager;
 class RecentAppsInteractionHandler;
 class AppStreamManager;
-class CrosStateMessageRecorder;
+class PhoneHubUiReadinessRecorder;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -62,7 +62,7 @@ class PhoneStatusProcessor
       AppStreamManager* app_stream_manager,
       AppStreamLauncherDataModel* app_stream_launcher_data_model,
       IconDecoder* icon_decoder_,
-      CrosStateMessageRecorder* cros_state_message_recorder);
+      PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -130,8 +130,8 @@ class PhoneStatusProcessor
   raw_ptr<AppStreamLauncherDataModel, ExperimentalAsh>
       app_stream_launcher_data_model_;
   raw_ptr<IconDecoder, ExperimentalAsh> icon_decoder_;
-  raw_ptr<CrosStateMessageRecorder, ExperimentalAsh>
-      cros_state_message_recorder_;
+  raw_ptr<PhoneHubUiReadinessRecorder, ExperimentalAsh>
+      phone_hub_ui_readiness_recorder_;
   base::TimeTicks connection_initialized_timestamp_ = base::TimeTicks();
   bool has_received_first_app_list_update_ = false;
 
