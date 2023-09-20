@@ -88,7 +88,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
 
     void Start() override {
       ReactorBase::Start();
-      (async_interface_.get()->*AsyncMethodPtr)(context(), request(), this);
+      (async_interface_->*AsyncMethodPtr)(context(), request(), this);
       grpc::ClientReadReactor<Response>::StartRead(&response_);
       grpc::ClientReadReactor<Response>::StartCall();
     }

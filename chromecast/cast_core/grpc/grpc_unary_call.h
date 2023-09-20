@@ -112,7 +112,7 @@ class GrpcUnaryCall : public GrpcCall<TGrpcStub, TRequest> {
 
     void Start() override {
       ReactorBase::Start();
-      (async_interface_.get()->*AsyncMethodPtr)(context(), request(), &response_,
+      (async_interface_->*AsyncMethodPtr)(context(), request(), &response_,
                                           this);
       grpc::ClientUnaryReactor::StartCall();
     }
