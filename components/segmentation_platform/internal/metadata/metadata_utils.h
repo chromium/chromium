@@ -44,7 +44,14 @@ enum class ValidationResult {
   kMultiClassClassifierHasNoLabels = 16,
   kMultiClassClassifierUsesBothThresholdTypes = 17,
   kMultiClassClassifierClassAndThresholdCountMismatch = 18,
-  kMaxValue = kMultiClassClassifierClassAndThresholdCountMismatch,
+  kDefaultTtlIsMissing = 19,
+  kPredictionTtlTimeUnitInvalid = 20,
+  kGenericPredictorMissingLabels = 21,
+  kBinaryClassifierEmptyLabels = 22,
+  kBinnedClassifierEmptyLabels = 23,
+  kBinnedClassifierBinsUnsorted = 24,
+  kPredictorTypeMissing = 25,
+  kMaxValue = kPredictorTypeMissing,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the

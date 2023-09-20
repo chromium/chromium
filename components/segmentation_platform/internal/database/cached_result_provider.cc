@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/logging.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
@@ -32,6 +33,10 @@ CachedResultProvider::CachedResultProvider(
     bool has_valid_result = client_result.has_value() &&
                             client_result->client_result().result_size() > 0 &&
                             client_result->client_result().has_output_config();
+    has_valid_result = has_valid_result &&
+                       metadata_utils::ValidateOutputConfig(
+                           client_result->client_result().output_config()) ==
+                           metadata_utils::ValidationResult::kValidationSuccess;
     stats::RecordSegmentSelectionFailure(
         *config, has_valid_result ? stats::SegmentationSelectionFailureReason::
                                         kSelectionAvailableInProtoPrefs

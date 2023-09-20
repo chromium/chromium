@@ -14,16 +14,13 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace segmentation_platform {
-namespace metadata_utils {
+namespace segmentation_platform::metadata_utils {
 
 namespace {
 uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
@@ -75,6 +72,33 @@ std::string FeatureToString(const proto::UMAFeature& feature) {
   if (base::EndsWith(result, ", "))
     result.resize(result.size() - 2);
   return result;
+}
+
+ValidationResult ValidateBinaryClassifier(
+    const proto::Predictor::BinaryClassifier& classifier) {
+  if (classifier.positive_label().empty() ||
+      classifier.negative_label().empty()) {
+    return ValidationResult::kBinaryClassifierEmptyLabels;
+  }
+  return ValidationResult::kValidationSuccess;
+}
+
+ValidationResult ValidateBinnedClassifier(
+    const proto::Predictor::BinnedClassifier& classifier) {
+  if (classifier.underflow_label().empty()) {
+    return ValidationResult::kBinnedClassifierEmptyLabels;
+  }
+  float prev = std::numeric_limits<float>::lowest();
+  for (const auto& bin : classifier.bins()) {
+    if (bin.label().empty()) {
+      return ValidationResult::kBinnedClassifierEmptyLabels;
+    }
+    if (bin.min_range() < prev) {
+      return ValidationResult::kBinnedClassifierBinsUnsorted;
+    }
+    prev = bin.min_range();
+  }
+  return ValidationResult::kValidationSuccess;
 }
 
 }  // namespace
@@ -251,10 +275,45 @@ ValidationResult ValidateSegmentInfoMetadataAndFeatures(
 
 ValidationResult ValidateOutputConfig(
     const proto::OutputConfig& output_config) {
-  if (output_config.has_predictor() &&
-      output_config.predictor().has_multi_class_classifier()) {
-    return ValidateMultiClassClassifier(
-        output_config.predictor().multi_class_classifier());
+  if (!output_config.has_predictor()) {
+    return ValidationResult::kPredictorTypeMissing;
+  }
+  const auto& predictor = output_config.predictor();
+  if (predictor.has_generic_predictor()) {
+    if (predictor.generic_predictor().output_labels_size() == 0) {
+      return ValidationResult::kGenericPredictorMissingLabels;
+    }
+  }
+  if (predictor.has_binary_classifier()) {
+    ValidationResult result =
+        ValidateBinaryClassifier(predictor.binary_classifier());
+    if (result != ValidationResult::kValidationSuccess) {
+      return result;
+    }
+  }
+  if (predictor.has_binned_classifier()) {
+    ValidationResult result =
+        ValidateBinnedClassifier(predictor.binned_classifier());
+    if (result != ValidationResult::kValidationSuccess) {
+      return result;
+    }
+  }
+  if (predictor.has_multi_class_classifier()) {
+    ValidationResult result =
+        ValidateMultiClassClassifier(predictor.multi_class_classifier());
+    if (result != ValidationResult::kValidationSuccess) {
+      return result;
+    }
+  }
+
+  if (output_config.has_predicted_result_ttl()) {
+    const auto& result_ttl = output_config.predicted_result_ttl();
+    if (!result_ttl.has_default_ttl()) {
+      return ValidationResult::kDefaultTtlIsMissing;
+    }
+    if (result_ttl.time_unit() == proto::TimeUnit::UNKNOWN_TIME_UNIT) {
+      return ValidationResult::kPredictionTtlTimeUnitInvalid;
+    }
   }
 
   return ValidationResult::kValidationSuccess;
@@ -535,5 +594,4 @@ bool SegmentUsesLegacyOutput(proto::SegmentId segment_id) {
   return segment_ids_use_legacy.contains(segment_id);
 }
 
-}  // namespace metadata_utils
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::metadata_utils
