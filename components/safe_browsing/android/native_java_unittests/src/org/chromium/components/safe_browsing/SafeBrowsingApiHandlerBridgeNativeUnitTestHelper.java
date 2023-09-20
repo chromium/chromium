@@ -7,6 +7,7 @@ package org.chromium.components.safe_browsing;
 import org.junit.Assert;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.safe_browsing.SafeBrowsingApiBridge.UrlCheckTimeObserver;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -162,16 +163,44 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         }
     }
 
+    public static final MockUrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver =
+            new MockUrlCheckTimeObserver();
+
+    public static class MockUrlCheckTimeObserver implements UrlCheckTimeObserver {
+        private long mCapturedUrlCheckTimeDeltaMicros;
+        private boolean mIsOnUrlCheckTimeCalled;
+
+        @Override
+        public void onUrlCheckTime(long urlCheckTimeDeltaMicros) {
+            Assert.assertFalse(
+                    "Url check time should only be logged once.", mIsOnUrlCheckTimeCalled);
+            mCapturedUrlCheckTimeDeltaMicros = urlCheckTimeDeltaMicros;
+            mIsOnUrlCheckTimeCalled = true;
+        }
+
+        public long getCapturedUrlCheckTimeDeltaMicros() {
+            return mCapturedUrlCheckTimeDeltaMicros;
+        }
+
+        public void tearDown() {
+            mCapturedUrlCheckTimeDeltaMicros = 0;
+            mIsOnUrlCheckTimeCalled = false;
+        }
+    }
+
     @CalledByNative
     static void setUp() {
         SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
+                sSafeBrowsingApiUrlCheckTimeObserver);
     }
 
     @CalledByNative
     static void tearDown() {
         MockSafetyNetApiHandler.tearDown();
         MockSafeBrowsingApiHandler.tearDown();
+        sSafeBrowsingApiUrlCheckTimeObserver.tearDown();
         SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
@@ -203,5 +232,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         MockSafeBrowsingApiHandler.setUrlCheckDoneValues(uri, expectedThreatTypes, expectedProtocol,
                 returnedLookupResult, returnedThreatType, returnedThreatAttributes,
                 returnedResponseStatus);
+    }
+
+    @CalledByNative
+    static long getSafeBrowsingApiUrlCheckTimeObserverResult() {
+        return sSafeBrowsingApiUrlCheckTimeObserver.getCapturedUrlCheckTimeDeltaMicros();
     }
 }

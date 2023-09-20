@@ -50,6 +50,9 @@ public final class SafeBrowsingApiBridge {
     @GuardedBy("sSafeBrowsingApiHandlerLock")
     private static SafeBrowsingApiHandler sSafeBrowsingApiHandler;
 
+    @GuardedBy("sSafeBrowsingApiHandlerLock")
+    private static UrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver;
+
     private SafeBrowsingApiBridge() {
         // Util class, do not instantiate.
     }
@@ -132,6 +135,18 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
+    /**
+     * Set the observer to notify about the time it took to respond for SafeBrowsing response via
+     * SafeBrowsing API. Notified for the first URL check, and only once.
+     *
+     * @param observer the observer to notify.
+     */
+    public static void setOneTimeSafeBrowsingApiUrlCheckObserver(UrlCheckTimeObserver observer) {
+        synchronized (sSafeBrowsingApiHandlerLock) {
+            sSafeBrowsingApiUrlCheckTimeObserver = observer;
+        }
+    }
+
     @GuardedBy("sSafetyNetApiHandlerLock")
     private static SafetyNetApiHandler getSafetyNetApiHandler() {
         if (!sSafetyNetApiHandlerInitCalled) {
@@ -189,8 +204,10 @@ public final class SafeBrowsingApiBridge {
         public void onUrlCheckDone(long callbackId, @LookupResult int lookupResult, int threatType,
                 int[] threatAttributes, int responseStatus, long checkDelta) {
             synchronized (sSafeBrowsingApiHandlerLock) {
-                // TODO(crbug.com/1444511): Similar to sSafetyNetApiUrlCheckTimeObserver, log first
-                // response latency from SafeBrowsing API.
+                if (sSafeBrowsingApiUrlCheckTimeObserver != null) {
+                    sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                    sSafeBrowsingApiUrlCheckTimeObserver = null;
+                }
                 SafeBrowsingApiBridgeJni.get().onUrlCheckDoneBySafeBrowsingApi(callbackId,
                         lookupResult, threatType, threatAttributes, responseStatus, checkDelta);
             }

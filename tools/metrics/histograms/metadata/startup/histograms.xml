@@ -93,15 +93,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.FirstSafeBrowsingApiResponseTime.Tabbed"
+    units="ms" expires_after="2024-03-18">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time it took GmsCore SafeBrowsing API to respond to SafeBrowsing request
+    (either through hash-prefix database or hash-prefix real time) in the
+    process lifetime. Recorded at the same time as
+    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed. Only logged if the
+    URL of the first navigation is checked by SafeBrowsing API.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed"
     units="ms" expires_after="2024-03-10">
   <owner>pasko@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The time it took GmsCore to respond to the first hash-based SafeBrowsing
-    request in the process lifetime. Recorded at the same time as
-    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed.
+    The time it took GmsCore SafetyNet API to respond to the first hash-prefix
+    SafeBrowsing database request in the process lifetime. Recorded at the same
+    time as Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed. Only logged
+    if the URL of the first navigation is checked by SafetyNet API.
   </summary>
 </histogram>
 

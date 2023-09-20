@@ -168,6 +168,10 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         std::move(callback), url, threat_types);
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(callback_executed);
+    EXPECT_EQ(
+        Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_getSafeBrowsingApiUrlCheckTimeObserverResult(
+            env_),
+        kExpectedSafeBrowsingCheckDeltaMicroseconds);
   }
 
   void CheckHashDatabaseHistogramValues(UmaRemoteCallResult expected_result) {
