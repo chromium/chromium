@@ -71,6 +71,8 @@ constexpr char kPermissionErrorMessage[] =
     "You do not have permission to access the preference '*'. "
     "Be sure to declare in your manifest what permissions you need.";
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+constexpr char kInvalidPrefPathErrorMessage[] =
+    "Invalid PrefPath '*' for getting extension pref with control.";
 constexpr char kPrimaryProfileOnlyErrorMessage[] =
     "You may only access the preference '*' in the primary profile.";
 constexpr char kAshDoesNotSupportPreference[] =
@@ -342,6 +344,14 @@ void PreferenceEventRouter::OnAshGetSuccess(
     const std::string& browser_pref,
     absl::optional<::base::Value> opt_value,
     crosapi::mojom::PrefControlState control_state) {
+  // Note: crosapi::mojom::prefs::GetExtensionPrefWithControl could be called
+  // with an invalid pref path, and returns empty opt_value.
+  if (!opt_value.has_value()) {
+    LOG(ERROR) << ErrorUtils::FormatErrorMessage(kInvalidPrefPathErrorMessage,
+                                                 browser_pref);
+    return;
+  }
+
   bool incognito = false;
 
   std::string event_name;
