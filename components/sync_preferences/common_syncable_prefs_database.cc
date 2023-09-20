@@ -93,7 +93,7 @@ enum {
   kSafeBrowsingEnabled = 48,
   kSyncedDefaultSearchProviderGUID = 49,
   kPrefForceTriggerTranslateCount = 50,
-  kPrefNeverPromptSitesDeprecated = 51,
+  // kPrefNeverPromptSitesDeprecated = 51, (deprecated)
   kPrefTranslateAcceptedCount = 52,
   kPrefTranslateAutoAlwaysCount = 53,
   kPrefTranslateAutoNeverCount = 54,
@@ -272,9 +272,6 @@ const auto& SyncablePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
             {translate::TranslatePrefs::kPrefForceTriggerTranslateCount,
              {syncable_prefs_ids::kPrefForceTriggerTranslateCount,
-              syncer::PREFERENCES, false, MergeBehavior::kNone}},
-            {translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
-             {syncable_prefs_ids::kPrefNeverPromptSitesDeprecated,
               syncer::PREFERENCES, false, MergeBehavior::kNone}},
             {translate::TranslatePrefs::kPrefTranslateAcceptedCount,
              {syncable_prefs_ids::kPrefTranslateAcceptedCount,

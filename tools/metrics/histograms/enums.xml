@@ -103479,7 +103479,7 @@ would be helpful to identify which type is being sent.
   <int value="48" label="SafeBrowsingEnabled"/>
   <int value="49" label="SyncedDefaultSearchProviderGUID"/>
   <int value="50" label="PrefForceTriggerTranslateCount"/>
-  <int value="51" label="PrefNeverPromptSitesDeprecated"/>
+  <int value="51" label="(obsolete) PrefNeverPromptSitesDeprecated"/>
   <int value="52" label="PrefTranslateAcceptedCount"/>
   <int value="53" label="PrefTranslateAutoAlwaysCount"/>
   <int value="54" label="PrefTranslateAutoNeverCount"/>
