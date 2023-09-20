@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -36,11 +37,10 @@ namespace ash::cloud_upload {
 // file to the cloud. Gets upload status by observing move and Drive events.
 // Calls the UploadCallback with the uploaded file's hosted URL once the upload
 // is completed, which is when `DriveUploadHandler` goes out of scope.
-class DriveUploadHandler
-    : public ::file_manager::io_task::IOTaskController::Observer,
-      public drivefs::DriveFsHostObserver,
-      public drive::DriveIntegrationServiceObserver,
-      public base::RefCounted<DriveUploadHandler> {
+class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
+                           ::file_manager::io_task::IOTaskController::Observer,
+                           drivefs::DriveFsHost::Observer,
+                           drive::DriveIntegrationService::Observer {
  public:
   using UploadCallback =
       base::OnceCallback<void(absl::optional<GURL>, int64_t)>;
@@ -100,12 +100,14 @@ class DriveUploadHandler
   // an appropriate error notification.
   void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
 
-  // DriveFsHostObserver:
+  // DriveFsHost::Observer implementation.
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(
       const drivefs::mojom::SyncingStatus& status) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
 
+  // DriveIntegrationService::Observer implementation.
+  void OnDriveIntegrationServiceDestroyed() override;
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
 
@@ -121,7 +123,7 @@ class DriveUploadHandler
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<::file_manager::io_task::IOTaskController, ExperimentalAsh>
-      io_task_controller_;
+      io_task_controller_ = nullptr;
   const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
       drive_integration_service_;
   const UploadType upload_type_;
@@ -142,6 +144,14 @@ class DriveUploadHandler
   int64_t upload_size_ = 0;
   std::unique_ptr<::file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
+  base::ScopedObservation<::file_manager::io_task::IOTaskController,
+                          ::file_manager::io_task::IOTaskController::Observer>
+      io_task_controller_observer_{this};
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observer1_{this};
+  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHost::Observer>
+      drive_observer2_{this};
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };
 
