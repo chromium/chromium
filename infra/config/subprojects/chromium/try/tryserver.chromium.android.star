@@ -75,9 +75,7 @@ This builder shadows android-12-x64-rel builder to experiment both jacoco and cl
     # are addressed
     # use_orchestrator_pool = True,
     use_clang_coverage = True,
-    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
-    # in recipe.
-    # use_java_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.orchestrator_builder(
@@ -444,9 +442,7 @@ This builder shadows android-nougat-x86-rel builder to experiment both jacoco an
     # are addressed
     # use_orchestrator_pool = True,
     use_clang_coverage = True,
-    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
-    # in recipe.
-    # use_java_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.orchestrator_builder(
