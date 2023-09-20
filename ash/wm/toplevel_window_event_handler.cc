@@ -886,8 +886,6 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
 }
 
 bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
-  UpdateGestureTarget(nullptr);
-
   if (!window_resizer_)
     return false;
 
@@ -897,9 +895,12 @@ bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
       resizer->resizer()->CompleteDrag();
       break;
     case DragResult::REVERT:
+      UpdateGestureTarget(nullptr);
       resizer->resizer()->RevertDrag();
       break;
     case DragResult::WINDOW_DESTROYED:
+      UpdateGestureTarget(nullptr);
+
       // We explicitly do not invoke RevertDrag() since that may do things to
       // the window that was destroyed.
       break;
