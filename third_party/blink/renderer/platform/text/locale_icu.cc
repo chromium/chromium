@@ -234,8 +234,8 @@ const Vector<String>& LocaleICU::MonthLabels() {
           CreateLabelVector(short_date_format_, UDAT_MONTHS, UCAL_JANUARY, 12);
     }
     if (month_labels_.empty()) {
-      month_labels_.reserve(std::size(WTF::kMonthFullName));
-      base::ranges::copy(WTF::kMonthFullName,
+      month_labels_.reserve(std::size(kFallbackMonthNames));
+      base::ranges::copy(kFallbackMonthNames,
                          std::back_inserter(month_labels_));
     }
   }
@@ -249,8 +249,8 @@ const Vector<String>& LocaleICU::WeekDayShortLabels() {
           short_date_format_, UDAT_NARROW_WEEKDAYS, UCAL_SUNDAY, 7);
     }
     if (week_day_short_labels_.empty()) {
-      week_day_short_labels_.reserve(std::size(WTF::kWeekdayName));
-      base::ranges::copy(WTF::kWeekdayName,
+      week_day_short_labels_.reserve(std::size(kFallbackWeekdayShortNames));
+      base::ranges::copy(kFallbackWeekdayShortNames,
                          std::back_inserter(week_day_short_labels_));
     }
   }
@@ -386,8 +386,8 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
           short_date_format_, UDAT_SHORT_MONTHS, UCAL_JANUARY, 12);
     }
     if (short_month_labels_.empty()) {
-      short_month_labels_.reserve(std::size(WTF::kMonthName));
-      base::ranges::copy(WTF::kMonthName,
+      short_month_labels_.reserve(std::size(kFallbackMonthShortNames));
+      base::ranges::copy(kFallbackMonthShortNames,
                          std::back_inserter(short_month_labels_));
     }
   }

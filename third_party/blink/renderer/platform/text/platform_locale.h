@@ -192,6 +192,15 @@ class PLATFORM_EXPORT Locale {
     kDecimalSymbolsSize
   };
 
+  static constexpr char kFallbackWeekdayShortNames[7][4] = {
+      "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+  static constexpr char kFallbackMonthShortNames[12][4] = {
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  static constexpr const char* kFallbackMonthNames[12] = {
+      "January", "February", "March",     "April",   "May",      "June",
+      "July",    "August",   "September", "October", "November", "December"};
+
   Locale() : has_locale_data_(false) {}
   virtual void InitializeLocaleData() = 0;
   void SetLocaleData(const Vector<String, kDecimalSymbolsSize>&,

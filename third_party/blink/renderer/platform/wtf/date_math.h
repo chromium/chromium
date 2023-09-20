@@ -63,14 +63,6 @@ namespace WTF {
 WTF_EXPORT absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string);
 
-const char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
-                                 "Thu", "Fri", "Sat"};
-const char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-const char* const kMonthFullName[12] = {
-    "January", "February", "March",     "April",   "May",      "June",
-    "July",    "August",   "September", "October", "November", "December"};
-
 const double kMinutesPerHour = 60.0;
 const double kSecondsPerMinute = 60.0;
 const double kMsPerSecond = 1000.0;

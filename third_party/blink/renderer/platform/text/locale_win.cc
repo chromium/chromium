@@ -259,7 +259,7 @@ const Vector<String>& LocaleWin::MonthLabels() {
       month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
       if (month_labels_.back().empty()) {
         month_labels_.Shrink(0);
-        base::ranges::copy(WTF::kMonthFullName,
+        base::ranges::copy(kFallbackMonthNames,
                            std::back_inserter(month_labels_));
         break;
       }
@@ -281,7 +281,7 @@ const Vector<String>& LocaleWin::WeekDayShortLabels() {
       week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
       if (week_day_short_labels_.back().empty()) {
         week_day_short_labels_.Shrink(0);
-        base::ranges::copy(WTF::kWeekdayName,
+        base::ranges::copy(kFallbackWeekdayShortNames,
                            std::back_inserter(week_day_short_labels_));
         break;
       }
@@ -389,7 +389,7 @@ const Vector<String>& LocaleWin::ShortMonthLabels() {
       short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
       if (short_month_labels_.back().empty()) {
         short_month_labels_.Shrink(0);
-        base::ranges::copy(WTF::kMonthName,
+        base::ranges::copy(kFallbackMonthShortNames,
                            std::back_inserter(short_month_labels_));
         break;
       }

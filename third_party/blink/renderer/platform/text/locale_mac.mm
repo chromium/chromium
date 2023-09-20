@@ -128,7 +128,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
         month_labels_.push_back(String(array[i]));
       }
     } else {
-      base::ranges::copy(WTF::kMonthFullName,
+      base::ranges::copy(kFallbackMonthNames,
                          std::back_inserter(month_labels_));
     }
   }
@@ -144,7 +144,7 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
         week_day_short_labels_.push_back(String(array[i]));
       }
     } else {
-      base::ranges::copy(WTF::kWeekdayName,
+      base::ranges::copy(kFallbackWeekdayShortNames,
                          std::back_inserter(week_day_short_labels_));
     }
   }
@@ -254,7 +254,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
         short_month_labels_.push_back(array[i]);
       }
     } else {
-      base::ranges::copy(WTF::kMonthName,
+      base::ranges::copy(kFallbackMonthShortNames,
                          std::back_inserter(short_month_labels_));
     }
   }
