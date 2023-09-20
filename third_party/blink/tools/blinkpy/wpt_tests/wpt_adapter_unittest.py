@@ -192,8 +192,6 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(options.retry_unexpected, 11)
             self.assertEqual(options.default_exclude, True)
             self.assertEqual(set(options.exclude), set())
-            self.assertEqual(options.debugger, 'rr')
-            self.assertEqual(options.debugger_args, 'record --disable-avx-512')
             # `*webdriver/` tests are implicitly excluded by default.
             self.assertNotIn('wdspec', options.test_types)
             self.assertEqual(options.include, ['dir/reftest.html'])
@@ -214,6 +212,20 @@ class WPTAdapterTest(unittest.TestCase):
                 00:00:03 INFO: View the test results at file:///tmp/layout-test-results/results.html
                 00:00:04 INFO: Using Debug build
                 """))
+
+    @mock.patch('blinkpy.web_tests.port.test.TestPort.default_child_processes',
+                return_value=8)
+    def test_wrapper_option(self, _):
+        args = [
+            '--no-manifest-update',
+            '--wrapper=rr record --disable-avx-512',
+            'external/wpt/dir/',
+        ]
+        adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
+        with adapter.test_env() as options:
+            self.assertEqual(options.debugger, 'rr')
+            self.assertEqual(options.debugger_args, 'record --disable-avx-512')
+            self.assertEqual(options.processes, 1)
 
     def test_scratch_directory_cleanup(self):
         """Only test results should be left behind, even with an exception."""
