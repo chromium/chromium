@@ -8,6 +8,7 @@
 #include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_message_loop.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -44,7 +45,8 @@ class MojoVideoEncoderMetricsProviderServiceTest
                                           VideoCodecProfile,
                                           gfx::Size,
                                           bool,
-                                          SVCScalabilityMode>> {
+                                          SVCScalabilityMode,
+                                          EncoderStatus::Codes>> {
  public:
   MojoVideoEncoderMetricsProviderServiceTest() = default;
   ~MojoVideoEncoderMetricsProviderServiceTest() override = default;
@@ -160,10 +162,14 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
   auto encode_size = std::get<3>(GetParam());
   auto is_hardware_encoder = std::get<4>(GetParam());
   auto svc_mode = std::get<5>(GetParam());
+  media::EncoderStatus encoder_status(std::get<6>(GetParam()));
   constexpr uint64_t kNumEncodedFrames = 100;
   provider->Initialize(encoder_id, encoder_use_case, codec_profile, encode_size,
                        is_hardware_encoder, svc_mode);
   provider->SetEncodedFrameCount(encoder_id, kNumEncodedFrames);
+  if (!encoder_status.is_ok()) {
+    provider->SetError(encoder_id, encoder_status);
+  }
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -176,11 +182,65 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
   EXPECT_UKM(UkmEntry::kIsHardwareName, is_hardware_encoder);
   EXPECT_UKM(UkmEntry::kNumEncodedFramesName, kNumEncodedFrames);
   EXPECT_UKM(UkmEntry::kProfileName, codec_profile);
-  EXPECT_UKM(UkmEntry::kStatusName,
-             static_cast<int64_t>(EncoderStatus::Codes::kOk));
   EXPECT_UKM(UkmEntry::kSVCModeName, static_cast<int64_t>(svc_mode));
   EXPECT_UKM(UkmEntry::kUseCaseName, static_cast<int64_t>(encoder_use_case));
   EXPECT_UKM(UkmEntry::kWidthName, expected_width);
+  EXPECT_UKM(UkmEntry::kStatusName,
+             static_cast<int64_t>(encoder_status.code()));
+}
+
+TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
+       CreateAndInitializeAndSetEncodedFrameCount_ReportUMA) {
+  base::HistogramTester histogram_tester;
+  auto [test_recorder, provider] = Create(kTestURL);
+  auto encoder_id = std::get<0>(GetParam());
+  auto encoder_use_case = std::get<1>(GetParam());
+  auto codec_profile = std::get<2>(GetParam());
+  auto encode_size = std::get<3>(GetParam());
+  auto is_hardware_encoder = std::get<4>(GetParam());
+  auto svc_mode = std::get<5>(GetParam());
+  media::EncoderStatus encoder_status(std::get<6>(GetParam()));
+  constexpr uint64_t kNumEncodedFrames = 100;
+  provider->Initialize(encoder_id, encoder_use_case, codec_profile, encode_size,
+                       is_hardware_encoder, svc_mode);
+  provider->SetEncodedFrameCount(encoder_id, kNumEncodedFrames);
+  if (!encoder_status.is_ok()) {
+    provider->SetError(encoder_id, encoder_status);
+  }
+  provider.reset();
+  base::RunLoop().RunUntilIdle();
+
+  std::string uma_prefix = "Media.VideoEncoder.";
+  switch (encoder_use_case) {
+    case mojom::VideoEncoderUseCase::kCastMirroring:
+      uma_prefix += "CastMirroring.";
+      break;
+    case mojom::VideoEncoderUseCase::kMediaRecorder:
+      uma_prefix += "MediaRecorder.";
+      break;
+    case mojom::VideoEncoderUseCase::kWebCodecs:
+      uma_prefix += "WebCodecs.";
+      break;
+    case mojom::VideoEncoderUseCase::kWebRTC:
+      uma_prefix += "WebRTC.";
+      break;
+  }
+
+#define EXPECT_UMA(name, value)                                           \
+  do {                                                                    \
+    histogram_tester.ExpectUniqueSample(base::StrCat({uma_prefix, name}), \
+                                        value, 1);                        \
+  } while (0)
+
+  EXPECT_UMA("Profile", codec_profile);
+  EXPECT_UMA("SVC", svc_mode);
+  EXPECT_UMA("HW", is_hardware_encoder);
+  EXPECT_UMA("Width", encode_size.width());
+  EXPECT_UMA("Height", encode_size.height());
+  EXPECT_UMA("Area", encode_size.GetArea() / 100);
+  EXPECT_UMA("Status", encoder_status.code());
+
+#undef EXPECT_UMA
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -207,6 +267,10 @@ INSTANTIATE_TEST_SUITE_P(
                        ValuesIn({
                            SVCScalabilityMode::kL1T1,
                            SVCScalabilityMode::kL3T3Key,
+                       }),
+                       ValuesIn({
+                           EncoderStatus::Codes::kOk,
+                           EncoderStatus::Codes::kEncoderFailedEncode,
                        })));
 
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,

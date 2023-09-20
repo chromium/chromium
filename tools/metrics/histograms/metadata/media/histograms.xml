@@ -116,6 +116,13 @@ chromium-metrics-reviews@google.com.
   <variant name="VP9"/>
 </variants>
 
+<variants name="VideoEncoderUsage">
+  <variant name="CastMirroring"/>
+  <variant name="MediaRecorder"/>
+  <variant name="WebCodecs"/>
+  <variant name="WebRTC"/>
+</variants>
+
 <histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
     expires_after="2024-04-07">
   <owner>jophba@chromium.org</owner>
@@ -6039,6 +6046,95 @@ chromium-metrics-reviews@google.com.
     regardless of clock resolution.
   </summary>
   <token key="DbOperation" variants="DbOperation"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Area" units="pixels"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The hundredth of a resolution area (i.e. width x height /100) configured in
+    a video encoder. Recorded when a video encoder is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Frames" units="frames"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of successfully encoded frames. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Height" units="pixels"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The height configured in a video encoder. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.HW" enum="Boolean"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    An used Video encoder is a hardware encoder or not. Recorded when a video
+    encoder is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Profile" enum="VideoCodecProfile"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Video codec profile used in a video encoder. Recorded when a video encoder
+    is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Status" enum="EncoderStatus"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The last encoder status in a video encoder. If an error occurs, then non kOk
+    value is recorded. Recorded when a video encoder is destroyed or
+    reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.SVC" enum="SVCScalabilityMode"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    SVC Scalability mode configured in a video encoder. Recorded when a video
+    encoder is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.Width" units="pixels"
+    expires_after="2024-03-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The width configured in a video encoder. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
 </histogram>
 
 <histogram name="Media.VideoFrameSubmitter" units="ms" expires_after="never">
