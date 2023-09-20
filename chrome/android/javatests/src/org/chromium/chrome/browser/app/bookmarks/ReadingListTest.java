@@ -373,7 +373,7 @@ public class ReadingListTest {
             Criteria.checkThat(activityTab.isIncognito(), Matchers.is(false));
         });
         pressBack();
-        BookmarkActivity bookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
+        BookmarkTestUtil.waitForBookmarkActivity();
 
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
@@ -405,7 +405,7 @@ public class ReadingListTest {
             Criteria.checkThat(activityTab.isIncognito(), Matchers.is(true));
         });
         pressBack();
-        BookmarkActivity bookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
+        BookmarkTestUtil.waitForBookmarkActivity();
 
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
