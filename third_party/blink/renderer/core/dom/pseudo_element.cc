@@ -60,7 +60,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
   } else if (IsTransitionPseudoElement(pseudo_id)) {
     auto* transition =
-        ViewTransitionUtils::GetActiveTransition(parent->GetDocument());
+        ViewTransitionUtils::GetTransition(parent->GetDocument());
     DCHECK(transition);
     return transition->CreatePseudoElement(parent, pseudo_id,
                                            view_transition_name);

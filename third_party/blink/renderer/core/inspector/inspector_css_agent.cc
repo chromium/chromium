@@ -1363,8 +1363,7 @@ InspectorCSSAgent::FindKeyframesRuleFromUAViewTransitionStylesheet(
     StyleRuleKeyframes* keyframes_style_rule) {
   // This function should only be called for transition pseudo elements.
   CHECK(IsTransitionPseudoElement(element->GetPseudoId()));
-  auto* transition =
-      ViewTransitionUtils::GetActiveTransition(element->GetDocument());
+  auto* transition = ViewTransitionUtils::GetTransition(element->GetDocument());
 
   // There must be a transition and an active UAStyleSheet for the
   // transition when the queried element is a transition pseudo element.

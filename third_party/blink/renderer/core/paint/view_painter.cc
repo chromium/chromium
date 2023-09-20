@@ -85,8 +85,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
   bool is_represented_via_pseudo_elements = [this]() {
-    if (auto* transition = ViewTransitionUtils::GetActiveTransition(
-            layout_view_.GetDocument())) {
+    if (auto* transition =
+            ViewTransitionUtils::GetTransition(layout_view_.GetDocument())) {
       return transition->IsRepresentedViaPseudoElements(layout_view_);
     }
     return false;

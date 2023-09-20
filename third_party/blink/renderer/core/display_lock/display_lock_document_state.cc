@@ -263,7 +263,7 @@ void DisplayLockDocumentState::NotifyViewTransitionPseudoTreeChanged() {
 }
 
 void DisplayLockDocumentState::UpdateViewTransitionElementAncestorLocks() {
-  auto* transition = ViewTransitionUtils::GetActiveTransition(*document_);
+  auto* transition = ViewTransitionUtils::GetTransition(*document_);
   if (!transition)
     return;
 

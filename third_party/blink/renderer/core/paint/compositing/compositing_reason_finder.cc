@@ -353,7 +353,7 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
   }
 
   if (auto* transition =
-          ViewTransitionUtils::GetActiveTransition(object.GetDocument())) {
+          ViewTransitionUtils::GetTransition(object.GetDocument())) {
     // Note that `NeedsViewTransitionEffectNode` returns true for values that
     // are in the non-transition-pseudo tree DOM. That is, things like layout
     // view or the view transition elements that we are transitioning.

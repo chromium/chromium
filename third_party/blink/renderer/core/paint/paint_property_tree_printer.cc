@@ -157,8 +157,7 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
   static void AddViewTransitionProperties(
       const LayoutObject& object,
       PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
-    auto* transition =
-        ViewTransitionUtils::GetActiveTransition(object.GetDocument());
+    auto* transition = ViewTransitionUtils::GetTransition(object.GetDocument());
     // `NeedsViewTransitionEffectNode` is an indirect way to see if the object
     // is participating in the transition.
     if (!transition || !transition->NeedsViewTransitionEffectNode(object)) {

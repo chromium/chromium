@@ -724,8 +724,8 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedContentsSize(
   // considered at least as large as the container. Otherwise, the snapshot
   // will be clipped by PendingLayer to the content size.
   if (IsA<LayoutView>(GetLayoutBox())) {
-    if (auto* transition = ViewTransitionUtils::GetActiveTransition(
-            GetLayoutBox()->GetDocument());
+    if (auto* transition =
+            ViewTransitionUtils::GetTransition(GetLayoutBox()->GetDocument());
         transition && transition->IsRootTransitioning()) {
       PhysicalSize container_size(transition->GetSnapshotRootSize());
       size.width = std::max(container_size.width, size.width);

@@ -838,7 +838,7 @@ bool ViewTransition::NeedsViewTransitionEffectNode(
   if (IsA<LayoutView>(object))
     return !IsTerminalState(state_);
 
-  // Otherwise check if the layout object has an active transition element.
+  // Otherwise check if the layout object has a transition element.
   auto* element = DynamicTo<Element>(object.GetNode());
   return element && IsTransitionElementExcludingRoot(*element);
 }

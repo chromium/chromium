@@ -1452,7 +1452,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         DCHECK(context.pseudo_argument);
 
         auto* transition =
-            ViewTransitionUtils::GetActiveTransition(element.GetDocument());
+            ViewTransitionUtils::GetTransition(element.GetDocument());
         DCHECK(transition);
         return transition->MatchForOnlyChild(context.pseudo_id,
                                              *context.pseudo_argument);

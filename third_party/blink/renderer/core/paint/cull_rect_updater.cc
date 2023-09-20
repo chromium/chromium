@@ -144,7 +144,7 @@ bool ShouldUseInfiniteCullRect(
   }
 
   if (view_transition_supplement) {
-    auto* transition = view_transition_supplement->GetActiveTransition();
+    auto* transition = view_transition_supplement->GetTransition();
 
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.

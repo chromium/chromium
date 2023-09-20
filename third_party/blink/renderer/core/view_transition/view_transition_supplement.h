@@ -52,7 +52,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // Abort any ongoing transitions in the document.
   static void AbortTransition(Document&);
 
-  ViewTransition* GetActiveTransition();
+  ViewTransition* GetTransition();
 
   explicit ViewTransitionSupplement(Document&);
   ~ViewTransitionSupplement() override;

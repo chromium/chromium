@@ -160,7 +160,7 @@ class CORE_EXPORT ViewTransitionUtils {
   }
 
   // Returns the active transition from the document, if any.
-  static ViewTransition* GetActiveTransition(const Document& document);
+  static ViewTransition* GetTransition(const Document& document);
 
   // Returns the ::view-transition pseudo element that is the root of the
   // view-transition DOM hierarchy.

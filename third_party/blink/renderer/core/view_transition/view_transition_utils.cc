@@ -13,13 +13,12 @@
 namespace blink {
 
 // static
-ViewTransition* ViewTransitionUtils::GetActiveTransition(
-    const Document& document) {
+ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
   auto* supplement = ViewTransitionSupplement::FromIfExists(document);
   if (!supplement) {
     return nullptr;
   }
-  auto* transition = supplement->GetActiveTransition();
+  auto* transition = supplement->GetTransition();
   if (!transition || transition->IsDone()) {
     return nullptr;
   }
@@ -34,7 +33,7 @@ PseudoElement* ViewTransitionUtils::GetRootPseudo(const Document& document) {
 
   PseudoElement* view_transition_pseudo =
       document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
-  DCHECK(!view_transition_pseudo || GetActiveTransition(document));
+  DCHECK(!view_transition_pseudo || GetTransition(document));
   return view_transition_pseudo;
 }
 
@@ -78,14 +77,14 @@ bool ViewTransitionUtils::IsViewTransitionParticipant(
 // static
 bool ViewTransitionUtils::IsViewTransitionElementExcludingRootFromSupplement(
     const Element& element) {
-  ViewTransition* transition = GetActiveTransition(element.GetDocument());
+  ViewTransition* transition = GetTransition(element.GetDocument());
   return transition && transition->IsTransitionElementExcludingRoot(element);
 }
 
 // static
 bool ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
     const LayoutObject& object) {
-  ViewTransition* transition = GetActiveTransition(object.GetDocument());
+  ViewTransition* transition = GetTransition(object.GetDocument());
   return transition && transition->IsRepresentedViaPseudoElements(object);
 }
 

@@ -125,14 +125,14 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void FinishTransition() {
-    auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
+    auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
     if (transition)
       transition->skipTransition();
   }
 
   bool ShouldCompositeForViewTransition(Element* e) {
     auto* layout_object = e->GetLayoutObject();
-    auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
+    auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
     return layout_object && transition &&
            transition->NeedsViewTransitionEffectNode(*layout_object);
   }

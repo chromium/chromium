@@ -25,7 +25,7 @@ bool HasActiveTransitionInAncestorFrame(LocalFrame* frame) {
 
   while (parent && parent->IsLocalFrame()) {
     if (To<LocalFrame>(parent)->GetDocument() &&
-        ViewTransitionUtils::GetActiveTransition(
+        ViewTransitionUtils::GetTransition(
             *To<LocalFrame>(parent)->GetDocument())) {
       return true;
     }
@@ -48,14 +48,13 @@ void SkipTransitionInAllLocalFrames(LocalFrame* curr_frame) {
       return;
 
     auto* document = child.GetFrame().GetDocument();
-    auto* transition = document
-                           ? ViewTransitionUtils::GetActiveTransition(*document)
-                           : nullptr;
+    auto* transition =
+        document ? ViewTransitionUtils::GetTransition(*document) : nullptr;
     if (!transition)
       return;
 
     transition->skipTransition();
-    DCHECK(!ViewTransitionUtils::GetActiveTransition(*document));
+    DCHECK(!ViewTransitionUtils::GetTransition(*document));
   });
 }
 
@@ -236,7 +235,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
     transition_ = nullptr;
 }
 
-ViewTransition* ViewTransitionSupplement::GetActiveTransition() {
+ViewTransition* ViewTransitionSupplement::GetTransition() {
   return transition_;
 }
 

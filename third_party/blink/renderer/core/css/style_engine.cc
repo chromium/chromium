@@ -2328,7 +2328,7 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
 }
 
 RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
-  auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
+  auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
   if (!transition) {
     return nullptr;
   }

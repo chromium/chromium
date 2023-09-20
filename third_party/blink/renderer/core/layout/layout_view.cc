@@ -261,7 +261,7 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
     snapshot_containing_block->AddChild(new_child);
 
     ViewTransition* transition =
-        ViewTransitionUtils::GetActiveTransition(GetDocument());
+        ViewTransitionUtils::GetTransition(GetDocument());
     CHECK(transition);
     transition->UpdateSnapshotContainingBlockStyle();
     return;
@@ -503,8 +503,7 @@ PhysicalRect LayoutView::ViewRect() const {
   // TODO(bokan): This shouldn't be just for the outermost main frame, we
   // should do it for all frames. crbug.com/1311518.
   if (frame_view_->GetFrame().IsOutermostMainFrame()) {
-    if (auto* transition =
-            ViewTransitionUtils::GetActiveTransition(GetDocument());
+    if (auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
         transition && transition->IsRootTransitioning()) {
       // If we're capturing a transition snapshot, the root transition
       // needs to produce the snapshot at a known stable size, excluding
@@ -541,7 +540,7 @@ PhysicalRect LayoutView::OverflowClipRect(
   // When capturing the root snapshot for a transition, we paint the
   // background color where the scrollbar would be so keep the clip rect
   // the full ViewRect size.
-  auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
+  auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
   bool is_in_transition = transition && transition->IsRootTransitioning();
   if (IsScrollContainer() && !is_in_transition)
     ExcludeScrollbars(rect, overlay_scrollbar_clip_behavior);

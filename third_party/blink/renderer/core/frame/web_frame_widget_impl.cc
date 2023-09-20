@@ -1486,8 +1486,7 @@ void WebFrameWidgetImpl::NotifyViewTransitionRenderingHasBegun() {
         auto* document = local_frame->GetFrame()->GetDocument();
         DCHECK(document);
 
-        if (auto* transition =
-                ViewTransitionUtils::GetActiveTransition(*document)) {
+        if (auto* transition = ViewTransitionUtils::GetTransition(*document)) {
           transition->NotifyRenderingHasBegun();
         }
       });

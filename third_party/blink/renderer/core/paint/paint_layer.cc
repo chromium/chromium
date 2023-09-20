@@ -1272,8 +1272,8 @@ PaintLayer* PaintLayer::HitTestLayer(
   // TODO(vmpstr): We need to add a simple document flag which says whether
   // there is an ongoing transition, since this may be too heavy of a check for
   // each hit test.
-  if (auto* transition = ViewTransitionUtils::GetActiveTransition(
-          layout_object.GetDocument())) {
+  if (auto* transition =
+          ViewTransitionUtils::GetTransition(layout_object.GetDocument())) {
     // This means that the contents of the object are drawn elsewhere.
     if (transition->IsRepresentedViaPseudoElements(layout_object))
       return nullptr;

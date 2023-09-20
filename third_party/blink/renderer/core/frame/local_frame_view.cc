@@ -2469,7 +2469,7 @@ bool LocalFrameView::RunViewTransitionSteps(
 
         DCHECK_GE(document->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
-        auto* transition = ViewTransitionUtils::GetActiveTransition(*document);
+        auto* transition = ViewTransitionUtils::GetTransition(*document);
         if (!transition)
           return;
 
@@ -4643,8 +4643,7 @@ bool LocalFrameView::HasViewTransitionThrottlingRendering() const {
   // Only nested local frames should be throttled. Pausing rendering for root
   // local frames is done by pausing frames in the compositor.
   // See ViewTransition::ScopedPauseRendering for details.
-  auto* transition =
-      ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument());
+  auto* transition = ViewTransitionUtils::GetTransition(*frame_->GetDocument());
   const bool should_throttle =
       transition && transition->ShouldThrottleRendering();
   DCHECK(!should_throttle || !frame_->IsLocalRoot());

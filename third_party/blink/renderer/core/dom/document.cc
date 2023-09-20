@@ -9195,8 +9195,9 @@ bool Document::DeferredCompositorCommitIsAllowed() const {
   // Don't defer commits if a transition is in progress. It requires commits to
   // send directives to the compositor and uses a separate mechanism to pause
   // all rendering when needed.
-  if (ViewTransitionUtils::GetActiveTransition(*this))
+  if (ViewTransitionUtils::GetTransition(*this)) {
     return false;
+  }
   return deferred_compositor_commit_is_allowed_;
 }
 
