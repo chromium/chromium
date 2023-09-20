@@ -424,6 +424,7 @@ defaults = args.defaults(
     executable = args.COMPUTE,
     notifies = None,
     triggered_by = args.COMPUTE,
+    contact_team_email = None,
 )
 
 def builder(
@@ -492,6 +493,7 @@ def builder(
         shadow_service_account = args.DEFAULT,
         shadow_reclient_instance = args.DEFAULT,
         gn_args = None,
+        contact_team_email = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -926,9 +928,11 @@ def builder(
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
 
+    contact_team_email = defaults.get_value("contact_team_email", contact_team_email)
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
+        contact_team_email = contact_team_email,
         dimensions = dimensions,
         properties = properties,
         resultdb_settings = _resultdb_settings(
@@ -956,7 +960,8 @@ def builder(
     register_bootstrap(bucket, name, bootstrap, executable)
 
     health_spec = defaults.get_value("health_spec", health_spec)
-    register_health_spec(bucket, name, health_spec, kwargs.get("contact_team_email"))
+
+    register_health_spec(bucket, name, health_spec, contact_team_email)
 
     register_gn_args(builder_group, bucket, name, gn_args)
 
