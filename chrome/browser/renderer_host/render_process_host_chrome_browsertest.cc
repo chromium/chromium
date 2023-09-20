@@ -269,13 +269,7 @@ class ChromeRenderProcessHostTestWithCommandLine
   }
 };
 
-// TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ProcessPerTab DISABLED_ProcessPerTab
-#else
-#define MAYBE_ProcessPerTab ProcessPerTab
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
@@ -305,9 +299,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
 
   // Create a new normal tab with a data URL.  It should be in its own process.
   GURL page1("data:text/html,hello world1");
+  content::TestNavigationObserver navigation_observer1(page1);
+  navigation_observer1.StartWatchingNewWebContents();
   ui_test_utils::TabAddedWaiter add_tab1(browser());
   ::ShowSingletonTab(browser(), page1);
   add_tab1.Wait();
+  navigation_observer1.Wait();
   tab_count++;
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -316,9 +313,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
   // Create another data URL tab.  With Site Isolation, this will require its
   // own process, but without Site Isolation, it can share the previous process.
   GURL page2("data:text/html,hello world2");
+  content::TestNavigationObserver navigation_observer2(page2);
+  navigation_observer2.StartWatchingNewWebContents();
   ui_test_utils::TabAddedWaiter add_tab2(browser());
   ::ShowSingletonTab(browser(), page2);
   add_tab2.Wait();
+  navigation_observer2.Wait();
   tab_count++;
   if (content::AreAllSitesIsolatedForTesting())
     host_count++;
