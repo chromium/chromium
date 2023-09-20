@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +51,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -735,5 +742,173 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, DedicatedWorker) {
   EXPECT_EQ("none", EvalJs(app_frame, "sendMessage('hello')"));
   EXPECT_EQ("hello", EvalJs(app_frame, "sendMessage('world')"));
 }
+
+struct ExtensionTestParam {
+  std::string test_name;
+  bool should_succeed;
+  // The value to set in the extension's manifest as
+  // `externally_connectable.matches[0]`. `${IWA_ORIGIN}` will be replaced by
+  // the IWA's origin without a trailing slash.
+  std::string externally_connectable_match;
+};
+
+class IsolatedWebAppExtensionBrowserTest
+    : public IsolatedWebAppBrowserTest,
+      public ::testing::WithParamInterface<ExtensionTestParam> {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    IsolatedWebAppBrowserTest::SetUp();
+  }
+
+  bool IsChromeRuntimeDefined(content::RenderFrameHost* app_frame) {
+    return EvalJs(app_frame, "chrome.runtime !== undefined").ExtractBool();
+  }
+
+  std::string GetMatch(const web_app::IsolatedWebAppUrlInfo& url_info) {
+    std::string origin = url_info.origin().GetURL().spec();
+    std::string match = GetParam().externally_connectable_match;
+    base::ReplaceSubstringsAfterOffset(
+        &match, /*start_offset=*/0, "${IWA_ORIGIN}",
+        base::TrimString(origin, "/", base::TRIM_TRAILING));
+    return match;
+  }
+
+  base::ScopedTempDir temp_dir_;
+
+  static constexpr base::StringPiece kExtensionManifest = R"({
+    "name": "foo",
+    "description": "foo",
+    "version": "0.1",
+    "manifest_version": 3,
+    "externally_connectable": {
+      "matches": [ $1 ]
+    },
+    "background": {"service_worker": "service_worker_background.js"}
+  })";
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppExtensionBrowserTest,
+                       SendMessageToExtension) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::WriteFile(temp_dir_.GetPath().AppendASCII("manifest.json"),
+                    content::JsReplace(kExtensionManifest, GetMatch(url_info)));
+    // Extension: Listen for pings from the IWA.
+    base::WriteFile(
+        temp_dir_.GetPath().AppendASCII("service_worker_background.js"),
+        R"(
+        chrome.runtime.onMessageExternal.addListener(
+          (request, sender, sendResponse) => {
+            chrome.test.assertEq('iwa->extension: ping', request);
+            sendResponse('extension->iwa: pong');
+            chrome.test.notifyPass();
+          });
+    )");
+  }
+
+  extensions::ResultCatcher result_catcher;
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(temp_dir_.GetPath());
+  ASSERT_TRUE(extension);
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  if (!GetParam().should_succeed) {
+    ASSERT_FALSE(IsChromeRuntimeDefined(app_frame));
+    return;
+  }
+  ASSERT_TRUE(IsChromeRuntimeDefined(app_frame));
+
+  // IWA: Send a ping to the extension and wait for the pong.
+  constexpr base::StringPiece kSendPing = R"(
+    chrome.runtime.sendMessage($1, "iwa->extension: ping");
+  )";
+  EXPECT_EQ(EvalJs(app_frame, content::JsReplace(kSendPing, extension->id())),
+            "extension->iwa: pong");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppExtensionBrowserTest, ConnectToExtension) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::WriteFile(temp_dir_.GetPath().AppendASCII("manifest.json"),
+                    content::JsReplace(kExtensionManifest, GetMatch(url_info)));
+    // Extension: Listen for pings from the IWA.
+    base::WriteFile(
+        temp_dir_.GetPath().AppendASCII("service_worker_background.js"),
+        R"(
+          chrome.runtime.onConnectExternal.addListener(
+            (port) =>
+              port.onMessage.addListener((message) => {
+                chrome.test.assertEq('iwa->extension: ping', message);
+                port.postMessage('extension->iwa: pong');
+                chrome.test.notifyPass();
+              }));
+    )");
+  }
+
+  extensions::ResultCatcher result_catcher;
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(temp_dir_.GetPath());
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  if (!GetParam().should_succeed) {
+    ASSERT_FALSE(IsChromeRuntimeDefined(app_frame));
+    return;
+  }
+  ASSERT_TRUE(IsChromeRuntimeDefined(app_frame));
+
+  // IWA: Send a ping to the extension and wait for the pong.
+  constexpr base::StringPiece kSendPing = R"(
+    new Promise((resolve, reject) => {
+      const port = chrome.runtime.connect($1);
+      port.onMessage.addListener((response) => resolve(response));
+      port.onDisconnect.addListener(() => reject());
+      port.postMessage("iwa->extension: ping");
+    });
+  )";
+  EXPECT_EQ(EvalJs(app_frame, content::JsReplace(kSendPing, extension->id())),
+            "extension->iwa: pong");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix*/,
+    IsolatedWebAppExtensionBrowserTest,
+    ::testing::Values(
+        ExtensionTestParam{
+            .test_name = "origin_with_start_url",
+            .should_succeed = true,
+            // /index.html is the IWA's start_url which is opened in the test.
+            .externally_connectable_match = {"${IWA_ORIGIN}/index.html"}},
+        ExtensionTestParam{
+            .test_name = "origin_with_other_path",
+            .should_succeed = false,
+            .externally_connectable_match = {"${IWA_ORIGIN}/foo"}},
+        ExtensionTestParam{.test_name = "origin_with_star",
+                           .should_succeed = true,
+                           .externally_connectable_match = {"${IWA_ORIGIN}/*"}},
+        ExtensionTestParam{.test_name = "all_urls",
+                           .should_succeed = true,
+                           .externally_connectable_match = {"<all_urls>"}},
+        ExtensionTestParam{
+            .test_name = "wildcard_all_iwas",
+            .should_succeed = true,
+            .externally_connectable_match = {"isolated-app://*/*"}},
+        ExtensionTestParam{
+            .test_name = "non_matching_url",
+            .should_succeed = false,
+            .externally_connectable_match = {"https://example.com/"}}),
+    [](const ::testing::TestParamInfo<ExtensionTestParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace web_app
