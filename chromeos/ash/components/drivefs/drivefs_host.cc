@@ -4,9 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 
-#include <map>
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/unguessable_token.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
@@ -25,11 +22,9 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
+#include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/system/invitation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace drivefs {
 

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
+
 namespace drivefs {
 namespace mojom {
 class DriveError;
@@ -17,7 +19,7 @@ class SyncingStatus;
 
 struct SyncState;
 
-class DriveFsHostObserver {
+class DriveFsHostObserver : public base::CheckedObserver {
  public:
   virtual void OnUnmounted() {}
   virtual void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {}
@@ -28,9 +30,6 @@ class DriveFsHostObserver {
   virtual void OnFilesChanged(const std::vector<mojom::FileChange>& changes) {}
   virtual void OnError(const mojom::DriveError& error) {}
   virtual void OnItemProgress(const mojom::ProgressEvent& event) {}
-
- protected:
-  virtual ~DriveFsHostObserver() = default;
 };
 
 }  // namespace drivefs

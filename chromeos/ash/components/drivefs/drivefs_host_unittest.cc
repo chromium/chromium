@@ -4,9 +4,6 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 
-#include <cmath>
-#include <set>
-#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -19,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -35,6 +31,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -42,7 +39,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
