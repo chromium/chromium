@@ -149,6 +149,20 @@ TEST_F(SearchEngineChoiceUtilsTest,
                               .pref_service = pref_service()}));
 }
 
+// Test that the choice screen does get displayed even if completed if the
+// command line argument for forcing it is set.
+TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceSearchEngineChoiceScreen);
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+
+  EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
+      policy_service(), /*profile_properties=*/{
+          .is_regular_profile = true, .pref_service = pref_service()}));
+}
+
 // Ensure that the choice screen doesn't get displayed if the flag is disabled.
 TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   feature_list()->Reset();
