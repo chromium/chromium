@@ -11350,6 +11350,7 @@ if (!is_android) {
         "../browser/sync/test/integration/two_client_arc_package_sync_test.cc",
         "../browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
+        "../browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
       ]
       deps += [
         "//chromeos/ash/components/browser_context_helper",
