@@ -186,7 +186,7 @@ void PrefetchDocumentManager::DidStartNavigation(
   PrefetchService* prefetch_service = GetPrefetchService();
   if (prefetch_service) {
     prefetch_service->PrepareToServe(navigation_handle->GetURL(),
-                                     std::move(prefetch_container));
+                                     *prefetch_container);
   }
 }
 

@@ -193,6 +193,11 @@ void OnGotPrefetchToServe(
     const network::ResourceRequest& tentative_resource_request,
     GetPrefetchCallback get_prefetch_callback,
     PrefetchContainer::Reader reader) {
+  // TODO(crbug.com/1462206): With multiple prefetches matching, we should
+  // move some of the checks here in `PrefetchService::ReturnPrefetchToServe`.
+  // Why ? Because we might be able to serve a different prefetch if the
+  // prefetch in the `reader` cannot be served.
+
   // The |tentative_resource_request.url| might be different from
   // |GetCurrentURLToServe()| because of No-Vary-Search non-exact url
   // match.
@@ -230,6 +235,9 @@ void OnGotPrefetchToServe(
     return;
   }
 
+  // TODO(crbug.com/1462206): Should we check for existence of an
+  // `origin_prober` earlier instead of waiting until we have a matching
+  // prefetch?
   PrefetchOriginProber* origin_prober =
       GetPrefetchOriginProber(frame_tree_node_id);
   if (!origin_prober) {

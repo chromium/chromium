@@ -74,15 +74,6 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   CHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
 
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  NavigationRequest* navigation_request = frame_tree_node->navigation_request();
-
-  PrefetchMatchResolver::CreateForNavigationHandle(*navigation_request);
-  PrefetchMatchResolver* prefetch_match_resolver =
-      PrefetchMatchResolver::GetForNavigationHandle(*navigation_request);
-  CHECK(prefetch_match_resolver);
-
   if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
                               tentative_resource_request.url)) {
     OnGotPrefetchToServe(
@@ -97,6 +88,21 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     RecordWasFullRedirectChainServedHistogram(false);
     redirect_reader_ = PrefetchContainer::Reader();
   }
+
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  // During the lifetime of the PrefetchUrlLoaderInterceptor there is only one
+  // cross-document navigation waiting for its final response.
+  // We only need to worry about one active navigation while trying to match
+  // prefetch_container in PrefetchService.
+  // This navigation is represented by `prefetch_match_resolver`.
+  // See documentation here as why this is true:
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/navigation_concepts.md#concurrent-navigations
+  NavigationRequest* navigation_request = frame_tree_node->navigation_request();
+  PrefetchMatchResolver::CreateForNavigationHandle(*navigation_request);
+  PrefetchMatchResolver* prefetch_match_resolver =
+      PrefetchMatchResolver::GetForNavigationHandle(*navigation_request);
+  CHECK(prefetch_match_resolver);
 
   GetPrefetch(
       tentative_resource_request, *prefetch_match_resolver,

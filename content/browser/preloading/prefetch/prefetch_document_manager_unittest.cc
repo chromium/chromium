@@ -42,10 +42,10 @@ class TestPrefetchService : public PrefetchService {
     prefetches_.push_back(prefetch_container);
   }
 
-  void PrepareToServe(
-      const GURL& url,
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetches_prepared_to_serve_.emplace_back(url, prefetch_container);
+  void PrepareToServe(const GURL& url,
+                      PrefetchContainer& prefetch_container) override {
+    prefetches_prepared_to_serve_.emplace_back(url,
+                                               prefetch_container.GetWeakPtr());
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;

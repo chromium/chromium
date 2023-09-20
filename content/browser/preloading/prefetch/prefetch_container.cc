@@ -846,8 +846,10 @@ base::OnceClosure PrefetchContainer::ReleaseOnReceivedHeadCallback() {
 void PrefetchContainer::OnPrefetchComplete() {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
-
+  DVLOG(1) << *this << "::OnPrefetchComplete";
   if (!GetNonRedirectResponseReader()) {
+    DVLOG(1) << *this << "::OnPrefetchComplete:"
+             << "no non redirect response reader";
     return;
   }
 
@@ -860,6 +862,8 @@ void PrefetchContainer::OnPrefetchComplete() {
 void PrefetchContainer::UpdatePrefetchRequestMetrics(
     const absl::optional<network::URLLoaderCompletionStatus>& completion_status,
     const network::mojom::URLResponseHead* head) {
+  DVLOG(1) << *this << "::UpdatePrefetchRequestMetrics:"
+           << "head = " << head;
   if (completion_status) {
     prefetch_response_sizes_ = {
         .encoded_data_length = completion_status->encoded_data_length,
@@ -898,6 +902,9 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     return ServableState::kServable;
   }
 
+  DVLOG(1) << *this << "(GetServableState)"
+           << "(streaming_loader=" << streaming_loader_.get() << ")"
+           << "(redirect_chain.empty=" << redirect_chain_.empty() << ")";
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
   if (streaming_loader_ && !redirect_chain_.empty() &&
@@ -959,6 +966,9 @@ void PrefetchContainer::SetServingPageMetrics(
 }
 
 void PrefetchContainer::UpdateServingPageMetrics() {
+  DVLOG(1) << *this << "::UpdateServingPageMetrics:"
+           << "serving_page_metrics_container_ = "
+           << serving_page_metrics_container_.get();
   if (!serving_page_metrics_container_) {
     return;
   }
@@ -981,6 +991,12 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
 
+// TODO(crbug.com/1462206): We might be waiting on PrefetchContainer's head
+// from multiple navigations.
+// E.g. We might wait from one navigation but not use the prefetch, and
+// then we can use the prefetch in a separate navigation without waiting
+// for the head. We need to keep track of blocked_until_head_start_time_ per
+// each navigation for this PrefetchContainer.
 void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
   // OnGetPrefetchToServe is called before we start waiting for head, and
   // when the prefetch is used from `prefetches_ready_to_serve_`.
