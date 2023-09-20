@@ -18,6 +18,12 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gtk/gtk_types.h"
 
+#if GTK_CHECK_VERSION(4, 1, 1)
+#define UI_GTK_CONST const
+#else
+#define UI_GTK_CONST
+#endif
+
 extern "C" {
 #include "ui/gtk/gdk.sigs"
 #include "ui/gtk/gdk_pixbuf.sigs"

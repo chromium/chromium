@@ -68,7 +68,7 @@ GskRenderNode* GetRenderNodeChild(GskRenderNode* node) {
 std::vector<GskRenderNode*> GetRenderNodeChildren(GskRenderNode* node) {
   std::vector<GskRenderNode*> result;
   size_t n_children = 0;
-  GskRenderNode* (*get_child)(GskRenderNode*, guint) = nullptr;
+  GskRenderNode* (*get_child)(UI_GTK_CONST GskRenderNode*, guint) = nullptr;
   switch (gsk_render_node_get_node_type(node)) {
     case GSK_CONTAINER_NODE:
       n_children = gsk_container_node_get_n_children(node);
