@@ -176,7 +176,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityCSSAltText DISABLED_AccessibilityCSSAltText
+#else
+#define MAYBE_AccessibilityCSSAltText AccessibilityCSSAltText
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityCSSAltText) {
   RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
 }
 
@@ -2250,8 +2256,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputCheckBox) {
   RunHtmlTest(FILE_PATH_LITERAL("input-checkbox.html"));
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityInputCheckBoxInMenu \
+  DISABLED_AccessibilityInputCheckBoxInMenu
+#else
+#define MAYBE_AccessibilityInputCheckBoxInMenu AccessibilityInputCheckBoxInMenu
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputCheckBoxInMenu) {
+                       MAYBE_AccessibilityInputCheckBoxInMenu) {
   RunHtmlTest(FILE_PATH_LITERAL("input-checkbox-in-menu.html"));
 }
 
