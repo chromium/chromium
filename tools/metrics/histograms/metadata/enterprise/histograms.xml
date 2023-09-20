@@ -1721,11 +1721,33 @@ chromium-metrics-reviews@google.com.
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".BrowserUploadPublicKey"
+        summary="Upload browser public key.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
     <variant name=".CertBasedRegistration" summary="Cert Based Registration.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".CertProvisioningRequest"
+        summary="Client Certificate Provisioning Request.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".CheckUserAccount" summary="Check User Account.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
     <variant name=".ChromeDesktopReport" summary="Chrome Desktop Report.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ChromeOsUserReport" summary="ChromeOs User Report.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ChromeProfileReport" summary="Chrome Profile Report.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
@@ -1750,15 +1772,19 @@ chromium-metrics-reviews@google.com.
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".PSMDeviceStateRequest" summary="PSM Device State Request.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".PublicSamlUserRequest" summary="Public SAML User Request.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
     <variant name=".Registration" summary="Registration.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".RemoteCommands" summary="Remote Commands.">
-      <owner>rbock@google.com</owner>
-      <owner>zmin@chromium.org</owner>
-    </variant>
-    <variant name=".RequestLicenseTypes" summary="Request License Types.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
@@ -1776,6 +1802,14 @@ chromium-metrics-reviews@google.com.
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadCertificate" summary="Upload Certificate.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadEncryptedReport" summary="Upload Encrypted Report.">
+      <owner>rbock@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadEuiccInfo" summary="Upload EUICC Report.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
