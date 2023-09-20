@@ -289,10 +289,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       /*expected_count=*/1);
 }
 
-// Tests that dispatching an event to a worker with status
-// `blink::EmbeddedWorkerStatus::STOPPING` succeeds.
+// TODO(crbug.com/1467015): Re-enable once we determine how to fix flakiness.
+// This test is flaky on the content::CheckServiceWorkerIsStopping(...) assert
+// because the worker can fully stop anytime after
+// content::StopServiceWorkerForScope(...).
+
+// Tests that dispatching an event to a
+// worker with status `blink::EmbeddedWorkerStatus::STOPPING` succeeds.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
-                       DispatchToStoppingWorker) {
+                       DISABLED_DispatchToStoppingWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
