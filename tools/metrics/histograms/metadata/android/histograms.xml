@@ -576,13 +576,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BiometricAuth.AuthRequester"
-    enum="DeviceAuthRequester" expires_after="2024-02-04">
+<histogram name="Android.BiometricAuth.AuthSource" enum="DeviceAuthSource"
+    expires_after="2024-02-04">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
+  <owner>theocristea@google.com</owner>
   <summary>
     Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
-    user via biometrics. It records that surface/flow which made the request.
+    user via biometrics. It records where the request comes from (Password
+    Manager, Autofill or Incognito).
   </summary>
 </histogram>
 

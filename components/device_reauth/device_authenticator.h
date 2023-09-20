@@ -73,6 +73,14 @@ enum class DeviceAuthRequester {
   kMaxValue = kPaymentsAutofillOptIn,
 };
 
+// The place where the device reauthentication flow is requested from.
+enum class DeviceAuthSource {
+  kPasswordManager = 0,
+  kAutofill = 1,
+  kIncognito = 2,
+  kMaxValue = kIncognito,
+};
+
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.

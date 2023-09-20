@@ -107,9 +107,9 @@ TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsRequester) {
                                 base::DoNothing(),
                                 /*use_last_valid_auth=*/true);
 
-  histogram_tester.ExpectUniqueSample("Android.BiometricAuth.AuthRequester",
-                                      DeviceAuthRequester::kAllPasswordsList,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.BiometricAuth.AuthSource",
+      device_reauth::DeviceAuthSource::kPasswordManager, 1);
 }
 
 TEST_F(DeviceAuthenticatorAndroidTest, DoesntTriggerAuthIfWithin60Seconds) {

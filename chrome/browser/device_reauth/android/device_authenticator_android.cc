@@ -92,8 +92,18 @@ void LogAuthResult(const device_reauth::DeviceAuthRequester& requester,
 }
 
 void LogAuthRequester(const device_reauth::DeviceAuthRequester& requester) {
-  base::UmaHistogramEnumeration("Android.BiometricAuth.AuthRequester",
-                                requester);
+  device_reauth::DeviceAuthSource source;
+
+  if (isAndroidPasswordManagerRequester(requester)) {
+    source = device_reauth::DeviceAuthSource::kPasswordManager;
+  } else if (device_reauth::DeviceAuthRequester::kIncognitoReauthPage ==
+             requester) {
+    source = device_reauth::DeviceAuthSource::kIncognito;
+  } else {
+    source = device_reauth::DeviceAuthSource::kAutofill;
+  }
+
+  base::UmaHistogramEnumeration("Android.BiometricAuth.AuthSource", source);
 }
 
 void LogCanAuthenticate(const BiometricsAvailability& availability) {
