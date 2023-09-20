@@ -35,6 +35,10 @@ struct AdminTemplateWindowUpdate {
 
   // Optional new display ID for the window.
   absl::optional<int64_t> display_id;
+
+  // Optional new Z index for the window, relative to the other tracked
+  // windows.
+  absl::optional<int32_t> activation_index;
 };
 
 // Apply changes in `update` to `admin_template`. If `update` has specified a

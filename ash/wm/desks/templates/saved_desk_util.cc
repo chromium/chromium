@@ -38,6 +38,20 @@ bool IsGuestSession() {
   return user_session->user_info.type == user_manager::USER_TYPE_GUEST;
 }
 
+// Returns true if all windows have bounds.
+bool DoesAllWindowsHaveActivationIndices(const DeskTemplate& admin_template) {
+  const auto& app_id_to_launch_list =
+      admin_template.desk_restore_data()->app_id_to_launch_list();
+  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+    for (auto& [window_id, app_restore_data] : launch_list) {
+      if (!app_restore_data->activation_index.has_value()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace saved_desk_util {
@@ -129,6 +143,12 @@ void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
 }
 
 void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
+  // Use relative ordering iff every window has an activation index.
+  if (!DoesAllWindowsHaveActivationIndices(saved_desk)) {
+    UpdateTemplateActivationIndices(saved_desk);
+    return;
+  }
+
   auto& app_id_to_launch_list =
       saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
   std::vector<app_restore::AppRestoreData*> relative_window_stack_order;

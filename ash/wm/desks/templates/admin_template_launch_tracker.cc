@@ -78,10 +78,12 @@ class AdminTemplateWindowObserver : public aura::WindowObserver {
   AdminTemplateWindowObserver(WindowUpdateCallback update_cb,
                               ObserverDoneCallback done_cb,
                               aura::Window* window,
-                              int32_t template_rwid)
+                              int32_t template_rwid,
+                              std::vector<WindowIdPair> all_rwids)
       : update_cb_(std::move(update_cb)),
         done_cb_(std::move(done_cb)),
-        template_rwid_(template_rwid) {
+        template_rwid_(template_rwid),
+        all_rwids_(std::move(all_rwids)) {
     observer_.Observe(window);
   }
 
@@ -109,6 +111,24 @@ class AdminTemplateWindowObserver : public aura::WindowObserver {
 
   void OnWindowDestroyed(aura::Window* window) override { done_cb_.Run(this); }
 
+  void OnWindowStackingChanged(aura::Window* window) override {
+    // iterate through siblings and update the Z-ordering.  Z ordering is
+    // determined via the reverse order of `window->parent()->children()`
+    int32_t activation_index = 0;
+    for (auto* child : window->parent()->children()) {
+      int32_t rwid = child->GetProperty(app_restore::kRestoreWindowIdKey);
+
+      // ignore windows not being tracked.
+      if (const auto it =
+              base::ranges::find(all_rwids_, rwid, &WindowIdPair::unique_rwid);
+          it != all_rwids_.end()) {
+        update_cb_.Run({.template_rwid = it->template_rwid,
+                        .activation_index = activation_index});
+        --activation_index;
+      }
+    }
+  }
+
   // Called when the the tracked window has updated its state.
   WindowUpdateCallback update_cb_;
   // Called when the tracked window has been destroyed. This destroys the
@@ -116,6 +136,9 @@ class AdminTemplateWindowObserver : public aura::WindowObserver {
   ObserverDoneCallback done_cb_;
   // The window ID of the tracked window, as it appears in the template.
   int32_t template_rwid_;
+  // The IDs of the other tracked windows, we need this in order to update
+  // the z order.
+  std::vector<WindowIdPair> all_rwids_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -132,7 +155,8 @@ class AdminTemplateDeskObserver : public aura::WindowObserver {
       : update_cb_(std::move(update_cb)),
         created_cb_(std::move(created_cb)),
         done_cb_(std::move(done_cb)),
-        rwids_(std::move(rwids)) {
+        rwids_(std::move(rwids)),
+        window_observer_rwids_(rwids_) {
     observer_.Observe(desk_container);
   }
 
@@ -143,7 +167,8 @@ class AdminTemplateDeskObserver : public aura::WindowObserver {
     if (auto it = base::ranges::find(rwids_, rwid, &WindowIdPair::unique_rwid);
         it != rwids_.end()) {
       auto window_observer = std::make_unique<AdminTemplateWindowObserver>(
-          update_cb_, done_cb_, new_window, it->template_rwid);
+          update_cb_, done_cb_, new_window, it->template_rwid,
+          window_observer_rwids_);
 
       created_cb_.Run(std::move(window_observer));
 
@@ -158,7 +183,6 @@ class AdminTemplateDeskObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroyed(aura::Window* window) override { done_cb_.Run(this); }
-
   // TODO(dandersson): Consider if there's an edge case where a desk can be
   // closed between the launch has been initiated and windows appear.
 
@@ -168,8 +192,14 @@ class AdminTemplateDeskObserver : public aura::WindowObserver {
   ObserverCreatedCallback created_cb_;
   // Callback used when an observer is done.
   ObserverDoneCallback done_cb_;
-  // Restore window IDs of windows that have not yet been created.
+  // Restore window IDs of windows that have not yet been created. Entries are
+  // removed as expected windows are created. When this vector becomes empty,
+  // the observer exits.
   std::vector<WindowIdPair> rwids_;
+  // Copy of rwids_ that is copied into window observers.  This enables the
+  // window observers to preserve relative Z ordering by filtering out non
+  // tracked windows in the set of the window's siblings.
+  std::vector<WindowIdPair> window_observer_rwids_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -225,6 +255,9 @@ bool MergeAdminTemplateWindowUpdate(DeskTemplate& admin_template,
   }
   if (update.bounds) {
     restore_data->current_bounds = *update.bounds;
+  }
+  if (update.activation_index) {
+    restore_data->activation_index = *update.activation_index;
   }
 
   return true;
@@ -340,7 +373,8 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
   auto* desks_controller = DesksController::Get();
   admin_template->SetDeskUuid(desks_controller->active_desk()->uuid());
 
-  saved_desk_util::UpdateTemplateActivationIndices(*admin_template);
+  saved_desk_util::UpdateTemplateActivationIndicesRelativeOrder(
+      *admin_template);
 
   // Get a mapping from unique RWIDs to IDs as specified in the original
   // template. This is needed so that we can track launched windows and map

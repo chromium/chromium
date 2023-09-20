@@ -3629,6 +3629,7 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
     struct WindowDefinition {
       std::vector<std::string> urls;
       absl::optional<gfx::Rect> bounds;
+      absl::optional<int32_t> activation_index;
     };
 
     std::vector<WindowDefinition> windows;
@@ -3658,6 +3659,10 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
       if (definition.windows[i].bounds) {
         window.Set("current_bounds",
                    CreateBounds(*definition.windows[i].bounds));
+      }
+
+      if (definition.windows[i].activation_index) {
+        window.Set("index", *definition.windows[i].activation_index);
       }
 
       base::Value::List urls;
@@ -3716,11 +3721,15 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
 
 // TODO(b/273803538): Add tests for lacros.
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
-  // Launch an admin template with a single browser. Verifies that a browser was
-  // actually launched.
-  auto admin_template = CreateAdminTemplate(
-      {.windows = {
-           {.urls = {kExampleUrl1}, .bounds = gfx::Rect(100, 50, 400, 300)}}});
+  // Launch an admin template with two browsers. Verifies that the browsers were
+  // actually launched.  One browser will have an activation index, but it
+  // it should be ignored.
+  auto admin_template =
+      CreateAdminTemplate({.windows = {{.urls = {kExampleUrl1},
+                                        .bounds = gfx::Rect(100, 50, 400, 300)},
+                                       {.urls = {kExampleUrl2},
+                                        .bounds = gfx::Rect(100, 50, 400, 300),
+                                        .activation_index = -100}}});
   ASSERT_NE(admin_template, nullptr);
 
   base::Uuid template_uuid = admin_template->uuid();
@@ -3731,27 +3740,38 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   saved_desk_controller->LaunchAdminTemplate(
       template_uuid, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  // Verify that there are two browsers (one from the suite and one from the
-  // test), and verify that our launched browser is stacked on top.
-  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
-  ASSERT_TRUE(new_browser);
+  // Verify that there are three browsers (two from the suite and one from the
+  // test), and verify that our launched browsers are stacked on top.
+  Browser* new_browser_one = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  Browser* new_browser_two = FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
+  ASSERT_TRUE(new_browser_one);
+  ASSERT_TRUE(new_browser_two);
 
   aura::Window* old_browser_window = browser()->window()->GetNativeWindow();
-  aura::Window* new_browser_window = new_browser->window()->GetNativeWindow();
+  aura::Window* new_browser_window_one =
+      new_browser_one->window()->GetNativeWindow();
+  aura::Window* new_browser_window_two =
+      new_browser_two->window()->GetNativeWindow();
 
-  // Both browsers should be on the same desk.
-  ASSERT_EQ(old_browser_window->parent(), new_browser_window->parent());
+  // All browsers should be on the same desk.
+  ASSERT_EQ(old_browser_window->parent(), new_browser_window_one->parent());
+  ASSERT_EQ(old_browser_window->parent(), new_browser_window_two->parent());
+  ASSERT_EQ(new_browser_window_one->parent(), new_browser_window_two->parent());
 
-  // Verify that the new browser window is stacked in front of the
-  // existing. Children are ordered from bottommost to topmost. We therefore
+  // Verify that the new browser windows are stacked in front of the
+  // existing window and that they are ordered relative to the order in their
+  // template. Children are ordered from bottommost to topmost. We therefore
   // expect the new window to have an index that is higher than the old.
-  const auto& container = new_browser_window->parent()->children();
-  size_t new_index =
-      base::ranges::find(container, new_browser_window) - container.begin();
+  const auto& container = new_browser_window_one->parent()->children();
+  size_t new_index_one =
+      base::ranges::find(container, new_browser_window_one) - container.begin();
+  size_t new_index_two =
+      base::ranges::find(container, new_browser_window_two) - container.begin();
   size_t old_index =
       base::ranges::find(container, old_browser_window) - container.begin();
 
-  EXPECT_GT(new_index, old_index);
+  EXPECT_GT(new_index_one, new_index_two);
+  EXPECT_GT(new_index_two, old_index);
 }
 
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowOffset) {
@@ -3838,12 +3858,18 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
   // windows are updated.
   updated_template = nullptr;
 
+  aura::Window* browser2_window = browser2->window()->GetNativeWindow();
+
   // Set the bounds of the two windows. This should result in the template
   // getting updated.
   const gfx::Rect window1_set_bounds(50, 50, 640, 480);
   browser1->window()->GetNativeWindow()->SetBounds(window1_set_bounds);
   const gfx::Rect window2_set_bounds(100, 100, 800, 600);
   browser2->window()->GetNativeWindow()->SetBounds(window2_set_bounds);
+
+  // Reverse the Z order, we will use this to verify that the Z order is
+  // persisted.
+  browser2_window->parent()->StackChildAtTop(browser2_window);
 
   ASSERT_TRUE(updated_template);
 
@@ -3855,6 +3881,10 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
   data2 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
   ASSERT_TRUE(data2);
   EXPECT_THAT(data2->current_bounds, Optional(window2_set_bounds));
+
+  // Verify that Z ordering was preserved
+  EXPECT_EQ(data1->activation_index, 0);
+  EXPECT_EQ(data2->activation_index, -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateHistograms) {
