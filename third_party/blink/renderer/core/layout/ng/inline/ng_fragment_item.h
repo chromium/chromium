@@ -641,7 +641,7 @@ template <>
 struct VectorTraits<blink::NGFragmentItem>
     : VectorTraitsBase<blink::NGFragmentItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-  // NGFragmentItem(NGFragmentItem&&) is save to be replaced with memcpy. This
+  // NGFragmentItem(NGFragmentItem&&) is safe to be replaced with memcpy. This
   // will enable Oilpan compaction as well.
   static constexpr bool kCanMoveWithMemcpy = true;
 };
