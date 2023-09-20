@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Start with an array of policies.
+// Validate this file in CrOS device: mojo_service_manager --check_policy
+[
+    {
+      "identity": "u:r:cros_browser:s0",
+      "own": [
+        "CrosJpegAccelerator"
+      ]
+    }
+]

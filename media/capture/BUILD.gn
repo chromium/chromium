@@ -326,6 +326,8 @@ component("capture_lib") {
       "video/chromeos/display_rotation_observer.h",
       "video/chromeos/gpu_memory_buffer_tracker_cros.cc",
       "video/chromeos/gpu_memory_buffer_tracker_cros.h",
+      "video/chromeos/jpeg_accelerator_provider.cc",
+      "video/chromeos/jpeg_accelerator_provider.h",
       "video/chromeos/pixel_format_utils.cc",
       "video/chromeos/pixel_format_utils.h",
       "video/chromeos/request_builder.cc",
@@ -367,9 +369,13 @@ component("capture_lib") {
       "//components/device_event_log",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
+      "//media/capture/video/chromeos/mojom:jpeg_accelerator",
       "//third_party/libsync",
     ]
-    data_deps = [ ":mojo_service_manager_policy" ]
+    data_deps = [
+      ":camera_hal_dispatcher_mojo_policy",
+      ":jpeg_accelerator_mojo_policy",
+    ]
   }
 
   if (is_fuchsia) {
@@ -601,7 +607,13 @@ test("capture_unittests") {
   }
 }
 
-copy("mojo_service_manager_policy") {
+# TODO(crbug.com/1484229): Move platform-specific files/targets into subdirectories.
+copy("camera_hal_dispatcher_mojo_policy") {
   sources = [ "video/chromeos/camera_hal_dispatcher_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("jpeg_accelerator_mojo_policy") {
+  sources = [ "video/chromeos/jpeg_accelerator_mojo_policy.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
