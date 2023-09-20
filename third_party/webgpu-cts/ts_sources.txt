@@ -506,6 +506,7 @@ src/webgpu/shader/execution/expression/unary/af_assignment.spec.ts
 src/webgpu/shader/execution/expression/unary/bool_conversion.spec.ts
 src/webgpu/shader/execution/expression/unary/bool_logical.spec.ts
 src/webgpu/shader/execution/expression/unary/f16_arithmetic.spec.ts
+src/webgpu/shader/execution/expression/unary/f16_conversion.spec.ts
 src/webgpu/shader/execution/expression/unary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/expression/unary/f32_conversion.spec.ts
 src/webgpu/shader/execution/expression/unary/i32_arithmetic.spec.ts
