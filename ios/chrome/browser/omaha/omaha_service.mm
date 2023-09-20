@@ -650,9 +650,10 @@ void OmahaService::SendPing() {
     DCHECK(!url_loader_factory_);
     url_loader_factory_ = network::SharedURLLoaderFactory::Create(
         std::move(pending_url_loader_factory_));
+    DCHECK(url_loader_factory_);
+  } else {
+    CHECK(url_loader_factory_);
   }
-
-  DCHECK(url_loader_factory_);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
