@@ -137,6 +137,19 @@ class PromiseAppRegistryCacheObserverTest : public testing::Test,
   void OnPromiseAppUpdate(const PromiseAppUpdate& update) override {
     EXPECT_EQ(update, *expected_update_);
     on_promise_app_updated_called_ = true;
+
+    // Verify that the data in promise app registry cache is already updated.
+    if (update.Status() == PromiseStatus::kRemove) {
+      ASSERT_FALSE(cache()->HasPromiseApp(update.PackageId()));
+    } else {
+      ASSERT_TRUE(cache()->HasPromiseApp(update.PackageId()));
+      const PromiseApp* promise_app_in_cache =
+          cache()->GetPromiseApp(update.PackageId());
+      EXPECT_EQ(promise_app_in_cache->package_id, update.PackageId());
+      EXPECT_EQ(promise_app_in_cache->progress, update.Progress());
+      EXPECT_EQ(promise_app_in_cache->status, update.Status());
+      EXPECT_EQ(promise_app_in_cache->should_show, update.ShouldShow());
+    }
   }
 
   void OnPromiseAppRegistryCacheWillBeDestroyed(

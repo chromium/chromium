@@ -37,18 +37,19 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK(!update_in_progress_);
   update_in_progress_ = true;
 
-  // Retrieve the current promise app state.
-  apps::PromiseApp* state = FindPromiseApp(delta->package_id);
-
   // Hide any promise apps marked for deletion.
   if (delta->status == PromiseStatus::kRemove) {
     delta->should_show = false;
   }
 
-  for (auto& observer : observers_) {
-    observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
-  }
+  // Retrieve the current promise app state.
+  apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
+  // Maintain a version of the state that doesn't have the delta merged into it.
+  // This will be used to send updates to observers.
+  PromiseAppPtr state_before_update = state ? state->Clone() : nullptr;
+
+  // Apply changes to the registry cache.
   if (delta->status == PromiseStatus::kRemove &&
       promise_app_map_.contains(delta->package_id)) {
     promise_app_map_.erase(delta->package_id);
@@ -58,6 +59,11 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   } else {
     // Add the promise app instance to the cache if it isn't registered yet.
     promise_app_map_[delta->package_id] = delta->Clone();
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnPromiseAppUpdate(
+        PromiseAppUpdate(state_before_update.get(), delta.get()));
   }
 
   update_in_progress_ = false;
