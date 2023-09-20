@@ -750,7 +750,6 @@ void PeerConnectionTracker::Bind(
     mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
         receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
                                           TaskType::kMiscPlatformAPI));
 }
