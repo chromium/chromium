@@ -72,18 +72,18 @@ enum class DownloadBubbleSubpageAction {
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 
 // Whether we should page away from the security view and return to the primary
-// view upon a download update. This returns true for danger types where the
-// security view is no longer appropriate.
-bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type) {
+// view upon a download update.
+bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type,
+                                 const DownloadUIModel::BubbleUIInfo& ui_info) {
   return danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED ||
-         danger_type == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS ||
          // The only non-terminal danger type where the security subpage view
          // shows is `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING`. We should then
          // return to the row view when the deep scan completes and is in a
          // state that doesn't have a security subpage. Specifically, that's
          // both safe and failed deep scans, but not scans that find malware.
          danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE ||
-         danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
+         danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED ||
+         !ui_info.HasSubpage();
 }
 
 bool HandleButtonClickWithDefaultClose(
@@ -785,7 +785,7 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
     // that we want this behavior even if `is_different_download` is true, e.g.
     // user clicks on a different download via entry point external to the
     // download bubble (e.g. notification on Lacros).
-    if (ShouldReturnToPrimaryDialog(danger_type_)) {
+    if (ShouldReturnToPrimaryDialog(danger_type_, ui_info_)) {
       navigation_handler_->OpenPrimaryDialog();
       // No need to update views here because we're resetting and returning to
       // the primary dialog anyway.
