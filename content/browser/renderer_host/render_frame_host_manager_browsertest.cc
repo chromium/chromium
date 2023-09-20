@@ -4738,7 +4738,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // in BeginNavigation is compatible with process locks, even when only some of
   // the frames requires isolation.
   IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
-                           {"a.com", "b.com"});
+                           std::vector<std::string>{"a.com", "b.com"});
 
   // Start on a page with a same-site main frame and a subframe.
   GURL page_url(embedded_test_server()->GetURL(

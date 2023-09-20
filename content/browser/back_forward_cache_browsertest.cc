@@ -2868,7 +2868,7 @@ IN_PROC_BROWSER_TEST_P(
       use_cross_origin_subframe ? "b.com" : "a.com", "/title1.html");
 
   IsolateOriginsForTesting(embedded_test_server(), web_contents(),
-                           {"a.com", "b.com"});
+                           std::vector<std::string>{"a.com", "b.com"});
 
   // 1) Navigate to a.com.
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
