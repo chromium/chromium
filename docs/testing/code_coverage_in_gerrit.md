@@ -15,10 +15,11 @@ change view to see absolute and incremental code coverage percentages**:
 
 Absolute coverage percentage is the percentage of lines covered by tests
 out of **all the lines** in the file, while incremental coverage percentage only
-accounts for **newly added or modified lines**.
+accounts for **newly added or modified lines**. Both these coverage metrics, are further
+classified into Unit Tests coverage(coverage from just unit tests) and All Tests coverage(covererd by all tests running in CQ, including unit tests). All Tests coverage is a superset of Unit Tests coverage.
 
 To further dig into specific lines that are not covered by tests, **look at the
-right column of the side by side diff view**:
+right column of the side by side diff view**. It only shows All Tests Coverage right now
 
 ![code_coverage_annotations]
 
@@ -27,11 +28,28 @@ trivial-rebase away**, however, if a newly uploaded patchset has
 non-trivial code change, a new CQ dry run must be triggered before coverage data
 shows up again.
 
-The code coverage tool currently supports:
-* C/C++ code for [Chromium on Linux].
-* C/C++ code for [Chromium on Chromium OS].
+The code coverage tool supports coverage for C/C++, JAVA and Javascript on all major platforms(Linux, MacOS, Windows, Android, iOS and ChromeOS)
 
-support for more platforms and more languages is in progress.
+## CLs Blocked Due to Low Coverage
+For some teams in Chrome, we have turned on a coverage check, which blocks a CL from submission if the incremental coverage is below a preset threshold(default = 70%). CLs with insufficient test coverage have a `CodeCoverage-1` label added to them, which prevents them from being submitted. Also, a descriptive message is added to the CL, notifying developer of why the CL was blocked, and how to resolve it.
+![low_coverage_message]
+
+Once the tests are added, another run of coverage builders (through CQ+1 or CQ+2) changes the label to `CodeCoverage+1`, allowing CLs to proceed with submission.
+
+Devs can also choose to bypass this block, in case they think they are being unfairly punished. They can do so by adding a *Low-Coverage-Reason: reason* footer to the change description. The `reason` string should mention the category the bypass reason belongs to. For e.g. *Low-Coverage-Reason: TRIVIAL_CHANGE This change contains only minor cosmetic changes.* (TRIVIAL_CHANGE is the category)
+
+Available category choices are:
+* **TRIVIAL_CHANGE**: CL contains mostly minor changes e.g. renaming, file moves, logging statements, simple interface definitions etc.
+* **TESTS_ARE_DISABLED**: Corresponding tests exist, but they are currently disabled.
+* **TESTS_IN_SEPARATE_CL**: Developer plan to write tests in a separate CL (Should not be exercised often as per best practices)
+* **HARD_TO_TEST**: The code under consideration is hard to test. For e.g. Interfaces with system, real hardware etc.
+* **COVERAGE_UNDERREPORTED**: To be used when the developer thinks that tests exist, but corresponding coverage is missing.
+* **LARGE_SCALE_REFACTOR**: The current change is part of a large scale refactor. Should explain why the refactor shouldn't have tests.
+* **EXPERIMENTAL_CODE**: The current code is experimental and unlikely to be released to users.
+* **OTHER**: None of the above categories are the right fit
+
+In case the developer doesn't specify the coverage category as prescribed, a warning will be shown in the UI, with details on how to fix
+![impropery_formatted_coverage_footer]
 
 ## Contacts
 
@@ -61,13 +79,12 @@ in Gerrit.
 
 
 [choose_tryjobs]: images/code_coverage_choose_tryjobs.png
-[linux_coverage_rel]: images/code_coverage_linux_coverage_rel.png
 [code_coverage_annotations]: images/code_coverage_annotations.png
 [code_coverage_percentages]: images/code_coverage_percentages.png
+[low_coverage_message]: images/low_coverage_message.png
+[impropery_formatted_coverage_footer]: images/improperly_formatted_coverage_footer.png
 [file a bug]: https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ETest%3ECodeCoverage
 [code-coverage group]: https://groups.google.com/a/chromium.org/forum/#!forum/code-coverage
 [code_coverage.md]: code_coverage.md
 [clang_code_coverage_wrapper]: https://chromium.googlesource.com/chromium/src/+/main/docs/clang_code_coverage_wrapper.md
 [chromium-coverage Gerrit plugin]: https://chromium.googlesource.com/infra/gerrit-plugins/code-coverage/
-[Chromium on Chromium OS]: https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
-[Chromium on Linux]: https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md
