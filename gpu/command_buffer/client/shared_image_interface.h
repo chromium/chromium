@@ -69,6 +69,7 @@ class GPU_EXPORT SharedImageInterface {
 
    private:
     friend class ClientSharedImageInterface;
+    friend class SharedImageInterfaceInProcess;
 
     ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(
