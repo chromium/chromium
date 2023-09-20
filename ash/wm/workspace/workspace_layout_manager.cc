@@ -69,12 +69,12 @@ void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowHierarchyChanged(
 void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
-  workspace_layout_manager_->NotifySystemUiAreaChanged();
+  workspace_layout_manager_->MaybeUpdateA11yFloatingPanelOrPipBounds();
 }
 
 void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowDestroying(
     aura::Window* window) {
-  workspace_layout_manager_->NotifySystemUiAreaChanged();
+  workspace_layout_manager_->MaybeUpdateA11yFloatingPanelOrPipBounds();
   StopOberservingWindow(window);
 }
 
@@ -83,7 +83,7 @@ void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  workspace_layout_manager_->NotifySystemUiAreaChanged();
+  workspace_layout_manager_->MaybeUpdateA11yFloatingPanelOrPipBounds();
 }
 
 void WorkspaceLayoutManager::FloatingWindowObserver::StopOberservingWindow(
@@ -214,7 +214,7 @@ void WorkspaceLayoutManager::OnKeyboardVisibleBoundsChanged(
   auto* keyboard_window =
       keyboard::KeyboardUIController::Get()->GetKeyboardWindow();
   if (keyboard_window && keyboard_window->GetRootWindow() == root_window_)
-    NotifySystemUiAreaChanged();
+    MaybeUpdateA11yFloatingPanelOrPipBounds();
 }
 
 void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
@@ -478,12 +478,12 @@ void WorkspaceLayoutManager::OnShellDestroying() {
 
 void WorkspaceLayoutManager::OnAutoHideStateChanged(
     ShelfAutoHideState new_state) {
-  NotifySystemUiAreaChanged();
+  MaybeUpdateA11yFloatingPanelOrPipBounds();
 }
 
 void WorkspaceLayoutManager::OnHotseatStateChanged(HotseatState old_state,
                                                    HotseatState new_state) {
-  NotifySystemUiAreaChanged();
+  MaybeUpdateA11yFloatingPanelOrPipBounds();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -496,8 +496,7 @@ void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
     return;
   }
   if (!Shell::Get()->IsInTabletMode()) {
-    // Adjust PIP window if needed.
-    NotifySystemUiAreaChanged();
+    MaybeUpdateA11yFloatingPanelOrPipBounds();
   }
 }
 
@@ -511,10 +510,7 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
 
   work_area_in_parent_ = screen_util::GetDisplayWorkAreaBoundsInParent(window_);
 
-  // The PIP avoids the accessibility bubbles, so here we update the
-  // accessibility position before sending the WMEvent, so that if the PIP is
-  // also being shown the PIPs calculation does not need to take place twice.
-  NotifyAccessibilityWorkspaceChanged();
+  MaybeUpdateA11yFloatingPanelOrPipBounds();
 
   // If a user plugs an external display into a laptop running Aura the
   // display size will change.  Maximized windows need to resize to match.
@@ -568,23 +564,20 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   }
 }
 
-void WorkspaceLayoutManager::NotifySystemUiAreaChanged() const {
+void WorkspaceLayoutManager::MaybeUpdateA11yFloatingPanelOrPipBounds() const {
   // The PIP avoids the accessibility bubble, so here we update the
-  // accessibility bubble position before sending the WMEvent, so that if the
-  // PIP is also being shown the PIPs calculation does not need to take place
-  // twice.
-  NotifyAccessibilityWorkspaceChanged();
-  for (auto* window : windows_) {
-    WMEvent event(WM_EVENT_SYSTEM_UI_AREA_CHANGED);
-    WindowState::Get(window)->OnWMEvent(&event);
-  }
-}
-
-void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() const {
+  // accessibility bubble position first, so that if the PIP is also being shown
+  // the PIPs calculation does not need to take place twice.
   if (!is_shell_destroying_) {
     Shell::Get()
         ->accessibility_controller()
         ->UpdateFloatingPanelBoundsIfNeeded();
+  }
+  for (auto* window : windows_) {
+    WindowState* window_state = WindowState::Get(window);
+    if (window_state->IsPip()) {
+      window_state->UpdatePipBounds();
+    }
   }
 }
 

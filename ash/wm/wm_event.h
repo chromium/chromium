@@ -108,13 +108,6 @@ enum WMEventType {
   // WM_EVENT_PIN but does not allow user to exit the mode by shortcut key.
   WM_EVENT_TRUSTED_PIN,
 
-  // A system ui area has changed. Currently, this includes the virtual
-  // keyboard and the message center. A change can be a change in visibility
-  // or bounds.
-  // TODO(oshima): Consider consolidating this into
-  // WM_EVENT_WORKAREA_BOUNDS_CHANGED
-  WM_EVENT_SYSTEM_UI_AREA_CHANGED,
-
   // A user requested to float a window.
   WM_EVENT_FLOAT,
 };

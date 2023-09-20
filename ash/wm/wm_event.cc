@@ -20,7 +20,6 @@ bool WMEvent::IsWorkspaceEvent() const {
     case WM_EVENT_ADDED_TO_WORKSPACE:
     case WM_EVENT_WORKAREA_BOUNDS_CHANGED:
     case WM_EVENT_DISPLAY_BOUNDS_CHANGED:
-    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
       return true;
     default:
       break;

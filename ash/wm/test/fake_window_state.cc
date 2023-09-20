@@ -23,9 +23,6 @@ void FakeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_SET_BOUNDS:
       last_requested_bounds_ = event->AsSetBoundsWMEvent()->requested_bounds();
       break;
-    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
-      ++num_system_ui_area_changes_;
-      break;
     default:
       break;
   }

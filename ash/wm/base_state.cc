@@ -30,8 +30,6 @@ BaseState::~BaseState() = default;
 void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
   if (event->IsWorkspaceEvent()) {
     HandleWorkspaceEvents(window_state, event);
-    if (window_state->IsPip())
-      window_state->UpdatePipBounds();
     if (window_state->IsSnapped() && !window_state->CanSnap())
       window_state->Restore();
     return;

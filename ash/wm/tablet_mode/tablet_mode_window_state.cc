@@ -358,7 +358,6 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                    /*=animate=*/true);
       break;
     case WM_EVENT_SHOW_INACTIVE:
-    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
       break;
     case WM_EVENT_SET_BOUNDS: {
       gfx::Rect bounds_in_parent =

@@ -23,9 +23,6 @@ class FakeWindowState : public WindowState::State {
 
   bool was_visible_on_minimize() const { return was_visible_on_minimize_; }
 
-  int num_system_ui_area_changes() const { return num_system_ui_area_changes_; }
-  void reset_num_system_ui_area_changes() { num_system_ui_area_changes_ = 0; }
-
   const gfx::Rect& last_requested_bounds() const {
     return last_requested_bounds_;
   }
@@ -39,7 +36,6 @@ class FakeWindowState : public WindowState::State {
 
  private:
   bool was_visible_on_minimize_ = true;
-  int num_system_ui_area_changes_ = 0;
   gfx::Rect last_requested_bounds_;
   const chromeos::WindowStateType state_type_;
 };

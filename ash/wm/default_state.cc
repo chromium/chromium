@@ -266,8 +266,6 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
           /*ensure_full_window_visibility=*/false);
       return;
     }
-    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
-      break;
     default:
       NOTREACHED() << "Unknown event:" << event->type();
   }

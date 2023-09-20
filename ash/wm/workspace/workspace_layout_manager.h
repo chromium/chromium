@@ -111,7 +111,8 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   typedef std::set<aura::Window*> WindowSet;
 
   // Observes changes in windows in the FloatingWindowObserver, and
-  // notifies WorkspaceLayoutManager to send out system ui area change events.
+  // notifies WorkspaceLayoutManager to update the accessibility panels and pip
+  // window bounds if needed.
   // This class currently observes windows in |settings_bubble_container_|,
   // |accessibility_bubble_container_|, and |shelf_container_|.
   class FloatingWindowObserver : public aura::WindowObserver {
@@ -166,16 +167,10 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // manager.
   void UpdateAlwaysOnTop(aura::Window* active_desk_fullscreen_window);
 
-  // Notifies windows about a change in a system ui area. This could be
-  // the keyboard or any window in the SettingsBubbleContainer or
-  // |accessibility_bubble_container_|. Windows will only be notified about
-  // changes to system ui areas on the display they are on.
-  void NotifySystemUiAreaChanged() const;
-
-  // Notifies the accessibility controller about a workspace event. If autoclick
-  // or stick keys is enabled, the autoclick bubble or sticky keys overlay may
-  // need to move in response to that event.
-  void NotifyAccessibilityWorkspaceChanged() const;
+  // Updates the bounds of the a11y floating panels (including autoclick menu
+  // and stick keys) and pip window when needed. E.g, work area changes,
+  // visibility of the windows observed by `FloatingWindowObserver` changes.
+  void MaybeUpdateA11yFloatingPanelOrPipBounds() const;
 
   // Updates the window workspace.
   void UpdateWindowWorkspace(aura::Window* window);
