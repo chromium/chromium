@@ -220,7 +220,7 @@ TriggerRegistration::Parse(base::StringPiece json) {
   }
 
   if (!trigger.has_value()) {
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError6",
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError7",
                                   trigger.error());
   }
 

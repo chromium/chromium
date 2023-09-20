@@ -28,9 +28,6 @@ bool IsValueInRange(int value) {
 }
 
 bool IsValid(const AggregatableValues::Values& values) {
-  if (values.size() > kMaxAggregationKeysPerSourceOrTrigger)
-    return false;
-
   return base::ranges::all_of(values, [](const auto& value) {
     return AggregationKeyIdHasValidLength(value.first) &&
            IsValueInRange(value.second);
@@ -57,11 +54,6 @@ AggregatableValues::FromJSON(const base::Value* input_value) {
   if (!dict) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableValuesWrongType);
-  }
-
-  if (dict->size() > kMaxAggregationKeysPerSourceOrTrigger) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregatableValuesTooManyKeys);
   }
 
   Values::container_type container;
