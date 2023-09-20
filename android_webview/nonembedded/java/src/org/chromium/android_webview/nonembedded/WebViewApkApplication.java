@@ -21,6 +21,7 @@ import org.chromium.android_webview.services.NonembeddedSafeModeActionsList;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -168,6 +169,8 @@ public class WebViewApkApplication extends Application {
      * @return True if the library was loaded, false if running as webview stub.
      */
     static synchronized boolean ensureNativeInitialized() {
+        assert ThreadUtils.runningOnUiThread()
+            : "WebViewApkApplication#ensureNativeInitialized should only be called on the UIThread";
         try {
             if (LibraryLoader.getInstance().isInitialized()) {
                 return true;

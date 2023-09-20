@@ -28,9 +28,11 @@ public class LicenseContentProvider
         extends ContentProvider implements ContentProvider.PipeDataWriter<String> {
     public static final String LICENSES_URI_SUFFIX = "LicenseContentProvider/webview_licenses";
     public static final String LICENSES_CONTENT_TYPE = "text/html";
+    private static boolean sLibraryLoaded;
 
     @Override
     public boolean onCreate() {
+        sLibraryLoaded = WebViewApkApplication.ensureNativeInitialized();
         return true;
     }
 
@@ -45,7 +47,7 @@ public class LicenseContentProvider
     @Override
     public void writeDataToPipe(
             ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, String filename) {
-        if (WebViewApkApplication.ensureNativeInitialized()) {
+        if (sLibraryLoaded) {
             CreditUtilsJni.get().writeCreditsHtml(output.detachFd());
         } else {
             // Missing native library means we're the webview stub and licenses are stored as an
