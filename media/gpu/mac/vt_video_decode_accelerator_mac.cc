@@ -47,6 +47,7 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
 #include "media/gpu/mac/vt_config_util.h"
@@ -621,10 +622,15 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
+  codec_ = VideoCodecProfileToVideoCodec(config.profile);
+
+  // If we don't have support support for a given codec, try to initialize
+  // anyways -- otherwise we're certain to fail playback.
   static const base::NoDestructor<VideoDecodeAccelerator::SupportedProfiles>
       kActualSupportedProfiles(GetSupportedProfiles(workarounds_));
   if (!base::Contains(*kActualSupportedProfiles, config.profile,
-                      &VideoDecodeAccelerator::SupportedProfile::profile)) {
+                      &VideoDecodeAccelerator::SupportedProfile::profile) &&
+      IsBuiltInVideoCodec(codec_)) {
     DVLOG(2) << "Unsupported profile";
     return false;
   }
@@ -633,29 +639,6 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
 
   client_ = client;
   config_ = config;
-
-  switch (config.profile) {
-    case H264PROFILE_BASELINE:
-    case H264PROFILE_EXTENDED:
-    case H264PROFILE_MAIN:
-    case H264PROFILE_HIGH:
-      codec_ = VideoCodec::kH264;
-      break;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case HEVCPROFILE_MAIN:
-    case HEVCPROFILE_MAIN10:
-    case HEVCPROFILE_MAIN_STILL_PICTURE:
-    case HEVCPROFILE_REXT:
-      codec_ = VideoCodec::kHEVC;
-      break;
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case VP9PROFILE_PROFILE0:
-    case VP9PROFILE_PROFILE2:
-      codec_ = VideoCodec::kVP9;
-      break;
-    default:
-      NOTREACHED() << "Unsupported profile.";
-  };
 
   // Count the session as successfully initialized.
   UMA_HISTOGRAM_ENUMERATION("Media.VTVDA.SessionFailureReason",
@@ -707,7 +690,8 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
           cc_detector_->GetCodedSize(config_.initial_expected_coded_size));
       break;
     default:
-      NOTREACHED() << "Unsupported codec.";
+      // We can reach this case for non-built-in codecs.
+      break;
   }
 
   if (!format) {

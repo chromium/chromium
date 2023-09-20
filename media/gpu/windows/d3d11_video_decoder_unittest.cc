@@ -25,6 +25,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
@@ -279,7 +280,10 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kH264, H264PROFILE_HIGH10PROFILE);
 
-  InitializeDecoder(high10, false);
+  // When the codec is built in this should fail without H264 decoding being
+  // attempted. If H264 isn't built-in, we should at least attempt initialize.
+  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  InitializeDecoder(high10, expect_success);
 }
 
 TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
@@ -306,7 +310,10 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   VideoDecoderConfig normal =
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
 
-  InitializeDecoder(normal, false);
+  // When the codec is built in this should fail without H264 decoding being
+  // attempted. If H264 isn't built-in, we should at least attempt initialize.
+  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  InitializeDecoder(normal, expect_success);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
