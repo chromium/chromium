@@ -1005,7 +1005,8 @@ class ChoobeScreenTester extends ScreenElementApi {
   }
 
   isDrivePinningScreenVisible() {
-    return this.drivePinningScreenButton.isVisible();
+    return this.drivePinningScreenButton.element() &&
+        this.drivePinningScreenButton.isVisible();
   }
 
   isDrivePinningScreenChecked() {
