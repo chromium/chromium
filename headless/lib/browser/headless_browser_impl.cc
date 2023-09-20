@@ -125,6 +125,11 @@ Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
   return *this;
 }
 
+Builder& Builder::SetDiskCacheDir(const base::FilePath& dir) {
+  options_.disk_cache_dir = dir;
+  return *this;
+}
+
 Builder& Builder::SetWindowSize(const gfx::Size& size) {
   options_.window_size = size;
   return *this;

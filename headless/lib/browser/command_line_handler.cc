@@ -6,6 +6,7 @@
 
 #include <cstdio>
 
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -131,6 +132,26 @@ bool HandleFontRenderHinting(base::CommandLine& command_line,
   return true;
 }
 
+base::FilePath EnsureDirectoryExists(const base::FilePath& file_path) {
+  if (!base::DirectoryExists(file_path) && !base::CreateDirectory(file_path)) {
+    PLOG(ERROR) << "Could not create directory " << file_path;
+    return base::FilePath();
+  }
+
+  if (file_path.IsAbsolute()) {
+    return file_path;
+  }
+
+  const base::FilePath absolute_file_path =
+      base::MakeAbsoluteFilePath(file_path);
+  if (absolute_file_path.empty()) {
+    PLOG(ERROR) << "Invalid directory path " << file_path;
+    return base::FilePath();
+  }
+
+  return absolute_file_path;
+}
+
 }  // namespace
 
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
@@ -157,11 +178,25 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
   }
 
   if (command_line.HasSwitch(switches::kUserDataDir)) {
-    builder.SetUserDataDir(
+    const base::FilePath dir = EnsureDirectoryExists(
         command_line.GetSwitchValuePath(switches::kUserDataDir));
+    if (dir.empty()) {
+      return false;
+    }
+    builder.SetUserDataDir(dir);
+
     if (!command_line.HasSwitch(switches::kIncognito)) {
       builder.SetIncognitoMode(false);
     }
+  }
+
+  if (command_line.HasSwitch(switches::kDiskCacheDir)) {
+    const base::FilePath dir = EnsureDirectoryExists(
+        command_line.GetSwitchValuePath(switches::kDiskCacheDir));
+    if (dir.empty()) {
+      return false;
+    }
+    builder.SetDiskCacheDir(dir);
   }
 
   if (command_line.HasSwitch(switches::kWindowSize)) {

@@ -42,6 +42,9 @@ class HeadlessBrowserContextOptions {
   // See HeadlessBrowser::Options::user_data_dir.
   const base::FilePath& user_data_dir() const;
 
+  // See HeadlessBrowser::Options::disk_cache_dir.
+  const base::FilePath& disk_cache_dir() const;
+
   // See HeadlessBrowser::Options::incognito_mode.
   bool incognito_mode() const;
 
@@ -63,6 +66,7 @@ class HeadlessBrowserContextOptions {
   std::unique_ptr<net::ProxyConfig> proxy_config_;
   absl::optional<gfx::Size> window_size_;
   absl::optional<base::FilePath> user_data_dir_;
+  absl::optional<base::FilePath> disk_cache_dir_;
   absl::optional<bool> incognito_mode_;
   absl::optional<bool> block_new_web_contents_;
 

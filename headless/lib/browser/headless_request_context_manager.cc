@@ -217,6 +217,7 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
               switches::kDisableCookieEncryption)),
 #endif
       user_data_path_(std::move(user_data_path)),
+      disk_cache_dir_(options->disk_cache_dir()),
       accept_language_(options->accept_language()),
       user_agent_(options->user_agent()),
       proxy_config_(
@@ -306,14 +307,13 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
     context_params->file_paths->trigger_migration = false;
 #endif  // BUILDFLAG(IS_WIN)
   }
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDiskCacheDir)) {
+
+  if (!disk_cache_dir_.empty()) {
     if (!context_params->file_paths) {
       context_params->file_paths =
           ::network::mojom::NetworkContextFilePaths::New();
     }
-    context_params->file_paths->http_cache_directory =
-        command_line->GetSwitchValuePath(switches::kDiskCacheDir);
+    context_params->file_paths->http_cache_directory = disk_cache_dir_;
   } else if (!user_data_path_.empty()) {
     context_params->file_paths->http_cache_directory =
         user_data_path_.Append(FILE_PATH_LITERAL("Cache"));

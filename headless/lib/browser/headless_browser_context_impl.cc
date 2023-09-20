@@ -380,6 +380,13 @@ HeadlessBrowserContext::Builder::SetUserDataDir(
 }
 
 HeadlessBrowserContext::Builder&
+HeadlessBrowserContext::Builder::SetDiskCacheDir(
+    const base::FilePath& disk_cache_dir) {
+  options_->disk_cache_dir_ = disk_cache_dir;
+  return *this;
+}
+
+HeadlessBrowserContext::Builder&
 HeadlessBrowserContext::Builder::SetIncognitoMode(bool incognito_mode) {
   options_->incognito_mode_ = incognito_mode;
   return *this;

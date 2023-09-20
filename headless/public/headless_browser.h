@@ -122,6 +122,10 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // If empty, default directory (where the binary is located) will be used.
   base::FilePath user_data_dir;
 
+  // Path to disk cache directory. If emppty, 'Cache' subdirectory of the
+  // user data directory will be used.
+  base::FilePath disk_cache_dir;
+
   // Run a browser context in an incognito mode. Enabled by default.
   bool incognito_mode = true;
 
@@ -170,6 +174,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> config);
   Builder& SetWindowSize(const gfx::Size& size);
   Builder& SetUserDataDir(const base::FilePath& dir);
+  Builder& SetDiskCacheDir(const base::FilePath& dir);
   Builder& SetIncognitoMode(bool incognito);
   Builder& SetBlockNewWebContents(bool block);
   Builder& SetCrashReporterEnabled(bool enabled);

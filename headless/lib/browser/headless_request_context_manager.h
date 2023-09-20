@@ -59,6 +59,7 @@ class HeadlessRequestContextManager {
   const bool cookie_encryption_enabled_;
 
   base::FilePath user_data_path_;
+  base::FilePath disk_cache_dir_;
   std::string accept_language_;
   std::string user_agent_;
   std::unique_ptr<net::ProxyConfig> proxy_config_;

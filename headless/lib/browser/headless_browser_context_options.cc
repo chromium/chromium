@@ -54,6 +54,11 @@ const base::FilePath& HeadlessBrowserContextOptions::user_data_dir() const {
   return ReturnOverriddenValue(user_data_dir_, browser_options_->user_data_dir);
 }
 
+const base::FilePath& HeadlessBrowserContextOptions::disk_cache_dir() const {
+  return ReturnOverriddenValue(disk_cache_dir_,
+                               browser_options_->disk_cache_dir);
+}
+
 bool HeadlessBrowserContextOptions::incognito_mode() const {
   return ReturnOverriddenValue(incognito_mode_,
                                browser_options_->incognito_mode);
