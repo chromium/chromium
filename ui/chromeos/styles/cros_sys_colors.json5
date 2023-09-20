@@ -225,6 +225,10 @@
       light: 'rgba($cros.sys.surface3.rgb, 0.9)',
       dark: 'rgba($cros.sys.surface3.rgb, 0.9)',
     },
+    'system-base-elevated-opaque': {
+      light: '$cros.sys.surface3',
+      dark: '$cros.sys.surface3',
+    },
 
     /* Surfaces */
     surface: {
