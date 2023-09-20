@@ -98,11 +98,11 @@ after discussions on the right group.
       <annotation id="printing_oauth2_token_exchange_request"/>
       <annotation id="printing_server_printers_query"/>
     </sender>
-    <sender name="Device Activity">
-      <annotation id="device_activity_client_health_check"/>
-      <annotation id="device_activity_client_check_membership"/>
-      <annotation id="device_activity_client_check_in"/>
+    <sender name="Report using PSM">
+      <annotation id="report_check_membership"/>
+      <annotation id="report_check_in"/>
     </sender>
+    <sender name="Device Activity"/>
     <sender name="Enhanced Network TTS">
       <annotation id="enhanced_network_tts"/>
     </sender>

@@ -69,6 +69,18 @@ net::NetworkTrafficAnnotationTag UseCase::GetCheckMembershipTrafficTag() {
                    "the device activity when the default network changes"
           data: "Google API Key."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "hirthanan@google.com"
+            }
+            contacts {
+              email: "chromeos-data-eng@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2023-07-05"
         }
         policy {
           cookies_allowed: NO
@@ -89,13 +101,25 @@ net::NetworkTrafficAnnotationTag UseCase::GetCheckInTrafficTag() {
                   "is operating system images to be retrieved and provisioned "
                   "from anywhere internet access is available. So when a new "
                   "Chrome OS device joins a LAN, it gets added to the Private "
-                  "Set of that LAN. After that, it can view the health status "
-                  "(CPU/RAM/disk usage) of other Chrome OS devices "
-                  "on the same LAN."
+                  "Set of that LAN. The import request contains an encrypted "
+                  "derived device id, and metadata used to calculate churn."
           trigger: "Chrome OS client makes this network request and records "
                    "the device activity when the default network changes"
-          data: "Google API Key."
+          data: "Google API Key and metadata that is used to count device actives and churn."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "hirthanan@google.com"
+            }
+            contacts {
+              email: "chromeos-data-eng@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: OTHER
+          }
+          last_reviewed: "2023-07-05"
         }
         policy {
           cookies_allowed: NO
