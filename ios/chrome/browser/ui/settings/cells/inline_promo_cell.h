@@ -27,6 +27,11 @@
 // Button to get more info on the promo.
 @property(nonatomic, readonly) UIButton* moreInfoButton;
 
+// Whether or not the cell can be interacted with. When the cell is disabled,
+// the text is dimmed and colors, as well as the image, are greyed out. `YES` by
+// default.
+@property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_INLINE_PROMO_CELL_H_

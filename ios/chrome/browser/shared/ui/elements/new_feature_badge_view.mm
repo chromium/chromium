@@ -10,6 +10,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+@interface NewFeatureBadgeView () {
+  // The icon representing the badge.
+  UIImageView* _badge;
+}
+
+@end
+
 @implementation NewFeatureBadgeView
 
 - (instancetype)initWithBadgeSize:(CGFloat)badgeSize
@@ -18,11 +25,11 @@
   if (self) {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    UIImageView* badge = [[UIImageView alloc]
+    _badge = [[UIImageView alloc]
         initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol, badgeSize)];
-    badge.translatesAutoresizingMaskIntoConstraints = NO;
-    badge.tintColor = [UIColor colorNamed:kBlue600Color];
-    [self addSubview:badge];
+    _badge.translatesAutoresizingMaskIntoConstraints = NO;
+    _badge.tintColor = [UIColor colorNamed:kBlue600Color];
+    [self addSubview:_badge];
 
     UIFontDescriptor* fontDescriptor = [UIFontDescriptor
         preferredFontDescriptorWithTextStyle:UIFontTextStyleCaption1];
@@ -40,14 +47,18 @@
     label.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     label.font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
     [self addSubview:label];
-    AddSameCenterConstraints(label, badge);
+    AddSameCenterConstraints(label, _badge);
 
     [NSLayoutConstraint activateConstraints:@[
-      [badge.widthAnchor constraintEqualToConstant:badgeSize],
-      [badge.heightAnchor constraintEqualToConstant:badgeSize],
+      [_badge.widthAnchor constraintEqualToConstant:badgeSize],
+      [_badge.heightAnchor constraintEqualToConstant:badgeSize],
     ]];
   }
   return self;
+}
+
+- (void)setBadgeColor:(UIColor*)color {
+  _badge.tintColor = color;
 }
 
 @end

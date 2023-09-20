@@ -54,19 +54,25 @@ constexpr CGFloat kNewFeatureFontSize = 10;
 
 }  // namespace
 
-@implementation InlinePromoCell
+@implementation InlinePromoCell {
+  // New feature badge that is overlaying part of the promo image view.
+  NewFeatureBadgeView* _badgeView;
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    _enabled = YES;
     _closeButton = [self createCloseButton];
     _promoImageView = [self createPromoImageView];
+    _badgeView = [self createNewFeatureBadgeView];
     _promoTextLabel = [self createPromoTextLabel];
     _moreInfoButton = [self createMoreInfoButton];
 
     UIView* badgedImageView =
-        [self createBadgedImageViewWithImageView:_promoImageView];
+        [self createBadgedImageViewWithImageView:_promoImageView
+                             newFeatureBadgeView:_badgeView];
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       badgedImageView, _promoTextLabel, _moreInfoButton
     ]];
@@ -129,6 +135,25 @@ constexpr CGFloat kNewFeatureFontSize = 10;
   return self;
 }
 
+#pragma mark - Setters
+
+- (void)setEnabled:(BOOL)enabled {
+  if (_enabled == enabled) {
+    return;
+  }
+  _enabled = enabled;
+
+  if (enabled) {
+    [_badgeView setBadgeColor:[UIColor colorNamed:kBlue600Color]];
+    _promoTextLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    [_badgeView setBadgeColor:[UIColor colorNamed:kTextSecondaryColor]];
+    _promoTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+  _moreInfoButton.enabled = enabled;
+  _closeButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 // Creates and returns the promo's close button.
@@ -160,6 +185,17 @@ constexpr CGFloat kNewFeatureFontSize = 10;
   promoImageView.contentMode = UIViewContentModeScaleAspectFit;
 
   return promoImageView;
+}
+
+// Creates and configures the new feature badge view.
+- (NewFeatureBadgeView*)createNewFeatureBadgeView {
+  NewFeatureBadgeView* badgeView =
+      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
+                                            fontSize:kNewFeatureFontSize];
+  badgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  badgeView.accessibilityElementsHidden = YES;
+
+  return badgeView;
 }
 
 // Creates and configures the promo's text label.
@@ -198,18 +234,13 @@ constexpr CGFloat kNewFeatureFontSize = 10;
 
 // Creates and configures the view composed of the image view and the new
 // feature badge.
-- (UIView*)createBadgedImageViewWithImageView:(UIImageView*)imageView {
+- (UIView*)createBadgedImageViewWithImageView:(UIImageView*)imageView
+                          newFeatureBadgeView:(NewFeatureBadgeView*)badgeView {
   UIView* view = [[UIView alloc] init];
   view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NewFeatureBadgeView* newFeatureBadgeView =
-      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
-                                            fontSize:kNewFeatureFontSize];
-  newFeatureBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-  newFeatureBadgeView.accessibilityElementsHidden = YES;
-
   [view addSubview:imageView];
-  [view addSubview:newFeatureBadgeView];
+  [view addSubview:badgeView];
 
   [NSLayoutConstraint activateConstraints:@[
     // `imageView` constraints.
@@ -220,14 +251,11 @@ constexpr CGFloat kNewFeatureFontSize = 10;
     [imageView.widthAnchor constraintEqualToConstant:kImageSize],
     [imageView.heightAnchor constraintEqualToConstant:kImageSize],
 
-    // `newFeatureBadgeView` constraints.
-    [newFeatureBadgeView.widthAnchor
-        constraintEqualToConstant:kNewFeatureBadgeSize],
-    [newFeatureBadgeView.heightAnchor
-        constraintEqualToConstant:kNewFeatureBadgeSize],
-    [newFeatureBadgeView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [newFeatureBadgeView.leadingAnchor
-        constraintEqualToAnchor:view.leadingAnchor],
+    // `badgeView` constraints.
+    [badgeView.widthAnchor constraintEqualToConstant:kNewFeatureBadgeSize],
+    [badgeView.heightAnchor constraintEqualToConstant:kNewFeatureBadgeSize],
+    [badgeView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [badgeView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
   ]];
 
   return view;

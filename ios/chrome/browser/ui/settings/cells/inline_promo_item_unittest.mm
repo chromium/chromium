@@ -63,6 +63,7 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
   UIImageView* cell_promo_image_view = promo_cell.promoImageView;
   UILabel* cell_promo_text_label = promo_cell.promoTextLabel;
   UIButton* more_info_button = promo_cell.moreInfoButton;
+  EXPECT_TRUE(close_button.enabled);
   EXPECT_NSEQ(cell_promo_image_view.image, promo_image);
   EXPECT_NSEQ(cell_promo_text_label.text, promo_text);
   EXPECT_EQ(cell_promo_text_label.font,
@@ -70,6 +71,7 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
   EXPECT_TRUE([cell_promo_text_label.textColor
       isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
   EXPECT_TRUE(cell_promo_text_label.isAccessibilityElement);
+  EXPECT_TRUE(more_info_button.enabled);
 
   UIButtonConfiguration* close_button_configuration =
       close_button.configuration;
@@ -99,7 +101,7 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
 
 // Tests that the close button visibility follows the item's
 // `shouldShowCloseButton` property.
-TEST_F(InlinePromoItemTest, InfoButtonVisibility) {
+TEST_F(InlinePromoItemTest, CloseButtonVisibility) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
   item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
   item.promoText = @"Test text";
@@ -115,6 +117,26 @@ TEST_F(InlinePromoItemTest, InfoButtonVisibility) {
   item.shouldShowCloseButton = false;
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_TRUE(promo_cell.closeButton.hidden);
+}
+
+// Tests that the cell is as expected when disabled.
+TEST_F(InlinePromoItemTest, DisableCell) {
+  InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
+  item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  item.promoText = @"Test text";
+  item.moreInfoButtonTitle = @"Button Title";
+  item.enabled = NO;
+
+  id cell = [[[item cellClass] alloc] init];
+  InlinePromoCell* promo_cell =
+      base::apple::ObjCCastStrict<InlinePromoCell>(cell);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+
+  EXPECT_FALSE(promo_cell.closeButton.enabled);
+  EXPECT_TRUE([promo_cell.promoTextLabel.textColor
+      isEqual:[UIColor colorNamed:kTextSecondaryColor]]);
+  EXPECT_FALSE(promo_cell.moreInfoButton.enabled);
 }
 
 }  // namespace

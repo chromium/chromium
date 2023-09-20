@@ -24,6 +24,9 @@
 // Whether or not the close button should be visible. `YES` by default.
 @property(nonatomic, assign) BOOL shouldShowCloseButton;
 
+// Whether or not the cell should be enabled. `YES` by default.
+@property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_INLINE_PROMO_ITEM_H_

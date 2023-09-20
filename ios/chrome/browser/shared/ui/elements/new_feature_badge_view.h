@@ -22,6 +22,10 @@
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Sets the color of the badge. When the NewFeatureBadgeView is initialized, the
+// badge is given the Blue600 color by default.
+- (void)setBadgeColor:(UIColor*)color;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_NEW_FEATURE_BADGE_VIEW_H_

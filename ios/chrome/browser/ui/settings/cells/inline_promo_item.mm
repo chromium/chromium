@@ -14,6 +14,7 @@
   if (self) {
     self.cellClass = [InlinePromoCell class];
     _shouldShowCloseButton = YES;
+    _enabled = YES;
   }
   return self;
 }
@@ -26,6 +27,7 @@
   cell.closeButton.hidden = !self.shouldShowCloseButton;
   cell.promoImageView.image = self.promoImage;
   cell.promoTextLabel.text = self.promoText;
+  cell.enabled = self.enabled;
 
   UIButtonConfiguration* buttonConfiguration =
       cell.moreInfoButton.configuration;
