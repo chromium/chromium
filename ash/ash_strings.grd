@@ -5069,6 +5069,21 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT" desc="The text for cancel button in settings, return to the main UI.">
         Cancel
       </message>
+      <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_1_HOUR_TEXT" desc="The text for snooze notification for 1 hour in snooze settings.">
+        1h
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_15_MINUTES_TEXT" desc="The text for snooze notification for 15 minutes in snooze settings.">
+        15min
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_30_MINUTES_TEXT" desc="The text for snooze notification for 30 minutes in snooze settings.">
+        30min
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_2_HOURS_TEXT" desc="The text for snooze notification for 2 hours in snooze settings.">
+        2h
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_UNDO_SNOOZE_TEXT" desc="The text for undo snooze notification in snooze settings.">
+        Undo
+      </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">
         Don't show again

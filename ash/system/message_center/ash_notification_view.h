@@ -118,6 +118,8 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void CreateOrUpdateInlineSettingsViews(
       const message_center::Notification& notification) override;
+  void CreateOrUpdateSnoozeSettingsViews(
+      const message_center::Notification& notification) override;
   void CreateOrUpdateCompactTitleMessageView(
       const message_center::Notification& notification) override;
   void CreateOrUpdateProgressViews(
@@ -137,6 +139,7 @@ class ASH_EXPORT AshNotificationView
   gfx::Size GetIconViewSize() const override;
   int GetLargeImageViewMaxWidth() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
+  void ToggleSnoozeSettings(const ui::Event& event) override;
   void OnInlineReplyUpdated() override;
 
   void set_is_animating(bool is_animating) { is_animating_ = is_animating; }

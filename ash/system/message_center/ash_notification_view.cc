@@ -593,6 +593,7 @@ AshNotificationView::AshNotificationView(
                   // consider making changes to this code when the bug is fixed.
                   .SetMaximumWidth(GetExpandedMessageLabelWidth()))
           .AddChild(CreateInlineSettingsBuilder())
+          .AddChild(CreateSnoozeSettingsBuilder())
           .AddChild(CreateImageContainerBuilder().SetProperty(
               views::kMarginsKey, kImageContainerPadding));
 
@@ -1375,6 +1376,58 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
       std::move(inline_settings_cancel_button));
 }
 
+void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
+    const message_center::Notification& notification) {
+  // TODO(b/298216201): Enable snooze settings after adding mojo callbacks in
+  // the snooze settings layout.
+
+  if (!snooze_settings_enabled()) {
+    return;
+  }
+
+  snooze_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  auto snooze_notification_1_hour_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::DisableNotification,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_1_HOUR_TEXT));
+  snooze_settings_row()->AddChildView(
+      std::move(snooze_notification_1_hour_button));
+
+  auto snooze_notification_15_minutes_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::DisableNotification,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_15_MINUTES_TEXT));
+  snooze_settings_row()->AddChildView(
+      std::move(snooze_notification_15_minutes_button));
+
+  auto snooze_notification_30_minutes_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::DisableNotification,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_30_MINUTES_TEXT));
+  snooze_settings_row()->AddChildView(
+      std::move(snooze_notification_30_minutes_button));
+
+  auto snooze_notification_2_hours_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::DisableNotification,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_2_HOURS_TEXT));
+  snooze_settings_row()->AddChildView(
+      std::move(snooze_notification_2_hours_button));
+
+  auto undo_snooze_notification_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::ToggleSnoozeSettings,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_UNDO_SNOOZE_TEXT));
+  snooze_settings_row()->AddChildView(
+      std::move(undo_snooze_notification_button));
+}
+
 void AshNotificationView::CreateOrUpdateCompactTitleMessageView(
     const message_center::Notification& notification) {
   // No CompactTitleMessageView required. It is only used for progress
@@ -1562,6 +1615,21 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
     right_content()->SetVisible(!should_show_inline_settings);
   }
   expand_button_->SetVisible(!should_show_inline_settings);
+
+  PreferredSizeChanged();
+}
+
+void AshNotificationView::ToggleSnoozeSettings(const ui::Event& event) {
+  if (!snooze_settings_enabled()) {
+    return;
+  }
+
+  bool should_show_snooze_settings = !snooze_settings_row()->GetVisible();
+
+  NotificationViewBase::ToggleSnoozeSettings(event);
+
+  left_content()->SetVisible(!should_show_snooze_settings);
+  right_content()->SetVisible(!should_show_snooze_settings);
 
   PreferredSizeChanged();
 }

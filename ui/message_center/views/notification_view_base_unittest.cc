@@ -96,6 +96,11 @@ class TestNotificationView : public NotificationViewBase {
         notification.rich_notification_data().settings_button_handler ==
         message_center::SettingsButtonHandler::INLINE);
   }
+  void CreateOrUpdateSnoozeSettingsViews(
+      const Notification& notification) override {
+    set_snooze_settings_enabled(notification.notifier_id().type ==
+                                message_center::NotifierType::ARC_APPLICATION);
+  }
   bool IsExpandable() const override { return true; }
   std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
       views::Button::PressedCallback callback,

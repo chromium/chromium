@@ -40,6 +40,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   void CreateOrUpdateSmallIconView(const Notification& notification) override;
   void CreateOrUpdateInlineSettingsViews(
       const Notification& notification) override;
+  void CreateOrUpdateSnoozeSettingsViews(
+      const Notification& notification) override;
   std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
       views::Button::PressedCallback callback,
       const std::u16string& label) override;
@@ -49,6 +51,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void ToggleInlineSettings(const ui::Event& event) override;
+  void ToggleSnoozeSettings(const ui::Event& event) override;
   bool IsExpandable() const override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;

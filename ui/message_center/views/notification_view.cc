@@ -303,6 +303,7 @@ NotificationView::NotificationView(
           .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding))
           .Build());
   AddChildView(CreateInlineSettingsBuilder().Build());
+  AddChildView(CreateSnoozeSettingsBuilder().Build());
   AddChildView(CreateActionsRow());
 
   CreateOrUpdateViews(notification);
@@ -471,6 +472,11 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
   inline_settings_row()->AddChildView(std::move(settings_button_row));
 }
 
+void NotificationView::CreateOrUpdateSnoozeSettingsViews(
+    const Notification& notification) {
+  // Not implemented by default.
+}
+
 std::unique_ptr<views::LabelButton>
 NotificationView::GenerateNotificationLabelButton(
     views::Button::PressedCallback callback,
@@ -559,6 +565,10 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
   // point after it's called.
   if (disable_notification)
     MessageCenter::Get()->DisableNotification(notification_id());
+}
+
+void NotificationView::ToggleSnoozeSettings(const ui::Event& event) {
+  // Not implemented by default.
 }
 
 bool NotificationView::IsExpandable() const {

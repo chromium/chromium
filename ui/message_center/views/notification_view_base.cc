@@ -209,6 +209,7 @@ void NotificationViewBase::CreateOrUpdateViews(
   CreateOrUpdateSmallIconView(notification);
   CreateOrUpdateImageView(notification);
   CreateOrUpdateInlineSettingsViews(notification);
+  CreateOrUpdateSnoozeSettingsViews(notification);
   UpdateViewForExpandedState(expanded_);
   // Should be called at the last because SynthesizeMouseMoveEvent() requires
   // everything is in the right location when called.
@@ -397,6 +398,14 @@ NotificationViewBase::CreateInlineSettingsBuilder() {
   DCHECK(!settings_row_);
   return views::Builder<views::BoxLayoutView>()
       .CopyAddressTo(&settings_row_)
+      .SetVisible(false);
+}
+
+views::Builder<views::BoxLayoutView>
+NotificationViewBase::CreateSnoozeSettingsBuilder() {
+  CHECK(!snooze_row_);
+  return views::Builder<views::BoxLayoutView>()
+      .CopyAddressTo(&snooze_row_)
       .SetVisible(false);
 }
 
@@ -825,6 +834,24 @@ void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
   }
 }
 
+void NotificationViewBase::ToggleSnoozeSettings(const ui::Event& event) {
+  bool snooze_settings_visible = !snooze_row_->GetVisible();
+
+  snooze_row_->SetVisible(snooze_settings_visible);
+
+  SetSettingMode(snooze_settings_visible);
+
+  // Grab a weak pointer before calling SetExpanded() as it might cause |this|
+  // to be deleted.
+  {
+    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+    SetExpanded(!snooze_settings_visible);
+    if (!weak_ptr) {
+      return;
+    }
+  }
+}
+
 NotificationControlButtonsView* NotificationViewBase::GetControlButtonsView()
     const {
   return control_buttons_view_;
@@ -861,6 +888,18 @@ void NotificationViewBase::OnSettingsButtonPressed(const ui::Event& event) {
     ToggleInlineSettings(event);
   else
     MessageView::OnSettingsButtonPressed(event);
+}
+
+void NotificationViewBase::OnSnoozeButtonPressed(const ui::Event& event) {
+  for (auto& observer : *observers()) {
+    observer.OnSnoozeButtonPressed(notification_id());
+  }
+
+  if (snooze_settings_enabled_) {
+    ToggleSnoozeSettings(event);
+  } else {
+    MessageView::OnSnoozeButtonPressed(event);
+  }
 }
 
 void NotificationViewBase::Activate() {
