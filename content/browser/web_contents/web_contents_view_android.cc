@@ -221,6 +221,11 @@ DropData* WebContentsViewAndroid::GetDropData() const {
   return NULL;
 }
 
+// TODO(crbug.com/1482848): Investigate if this needs to be implemented.
+void WebContentsViewAndroid::CancelDragDropForPortalActivation() {
+  NOTIMPLEMENTED();
+}
+
 gfx::Rect WebContentsViewAndroid::GetViewBounds() const {
   return gfx::Rect(view_.GetSize());
 }

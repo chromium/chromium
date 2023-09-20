@@ -243,6 +243,11 @@ DropData* WebContentsViewMac::GetDropData() const {
   return [drag_dest_ currentDropData];
 }
 
+// TODO(crbug.com/1482848): Investigate if this needs to be implemented.
+void WebContentsViewMac::CancelDragDropForPortalActivation() {
+  NOTIMPLEMENTED();
+}
+
 void WebContentsViewMac::UpdateDragCursor(ui::mojom::DragOperation operation) {
   [drag_dest_ setCurrentOperation:static_cast<NSDragOperation>(operation)];
 }

@@ -786,6 +786,14 @@ void WebContentsViewAura::EndDrag(
   RenderWidgetHost* source_rwh = source_rwh_weak_ptr.get();
 
   aura::Window* window = GetContentNativeView();
+  // When the drag is cancelled after a portal activation, we would have already
+  // destroyed the page's RWHV (the predecessor page is now an orphaned portal),
+  // and GetContentNativeView() will return a nullptr.
+  if (!window) {
+    web_contents_->SystemDragEnded(source_rwh);
+    return;
+  }
+
   gfx::PointF screen_loc =
       gfx::PointF(display::Screen::GetScreen()->GetCursorScreenPoint());
   gfx::PointF client_loc = screen_loc;
@@ -957,6 +965,21 @@ void WebContentsViewAura::FocusThroughTabTraversal(bool reverse) {
 
 DropData* WebContentsViewAura::GetDropData() const {
   return current_drag_data_.get();
+}
+
+void WebContentsViewAura::CancelDragDropForPortalActivation() {
+  // Note: We only want to cancel drags that originate from the predecessor
+  // WebContents to prevent possible unintentional cross-origin data accesses.
+  // |drag_start_| is only set if the drag originated in this WebContents. Drags
+  // from other tabs or from outside Chrome are not subject to this restriction
+  // (as they demonstrate sufficient user intent), and should continue to work
+  // across portal activations.
+  if (auto* drag_drop_client =
+          aura::client::GetDragDropClient(GetNativeView()->GetRootWindow());
+      drag_drop_client && drag_drop_client->IsDragDropInProgress() &&
+      drag_start_) {
+    drag_drop_client->DragCancel();
+  }
 }
 
 gfx::Rect WebContentsViewAura::GetViewBounds() const {

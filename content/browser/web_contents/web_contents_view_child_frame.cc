@@ -153,6 +153,10 @@ DropData* WebContentsViewChildFrame::GetDropData() const {
   return nullptr;
 }
 
+void WebContentsViewChildFrame::CancelDragDropForPortalActivation() {
+  NOTREACHED();
+}
+
 void WebContentsViewChildFrame::UpdateDragCursor(
     ui::mojom::DragOperation operation) {
   if (auto* view = GetOuterDelegateView())
