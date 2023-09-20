@@ -5,6 +5,7 @@
 #ifndef BASE_MOVING_WINDOW_H_
 #define BASE_MOVING_WINDOW_H_
 
+#include <math.h>
 #include <stddef.h>
 
 #include <functional>
