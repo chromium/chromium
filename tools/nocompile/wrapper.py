@@ -39,6 +39,7 @@ def main():
   ]
   compiler_args += args.compiler_options
   compiler_args += [
+      '-Werror',
       '-c',
       args.source_path,
   ]
