@@ -215,10 +215,6 @@ HRESULT ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   param = kIntelVpeVersion3;
   HRESULT hr = video_context->VideoProcessorSetOutputExtension(
       video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
-  base::UmaHistogramSparse(enable
-                               ? "GPU.IntelVpSuperResolution.On.VpeFnVersion"
-                               : "GPU.IntelVpSuperResolution.Off.VpeFnVersion",
-                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
@@ -229,9 +225,6 @@ HRESULT ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   param = enable ? kIntelVpeModePreproc : kIntelVpeModeNone;
   hr = video_context->VideoProcessorSetOutputExtension(
       video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
-  base::UmaHistogramSparse(enable ? "GPU.IntelVpSuperResolution.On.VpeFnMode"
-                                  : "GPU.IntelVpSuperResolution.Off.VpeFnMode",
-                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
@@ -243,10 +236,6 @@ HRESULT ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
 
   hr = video_context->VideoProcessorSetStreamExtension(
       video_processor, 0, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
-  base::UmaHistogramSparse(enable
-                               ? "GPU.IntelVpSuperResolution.On.VpeFnScaling"
-                               : "GPU.IntelVpSuperResolution.Off.VpeFnScaling",
-                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
