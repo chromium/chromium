@@ -1872,8 +1872,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-remove-nodes.html"));
 }
 
+// TODO(crbug.com/1485244): Fails on ASAN/LSAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityCustomElementWithAriaOwnsOutside \
+  DISABLED_AccessibilityCustomElementWithAriaOwnsOutside
+#else
+#define MAYBE_AccessibilityCustomElementWithAriaOwnsOutside \
+  AccessibilityCustomElementWithAriaOwnsOutside
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCustomElementWithAriaOwnsOutside) {
+                       MAYBE_AccessibilityCustomElementWithAriaOwnsOutside) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-outside.html"));
 }
 
