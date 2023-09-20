@@ -1129,7 +1129,7 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
     EndAction action) {
   TRACE_EVENT0("ui",
                "ChromeAppListModelUpdater::EndTemporarySortAndTakeAction");
-  DCHECK(is_under_temporary_sort() && temporary_sort_manager_->is_active());
+  CHECK(is_under_temporary_sort() && temporary_sort_manager_->is_active());
 
   // Allow item updates to be propagated to observers.
   temporary_sort_manager_->Deactivate();
