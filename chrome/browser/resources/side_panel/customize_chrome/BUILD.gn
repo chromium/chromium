@@ -27,6 +27,7 @@ build_webui("build") {
     "shortcuts.ts",
     "themes.ts",
     "theme_snapshot.ts",
+    "wallpaper_search_simple.ts",
     "wallpaper_search.ts",
   ]
 

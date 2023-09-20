@@ -51,7 +51,8 @@
         var(--color-side-panel-customize-chrome-corner-ntp-border);
   }
 
-  :host-context([chrome-refresh-2023]) #uploadImageTile .image-container {
+  :host-context([chrome-refresh-2023]) #uploadImageTile .image-container,
+  :host-context([chrome-refresh-2023]) #wallpaperSearchTile .image-container {
     --cr-icon-color: var(
         --color-side-panel-customize-chrome-custom-option-foreground);
     background-color: var(
@@ -178,6 +179,17 @@
     width: 21px;
   }
 
+  #wallpaperSearchIcon {
+    --cr-icon-image: url(icons/image.svg);
+    --cr-icon-size: 21px;
+    height: 21px;
+    left: 50%;
+    margin: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 21px;
+  }
+
   #cornerNewTabPage {
     left: 12%;
     top: 15%;
@@ -273,6 +285,17 @@
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{classicChrome}</div>
     </div>
+    <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
+      <div class="tile" tabindex="0" id="wallpaperSearchTile"
+          role="button" on-click="onWallpaperSearchClick_">
+        <customize-chrome-check-mark-wrapper>
+          <div class="image-container">
+            <div id="wallpaperSearchIcon" class="cr-icon"></div>
+          </div>
+        </customize-chrome-check-mark-wrapper>
+        <div class="label">Wallpaper Search</div>
+      </div>
+    </template>
     <div class="tile" tabindex="0" id="uploadImageTile"
         role="button" on-click="onUploadImageClick_"
         aria-current$="[[boolToString_(isLocalImageSelected_)]]">

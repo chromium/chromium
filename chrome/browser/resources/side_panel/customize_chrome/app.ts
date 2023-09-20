@@ -14,6 +14,7 @@ import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
 import './wallpaper_search.js';
+import './wallpaper_search_simple.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -28,6 +29,7 @@ import {ChromeColorsElement} from './chrome_colors.js';
 import {BackgroundCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {ThemesElement} from './themes.js';
+import {WallpaperSearchElement} from './wallpaper_search.js';
 
 const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',
@@ -43,6 +45,7 @@ export enum CustomizeChromePage {
   CATEGORIES = 'categories',
   THEMES = 'themes',
   CHROME_COLORS = 'chrome-colors',
+  WALLPAPER_SEARCH = 'wallpaper-search',
 }
 
 const AppElementBase = HelpBubbleMixin(PolymerElement) as
@@ -55,6 +58,7 @@ export interface AppElement {
     themesPage: ThemesElement,
     appearanceElement: AppearanceElement,
     chromeColorsPage: ChromeColorsElement,
+    wallpaperSearchPage: WallpaperSearchElement,
   };
 }
 
@@ -140,6 +144,7 @@ export class AppElement extends AppElementBase {
         break;
       case CustomizeChromePage.THEMES:
       case CustomizeChromePage.CHROME_COLORS:
+      case CustomizeChromePage.WALLPAPER_SEARCH:
         this.page_ = CustomizeChromePage.CATEGORIES;
         this.$.categoriesPage.focusOnBackButton();
         break;
@@ -165,6 +170,11 @@ export class AppElement extends AppElementBase {
   private onChromeColorsSelect_() {
     this.page_ = CustomizeChromePage.CHROME_COLORS;
     this.$.chromeColorsPage.focusOnBackButton();
+  }
+
+  private onWallpaperSearchSelect_() {
+    this.page_ = CustomizeChromePage.WALLPAPER_SEARCH;
+    this.$.wallpaperSearchPage.focusOnBackButton();
   }
 }
 

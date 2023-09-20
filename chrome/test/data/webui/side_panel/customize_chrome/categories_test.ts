@@ -8,6 +8,7 @@ import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -287,5 +288,25 @@ suite('CategoriesTest', () => {
 
     assertTrue(
         !categoriesElement.shadowRoot!.querySelector('#chromeColorsTile'));
+  });
+
+  [true, false].forEach((flagEnabled) => {
+    suite(`WallpaperSearchEnabled_${flagEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'wallpaperSearchEnabled': flagEnabled,
+        });
+      });
+
+      test(
+          `wallpaper search does ${flagEnabled ? '' : 'not '}show`,
+          async () => {
+            await setInitialSettings(0);
+            assertEquals(
+                !!categoriesElement.shadowRoot!.querySelector(
+                    '#wallpaperSearchTile'),
+                flagEnabled);
+          });
+    });
   });
 });

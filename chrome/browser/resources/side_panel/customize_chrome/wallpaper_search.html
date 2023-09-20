@@ -1,13 +1,12 @@
 <style include="sp-shared-style">
-  :host {
-    box-sizing: border-box;
-    padding: 0 16px;
+  sp-heading {
+    margin: 0 0 8px;
   }
 </style>
-<cr-input
-    id="queryInput"
-    type="text"
-    placeholder="Query"
-    value="{{query_}}">
-</cr-input>
-<cr-button id="submitButton" on-click="onSearchClick_">Search</cr-button>
+<div class="sp-card">
+  <sp-heading id="heading" on-back-button-click="onBackClick_"
+      back-button-aria-label="$i18n{backButton}"
+      back-button-title="$i18n{backButton}">
+    <h2 slot="heading">Wallpaper Search</h2>
+  </sp-heading>
+</div>

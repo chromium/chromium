@@ -10,10 +10,12 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
+import './strings.m.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './categories.html.js';
@@ -84,6 +86,10 @@ export class CategoriesElement extends CategoriesElementBase {
       isChromeColorsSelected_: {
         type: Boolean,
         computed: 'computeIsChromeColorsSelected_(selectedCategory_)',
+      },
+      wallpaperSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
       },
     };
   }
@@ -204,6 +210,10 @@ export class CategoriesElement extends CategoriesElementBase {
   private onClassicChromeClick_() {
     this.pageHandler_.setDefaultColor();
     this.pageHandler_.removeBackgroundImage();
+  }
+
+  private onWallpaperSearchClick_() {
+    this.dispatchEvent(new Event('wallpaper-search-select'));
   }
 
   private async onUploadImageClick_() {

@@ -55,7 +55,8 @@
   customize-chrome-categories,
   customize-chrome-themes,
   customize-chrome-chrome-colors,
-  customize-chrome-wallpaper-search {
+  customize-chrome-wallpaper-search,
+  customize-chrome-wallpaper-search-simple {
     display: block;
     max-width: 320px;
     width: 100%;
@@ -104,7 +105,8 @@
         <sp-heading hide-back-button>
           <h2 slot="heading">Wallpaper Search</h2>
         </sp-heading>
-        <customize-chrome-wallpaper-search></customize-chrome-wallpaper-search>
+        <customize-chrome-wallpaper-search-simple>
+        </customize-chrome-wallpaper-search-simple>
       </div>
       <hr class="sp-cards-separator">
     </template>
@@ -161,7 +163,8 @@
   <customize-chrome-categories on-back-click="onBackClick_"
       on-collection-select="onCollectionSelect_" page-name="categories"
       id="categoriesPage" on-local-image-upload="onLocalImageUpload_"
-      on-chrome-colors-select="onChromeColorsSelect_">
+      on-chrome-colors-select="onChromeColorsSelect_"
+      on-wallpaper-search-select="onWallpaperSearchSelect_">
   </customize-chrome-categories>
   <customize-chrome-themes on-back-click="onBackClick_"
       page-name="themes" id="themesPage"
@@ -170,4 +173,7 @@
   <customize-chrome-chrome-colors on-back-click="onBackClick_"
       page-name="chrome-colors" id="chromeColorsPage">
   </customize-chrome-chrome-colors>
+  <customize-chrome-wallpaper-search on-back-click="onBackClick_"
+      page-name="wallpaper-search" id="wallpaperSearchPage">
+  </customize-chrome-wallpaper-search>
 </iron-pages>

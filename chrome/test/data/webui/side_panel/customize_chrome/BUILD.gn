@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "test_support.ts",
     "themes_test.ts",
     "theme_snapshot_test.ts",
+    "wallpaper_search_simple_test.ts",
     "wallpaper_search_test.ts",
   ]
 

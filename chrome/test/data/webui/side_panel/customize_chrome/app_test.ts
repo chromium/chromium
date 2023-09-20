@@ -98,6 +98,22 @@ suite('AppTest', () => {
         'iron-selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
+    // Send event for wallpaper search select.
+    customizeChromeApp.$.categoriesPage.dispatchEvent(
+        new Event('wallpaper-search-select'));
+    // Current page should now be wallpaper search.
+    assertTrue(customizeChromeApp.$.wallpaperSearchPage.classList.contains(
+        'iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
+
+    // Send event for back click.
+    customizeChromeApp.$.wallpaperSearchPage.dispatchEvent(
+        new Event('back-click'));
+    // Current page should now be categories.
+    assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
+        'iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
+
     // Send event for back click.
     customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be overview.
