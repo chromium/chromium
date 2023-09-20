@@ -274,16 +274,9 @@ TEST_P(JSONReaderTest, Zeroes) {
 
   root = JSONReader::Read("-0");
   ASSERT_TRUE(root);
-  // The Rust parser represents this as a float, because an int cannot represent
-  // the "negativeness".
-  if (using_rust_) {
-    EXPECT_TRUE(root->is_double());
-    EXPECT_DOUBLE_EQ(0.0, root->GetDouble());
-    EXPECT_TRUE(std::signbit(root->GetDouble()));
-  } else {
-    EXPECT_TRUE(root->is_int());
-    EXPECT_DOUBLE_EQ(0, root->GetInt());
-  }
+  EXPECT_TRUE(root->is_double());
+  EXPECT_DOUBLE_EQ(0.0, root->GetDouble());
+  EXPECT_TRUE(std::signbit(root->GetDouble()));
 
   root = JSONReader::Read("-0.0");
   ASSERT_TRUE(root);

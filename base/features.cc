@@ -36,6 +36,8 @@ BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
              FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kJsonNegativeZero, "JsonNegativeZero", FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Force to enable LowEndDeviceMode partially on Android mid-range devices.
 // Such devices aren't considered low-end, but we'd like experiment with
