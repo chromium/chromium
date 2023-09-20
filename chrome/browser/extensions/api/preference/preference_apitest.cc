@@ -504,17 +504,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
   EXPECT_FALSE(loaded_incognito_test_listener.was_satisfied());
 }
 
-// TODO(crbug.com/1446968): The service worker version is flaky.
-using ExtensionPreferenceApiEventPageTest = ExtensionPreferenceApiTest;
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionPreferenceApiEventPageTest,
-                         ::testing::Values(ContextType::kEventPage));
-
 // Tests the behavior of the Safe Browsing API as described in
 // crbug.com/1064722.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
-                       SafeBrowsing_SetTrue) {
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_clear("cleared",
@@ -580,8 +572,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
 // Tests the behavior of the ThirdPartyCookies preference API.
 // kCookieControlsMode should be set to kOff/kBlockThirdParty if
 // ThirdPartyCookiesAllowed is set to true/false by an extension.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
-                       ThirdPartyCookiesAllowed) {
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_clear("cleared",
