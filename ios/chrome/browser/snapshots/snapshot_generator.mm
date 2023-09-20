@@ -242,6 +242,16 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                               -frameInBaseView.origin.y);
 
         if (baseView.window && ViewHierarchyContainsWebView(baseView)) {
+          // Resize the `baseImage` into the size of `frameInBaseView` because
+          // UIGraphicsImageRenderer is initialized with the size of
+          // `frameInBaseView` and it can't render an image beyond that.
+          if (frameInBaseView.size.height < baseView.bounds.size.height) {
+            DCHECK_EQ(frameInBaseView.size.width, baseView.bounds.size.width);
+            CGRect frame = baseView.frame;
+            frame.size.height = frameInBaseView.size.height;
+            baseView.frame = frame;
+          }
+
           // `-renderInContext:` is the preferred way to render a snapshot, but
           // it's buggy for WKWebView, which is used for some WebUI pages such
           // as "No internet" or "Site can't be reached". If a
@@ -256,7 +266,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           // `-drawViewHierarchyInRect:afterScreenUpdates:` is buggy causing GPU
           // glitches, screen redraws during animations, broken pinch to dismiss
           // on tablet, etc.
-          snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
+          snapshotSuccess = [baseView drawViewHierarchyInRect:frameInBaseView
                                            afterScreenUpdates:YES];
         } else {
           // Render the view's layer via `-renderInContext:`.
