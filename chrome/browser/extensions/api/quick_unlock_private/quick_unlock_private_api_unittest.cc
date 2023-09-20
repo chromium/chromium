@@ -259,10 +259,10 @@ class QuickUnlockPrivateUnitTest
       const cryptohome::AccountIdentifier account_id =
           cryptohome::CreateAccountIdentifierFromAccountId(
               AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId));
-
-      auth_token_user_context_.SetAuthSessionId(
-          fake_userdataauth_client_testapi->AddSession(account_id,
-                                                       /*authenticated=*/true));
+      auto session_ids = fake_userdataauth_client_testapi->AddSession(
+          account_id, /*authenticated=*/true);
+      auth_token_user_context_.SetAuthSessionIds(session_ids.first,
+                                                 session_ids.second);
       // Technically configuration should contain password as factor, but
       // it is not checked anywhere.
       auth_token_user_context_.SetAuthFactorsConfiguration(

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_CRYPTOHOME_MIXIN_H_
 
 #include <queue>
+#include <string>
+#include <utility>
 
 #include "base/gtest_prod_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -28,7 +30,9 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   void SetUpOnMainThread() override;
 
   void MarkUserAsExisting(const AccountId& user);
-  std::string AddSession(const AccountId& user, bool authenticated);
+  // Returns {authsession_id, broadcast_id} pair.
+  std::pair<std::string, std::string> AddSession(const AccountId& user,
+                                                 bool authenticated);
   void AddGaiaPassword(const AccountId& user, std::string password);
   void AddLocalPassword(const AccountId& user, std::string password);
   void AddCryptohomePin(const AccountId& user, const std::string& pin);

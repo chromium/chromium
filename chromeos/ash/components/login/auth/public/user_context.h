@@ -75,9 +75,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     const std::string& GetUserIDHash() const;
     void SetUserIDHash(const std::string& user_id_hash);
 
-    void SetAuthSessionId(const std::string& authsession_id);
-    void ResetAuthSessionId();
+    void SetAuthSessionIds(const std::string& authsession_id,
+                           const std::string& broadcast_id);
+    void ResetAuthSessionIds();
     const std::string& GetAuthSessionId() const;
+    const std::string& GetBroadcastId() const;
 
     void AddAuthorizedIntent(AuthSessionIntent auth_intent);
     AuthSessionIntents GetAuthorizedIntents() const;
@@ -90,6 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     mutable absl::optional<AuthFactorsConfiguration>
         auth_factors_configuration_;
     std::string authsession_id_;
+    std::string broadcast_id_;
     AuthSessionIntents authorized_for_;
     std::string user_id_hash_;
   };
@@ -225,9 +228,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   // when session starts.
   void SetLoginInputMethodIdUsed(const std::string& input_method_id);
   const std::string& GetLoginInputMethodIdUsed() const;
-  void SetAuthSessionId(const std::string& authsession_id);
-  void ResetAuthSessionId();
+  void SetAuthSessionIds(const std::string& authsession_id,
+                         const std::string& broadcast_id);
+  void ResetAuthSessionIds();
   const std::string& GetAuthSessionId() const;
+  const std::string& GetBroadcastId() const;
 
   void AddAuthorizedIntent(AuthSessionIntent auth_intent);
 

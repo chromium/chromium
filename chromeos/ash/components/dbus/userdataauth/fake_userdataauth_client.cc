@@ -576,7 +576,7 @@ bool FakeUserDataAuthClient::TestApi::HasPinFactor(
   return ContainsFakeFactor<PinFactor>(user_state.auth_factors);
 }
 
-std::string FakeUserDataAuthClient::TestApi::AddSession(
+std::pair<std::string, std::string> FakeUserDataAuthClient::TestApi::AddSession(
     const cryptohome::AccountIdentifier& account_id,
     bool authenticated) {
   CHECK(FakeUserDataAuthClient::Get()->users_.contains(account_id));
@@ -591,11 +591,12 @@ std::string FakeUserDataAuthClient::TestApi::AddSession(
       FakeUserDataAuthClient::Get()->auth_sessions_[auth_session_id];
 
   session.id = auth_session_id;
+  session.broadcast_id = "b-" + auth_session_id;
   session.ephemeral = false;
   session.account = account_id;
   session.authenticated = authenticated;
 
-  return auth_session_id;
+  return {auth_session_id, session.broadcast_id};
 }
 
 bool FakeUserDataAuthClient::TestApi::IsCurrentSessionEphemeral() {
@@ -823,6 +824,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   DCHECK_EQ(auth_sessions_.count(auth_session_id), 0u);
   AuthSessionData& session = auth_sessions_[auth_session_id];
   session.id = auth_session_id;
+  session.broadcast_id = "b-" + auth_session_id;
   session.ephemeral =
       (request.flags() & ::user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER) !=
       0;
@@ -830,6 +832,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   session.requested_auth_session_intent = request.intent();
 
   reply.set_auth_session_id(auth_session_id);
+  reply.set_broadcast_id(session.broadcast_id);
 
   const auto user_it = users_.find(request.account_id());
   const bool user_exists = user_it != std::end(users_);

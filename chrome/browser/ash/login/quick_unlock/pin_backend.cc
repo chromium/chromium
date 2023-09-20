@@ -454,7 +454,7 @@ void PinBackend::OnCryptohomeAuthenticationResponse(
     absl::optional<AuthenticationError> error) {
   // Regardless of the outcome, discard the session in user_context. This
   // session was only meant to be used for checking the PIN.
-  user_context->ResetAuthSessionId();
+  user_context->ResetAuthSessionIds();
 
   const bool success = !error.has_value();
   const AccountId& account_id = user_context->GetAccountId();

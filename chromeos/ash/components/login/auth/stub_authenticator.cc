@@ -219,7 +219,7 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
   cryptohome::AuthFactor password(ref, cryptohome::AuthFactorCommonMetadata());
   user_context.SetAuthFactorsConfiguration(
       AuthFactorsConfiguration{{password}, factors});
-  user_context.SetAuthSessionId("someauthsessionid");
+  user_context.SetAuthSessionIds("someauthsessionid", "broadcast");
   return user_context;
 }
 

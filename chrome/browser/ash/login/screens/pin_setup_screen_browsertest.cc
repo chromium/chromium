@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 
+#include <string>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -87,9 +90,9 @@ class PinSetupScreenTest : public OobeBaseTest {
                                ->extra_factors_auth_session.get();
     CHECK(context);
     cryptohome_.MarkUserAsExisting(context->GetAccountId());
-    std::string auth_session =
+    auto session_ids =
         cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);
-    context->SetAuthSessionId(std::move(auth_session));
+    context->SetAuthSessionIds(session_ids.first, session_ids.second);
   }
 
   PinSetupScreen* GetScreen() {
@@ -123,7 +126,7 @@ class PinSetupScreenTest : public OobeBaseTest {
   void ConfigureUserContextForTest() {
     if (ash::features::ShouldUseAuthSessionStorage()) {
       std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
-      context->SetAuthSessionId("fake-session-id");
+      context->SetAuthSessionIds("fake-session-id", "broadcast");
       auto token = ash::AuthSessionStorage::Get()->Store(std::move(context));
       LoginDisplayHost::default_host()
           ->GetWizardContextForTesting()

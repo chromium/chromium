@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include <string>
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -137,8 +140,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     bool HasPinFactor(const cryptohome::AccountIdentifier& account_id);
 
-    std::string AddSession(const cryptohome::AccountIdentifier& account_id,
-                           bool authenticated);
+    // Returns {authsession_id, broadcast_id} pair.
+    std::pair<std::string, std::string> AddSession(
+        const cryptohome::AccountIdentifier& account_id,
+        bool authenticated);
 
     // Checks that there is one active auth session and returns whether session
     // is ephemeral.
@@ -165,6 +170,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     ~AuthSessionData();
     // AuthSession id.
     std::string id;
+    std::string broadcast_id;
     // Whether the `AUTH_SESSION_FLAGS_EPHEMERAL_USER` flag was passed on
     // creation.
     bool ephemeral = false;

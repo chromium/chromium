@@ -270,7 +270,7 @@ void MountPerformer::OnRemove(
     return;
   }
   CHECK(reply.has_value());
-  context->ResetAuthSessionId();
+  context->ResetAuthSessionIds();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 

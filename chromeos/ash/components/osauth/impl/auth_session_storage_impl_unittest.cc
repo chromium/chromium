@@ -27,7 +27,7 @@ class AuthSessionStorageImplTest : public ::testing::Test {
 
 TEST_F(AuthSessionStorageImplTest, Basic) {
   std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
-  context->SetAuthSessionId("some-id");
+  context->SetAuthSessionIds("some-id", "broadcast");
 
   // Store UserContext;
 
@@ -51,7 +51,7 @@ TEST_F(AuthSessionStorageImplTest, Basic) {
 
 TEST_F(AuthSessionStorageImplTest, InvalidateOnReturn) {
   std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
-  context->SetAuthSessionId("some-id");
+  context->SetAuthSessionIds("some-id", "broadcast");
 
   // Store UserContext;
   AuthProofToken token = storage_->Store(std::move(context));

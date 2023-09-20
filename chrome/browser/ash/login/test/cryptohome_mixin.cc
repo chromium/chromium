@@ -35,8 +35,9 @@ void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
       std::move(account_id));
 }
 
-std::string CryptohomeMixin::AddSession(const AccountId& user,
-                                        bool authenticated) {
+std::pair<std::string, std::string> CryptohomeMixin::AddSession(
+    const AccountId& user,
+    bool authenticated) {
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
   return FakeUserDataAuthClient::TestApi::Get()->AddSession(
       std::move(account_id), authenticated);

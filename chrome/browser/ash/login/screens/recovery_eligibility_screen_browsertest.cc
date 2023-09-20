@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
 
+#include <string>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -89,9 +92,10 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     // Set the values on the wizard context: the `extra_factors_auth_session`
     // is available after the previous screens have run regularly, and it holds
     // an authenticated auth session.
-    user_context->ResetAuthSessionId();
-    user_context->SetAuthSessionId(cryptohome_.AddSession(
-        user_context->GetAccountId(), /*authenticated=*/true));
+    user_context->ResetAuthSessionIds();
+    auto session_ids = cryptohome_.AddSession(user_context->GetAccountId(),
+                                              /*authenticated=*/true);
+    user_context->SetAuthSessionIds(session_ids.first, session_ids.second);
     if (ash::features::ShouldUseAuthSessionStorage()) {
       context->extra_factors_token =
           ash::AuthSessionStorage::Get()->Store(std::move(user_context));

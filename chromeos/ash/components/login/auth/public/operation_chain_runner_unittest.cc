@@ -28,7 +28,7 @@ TEST(OperationChainRunnerTest, TestSingleSuccessfulOperation) {
   std::vector<AuthOperation> operations;
   operations.push_back(base::BindLambdaForTesting(
       [](std::unique_ptr<UserContext> context, AuthOperationCallback callback) {
-        context->SetAuthSessionId("session");
+        context->SetAuthSessionIds("session", "broadcast");
         std::move(callback).Run(std::move(context), absl::nullopt);
       }));
 
@@ -51,7 +51,7 @@ TEST(OperationChainRunnerTest, TestSingleFailedOperation) {
   std::vector<AuthOperation> operations;
   operations.push_back(base::BindLambdaForTesting(
       [](std::unique_ptr<UserContext> context, AuthOperationCallback callback) {
-        context->SetAuthSessionId("session");
+        context->SetAuthSessionIds("session", "broadcast");
         std::move(callback).Run(
             std::move(context),
             AuthenticationError{
@@ -89,7 +89,7 @@ TEST(OperationChainRunnerTest, TestSuccesfulSequenceOrdering) {
                                      AuthOperationCallback callback) {
         EXPECT_EQ(order, 1);
         order++;
-        context->SetAuthSessionId("session");
+        context->SetAuthSessionIds("session", "broadcast");
         std::move(callback).Run(std::move(context), absl::nullopt);
       }));
   operations.push_back(

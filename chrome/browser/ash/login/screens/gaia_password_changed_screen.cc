@@ -233,7 +233,7 @@ void GaiaPasswordChangedScreen::OnRemovedUserDirectory(
       context()->user_context->GetAccountId());
   // Now that user is deleted, reset everything in UserContext
   // related to cryptohome state.
-  context()->user_context->ResetAuthSessionId();
+  context()->user_context->ResetAuthSessionIds();
   context()->user_context->ClearAuthFactorsConfiguration();
   // Move online password back so that it can be used as key.
   // See `ShowImpl()` to see where it was stored.

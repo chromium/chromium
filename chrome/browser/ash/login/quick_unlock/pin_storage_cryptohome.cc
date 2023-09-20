@@ -310,7 +310,7 @@ void PinStorageCryptohome::TryAuthenticate(
 
   if (!user_context->GetAuthSessionId().empty()) {
     NOTREACHED() << "TryAuthenticate called with existing auth session";
-    user_context->SetAuthSessionId(std::string());
+    user_context->ResetAuthSessionIds();
   }
 
   // We need to start an auth session, which requires us to specify whether

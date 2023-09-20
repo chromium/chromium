@@ -482,7 +482,8 @@ void AuthPerformer::OnStartAuthSession(
   LOGIN_LOG(EVENT) << "AuthSession started, user "
                    << (reply->user_exists() ? "exists" : "does not exist");
 
-  context->SetAuthSessionId(reply->auth_session_id());
+  context->SetAuthSessionIds(reply->auth_session_id(), reply->broadcast_id());
+
   std::vector<cryptohome::AuthFactor> next_factors;
   cryptohome::AuthFactorType fallback_type =
       cryptohome::AuthFactorType::kPassword;
@@ -516,7 +517,7 @@ void AuthPerformer::OnInvalidateAuthSession(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::InvalidateAuthSessionReply> reply) {
   // The auth session is useless even if we failed to invalidate it.
-  context->ResetAuthSessionId();
+  context->ResetAuthSessionIds();
 
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET &&

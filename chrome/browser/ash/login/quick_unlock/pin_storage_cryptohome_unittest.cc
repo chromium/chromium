@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -60,10 +62,10 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
     FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(cryptohome_user_id);
 
-    std::string session = FakeUserDataAuthClient::TestApi::Get()->AddSession(
+    auto session_ids = FakeUserDataAuthClient::TestApi::Get()->AddSession(
         cryptohome_user_id, true /*authenticated*/);
+    user_context_->SetAuthSessionIds(session_ids.first, session_ids.second);
     user_context_->SetIsUsingPin(true);
-    user_context_->SetAuthSessionId(std::move(session));
     user_context_->SetAuthFactorsConfiguration(AuthFactorsConfiguration());
 
     storage_ = std::make_unique<PinStorageCryptohome>();
@@ -109,7 +111,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
   bool TryAuthenticate(const std::string& pin, Purpose purpose) {
     auto user_context = std::make_unique<UserContext>(*user_context_);
-    user_context->ResetAuthSessionId();
+    user_context->ResetAuthSessionIds();
     bool res;
     base::RunLoop loop;
     storage_->TryAuthenticate(
