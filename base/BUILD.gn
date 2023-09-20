@@ -4207,10 +4207,7 @@ if (is_android || is_robolectric) {
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
-    classes = [
-      "java/lang/Runtime.class",
-      "java/lang/Throwable.class",
-    ]
+    classes = [ "java/lang/Runtime.class" ]
   }
 
   generate_jar_jni("android_runtime_unchecked_jni_headers") {
