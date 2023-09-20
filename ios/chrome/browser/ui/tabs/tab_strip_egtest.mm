@@ -155,7 +155,7 @@ void DragDrop(NSString* src_identifier, NSString* tab_strip_identifier) {
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Drag and drop the link on the page to the tab strip. This should open
-  // a new incognito tab.
+  // a new regular tab.
   DragDrop(kInitialPageLinkId, kRegularTabStripId);
   GREYWaitForAppToIdle(@"App failed to idle");
 
