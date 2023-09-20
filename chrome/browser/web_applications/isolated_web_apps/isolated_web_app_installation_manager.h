@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -89,6 +90,10 @@ class IsolatedWebAppInstallationManager {
       const base::CommandLine& command_line,
       base::OnceCallback<void(MaybeIwaLocation)> callback);
 
+  base::OneShotEvent& on_garbage_collect_storage_partitions_done_for_testing() {
+    return on_garbage_collect_storage_partitions_done_for_testing_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
                            NoInstallationWhenFeatureDisabled);
@@ -149,6 +154,10 @@ class IsolatedWebAppInstallationManager {
   base::RepeatingCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
       on_report_installation_result_ = base::DoNothing();
+
+  // Signals when `GarbageCollectStoragePartitionsCommand` completes
+  // successfully.
+  base::OneShotEvent on_garbage_collect_storage_partitions_done_for_testing_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallationManager> weak_ptr_factory_{
       this};

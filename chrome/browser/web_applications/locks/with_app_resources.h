@@ -10,6 +10,7 @@
 namespace web_app {
 
 class ExtensionsManager;
+class IsolatedWebAppInstallationManager;
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallFinalizer;
@@ -37,6 +38,7 @@ class WithAppResources {
   ~WithAppResources();
 
   ExtensionsManager& extensions_manager();
+  IsolatedWebAppInstallationManager& isolated_web_app_installation_manager();
   WebAppRegistrar& registrar();
   WebAppSyncBridge& sync_bridge();
   WebAppInstallFinalizer& install_finalizer();

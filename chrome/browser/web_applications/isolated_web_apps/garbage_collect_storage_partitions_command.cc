@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -130,7 +131,7 @@ void GarbageCollectStoragePartitionsCommand::OnShutdown() {
 }
 
 void GarbageCollectStoragePartitionsCommand::OnSuccess() {
-  lock_->extensions_manager()
+  lock_->isolated_web_app_installation_manager()
       .on_garbage_collect_storage_partitions_done_for_testing()  // IN-TEST
       .Signal();
 

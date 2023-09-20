@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/one_shot_event.h"
 
 class Profile;
 class KeyedServiceBaseFactory;
@@ -54,18 +53,9 @@ class ExtensionsManager {
 
   static KeyedServiceBaseFactory* GetExtensionSystemSharedFactory();
 
-  // Signals when `GarbageCollectStoragePartititonsCommand` completes
-  // successfully.
-  // TODO(zelin): move this out of ExtensionsManager.
-  base::OneShotEvent& on_garbage_collect_storage_partitions_done_for_testing() {
-    return on_garbage_collect_storage_partitions_done_for_testing_;
-  }
-
  private:
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
-
-  base::OneShotEvent on_garbage_collect_storage_partitions_done_for_testing_;
 };
 
 }  // namespace web_app
