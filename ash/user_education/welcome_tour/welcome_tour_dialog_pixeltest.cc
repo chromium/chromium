@@ -21,7 +21,10 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWelcomeTour,
+                              features::kWelcomeTourForceUserEligibility},
+        /*disabled_features=*/{});
     UserEducationAshTestBase::SetUp();
     SimulateUserLogin("primary@test");
   }
@@ -29,14 +32,13 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/1454700): flaky on  linux-chromeos-rel.
-TEST_F(WelcomeTourDialogPixelTest, DISABLED_Appearance) {
+TEST_F(WelcomeTourDialogPixelTest, Appearance) {
   ASSERT_TRUE(WelcomeTourDialog::Get());
 
   // Take a screenshot of the Welcome Tour dialog.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "welcome_tour_dialog",
-      /*revision_number=*/1, WelcomeTourDialog::Get()));
+      /*revision_number=*/2, WelcomeTourDialog::Get()));
 }
 
 }  // namespace ash
