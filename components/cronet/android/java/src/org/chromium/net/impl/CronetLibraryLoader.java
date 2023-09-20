@@ -116,7 +116,7 @@ public class CronetLibraryLoader {
         Context applicationContext = ContextUtils.getApplicationContext();
         Flags flags = HttpFlagsLoader.load(applicationContext);
         sHttpFlags = ResolvedFlags.resolve(flags != null ? flags : Flags.newBuilder().build(),
-                applicationContext.getPackageName());
+                applicationContext.getPackageName(), ImplVersion.getCronetVersion());
         sHttpFlagsLoaded.open();
         ResolvedFlags.Value logMe = sHttpFlags.flags().get(LOG_FLAG_NAME);
         if (logMe != null) {

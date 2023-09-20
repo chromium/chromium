@@ -12,6 +12,7 @@ import com.google.protobuf.ByteString;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Holds the effective HTTP flags that apply to a given instance of the Cronet library.
@@ -31,15 +32,30 @@ public final class ResolvedFlags {
         private final Object mValue;
 
         @Nullable
-        private static Value resolve(FlagValue flagValue, String appId) {
+        private static Value resolve(FlagValue flagValue, String appId, int[] cronetVersion) {
             for (var constrainedValue : flagValue.getConstrainedValuesList()) {
-                // TODO: add support for the `min_version` filter
-                if (constrainedValue.hasAppId() && !constrainedValue.getAppId().equals(appId)) {
+                if ((constrainedValue.hasAppId() && !constrainedValue.getAppId().equals(appId))
+                        || (constrainedValue.hasMinVersion()
+                                && !matchesVersion(cronetVersion,
+                                        parseVersionString(constrainedValue.getMinVersion())))) {
                     continue;
                 }
                 return fromConstrainedValue(constrainedValue);
             }
             return null;
+        }
+
+        private static boolean matchesVersion(int[] cronetVersion, int[] minVersion) {
+            for (int i = 0; i < Math.max(cronetVersion.length, minVersion.length); i++) {
+                int cronetComponent = i < cronetVersion.length ? cronetVersion[i] : 0;
+                int minComponent = i < minVersion.length ? minVersion[i] : 0;
+                if (cronetComponent > minComponent) {
+                    return true;
+                } else if (cronetComponent < minComponent) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static Value fromConstrainedValue(FlagValue.ConstrainedValue constrainedValue) {
@@ -163,13 +179,21 @@ public final class ResolvedFlags {
      * @param appId The App ID for resolving the {@link FlagValue.ConstrainedValue#getAppId} field.
      *              This would normally be the return value of
      *              {@link android.content.Context#getPackageName}.
+     * @param cronetVersion The version to use for filtering against the {@link
+     *                      FlagValue.ConstrainedValue#getMinVersion} field.
      */
-    public static ResolvedFlags resolve(Flags flags, String appId) {
+    public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
+        int[] parsedCronetVersion = parseVersionString(cronetVersion);
         Map<String, Value> resolvedFlags = new HashMap<String, Value>();
         for (var flag : flags.getFlagsMap().entrySet()) {
-            Value value = Value.resolve(flag.getValue(), appId);
-            if (value == null) continue;
-            resolvedFlags.put(flag.getKey(), value);
+            try {
+                Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);
+                if (value == null) continue;
+                resolvedFlags.put(flag.getKey(), value);
+            } catch (RuntimeException exception) {
+                throw new IllegalArgumentException(
+                        "Unable to resolve HTTP flag `" + flag.getKey() + "`", exception);
+            }
         }
         return new ResolvedFlags(resolvedFlags);
     }
@@ -185,5 +209,23 @@ public final class ResolvedFlags {
      */
     public Map<String, Value> flags() {
         return Collections.unmodifiableMap(mFlags);
+    }
+
+    private static int[] parseVersionString(String versionString) {
+        try {
+            if (versionString.isEmpty()) {
+                throw new IllegalArgumentException("Version string is empty");
+            }
+            StringTokenizer tokenizer = new StringTokenizer(versionString, ".");
+            int[] components = new int[tokenizer.countTokens()];
+            for (int i = 0; i < components.length; i++) {
+                components[i] = Integer.parseInt(tokenizer.nextToken());
+            }
+            return components;
+        } catch (RuntimeException exception) {
+            throw new IllegalArgumentException(
+                    "Unable to parse HTTP flags version string: `" + versionString + "`",
+                    exception);
+        }
     }
 }

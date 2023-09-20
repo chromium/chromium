@@ -25,16 +25,17 @@ message FlagValue {
 
     // Only apply this value to client libraries running at least this version.
     //
-    // Currently this refers to Cronet versions. The semantics of this field are
-    // the same as the Finch `variations.Study.Filter.min_version` field, that
-    // is:
+    // Currently this refers to Cronet versions, which are in the form
+    // <MAJOR>.<MINOR>.<BUILD>.<PATCH>.
     //
-    // The minimum Cronet version, allowing a trailing '*' character for pattern
-    // matching. Inclusive. (To check for a match, iterate over each component
-    // checking >= until a * or end of string is reached.) Ex: "17.0.963.46",
-    // "17.0.963.*", "17.*"
+    // The comparison is done in the usual way version numbers are compared,
+    // i.e. they are treated as numeric tuples and compared
+    // lexicographically. If the tuple dimensions differ, the smallest tuple is
+    // zero-extended to match. For example, a `min_version` of 4.5.6.0 (or
+    // just 4.5.6) will match 4.5.6.0, 4.5.6.1, 4.5.7.0, 4.5.10.0, 4.6.0.0,
+    // 5.0.0.0, etc. but will not match 4.5.5.99, 4.4.7.0, 3.6.7.1, etc.
     //
-    // If not set, matches all versions.
+    // If not set, matches all versions. The empty string is not a valid value.
     optional string min_version = 2;
 
     // If none of these fields are set, the flag is deemed to be unset.
