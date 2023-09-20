@@ -26,10 +26,13 @@ namespace {
 static constexpr char kGoogleSigninHeader[] = "Google-Accounts-SignIn";
 static constexpr char kGoogleSignoutHeader[] = "Google-Accounts-SignOut";
 static constexpr char kIdpSigninStatusHeader[] = "IdP-SignIn-Status";
-static constexpr char kSigninStatusHeader[] = "Signin-Status";
+static constexpr char kSetLoginHeader[] = "Set-Login";
 
-static constexpr char kIdpHeaderValueSignin[] = "action=signin";
-static constexpr char kIdpHeaderValueSignout[] = "action=signout-all";
+static constexpr char kOldIdpHeaderValueSignin[] = "action=signin";
+static constexpr char kOldIdpHeaderValueSignout[] = "action=signout-all";
+
+static constexpr char kSetLoginHeaderValueLoggedIn[] = "logged-in";
+static constexpr char kSetLoginHeaderValueLoggedOut[] = "logged-out";
 
 bool IsFedCmIdpSigninStatusThrottleEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics) ||
@@ -104,8 +107,9 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   // TODO(https://crbug.com/1381501): Remove the Google headers once we can.
   std::string header;
   if (headers->GetNormalizedHeader(kGoogleSigninHeader, &header) ||
-      HeaderHasToken(*headers, kIdpSigninStatusHeader, kIdpHeaderValueSignin) ||
-      HeaderHasToken(*headers, kSigninStatusHeader, kIdpHeaderValueSignin)) {
+      HeaderHasToken(*headers, kIdpSigninStatusHeader,
+                     kOldIdpHeaderValueSignin) ||
+      HeaderHasToken(*headers, kSetLoginHeader, kSetLoginHeaderValueLoggedIn)) {
     // Mark IDP as logged in
     VLOG(1) << "IDP signed in: " << response_url.spec();
     UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSigninRequestInitiatedByUser",
@@ -113,9 +117,9 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
     set_idp_status_cb_.Run(origin, IdpSigninStatus::kSignedIn);
   } else if (headers->GetNormalizedHeader(kGoogleSignoutHeader, &header) ||
              HeaderHasToken(*headers, kIdpSigninStatusHeader,
-                            kIdpHeaderValueSignout) ||
-             HeaderHasToken(*headers, kSigninStatusHeader,
-                            kIdpHeaderValueSignout)) {
+                            kOldIdpHeaderValueSignout) ||
+             HeaderHasToken(*headers, kSetLoginHeader,
+                            kSetLoginHeaderValueLoggedOut)) {
     // Mark IDP as logged out
     VLOG(1) << "IDP signed out: " << response_url.spec();
     UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSignoutRequestInitiatedByUser",
