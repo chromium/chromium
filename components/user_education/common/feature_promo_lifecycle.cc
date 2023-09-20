@@ -150,22 +150,19 @@ bool FeaturePromoLifecycle::OnPromoBubbleClosed() {
 void FeaturePromoLifecycle::OnPromoEnded(CloseReason close_reason,
                                          bool continue_promo) {
   MaybeRecordCloseReason(close_reason);
-  bool write_close_data;
   if (continue_promo) {
     CHECK(is_bubble_visible());
     state_ = State::kContinued;
-    help_bubble_->Close();
     // When a snoozeable, normal promo that has a follow-up action (Tutorial,
     // custom action), the result is not recorded until after the follow-up
     // finishes, because e.g. an aborted tutorial counts as a snooze.
-    write_close_data = promo_subtype_ != PromoSubtype::kNormal ||
-                       close_reason != CloseReason::kAction;
+    if (promo_subtype_ != PromoSubtype::kNormal ||
+        close_reason != CloseReason::kAction) {
+      MaybeWriteClosePromoData(close_reason);
+    }
+    help_bubble_->Close();
   } else {
     CHECK(MaybeEndPromo());
-    write_close_data = true;
-  }
-
-  if (write_close_data) {
     MaybeWriteClosePromoData(close_reason);
   }
 }

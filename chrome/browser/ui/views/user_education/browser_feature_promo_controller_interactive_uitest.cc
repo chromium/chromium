@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -19,6 +22,8 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,22 +42,7 @@ using ::testing::Return;
 using user_education::FeaturePromoCloseReason;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoSpecification;
-
-// Copied from feature_promo_controller.cc to mock internal enum.
-enum class FeaturePromoCloseReasonInternal {
-  kDismiss = 0,
-  kSnooze = 1,
-  kAction = 2,
-  kCancel = 3,
-  kTimeout = 4,
-  kAbortPromo = 5,
-  kFeatureEngaged = 6,
-  kOverrideForUIRegionConflict = 7,
-  kOverrideForDemo = 8,
-  kOverrideForTesting = 9,
-  kOverrideForPrecedence = 10,
-  kMaxValue = kOverrideForPrecedence,
-};
+using CloseReason = user_education::FeaturePromoStorageService::CloseReason;
 
 namespace {
 BASE_FEATURE(kToastTestFeature,
@@ -60,6 +50,9 @@ BASE_FEATURE(kToastTestFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomActionTestFeature,
              "CustomActionTestFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLegalNoticeTestFeature,
+             "LegalNoticeTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
@@ -100,13 +93,26 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
             kCustomActionTestFeature, kToolbarAppMenuButtonElementId,
             IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
             base::DoNothing()));
+
+    auto notice =
+        user_education::FeaturePromoSpecification::CreateForCustomAction(
+            kLegalNoticeTestFeature, kToolbarAppMenuButtonElementId,
+            IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
+            base::DoNothing());
+    notice.set_promo_subtype_for_testing(
+        user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+    registry()->RegisterFeature(std::move(notice));
   }
 
   // Tries to show tab groups IPH by meeting the trigger conditions. If
   // |should_show| is true it checks that it was shown. If false, it
   // checks that it was not shown.
-  auto AttemptIPH(const base::Feature& iph_feature, bool should_show) {
-    return Do(base::BindLambdaForTesting([this, &iph_feature, should_show]() {
+  auto AttemptIPH(const base::Feature& iph_feature,
+                  bool should_show,
+                  base::OnceClosure on_close = base::DoNothing()) {
+    return Do(base::BindLambdaForTesting([this, &iph_feature, should_show,
+                                          callback =
+                                              std::move(on_close)]() mutable {
       if (should_show) {
         EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(iph_feature)))
             .WillOnce(Return(true));
@@ -115,7 +121,8 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
             .Times(0);
       }
 
-      ASSERT_EQ(should_show, promo_controller_->MaybeShowPromo(iph_feature));
+      ASSERT_EQ(should_show, promo_controller_->MaybeShowPromo(
+                                 iph_feature, std::move(callback)));
       ASSERT_EQ(should_show, promo_controller_->IsPromoActive(iph_feature));
 
       // If shown, Tracker::Dismissed should be called eventually.
@@ -136,6 +143,13 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
   auto DismissIPH() {
     return Steps(
         PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+  }
+
+  auto CancelIPH() {
+    return Steps(
+        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
@@ -197,30 +211,28 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
           action_name.append(iph_feature.name);
 
           histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoCloseReasonInternal::kDismiss),
+              action_name, static_cast<int>(CloseReason::kDismiss),
               dismiss_count);
           histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoCloseReasonInternal::kSnooze),
+              action_name, static_cast<int>(CloseReason::kSnooze),
               snooze_count);
           histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoCloseReasonInternal::kAbortPromo),
+              action_name, static_cast<int>(CloseReason::kAbortPromo),
               abort_count);
           histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(
-                  FeaturePromoCloseReasonInternal::kFeatureEngaged),
+              action_name, static_cast<int>(CloseReason::kFeatureEngaged),
               feature_engaged_count);
           histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoCloseReasonInternal::kAction),
+              action_name, static_cast<int>(CloseReason::kAction),
               custom_action_count);
 
           return !testing::Test::HasNonfatalFailure();
         }),
         "Metrics");
+  }
+
+  user_education::FeaturePromoController* promo_controller() const {
+    return promo_controller_;
   }
 
  private:
@@ -335,4 +347,58 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                                /*abort_count*/ 0,
                                /*feature_engaged_count*/ 0,
                                /*custom_action_count*/ 1));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+                       CallbackHappensAfterCancel) {
+  bool called = false;
+  CloseReason close_reason = CloseReason::kAbortPromo;
+
+  RunTestSequence(
+      AttemptIPH(kCustomActionTestFeature, true,
+                 base::BindLambdaForTesting([this, &called, &close_reason]() {
+                   called = true;
+                   EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+                       kCustomActionTestFeature, &close_reason));
+                 })),
+      CancelIPH(), Check([&called]() { return called; }),
+      CheckResult([&close_reason]() { return close_reason; },
+                  CloseReason::kCancel));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+                       CallbackHappensAfterConfirm) {
+  bool called = false;
+  CloseReason close_reason = CloseReason::kAbortPromo;
+
+  RunTestSequence(
+      AttemptIPH(kCustomActionTestFeature, true,
+                 base::BindLambdaForTesting([this, &called, &close_reason]() {
+                   called = true;
+                   EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+                       kCustomActionTestFeature, &close_reason));
+                 })),
+      DismissIPH(), Check([&called]() { return called; }),
+      CheckResult([&close_reason]() { return close_reason; },
+                  CloseReason::kDismiss));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+                       CallbackHappensAfterCustomAction) {
+  bool called = false;
+  CloseReason close_reason = CloseReason::kAbortPromo;
+
+  RunTestSequence(
+      AttemptIPH(
+          // Normal promos will defer writing close data until the promo is
+          // fully ended.
+          kLegalNoticeTestFeature, true,
+          base::BindLambdaForTesting([this, &called, &close_reason]() {
+            called = true;
+            EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+                kLegalNoticeTestFeature, &close_reason));
+          })),
+      TriggerNonDefaultButton(), Check([&called]() { return called; }),
+      CheckResult([&close_reason]() { return close_reason; },
+                  CloseReason::kAction));
 }
