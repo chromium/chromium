@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/win/scoped_localalloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -213,8 +213,8 @@ TEST(AccessControlListTest, SetEntriesError) {
   EXPECT_EQ(ConvertAclToSddl(acl), kEvent);
   // ACL has a maximum capacity of 2^16-1 bytes or 2^16-1 ACEs. Force a fail.
   while (ace_list.size() < 0x10000) {
-    auto sid = Sid::FromSddlString(
-        base::StringPrintf(L"S-1-5-1234-%zu", ace_list.size()).c_str());
+    auto sid =
+        Sid::FromSddlString(L"S-1-5-1234-" + NumberToWString(ace_list.size()));
     ASSERT_TRUE(sid);
     ace_list.emplace_back(*sid, SecurityAccessMode::kGrant, GENERIC_ALL, 0);
   }

@@ -11,6 +11,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace base::win {
 
@@ -230,9 +231,10 @@ std::wstring AccessToken::Privilege::GetName() const {
   luid.LowPart = luid_.LowPart;
   luid.HighPart = luid_.HighPart;
   DWORD size = std::size(name);
-  if (!::LookupPrivilegeName(nullptr, &luid, name, &size))
-    return base::StringPrintf(L"%08X-%08X", luid.HighPart, luid.LowPart);
-  return name;
+  return ::LookupPrivilegeName(nullptr, &luid, name, &size)
+             ? name
+             : ASCIIToWide(
+                   StringPrintf("%08lX-%08lX", luid.HighPart, luid.LowPart));
 }
 
 bool AccessToken::Privilege::IsEnabled() const {

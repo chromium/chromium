@@ -12,7 +12,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/sid.h"
@@ -99,8 +99,8 @@ TEST(SecurityUtilTest, GrantAccessToPathErrorCase) {
       GrantAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, false));
   std::vector<Sid> large_sid_list;
   while (large_sid_list.size() < 0x10000) {
-    auto sid = Sid::FromSddlString(
-        base::StringPrintf(L"S-1-5-1234-%zu", large_sid_list.size()).c_str());
+    auto sid = Sid::FromSddlString(L"S-1-5-1234-" +
+                                   NumberToWString(large_sid_list.size()));
     ASSERT_TRUE(sid);
     large_sid_list.emplace_back(std::move(*sid));
   }
