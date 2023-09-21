@@ -5172,18 +5172,21 @@ const CSSValue* MarginBottom::ParseSingleValue(
 
 bool MarginBottom::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBox() &&
+         (!style || !style->MarginBottom().IsFixed());
 }
 
 const CSSValue* MarginBottom::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    return ZoomAdjustedPixelValue(box->MarginBottom(), style);
+  const Length& margin_bottom = style.MarginBottom();
+  if (margin_bottom.IsFixed() || !layout_object || !layout_object->IsBox()) {
+    return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_bottom,
+                                                               style);
   }
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.MarginBottom(), style);
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginBottom(),
+                                style);
 }
 
 bool MarginInlineEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -5222,18 +5225,21 @@ const CSSValue* MarginLeft::ParseSingleValue(
 
 bool MarginLeft::IsLayoutDependent(const ComputedStyle* style,
                                    LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBox() &&
+         (!style || !style->MarginLeft().IsFixed());
 }
 
 const CSSValue* MarginLeft::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    return ZoomAdjustedPixelValue(box->MarginLeft(), style);
+  const Length& margin_left = style.MarginLeft();
+  if (margin_left.IsFixed() || !layout_object || !layout_object->IsBox()) {
+    return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_left,
+                                                               style);
   }
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MarginLeft(),
-                                                             style);
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginLeft(),
+                                style);
 }
 
 const CSSValue* MarginRight::ParseSingleValue(
@@ -5246,18 +5252,21 @@ const CSSValue* MarginRight::ParseSingleValue(
 
 bool MarginRight::IsLayoutDependent(const ComputedStyle* style,
                                     LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBox() &&
+         (!style || !style->MarginRight().IsFixed());
 }
 
 const CSSValue* MarginRight::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    return ZoomAdjustedPixelValue(box->MarginRight(), style);
+  const Length& margin_right = style.MarginRight();
+  if (margin_right.IsFixed() || !layout_object || !layout_object->IsBox()) {
+    return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_right,
+                                                               style);
   }
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.MarginRight(), style);
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginRight(),
+                                style);
 }
 
 const CSSValue* MarginTop::ParseSingleValue(
@@ -5270,18 +5279,21 @@ const CSSValue* MarginTop::ParseSingleValue(
 
 bool MarginTop::IsLayoutDependent(const ComputedStyle* style,
                                   LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBox() &&
+         (!style || !style->MarginTop().IsFixed());
 }
 
 const CSSValue* MarginTop::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    return ZoomAdjustedPixelValue(box->MarginTop(), style);
+  const Length& margin_top = style.MarginTop();
+  if (margin_top.IsFixed() || !layout_object || !layout_object->IsBox()) {
+    return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_top,
+                                                               style);
   }
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MarginTop(),
-                                                             style);
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginTop(),
+                                style);
 }
 
 const CSSValue* MarkerEnd::ParseSingleValue(
