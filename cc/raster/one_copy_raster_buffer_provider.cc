@@ -337,6 +337,17 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     const RasterSource::PlaybackSettings& playback_settings,
     uint64_t previous_content_id,
     uint64_t new_content_id) {
+  gfx::Rect playback_rect = raster_full_rect;
+  if (use_partial_raster_ && previous_content_id) {
+    // Reduce playback rect to dirty region if the content id of the staging
+    // buffer matches the previous content id.
+    if (previous_content_id == staging_buffer->content_id) {
+      playback_rect.Intersect(raster_dirty_rect);
+    }
+  }
+
+  float full_rect_size = raster_full_rect.size().GetArea();
+
   // Allocate GpuMemoryBuffer if necessary.
   if (!staging_buffer->gpu_memory_buffer) {
     staging_buffer->gpu_memory_buffer =
@@ -347,15 +358,6 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
             shutdown_event_);
   }
 
-  gfx::Rect playback_rect = raster_full_rect;
-  if (use_partial_raster_ && previous_content_id) {
-    // Reduce playback rect to dirty region if the content id of the staging
-    // buffer matches the prevous content id.
-    if (previous_content_id == staging_buffer->content_id)
-      playback_rect.Intersect(raster_dirty_rect);
-  }
-
-  float full_rect_size = raster_full_rect.size().GetArea();
   if (!staging_buffer->gpu_memory_buffer) {
     return false;
   }
