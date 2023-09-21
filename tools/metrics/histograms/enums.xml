@@ -114769,6 +114769,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-1743341803" label="chrome://bookmarks/"/>
   <int value="-1737358104" label="chrome://account-migration-welcome/"/>
   <int value="-1729122580" label="chrome://chrome-urls/"/>
+  <int value="-1716340463" label="chrome://safe-browsing/"/>
   <int value="-1704400468" label="chrome://quit/"/>
   <int value="-1700864659" label="chrome://slow/"/>
   <int value="-1697612520" label="chrome://print-management/"/>
