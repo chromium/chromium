@@ -95,8 +95,14 @@ FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
 std::unique_ptr<FatalCrashEventsObserver> FatalCrashEventsObserver::Create() {
   return base::WrapUnique(new FatalCrashEventsObserver());
+}
+
+// static
+int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
+  return t.ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
 }
 
 void FatalCrashEventsObserver::SetSkippedCrashCallback(
@@ -116,18 +122,18 @@ void FatalCrashEventsObserver::OnEvent(
   // Unuploaded crash. Need to look up whether the crash has been reported or
   // not.
   if (crash_event_info->upload_info.is_null()) {
-    if (!reported_local_id_manager_->UpdateLocalId(
-            crash_event_info->local_id,
-            crash_event_info->capture_time.ToJavaTime())) {
+    if (auto capture_timestamp_us =
+            ConvertTimeToMicroseconds(crash_event_info->capture_time);
+        !reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
+                                                   capture_timestamp_us)) {
       // Crash is already reported. Skip.
       skipped_callback_.Run({.local_id = std::move(crash_event_info->local_id),
-                             .capture_timestamp_us =
-                                 crash_event_info->capture_time.ToJavaTime()});
+                             .capture_timestamp_us = capture_timestamp_us});
       return;
     }
   }
-  // TODO(b/266018440): If the crash is found to be uploaded, need to remove it
-  // from reported local IDs.
+  // TODO(b/266018440): If the crash is found to have been uploaded, need to
+  // remove it from reported local IDs.
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
   OnEventObserved(std::move(metric_data));
@@ -171,7 +177,7 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   }
 
   *data.mutable_local_id() = info->local_id;
-  data.set_timestamp_us(info->capture_time.ToJavaTime());
+  data.set_timestamp_us(ConvertTimeToMicroseconds(info->capture_time));
   if (!info->upload_info.is_null()) {
     *data.mutable_crash_report_id() = info->upload_info->crash_report_id;
   }
@@ -192,6 +198,7 @@ FatalCrashEventsObserver::ReportedLocalIdManager::~ReportedLocalIdManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
 std::unique_ptr<FatalCrashEventsObserver::ReportedLocalIdManager>
 FatalCrashEventsObserver::ReportedLocalIdManager::Create(
     base::FilePath save_file_path) {

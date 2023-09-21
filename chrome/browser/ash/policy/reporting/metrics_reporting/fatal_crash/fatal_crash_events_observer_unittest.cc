@@ -221,7 +221,8 @@ TEST_P(FatalCrashEventsObserverTest, FieldTimestampPassedThrough) {
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
   ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
-  EXPECT_EQ(fatal_crash_telemetry.timestamp_us(), kCaptureTime.ToJavaTime());
+  EXPECT_EQ(fatal_crash_telemetry.timestamp_us(),
+            FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
 }
 
 TEST_P(FatalCrashEventsObserverTest, FieldCrashReportIdPassedThrough) {
@@ -389,7 +390,9 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
     ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
     ASSERT_EQ(fatal_crash_telemetry.local_id(), local_id);
     ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
-    ASSERT_EQ(fatal_crash_telemetry.timestamp_us(), capture_time.ToJavaTime());
+    ASSERT_EQ(
+        fatal_crash_telemetry.timestamp_us(),
+        FatalCrashEventsObserver::ConvertTimeToMicroseconds(capture_time));
   }
 
   // Wait for the given fatal crash event being skipped.
@@ -441,7 +444,8 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       /*local_id=*/kLocalId,
       /*capture_time=*/kCaptureTime, *fatal_crash_events_observer);
   EXPECT_EQ(local_id_entry.local_id, kLocalId);
-  EXPECT_EQ(local_id_entry.capture_timestamp_us, kCaptureTime.ToJavaTime());
+  EXPECT_EQ(local_id_entry.capture_timestamp_us,
+            FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
 }
 
 TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
@@ -466,7 +470,9 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
         /*local_id=*/kLocalId,
         /*capture_time=*/kCaptureTime, *fatal_crash_events_observer);
     EXPECT_EQ(local_id_entry.local_id, kLocalId);
-    EXPECT_EQ(local_id_entry.capture_timestamp_us, kCaptureTime.ToJavaTime());
+    EXPECT_EQ(
+        local_id_entry.capture_timestamp_us,
+        FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
   }
 }
 
@@ -493,13 +499,15 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       /*local_id=*/kLocalIdEarly,
       /*capture_time=*/kCaptureTimeEarly, *fatal_crash_events_observer);
   EXPECT_EQ(local_id_entry.local_id, kLocalIdEarly);
-  EXPECT_EQ(local_id_entry.capture_timestamp_us,
-            kCaptureTimeEarly.ToJavaTime());
+  EXPECT_EQ(
+      local_id_entry.capture_timestamp_us,
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeEarly));
   local_id_entry = WaitForSkippedFatalCrashEvent(/*local_id=*/kLocalId,
                                                  /*capture_time=*/kCaptureTime,
                                                  *fatal_crash_events_observer);
   EXPECT_EQ(local_id_entry.local_id, kLocalId);
-  EXPECT_EQ(local_id_entry.capture_timestamp_us, kCaptureTime.ToJavaTime());
+  EXPECT_EQ(local_id_entry.capture_timestamp_us,
+            FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
 
   // Crashes with later timestamps are reported.
   auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
@@ -511,8 +519,9 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
   ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
   EXPECT_EQ(fatal_crash_telemetry.local_id(), kLocalIdLate);
   ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
-  EXPECT_EQ(fatal_crash_telemetry.timestamp_us(),
-            kCaptureTimeLate.ToJavaTime());
+  EXPECT_EQ(
+      fatal_crash_telemetry.timestamp_us(),
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeLate));
 }
 
 // TODO(b/266018440): After implementing the logic that controls whether an
@@ -581,8 +590,9 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
     ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
     EXPECT_EQ(fatal_crash_telemetry.local_id(), ss.str());
     ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
-    EXPECT_EQ(fatal_crash_telemetry.timestamp_us(),
-              kCaptureTimeZero.ToJavaTime());
+    EXPECT_EQ(
+        fatal_crash_telemetry.timestamp_us(),
+        FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeZero));
   }
 
   // The next crash event should still be skipped. Need this line for testing
@@ -592,7 +602,9 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
       /*local_id=*/kLocalId,
       /*capture_time=*/kCaptureTimeZero, *fatal_crash_events_observer);
   EXPECT_EQ(local_id_entry.local_id, kLocalId);
-  EXPECT_EQ(local_id_entry.capture_timestamp_us, kCaptureTimeZero.ToJavaTime());
+  EXPECT_EQ(
+      local_id_entry.capture_timestamp_us,
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeZero));
 }
 
 TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,

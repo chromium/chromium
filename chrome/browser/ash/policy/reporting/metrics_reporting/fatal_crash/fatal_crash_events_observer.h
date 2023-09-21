@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
@@ -41,6 +42,9 @@ class FatalCrashEventsObserver
       delete;
 
   ~FatalCrashEventsObserver() override;
+
+  // Convert a `base::Time` to a timestamp in microseconds.
+  static int64_t ConvertTimeToMicroseconds(base::Time t);
 
   // Sets the callback that is called when a crash is skipped.
   void SetSkippedCrashCallback(
