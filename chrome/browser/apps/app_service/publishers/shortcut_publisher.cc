@@ -33,8 +33,8 @@ void ShortcutPublisher::ShortcutRemoved(const ShortcutId& id) {
   proxy_->ShortcutRegistryCache()->RemoveShortcut(id);
 }
 
-void ShortcutPublisher::GetCompressedShortcutIcon(
-    const apps::ShortcutId& shortcut_id,
+void ShortcutPublisher::GetCompressedIconData(
+    const std::string& shortcut_id,
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
     LoadIconCallback callback) {

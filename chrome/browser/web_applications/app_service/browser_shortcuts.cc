@@ -144,13 +144,13 @@ void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
       web_app->app_id(), webapp_uninstall_source, base::DoNothing());
 }
 
-void BrowserShortcuts::GetCompressedShortcutIcon(
-    const apps::ShortcutId& shortcut_id,
+void BrowserShortcuts::GetCompressedIconData(
+    const std::string& shortcut_id,
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::LoadIconCallback callback) {
-  std::string local_id =
-      proxy_->ShortcutRegistryCache()->GetShortcutLocalId(shortcut_id);
+  std::string local_id = proxy_->ShortcutRegistryCache()->GetShortcutLocalId(
+      apps::ShortcutId(shortcut_id));
   apps::GetWebAppCompressedIconData(profile_, local_id, size_in_dip,
                                     scale_factor, std::move(callback));
 }

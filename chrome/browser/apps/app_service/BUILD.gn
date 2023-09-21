@@ -177,6 +177,7 @@ source_set("app_service") {
       "publishers/bruschetta_apps.h",
       "publishers/built_in_chromeos_apps.cc",
       "publishers/built_in_chromeos_apps.h",
+      "publishers/compressed_icon_getter.h",
       "publishers/crostini_apps.cc",
       "publishers/crostini_apps.h",
       "publishers/extension_apps_chromeos.cc",

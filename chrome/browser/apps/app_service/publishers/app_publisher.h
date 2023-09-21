@@ -24,6 +24,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
+#endif
+
 namespace apps {
 
 struct AppLaunchParams;
@@ -36,7 +40,11 @@ using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
 // AppPublisher parent class (in the App Service sense) for all app publishers.
 // See components/services/app_service/README.md.
-class AppPublisher {
+class AppPublisher
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    : public CompressedIconGetter
+#endif
+{
  public:
   explicit AppPublisher(AppServiceProxy* proxy);
   AppPublisher(const AppPublisher&) = delete;
@@ -92,13 +100,11 @@ class AppPublisher {
   // app didn't supply an icon.
   virtual int DefaultIconResourceId() const;
 
-  // Requests a compressed icon data for an app identified by `app_id`. The icon
-  // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
-  // the result.
-  virtual void GetCompressedIconData(const std::string& app_id,
-                                     int32_t size_in_dip,
-                                     ui::ResourceScaleFactor scale_factor,
-                                     LoadIconCallback callback);
+  // CompressedIconGetter override.
+  void GetCompressedIconData(const std::string& app_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             LoadIconCallback callback) override;
 #endif
 
   // Launches an app identified by `app_id`. `event_flags` contains launch

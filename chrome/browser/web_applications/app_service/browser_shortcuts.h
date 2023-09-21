@@ -62,10 +62,10 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   void RemoveShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
                       apps::UninstallSource uninstall_source) override;
-  void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
-                                 int32_t size_in_dip,
-                                 ui::ResourceScaleFactor scale_factor,
-                                 apps::LoadIconCallback callback) override;
+  void GetCompressedIconData(const std::string& shortcut_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             apps::LoadIconCallback callback) override;
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;

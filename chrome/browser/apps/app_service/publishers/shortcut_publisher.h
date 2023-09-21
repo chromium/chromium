@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -21,7 +22,7 @@ namespace apps {
 
 // ShortcutPublisher parent class (in the App Service sense) for all shortcut
 // publishers. See components/services/app_service/README.md.
-class ShortcutPublisher {
+class ShortcutPublisher : public CompressedIconGetter {
  public:
   explicit ShortcutPublisher(AppServiceProxy* proxy);
   ShortcutPublisher(const ShortcutPublisher&) = delete;
@@ -52,13 +53,11 @@ class ShortcutPublisher {
                               const std::string& local_shortcut_id,
                               UninstallSource uninstall_source) = 0;
 
-  // Requests a compressed shortcut icon data (not including the badge) for
-  // shortcut identified by `shortcut_id`. The icon is identified by
-  // `size_in_dip` and `scale_factor`. Calls `callback` with the result.
-  virtual void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
-                                         int32_t size_in_dip,
-                                         ui::ResourceScaleFactor scale_factor,
-                                         LoadIconCallback callback);
+  // CompressedIconGetter override.
+  void GetCompressedIconData(const std::string& shortcut_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             LoadIconCallback callback) override;
 
  protected:
   // Publish one `delta` to AppServiceProxy. Should be called whenever the

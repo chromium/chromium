@@ -55,10 +55,10 @@ class FakeShortcutPublisher : public ShortcutPublisher {
         apps::GenerateShortcutId(host_app_id, local_shortcut_id));
   }
 
-  void GetCompressedShortcutIcon(const apps::ShortcutId& shortcut_id,
-                                 int32_t size_in_dip,
-                                 ui::ResourceScaleFactor scale_factor,
-                                 LoadIconCallback callback) override {
+  void GetCompressedIconData(const std::string& shortcut_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             LoadIconCallback callback) override {
     apps::IconValuePtr icon = std::make_unique<IconValue>();
     icon->compressed = {1, 2, 3};
     std::move(callback).Run(std::move(icon));
@@ -314,8 +314,8 @@ TEST_F(ShortcutPublisherTest, GetCompressedIcon) {
                                                   initial_chrome_shortcuts);
 
   base::test::TestFuture<apps::IconValuePtr> result;
-  fake_chrome_app_publisher.GetCompressedShortcutIcon(
-      initial_chrome_shortcuts[0]->shortcut_id, 1000,
+  fake_chrome_app_publisher.GetCompressedIconData(
+      initial_chrome_shortcuts[0]->shortcut_id.value(), 1000,
       ui::ResourceScaleFactor::k100Percent, result.GetCallback());
   apps::IconValuePtr icon = result.Take();
 

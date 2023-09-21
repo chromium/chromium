@@ -326,8 +326,8 @@ TEST_F(BrowserShortcutsTest, GetCompressedShortcutIcon) {
   base::test::TestFuture<apps::IconValuePtr> result;
   auto* shortcut_publisher =
       proxy->GetShortcutPublisherForTesting(apps::AppType::kChromeApp);
-  shortcut_publisher->GetCompressedShortcutIcon(
-      shortcut_id, icon_size, ui::ResourceScaleFactor::k100Percent,
+  shortcut_publisher->GetCompressedIconData(
+      shortcut_id.value(), icon_size, ui::ResourceScaleFactor::k100Percent,
       result.GetCallback());
   apps::IconValuePtr icon = result.Take();
   ASSERT_EQ(expected_icon->compressed, icon->compressed);
