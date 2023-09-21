@@ -37,7 +37,7 @@ bool IsFullScreenMode(Browser* browser) {
   LocationBarView* location_bar = browser_view->GetLocationBarView();
 
   return !location_bar || !location_bar->IsDrawn() ||
-         location_bar->GetWidget()->IsFullscreen();
+         location_bar->GetWidget()->GetTopLevelWidget()->IsFullscreen();
 }
 
 LocationBarView* GetLocationBarView(Browser* browser) {
@@ -91,7 +91,8 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
 
 bool IsLocationBarDisplayed(Browser* browser) {
   LocationBarView* lbv = GetLocationBarView(browser);
-  return lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
+  return lbv && lbv->IsDrawn() &&
+         !lbv->GetWidget()->GetTopLevelWidget()->IsFullscreen();
 }
 
 bool ShouldCurrentRequestUseQuietChip(
