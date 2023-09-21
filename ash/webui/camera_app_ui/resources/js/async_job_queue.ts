@@ -159,11 +159,9 @@ export class AsyncJobQueue {
  */
 export function queuedAsyncCallback<T extends unknown[]>(
     mode: AsyncJobQueueMode,
-    callback: (...args: T) => Promise<void>): (...args: T) => void {
+    callback: (...args: T) => Promise<void>): (...args: T) => AsyncJobInfo {
   const queue = new AsyncJobQueue(mode);
-  return (...args) => {
-    queue.push(() => callback(...args));
-  };
+  return (...args) => queue.push(() => callback(...args));
 }
 
 /**
