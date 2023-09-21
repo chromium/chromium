@@ -1692,8 +1692,6 @@ crbug.com/1465321 [ Mac ] external/wpt/html/semantics/popovers/popover-focus-2.h
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
 
-crbug.com/889952 fast/selectors/selection-window-inactive.html [ Failure Pass ]
-
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
 
 # Will be re-enabled and rebaselined once we remove the '--enable-file-cookies' flag.

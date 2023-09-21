@@ -51,7 +51,7 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   void Commit();
 
   gfx::Rect AbsoluteSelectionBounds();
-  void InvalidatePaintForSelection();
+  void InvalidateStyleAndPaintForSelection();
 
   LayoutTextSelectionStatus ComputeSelectionStatus(const LayoutText&) const;
   LayoutSelectionStatus ComputeSelectionStatus(const NGInlineCursor&) const;

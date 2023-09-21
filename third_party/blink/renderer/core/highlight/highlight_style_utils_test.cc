@@ -22,19 +22,6 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
-namespace {
-
-Color SelectionWebkitTextFillColor(const Document& document,
-                                   Node* node,
-                                   const ComputedStyle& originating_style) {
-  const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-      node, originating_style, kPseudoIdSelection);
-  return HighlightStyleUtils::ResolveColor(
-      document, originating_style, pseudo_style, kPseudoIdSelection,
-      GetCSSPropertyWebkitTextFillColor(), Color::kBlack);
-}
-
-}  // namespace
 
 class HighlightStyleUtilsTest : public SimTest,
                                 private ScopedHighlightInheritanceForTest {
@@ -43,119 +30,6 @@ class HighlightStyleUtilsTest : public SimTest,
   // SelectedTextInputShadow, when HighlightInheritance becomes stable
   HighlightStyleUtilsTest() : ScopedHighlightInheritanceForTest(false) {}
 };
-
-TEST_F(HighlightStyleUtilsTest, CachedPseudoStylesWindowInactive) {
-  // Test that we are only caching active selection styles as so that we don't
-  // incorrectly use a cached ComputedStyle when the active state changes.
-
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!doctype html>
-    <style>
-      ::selection:window-inactive {color: red }
-      ::selection { color: green }
-    </style>
-    <body>Text to select.</body>
-  )HTML");
-
-  auto* body = GetDocument().body();
-  auto* text_node = body->firstChild();
-
-  Compositor().BeginFrame();
-
-  const ComputedStyle& body_style = body->ComputedStyleRef();
-  const ComputedStyle& text_style = text_node->ComputedStyleRef();
-
-  EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-
-  // Select some text.
-  Window().getSelection()->setBaseAndExtent(body, 0, body, 1);
-  Compositor().BeginFrame();
-
-  // We don't cache ::selection styles for :window-inactive.
-  EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-
-  EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(255, 0, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-
-  // Focus the window.
-  GetPage().SetActive(true);
-  Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-  const ComputedStyle* active_style =
-      body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
-  EXPECT_TRUE(active_style);
-
-  // Unfocus the window.
-  GetPage().SetActive(false);
-  Compositor().BeginFrame();
-  EXPECT_EQ(Color(255, 0, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-  EXPECT_EQ(active_style,
-            body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-}
-
-TEST_F(HighlightStyleUtilsTest, CachedPseudoStylesNoWindowInactive) {
-  // Test that we share a cached ComputedStyle for active and inactive
-  // selections when there are no :window-inactive styles.
-
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!doctype html>
-    <style>
-      ::selection { color: green }
-    </style>
-    <body>Text to select.</body>
-  )HTML");
-
-  auto* body = GetDocument().body();
-  auto* text_node = body->firstChild();
-
-  Compositor().BeginFrame();
-
-  const ComputedStyle& body_style = body->ComputedStyleRef();
-  const ComputedStyle& text_style = text_node->ComputedStyleRef();
-
-  EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-
-  // Select some text.
-  Window().getSelection()->setBaseAndExtent(body, 0, body, 1);
-  Compositor().BeginFrame();
-
-  // We cache inactive ::selection styles when there are no :window-inactive
-  // selectors.
-  const ComputedStyle* active_style =
-      body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
-  EXPECT_TRUE(active_style);
-
-  EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(0, 128, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-
-  // Focus the window.
-  GetPage().SetActive(true);
-  Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-  EXPECT_EQ(active_style,
-            body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-
-  // Unfocus the window.
-  GetPage().SetActive(false);
-  Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0),
-            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
-  EXPECT_EQ(active_style,
-            body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-}
 
 TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   // Test that we apply input ::selection style to the value text.

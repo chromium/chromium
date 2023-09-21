@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/editing/layout_selection.h"
 
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -343,7 +344,7 @@ static bool IsDisplayContentElement(const Node& node) {
 }
 
 template <typename Visitor>
-static void VisitSelectedInclusiveDescendantsOfInternal(const Node& node,
+static void VisitSelectedInclusiveDescendantsOfInternal(Node& node,
                                                         Visitor* visitor) {
   // Display:content element appears in a flat tree even it doesn't have
   // a LayoutObject but we need to visit its children.
@@ -365,14 +366,13 @@ static inline bool IsFlatTreeClean(const Node& node) {
 }
 
 template <typename Visitor>
-static void VisitSelectedInclusiveDescendantsOf(const Node& node,
-                                                Visitor* visitor) {
+static void VisitSelectedInclusiveDescendantsOf(Node& node, Visitor* visitor) {
   DCHECK(IsFlatTreeClean(node));
   return VisitSelectedInclusiveDescendantsOfInternal(node, visitor);
 }
 
 static OldSelectedNodes ResetOldSelectedNodes(
-    const Node& root,
+    Node& root,
     absl::optional<unsigned> old_start_offset,
     absl::optional<unsigned> old_end_offset) {
   class OldSelectedVisitor {
@@ -384,7 +384,7 @@ static OldSelectedNodes ResetOldSelectedNodes(
         : old_start_offset(passed_old_start_offset),
           old_end_offset(passed_old_end_offset) {}
 
-    void Visit(const Node& node) {
+    void Visit(Node& node) {
       LayoutObject* layout_object = node.GetLayoutObject();
       const SelectionState old_state = layout_object->GetSelectionState();
       DCHECK_NE(old_state, SelectionState::kNone) << node;
@@ -988,7 +988,7 @@ gfx::Rect LayoutSelection::AbsoluteSelectionBounds() {
   return ToPixelSnappedRect(visitor.selected_rect);
 }
 
-void LayoutSelection::InvalidatePaintForSelection() {
+void LayoutSelection::InvalidateStyleAndPaintForSelection() {
   if (paint_range_->IsNull())
     return;
 
@@ -996,7 +996,29 @@ void LayoutSelection::InvalidatePaintForSelection() {
     STACK_ALLOCATED();
 
    public:
-    void Visit(const Node& node) { VisitLayoutObjectsOf(node, this); }
+    void Visit(Node& node) {
+      if (!node.GetLayoutObject()) {
+        return;
+      }
+
+      // Invalidate style to force an update to ::selection pseudo
+      // elements so that ::selection::inactive-window style is applied
+      // (or removed).
+      if (auto* this_element = DynamicTo<Element>(node)) {
+        const ComputedStyle* element_style = node.GetComputedStyle();
+        if (element_style &&
+            element_style->HasPseudoElementStyle(kPseudoIdSelection)) {
+          node.SetNeedsStyleRecalc(
+              kLocalStyleChange,
+              StyleChangeReasonForTracing::CreateWithExtraData(
+                  style_change_reason::kPseudoClass,
+                  style_change_extra_data::g_active));
+          this_element->PseudoStateChanged(CSSSelector::kPseudoSelection);
+        }
+      }
+
+      VisitLayoutObjectsOf(node, this);
+    }
     void Visit(LayoutObject* layout_object) {
       layout_object->SetShouldInvalidateSelection();
     }
