@@ -35,6 +35,7 @@ source_set("cells") {
   ]
   deps = [
     ":constants",
+    "resources:magic_stack_placeholder_module",
     "resources:ntp_most_visited_tile",
     "//base",
     "//components/ntp_tiles",

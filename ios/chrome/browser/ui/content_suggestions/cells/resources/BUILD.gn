@@ -4,6 +4,16 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("magic_stack_placeholder_module") {
+  sources = [
+    "magic_stack_placeholder_module.imageset/Contents.json",
+    "magic_stack_placeholder_module.imageset/magic_stack_placeholder_module_dark@2x.png",
+    "magic_stack_placeholder_module.imageset/magic_stack_placeholder_module_dark@3x.png",
+    "magic_stack_placeholder_module.imageset/magic_stack_placeholder_module_light@2x.png",
+    "magic_stack_placeholder_module.imageset/magic_stack_placeholder_module_light@3x.png",
+  ]
+}
+
 imageset("ntp_most_visited_tile") {
   sources = [
     "ntp_most_visited_tile.imageset/Contents.json",

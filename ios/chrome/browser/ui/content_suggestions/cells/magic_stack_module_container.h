@@ -18,6 +18,7 @@ enum class ContentSuggestionsModuleType;
                                type:(ContentSuggestionsModuleType)type
                            delegate:
                                (id<MagicStackModuleContainerDelegate>)delegate;
+- (instancetype)initAsPlaceholder;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

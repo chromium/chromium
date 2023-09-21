@@ -64,11 +64,28 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   id<MagicStackModuleContainerDelegate> _delegate;
   UILabel* _title;
   UILabel* _subtitle;
+  BOOL _isPlaceholder;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+  }
+  return self;
+}
+
+- (instancetype)initAsPlaceholder {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
+    _isPlaceholder = YES;
+    self.layer.cornerRadius = kCornerRadius;
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+    UIImageView* placeholderImage = [[UIImageView alloc]
+        initWithImage:[UIImage imageNamed:@"magic_stack_placeholder_module"]];
+    placeholderImage.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:placeholderImage];
+    AddSameConstraints(placeholderImage, self);
   }
   return self;
 }
@@ -308,7 +325,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   // is the only module in the Magic Stack in a wider screen, the module should
   // be wider to match the wider Magic Stack ScrollView.
   BOOL MVTModuleShouldUseWideWidth =
-      (_type == ContentSuggestionsModuleType::kMostVisited &&
+      (!_isPlaceholder && _type == ContentSuggestionsModuleType::kMostVisited &&
        !ShouldPutMostVisitedSitesInMagicStack() &&
        content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                            self.window));

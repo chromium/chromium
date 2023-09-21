@@ -256,8 +256,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
   // to after -viewDidLoad if fecthing from Segmentation Platform.
-  if (IsMagicStackEnabled() && _magicStackRankReceived) {
+  if (IsMagicStackEnabled()) {
     [self createMagicStack];
+    if (_magicStackRankReceived) {
+      [self populateMagicStack];
+    } else if (base::FeatureList::IsEnabled(
+                   segmentation_platform::features::
+                       kSegmentationPlatformIosModuleRanker)) {
+      // If Magic Stack rank has not been received from Segmentation, add
+      // placeholders
+      [self populateMagicStackWithPlaceholders];
+    }
   }
 }
 
@@ -454,9 +463,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                        kSegmentationPlatformIosModuleRanker)) {
     // Magic Stack order is only passed to the VC late when fetching it from the
     // Segmentation Platform
-    [self createMagicStack];
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
+    [self populateMagicStack];
   }
 }
 
@@ -560,7 +567,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       }
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
-      if (_magicStack) {
+      if (_magicStackRankReceived) {
         if (shouldShowCompactedSetUpListModule) {
           MultiRowContainerView* multiRowContainer =
               [[MultiRowContainerView alloc]
@@ -694,7 +701,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)showSafetyCheck:(SafetyCheckState*)state {
   _safetyCheckState = state;
 
-  if (!_magicStack) {
+  if (!_magicStackRankReceived) {
     return;
   }
 
@@ -795,7 +802,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                      type:ContentSuggestionsModuleType::kTabResumption
                  delegate:self];
 
-  if (_magicStack) {
+  if (_magicStackRankReceived) {
     [self insertModuleIntoMagicStack:self.tabResumptionModuleContainer];
   }
 }
@@ -930,6 +937,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       !ShouldPutMostVisitedSitesInMagicStack()) {
     return NO;
   }
+  if (!_magicStackRankReceived &&
+      base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationPlatformIosModuleRanker)) {
+    // There are two placeholders shown in the Magic Stack.
+    return NO;
+  }
   ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
       [_magicStackModuleOrder objectAtIndex:0] intValue];
   return [_magicStackModuleOrder count] == 1 && firstModuleType == type;
@@ -1009,7 +1022,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
-      if (_magicStack) {
+      if (_magicStackRankReceived) {
         [self insertModuleIntoMagicStack:self.mostVisitedModuleContainer];
       }
     } else {
@@ -1109,6 +1122,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+// Constructs the Magic Stack module only. No modules are added in this
+// implementation.
 - (void)createMagicStack {
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
@@ -1132,6 +1147,40 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   // Ensures modules take up entire height of the Magic Stack.
   _magicStack.alignment = UIStackViewAlignmentFill;
   [_magicStackScrollView addSubview:_magicStack];
+
+  AddSameConstraints(_magicStack, _magicStackScrollView);
+  // Define width of ScrollView. Instrinsic content height of the
+  // StackView within the ScrollView will define the height of the
+  // ScrollView.
+  CGFloat width = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  // Magic Stack has a wider width for wider screens so that clipToBounds can be
+  // YES with a peeking module still visible.
+  if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
+                                                          self.view.window)) {
+    width = kMagicStackWideWidth;
+  }
+  _magicStackScrollViewWidthAnchor =
+      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
+  [NSLayoutConstraint activateConstraints:@[
+    // Ensures only horizontal scrolling
+    [_magicStack.heightAnchor
+        constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
+    _magicStackScrollViewWidthAnchor
+  ]];
+}
+
+// Resets and fills the Magic Stack with modules using `_magicStackModuleOrder`.
+// This method loops over any module types listed in `_magicStackModuleOrder`
+// and adds their respective views to the Magic Stack.
+- (void)populateMagicStack {
+  if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationPlatformIosModuleRanker)) {
+    // Clear out any placeholders.
+    for (UIView* view in _magicStack.arrangedSubviews) {
+      [view removeFromSuperview];
+    }
+  }
 
   // Add Magic Stack modules in order dictated by `_magicStackModuleOrder`.
   for (NSNumber* moduleType in _magicStackModuleOrder) {
@@ -1217,26 +1266,16 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
     }
   }
-  AddSameConstraints(_magicStack, _magicStackScrollView);
-  // Define width of ScrollView. Instrinsic content height of the
-  // StackView within the ScrollView will define the height of the
-  // ScrollView.
-  CGFloat width = [MagicStackModuleContainer
-      moduleWidthForHorizontalTraitCollection:self.traitCollection];
-  // Magic Stack has a wider width for wider screens so that clipToBounds can be
-  // YES with a peeking module still visible.
-  if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
-                                                          self.view.window)) {
-    width = kMagicStackWideWidth;
-  }
-  _magicStackScrollViewWidthAnchor =
-      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
-  [NSLayoutConstraint activateConstraints:@[
-    // Ensures only horizontal scrolling
-    [_magicStack.heightAnchor
-        constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
-    _magicStackScrollViewWidthAnchor
-  ]];
+}
+
+// Adds two placeholder modules to Magic Stack.
+- (void)populateMagicStackWithPlaceholders {
+  CHECK(_magicStack);
+  CHECK([_magicStack.arrangedSubviews count] == 0);
+  [_magicStack
+      addArrangedSubview:[[MagicStackModuleContainer alloc] initAsPlaceholder]];
+  [_magicStack
+      addArrangedSubview:[[MagicStackModuleContainer alloc] initAsPlaceholder]];
 }
 
 // Returns the index position `moduleType` should be placed in the Magic Stack.
