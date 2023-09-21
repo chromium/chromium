@@ -144,10 +144,13 @@ media_status_t NdkMediaCodecWrapper::Start() {
 
 void NdkMediaCodecWrapper::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(started_);
-  started_ = false;
-
   weak_factory_.InvalidateWeakPtrs();
+
+  if (!started_) {
+    return;
+  }
+
+  started_ = false;
   AMediaCodec_stop(media_codec_.get());
 }
 
