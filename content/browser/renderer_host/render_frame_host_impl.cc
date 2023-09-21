@@ -10404,11 +10404,6 @@ void RenderFrameHostImpl::CommitNavigation(
       }
     }
 
-    // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
-    // need to check the relevant FrameTree to know the precise prerendering
-    // state to update commit_params.is_prerendering here.
-    // Current design doesn't capture the cases NavigationRequest is created via
-    // CreateRendererInitiated or CreateForSynchronousRendererCommit.
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
         std::move(commit_params), std::move(head), std::move(response_body),
