@@ -37,7 +37,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
       const ComputedStyle* style,
       const NGInlineItemTextIndex& start,
       unsigned flags /* NGInlineBreakTokenFlags */,
-      const NGBreakToken* sub_break_token = nullptr);
+      const NGBlockBreakToken* sub_break_token = nullptr);
 
   // Wrap a block break token inside an inline break token. The block break
   // token may for instance be for a float inside an inline formatting context.
@@ -66,19 +66,8 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
     return flags_ & kIsForcedBreak;
   }
 
-  // True if this is after a block-in-inline.
-  bool IsAfterBlockInInline() const;
-
   // The BreakToken when a block-in-inline or float is block-fragmented.
   const NGBlockBreakToken* BlockBreakToken() const;
-
-  // The BreakToken for the inline break token that has a block in inline break
-  // token inside. This should be resumed in the next fragmentainer as a
-  // parallel flow. This happens when a block inside an inline is overflowed
-  // beyond what was available in the fragmentainer. Regular inline content will
-  // then still fit in the fragmentainer, while the block inside the inline will
-  // be resumed in the next fragmentainer.
-  const NGInlineBreakToken* SubBreakTokenInParallelFlow() const;
 
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.
@@ -96,7 +85,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
                      const ComputedStyle*,
                      const NGInlineItemTextIndex& start,
                      unsigned flags /* NGInlineBreakTokenFlags */,
-                     const NGBreakToken* sub_break_token);
+                     const NGBlockBreakToken* sub_break_token);
 
   explicit NGInlineBreakToken(PassKey, NGLayoutInputNode node);
 
@@ -113,7 +102,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   NGInlineItemTextIndex start_;
 
   // This is an array of one item if |kHasSubBreakToken|, or zero.
-  Member<const NGBreakToken> sub_break_token_[];
+  Member<const NGBlockBreakToken> sub_break_token_[];
 };
 
 template <>

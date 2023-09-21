@@ -736,8 +736,13 @@ void NGLineBreaker::NextLine(NGLineInfo* line_info) {
     const NGInlineItem& item = Items()[break_token_->StartItemIndex()];
     DCHECK_EQ(item.GetLayoutObject(),
               block_break_token->InputNode().GetLayoutBox());
-    DCHECK(block_break_token->InputNode().IsFloating());
-    HandleFloat(item, block_break_token, line_info);
+    if (block_break_token->InputNode().IsFloating()) {
+      HandleFloat(item, block_break_token, line_info);
+    } else {
+      // Overflowed block-in-inline, i.e. in a parallel flow.
+      DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
+      HandleBlockInInline(item, block_break_token, line_info);
+    }
 
     state_ = LineBreakState::kDone;
     line_info->SetIsEmptyLine();
@@ -867,7 +872,9 @@ void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
       continue;
     }
     if (item.Type() == NGInlineItem::kBlockInInline) {
-      HandleBlockInInline(item, line_info);
+      const NGBlockBreakToken* block_break_token =
+          break_token_ ? break_token_->BlockBreakToken() : nullptr;
+      HandleBlockInInline(item, block_break_token, line_info);
       continue;
     }
 
@@ -2671,8 +2678,10 @@ void NGLineBreaker::ComputeMinMaxContentSizeForBlockChild(
   item_result->inline_size = result.sizes.max_size + inline_margins;
 }
 
-void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
-                                        NGLineInfo* line_info) {
+void NGLineBreaker::HandleBlockInInline(
+    const NGInlineItem& item,
+    const NGBlockBreakToken* block_break_token,
+    NGLineInfo* line_info) {
   DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
 
   if (!line_info->Results().empty()) {
@@ -2683,8 +2692,6 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   }
 
   NGInlineItemResult* item_result = AddItem(item, line_info);
-  const NGBlockBreakToken* incoming_block_break_token =
-      break_token_ ? break_token_->BlockBreakToken() : nullptr;
   if (mode_ == NGLineBreakerMode::kContent) {
     // The exclusion spaces *must* match. If they don't we'll have an incorrect
     // layout (as it will potentially won't consider some preceeding floats).
@@ -2697,7 +2704,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     const NGColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
     const NGLayoutResult* layout_result =
-        block_node.Layout(constraint_space_, incoming_block_break_token,
+        block_node.Layout(constraint_space_, block_break_token,
                           /* early_break */ nullptr, spanner_path_for_child);
     line_info->SetBlockInInlineLayoutResult(layout_result);
 
@@ -2728,14 +2735,18 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   if (const auto* outgoing_block_break_token =
           line_info->BlockInInlineBreakToken()) {
     // The block broke inside. If the block itself fits, but some content inside
-    // overflowed, and this happened for the first time, we now need to enter a
-    // parallel flow, i.e. resume the block-in-inline in the next fragmentainer,
-    // but continue layout of any actual inline content after the block-in-
-    // inline in the current fragmentainer.
-    if (outgoing_block_break_token->IsAtBlockEnd() &&
-        (!incoming_block_break_token ||
-         !incoming_block_break_token->IsAtBlockEnd()))
-      needs_new_parallel_flow_ = true;
+    // overflowed, we now need to enter a parallel flow, i.e. resume the
+    // block-in-inline in the next fragmentainer, but continue layout of any
+    // actual inline content after the block-in- inline in the current
+    // fragmentainer.
+    if (outgoing_block_break_token->IsAtBlockEnd()) {
+      const auto* parallel_token =
+          NGInlineBreakToken::CreateForParallelBlockFlow(
+              node_, current_, *outgoing_block_break_token);
+      line_info->PropagateParallelFlowBreakToken(parallel_token);
+
+      MoveToNextOf(item);
+    }
   } else {
     MoveToNextOf(item);
   }
@@ -3582,7 +3593,6 @@ bool NGLineBreaker::IsPreviousItemOfType(NGInlineItem::NGInlineItemType type) {
 }
 
 void NGLineBreaker::MoveToNextOf(const NGInlineItem& item) {
-  DCHECK(!needs_new_parallel_flow_);
   current_.text_offset = item.EndOffset();
   current_.item_index++;
 #if DCHECK_IS_ON()
@@ -3596,7 +3606,6 @@ void NGLineBreaker::MoveToNextOf(const NGInlineItem& item) {
 }
 
 void NGLineBreaker::MoveToNextOf(const NGInlineItemResult& item_result) {
-  DCHECK(!needs_new_parallel_flow_);
   current_ = item_result.End();
   DCHECK(item_result.item);
   if (current_.text_offset == item_result.item->EndOffset()) {
@@ -3619,21 +3628,17 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
     return nullptr;
   }
 
-  // If we've resumed a block-in-inline in a parallel flow, and didn't break
-  // again, we're done. A break token will be created in the main flow (if
-  // there's any left of it).
-  const NGBreakToken* sub_break_token = nullptr;
+  const NGBlockBreakToken* sub_break_token = nullptr;
   const NGLayoutResult* block_in_inline = line_info.BlockInInlineLayoutResult();
   if (UNLIKELY(block_in_inline)) {
     if (UNLIKELY(block_in_inline->Status() != NGLayoutResult::kSuccess)) {
       return nullptr;
     }
-    sub_break_token = block_in_inline->PhysicalFragment().BreakToken();
-  }
-  if (UNLIKELY(break_token_ && break_token_->BlockBreakToken())) {
-    if (break_token_->BlockBreakToken()->IsAtBlockEnd() && !sub_break_token) {
-      return nullptr;
-    }
+    // Look for a break token inside the block-in-inline, so that we can add it
+    // to the inline break token that we're about to create.
+    const auto& block_in_inline_fragment =
+        To<NGPhysicalBoxFragment>(block_in_inline->PhysicalFragment());
+    sub_break_token = block_in_inline_fragment.BreakToken();
   }
 
   DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);
@@ -3644,25 +3649,6 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
       (cloned_box_decorations_count_
            ? NGInlineBreakToken::kHasClonedBoxDecorations
            : 0);
-
-  if (needs_new_parallel_flow_) {
-    // We broke inside a block-in-inline for the first time. This will establish
-    // a parallel flow, so that the block can be resumed independently of inline
-    // content that might come after it. We'll now create an inline break token
-    // for the block-in-inline, and then (below) we'll wrap this inside another
-    // inline break token. The inner break token will be found by the caller,
-    // and shouldn't be resumed until we get to the next fragmentainer. The
-    // outer break token is used to resume regular inline layout after the block
-    // in inline in the current fragmentainer (and the block-in-inline part
-    // won't be seen there).
-    sub_break_token = NGInlineBreakToken::Create(
-        node_, current_style_, current_, flags, sub_break_token);
-
-    // Move past the block in inline, since we stopped at it. This is where
-    // regular inline content will resume.
-    needs_new_parallel_flow_ = false;
-    MoveToNextOf(items[current_.item_index]);
-  }
 
   return NGInlineBreakToken::Create(node_, current_style_, current_, flags,
                                     sub_break_token);

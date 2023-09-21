@@ -204,7 +204,9 @@ class CORE_EXPORT NGLineBreaker {
   void HandleForcedLineBreak(const NGInlineItem*, NGLineInfo*);
   void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
   void HandleAtomicInline(const NGInlineItem&, NGLineInfo*);
-  void HandleBlockInInline(const NGInlineItem&, NGLineInfo*);
+  void HandleBlockInInline(const NGInlineItem&,
+                           const NGBlockBreakToken*,
+                           NGLineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const NGInlineItem&,
                                              NGInlineItemResult*);
 
@@ -340,11 +342,6 @@ class CORE_EXPORT NGLineBreaker {
 
   // True if ShouldCreateNewSvgSegment() should be called.
   bool needs_svg_segmentation_ = false;
-
-  // True if we need to establish a new parallel flow for contents inside a
-  // block-in-inline that overflowed the fragmentainer (although the
-  // block-in-inline itself didn't overflow).
-  bool needs_new_parallel_flow_ = false;
 
 #if DCHECK_IS_ON()
   bool has_considered_creating_break_token_ = false;
