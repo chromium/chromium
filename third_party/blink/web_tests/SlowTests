@@ -1521,3 +1521,11 @@ crbug.com/1453303 [ Win ] http/tests/inspector-protocol/network/blocked-setcooki
 crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
 
 crbug.com/1456739 [ Linux Release ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/protected-audience-sends-report.https.html [ Slow ]
+
+# Slow because of multiple subtests and many cycles spent doing garbage collection.
+crbug.com/1473373 wpt_internal/dom/abort/abort-signal-memory-tests.https.any.html [ Slow ]
+crbug.com/1473373 wpt_internal/dom/abort/abort-signal-memory-tests.https.any.worker.html [ Slow ]
+crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Slow ]
+crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-1.any.worker.html [ Slow ]
+crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.html [ Slow ]
+crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.worker.html [ Slow ]
