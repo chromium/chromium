@@ -555,6 +555,8 @@ extern const char kAdPrivacySubPagePath[];
 extern const char kPrivacySandboxSubPagePath[];
 extern const char kPerformanceSubPagePath[];
 extern const char kPreloadingSubPagePath[];
+extern const char kTrackingProtectionSubPagePath[];
+extern const char kCookiesSubPagePath[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

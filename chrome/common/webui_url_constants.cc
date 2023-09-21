@@ -627,6 +627,8 @@ const char kAdPrivacySubPagePath[] = "/adPrivacy";
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 const char kPerformanceSubPagePath[] = "/performance";
 const char kPreloadingSubPagePath[] = "/preloading";
+const char kTrackingProtectionSubPagePath[] = "/trackingProtection";
+const char kCookiesSubPagePath[] = "/cookies";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

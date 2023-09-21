@@ -27,8 +27,14 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   }
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
-  r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
+
+  r.TRACKING_PROTECTION = r.PRIVACY.createChild('/trackingProtection');
+  r.COOKIES = r.PRIVACY.createChild('/cookies');
+  if (!loadTimeData.getBoolean(
+          'isPerformanceSettingsPreloadingSubpageEnabled')) {
+    r.PRELOADING = r.COOKIES.createChild('/preloading');
+  }
 
   if (loadTimeData.getBoolean('isPrivacySandboxSettings4') &&
       !loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
@@ -60,11 +66,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   } else {
     r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
     // </if>
-  }
-
-  if (!loadTimeData.getBoolean(
-          'isPerformanceSettingsPreloadingSubpageEnabled')) {
-    r.PRELOADING = r.COOKIES.createChild('/preloading');
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');

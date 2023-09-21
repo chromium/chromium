@@ -175,9 +175,15 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       assert(toFocus);
       focusWithoutInk(toFocus);
     };
-    this.focusConfig.set(
-        `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
-        selectSiteDataLinkRow);
+    if (this.is3pcdRedesignEnabled_) {
+      this.focusConfig.set(
+          `${routes.SITE_SETTINGS_ALL.path}_${routes.TRACKING_PROTECTION.path}`,
+          selectSiteDataLinkRow);
+    } else {
+      this.focusConfig.set(
+          `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
+          selectSiteDataLinkRow);
+    }
 
     if (this.showPreloadingSubpage_) {
       const selectPreloadingLinkRow = () => {
@@ -193,7 +199,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   override currentRouteChanged(route: Route) {
-    if (route !== routes.COOKIES) {
+    if (this.is3pcdRedesignEnabled_) {
+      if (route !== routes.TRACKING_PROTECTION) {
+        this.$.toast.hide();
+      }
+    } else if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
   }
