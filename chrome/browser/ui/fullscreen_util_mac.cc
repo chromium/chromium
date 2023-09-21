@@ -16,10 +16,13 @@
 namespace fullscreen_utils {
 
 bool IsInContentFullscreen(Browser* browser) {
+  if (!browser->exclusive_access_manager()) {
+    return false;
+  }
   FullscreenController* controller =
       browser->exclusive_access_manager()->fullscreen_controller();
-  return controller->IsWindowFullscreenForTabOrPending() ||
-         controller->IsExtensionFullscreenOrPending();
+  return controller && (controller->IsWindowFullscreenForTabOrPending() ||
+                        controller->IsExtensionFullscreenOrPending());
 }
 
 bool IsAlwaysShowToolbarEnabled(const Browser* browser) {
