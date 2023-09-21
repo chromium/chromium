@@ -13,7 +13,9 @@
 #include <set>
 #include <tuple>
 
+#include "base/command_line.h"
 #include "base/format_macros.h"
+#include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
@@ -52,8 +54,8 @@
 #include "ui/gfx/range/range_f.h"
 #include "ui/gfx/render_text_harfbuzz.h"
 #include "ui/gfx/render_text_test_api.h"
-#include "ui/gfx/switches.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 
@@ -8653,6 +8655,72 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1193815) {
   render_text->SetMaxLines(1);
   render_text->SetMultiline(true);
   render_text->Draw(canvas());
+}
+
+class RenderTextDirectionTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::string> {
+ public:
+  RenderTextDirectionTest() = default;
+  RenderTextDirectionTest(const RenderTextDirectionTest&) = delete;
+  RenderTextDirectionTest& operator=(const RenderTextDirectionTest&) = delete;
+  ~RenderTextDirectionTest() override = default;
+
+  HorizontalAlignment GetCurrentHorizontalAlignment() {
+    return test_api_->GetCurrentHorizontalAlignment();
+  }
+
+  RenderText* render_text() { return render_text_.get(); }
+
+ private:
+  void SetUp() override {
+    // Using "en" locale, which is a LTR langulage.
+    base::i18n::SetICUDefaultLocale("en");
+
+    if (!GetParam().empty()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+          switches::kForceUIDirection, GetParam());
+    }
+
+    render_text_ = std::make_unique<RenderTextHarfBuzz>();
+    test_api_ = std::make_unique<test::RenderTextTestApi>(render_text_.get());
+  }
+
+  std::unique_ptr<RenderTextHarfBuzz> render_text_;
+  std::unique_ptr<test::RenderTextTestApi> test_api_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderTextDirectionTest,
+                         testing::Values(std::string(),
+                                         switches::kForceDirectionRTL,
+                                         switches::kForceDirectionLTR));
+
+TEST_P(RenderTextDirectionTest, GetCurrentHorizontalAlignment) {
+  // Default alignment:
+  if (GetParam() == switches::kForceDirectionRTL) {
+    EXPECT_EQ(ALIGN_RIGHT, GetCurrentHorizontalAlignment());
+  } else {
+    EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
+  }
+
+  render_text()->SetHorizontalAlignment(ALIGN_RIGHT);
+  EXPECT_EQ(ALIGN_RIGHT, GetCurrentHorizontalAlignment());
+
+  render_text()->SetHorizontalAlignment(ALIGN_CENTER);
+  EXPECT_EQ(ALIGN_CENTER, GetCurrentHorizontalAlignment());
+
+  render_text()->SetHorizontalAlignment(ALIGN_TO_HEAD);
+  if (GetParam() == switches::kForceDirectionLTR) {
+    EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
+  } else if (GetParam() == switches::kForceDirectionRTL) {
+    EXPECT_EQ(ALIGN_RIGHT, GetCurrentHorizontalAlignment());
+  } else {
+    EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
+  }
+
+  render_text()->SetDirectionalityMode(DIRECTIONALITY_AS_URL);
+  EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
 }
 
 }  // namespace gfx

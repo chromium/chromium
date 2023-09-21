@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -38,6 +39,7 @@
 #include "ui/gfx/render_text_harfbuzz.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
@@ -1797,6 +1799,16 @@ Point RenderText::ToViewPoint(const PointF& point, size_t line) {
 HorizontalAlignment RenderText::GetCurrentHorizontalAlignment() {
   if (horizontal_alignment_ != ALIGN_TO_HEAD)
     return horizontal_alignment_;
+
+  if (directionality_mode_ == gfx::DIRECTIONALITY_FROM_TEXT) {
+    if (base::i18n::GetForcedTextDirection() == base::i18n::RIGHT_TO_LEFT) {
+      return ALIGN_RIGHT;
+    }
+    if (base::i18n::GetForcedTextDirection() == base::i18n::LEFT_TO_RIGHT) {
+      return ALIGN_LEFT;
+    }
+  }
+
   return GetDisplayTextDirection() == base::i18n::RIGHT_TO_LEFT ?
       ALIGN_RIGHT : ALIGN_LEFT;
 }
