@@ -334,18 +334,6 @@ TEST_F(WKNavigationUtilTest, IsNotRestoreSessionUrl) {
   EXPECT_FALSE(IsRestoreSessionUrl([NSURL URLWithString:@"http://www.1.com"]));
 }
 
-// Tests that CreateRedirectUrl and ExtractTargetURL used back-to-back is an
-// identity transformation.
-TEST_F(WKNavigationUtilTest, CreateAndExtractTargetURL) {
-  GURL target_url = GURL("http://www.1.com?query=special%26chars");
-  GURL url = CreateRedirectUrl(target_url);
-  ASSERT_TRUE(url.SchemeIsFile());
-
-  GURL extracted_url;
-  ASSERT_TRUE(ExtractTargetURL(url, &extracted_url));
-  EXPECT_EQ(target_url, extracted_url);
-}
-
 // Tests that app specific urls and non-placeholder about: urls do not need a
 // user agent type, but normal urls and placeholders do.
 TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {

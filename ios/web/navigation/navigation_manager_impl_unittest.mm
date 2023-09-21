@@ -1375,32 +1375,6 @@ TEST_F(NavigationManagerTest, ReloadWithUserAgentTypeOnNewTabRedirect) {
   EXPECT_EQ(url, pending_item->GetURL());
 }
 
-// Tests that ReloadWithUserAgentType does not expose internal URLs.
-TEST_F(NavigationManagerTest, ReloadWithUserAgentTypeOnIntenalUrl) {
-  delegate_.SetWebState(&web_state_);
-  web_state_.SetLoading(true);
-
-  GURL url = wk_navigation_util::CreateRedirectUrl(GURL("http://www.1.com"));
-  navigation_manager()->AddPendingItem(
-      url, Referrer(), ui::PAGE_TRANSITION_TYPED,
-      NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
-      web::HttpsUpgradeType::kNone);
-  GURL virtual_url("http://www.1.com/virtual");
-  navigation_manager()
-      ->GetPendingItemInCurrentOrRestoredSession()
-      ->SetVirtualURL(virtual_url);
-  [mock_wk_list_ setCurrentURL:base::SysUTF8ToNSString(url.spec())];
-  navigation_manager()->OnNavigationStarted(GURL("http://www.1.com/virtual"));
-
-  navigation_manager()->ReloadWithUserAgentType(UserAgentType::DESKTOP);
-
-  NavigationItem* pending_item =
-      navigation_manager()->GetPendingItemInCurrentOrRestoredSession();
-  EXPECT_EQ(url, pending_item->GetURL());
-  EXPECT_EQ(virtual_url, pending_item->GetVirtualURL());
-}
-
 // Tests that app-specific URLs are not rewritten for renderer-initiated loads
 // or reloads unless requested by a page with app-specific url.
 TEST_F(NavigationManagerTest, RewritingAppSpecificUrls) {
@@ -2335,21 +2309,6 @@ TEST_F(NavigationManagerTest, ReusePendingItemForHistoryNavigation) {
       web::HttpsUpgradeType::kNone);
 
   EXPECT_EQ(original_item0, manager_->GetPendingItem());
-
-  // Simulate reloading a redirect url.  This happens when one restores while
-  // offline.
-  GURL redirect_url = wk_navigation_util::CreateRedirectUrl(
-      manager_->GetPendingItem()->GetURL());
-  [mock_wk_list_ setCurrentURL:base::SysUTF8ToNSString(redirect_url.spec())
-                  backListURLs:nil
-               forwardListURLs:nil];
-  original_item0 = manager_->GetItemAtIndex(0);
-  manager_->AddPendingItem(
-      GURL("http://www.0.com"), Referrer(), ui::PAGE_TRANSITION_RELOAD,
-      web::NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
-      web::HttpsUpgradeType::kNone);
-  EXPECT_EQ(original_item0, manager_->GetPendingItem());
 }
 
 // Tests that transient URL rewriters are only applied to a new pending item.
@@ -2712,19 +2671,6 @@ TEST_F(NavigationManagerTest, RestoreSessionWithEmptyHistory) {
   ASSERT_EQ(nullptr, manager_->GetPendingItem());
 }
 
-// Tests that the virtual URL of a restore_session redirect item is updated to
-// the target URL.
-TEST_F(NavigationManagerTest, HideInternalRedirectUrl) {
-  GURL target_url = GURL("http://www.1.com?query=special%26chars");
-  GURL url = wk_navigation_util::CreateRedirectUrl(target_url);
-  NSString* url_spec = base::SysUTF8ToNSString(url.spec());
-  [mock_wk_list_ setCurrentURL:url_spec];
-  NavigationItem* item = manager_->GetItemAtIndex(0);
-  ASSERT_TRUE(item);
-  EXPECT_EQ(target_url, item->GetVirtualURL());
-  EXPECT_EQ(url, item->GetURL());
-}
-
 // Tests that all NavigationManager APIs return reasonable values in the Empty
 // Window Open Navigation edge case. See comments in header file for details.
 TEST_F(NavigationManagerTest, EmptyWindowOpenNavigation) {
@@ -2833,11 +2779,6 @@ class NavigationManagerDetachedModeTest : public NavigationManagerTest {
     ASSERT_EQ(url0_, manager_->GetItemAtIndex(0)->GetURL());
     ASSERT_EQ(url1_, manager_->GetItemAtIndex(1)->GetURL());
     ASSERT_EQ(url2_, manager_->GetItemAtIndex(2)->GetURL());
-  }
-
-  NSString* CreateRedirectUrlForWKList(GURL url) {
-    GURL redirect_url = wk_navigation_util::CreateRedirectUrl(url);
-    return base::SysUTF8ToNSString(redirect_url.spec());
   }
 
   GURL url0_;
@@ -2982,18 +2923,6 @@ TEST_F(NavigationManagerDetachedModeTest, LoadURLWithParams) {
 
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 1);
   histogram_tester_.ExpectBucketCount(kRestoreNavigationItemCount, 3, 1);
-}
-
-// Tests that detaching placeholder urls are cleaned before being cached.
-TEST_F(NavigationManagerDetachedModeTest, CachedPlaceholders) {
-  [mock_wk_list_ setCurrentURL:CreateRedirectUrlForWKList(url1_)
-                  backListURLs:@[ CreateRedirectUrlForWKList(url0_) ]
-               forwardListURLs:@[ CreateRedirectUrlForWKList(url2_) ]];
-  manager_->DetachFromWebView();
-
-  EXPECT_EQ(url0_, manager_->GetNavigationItemImplAtIndex(0)->GetURL());
-  EXPECT_EQ(url1_, manager_->GetNavigationItemImplAtIndex(1)->GetURL());
-  EXPECT_EQ(url2_, manager_->GetNavigationItemImplAtIndex(2)->GetURL());
 }
 
 // Tests that pending item is set to serializable when appropriate.
