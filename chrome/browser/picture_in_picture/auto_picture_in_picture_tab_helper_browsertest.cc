@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
@@ -246,6 +247,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
             url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE, setting);
   }
 
+  void OverrideURL(const GURL& url) {
+    // Lie about the URL.
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents->GetController().GetVisibleEntry()->SetVirtualURL(url);
+  }
+
  protected:
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
     return {blink::features::kDocumentPictureInPictureAPI,
@@ -306,6 +313,34 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
+                                        /*should_document_pip=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       CannotAutopipViaHttp) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Since it's hard to test that autopip is not triggered, settle to make sure
+  // that the tab helper switches from "okay" to "not okay".
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+  EXPECT_TRUE(tab_helper->IsEligibleForAutoPictureInPicture());
+  OverrideURL(GURL("http://should.not.work.com"));
+  EXPECT_FALSE(tab_helper->IsEligibleForAutoPictureInPicture());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       CanAutopipViaHttps) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+  OverrideURL(GURL("https://should.work.great.com"));
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);

@@ -79,6 +79,8 @@ class AutoPictureInPictureTabHelper
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
+  FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
+                           CannotAutopipViaHttp);
 
   void MaybeEnterAutoPictureInPicture();
 

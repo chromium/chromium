@@ -183,6 +183,12 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
     return false;
   }
 
+  // Only https:// or file:// may autopip.
+  const GURL url = web_contents()->GetLastCommittedURL();
+  if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIsFile()) {
+    return false;
+  }
+
   // The website must have registered for autopip.
   if (!is_enter_auto_picture_in_picture_available_) {
     return false;
