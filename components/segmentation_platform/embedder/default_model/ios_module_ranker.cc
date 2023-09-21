@@ -251,6 +251,7 @@ IosModuleRanker::GetModelConfig() {
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(kMinSignalCollectionLength,
                                               kSignalStorageLength);
+  metadata.set_upload_tensors(true);
 
   // Set output config.
   writer.AddOutputConfigForMultiClassClassifier(kIosModuleLabels.begin(),
