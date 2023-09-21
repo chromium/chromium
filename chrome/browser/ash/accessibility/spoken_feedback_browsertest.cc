@@ -194,14 +194,16 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
   // (http://crbug.com/396507). Work around this by just telling
   // ChromeVox to not ever play earcons (prerecorded sound effects).
   extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
+      AccessibilityManager::Get()->profile(),
+      extension_misc::kChromeVoxExtensionId,
       "ChromeVox.earcons.playEarcon = function() {};");
 }
 
 void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
                                                             std::string path) {
   extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
+      AccessibilityManager::Get()->profile(),
+      extension_misc::kChromeVoxExtensionId,
       "import('" + path +
           "').then(mod => {"
           "globalThis." +
