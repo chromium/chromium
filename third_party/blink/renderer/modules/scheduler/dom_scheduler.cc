@@ -174,7 +174,11 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
     ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  DCHECK(scheduler->GetTaskAttributionTracker());
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    // Can happen when a feature flag disables TaskAttribution.
+    return 0;
+  }
   absl::optional<scheduler::TaskAttributionId> task_id =
       scheduler->GetTaskAttributionTracker()->RunningTaskAttributionId(
           script_state);
@@ -191,9 +195,11 @@ AtomicString DOMScheduler::isAncestor(
       scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor;
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  scheduler::TaskAttributionTracker* tracker =
-      scheduler->GetTaskAttributionTracker();
-  DCHECK(tracker);
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    // Can happen when a feature flag disables TaskAttribution.
+    return AtomicString("unknown");
+  }
   status =
       tracker->IsAncestor(script_state, scheduler::TaskAttributionId(parentId));
   switch (status) {

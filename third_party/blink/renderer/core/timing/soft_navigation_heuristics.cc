@@ -85,10 +85,12 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
   // Set task ID to the current one.
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  // This should not be called off-main-thread.
-  DCHECK(scheduler->GetTaskAttributionTracker());
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    return;
+  }
   ResetHeuristic();
-  scheduler->GetTaskAttributionTracker()->RegisterObserver(this);
+  tracker->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   user_click_timestamp_ = base::TimeTicks::Now();
   TRACE_EVENT_INSTANT("scheduler",
@@ -116,7 +118,11 @@ bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
 void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  scheduler->GetTaskAttributionTracker()->UnregisterObserver(this);
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    return;
+  }
+  tracker->UnregisterObserver(this);
   CheckAndReportSoftNavigation(script_state);
   TRACE_EVENT_INSTANT("scheduler", "SoftNavigationHeuristics::ClickEventEnded");
 }
