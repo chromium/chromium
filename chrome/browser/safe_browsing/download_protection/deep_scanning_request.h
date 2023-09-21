@@ -138,6 +138,14 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   void OnScanComplete(const base::FilePath& current_path,
                       BinaryUploadService::Result result,
                       enterprise_connectors::ContentAnalysisResponse response);
+  void OnConsumerScanComplete(
+      const base::FilePath& current_path,
+      BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
+  void OnEnterpriseScanComplete(
+      const base::FilePath& current_path,
+      BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
 
   // Called when a single file scanning request has completed. Calls
   // FinishRequest if it was the last required one.
