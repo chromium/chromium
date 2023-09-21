@@ -7,10 +7,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/photos/photos_metrics.h"
 #import "ios/chrome/browser/photos/photos_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -96,6 +99,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   // If the web state does not exist anymore (which can happen when the user
   // tries again), hide Save to Photos.
   if (!webState) {
+    base::UmaHistogramEnumeration(
+        kSaveToPhotosActionsHistogram,
+        SaveToPhotosActions::kFailureWebStateDestroyed);
     [self.delegate hideSaveToPhotos];
     return;
   }
@@ -125,6 +131,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 - (void)accountPickerDidSelectIdentity:(id<SystemIdentity>)identity
                           askEveryTime:(BOOL)askEveryTime {
   CHECK(identity);
+  base::UmaHistogramEnumeration(
+      kSaveToPhotosAccountPickerActionsHistogram,
+      SaveToPhotosAccountPickerActions::kSelectedIdentity);
   [self.delegate hideAccountPicker];
 
   // Memorize the account that was picked if the user does not want to be asked
@@ -138,11 +147,16 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 }
 
 - (void)accountPickerDidCancel {
+  base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
+                                SaveToPhotosAccountPickerActions::kCancelled);
   [self.delegate hideAccountPicker];
 }
 
 - (void)accountPickerWasHidden {
   if (!_identity) {
+    base::UmaHistogramEnumeration(
+        kSaveToPhotosActionsHistogram,
+        SaveToPhotosActions::kFailureUserCancelledWithAccountPicker);
     [self.delegate hideSaveToPhotos];
     return;
   }
@@ -150,6 +164,13 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 }
 
 - (void)storeKitWantsToHide {
+  BOOL photosAppInstalled =
+      [UIApplication.sharedApplication canOpenURL:GetGooglePhotosAppURL()];
+  base::UmaHistogramEnumeration(
+      kSaveToPhotosActionsHistogram,
+      photosAppInstalled
+          ? SaveToPhotosActions::kSuccessAndOpenStoreKitAndAppInstalled
+          : SaveToPhotosActions::kSuccessAndOpenStoreKitAndAppNotInstalled);
   [self.delegate hideSaveToPhotos];
 }
 
@@ -173,6 +194,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   // Although it is unlikely, the user could sign-out while the image data is
   // being fetched. Exit now if that happened.
   if (!_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
+                                  SaveToPhotosActions::kFailureUserSignedOut);
     [self.delegate hideSaveToPhotos];
     return;
   }
@@ -186,6 +209,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   // Photos, use that default.
   if (defaultIdentity) {
     _identity = defaultIdentity;
+    base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
+                                  SaveToPhotosAccountPickerActions::kSkipped);
     [self tryUploadImage];
     return;
   }
@@ -240,6 +265,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 // Cancels the ongoing upload and exit hide Save to Photos.
 - (void)cancelUpload {
   _photosService->CancelUpload();
+  base::UmaHistogramEnumeration(
+      kSaveToPhotosActionsHistogram,
+      SaveToPhotosActions::kFailureUserCancelledWithSnackbar);
   [self.delegate hideSaveToPhotos];
 }
 
@@ -270,14 +298,19 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   NSString* tryAgainTitle = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_THIS_FILE_COULD_NOT_BE_UPLOADED_TRY_AGAIN);
   __weak __typeof(self.delegate) weakDelegate = self.delegate;
-  [self.delegate showTryAgainOrCancelAlertWithTitle:title
-                                            message:message
-                                      tryAgainTitle:tryAgainTitle
-                                     tryAgainAction:tryAgain
-                                        cancelTitle:cancelTitle
-                                       cancelAction:^{
-                                         [weakDelegate hideSaveToPhotos];
-                                       }];
+  [self.delegate
+      showTryAgainOrCancelAlertWithTitle:title
+                                 message:message
+                           tryAgainTitle:tryAgainTitle
+                          tryAgainAction:tryAgain
+                             cancelTitle:cancelTitle
+                            cancelAction:^{
+                              base::UmaHistogramEnumeration(
+                                  kSaveToPhotosActionsHistogram,
+                                  SaveToPhotosActions::
+                                      kFailureUserCancelledWithAlert);
+                              [weakDelegate hideSaveToPhotos];
+                            }];
 }
 
 // Shows a snackbar to let the user know the Photos service started to upload
@@ -327,6 +360,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
     [self openPhotosAppOrShowInStoreKit];
     return;
   }
+  base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
+                                SaveToPhotosActions::kSuccess);
   [self.delegate hideSaveToPhotos];
 }
 
@@ -348,6 +383,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
                 openURL:photosURL
                 options:@{UIApplicationOpenURLOptionUniversalLinksOnly : @YES}
       completionHandler:nil];
+  base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
+                                SaveToPhotosActions::kSuccessAndOpenPhotosApp);
   [self.delegate hideSaveToPhotos];
 }
 

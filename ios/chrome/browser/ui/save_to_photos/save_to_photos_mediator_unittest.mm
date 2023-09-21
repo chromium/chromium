@@ -8,11 +8,13 @@
 
 #import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/photos/photos_metrics.h"
 #import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -196,6 +198,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> web_state_;
   id mock_application_;
   id<SystemIdentity> fake_identity_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the mediator attempts to fetch the image data when started.
@@ -297,6 +300,10 @@ TEST_F(SaveToPhotosMediatorTest,
                      webState:web_state_.get()];
   task_environment_.RunUntilQuit();
 
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosAccountPickerActionsHistogram,
+      SaveToPhotosAccountPickerActions::kSkipped, 1);
+
   // Test that the Photos service has already been called with the identity from
   // the prefs.
   EXPECT_FALSE(GetTestPhotosService()->IsAvailable());
@@ -341,6 +348,9 @@ TEST_F(SaveToPhotosMediatorTest,
   // Give the selected identity to the mediator and verify that the mediator
   // asked to hide the account picker.
   [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosAccountPickerActionsHistogram,
+      SaveToPhotosAccountPickerActions::kSelectedIdentity, 1);
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 
   // Expect the the mediator will start uploading and show a snackbar when the
@@ -466,6 +476,10 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
   // Simulate the snackbar was dismissed because of user interaction.
   savedCompletionAction(/* user_triggered= */ YES);
 
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosActionsHistogram,
+      SaveToPhotosActions::kSuccessAndOpenPhotosApp, 1);
+
   [mediator disconnect];
 
   // Verify that the mediator detected that the app is installed and tried to
@@ -551,6 +565,9 @@ TEST_F(SaveToPhotosMediatorTest,
   OCMExpect([mock_save_to_photos_mediator_delegate hideSaveToPhotos]);
   [mediator storeKitWantsToHide];
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+  histogram_tester_.ExpectUniqueSample(
+      kSaveToPhotosActionsHistogram,
+      SaveToPhotosActions::kSuccessAndOpenStoreKitAndAppNotInstalled, 1);
 
   [mediator disconnect];
 }

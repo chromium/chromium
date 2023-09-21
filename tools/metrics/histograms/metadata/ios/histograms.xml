@@ -2594,6 +2594,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
+    expires_after="2024-03-19">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged before the &quot;Save to Photos&quot; UI is dismissed with the result
+    i.e. whether upload succeeded or failed, reason of the failure if any and
+    whether any action was performed after the upload, such as opening the
+    Photos app or showing StoreKit.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToPhotos.AccountPicker"
+    enum="IOSSaveToPhotosAccountPickerType" expires_after="2024-03-19">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged after the &quot;Save to Photos&quot; UI knows what account to use as
+    destination for the photo to be saved i.e. an account saved in preferences
+    as the default (account picker skipped), or an account selected with the
+    account picker, or no account if the user cancels.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToPhotos.Settings" enum="IOSSaveToPhotosSettingsType"
+    expires_after="2024-03-19">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the Photos service starts, if and only if the Save to Photos
+    settings are accessible from Settings. It gives information about the state
+    of the Save to Photos &quot;default account&quot; settings i.e. whether the
+    user opted-in to skip the account picker.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
     expires_after="2024-09-18">
   <owner>olivierrobin@chromium.org</owner>
