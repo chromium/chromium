@@ -47,7 +47,7 @@ robolectric_library("junit_test_support") {
   deps = [ ":java" ]
 }
 
-robolectric_binary("components_stylus_handwriting_junit_tests") {
+robolectric_library("stylus_handwriting_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinderTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
