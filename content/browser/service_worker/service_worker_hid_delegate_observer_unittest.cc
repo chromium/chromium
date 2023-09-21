@@ -321,7 +321,7 @@ class ServiceWorkerHidDelegateObserverNoEventHandlersTest
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -387,7 +387,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -454,7 +454,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -522,7 +522,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, OnHidManagerConnectionError) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -565,7 +565,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
   ConnectDevice(*device);
 
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -749,7 +749,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, NoReportsDeviceNotStartWorker) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, ProcessPendingCallback) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -807,7 +807,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, ProcessPendingCallback) {
 TEST_F(ServiceWorkerHidDelegateObserverTest,
        ClearPendingCallbackWhenWorkerStopped) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   for (size_t idx = 0; idx < num_workers; ++idx) {

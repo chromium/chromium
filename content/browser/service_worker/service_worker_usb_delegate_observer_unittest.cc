@@ -259,7 +259,7 @@ class ServiceWorkerUsbDelegateObserverNoEventHandlersTest
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -331,7 +331,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -403,7 +403,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceManagerConnectionError) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -448,7 +448,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
 
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -622,7 +622,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, NoPermissionNotStartWorker) {
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -683,7 +683,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
 TEST_F(ServiceWorkerUsbDelegateObserverTest,
        ClearPendingCallbackWhenWorkerStopped) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   for (size_t idx = 0; idx < num_workers; ++idx) {
