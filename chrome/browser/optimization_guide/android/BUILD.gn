@@ -49,6 +49,7 @@ android_library("native_java_unittests") {
 
   deps = [
     ":java",
+    "//base:base_java_test_support",
     "//base:jni_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",

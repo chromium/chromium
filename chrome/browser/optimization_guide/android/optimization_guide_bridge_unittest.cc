@@ -167,7 +167,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
                                GURL("https://example2.com/")),
           UnorderedElementsAre(optimization_guide::proto::LOADING_PREDICTOR,
                                optimization_guide::proto::DEFER_ALL_SCRIPT),
-          optimization_guide::proto::CONTEXT_NEW_TAB_PAGE,
+          optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB,
           base::test::IsNotNullCallback()))
       .WillOnce(DoAll(base::test::RunCallback<3>(GURL("https://example.com/"),
                                                  ByRef(url1_decisions)),
