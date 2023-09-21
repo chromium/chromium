@@ -12,6 +12,10 @@ namespace sync_test_utils_android {
 // Sets up the test account and signs in synchronously.
 void SetUpAccountAndSignInForTesting();
 
+// Sets up the test account, signs in, and enables Sync-the-feature
+// synchronously.
+void SetUpAccountAndSignInAndEnableSyncForTesting();
+
 // Sets up the test authentication environment synchronously using a worker
 // thread.
 //

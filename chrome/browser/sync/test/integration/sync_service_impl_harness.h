@@ -56,10 +56,8 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
   // Signs in to a primary account without actually enabling sync the feature.
-  // TODO(crbug.com/1455032): This actually sets up an account with
-  // ConsentLevel::kSync (should probably be kSignin instead), and on Android it
-  // also explicitly enables Sync-the-feature.
-  [[nodiscard]] bool SignInPrimaryAccount();
+  [[nodiscard]] bool SignInPrimaryAccount(
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
@@ -116,6 +114,8 @@ class SyncServiceImplHarness {
   void StopSyncServiceAndClearData();
 
   // Turns on sync-the-feature and waits until sync-the-feature is active.
+  // Note that this only works if there already is an account with
+  // ConsentLevel::kSync.
   // Returns true if and only if sync setup completed successfully.
   [[nodiscard]] bool EnableSyncFeature();
 

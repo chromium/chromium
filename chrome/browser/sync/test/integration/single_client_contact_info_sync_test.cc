@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
                        DisabledForManagedAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   CoreAccountInfo account =
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DisableForChildAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a child account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   AccountInfo account = identity_manager->FindExtendedAccountInfo(

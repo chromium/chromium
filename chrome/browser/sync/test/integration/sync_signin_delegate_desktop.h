@@ -17,7 +17,9 @@ class SyncSigninDelegateDesktop : public SyncSigninDelegate {
   SyncSigninDelegateDesktop(const SyncSigninDelegateDesktop&) = delete;
 
   // SyncSigninDelegate:
-  void SigninFake(Profile* profile, const std::string& username) override;
+  void SigninFake(Profile* profile,
+                  const std::string& username,
+                  signin::ConsentLevel consent_level) override;
   bool SigninUI(Profile* profile,
                 const std::string& username,
                 const std::string& password) override;

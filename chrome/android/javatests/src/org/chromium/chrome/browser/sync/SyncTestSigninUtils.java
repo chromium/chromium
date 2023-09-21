@@ -14,10 +14,19 @@ final class SyncTestSigninUtils {
     private static final SigninTestRule sSigninTestRule = new SigninTestRule();
 
     /**
-     * Sets up the test account and signs in.
+     * Sets up the test account and signs in, but does not enable Sync.
      */
     @CalledByNative
     private static void setUpAccountAndSignInForTesting() {
+        sSigninTestRule.waitForSeeding();
+        sSigninTestRule.addTestAccountThenSignin();
+    }
+
+    /**
+     * Sets up the test account, signs in, and enables Sync-the-feature.
+     */
+    @CalledByNative
+    private static void setUpAccountAndSignInAndEnableSyncForTesting() {
         sSigninTestRule.waitForSeeding();
         sSigninTestRule.addTestAccountThenSigninAndEnableSync();
     }

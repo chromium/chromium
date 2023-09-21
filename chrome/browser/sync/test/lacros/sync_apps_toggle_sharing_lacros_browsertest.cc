@@ -14,6 +14,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_sync_mojo_service.h"
 #include "components/sync/test/fake_sync_user_settings_client_ash.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,18 @@ class SyncAppsToggleSharingLacrosBrowserTest : public SyncTest {
         syncer::kSyncChromeOSAppsToggleSharing);
   }
   ~SyncAppsToggleSharingLacrosBrowserTest() override = default;
+
+  void SetUp() override {
+    // In the "initial" profile (see GetProfileBaseName() below), ChromeOS test
+    // infra automatically signs in a stub user. Make sure Sync uses the same
+    // account.
+    // Note: This can't be done in SetUpCommandLine() because that happens
+    // slightly too late (SyncTest::SetUp() already consumes this param).
+    base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+    cl->AppendSwitchASCII(switches::kSyncUserForTest,
+                          user_manager::kStubUserEmail);
+    SyncTest::SetUp();
+  }
 
   base::FilePath GetProfileBaseName(int index) override {
     // Apps toggle sharing is enabled only for the main profile, so SyncTest

@@ -47,13 +47,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   // Sign the profile in.
   EXPECT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On Chrome OS sync in turned on by default.
-  EXPECT_TRUE(ShouldShowCookieException(GetProfile(0)));
-#else
   // Sign-in alone shouldn't lead to a cookie exception.
   EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
-#endif
 
   // Enable sync.
   EXPECT_TRUE(GetClient(0)->SetupSync());

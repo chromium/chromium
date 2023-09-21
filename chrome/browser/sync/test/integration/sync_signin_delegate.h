@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "components/signin/public/base/consent_level.h"
+
 class Profile;
 
 // Delegate to sign-in test accounts for Sync testing across platforms.
@@ -15,15 +17,15 @@ class SyncSigninDelegate {
  public:
   virtual ~SyncSigninDelegate() = default;
 
-  // TODO(crbug.com/1455032): Clarify whether the methods in this class refer to
-  // signing in, or signing in + turning on Sync. (Maybe they should take a
-  // signin::ConsentLevel param?)
-
   // Signs in a fake account.
-  virtual void SigninFake(Profile* profile, const std::string& username) = 0;
+  virtual void SigninFake(Profile* profile,
+                          const std::string& username,
+                          signin::ConsentLevel consent_level) = 0;
 
   // Signs in a real account via the actual UI, for use in end-to-end tests
   // using real servers.
+  // TODO(crbug.com/1455032): This is currently only supported for
+  // Sync-the-feature - we should also support *just* signing in.
   [[nodiscard]] virtual bool SigninUI(Profile* profile,
                                       const std::string& username,
                                       const std::string& password) = 0;

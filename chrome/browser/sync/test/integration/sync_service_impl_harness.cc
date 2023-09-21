@@ -205,19 +205,20 @@ SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
 
-bool SyncServiceImplHarness::SignInPrimaryAccount() {
-  // TODO(crbug.com/871221): This function should distinguish primary account
-  // (aka sync account) from secondary accounts (content area signin). Let's
-  // migrate tests that exercise transport-only sync to secondary accounts.
+bool SyncServiceImplHarness::SignInPrimaryAccount(
+    signin::ConsentLevel consent_level) {
   DCHECK(!username_.empty());
 
   switch (signin_type_) {
     case SigninType::UI_SIGNIN: {
+      // TODO(crbug.com/1455032): UI signin is currently only supported with
+      // ConsentLevel::kSync.
+      CHECK_EQ(consent_level, signin::ConsentLevel::kSync);
       return signin_delegate_->SigninUI(profile_, username_, password_);
     }
 
     case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_);
+      signin_delegate_->SigninFake(profile_, username_, consent_level);
       return true;
     }
   }
@@ -296,7 +297,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  if (!SignInPrimaryAccount()) {
+  if (!SignInPrimaryAccount(signin::ConsentLevel::kSync)) {
     return false;
   }
 

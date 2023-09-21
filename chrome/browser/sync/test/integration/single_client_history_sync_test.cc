@@ -938,7 +938,8 @@ class SingleClientHistoryNonGmailSyncTest : public SingleClientHistorySyncTest {
   }
 
   void SignInAndSetAccountInfo(bool is_managed) {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    ASSERT_TRUE(
+        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(GetProfile(0));

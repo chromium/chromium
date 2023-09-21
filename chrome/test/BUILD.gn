@@ -5298,6 +5298,7 @@ if (is_chromeos_lacros) {
       "//chromeos/startup",
       "//components/proxy_config:proxy_config",
       "//components/sync:test_support",
+      "//components/user_manager",
       "//ui/ozone",
       "//ui/platform_window",
     ]
