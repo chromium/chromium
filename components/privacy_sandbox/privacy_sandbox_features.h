@@ -83,6 +83,11 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4SuppressDialogForExternalAppLaunches;
 
+// When true, attempts to close all open dialogs when one dialog's flow has
+// been completed. Included as a kill switch.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool> kPrivacySandboxSettings4CloseAllPrompts;
+
 // Enables the third release of the Privacy Sandbox settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);

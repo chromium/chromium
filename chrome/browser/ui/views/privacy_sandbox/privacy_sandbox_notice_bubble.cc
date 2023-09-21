@@ -34,8 +34,6 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
     privacy_sandbox_service_ =
         PrivacySandboxServiceFactory::GetForProfile(browser_->profile());
 
-    if (privacy_sandbox_service_)
-      privacy_sandbox_service_->PromptOpenedForBrowser(browser_);
     NotifyServiceAboutPromptAction(PromptAction::kNoticeShown);
   }
 
@@ -150,4 +148,9 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
   widget->ShowInactive();
   widget->GetRootView()->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
+
+  if (auto* privacy_sandbox_service =
+          PrivacySandboxServiceFactory::GetForProfile(browser->profile())) {
+    privacy_sandbox_service->PromptOpenedForBrowser(browser, widget);
+  }
 }

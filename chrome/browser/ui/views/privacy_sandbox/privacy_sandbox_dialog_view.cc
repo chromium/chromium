@@ -73,10 +73,6 @@ int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
   explicit PrivacySandboxDialogDelegate(Browser* browser) : browser_(browser) {
-    if (auto* privacy_sandbox_service =
-            PrivacySandboxServiceFactory::GetForProfile(browser->profile())) {
-      privacy_sandbox_service->PromptOpenedForBrowser(browser);
-    }
     SetCloseCallback(base::BindOnce(&PrivacySandboxDialogDelegate::OnClose,
                                     base::Unretained(this)));
   }
@@ -122,8 +118,13 @@ void ShowPrivacySandboxDialog(Browser* browser,
 
   delegate->SetContentsView(
       std::make_unique<PrivacySandboxDialogView>(browser, prompt_type));
-  constrained_window::CreateBrowserModalDialogViews(
+  auto* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(delegate), browser->window()->GetNativeWindow());
+
+  if (auto* privacy_sandbox_service =
+          PrivacySandboxServiceFactory::GetForProfile(browser->profile())) {
+    privacy_sandbox_service->PromptOpenedForBrowser(browser, widget);
+  }
 }
 
 PrivacySandboxDialogView::PrivacySandboxDialogView(

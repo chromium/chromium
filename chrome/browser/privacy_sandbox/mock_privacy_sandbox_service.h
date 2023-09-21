@@ -14,6 +14,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace views {
+class Widget;
+}
+
 class KeyedService;
 
 class MockPrivacySandboxService : public PrivacySandboxService {
@@ -25,9 +29,14 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               PromptActionOccurred,
               (PrivacySandboxService::PromptAction),
               (override));
-  MOCK_METHOD(void, PromptOpenedForBrowser, (Browser*), (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              PromptOpenedForBrowser,
+              (Browser*, views::Widget*),
+              (override));
   MOCK_METHOD(void, PromptClosedForBrowser, (Browser*), (override));
   MOCK_METHOD(bool, IsPromptOpenForBrowser, (Browser*), (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
   MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
