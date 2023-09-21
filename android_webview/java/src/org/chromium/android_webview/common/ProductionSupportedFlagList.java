@@ -152,6 +152,7 @@ public final class ProductionSupportedFlagList {
                             + "security checks."),
             Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                     "Enables brotli compression support in WebView."),
+            Flag.baseFeature(NetFeatures.PRIORITY_HEADER, "Enables the HTTP priority header."),
             Flag.baseFeature(NetFeatures.ZSTD_CONTENT_ENCODING,
                     "Enables zstd content-encoding support in the browser."),
             Flag.baseFeature(

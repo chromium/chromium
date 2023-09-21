@@ -219,6 +219,10 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // of the session due to complications related to IP-pooling.
   std::set<std::string> dns_aliases_;
 
+  // Keep track of the priority of the request for setting the priority header
+  // right before sending the request.
+  RequestPriority priority_ = RequestPriority::DEFAULT_PRIORITY;
+
   base::WeakPtrFactory<SpdyHttpStream> weak_factory_{this};
 };
 

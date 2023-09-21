@@ -264,12 +264,17 @@ class SpdySessionPoolPeer {
 
 class SpdyTestUtil {
  public:
-  SpdyTestUtil();
+  explicit SpdyTestUtil(bool use_priority_header = false);
   ~SpdyTestUtil();
 
   // Add the appropriate headers to put |url| into |block|.
   void AddUrlToHeaderBlock(base::StringPiece url,
                            spdy::Http2HeaderBlock* headers) const;
+
+  // Add the appropriate priority header if PriorityHeaders is enabled.
+  void AddPriorityToHeaderBlock(RequestPriority request_priority,
+                                bool priority_incremental,
+                                spdy::Http2HeaderBlock* headers) const;
 
   static spdy::Http2HeaderBlock ConstructGetHeaderBlock(base::StringPiece url);
   static spdy::Http2HeaderBlock ConstructGetHeaderBlockForProxy(
@@ -333,18 +338,24 @@ class SpdyTestUtil {
   // compression.
   // |extra_headers| are the extra header-value pairs, which typically
   // will vary the most between calls.
-  spdy::SpdySerializedFrame ConstructSpdyGet(const char* const url,
-                                             spdy::SpdyStreamId stream_id,
-                                             RequestPriority request_priority);
+  spdy::SpdySerializedFrame ConstructSpdyGet(
+      const char* const url,
+      spdy::SpdyStreamId stream_id,
+      RequestPriority request_priority,
+      bool priority_incremental = kDefaultPriorityIncremental,
+      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
 
   // Constructs a standard SPDY GET HEADERS frame with header compression.
   // |extra_headers| are the extra header-value pairs, which typically
   // will vary the most between calls.  If |direct| is false, the
   // the full url will be used instead of simply the path.
-  spdy::SpdySerializedFrame ConstructSpdyGet(const char* const extra_headers[],
-                                             int extra_header_count,
-                                             int stream_id,
-                                             RequestPriority request_priority);
+  spdy::SpdySerializedFrame ConstructSpdyGet(
+      const char* const extra_headers[],
+      int extra_header_count,
+      int stream_id,
+      RequestPriority request_priority,
+      bool priority_incremental = kDefaultPriorityIncremental,
+      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
 
   // Constructs a SPDY HEADERS frame for a CONNECT request.
   spdy::SpdySerializedFrame ConstructSpdyConnect(
@@ -368,10 +379,13 @@ class SpdyTestUtil {
       bool fin);
 
   // Construct a HEADERS frame carrying exactly the given headers and priority.
-  spdy::SpdySerializedFrame ConstructSpdyHeaders(int stream_id,
-                                                 spdy::Http2HeaderBlock headers,
-                                                 RequestPriority priority,
-                                                 bool fin);
+  spdy::SpdySerializedFrame ConstructSpdyHeaders(
+      int stream_id,
+      spdy::Http2HeaderBlock headers,
+      RequestPriority priority,
+      bool fin,
+      bool priority_incremental = kDefaultPriorityIncremental,
+      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
 
   // Construct a reply HEADERS frame carrying exactly the given headers and the
   // default priority.
@@ -400,19 +414,23 @@ class SpdyTestUtil {
   // Constructs a standard SPDY POST HEADERS frame.
   // |extra_headers| are the extra header-value pairs, which typically
   // will vary the most between calls.
-  spdy::SpdySerializedFrame ConstructSpdyPost(const char* url,
-                                              spdy::SpdyStreamId stream_id,
-                                              int64_t content_length,
-                                              RequestPriority priority,
-                                              const char* const extra_headers[],
-                                              int extra_header_count);
+  spdy::SpdySerializedFrame ConstructSpdyPost(
+      const char* url,
+      spdy::SpdyStreamId stream_id,
+      int64_t content_length,
+      RequestPriority request_priority,
+      const char* const extra_headers[],
+      int extra_header_count,
+      bool priority_incremental = kDefaultPriorityIncremental);
 
   // Constructs a chunked transfer SPDY POST HEADERS frame.
   // |extra_headers| are the extra header-value pairs, which typically
   // will vary the most between calls.
   spdy::SpdySerializedFrame ConstructChunkedSpdyPost(
       const char* const extra_headers[],
-      int extra_header_count);
+      int extra_header_count,
+      RequestPriority request_priority = RequestPriority::DEFAULT_PRIORITY,
+      bool priority_incremental = kDefaultPriorityIncremental);
 
   // Constructs a standard SPDY HEADERS frame to match the SPDY POST.
   // |extra_headers| are the extra header-value pairs, which typically
@@ -467,6 +485,9 @@ class SpdyTestUtil {
   spdy::SpdyFramer response_spdy_framer_;
 
   GURL default_url_;
+
+  // Enable support for addint the "priority" header to requests.
+  bool use_priority_header_;
 
   // Track a FIFO list of the stream_id of all created requests by priority.
   std::map<int, std::vector<int>> priority_to_stream_id_list_;

@@ -10,6 +10,7 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -17,6 +18,10 @@ namespace net {
 class HttpResponseInfo;
 struct HttpRequestInfo;
 class HttpRequestHeaders;
+
+// HTTP Extensible Priorities header (in lowercase HTTP2/3).
+// RFC 9218.
+NET_EXPORT extern const char* const kHttp2PriorityHeader;
 
 // Convert a spdy::Http2HeaderBlock into an HttpResponseInfo with some checks.
 // `headers` input parameter with the spdy::Http2HeaderBlock.
@@ -30,6 +35,7 @@ NET_EXPORT int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
 // Create a spdy::Http2HeaderBlock from HttpRequestInfo and HttpRequestHeaders.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequest(
     const HttpRequestInfo& info,
+    absl::optional<RequestPriority> priority,
     const HttpRequestHeaders& request_headers,
     spdy::Http2HeaderBlock* headers);
 

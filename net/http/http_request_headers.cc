@@ -64,6 +64,7 @@ const char HttpRequestHeaders::kIfRange[] = "If-Range";
 const char HttpRequestHeaders::kIfUnmodifiedSince[] = "If-Unmodified-Since";
 const char HttpRequestHeaders::kOrigin[] = "Origin";
 const char HttpRequestHeaders::kPragma[] = "Pragma";
+const char HttpRequestHeaders::kPriority[] = "Priority";
 const char HttpRequestHeaders::kProxyAuthorization[] = "Proxy-Authorization";
 const char HttpRequestHeaders::kProxyConnection[] = "Proxy-Connection";
 const char HttpRequestHeaders::kRange[] = "Range";

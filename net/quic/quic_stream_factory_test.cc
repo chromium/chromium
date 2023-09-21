@@ -130,11 +130,14 @@ const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 // and enable_connection_racting.
 struct TestParams {
   quic::ParsedQuicVersion version;
+  bool priority_header_enabled;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return ParsedQuicVersionToString(p.version);
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       p.priority_header_enabled ? "PriorityHeaderEnabled"
+                                                 : "PriorityHeaderDisabled"});
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -142,7 +145,8 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version});
+    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version, false});
   }
   return params;
 }
@@ -266,14 +270,16 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       context_.clock(),
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
-                      true),
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/true),
         server_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(
                           context_.random_generator()),
                       context_.clock(),
                       kDefaultServerHostName,
                       quic::Perspective::IS_SERVER,
-                      false),
+                      /*client_priority_uses_incremental=*/false,
+                      /*use_priority_header=*/false),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
         failed_on_default_network_callback_(base::BindRepeating(
@@ -976,7 +982,16 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
                               public ::testing::TestWithParam<TestParams> {
  protected:
-  QuicStreamFactoryTest() : QuicStreamFactoryTestBase(GetParam().version) {}
+  QuicStreamFactoryTest() : QuicStreamFactoryTestBase(GetParam().version) {
+    if (GetParam().priority_header_enabled) {
+      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+    } else {
+      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -15035,7 +15050,16 @@ class QuicStreamFactoryEchTest : public QuicStreamFactoryTestBase,
       : QuicStreamFactoryTestBase(GetParam().version,
                                   /*enabled_features=*/
                                   {features::kEncryptedClientHello,
-                                   features::kEncryptedClientHelloQuic}) {}
+                                   features::kEncryptedClientHelloQuic}) {
+    if (GetParam().priority_header_enabled) {
+      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+    } else {
+      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

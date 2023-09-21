@@ -13,6 +13,7 @@
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_utils.h"
+#include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream.h"
@@ -97,14 +98,16 @@ QuicTestPacketMaker::QuicTestPacketMaker(quic::ParsedQuicVersion version,
                                          const quic::QuicClock* clock,
                                          const std::string& host,
                                          quic::Perspective perspective,
-                                         bool client_priority_uses_incremental)
+                                         bool client_priority_uses_incremental,
+                                         bool use_priority_header)
     : version_(version),
       connection_id_(connection_id),
       clock_(clock),
       host_(host),
       qpack_encoder_(&decoder_stream_error_delegate_),
       perspective_(perspective),
-      client_priority_uses_incremental_(client_priority_uses_incremental) {
+      client_priority_uses_incremental_(client_priority_uses_incremental),
+      use_priority_header_(use_priority_header) {
   DCHECK(!(perspective_ == quic::Perspective::IS_SERVER &&
            client_priority_uses_incremental_));
 
@@ -764,6 +767,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
     AddQuicStreamFrame(2, false, priority_data);
   }
 
+  AddPriorityHeader(spdy_priority, &headers);
   std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                         spdy_headers_frame_length);
   for (const auto& data_write : data_writes) {
@@ -795,6 +799,7 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
     }
   }
 
+  AddPriorityHeader(spdy_priority, &headers);
   std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                         spdy_headers_frame_length);
   AddQuicStreamFrame(stream_id, fin, data);
@@ -830,6 +835,7 @@ QuicTestPacketMaker::MakeRetransmissionAndRequestHeadersPacket(
     AddQuicStreamFrame(2, false, priority_data);
   }
 
+  AddPriorityHeader(spdy_priority, &headers);
   std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                         spdy_headers_frame_length);
   AddQuicStreamFrame(stream_id, fin, data);
@@ -856,6 +862,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
     AddQuicStreamFrame(2, false, priority_data);
   }
 
+  AddPriorityHeader(spdy_priority, &headers);
   std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                         spdy_headers_frame_length);
   AddQuicStreamFrame(stream_id, fin, data);
@@ -1418,6 +1425,20 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
   }
 
   return priority_data;
+}
+
+void QuicTestPacketMaker::AddPriorityHeader(spdy::SpdyPriority spdy_priority,
+                                            spdy::Http2HeaderBlock* headers) {
+  if (use_priority_header_ &&
+      base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
+    quic::HttpStreamPriority priority{
+        spdy_priority, quic::HttpStreamPriority::kDefaultIncremental};
+    if (client_priority_uses_incremental_) {
+      priority.incremental = kDefaultPriorityIncremental;
+    }
+    (*headers)[net::kHttp2PriorityHeader] =
+        quic::SerializePriorityFieldValue(priority);
+  }
 }
 
 std::string QuicTestPacketMaker::GenerateHttp3GreaseData() {

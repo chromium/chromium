@@ -8,12 +8,35 @@
 
 #include <limits>
 
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/http/http_request_info.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
+
+class SpdyHttpUtilsTestParam : public testing::TestWithParam<bool> {
+ public:
+  SpdyHttpUtilsTestParam() {
+    if (PriorityHeaderEnabled()) {
+      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+    } else {
+      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+    }
+  }
+
+ protected:
+  bool PriorityHeaderEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SpdyHttpUtilsTestParam,
+                         testing::Values(true, false));
 
 TEST(SpdyHttpUtilsTest, ConvertRequestPriorityToSpdy3Priority) {
   EXPECT_EQ(0, ConvertRequestPriorityToSpdyPriority(HIGHEST));
@@ -38,19 +61,47 @@ TEST(SpdyHttpUtilsTest, ConvertSpdy3PriorityToRequestPriority) {
   }
 }
 
-TEST(SpdyHttpUtilsTest, CreateSpdyHeadersFromHttpRequestHTTP2) {
+TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersFromHttpRequestHTTP2) {
   GURL url("https://www.google.com/index.html");
   HttpRequestInfo request;
   request.method = "GET";
   request.url = url;
+  request.priority_incremental = true;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
   spdy::Http2HeaderBlock headers;
-  CreateSpdyHeadersFromHttpRequest(request, request.extra_headers, &headers);
+  CreateSpdyHeadersFromHttpRequest(request, RequestPriority::HIGHEST,
+                                   request.extra_headers, &headers);
   EXPECT_EQ("GET", headers[":method"]);
   EXPECT_EQ("https", headers[":scheme"]);
   EXPECT_EQ("www.google.com", headers[":authority"]);
   EXPECT_EQ("/index.html", headers[":path"]);
-  EXPECT_TRUE(headers.end() == headers.find(":version"));
+  if (base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
+    EXPECT_EQ("u=0, i", headers[net::kHttp2PriorityHeader]);
+  } else {
+    EXPECT_EQ(headers.end(), headers.find(net::kHttp2PriorityHeader));
+  }
+  EXPECT_EQ(headers.end(), headers.find(":version"));
+  EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
+}
+
+TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithExistingPriority) {
+  GURL url("https://www.google.com/index.html");
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = url;
+  request.priority_incremental = true;
+  request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
+  request.extra_headers.SetHeader(net::kHttp2PriorityHeader,
+                                  "explicit-priority");
+  spdy::Http2HeaderBlock headers;
+  CreateSpdyHeadersFromHttpRequest(request, RequestPriority::HIGHEST,
+                                   request.extra_headers, &headers);
+  EXPECT_EQ("GET", headers[":method"]);
+  EXPECT_EQ("https", headers[":scheme"]);
+  EXPECT_EQ("www.google.com", headers[":authority"]);
+  EXPECT_EQ("/index.html", headers[":path"]);
+  EXPECT_EQ("explicit-priority", headers[net::kHttp2PriorityHeader]);
+  EXPECT_EQ(headers.end(), headers.find(":version"));
   EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
 }
 
@@ -61,7 +112,8 @@ TEST(SpdyHttpUtilsTest, CreateSpdyHeadersFromHttpRequestConnectHTTP2) {
   request.url = url;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
   spdy::Http2HeaderBlock headers;
-  CreateSpdyHeadersFromHttpRequest(request, request.extra_headers, &headers);
+  CreateSpdyHeadersFromHttpRequest(request, RequestPriority::DEFAULT_PRIORITY,
+                                   request.extra_headers, &headers);
   EXPECT_EQ("CONNECT", headers[":method"]);
   EXPECT_TRUE(headers.end() == headers.find(":scheme"));
   EXPECT_EQ("www.google.com:443", headers[":authority"]);

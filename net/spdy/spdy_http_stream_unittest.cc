@@ -13,10 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
 #include "crypto/signature_creator.h"
 #include "net/base/chunked_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/test_completion_callback.h"
@@ -26,6 +28,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_http_utils.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_http_utils.h"
@@ -124,10 +127,12 @@ class CancelStreamCallback : public TestCompletionCallbackBase {
 
 }  // namespace
 
-class SpdyHttpStreamTest : public TestWithTaskEnvironment {
+class SpdyHttpStreamTest : public testing::TestWithParam<bool>,
+                           public WithTaskEnvironment {
  public:
   SpdyHttpStreamTest()
-      : url_(kDefaultUrl),
+      : spdy_util_(/*use_priority_header=*/true),
+        url_(kDefaultUrl),
         host_port_pair_(HostPortPair::FromURL(url_)),
         key_(host_port_pair_,
              ProxyServer::Direct(),
@@ -137,6 +142,11 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow),
         ssl_(SYNCHRONOUS, OK) {
+    if (PriorityHeaderEnabled()) {
+      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+    } else {
+      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+    }
     session_deps_.net_log = NetLog::Get();
   }
 
@@ -164,6 +174,8 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
     session_ = CreateSpdySession(http_session_.get(), key_, NetLogWithSource());
   }
 
+  bool PriorityHeaderEnabled() const { return GetParam(); }
+
   SpdyTestUtil spdy_util_;
   SpdySessionDependencies session_deps_;
   const GURL url_;
@@ -175,9 +187,12 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
 
  private:
   SSLSocketDataProvider ssl_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SpdyHttpStreamTest, SendRequest) {
+INSTANTIATE_TEST_SUITE_P(All, SpdyHttpStreamTest, testing::Values(true, false));
+
+TEST_P(SpdyHttpStreamTest, SendRequest) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   MockWrite writes[] = {
@@ -238,7 +253,7 @@ TEST_F(SpdyHttpStreamTest, SendRequest) {
             http_stream->GetTotalReceivedBytes());
 }
 
-TEST_F(SpdyHttpStreamTest, RequestInfoDestroyedBeforeRead) {
+TEST_P(SpdyHttpStreamTest, RequestInfoDestroyedBeforeRead) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   MockWrite writes[] = {CreateMockWrite(req, 0)};
@@ -300,7 +315,7 @@ TEST_F(SpdyHttpStreamTest, RequestInfoDestroyedBeforeRead) {
             http_stream->GetTotalReceivedBytes());
 }
 
-TEST_F(SpdyHttpStreamTest, LoadTimingTwoRequests) {
+TEST_P(SpdyHttpStreamTest, LoadTimingTwoRequests) {
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   spdy::SpdySerializedFrame req2(
@@ -409,7 +424,7 @@ TEST_F(SpdyHttpStreamTest, LoadTimingTwoRequests) {
             http_stream2->GetTotalReceivedBytes());
 }
 
-TEST_F(SpdyHttpStreamTest, SendChunkedPost) {
+TEST_P(SpdyHttpStreamTest, SendChunkedPost) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame body(
@@ -472,7 +487,7 @@ TEST_F(SpdyHttpStreamTest, SendChunkedPost) {
 }
 
 // This unittest tests the request callback is properly called and handled.
-TEST_F(SpdyHttpStreamTest, SendChunkedPostLastEmpty) {
+TEST_P(SpdyHttpStreamTest, SendChunkedPostLastEmpty) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk(
@@ -529,7 +544,7 @@ TEST_F(SpdyHttpStreamTest, SendChunkedPostLastEmpty) {
   EXPECT_FALSE(HasSpdySession(http_session_->spdy_session_pool(), key_));
 }
 
-TEST_F(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
+TEST_P(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame body(
@@ -600,7 +615,7 @@ TEST_F(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
 
 // Test to ensure the SpdyStream state machine does not get confused when a
 // chunk becomes available while a write is pending.
-TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPost) {
+TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPost) {
   const char kUploadData1[] = "12345678";
   const int kUploadData1Size = std::size(kUploadData1) - 1;
   spdy::SpdySerializedFrame req(
@@ -708,7 +723,7 @@ TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPost) {
 
 // Test that the SpdyStream state machine can handle sending a final empty data
 // frame when uploading a chunked data stream.
-TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPostWithEmptyFinalDataFrame) {
+TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPostWithEmptyFinalDataFrame) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk1(spdy_util_.ConstructSpdyDataFrame(1, false));
@@ -802,7 +817,7 @@ TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPostWithEmptyFinalDataFrame) {
 
 // Test that the SpdyStream state machine handles a chunked upload with no
 // payload. Unclear if this is a case worth supporting.
-TEST_F(SpdyHttpStreamTest, ChunkedPostWithEmptyPayload) {
+TEST_P(SpdyHttpStreamTest, ChunkedPostWithEmptyPayload) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk(
@@ -874,7 +889,7 @@ TEST_F(SpdyHttpStreamTest, ChunkedPostWithEmptyPayload) {
 }
 
 // Test case for https://crbug.com/50058.
-TEST_F(SpdyHttpStreamTest, SpdyURLTest) {
+TEST_P(SpdyHttpStreamTest, SpdyURLTest) {
   const char* const full_url = "https://www.example.org/foo?query=what#anchor";
   const char* const base_url = "https://www.example.org/foo?query=what";
   spdy::SpdySerializedFrame req(
@@ -925,7 +940,7 @@ TEST_F(SpdyHttpStreamTest, SpdyURLTest) {
 
 // Test the receipt of a WINDOW_UPDATE frame while waiting for a chunk to be
 // made available is handled correctly.
-TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPostWithWindowUpdate) {
+TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPostWithWindowUpdate) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk1(spdy_util_.ConstructSpdyDataFrame(1, true));
@@ -1028,7 +1043,7 @@ TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPostWithWindowUpdate) {
   ASSERT_EQ(200, response.headers->response_code());
 }
 
-TEST_F(SpdyHttpStreamTest, DataReadErrorSynchronous) {
+TEST_P(SpdyHttpStreamTest, DataReadErrorSynchronous) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
 
@@ -1085,7 +1100,7 @@ TEST_F(SpdyHttpStreamTest, DataReadErrorSynchronous) {
   EXPECT_FALSE(HasSpdySession(http_session_->spdy_session_pool(), key_));
 }
 
-TEST_F(SpdyHttpStreamTest, DataReadErrorAsynchronous) {
+TEST_P(SpdyHttpStreamTest, DataReadErrorAsynchronous) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
 
@@ -1144,7 +1159,7 @@ TEST_F(SpdyHttpStreamTest, DataReadErrorAsynchronous) {
 }
 
 // Regression test for https://crbug.com/622447.
-TEST_F(SpdyHttpStreamTest, RequestCallbackCancelsStream) {
+TEST_P(SpdyHttpStreamTest, RequestCallbackCancelsStream) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk(
@@ -1198,7 +1213,7 @@ TEST_F(SpdyHttpStreamTest, RequestCallbackCancelsStream) {
 // Regression test for https://crbug.com/1082683.
 // SendRequest() callback should be called as soon as sending is done,
 // even when sending greased frame type is allowed.
-TEST_F(SpdyHttpStreamTest, DownloadWithEmptyDataFrame) {
+TEST_P(SpdyHttpStreamTest, DownloadWithEmptyDataFrame) {
   session_deps_.http2_end_stream_with_data_frame = true;
 
   // HEADERS frame without END_STREAM

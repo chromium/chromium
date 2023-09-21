@@ -95,6 +95,7 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kIfUnmodifiedSince[];
   static const char kOrigin[];
   static const char kPragma[];
+  static const char kPriority[];
   static const char kProxyAuthorization[];
   static const char kProxyConnection[];
   static const char kRange[];

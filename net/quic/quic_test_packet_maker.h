@@ -39,7 +39,8 @@ class QuicTestPacketMaker {
                       const quic::QuicClock* clock,
                       const std::string& host,
                       quic::Perspective perspective,
-                      bool client_priority_uses_incremental = false);
+                      bool client_priority_uses_incremental = false,
+                      bool use_priority_header = false);
 
   QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
   QuicTestPacketMaker& operator=(const QuicTestPacketMaker&) = delete;
@@ -468,6 +469,8 @@ class QuicTestPacketMaker {
   void AddQuicCryptoFrame(quic::EncryptionLevel level,
                           quic::QuicStreamOffset offset,
                           quic::QuicPacketLength data_length);
+  void AddPriorityHeader(spdy::SpdyPriority spdy_priority,
+                         spdy::Http2HeaderBlock* headers);
 
   // Build packet using |header_|, |frames_|, and |data_producer_|,
   // and clear |frames_| and |data_producer_| afterwards.
@@ -515,6 +518,9 @@ class QuicTestPacketMaker {
 
   // The value of incremental flag in generated priority headers.
   bool client_priority_uses_incremental_;
+
+  // Add the priority header to outbound requests
+  bool use_priority_header_;
 
   // Save a copy of stream frame data that QuicStreamFrame objects can refer to.
   std::vector<std::unique_ptr<std::string>> saved_stream_data_;
