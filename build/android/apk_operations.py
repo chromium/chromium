@@ -364,6 +364,38 @@ def _RunGdb(device, package_name, debug_process_name, pid, output_directory,
   os.execv(gdb_script_path, cmd)
 
 
+def _RunLldb(device, package_name, debug_process_name, pid, output_directory,
+             target_cpu, port, verbose):
+  if not pid:
+    debug_process_name = _NormalizeProcessName(debug_process_name, package_name)
+    pid = device.GetApplicationPids(debug_process_name, at_most_one=True)
+  if not pid:
+    # Attaching lldb makes the app run so slow that it takes *minutes* to start
+    # up (as of 2018). Better to just fail than to start & attach.
+    raise Exception('App not running.')
+
+  lldb_script_path = os.path.dirname(__file__) + '/connect_lldb.sh'
+  cmd = [
+      lldb_script_path,
+      '--package-name=%s' % package_name,
+      '--output-directory=%s' % output_directory,
+      '--adb=%s' % adb_wrapper.AdbWrapper.GetAdbPath(),
+      '--device=%s' % device.serial,
+      '--pid=%s' % pid,
+      '--port=%d' % port,
+  ]
+  # Enable verbose output of connect_lldb.sh if it's set for this script.
+  if verbose:
+    cmd.append('--verbose')
+  if target_cpu:
+    cmd.append('--target-arch=%s' % _TargetCpuToTargetArch(target_cpu))
+  logging.warning('Running: %s', ' '.join(shlex.quote(x) for x in cmd))
+  print(
+      _Colorize('All subsequent output is from connect_lldb.sh script.',
+                colorama.Fore.YELLOW))
+  os.execv(lldb_script_path, cmd)
+
+
 def _PrintPerDeviceOutput(devices, results, single_line=False):
   for d, result in zip(devices, results):
     if not single_line and d is not devices[0]:
@@ -1604,6 +1636,42 @@ If no apk process is currently running, sends a launch intent.
                        help='Use the given port for the GDB connection')
 
 
+class _LldbCommand(_Command):
+  name = 'lldb'
+  description = 'Runs //build/android/connect_lldb.sh with apk-specific args.'
+  long_description = description + """
+
+To attach to a process other than the APK's main process, use --pid=1234.
+To list all PIDs, use the "ps" command.
+
+If no apk process is currently running, sends a launch intent.
+"""
+  needs_package_name = True
+  needs_output_directory = True
+  calls_exec = True
+  supports_multiple_devices = False
+
+  def Run(self):
+    _RunLldb(self.devices[0], self.args.package_name,
+             self.args.debug_process_name, self.args.pid,
+             self.args.output_directory, self.args.target_cpu, self.args.port,
+             bool(self.args.verbose_count))
+
+  def _RegisterExtraArgs(self, group):
+    pid_group = group.add_mutually_exclusive_group()
+    pid_group.add_argument('--debug-process-name',
+                           help='Name of the process to attach to. '
+                           'E.g. "privileged_process0", or "foo.bar:baz"')
+    pid_group.add_argument('--pid',
+                           help='The process ID to attach to. Defaults to '
+                           'the main process for the package.')
+    # Same default port that ndk-gdb.py uses.
+    group.add_argument('--port',
+                       type=int,
+                       default=5039,
+                       help='Use the given port for the LLDB connection')
+
+
 class _LogcatCommand(_Command):
   name = 'logcat'
   description = 'Runs "adb logcat" with filters relevant the current APK.'
@@ -2028,6 +2096,7 @@ _COMMANDS = [
     _ClearDataCommand,
     _ArgvCommand,
     _GdbCommand,
+    _LldbCommand,
     _LogcatCommand,
     _PsCommand,
     _DiskUsageCommand,
