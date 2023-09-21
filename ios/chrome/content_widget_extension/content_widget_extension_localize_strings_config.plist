@@ -21,6 +21,14 @@
 				</dict>
 			</array>
 		</dict>
+		<dict>
+			<key>name</key>
+			<string>Localizable.strings</string>
+			<key>strings</key>
+			<array>
+				<string>IDS_IOS_CONTENT_WIDGET_LABEL</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

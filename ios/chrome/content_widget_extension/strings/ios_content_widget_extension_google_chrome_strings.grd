@@ -193,6 +193,9 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_CONTENT_WIDGET_TITLE" desc="Title of the widget.">
         Chrome - Suggested Sites
       </message>
+      <message name="IDS_IOS_CONTENT_WIDGET_LABEL" desc="Label of the widget. This is a message to indicate the deprecation of the extension.">
+          To keep using this widget, at the bottom of the screen, tap Edit, then tap +. Go to Chrome and select Chrome Shortcuts.
+      </message>
     </messages>
   </release>
 </grit>
