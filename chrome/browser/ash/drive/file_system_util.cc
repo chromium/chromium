@@ -175,6 +175,15 @@ bool IsOobeDrivePinningEnabled() {
   return IsOobeDrivePinningEnabled(ProfileManager::GetActiveUserProfile());
 }
 
+// To ensure that the DrivePinningScreen is always available to the wizard,
+// regardless of the current user profile, check this to add the
+// DrivePinningScreen to the screen_manager when initializing the
+// wizardController.
+bool IsOobeDrivePinningScreenEnabled() {
+  return base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
+         ash::features::IsOobeChoobeEnabled();
+}
+
 std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
   switch (status) {
 #define PRINT(s)               \
