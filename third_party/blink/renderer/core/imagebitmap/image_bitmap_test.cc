@@ -329,8 +329,8 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
 // ImageBitmap from that does not crash. crbug.com/780358
 TEST_F(ImageBitmapTest,
        MAYBE_CreateImageBitmapFromTooBigImageDataDoesNotCrash) {
-  ImageData* image_data =
-      ImageData::CreateForTest(gfx::Size(v8::TypedArray::kMaxLength / 16, 1));
+  constexpr int kWidth = 1 << 28;  // 256M pixels width, resulting in 1GB data.
+  ImageData* image_data = ImageData::CreateForTest(gfx::Size(kWidth, 1));
   DCHECK(image_data);
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   options->setColorSpaceConversion("default");
