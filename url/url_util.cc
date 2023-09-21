@@ -934,4 +934,16 @@ bool CompareSchemeComponent(const char16_t* spec,
   return DoCompareSchemeComponent(spec, component, compare_to);
 }
 
+bool HasInvalidURLEscapeSequences(std::string_view input) {
+  for (size_t i = 0; i < input.size(); i++) {
+    if (input[i] == '%') {
+      unsigned char ch;
+      if (!DecodeEscaped(input.data(), &i, input.size(), &ch)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace url

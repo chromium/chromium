@@ -312,6 +312,13 @@ PLATFORM_EXPORT String DecodeURLEscapeSequences(const String&,
 
 PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const String&);
 
+// Checks an arbitrary string for invalid escape sequences.
+//
+// A valid percent-encoding is '%' followed by exactly two hex-digits. This
+// function returns true if an occurrence of '%' is found and followed by
+// anything other than two hex-digits.
+PLATFORM_EXPORT bool HasInvalidURLEscapeSequences(const String&);
+
 }  // namespace blink
 
 namespace WTF {

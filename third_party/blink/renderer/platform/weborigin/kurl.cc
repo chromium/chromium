@@ -815,6 +815,11 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
   return escaped;
 }
 
+bool HasInvalidURLEscapeSequences(const String& string) {
+  StringUTF8Adaptor string_utf8(string);
+  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringPiece());
+}
+
 bool KURL::IsHierarchical() const {
   if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;

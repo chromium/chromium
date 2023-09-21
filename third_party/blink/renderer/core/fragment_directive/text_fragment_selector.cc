@@ -61,6 +61,10 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
 
   DCHECK_EQ(directive.find('&'), kNotFound);
 
+  if (HasInvalidURLEscapeSequences(directive)) {
+    return kInvalidSelector;
+  }
+
   Vector<String> terms;
   directive.Split(",", true, terms);
 

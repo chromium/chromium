@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -315,6 +316,14 @@ void EncodeURIComponent(const char* input, int length, CanonOutput* output);
 // (if it is still this function's only consumer).
 COMPONENT_EXPORT(URL)
 bool IsURIComponentChar(char c);
+
+// Checks an arbitrary string for invalid escape sequences.
+//
+// A valid percent-encoding is '%' followed by exactly two hex-digits. This
+// function returns true if an occurrence of '%' is found and followed by
+// anything other than two hex-digits.
+COMPONENT_EXPORT(URL)
+bool HasInvalidURLEscapeSequences(std::string_view input);
 
 }  // namespace url
 
