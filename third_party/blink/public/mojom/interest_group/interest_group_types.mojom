@@ -188,9 +188,9 @@ struct DirectFromSellerSignalsSubresource {
 // https (uuid-in-package isn't supported since it doesn't support CORS), and
 // each origin must match `seller` in AuctionAdConfig. The response must be
 // served with the legacy headers `X-FLEDGE-Auction-Only: true` and
-// `X-Allow-Fledge: true` or the new header `Ad-Auction-Allowed: true`. The
-// request is made with CORS, using the caller of runAdAuction()'s frame as the
-// initiator.
+// `X-Allow-Fledge: true` or the new headers `Ad-Auction-Only: true` and
+// `Ad-Auction-Allowed: true`. The request is made with CORS, using the caller
+// of runAdAuction()'s frame as the initiator.
 //
 // The worklet process will parse the signals object and deliver it to worklet
 // functions (generateBid(), scoreAd(), reportWin(), reportResult()).

@@ -450,7 +450,7 @@ class NetworkResponder {
                             {{":status", "200"},
                              {"content-type", response.content_type},
                              {"ad-auction-allowed", "true"},
-                             {"x-fledge-auction-only", "true"},
+                             {"ad-auction-only", "true"},
                              {"access-control-allow-credentials", "true"},
                              {"access-control-allow-origin", allow_origin}},
                             response.payload);
