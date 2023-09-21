@@ -183,7 +183,7 @@ bool ShouldPreserveLastDefaultMatch(bool sync_pass_done,
   // updates. This mitigates aggressive scoring search suggestions getting
   // 'stuck' as the default when short inputs provide low confidence.
   if (!sync_pass_done)
-    return input.text().length() >= 3;
+    return input.text().length() >= 4;
   else
     return true;
 }
