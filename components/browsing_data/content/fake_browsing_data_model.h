@@ -27,6 +27,9 @@ class FakeBrowsingDataModel : public BrowsingDataModel {
                                      const net::SchemefulSite& top_level_site,
                                      base::OnceClosure completed) override;
 
+  void RemoveUnpartitionedBrowsingData(const DataOwner& data_owner,
+                                       base::OnceClosure completed) override;
+
  private:
   void PopulateFromDisk(base::OnceClosure finished_callback) override;
 };

@@ -288,11 +288,11 @@ class SiteSettingsHandler
   // Gets a plural string for the given number of cookies.
   void HandleGetNumCookiesString(const base::Value::List& args);
 
-  // Provides an opportunity for site data which is not integrated into the
-  // tree model to be removed when entries for |origins| are removed.
+  // Provides an opportunity for site data which is not integrated into a model
+  // to be removed when entries for |origins| are removed.
   // TODO(crbug.com/1271155): This function is a temporary hack while the
   // CookiesTreeModel is deprecated.
-  void RemoveNonTreeModelData(const std::vector<url::Origin>& origins);
+  void RemoveNonModelData(const std::vector<url::Origin>& origins);
 
   // Notifies the JS side the effective cookies setting has changed and
   // provides the updated description label for display.
