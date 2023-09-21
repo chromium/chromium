@@ -193,8 +193,6 @@ extern const char kEnableDrDcDescription[];
 extern const char kForceGpuMainThreadToNormalPriorityDrDcName[];
 extern const char kForceGpuMainThreadToNormalPriorityDrDcDescription[];
 
-extern const char kEnableDrDcVulkanName[];
-
 extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 

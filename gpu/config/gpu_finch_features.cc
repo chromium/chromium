@@ -275,12 +275,6 @@ BASE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc,
              "ForceGpuMainThreadToNormalPriorityDrDc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableDrDcVulkan,
-             "EnableDrDcVulkan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -553,8 +547,8 @@ bool IsDrDcEnabled() {
 
   if (!base::FeatureList::IsEnabled(kEnableDrDc))
     return false;
-  return IsUsingVulkan() ? base::FeatureList::IsEnabled(kEnableDrDcVulkan)
-                         : true;
+
+  return true;
 #else
   return false;
 #endif

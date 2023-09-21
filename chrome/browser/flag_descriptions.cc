@@ -266,10 +266,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kEnableDrDcVulkanName[] =
-    " Use this flag along with flag enable-drdc to enable DrDc on Vulkan. "
-    " Note that this flag will be a no-op if enable-drdc is disabled. ";
-
 const char kForceGpuMainThreadToNormalPriorityDrDcName[] =
     "Force GPU main thread priority to normal for DrDc.";
 const char kForceGpuMainThreadToNormalPriorityDrDcDescription[] =

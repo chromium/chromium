@@ -9346,12 +9346,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kForceGpuMainThreadToNormalPriorityDrDc)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-drdc-vulkan", flag_descriptions::kEnableDrDcVulkanName,
-     flag_descriptions::kEnableDrDcDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kEnableDrDcVulkan)},
-#endif  //   BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
      flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,
