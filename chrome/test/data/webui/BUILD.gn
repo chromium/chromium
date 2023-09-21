@@ -30,6 +30,7 @@ source_set("browser_tests") {
     "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
+    "commander/commander_browsertest.cc",
     "commerce_internals/commerce_internals_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
@@ -222,7 +223,6 @@ if (include_js2gtest_tests) {
     sources = [
       "assertions.js",
       "async_gen.js",
-      "commander/commander_browsertest.js",
       "js2gtest_browsertest.js",
     ]
 
