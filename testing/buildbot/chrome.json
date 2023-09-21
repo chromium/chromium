@@ -1652,6 +1652,144 @@
         "variant_id": "DEDEDE_RELEASE_STABLE"
       },
       {
+        "cros_board": "fizz",
+        "cros_img": "fizz-release/R116-15509.50.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests FIZZ_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "FIZZ_RELEASE_BETA"
+      },
+      {
+        "cros_board": "fizz",
+        "cros_img": "fizz-release/R117-15563.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests FIZZ_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "FIZZ_RELEASE_DEV"
+      },
+      {
+        "autotest_name": "tast.lacros-from-gcs",
+        "cros_board": "fizz",
+        "cros_img": "fizz-release/R119-15619.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests FIZZ_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "FIZZ_RELEASE_LKGM"
+      },
+      {
+        "cros_board": "fizz",
+        "cros_img": "fizz-release/R115-15474.70.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests FIZZ_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "FIZZ_RELEASE_STABLE"
+      },
+      {
+        "cros_board": "guybrush",
+        "cros_img": "guybrush-release/R116-15509.50.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "GUYBRUSH_RELEASE_BETA"
+      },
+      {
+        "cros_board": "guybrush",
+        "cros_img": "guybrush-release/R117-15563.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "GUYBRUSH_RELEASE_DEV"
+      },
+      {
+        "autotest_name": "tast.lacros-from-gcs",
+        "cros_board": "guybrush",
+        "cros_img": "guybrush-release/R119-15619.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "GUYBRUSH_RELEASE_LKGM"
+      },
+      {
+        "cros_board": "guybrush",
+        "cros_img": "guybrush-release/R115-15474.70.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "GUYBRUSH_RELEASE_STABLE"
+      },
+      {
         "cros_board": "puff",
         "cros_img": "puff-release/R116-15509.50.0",
         "dut_pool": "chrome",

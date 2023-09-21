@@ -465,6 +465,72 @@
       'cros_img': 'dedede-release/R115-15474.70.0',
     },
   },
+  'CROS_FIZZ_RELEASE_LKGM': {
+    'identifier': 'FIZZ_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'fizz',
+      'cros_img': 'fizz-release/R119-15619.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_FIZZ_RELEASE_DEV': {
+    'identifier': 'FIZZ_RELEASE_DEV',
+    'skylab': {
+      'cros_board': 'fizz',
+      'cros_img': 'fizz-release/R117-15563.0.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_FIZZ_RELEASE_BETA': {
+    'identifier': 'FIZZ_RELEASE_BETA',
+    'skylab': {
+      'cros_board': 'fizz',
+      'cros_img': 'fizz-release/R116-15509.50.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_FIZZ_RELEASE_STABLE': {
+    'identifier': 'FIZZ_RELEASE_STABLE',
+    'skylab': {
+      'cros_board': 'fizz',
+      'cros_img': 'fizz-release/R115-15474.70.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_GUYBRUSH_RELEASE_LKGM': {
+    'identifier': 'GUYBRUSH_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'guybrush',
+      'cros_img': 'guybrush-release/R119-15619.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_GUYBRUSH_RELEASE_DEV': {
+    'identifier': 'GUYBRUSH_RELEASE_DEV',
+    'skylab': {
+      'cros_board': 'guybrush',
+      'cros_img': 'guybrush-release/R117-15563.0.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_GUYBRUSH_RELEASE_BETA': {
+    'identifier': 'GUYBRUSH_RELEASE_BETA',
+    'skylab': {
+      'cros_board': 'guybrush',
+      'cros_img': 'guybrush-release/R116-15509.50.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_GUYBRUSH_RELEASE_STABLE': {
+    'identifier': 'GUYBRUSH_RELEASE_STABLE',
+    'skylab': {
+      'cros_board': 'guybrush',
+      'cros_img': 'guybrush-release/R115-15474.70.0',
+      'dut_pool': 'chrome',
+    },
+  },
   'CROS_PUFF_RELEASE_LKGM': {
     'identifier': 'PUFF_RELEASE_LKGM',
     'skylab': {
