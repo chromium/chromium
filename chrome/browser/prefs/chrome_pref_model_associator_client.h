@@ -10,26 +10,16 @@
 #include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
-
 class ChromePrefModelAssociatorClient
     : public sync_preferences::PrefModelAssociatorClient {
  public:
-  // Returns the global instance.
-  static ChromePrefModelAssociatorClient* GetInstance();
-
+  ChromePrefModelAssociatorClient();
   ChromePrefModelAssociatorClient(const ChromePrefModelAssociatorClient&) =
       delete;
   ChromePrefModelAssociatorClient& operator=(
       const ChromePrefModelAssociatorClient&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ChromePrefModelAssociatorClient>;
-
-  ChromePrefModelAssociatorClient();
   ~ChromePrefModelAssociatorClient() override;
 
   // sync_preferences::PrefModelAssociatorClient implementation.

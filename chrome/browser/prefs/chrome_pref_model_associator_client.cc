@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "base/check_is_test.h"
-#include "base/memory/singleton.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -16,12 +15,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/values_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// static
-ChromePrefModelAssociatorClient*
-ChromePrefModelAssociatorClient::GetInstance() {
-  return base::Singleton<ChromePrefModelAssociatorClient>::get();
-}
 
 ChromePrefModelAssociatorClient::ChromePrefModelAssociatorClient() {}
 

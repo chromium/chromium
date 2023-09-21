@@ -401,8 +401,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   TestPrefModelAssociatorClient& operator=(
       const TestPrefModelAssociatorClient&) = delete;
 
-  ~TestPrefModelAssociatorClient() override = default;
-
   // PrefModelAssociatorClient implementation.
   bool IsMergeableListPreference(const std::string& pref_name) const override {
     return pref_name == kMergeableListPrefName;
@@ -421,6 +419,8 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   }
 
  private:
+  ~TestPrefModelAssociatorClient() override = default;
+
   const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
     return syncable_prefs_database_;
   }
@@ -445,7 +445,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
             user_prefs_,
             standalone_browser_prefs_,
             pref_registry_,
-            &client_,
+            client_,
             /*read_error_callback=*/base::DoNothing(),
             /*async=*/false) {}
 
@@ -527,7 +527,8 @@ class PrefServiceSyncableMergeTest : public testing::Test {
       base::MakeRefCounted<TestingPrefStore>();
   scoped_refptr<TestingPrefStore> standalone_browser_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
-  TestPrefModelAssociatorClient client_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_ =
+      base::MakeRefCounted<TestPrefModelAssociatorClient>();
   PrefServiceSyncable prefs_;
   raw_ptr<PrefModelAssociator> pref_sync_service_ = nullptr;
 };
@@ -969,7 +970,8 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
       : pref_registry_(base::MakeRefCounted<PrefRegistrySyncable>()),
         pref_notifier_(new PrefNotifierImpl),
         user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
-        standalone_browser_prefs_(base::MakeRefCounted<TestingPrefStore>()) {}
+        standalone_browser_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()) {}
 
   void CreatePrefService() {
     // Register prefs of various types.
@@ -994,7 +996,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
             new TestingPrefStore, new TestingPrefStore, user_prefs_.get(),
             standalone_browser_prefs_.get(), pref_registry_->defaults().get(),
             pref_notifier_),
-        user_prefs_, standalone_browser_prefs_, pref_registry_, &client_,
+        user_prefs_, standalone_browser_prefs_, pref_registry_, client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);
   }
@@ -1045,7 +1047,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
       pref_notifier_;  // Owned by |prefs_|.
   scoped_refptr<TestingPrefStore> user_prefs_;
   scoped_refptr<TestingPrefStore> standalone_browser_prefs_;
-  TestPrefModelAssociatorClient client_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_;
   std::unique_ptr<PrefServiceSyncable> prefs_;
 };
 

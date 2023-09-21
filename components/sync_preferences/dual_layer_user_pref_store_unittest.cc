@@ -139,6 +139,7 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   }
 
  private:
+  ~TestPrefModelAssociatorClient() override = default;
   TestSyncablePrefsDatabase syncable_prefs_database_;
 };
 
@@ -147,8 +148,10 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
   explicit DualLayerUserPrefStoreTestBase(bool initialize) {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
     account_store_ = base::MakeRefCounted<TestingPrefStore>();
+    pref_model_associator_client_ =
+        base::MakeRefCounted<TestPrefModelAssociatorClient>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, account_store_, &pref_model_associator_client_);
+        local_store_, account_store_, pref_model_associator_client_);
 
     if (initialize) {
       local_store_->NotifyInitializationCompleted();
@@ -163,8 +166,8 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
   scoped_refptr<TestingPrefStore> account_store_;
+  scoped_refptr<TestPrefModelAssociatorClient> pref_model_associator_client_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
-  TestPrefModelAssociatorClient pref_model_associator_client_;
 };
 
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
@@ -1217,6 +1220,8 @@ class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   }
 
  private:
+  ~MergeTestPrefModelAssociatorClient() override = default;
+
   TestSyncablePrefsDatabase syncable_prefs_database_;
 
   std::set<std::string> mergeable_dict_prefs_;
@@ -1229,8 +1234,10 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
   DualLayerUserPrefStoreMergeTest() {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
     account_store_ = base::MakeRefCounted<TestingPrefStore>();
+    pref_model_associator_client_ =
+        base::MakeRefCounted<MergeTestPrefModelAssociatorClient>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, account_store_, &pref_model_associator_client_);
+        local_store_, account_store_, pref_model_associator_client_);
 
     local_store_->NotifyInitializationCompleted();
     account_store_->NotifyInitializationCompleted();
@@ -1254,8 +1261,9 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
   scoped_refptr<TestingPrefStore> account_store_;
+  scoped_refptr<MergeTestPrefModelAssociatorClient>
+      pref_model_associator_client_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
-  MergeTestPrefModelAssociatorClient pref_model_associator_client_;
   testing::StrictMock<MockPrefStoreObserver> observer_;
 };
 
@@ -1372,7 +1380,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableListPref) {
       base::Value::List().Append("local_value").Append("common_value"));
   store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_list.Clone(), 0);
 
-  pref_model_associator_client_.MarkAsMergeableListPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableListPref(kPref1);
   // Different values are set in both stores; a merged view should be returned.
   // The two lists should be de-duped, with account values coming first.
   base::Value merged_list(base::Value::List()
@@ -1416,7 +1424,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableDictPref) {
                              .Set("common_key", "local_value"));
   store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
 
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
   // Different values are set in both stores; a merged view should be returned.
   // In case of conflict, the value in account store takes precedence.
   base::Value merged_dict(base::Value::Dict()
@@ -1457,8 +1465,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeSpecialCasedMergeablePref) {
                                                  0);
 
   base::Value merged_value("custom_merge_value");
-  pref_model_associator_client_.SetCustomMergeValue(kPref1,
-                                                    merged_value.Clone());
+  pref_model_associator_client_->SetCustomMergeValue(kPref1,
+                                                     merged_value.Clone());
   // Different values are set in both stores; the merge should use the custom
   // logic.
   // Uses GetValue().
@@ -1611,7 +1619,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingSetValue) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   store()->GetAccountPrefStore()->SetValueSilently(
       kPref1,
@@ -1675,7 +1683,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingSetValueSilently) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   store()->GetAccountPrefStore()->SetValueSilently(
       kPref1,
@@ -1737,7 +1745,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingMutableValue) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   store()->GetAccountPrefStore()->SetValueSilently(
       kPref1,
@@ -1803,7 +1811,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUpdateMergedPrefOnRemoveFromUnderlyingStores) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   store()->GetAccountPrefStore()->SetValueSilently(
       kPref1,
@@ -1855,7 +1863,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldClearMergedPrefOnRemove) {
                       .Set("common_key", "local_value")),
       0);
 
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
   ASSERT_TRUE(
       ValueInStoreIs(*store(), kPref1,
                      base::Value(base::Value::Dict()
@@ -1867,7 +1875,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldClearMergedPrefOnRemove) {
   store()->RemoveValue(kPref1, 0);
   EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
 
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref2);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref2);
   store()->GetAccountPrefStore()->SetValueSilently(
       kPref2,
       base::Value(base::Value::Dict()
@@ -1894,7 +1902,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldClearMergedPrefOnRemove) {
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUnmergeMergeableDictPrefButNotAddUnchangedValueToAccountStore) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value local_dict(base::Value::Dict().Set("local_key", "local_value"));
   store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
@@ -1921,7 +1929,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUnmergeMergeableDictPrefButNotAddUnchangedValueToLocalStore) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value account_dict(
       base::Value::Dict().Set("account_key", "account_value"));
@@ -1948,7 +1956,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnSetValue) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value local_dict(base::Value::Dict()
                              .Set("local_key1", "local_value1")
@@ -2030,7 +2038,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnSetValueSilently) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value local_dict(base::Value::Dict()
                              .Set("local_key1", "local_value1")
@@ -2111,7 +2119,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnReportPrefChanged) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value local_dict(base::Value::Dict()
                              .Set("local_key1", "local_value1")
@@ -2196,7 +2204,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldApplyUpdateOnMergeableListPrefAsNonMergeablePref) {
-  pref_model_associator_client_.MarkAsMergeableListPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableListPref(kPref1);
 
   base::Value local_list(
       base::Value::List().Append("local_value").Append("common_value"));
@@ -2232,7 +2240,7 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
 TEST_F(DualLayerUserPrefStoreMergeTest,
        ShouldNotUnmergeIfIncorrectlyMarkedAsMergeableDict) {
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value local_dict_value(
       base::Value::Dict().Set("local_key", "local_value"));
@@ -2267,7 +2275,7 @@ TEST_F(
   base::Value local_dict(base::Value::Dict().Set("common_key", "local_value"));
   store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
 
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   base::Value merged_dict(
       base::Value::Dict().Set("common_key", "account_value"));
@@ -2294,7 +2302,7 @@ TEST_F(
   store()->GetAccountPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
   store()->GetLocalPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
 
-  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  pref_model_associator_client_->MarkAsMergeableDictPref(kPref1);
 
   EXPECT_CALL(observer_, OnPrefValueChanged(kPref1)).Times(0);
 

@@ -43,7 +43,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   DualLayerUserPrefStore(
       scoped_refptr<PersistentPrefStore> local_pref_store,
       scoped_refptr<PersistentPrefStore> account_pref_store,
-      const PrefModelAssociatorClient* pref_model_associator_client);
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client);
 
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
@@ -215,8 +215,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
-  const raw_ptr<const PrefModelAssociatorClient> pref_model_associator_client_ =
-      nullptr;
+  const scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client_;
 };
 
 }  // namespace sync_preferences

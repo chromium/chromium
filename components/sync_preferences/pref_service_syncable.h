@@ -47,7 +47,7 @@ class PrefServiceSyncable : public PrefService,
       scoped_refptr<PersistentPrefStore> user_prefs,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-      const PrefModelAssociatorClient* pref_model_associator_client,
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
           read_error_callback,
       bool async);
@@ -62,7 +62,7 @@ class PrefServiceSyncable : public PrefService,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-      const PrefModelAssociatorClient* pref_model_associator_client,
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
           read_error_callback,
       bool async);

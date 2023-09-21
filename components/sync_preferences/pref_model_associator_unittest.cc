@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -90,8 +91,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   TestPrefModelAssociatorClient& operator=(
       const TestPrefModelAssociatorClient&) = delete;
 
-  ~TestPrefModelAssociatorClient() override = default;
-
   // PrefModelAssociatorClient implementation.
   bool IsMergeableListPreference(const std::string& pref_name) const override {
     return pref_name == kListPrefName;
@@ -113,6 +112,8 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   }
 
  private:
+  ~TestPrefModelAssociatorClient() override = default;
+
   const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
     return syncable_prefs_database_;
   }
@@ -137,7 +138,7 @@ scoped_refptr<user_prefs::PrefRegistrySyncable> CreatePrefRegistry() {
 }
 
 std::unique_ptr<PrefServiceSyncable> CreatePrefService(
-    PrefModelAssociatorClient* client,
+    scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     scoped_refptr<PersistentPrefStore> user_prefs) {
   PrefServiceMockFactory factory;
@@ -172,13 +173,14 @@ class AbstractPreferenceMergeTest : public testing::Test {
     }
   }
 
-  TestPrefModelAssociatorClient client_;
+  const scoped_refptr<TestPrefModelAssociatorClient> client_ =
+      base::MakeRefCounted<TestPrefModelAssociatorClient>();
   const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
       CreatePrefRegistry();
   const scoped_refptr<TestingPrefStore> user_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   const std::unique_ptr<PrefServiceSyncable> pref_service_ =
-      CreatePrefService(&client_, pref_registry_, user_prefs_);
+      CreatePrefService(client_, pref_registry_, user_prefs_);
   const raw_ptr<PrefModelAssociator> pref_sync_service_ =
       static_cast<PrefModelAssociator*>(
           pref_service_->GetSyncableService(syncer::PREFERENCES));
@@ -193,7 +195,7 @@ TEST_F(CustomPreferenceMergeTest, ClientMergesCustomPreference) {
   base::Value local_value(pref->GetValue()->Clone());
   base::Value server_value("server");
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), server_value));
+      client_.get(), pref->name(), *pref->GetValue(), server_value));
   // TestPrefModelAssociatorClient should have chosen local value instead of the
   // default server value.
   EXPECT_EQ(merged_value, local_value);
@@ -223,7 +225,7 @@ TEST_F(ListPreferenceMergeTest, NotListOrDictionary) {
       pref_service_->FindPreference(kStringPrefName);
   base::Value server_value(server_url0_);
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), server_value));
+      client_.get(), pref->name(), *pref->GetValue(), server_value));
   EXPECT_EQ(merged_value, server_value);
 }
 
@@ -232,7 +234,7 @@ TEST_F(ListPreferenceMergeTest, LocalEmpty) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
-      helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
   EXPECT_EQ(merged_value, server_url_list_);
 }
@@ -246,7 +248,7 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), base::Value()));
+      client_.get(), pref->name(), *pref->GetValue(), base::Value()));
   const base::Value::List& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
@@ -262,7 +264,7 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
-      helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(empty_value.Clone())));
   const base::Value::List& local_list_value =
       pref_service_->GetList(kListPrefName);
@@ -277,8 +279,9 @@ TEST_F(ListPreferenceMergeTest, ServerCorrupt) {
 
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
-  base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), base::Value("corrupt-type")));
+  base::Value merged_value(
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
+                              base::Value("corrupt-type")));
   const base::Value::List& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
@@ -294,7 +297,7 @@ TEST_F(ListPreferenceMergeTest, Merge) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
-      helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
   auto expected = base::Value::List()
@@ -316,7 +319,7 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
-      helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
   auto expected = base::Value::List()
@@ -337,7 +340,7 @@ TEST_F(ListPreferenceMergeTest, Equals) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
-      helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
   EXPECT_EQ(merged_value, original);
 }
@@ -368,7 +371,7 @@ TEST_F(DictionaryPreferenceMergeTest, LocalEmpty) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), server_patterns_));
+      client_.get(), pref->name(), *pref->GetValue(), server_patterns_));
   EXPECT_EQ(merged_value, server_patterns_);
 }
 
@@ -381,7 +384,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), base::Value()));
+      client_.get(), pref->name(), *pref->GetValue(), base::Value()));
   const base::Value::Dict& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
@@ -396,7 +399,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), base::Value()));
+      client_.get(), pref->name(), *pref->GetValue(), base::Value()));
   const base::Value::Dict& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
@@ -410,8 +413,9 @@ TEST_F(DictionaryPreferenceMergeTest, ServerCorrupt) {
 
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDictionaryPrefName);
-  base::Value merged_value(helper::MergePreference(
-      &client_, pref->name(), *pref->GetValue(), base::Value("corrupt-type")));
+  base::Value merged_value(
+      helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
+                              base::Value("corrupt-type")));
   const base::Value::Dict& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
@@ -424,7 +428,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
   }
 
   base::Value merged_value(helper::MergePreference(
-      &client_, kDictionaryPrefName,
+      client_.get(), kDictionaryPrefName,
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
@@ -446,7 +450,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
   }
 
   base::Value merged_value(helper::MergePreference(
-      &client_, kDictionaryPrefName,
+      client_.get(), kDictionaryPrefName,
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
@@ -469,7 +473,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
   // TODO(https://crbug.com/1187026): Migrate MergePreference() to
   // take a base::Value::Dict.
   base::Value merged_value(helper::MergePreference(
-      &client_, kDictionaryPrefName, base::Value(local_dict_value.Clone()),
+      client_.get(), kDictionaryPrefName, base::Value(local_dict_value.Clone()),
       base::Value(server_dict_value.Clone())));
 
   EXPECT_EQ(merged_value, server_dict_value);
@@ -484,7 +488,7 @@ TEST_F(DictionaryPreferenceMergeTest, Equal) {
   }
 
   base::Value merged_value(helper::MergePreference(
-      &client_, kDictionaryPrefName,
+      client_.get(), kDictionaryPrefName,
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
   EXPECT_EQ(merged_value, server_patterns_);
@@ -499,7 +503,7 @@ TEST_F(DictionaryPreferenceMergeTest, ConflictButServerWins) {
   }
 
   base::Value merged_value(helper::MergePreference(
-      &client_, kDictionaryPrefName,
+      client_.get(), kDictionaryPrefName,
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
   EXPECT_EQ(merged_value, server_patterns_);
@@ -523,7 +527,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
     }
 
     base::Value merged_value(helper::MergePreference(
-        &client_, pref, *pref_service_->GetUserPrefValue(pref),
+        client_.get(), pref, *pref_service_->GetUserPrefValue(pref),
         base::Value(server_url_list_.Clone())));
 
     auto expected = base::Value::List().Append(url0_).Append(url1_);
@@ -537,7 +541,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
     }
 
     base::Value merged_value(helper::MergePreference(
-        &client_, pref, *pref_service_->GetUserPrefValue(pref),
+        client_.get(), pref, *pref_service_->GetUserPrefValue(pref),
         server_patterns_));
 
     base::Value::Dict expected;
@@ -562,14 +566,15 @@ TEST_F(IndividualPreferenceMergeTest, ListPreference) {
 class SyncablePrefsDatabaseTest : public testing::Test {
  protected:
   SyncablePrefsDatabaseTest()
-      : pref_registry_(
+      : client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
+        pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()) {
     PrefServiceMockFactory factory;
-    factory.SetPrefModelAssociatorClient(&client_);
+    factory.SetPrefModelAssociatorClient(client_);
     pref_service_ = factory.CreateSyncable(pref_registry_.get());
   }
 
-  TestPrefModelAssociatorClient client_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   std::unique_ptr<PrefServiceSyncable> pref_service_;
 };
@@ -738,6 +743,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
  protected:
   PrefModelAssociatorWithPreferencesAccountStorageTest()
       : feature_list_(syncer::kEnablePreferencesAccountStorage),
+        client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
         pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
         local_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
@@ -747,7 +753,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
     PrefServiceMockFactory factory;
-    factory.SetPrefModelAssociatorClient(&client_);
+    factory.SetPrefModelAssociatorClient(client_);
     factory.set_user_prefs(local_pref_store_);
     factory.SetAccountPrefStore(account_pref_store_);
     pref_service_ = factory.CreateSyncable(pref_registry_);
@@ -764,7 +770,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
 
   base::test::ScopedFeatureList feature_list_;
 
-  TestPrefModelAssociatorClient client_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   scoped_refptr<TestingPrefStore> local_pref_store_;
   scoped_refptr<TestingPrefStore> account_pref_store_;

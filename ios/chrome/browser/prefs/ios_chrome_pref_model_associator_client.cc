@@ -8,13 +8,6 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 
-// static
-IOSChromePrefModelAssociatorClient*
-IOSChromePrefModelAssociatorClient::GetInstance() {
-  static base::NoDestructor<IOSChromePrefModelAssociatorClient> instance;
-  return instance.get();
-}
-
 IOSChromePrefModelAssociatorClient::IOSChromePrefModelAssociatorClient() {}
 
 IOSChromePrefModelAssociatorClient::~IOSChromePrefModelAssociatorClient() {}

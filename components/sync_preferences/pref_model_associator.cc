@@ -28,7 +28,6 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
-#include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
@@ -69,7 +68,7 @@ absl::optional<base::Value> ReadPreferenceSpecifics(
 }  // namespace
 
 PrefModelAssociator::PrefModelAssociator(
-    const PrefModelAssociatorClient* client,
+    scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<WriteablePrefStore> user_prefs,
     syncer::ModelType type)
     : type_(type),
@@ -89,7 +88,7 @@ PrefModelAssociator::PrefModelAssociator(
 }
 
 PrefModelAssociator::PrefModelAssociator(
-    const PrefModelAssociatorClient* client,
+    scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
     syncer::ModelType type)
     : PrefModelAssociator(client,
@@ -158,7 +157,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
       // TODO(crbug.com/1434943): Consider the case where a value is set before
       // initial merge. This would overwrite the value the user just set.
       base::Value new_value(helper::MergePreference(
-          client_, pref_name, *user_pref_value, sync_value));
+          client_.get(), pref_name, *user_pref_value, sync_value));
       // Update the local preference based on what we got from the sync
       // server.
       if (new_value.is_none()) {

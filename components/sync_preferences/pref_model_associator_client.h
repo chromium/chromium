@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "base/values.h"
 
 namespace sync_preferences {
@@ -16,7 +17,8 @@ class SyncablePrefsDatabase;
 // This class allows the embedder to configure the PrefModelAssociator to
 // have a different behaviour when receiving preference synchronisations
 // events from the server.
-class PrefModelAssociatorClient {
+class PrefModelAssociatorClient
+    : public base::RefCounted<PrefModelAssociatorClient> {
  public:
   PrefModelAssociatorClient(const PrefModelAssociatorClient&) = delete;
   PrefModelAssociatorClient& operator=(const PrefModelAssociatorClient&) =
@@ -46,8 +48,9 @@ class PrefModelAssociatorClient {
   virtual const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const = 0;
 
  protected:
-  PrefModelAssociatorClient() {}
-  virtual ~PrefModelAssociatorClient() {}
+  friend class base::RefCounted<PrefModelAssociatorClient>;
+  PrefModelAssociatorClient() = default;
+  virtual ~PrefModelAssociatorClient() = default;
 };
 
 }  // namespace sync_preferences

@@ -7,25 +7,19 @@
 
 #include <string>
 
-#include "base/no_destructor.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.h"
 
 class IOSChromePrefModelAssociatorClient
     : public sync_preferences::PrefModelAssociatorClient {
  public:
-  // Returns the global instance.
-  static IOSChromePrefModelAssociatorClient* GetInstance();
-
+  IOSChromePrefModelAssociatorClient();
   IOSChromePrefModelAssociatorClient(
       const IOSChromePrefModelAssociatorClient&) = delete;
   IOSChromePrefModelAssociatorClient& operator=(
       const IOSChromePrefModelAssociatorClient&) = delete;
 
  private:
-  friend class base::NoDestructor<IOSChromePrefModelAssociatorClient>;
-
-  IOSChromePrefModelAssociatorClient();
   ~IOSChromePrefModelAssociatorClient() override;
 
   // sync_preferences::PrefModelAssociatorClient implementation.

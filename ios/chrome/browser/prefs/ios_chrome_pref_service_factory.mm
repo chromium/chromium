@@ -63,7 +63,7 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
 
   factory->set_read_error_callback(base::BindRepeating(&HandleReadError));
   factory->SetPrefModelAssociatorClient(
-      IOSChromePrefModelAssociatorClient::GetInstance());
+      base::MakeRefCounted<IOSChromePrefModelAssociatorClient>());
 }
 
 }  // namespace

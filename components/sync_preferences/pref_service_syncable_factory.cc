@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/common/policy_service.h"
@@ -44,7 +43,7 @@ void PrefServiceSyncableFactory::SetRecommendedPolicies(
 }
 
 void PrefServiceSyncableFactory::SetPrefModelAssociatorClient(
-    PrefModelAssociatorClient* pref_model_associator_client) {
+    scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client) {
   pref_model_associator_client_ = pref_model_associator_client;
 }
 

@@ -88,7 +88,7 @@ bool DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 DualLayerUserPrefStore::DualLayerUserPrefStore(
     scoped_refptr<PersistentPrefStore> local_pref_store,
     scoped_refptr<PersistentPrefStore> account_pref_store,
-    const PrefModelAssociatorClient* pref_model_associator_client)
+    scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client)
     : local_pref_store_(std::move(local_pref_store)),
       account_pref_store_(std::move(account_pref_store)),
       local_pref_store_observer_(this, /*is_account_store=*/false),
@@ -560,8 +560,9 @@ const base::Value* DualLayerUserPrefStore::MaybeMerge(
   // without a corresponding call to ReportValueChanged().
   // 2. Avoid removing the entry from `merged_prefs_` every time pref is
   // updated.
-  base::Value merged_value = helper::MergePreference(
-      pref_model_associator_client_, pref_name, local_value, account_value);
+  base::Value merged_value =
+      helper::MergePreference(pref_model_associator_client_.get(), pref_name,
+                              local_value, account_value);
 
   if (merged_value == account_value) {
     // Most likely this is not a mergeable pref. Should be safe to just return

@@ -304,7 +304,7 @@ void PrepareFactory(
       &chrome_prefs::HandlePersistentPrefStoreReadError, pref_filename));
   factory->set_user_prefs(std::move(user_pref_store));
   factory->SetPrefModelAssociatorClient(
-      ChromePrefModelAssociatorClient::GetInstance());
+      base::MakeRefCounted<ChromePrefModelAssociatorClient>());
 }
 
 class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
