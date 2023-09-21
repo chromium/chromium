@@ -286,6 +286,7 @@ class ExtensionTelemetryService : public KeyedService {
   // |kExtensionTelemetryFileDataProcessIntervalSeconds| - default: 2 hours.
   base::OneShotTimer offstore_file_data_collection_timer_;
   base::TimeTicks offstore_file_data_collection_start_time_;
+  base::TimeDelta offstore_file_data_collection_duration_limit_;
 
   using SignalProcessors =
       base::flat_map<ExtensionSignalType,
@@ -299,7 +300,8 @@ class ExtensionTelemetryService : public KeyedService {
 
   friend class ExtensionTelemetryServiceTest;
   friend class ExtensionTelemetryServiceBrowserTest;
-
+  FRIEND_TEST_ALL_PREFIXES(ExtensionTelemetryServiceTest,
+                           FileData_EnforcesCollectionDurationLimit);
   base::WeakPtrFactory<ExtensionTelemetryService> weak_factory_{this};
 };
 

@@ -98,6 +98,10 @@ constexpr char kManifestFile[] = "manifest.json";
 // Delay before the Telemetry Service checks its last upload time.
 base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(15);
 
+// Limit the off-store file data collection duration.
+base::TimeDelta kOffstoreFileDataCollectionDurationLimitSeconds =
+    base::Seconds(60);
+
 void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.ExtensionTelemetry.FilePersistedAtWriteInterval",
@@ -231,7 +235,9 @@ ExtensionTelemetryService::ExtensionTelemetryService(
       extension_prefs_(extensions::ExtensionPrefs::Get(profile)),
       enabled_(false),
       current_reporting_interval_(
-          base::Seconds(kExtensionTelemetryUploadIntervalSeconds.Get())) {
+          base::Seconds(kExtensionTelemetryUploadIntervalSeconds.Get())),
+      offstore_file_data_collection_duration_limit_(
+          kOffstoreFileDataCollectionDurationLimitSeconds) {
   // Register for SB preference change notifications.
   pref_service_ = profile_->GetPrefs();
   pref_change_registrar_.Init(pref_service_);
@@ -1080,9 +1086,13 @@ void ExtensionTelemetryService::CollectOffstoreFileData() {
     return;
   }
 
-  // If data for all offstore extensions has been collected, start the timer
-  // again to schedule the next pass of data collection.
-  if (offstore_extension_file_data_contexts_.empty()) {
+  // If data for all offstore extensions has been collected or
+  // |offstore_file_data_collection_duration_limit_| has been
+  // exceeded, start the timer again to schedule the next pass of data
+  // collection.
+  if (offstore_extension_file_data_contexts_.empty() ||
+      (base::TimeTicks::Now() - offstore_file_data_collection_start_time_) >=
+          offstore_file_data_collection_duration_limit_) {
     offstore_file_data_collection_timer_.Start(
         FROM_HERE,
         base::Seconds(

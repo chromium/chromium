@@ -976,6 +976,34 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
   EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos_size(), 0);
 }
 
+TEST_F(ExtensionTelemetryServiceTest,
+       FileData_EnforcesCollectionDurationLimit) {
+  // Enable |kExtensionTelemetryFileData| feature and starts collection.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      {kExtensionTelemetryFileData},
+      {{"StartupDelaySeconds",
+        base::NumberToString(kFileDataStartUpDelaySeconds)}});
+  // Set collection duration limit to 0 milliseconds.
+  telemetry_service_->offstore_file_data_collection_duration_limit_ =
+      base::Milliseconds(0);
+  telemetry_service_->SetEnabled(true);
+  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+
+  // Verify Extension 0 does not have offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId[0]);
+  EXPECT_FALSE(telemetry_report_pb->reports(0).extension().has_manifest_json());
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos_size(), 0);
+
+  // Verify Extension 1 does not have offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().id(), kExtensionId[1]);
+  EXPECT_FALSE(telemetry_report_pb->reports(1).extension().has_manifest_json());
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos_size(), 0);
+}
+
 TEST_F(ExtensionTelemetryServiceTest, DisableOffstoreExtensions) {
   telemetry_service_->SetEnabled(false);
   scoped_feature_list.InitAndEnableFeature(
