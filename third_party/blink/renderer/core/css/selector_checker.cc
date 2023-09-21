@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1765,6 +1766,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
 
       if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+        // Recomputing the slot assignment can update cached directionality.
+        // This should already have been done unless this an API call like
+        // Element.matches().
+        Document& document = element.GetDocument();
+        if (document.IsSlotAssignmentDirty()) {
+          CHECK_EQ(mode_, kQueryingRules);
+          document.GetSlotAssignmentEngine().RecalcSlotAssignments();
+        }
+
         return html_element->CachedDirectionality() == direction;
       }
       break;
