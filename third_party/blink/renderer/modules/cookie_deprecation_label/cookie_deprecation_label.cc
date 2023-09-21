@@ -68,7 +68,7 @@ ScriptPromise CookieDeprecationLabel::getValue(ScriptState* script_state) {
             // The label will be null if cookie deprecation label is not allowed
             // for the profile.
             if (label.IsNull()) {
-              resolver->Reject();
+              resolver->Resolve(String());
             } else {
               resolver->Resolve(label);
             }

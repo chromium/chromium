@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
-                       NotAllowed_LabelError) {
+                       NotAllowed_EmptyLabelReturned) {
   MockCookieDeprecationLabelContentBrowserClientBase<
       ContentBrowserTestContentBrowserClient>
       browser_client;
@@ -496,9 +496,9 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), https_server->GetURL("a.test", "/hello.html")));
   EXPECT_EQ(EvalJs(shell(), R"((async () => {
-        return await navigator.cookieDeprecationLabel.getValue()
-                       .catch(() => 'error'); })())"),
-            "error");
+        return await navigator.cookieDeprecationLabel.getValue();
+      })())"),
+            "");
 }
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
-                       Incognito_LabelError) {
+                       Incognito_EmptyLabelReturned) {
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server->Start());
 
@@ -530,9 +530,9 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   EXPECT_TRUE(NavigateToURL(incognito_shell,
                             https_server->GetURL("a.test", "/hello.html")));
   EXPECT_EQ(EvalJs(incognito_shell, R"((async () => {
-        return await navigator.cookieDeprecationLabel.getValue()
-                       .catch(() => 'error'); })())"),
-            "error");
+        return await navigator.cookieDeprecationLabel.getValue();
+      })())"),
+            "");
 }
 
 class CookieDeprecationLabelEnabledEmptyLabelBrowserTest
@@ -608,7 +608,7 @@ class CookieDeprecationLabelIncognitoEnabledBrowserTest
 
 // Ensure that cookie deprecation labels are present in incognito mode if the
 // "enable_incognito" feature parameter is true. See also the
-// CookieDeprecationLabelEnabledBrowserTest.Incognito_LabelError test.
+// CookieDeprecationLabelEnabledBrowserTest.Incognito_EmptyLabelReturned test.
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelIncognitoEnabledBrowserTest,
                        Incognito_LabelReturned) {
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
