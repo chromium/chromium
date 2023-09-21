@@ -170,6 +170,11 @@ BASE_FEATURE(kCookieDeprecationFacilitatedTesting,
              "CookieDeprecationFacilitatedTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Set whether to enable cookie deprecation API in incognito mode.
+const base::FeatureParam<bool>
+    kCookieDeprecationFacilitatedTestingEnableIncognito{
+        &kCookieDeprecationFacilitatedTesting, "enable_incognito", false};
+
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",

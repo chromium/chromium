@@ -49,6 +49,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kClearCrossSiteCrossBrowsingContextGroupWindowName);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCookieDeprecationFacilitatedTesting);
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kCookieDeprecationFacilitatedTestingEnableIncognito;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);

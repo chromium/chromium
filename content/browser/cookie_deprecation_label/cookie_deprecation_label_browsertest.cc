@@ -593,6 +593,37 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledEmptyLabelBrowserTest,
   response_a_b->Done();
 }
 
+class CookieDeprecationLabelIncognitoEnabledBrowserTest
+    : public CookieDeprecationLabelBrowserTestBase {
+ public:
+  CookieDeprecationLabelIncognitoEnabledBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{"label", "label_test"}, {"enable_incognito", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that cookie deprecation labels are present in incognito mode if the
+// "enable_incognito" feature parameter is true. See also the
+// CookieDeprecationLabelEnabledBrowserTest.Incognito_LabelError test.
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelIncognitoEnabledBrowserTest,
+                       Incognito_LabelReturned) {
+  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server->Start());
+
+  auto* incognito_shell = CreateOffTheRecordBrowser();
+
+  EXPECT_TRUE(NavigateToURL(incognito_shell,
+                            https_server->GetURL("a.test", "/hello.html")));
+  EXPECT_EQ(EvalJs(incognito_shell, R"((async () => {
+        return await navigator.cookieDeprecationLabel.getValue();
+      })())"),
+            "label_test");
+}
+
 }  // namespace
 
 }  // namespace content
