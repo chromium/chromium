@@ -8674,7 +8674,7 @@ class RenderTextDirectionTest
 
  private:
   void SetUp() override {
-    // Using "en" locale, which is a LTR langulage.
+    // Set default locale to a LTR language.
     base::i18n::SetICUDefaultLocale("en");
 
     if (!GetParam().empty()) {
@@ -8711,9 +8711,7 @@ TEST_P(RenderTextDirectionTest, GetCurrentHorizontalAlignment) {
   EXPECT_EQ(ALIGN_CENTER, GetCurrentHorizontalAlignment());
 
   render_text()->SetHorizontalAlignment(ALIGN_TO_HEAD);
-  if (GetParam() == switches::kForceDirectionLTR) {
-    EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
-  } else if (GetParam() == switches::kForceDirectionRTL) {
+  if (GetParam() == switches::kForceDirectionRTL) {
     EXPECT_EQ(ALIGN_RIGHT, GetCurrentHorizontalAlignment());
   } else {
     EXPECT_EQ(ALIGN_LEFT, GetCurrentHorizontalAlignment());
