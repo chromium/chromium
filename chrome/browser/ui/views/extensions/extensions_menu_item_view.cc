@@ -310,9 +310,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
-              // TODO(crbug.com/1390952): Enterprise icon should appear to the
-              // left of the label, instead of the right. HoverButton should
-              // take care of this, but for some reason it doesn't.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       site_permissions_button_callback,
