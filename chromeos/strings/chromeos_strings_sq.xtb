@@ -330,7 +330,7 @@
 <translation id="3603829704940252505">Simboli</translation>
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
-<translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
+<translation id="3606583719724308068">Vonesë e lartë në uebsajtet HTTPS</translation>
 <translation id="3607216139080387279">Shfaq mbrojtësin e ekranit</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
@@ -808,7 +808,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Ndjeje puhizën</translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
-<translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
+<translation id="7297226631177386107">Nuk mund të lidhesh me uebsajtet HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -958,7 +958,7 @@
 <translation id="8476942730579767658">Dritaret dhe tavolinat e punës</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
-<translation id="8491311378305535241">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>
+<translation id="8491311378305535241">Nuk mund të lidhesh me uebsajtet HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>
 <translation id="8498220429738806196">Matësit e trafikut</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
@@ -1001,7 +1001,7 @@
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8851859208664803097">U ndalua - Printeri është i paarritshëm</translation>
-<translation id="8855781559874488009">Nuk mund të lidhesh me sajtet e uebit HTTP nëpërmjet murit mbrojtës</translation>
+<translation id="8855781559874488009">Nuk mund të lidhesh me uebsajtet HTTP nëpërmjet murit mbrojtës</translation>
 <translation id="885701979325669005">Hapësira ruajtëse</translation>
 <translation id="885704831271383379">tastiera më e errët</translation>
 <translation id="8863170912498892583">Aktivizo temën e errët</translation>
