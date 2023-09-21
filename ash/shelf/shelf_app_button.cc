@@ -1125,8 +1125,6 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 }
 
 void ShelfAppButton::UpdateProgressRingBounds() {
-  // TODO(b/297866814): Wire logic to handle updates on app status
-  // AppStatus::kPending -> AppStatus::kInstalling
   if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
     return;
   }
@@ -1135,6 +1133,9 @@ void ShelfAppButton::UpdateProgressRingBounds() {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
             [](ShelfAppButton* view) -> absl::optional<float> {
+              if (view->app_status() == AppStatus::kPending) {
+                return absl::nullopt;
+              }
               // If download is in-progress, return the progress as a decimal.
               // Otherwise, the progress indicator shouldn't be painted.
               float progress = view->progress();

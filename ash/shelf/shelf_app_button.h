@@ -138,6 +138,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   float progress() { return progress_; }
 
+  AppStatus app_status() { return app_status_; }
+
   ProgressIndicator* GetProgressIndicatorForTest() const;
 
  protected:
