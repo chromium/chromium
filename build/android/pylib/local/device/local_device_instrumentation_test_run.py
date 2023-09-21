@@ -445,6 +445,8 @@ class LocalDeviceInstrumentationTestRun(
       def push_test_data(dev):
         device_root = posixpath.join(dev.GetExternalStoragePath(),
                                      'chromium_tests_root')
+        if self._env.force_main_user:
+          device_root = dev.ResolveSpecialPath(device_root)
         host_device_tuples_substituted = [
             (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
             for h, d in host_device_tuples
@@ -457,8 +459,12 @@ class LocalDeviceInstrumentationTestRun(
                              delete_device_stale=True,
                              as_root=self._env.force_main_user)
         if not host_device_tuples_substituted:
-          dev.RunShellCommand(['rm', '-rf', device_root], check_return=True)
-          dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
+          dev.RunShellCommand(['rm', '-rf', device_root],
+                              check_return=True,
+                              as_root=self._env.force_main_user)
+          dev.RunShellCommand(['mkdir', '-p', device_root],
+                              check_return=True,
+                              as_root=self._env.force_main_user)
 
       @trace_event.traced
       def create_flag_changer(dev):
