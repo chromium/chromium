@@ -6,13 +6,16 @@
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_LINUX_SYSTEM_MEDIA_CONTROLS_LINUX_H_
 
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "components/dbus/properties/types.h"
 #include "components/system_media_controls/system_media_controls.h"
@@ -45,27 +48,6 @@ COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIPlayerInterfaceName[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPISignalSeeked[];
-
-// A helper class that deletes a file when going out of scope.
-class ScopedFile {
- public:
-  ScopedFile();
-  ScopedFile(const base::FilePath& path,
-             scoped_refptr<base::SequencedTaskRunner> file_task_runner);
-
-  ScopedFile(ScopedFile&& other) noexcept;
-  ScopedFile& operator=(ScopedFile&& rhs) noexcept;
-
-  ~ScopedFile();
-
-  const base::FilePath& path() const { return path_; }
-
- private:
-  void Delete();
-
-  base::FilePath path_;
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-};
 
 // A D-Bus service conforming to the MPRIS spec:
 // https://specifications.freedesktop.org/mpris-spec/latest/
@@ -154,7 +136,9 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void StartPositionUpdateTimer();
   void StopPositionUpdateTimer();
 
-  void OnThumbnailFileWritten(ScopedFile thumbnail);
+  void OnThumbnailFileWritten(
+      std::pair<base::FilePath, base::SequenceBound<base::ScopedTempFile>>
+          thumbnail);
 
   absl::optional<media_session::MediaPosition> position_;
   base::RepeatingTimer position_update_timer_;
@@ -179,7 +163,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   bool service_ready_ = false;
 
   // A temporary file containing the thumbnail image.
-  ScopedFile thumbnail_;
+  base::SequenceBound<base::ScopedTempFile> thumbnail_;
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 

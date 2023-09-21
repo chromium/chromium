@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -57,12 +58,13 @@ const char kMprisAPINoTrackPath[] = "/org/mpris/MediaPlayer2/TrackList/NoTrack";
 const char kMprisAPICurrentTrackPathFormatString[] =
     "/org/chromium/MediaPlayer2/TrackList/Track%s";
 
-// Writes `bitmap` to a new temporary PNG file and returns a `ScopedFile`
-// that wraps it.  The path will be empty if the image was empty or the
-// image failed to write to the file.
-ScopedFile WriteBitmapToTmpFile(
-    const SkBitmap& bitmap,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
+// Writes `bitmap` to a new temporary PNG file and returns a a pair of the file
+// path and a managed base::ScopedTempFile bound to this sequence.  This should
+// be called on the file task runner so the file is cleaned up on the proper
+// sequence.  The path will be empty if the image was empty or the image failed
+// to write to the file.
+std::pair<base::FilePath, base::SequenceBound<base::ScopedTempFile>>
+WriteBitmapToTmpFile(const SkBitmap& bitmap) {
   if (bitmap.empty()) {
     return {};
   }
@@ -74,16 +76,21 @@ ScopedFile WriteBitmapToTmpFile(
     return {};
   }
 
-  base::FilePath file_path;
-  if (!base::CreateTemporaryFile(&file_path)) {
+  base::ScopedTempFile scoped_file;
+  if (!scoped_file.Create()) {
     return {};
   }
-  ScopedFile scoped_file(std::move(file_path), file_task_runner);
 
   if (!base::WriteFile(scoped_file.path(), *data)) {
     return {};
   }
-  return scoped_file;
+
+  // Make a copy of the path before `scoped_file` is moved.
+  base::FilePath path = scoped_file.path();
+  return std::make_pair(std::move(path),
+                        base::SequenceBound<base::ScopedTempFile>(
+                            base::SequencedTaskRunner::GetCurrentDefault(),
+                            std::move(scoped_file)));
 }
 
 }  // namespace
@@ -94,50 +101,6 @@ const char kMprisAPIObjectPath[] = "/org/mpris/MediaPlayer2";
 const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
 const char kMprisAPISignalSeeked[] = "Seeked";
-
-ScopedFile::ScopedFile() = default;
-
-ScopedFile::ScopedFile(
-    const base::FilePath& path,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
-    : path_(path), file_task_runner_(file_task_runner) {}
-
-ScopedFile::ScopedFile(ScopedFile&& other) noexcept {
-  if (!path_.empty()) {
-    CHECK_NE(path_, other.path_);
-  }
-  Delete();
-  path_ = std::move(other.path_);
-  file_task_runner_ = std::move(other.file_task_runner_);
-}
-
-ScopedFile& ScopedFile::operator=(ScopedFile&& other) noexcept {
-  if (!path_.empty()) {
-    CHECK_NE(path_, other.path_);
-  }
-  Delete();
-  path_ = std::move(other.path_);
-  file_task_runner_ = std::move(other.file_task_runner_);
-  return *this;
-}
-
-ScopedFile::~ScopedFile() {
-  Delete();
-}
-
-void ScopedFile::Delete() {
-  if (path_.empty()) {
-    return;
-  }
-  if (file_task_runner_->RunsTasksInCurrentSequence()) {
-    base::DeleteFile(path_);
-  } else {
-    file_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::DeleteFile), path_));
-  }
-  path_ = base::FilePath();
-}
 
 SystemMediaControlsLinux::SystemMediaControlsLinux(
     const std::string& product_name)
@@ -155,8 +118,9 @@ SystemMediaControlsLinux::~SystemMediaControlsLinux() {
 }
 
 void SystemMediaControlsLinux::StartService() {
-  if (started_)
+  if (started_) {
     return;
+  }
   started_ = true;
   InitializeDbusInterface();
 }
@@ -166,8 +130,9 @@ void SystemMediaControlsLinux::AddObserver(
   observers_.AddObserver(observer);
 
   // If the service is already ready, inform the observer.
-  if (service_ready_)
+  if (service_ready_) {
     observer->OnServiceReady();
+  }
 }
 
 void SystemMediaControlsLinux::RemoveObserver(
@@ -212,10 +177,11 @@ void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
                            status());
 
   playing_ = (value == PlaybackStatus::kPlaying);
-  if (playing_ && position_.has_value())
+  if (playing_ && position_.has_value()) {
     StartPositionUpdateTimer();
-  else
+  } else {
     StopPositionUpdateTimer();
+  }
 }
 
 void SystemMediaControlsLinux::SetID(const std::string* value) {
@@ -249,8 +215,7 @@ void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
 
 void SystemMediaControlsLinux::SetThumbnail(const SkBitmap& bitmap) {
   file_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&WriteBitmapToTmpFile, bitmap, file_task_runner_),
+      FROM_HERE, base::BindOnce(&WriteBitmapToTmpFile, bitmap),
       base::BindOnce(&SystemMediaControlsLinux::OnThumbnailFileWritten,
                      weak_factory_.GetWeakPtr()));
 }
@@ -260,8 +225,9 @@ void SystemMediaControlsLinux::SetPosition(
   position_ = position;
   UpdatePosition(/*emit_signal=*/true);
 
-  if (playing_)
+  if (playing_) {
     StartPositionUpdateTimer();
+  }
 }
 
 void SystemMediaControlsLinux::ClearMetadata() {
@@ -409,60 +375,68 @@ void SystemMediaControlsLinux::OnInitialized(bool success) {
 
 void SystemMediaControlsLinux::OnOwnership(const std::string& service_name,
                                            bool success) {
-  if (!success)
+  if (!success) {
     return;
+  }
 
   service_ready_ = true;
 
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnServiceReady();
+  }
 }
 
 void SystemMediaControlsLinux::Next(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnNext();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void SystemMediaControlsLinux::Previous(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnPrevious();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void SystemMediaControlsLinux::Pause(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnPause();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void SystemMediaControlsLinux::PlayPause(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnPlayPause();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void SystemMediaControlsLinux::Stop(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnStop();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void SystemMediaControlsLinux::Play(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnPlay();
+  }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
@@ -476,8 +450,9 @@ void SystemMediaControlsLinux::Seek(
     return;
   }
 
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnSeek(base::Microseconds(offset));
+  }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -499,8 +474,9 @@ void SystemMediaControlsLinux::SetPositionMpris(
     return;
   }
 
-  for (SystemMediaControlsObserver& obs : observers_)
+  for (SystemMediaControlsObserver& obs : observers_) {
     obs.OnSeekTo(base::Microseconds(position));
+  }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -519,8 +495,9 @@ void SystemMediaControlsLinux::SetMetadataPropertyInternal(
   DCHECK(dictionary_variant);
   DbusDictionary* dictionary = dictionary_variant->GetAs<DbusDictionary>();
   DCHECK(dictionary);
-  if (dictionary->Put(property_name, std::move(new_value)))
+  if (dictionary->Put(property_name, std::move(new_value))) {
     properties_->PropertyUpdated(kMprisAPIPlayerInterfaceName, "Metadata");
+  }
 }
 
 void SystemMediaControlsLinux::ClearTrackId() {
@@ -556,8 +533,9 @@ void SystemMediaControlsLinux::UpdatePosition(bool emit_signal) {
   SetMetadataPropertyInternal("mpris:length",
                               MakeDbusVariant(DbusInt64(duration)));
 
-  if (!service_ready_ || !emit_signal || !position_.has_value())
+  if (!service_ready_ || !emit_signal || !position_.has_value()) {
     return;
+  }
 
   dbus::Signal seeked_signal(kMprisAPIPlayerInterfaceName,
                              kMprisAPISignalSeeked);
@@ -583,11 +561,13 @@ void SystemMediaControlsLinux::StopPositionUpdateTimer() {
   position_update_timer_.Stop();
 }
 
-void SystemMediaControlsLinux::OnThumbnailFileWritten(ScopedFile thumbnail) {
-  const auto& path = thumbnail.path();
+void SystemMediaControlsLinux::OnThumbnailFileWritten(
+    std::pair<base::FilePath, base::SequenceBound<base::ScopedTempFile>>
+        thumbnail) {
+  const auto& path = thumbnail.first;
   auto url = path.empty() ? "" : "file://" + base::EscapePath(path.value());
   SetMetadataPropertyInternal("mpris:artUrl", MakeDbusVariant(DbusString(url)));
-  thumbnail_ = std::move(thumbnail);
+  thumbnail_ = std::move(thumbnail.second);
 }
 
 }  // namespace internal
