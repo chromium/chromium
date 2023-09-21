@@ -675,15 +675,17 @@ void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
                       "height > MAX_RENDERBUFFER_SIZE");
     return;
   }
+  if (!attrs.alpha) {
+    SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                      "alpha is required for drawingBufferStorage");
+    return;
+  }
 
   // Ensure that the format is supported, and set the corresponding alpha
   // type.
   SkAlphaType alpha_type =
       attrs.premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
   switch (sizedformat) {
-    case GL_RGB8:
-      alpha_type = kOpaque_SkAlphaType;
-      break;
     case GL_RGBA8:
       break;
     case GL_SRGB8_ALPHA8:
