@@ -15,7 +15,6 @@
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/share/share_features.h"
@@ -351,7 +350,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
-    &media_router::kCastAnotherContentWhileCasting,
     &messages::kMessagesForAndroidInfrastructure,
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflinePagesCTFeature,  // See crbug.com/620421.

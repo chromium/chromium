@@ -26,13 +26,7 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
-#if BUILDFLAG(IS_ANDROID)
-// If enabled, and the HTMLMediaElement source changes (e.g. started observing
-// new source, and stopped observing the first one), the new source is cast
-// instead.
-BASE_DECLARE_FEATURE(kCastAnotherContentWhileCasting);
-#else
-
+#if !BUILDFLAG(IS_ANDROID)
 // Enables the media router. Can be disabled in tests unrelated to
 // Media Router where it interferes. Can also be useful to disable for local
 // development on Mac because DIAL local discovery opens a local port

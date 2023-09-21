@@ -168,8 +168,6 @@ public abstract class ChromeFeatureList {
     public static final String BOOKMARKS_REFRESH = "BookmarksRefresh";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
-    public static final String CAST_ANOTHER_CONTENT_WHILE_CASTING =
-            "CastAnotherContentWhileCasting";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BOTTOM_BAR_SWIPE_UP_GESTURE = "CCTBottomBarSwipeUpGesture";
     public static final String CCT_BRAND_TRANSPARENCY = "CCTBrandTransparency";

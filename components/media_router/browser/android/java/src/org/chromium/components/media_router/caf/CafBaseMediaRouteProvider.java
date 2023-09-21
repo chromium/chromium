@@ -100,9 +100,7 @@ public abstract class CafBaseMediaRouteProvider
         String applicationId = source.getApplicationId();
         DiscoveryCallback callback = mDiscoveryCallbacks.get(applicationId);
 
-        if (MediaRouterClient.getInstance().isCastAnotherContentWhileCastingEnabled()) {
-            updateSessionMediaSourceIfNeeded(callback, source);
-        }
+        updateSessionMediaSourceIfNeeded(callback, source);
 
         // No-op, if already monitoring the application for this source.
         if (callback != null) {
