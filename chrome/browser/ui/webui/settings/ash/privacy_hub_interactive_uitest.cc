@@ -95,7 +95,8 @@ class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
+// Fails on linux-chromeos-chrome official builder, http://b/301322535
+IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, DISABLED_SettingsPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
 
   RunTestSequence(
