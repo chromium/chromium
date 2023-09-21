@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 
 #include <memory>
@@ -79,6 +80,10 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
                 browser()->profile()));
     ASSERT_TRUE(mock_tracker_);
 
+    // Allow an unlimited number of calls to WouldTriggerHelpUI().
+    EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI)
+        .WillRepeatedly(Return(true));
+
     promo_controller_ = static_cast<BrowserFeaturePromoController*>(
         browser()->window()->GetFeaturePromoController());
 
@@ -104,15 +109,25 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     registry()->RegisterFeature(std::move(notice));
   }
 
+  // Verifies that `CanShowPromo()` returns `can_show`.
+  auto QueryIPH(const base::Feature& iph_feature, bool can_show) {
+    return CheckResult(
+        [this, &iph_feature]() {
+          return promo_controller_->CanShowPromo(iph_feature);
+        },
+        can_show,
+        base::StringPrintf("QueryIPH(%s, %s)", iph_feature.name,
+                           (can_show ? "true" : "false")));
+  }
+
   // Tries to show tab groups IPH by meeting the trigger conditions. If
   // |should_show| is true it checks that it was shown. If false, it
   // checks that it was not shown.
   auto AttemptIPH(const base::Feature& iph_feature,
                   bool should_show,
                   base::OnceClosure on_close = base::DoNothing()) {
-    return Do(base::BindLambdaForTesting([this, &iph_feature, should_show,
-                                          callback =
-                                              std::move(on_close)]() mutable {
+    return Check([this, &iph_feature, should_show,
+                  callback = std::move(on_close)]() mutable {
       if (should_show) {
         EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(iph_feature)))
             .WillOnce(Return(true));
@@ -121,15 +136,22 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
             .Times(0);
       }
 
-      ASSERT_EQ(should_show, promo_controller_->MaybeShowPromo(
-                                 iph_feature, std::move(callback)));
-      ASSERT_EQ(should_show, promo_controller_->IsPromoActive(iph_feature));
+      if (should_show !=
+          promo_controller_->MaybeShowPromo(iph_feature, std::move(callback))) {
+        LOG(ERROR) << "MaybeShowPromo() didn't return expected result.";
+        return false;
+      }
+      if (should_show != promo_controller_->IsPromoActive(iph_feature)) {
+        LOG(ERROR) << "IsPromoActive() didn't return expected result.";
+        return false;
+      }
 
       // If shown, Tracker::Dismissed should be called eventually.
       if (should_show) {
         EXPECT_CALL(*mock_tracker_, Dismissed(Ref(iph_feature)));
       }
-    }));
+      return true;
+    });
   }
 
   auto TriggerNonDefaultButton() {
@@ -273,13 +295,14 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
   base::UserActionTester user_action_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, CanShowPromo) {
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+                       CanShowPromoForElement) {
   auto widget = std::make_unique<views::Widget>();
 
   auto can_show_promo = [this](ui::TrackedElement* anchor) {
     return static_cast<BrowserFeaturePromoController*>(
                browser()->window()->GetFeaturePromoController())
-        ->CanShowPromo(anchor);
+        ->CanShowPromoForElement(anchor);
   };
 
   RunTestSequence(
@@ -347,6 +370,15 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                                /*abort_count*/ 0,
                                /*feature_engaged_count*/ 0,
                                /*custom_action_count*/ 1));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+                       CanShowPromoReturnsExpectedValue) {
+  RunTestSequence(QueryIPH(kCustomActionTestFeature, true),
+                  AttemptIPH(kCustomActionTestFeature, true),
+                  QueryIPH(kCustomActionTestFeature, false),
+                  TriggerNonDefaultButton(),
+                  QueryIPH(kCustomActionTestFeature, true));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,

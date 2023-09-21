@@ -350,6 +350,12 @@ bool TestBrowserWindow::IsFeaturePromoActive(
              iph_feature, user_education::FeaturePromoStatus::kContinued);
 }
 
+bool TestBrowserWindow::CanShowFeaturePromo(
+    const base::Feature& iph_feature) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->CanShowPromo(iph_feature);
+}
+
 bool TestBrowserWindow::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
     user_education::FeaturePromoController::BubbleCloseCallback close_callback,

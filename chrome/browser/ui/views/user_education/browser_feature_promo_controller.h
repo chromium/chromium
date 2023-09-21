@@ -71,11 +71,13 @@ class BrowserFeaturePromoController
                            GetAcceleratorProvider);
   FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerTest,
                            GetFocusHelpBubbleScreenReaderHint);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerUiTest, CanShowPromo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerUiTest,
+                           CanShowPromoForElement);
 
   // FeaturePromoController:
   ui::ElementContext GetAnchorContext() const override;
-  bool CanShowPromo(ui::TrackedElement* anchor_element) const override;
+  bool CanShowPromoForElement(
+      ui::TrackedElement* anchor_element) const override;
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
   std::u16string GetTutorialScreenReaderHint() const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(

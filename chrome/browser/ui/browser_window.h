@@ -587,11 +587,22 @@ class BrowserWindow : public ui::BaseWindow {
   // background.
   virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
 
+  // Returns whether `MaybeShowFeaturePromo()` would succeed if called now.
+  //
+  // USAGE NOTE: Only call this method if figuring out whether to try to show an
+  // IPH would involve significant expense. This method may itself have
+  // non-trivial cost.
+  virtual bool CanShowFeaturePromo(const base::Feature& iph_feature) const = 0;
+
   // Maybe shows an in-product help promo. Returns true if the promo is shown.
   // In cases where there is no promo controller, immediately returns false.
   //
   // If this feature promo is likely to be shown at browser startup, prefer
-  // calling MaybeShowStartupFeaturePromo() instead.
+  // calling `MaybeShowStartupFeaturePromo()` instead.
+  //
+  // If determining whether to call this method would involve significant
+  // expense, you *may* first call `CanShowFeaturePromo()` before doing the
+  // required computation; otherwise just call this method.
   virtual bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoController::BubbleCloseCallback

@@ -273,6 +273,18 @@ TEST_F(BrowserFeaturePromoControllerTest, GetForView) {
   EXPECT_EQ(nullptr, BrowserFeaturePromoController::GetForView(&orphan_view));
 }
 
+TEST_F(BrowserFeaturePromoControllerTest, AsksBackendIfPromoShouldBeShown) {
+  // If the backend says no, the controller says no.
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(false));
+  EXPECT_FALSE(controller_->CanShowPromo(kTestIPHFeature));
+
+  // If the backend says yes, the controller says yes.
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(controller_->CanShowPromo(kTestIPHFeature));
+}
+
 TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(false));
@@ -300,7 +312,7 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowStartupPromo) {
 
 TEST_F(BrowserFeaturePromoControllerTest,
        DoesNotAskBackendWhenShowingFromDemoPage) {
-  EXPECT_TRUE(controller_->MaybeShowPromoForDemoPage(&kTestIPHFeature));
+  EXPECT_TRUE(controller_->MaybeShowPromoForDemoPage(kTestIPHFeature));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_NE(nullptr, GetPromoBubble());
 }
@@ -311,6 +323,20 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubble) {
   EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, BubbleBlocksCanShowPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
+      .WillRepeatedly(Return(true));
+  EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+  EXPECT_FALSE(controller_->CanShowPromo(kTutorialIPHFeature));
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_TRUE(controller_->EndPromo(
+      kTestIPHFeature,
+      user_education::FeaturePromoCloseReason::kFeatureEngaged));
+  EXPECT_TRUE(controller_->CanShowPromo(kTutorialIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, ShowsStartupBubble) {

@@ -81,6 +81,16 @@ class FeaturePromoController {
   virtual ~FeaturePromoController();
   void operator=(const FeaturePromoController& other) = delete;
 
+  // Queries whether the given promo could be shown at the current moment.
+  //
+  // In general it is unnecessary to call this method if the intention is to
+  // show the promo; just call `MaybeShowPromo()` directly. However, in cases
+  // where determining whether to try to show a promo would be prohibitively
+  // expensive, this is a slightly less expensive out (but please note that it
+  // is not zero cost; a number of prefs and application states do need to be
+  // queried).
+  virtual bool CanShowPromo(const base::Feature& iph_feature) const = 0;
+
   // Starts the promo if possible. Returns whether it started.
   // |iph_feature| must be an IPH feature defined in
   // components/feature_engagement/public/feature_list.cc and registered
@@ -166,7 +176,7 @@ class FeaturePromoController {
   // Starts a promo with the settings for skipping any logging or filtering
   // provided by the implementation for MaybeShowPromo.
   virtual bool MaybeShowPromoForDemoPage(
-      const base::Feature* iph_feature,
+      const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = base::DoNothing(),
       FeaturePromoSpecification::FormatParameters body_params =
           FeaturePromoSpecification::NoSubstitution(),
@@ -240,6 +250,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
   // FeaturePromoController:
+  bool CanShowPromo(const base::Feature& iph_feature) const override;
   bool MaybeShowPromo(const base::Feature& iph_feature,
                       BubbleCloseCallback close_callback = base::DoNothing(),
                       FeaturePromoSpecification::FormatParameters body_params =
@@ -260,7 +271,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
                              FeaturePromoStorageService::CloseReason*
                                  close_reason = nullptr) const override;
   bool MaybeShowPromoForDemoPage(
-      const base::Feature* iph_feature,
+      const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = base::DoNothing(),
       FeaturePromoSpecification::FormatParameters body_params =
           FeaturePromoSpecification::NoSubstitution(),
@@ -295,10 +306,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // For IPH not registered with |FeaturePromoRegistry|. Only use this
   // if it is infeasible to pre-register your IPH.
-  bool MaybeShowPromoFromSpecification(
-      const FeaturePromoSpecification& spec,
+  bool MaybeShowPromoCommon(
+      const base::Feature& iph_feature,
       bool for_demo,
-      ui::TrackedElement* anchor_element,
       BubbleCloseCallback close_callback,
       FeaturePromoSpecification::FormatParameters body_params,
       FeaturePromoSpecification::FormatParameters title_params);
@@ -329,8 +339,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // non-critical promos.
   //
   // Note: Implementations should make sure to check
-  // active_window_check_blocked().
-  virtual bool CanShowPromo(ui::TrackedElement* anchor_element) const = 0;
+  // `active_window_check_blocked()`.
+  virtual bool CanShowPromoForElement(
+      ui::TrackedElement* anchor_element) const = 0;
 
   // Get the accelerator provider to use to look up accelerators.
   virtual const ui::AcceleratorProvider* GetAcceleratorProvider() const = 0;
@@ -396,6 +407,18 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::FormatParameters body_params,
       FeaturePromoSpecification::FormatParameters title_params,
       bool tracker_initialized_successfully);
+
+  // Performs common logic for determining if a feature promo for `iph_feature`
+  // could be shown right now.
+  //
+  // The optional parameters `spec`, `lifecycle`, and `anchor_element` will be
+  // populated on success, if specified.
+  bool CanShowPromoCommon(
+      const base::Feature& iph_feature,
+      bool for_demo,
+      const FeaturePromoSpecification** spec = nullptr,
+      std::unique_ptr<FeaturePromoLifecycle>* lifecycle = nullptr,
+      ui::TrackedElement** anchor_element = nullptr) const;
 
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
@@ -465,6 +488,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       int custom_action_dismiss_string_id);
 
   const base::Feature* GetCurrentPromoFeature() const;
+
+  // Whether the IPH Demo Mode flag has been set at startup.
+  const bool in_iph_demo_mode_;
 
   // The feature promo registry to use.
   const raw_ptr<FeaturePromoRegistry> registry_;

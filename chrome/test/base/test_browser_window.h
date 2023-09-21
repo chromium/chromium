@@ -240,6 +240,7 @@ class TestBrowserWindow : public BrowserWindow {
 
   user_education::FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
+  bool CanShowFeaturePromo(const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoController::BubbleCloseCallback

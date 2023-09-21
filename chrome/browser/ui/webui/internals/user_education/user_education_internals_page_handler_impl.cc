@@ -210,7 +210,7 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
           ->GetFeaturePromoController();
 
   bool showed_promo =
-      feature_promo_controller->MaybeShowPromoForDemoPage(feature);
+      feature_promo_controller->MaybeShowPromoForDemoPage(*feature);
 
   if (showed_promo) {
     std::move(callback).Run(std::string());
