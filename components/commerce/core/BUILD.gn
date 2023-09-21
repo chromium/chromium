@@ -256,6 +256,8 @@ source_set("shopping_service_test_support") {
   testonly = true
 
   sources = [
+    "mock_discounts_storage.cc",
+    "mock_discounts_storage.h",
     "mock_shopping_service.cc",
     "mock_shopping_service.h",
     "shopping_service_test_base.cc",
@@ -296,6 +298,7 @@ source_set("shopping_service_unit_tests") {
 
   sources = [
     "bookmark_update_manager_unittest.cc",
+    "discounts_storage_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
@@ -307,6 +310,7 @@ source_set("shopping_service_unit_tests") {
 
   deps = [
     ":account_checker_test_support",
+    ":discounts_db_content_proto",
     ":metrics",
     ":pref_names",
     ":shopping_service_test_support",
