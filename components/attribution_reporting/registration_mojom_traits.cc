@@ -205,10 +205,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   }
 
   out->source_event_id = data.source_event_id();
-  out->max_event_level_reports =
-      data.max_event_level_reports() == -1
-          ? absl::nullopt
-          : absl::make_optional(data.max_event_level_reports());
+  out->max_event_level_reports = data.max_event_level_reports();
   out->priority = data.priority();
   out->debug_reporting = data.debug_reporting();
   return out->IsValid();

@@ -292,7 +292,6 @@ class AttributionManagerImplTest : public testing::Test {
     auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
 
     storage_delegate->set_report_delay(kFirstReportingWindow);
-    storage_delegate->set_max_attributions_per_source(3);
     storage_delegate->set_offline_report_delay_config(
         kDefaultOfflineReportDelay);
 
@@ -916,12 +915,14 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
                                        kSuccessDroppedLowerPriority))));
   }
 
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetMaxEventLevelReports(3)
+                                         .Build(),
+                                     kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
-  // `kNavigation` sources can have 3 reports, so none of these should result in
-  // a dropped report.
+  // Store the maximum number of reports.
   for (int i = 1; i <= 3; i++) {
     attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(i).Build(),
                                         kFrameId);
@@ -1547,6 +1548,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
   attribution_manager_->HandleSource(TestAggregatableSourceProvider()
                                          .GetBuilder()
+                                         .SetMaxEventLevelReports(3)
                                          .SetExpiry(kImpressionExpiry)
                                          .Build(),
                                      kFrameId);

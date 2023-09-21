@@ -70,14 +70,6 @@
   // storage per destination. Formatted as a base-10 string.
   "max_event_level_reports_per_destination": "1024",
 
-  // Positive integer that controls how many times a navigation source can create
-  // an event-level report. Formatted as a base-10 string.
-  "max_attributions_per_navigation_source": "3",
-
-  // Positive integer that controls how many times an event source can create
-  // an event-level report. Formatted as a base-10 string.
-  "max_attributions_per_event_source": "1",
-
   // Positive double that controls the max channel capacity in bits for
   // navigation sources.
   "max_navigation_info_gain": "11.46173",

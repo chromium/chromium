@@ -149,14 +149,6 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
     return false;
   }
 
-  if (max_attributions_per_navigation_source <= 0) {
-    return false;
-  }
-
-  if (max_attributions_per_event_source <= 0) {
-    return false;
-  }
-
   if (randomized_response_epsilon < 0 ||
       std::isnan(randomized_response_epsilon)) {
     return false;

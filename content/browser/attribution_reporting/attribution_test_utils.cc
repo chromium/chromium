@@ -125,7 +125,9 @@ SourceBuilder::SourceBuilder(base::Time time)
       source_origin_(*SuitableOrigin::Deserialize(kDefaultSourceOrigin)),
       destination_sites_(*attribution_reporting::DestinationSet::Create(
           {net::SchemefulSite::Deserialize(kDefaultDestinationOrigin)})),
-      reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {}
+      reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)),
+      max_event_level_reports_(
+          attribution_reporting::kMaxSettableEventLevelAttributions) {}
 
 SourceBuilder::~SourceBuilder() = default;
 
@@ -291,10 +293,8 @@ StoredSource SourceBuilder::BuildStored() const {
       ComputeReportWindowTime(GetReportWindowTimeForTesting(
                                   aggregatable_report_window_, source_time_),
                               expiry_time),
-      max_event_level_reports_.value_or(
-          attribution_reporting::kMaxSettableEventLevelAttributions),
-      priority_, filter_data_, debug_key_, aggregation_keys_,
-      attribution_logic_, active_state_, source_id_,
+      max_event_level_reports_, priority_, filter_data_, debug_key_,
+      aggregation_keys_, attribution_logic_, active_state_, source_id_,
       aggregatable_budget_consumed_, randomized_response_rate_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);

@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
+#include "components/attribution_reporting/source_type.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
@@ -80,6 +81,7 @@ namespace blink {
 namespace {
 
 using ::attribution_reporting::mojom::RegistrationEligibility;
+using ::attribution_reporting::mojom::SourceType;
 using ::network::mojom::AttributionReportingEligibility;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -225,9 +227,11 @@ class AttributionSrcLoader::ResourceClient
   ResourceClient(
       AttributionSrcLoader* loader,
       RegistrationEligibility eligibility,
+      SourceType source_type,
       mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host)
       : loader_(loader),
         eligibility_(eligibility),
+        source_type_(source_type),
         data_host_(std::move(data_host)) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
@@ -284,6 +288,10 @@ class AttributionSrcLoader::ResourceClient
 
   // Type of events this request can register.
   const RegistrationEligibility eligibility_;
+
+  // Used to parse source registrations associated with this resource client.
+  // Irrelevant for trigger registrations.
+  const SourceType source_type_;
 
   // Remote used for registering responses with the browser-process.
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
@@ -418,13 +426,16 @@ bool AttributionSrcLoader::DoRegistration(
       &conversion_host);
 
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
+  SourceType source_type;
 
   if (attribution_src_token.has_value()) {
     conversion_host->RegisterNavigationDataHost(
         data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
+    source_type = SourceType::kNavigation;
   } else {
     conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
                                       eligibility);
+    source_type = SourceType::kEvent;
   }
 
   for (const KURL& url : urls) {
@@ -452,8 +463,8 @@ bool AttributionSrcLoader::DoRegistration(
     params.MutableOptions().initiator_info.name =
         fetch_initiator_type_names::kAttributionsrc;
 
-    auto* client =
-        MakeGarbageCollected<ResourceClient>(this, eligibility, data_host);
+    auto* client = MakeGarbageCollected<ResourceClient>(this, eligibility,
+                                                        source_type, data_host);
     // TODO(https://crbug.com/1374121): If this registration is
     // `associated_with_navigation`, there is a risk that the navigation will
     // complete before the resource fetch here is complete. In this case, the
@@ -662,7 +673,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
   auto* client = MakeGarbageCollected<ResourceClient>(
-      this, registration_eligibility, std::move(data_host));
+      this, registration_eligibility, SourceType::kEvent, std::move(data_host));
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
                                 trigger_verifications);
   client->Finish();
@@ -811,7 +822,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       return;
     }
     auto source_data = attribution_reporting::SourceRegistration::Parse(
-        StringUTF8Adaptor(headers.web_source).AsStringPiece());
+        StringUTF8Adaptor(headers.web_source).AsStringPiece(), source_type_);
     if (!source_data.has_value()) {
       LogAuditIssue(loader_->local_frame_->DomWindow(),
                     AttributionReportingIssueType::kInvalidRegisterSourceHeader,

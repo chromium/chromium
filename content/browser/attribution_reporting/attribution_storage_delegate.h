@@ -112,14 +112,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual base::Time GetAggregatableReportTime(
       base::Time trigger_time) const = 0;
 
-  // This limit is used to determine if a source is allowed to schedule
-  // a new report. When a source reaches this limit it is
-  // marked inactive and no new reports will be created for it.
-  // Sources will be checked against this limit after they schedule a new
-  // report.
-  int GetDefaultAttributionsPerSource(
-      attribution_reporting::mojom::SourceType) const;
-
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
   //

@@ -877,13 +877,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                                   reg.aggregatable_report_window, source_time),
                               expiry_time);
 
-  int max_event_level_reports = reg.max_event_level_reports.value_or(
-      delegate_->GetDefaultAttributionsPerSource(common_info.source_type()));
-
   ASSIGN_OR_RETURN(const auto randomized_response_data,
                    delegate_->GetRandomizedResponse(
                        common_info.source_type(), event_report_windows,
-                       max_event_level_reports, source_time),
+                       reg.max_event_level_reports, source_time),
                    [](auto) {
                      return StoreSourceResult(
                          StorableSource::Result::kExceedsMaxChannelCapacity);
@@ -937,7 +934,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
   statement.BindBlob(16, SerializeReadOnlySourceData(
-                             event_report_windows, max_event_level_reports,
+                             event_report_windows, reg.max_event_level_reports,
                              randomized_response_data.rate()));
 
   if (!statement.Run()) {
@@ -963,9 +960,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const StoredSource stored_source(
       source.common_info(), reg.source_event_id, reg.destination_set,
       source_time, expiry_time, std::move(event_report_windows),
-      aggregatable_report_window_time, max_event_level_reports, reg.priority,
-      reg.filter_data, reg.debug_key, reg.aggregation_keys, attribution_logic,
-      *active_state, source_id,
+      aggregatable_report_window_time, reg.max_event_level_reports,
+      reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
+      attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate());
 
   if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {

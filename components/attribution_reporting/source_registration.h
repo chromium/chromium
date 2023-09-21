@@ -17,6 +17,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,11 +29,11 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError);
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // Doesn't log metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-      Parse(base::Value::Dict);
+      Parse(base::Value::Dict, mojom::SourceType);
 
   // Logs metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-  Parse(base::StringPiece json);
+  Parse(base::StringPiece json, mojom::SourceType);
 
   explicit SourceRegistration(DestinationSet);
 
@@ -59,9 +60,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   absl::optional<base::TimeDelta> expiry;
   absl::optional<EventReportWindows> event_report_windows;
   absl::optional<base::TimeDelta> aggregatable_report_window;
-  // Must be non-negative and <= `kMaxSettableEventLevelAttributions` if set.
+  // Must be non-negative and <= `kMaxSettableEventLevelAttributions`.
   // This is verified by the `Parse()` and `IsValid()` methods.
-  absl::optional<int> max_event_level_reports;
+  int max_event_level_reports = 0;
   int64_t priority = 0;
   FilterData filter_data;
   absl::optional<uint64_t> debug_key;

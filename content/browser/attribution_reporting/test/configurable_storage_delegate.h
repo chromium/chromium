@@ -60,8 +60,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       attribution_reporting::mojom::SourceType source_type,
       base::TimeDelta last_report_window) const override;
 
-  void set_max_attributions_per_source(int max);
-
   void set_max_sources_per_origin(int max);
 
   void set_max_reports_per_destination(AttributionReport::Type, int max);

@@ -274,8 +274,8 @@ class AttributionEventHandler : public AttributionObserver {
     }
 
     if (event.source_type.has_value()) {
-      auto registration =
-          attribution_reporting::SourceRegistration::Parse(std::move(*dict));
+      auto registration = attribution_reporting::SourceRegistration::Parse(
+          std::move(*dict), *event.source_type);
       if (!registration.has_value()) {
         AddUnparsableRegistration(event);
         return;

@@ -45,8 +45,6 @@ bool operator==(const AttributionConfig::EventLevelLimit& a,
         config.navigation_source_trigger_data_cardinality,
         config.event_source_trigger_data_cardinality,
         config.randomized_response_epsilon, config.max_reports_per_destination,
-        config.max_attributions_per_navigation_source,
-        config.max_attributions_per_event_source,
         config.first_navigation_report_window_deadline,
         config.second_navigation_report_window_deadline,
         config.first_event_report_window_deadline,
@@ -577,20 +575,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                e.max_reports_per_destination = 10;
              });
        })},
-      {R"json({"max_attributions_per_navigation_source":"10"})json", false,
-       AttributionConfigWith([](AttributionConfig& c) {
-         c.event_level_limit =
-             EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
-               e.max_attributions_per_navigation_source = 10;
-             });
-       })},
-      {R"json({"max_attributions_per_event_source":"10"})json", false,
-       AttributionConfigWith([](AttributionConfig& c) {
-         c.event_level_limit =
-             EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
-               e.max_attributions_per_event_source = 10;
-             });
-       })},
       {R"json({"max_navigation_info_gain":"0.2"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
          c.event_level_limit =
@@ -649,8 +633,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "event_source_trigger_data_cardinality":"10",
         "randomized_response_epsilon":"0.2",
         "max_event_level_reports_per_destination":"10",
-        "max_attributions_per_navigation_source":"5",
-        "max_attributions_per_event_source":"1",
         "max_navigation_info_gain":"5.5",
         "max_event_info_gain":"0.5",
         "max_aggregatable_reports_per_destination":"10",
@@ -676,8 +658,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                e.event_source_trigger_data_cardinality = 10;
                e.randomized_response_epsilon = 0.2;
                e.max_reports_per_destination = 10;
-               e.max_attributions_per_navigation_source = 5;
-               e.max_attributions_per_event_source = 1;
                e.max_navigation_info_gain = 5.5;
                e.max_event_info_gain = 0.5;
              });
@@ -723,8 +703,6 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "navigation_source_trigger_data_cardinality",
       "event_source_trigger_data_cardinality",
       "max_event_level_reports_per_destination",
-      "max_attributions_per_navigation_source",
-      "max_attributions_per_event_source",
       "max_aggregatable_reports_per_destination",
       "aggregatable_budget_per_source",
   };

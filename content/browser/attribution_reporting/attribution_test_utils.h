@@ -176,7 +176,7 @@ class SourceBuilder {
   std::vector<uint64_t> aggregatable_dedup_keys_;
   absl::optional<attribution_reporting::EventReportWindows>
       event_report_windows_ = absl::nullopt;
-  absl::optional<int> max_event_level_reports_ = absl::nullopt;
+  int max_event_level_reports_;
   bool is_within_fenced_frame_ = false;
   bool debug_reporting_ = false;
 };

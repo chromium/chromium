@@ -354,27 +354,6 @@ TEST_F(AttributionStorageTest, ImpressionExpired_ConversionsStoredPrior) {
 }
 
 TEST_F(AttributionStorageTest,
-       ImpressionWithDefaultMaxConversions_ConversionReportNotStored) {
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
-  storage()->StoreSource(SourceBuilder().Build());
-
-  for (int i = 0; i < kMaxConversions; i++) {
-    EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-              MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-  }
-
-  // No additional conversion reports should be created.
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
-                  TriggerBuilder().SetTriggerData(20).Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    ReplacedEventLevelReportIs(absl::nullopt),
-                    DroppedEventLevelReportIs(
-                        Optional(EventLevelDataIs(TriggerDataIs(20u))))));
-}
-
-TEST_F(AttributionStorageTest,
        ImpressionWithSetMaxConversions_ConversionReportStored) {
   storage()->StoreSource(
       SourceBuilder().SetMaxEventLevelReports(kMaxConversions + 1).Build());
@@ -529,13 +508,12 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
 
 TEST_F(AttributionStorageTest,
        ManyImpressionsWithManyConversions_OneImpressionAttributed) {
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
   const int kNumMultiTouchImpressions = 20;
 
   // Store a large, arbitrary number of impressions.
   for (int i = 0; i < kNumMultiTouchImpressions; i++) {
-    storage()->StoreSource(SourceBuilder().Build());
+    storage()->StoreSource(
+        SourceBuilder().SetMaxEventLevelReports(kMaxConversions).Build());
   }
 
   for (int i = 0; i < kMaxConversions; i++) {
@@ -829,19 +807,24 @@ TEST_F(AttributionStorageTest, ExceedsChannelCapacity) {
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_sources_per_origin(2);
-  delegate()->set_max_attributions_per_source(1);
 
   base::HistogramTester histograms;
 
   ASSERT_EQ(storage()
-                ->StoreSource(
-                    SourceBuilder().SetSourceEventId(3).SetPriority(1).Build())
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(3)
+                                  .SetPriority(1)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
                 .status,
             StorableSource::Result::kSuccess);
 
   ASSERT_EQ(storage()
-                ->StoreSource(
-                    SourceBuilder().SetSourceEventId(5).SetPriority(2).Build())
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(5)
+                                  .SetPriority(2)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
                 .status,
             StorableSource::Result::kSuccess);
 
@@ -854,12 +837,18 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   // There's still room for this source, as the limit applies only to active
   // sources.
   ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder().SetSourceEventId(6).Build())
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(6)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
                 .status,
             StorableSource::Result::kSuccess);
 
   ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder().SetSourceEventId(7).Build())
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(7)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
                 .status,
             StorableSource::Result::kInsufficientSourceCapacity);
 
@@ -1296,11 +1285,6 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
 }
 
 TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
-  // TODO(linnan): This should be irrelevant to this test, but isn't due to
-  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
-  // field of the source, which is not relevant to this test.
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
   delegate()->set_rate_limits(
       RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
         r.time_window = base::TimeDelta::Max();
@@ -1347,7 +1331,6 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
             DroppedEventLevelReportIs(absl::nullopt)));
 
   const auto source = source_builder.SetAggregatableBudgetConsumed(5)
-                          .SetMaxEventLevelReports(3)
                           .BuildStored();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
@@ -1385,8 +1368,6 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        NeverAttributeImpression_EventLevelReportNotStored) {
-  delegate()->set_max_attributions_per_source(1);
-
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{});
   StoreSourceResult result = storage()->StoreSource(
@@ -1494,11 +1475,6 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
 
 TEST_F(AttributionStorageTest,
        NeverAttributeSource_AggregatableReportStoredAndRateLimitsChanged) {
-  // TODO(linnan): This should be irrelevant to this test, but isn't due to
-  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
-  // field of the source, which is not relevant to this test.
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
   delegate()->set_rate_limits(
       RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
         r.time_window = base::TimeDelta::Max();
@@ -1529,7 +1505,6 @@ TEST_F(AttributionStorageTest,
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
           .SetPriority(0)
           .SetAggregatableBudgetConsumed(1)
-          .SetMaxEventLevelReports(3)
           .BuildStored(),
       DefaultAggregatableHistogramContributions(), trigger);
 
@@ -1913,7 +1888,6 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
 }
 
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
-  delegate()->set_max_attributions_per_source(1);
   delegate()->set_rate_limits(
       RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
         r.time_window = base::TimeDelta::Max();
@@ -1930,7 +1904,8 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(4)
       .SetSourceType(SourceType::kEvent)
-      .SetPriority(100);
+      .SetPriority(100)
+      .SetMaxEventLevelReports(1);
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{
           {.trigger_data = 7,
@@ -2053,12 +2028,16 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority) {
-  delegate()->set_max_attributions_per_source(1);
-
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(3).SetPriority(0).Build());
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(5).SetPriority(1).Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(3)
+                             .SetPriority(0)
+                             .SetMaxEventLevelReports(1)
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(5)
+                             .SetPriority(1)
+                             .SetMaxEventLevelReports(1)
+                             .Build());
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
@@ -2080,8 +2059,11 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                     CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
                     DroppedEventLevelReportIs(absl::nullopt)));
 
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(7)
+                             .SetPriority(2)
+                             .SetMaxEventLevelReports(1)
+                             .Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
@@ -2105,9 +2087,7 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
-  delegate()->set_max_attributions_per_source(1);
-
-  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(SourceBuilder().SetMaxEventLevelReports(1).Build());
 
   int i = 0;
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -2127,9 +2107,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
-  delegate()->set_max_attributions_per_source(2);
-
-  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(SourceBuilder().SetMaxEventLevelReports(2).Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
@@ -2160,12 +2138,16 @@ TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
-  delegate()->set_max_attributions_per_source(1);
-
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(3).SetPriority(0).Build());
-  storage()->StoreSource(
-      SourceBuilder().SetSourceEventId(5).SetPriority(1).Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(3)
+                             .SetPriority(0)
+                             .SetMaxEventLevelReports(1)
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(5)
+                             .SetPriority(1)
+                             .SetMaxEventLevelReports(1)
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -2771,9 +2753,8 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
 TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreEventLevelReport_ReturnsDeactivatedSources) {
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
-  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(
+      SourceBuilder().SetMaxEventLevelReports(kMaxConversions).Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
@@ -3297,11 +3278,12 @@ TEST_F(AttributionStorageTest, RandomizedResponseRatePerSourceUsed) {
 // Will return minimum of next event-level report and next aggregatable report
 // time if both present.
 TEST_F(AttributionStorageTest, GetNextReportTime) {
-  delegate()->set_max_attributions_per_source(1);
-
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), absl::nullopt);
 
-  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetMaxEventLevelReports(1)
+                             .Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -3325,7 +3307,7 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(SourceBuilder().SetMaxEventLevelReports(1).Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -3677,11 +3659,6 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
-  // TODO(linnan): This should be irrelevant to this test, but isn't due to
-  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
-  // field of the source, which is not relevant to this test.
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
   auto source_builder = TestAggregatableSourceProvider().GetBuilder();
   storage()->StoreSource(source_builder.Build());
 
@@ -3703,7 +3680,6 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
                 AggregatableHistogramContributionsAre(contributions))))));
 
   const auto source = source_builder.SetAggregatableBudgetConsumed(5)
-                          .SetMaxEventLevelReports(3)
                           .BuildStored();
   auto expected_aggregatable_report =
       GetExpectedAggregatableReport(source, std::move(contributions), trigger);
@@ -3718,9 +3694,10 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
 TEST_F(
     AttributionStorageTest,
     MaybeCreateAndStoreAggregatableReport_reachedEventLevelAttributionLimit) {
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
-  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetMaxEventLevelReports(kMaxConversions)
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
@@ -3940,11 +3917,6 @@ TEST_F(AttributionStorageTest, NoAggregatableData_NoNullReport) {
 }
 
 TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
-  // TODO(linnan): This should be irrelevant to this test, but isn't due to
-  // `GetExpectedAggregatableReport()` inspecting the max_event_level_reports
-  // field of the source, which is not relevant to this test.
-  delegate()->set_max_attributions_per_source(kMaxConversions);
-
   base::Time now = base::Time::Now();
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder(now);
@@ -3975,7 +3947,6 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
 
   const AttributionReport expected_aggregatable_report =
       GetExpectedAggregatableReport(builder.SetAggregatableBudgetConsumed(1)
-                                        .SetMaxEventLevelReports(3)
                                         .BuildStored(),
                                     DefaultAggregatableHistogramContributions(),
                                     trigger);

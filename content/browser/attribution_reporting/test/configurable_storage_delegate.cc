@@ -55,10 +55,6 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
                       std::numeric_limits<double>::infinity();
                   e.max_reports_per_destination =
                       std::numeric_limits<int>::max();
-                  e.max_attributions_per_navigation_source =
-                      std::numeric_limits<int>::max();
-                  e.max_attributions_per_event_source =
-                      std::numeric_limits<int>::max();
                 });
             c.aggregate_limit =
                 AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
@@ -185,12 +181,6 @@ ConfigurableStorageDelegate::GetDefaultEventReportWindows(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *attribution_reporting::EventReportWindows::CreateWindows(
       base::Seconds(0), {last_report_window});
-}
-
-void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.event_level_limit.max_attributions_per_navigation_source = max;
-  config_.event_level_limit.max_attributions_per_event_source = max;
 }
 
 void ConfigurableStorageDelegate::set_max_sources_per_origin(int max) {

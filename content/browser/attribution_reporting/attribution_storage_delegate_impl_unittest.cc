@@ -989,12 +989,5 @@ TEST(AttributionStorageDelegateImplTest,
               IsEmpty());
 }
 
-TEST(AttributionStorageDelegateImplTest, GetMaxAttributionsPerSource) {
-  EXPECT_EQ(1, AttributionStorageDelegateImpl().GetDefaultAttributionsPerSource(
-                   SourceType::kEvent));
-  EXPECT_EQ(3, AttributionStorageDelegateImpl().GetDefaultAttributionsPerSource(
-                   SourceType::kNavigation));
-}
-
 }  // namespace
 }  // namespace content

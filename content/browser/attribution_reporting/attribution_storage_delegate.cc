@@ -57,17 +57,6 @@ AttributionStorageDelegate::AttributionStorageDelegate(
 
 AttributionStorageDelegate::~AttributionStorageDelegate() = default;
 
-int AttributionStorageDelegate::GetDefaultAttributionsPerSource(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return config_.event_level_limit.max_attributions_per_navigation_source;
-    case SourceType::kEvent:
-      return config_.event_level_limit.max_attributions_per_event_source;
-  }
-}
-
 int AttributionStorageDelegate::GetMaxSourcesPerOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.max_sources_per_origin;

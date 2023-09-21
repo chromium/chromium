@@ -906,7 +906,7 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
       }
       ASSIGN_OR_RETURN(auto registration,
                        attribution_reporting::SourceRegistration::Parse(
-                           std::move(*result).TakeDict()));
+                           std::move(*result).TakeDict(), source_type));
       return StorableSource(pending_decode.reporting_origin,
                             std::move(registration),
                             registrations->source_origin(), source_type,

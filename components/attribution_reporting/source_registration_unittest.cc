@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +30,7 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
@@ -52,6 +54,7 @@ TEST(SourceRegistrationTest, Parse) {
     ::testing::Matcher<
         base::expected<SourceRegistration, SourceRegistrationError>>
         matches;
+    SourceType source_type = SourceType::kNavigation;
   } kTestCases[] = {
       {
           "invalid_json",
@@ -73,8 +76,7 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::event_report_windows, absl::nullopt),
               Field(&SourceRegistration::aggregatable_report_window,
                     absl::nullopt),
-              Field(&SourceRegistration::max_event_level_reports,
-                    absl::nullopt),
+              Field(&SourceRegistration::max_event_level_reports, 3),
               Field(&SourceRegistration::priority, 0),
               Field(&SourceRegistration::filter_data, FilterData()),
               Field(&SourceRegistration::debug_key, absl::nullopt),
@@ -210,6 +212,12 @@ TEST(SourceRegistrationTest, Parse) {
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),
       },
       {
+          "max_event_level_reports_omitted_event",
+          R"json({"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::max_event_level_reports, 1)),
+          SourceType::kEvent,
+      },
+      {
           "max_event_level_reports_valid",
           R"json({"max_event_level_reports":5,
           "destination":"https://d.example"})json",
@@ -296,7 +304,8 @@ TEST(SourceRegistrationTest, Parse) {
     SCOPED_TRACE(test_case.desc);
     base::HistogramTester histograms;
 
-    auto source = SourceRegistration::Parse(test_case.json);
+    auto source =
+        SourceRegistration::Parse(test_case.json, test_case.source_type);
     EXPECT_THAT(source, test_case.matches);
 
     if (source.has_value()) {
@@ -321,6 +330,7 @@ TEST(SourceRegistrationTest, ToJson) {
           R"json({
             "debug_reporting": false,
             "destination":"https://d.example",
+            "max_event_level_reports": 0,
             "priority": "0",
             "source_event_id": "0"
           })json",

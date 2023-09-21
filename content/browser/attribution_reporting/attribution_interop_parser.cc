@@ -197,12 +197,6 @@ class AttributionInteropParser {
 
     ParseInt(dict, "max_event_level_reports_per_destination",
              config.event_level_limit.max_reports_per_destination, required);
-    ParseInt(dict, "max_attributions_per_navigation_source",
-             config.event_level_limit.max_attributions_per_navigation_source,
-             required);
-    ParseInt(dict, "max_attributions_per_event_source",
-             config.event_level_limit.max_attributions_per_event_source,
-             required);
     ParseUint64(
         dict, "navigation_source_trigger_data_cardinality",
         config.event_level_limit.navigation_source_trigger_data_cardinality,
