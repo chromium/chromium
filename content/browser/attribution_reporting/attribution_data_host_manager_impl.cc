@@ -867,6 +867,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
                   /*violation_type=*/attribution_header->error(),
                   /*request_url=*/reporting_url, *it->devtools_request_id(),
                   /*invalid_parameter=*/absl::nullopt);
+    MaybeOnRegistrationsFinished(it);
     return;
   }
 
