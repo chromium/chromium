@@ -14,7 +14,10 @@
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#endif
 
 namespace ui {
 
@@ -83,13 +86,22 @@ void XDisplayManager::SetDisplayList(std::vector<display::Display> displays,
 // 1.3.
 void XDisplayManager::FetchDisplayList() {
   std::vector<display::Display> displays;
-  auto& display_config = delegate_->GetDisplayConfig();
+  DisplayConfig empty_display_config{
+      display::Display::HasForceDeviceScaleFactor()
+          ? display::Display::GetForcedDeviceScaleFactor()
+          : 1.0f};
+  const auto* display_config = &empty_display_config;
+#if BUILDFLAG(IS_LINUX)
+  if (const auto* linux_ui = ui::LinuxUi::instance()) {
+    display_config = &linux_ui->display_config();
+  }
+#endif
   size_t primary_display_index = 0;
   if (IsXrandrAvailable()) {
-    displays = BuildDisplaysFromXRandRInfo(xrandr_version_, display_config,
+    displays = BuildDisplaysFromXRandRInfo(xrandr_version_, *display_config,
                                            &primary_display_index);
   } else {
-    displays = GetFallbackDisplayList(display_config.primary_scale,
+    displays = GetFallbackDisplayList(display_config->primary_scale,
                                       &primary_display_index);
   }
 

@@ -23,8 +23,6 @@ ScreenOzone::ScreenOzone() {
   auto* platform = ui::OzonePlatform::GetInstance();
   platform_screen_ = platform->CreateScreen();
   if (platform_screen_) {
-    // Gives a chance to the derived classes to do pre-early initialization.
-    OnBeforePlatformScreenInit();
     // Separate `CreateScreen` from `InitScreen` so that synchronous observers
     // that call into `Screen` functions below have a valid `platform_screen_`.
     platform->InitScreen(platform_screen_.get());
@@ -174,7 +172,5 @@ gfx::AcceleratedWidget ScreenOzone::GetAcceleratedWidgetForWindow(
 
   return host->GetAcceleratedWidget();
 }
-
-void ScreenOzone::OnBeforePlatformScreenInit() {}
 
 }  // namespace aura

@@ -136,11 +136,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
-#if BUILDFLAG(IS_LINUX)
-  // Sets device scale factor received from external sources such as toolkits.
-  virtual void SetDisplayConfig(const DisplayConfig& display_config);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when tablet state is changed.
   virtual void OnTabletStateChanged(display::TabletState tablet_state) {}

@@ -22,6 +22,10 @@
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -71,11 +75,13 @@ gfx::PointF PointDipToPx(const DisplayList& displays, gfx::Point point_dip) {
 X11ScreenOzone::X11ScreenOzone()
     : connection_(x11::Connection::Get()),
       window_manager_(X11WindowManager::GetInstance()),
-      x11_display_manager_(std::make_unique<XDisplayManager>(this)),
-      empty_display_config_(display::Display::HasForceDeviceScaleFactor()
-                                ? display::Display::GetForcedDeviceScaleFactor()
-                                : 1.0f) {
+      x11_display_manager_(std::make_unique<XDisplayManager>(this)) {
   DCHECK(window_manager_);
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    display_scale_factor_observer_.Observe(linux_ui);
+  }
+#endif
 }
 
 X11ScreenOzone::~X11ScreenOzone() {
@@ -235,18 +241,12 @@ base::Value::List X11ScreenOzone::GetGpuExtraInfo(
   return result;
 }
 
-#if BUILDFLAG(IS_LINUX)
-void X11ScreenOzone::SetDisplayConfig(const DisplayConfig& display_config) {
-  display_config_ = &display_config;
-  // See DesktopScreenLinux, which sets the |device_scale_factor| before |this|
-  // is initialized.
-  if (initialized_)
-    x11_display_manager_->DispatchDelayedDisplayListUpdate();
-}
-#endif
-
 void X11ScreenOzone::OnEvent(const x11::Event& xev) {
   x11_display_manager_->OnEvent(xev);
+}
+
+void X11ScreenOzone::OnDeviceScaleFactorChanged() {
+  x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
 
 gfx::Point X11ScreenOzone::GetCursorLocation() const {
@@ -257,12 +257,6 @@ void X11ScreenOzone::OnXDisplayListUpdated() {
   float scale_factor =
       x11_display_manager_->GetPrimaryDisplay().device_scale_factor();
   gfx::SetFontRenderParamsDeviceScaleFactor(scale_factor);
-}
-
-const DisplayConfig& X11ScreenOzone::GetDisplayConfig() const {
-  return display_config_ && !display::Display::HasForceDeviceScaleFactor()
-             ? *display_config_
-             : empty_display_config_;
 }
 
 }  // namespace ui
