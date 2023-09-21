@@ -1183,6 +1183,11 @@ import java.util.concurrent.atomic.AtomicReference;
         public void dismissInstrument() {}
     }
 
+    public void startMainActivity() {
+        assert mDelayStartActivity;
+        startMainActivityWithURL(mTestFilePath);
+    }
+
     @Override
     public Statement apply(final Statement base, Description description) {
         return super.apply(new Statement() {
