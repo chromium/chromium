@@ -1134,7 +1134,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
           "ChromeOS.Settings.SmartInputs.PersonalInfoSuggestions.Open"));
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           ProfileManager::GetActiveUserProfile(),
-          chromeos::settings::mojom::kSmartInputsSubpagePath);
+          chromeos::settings::mojom::kInputSubpagePath);
       break;
     case ui::ime::ButtonId::kLearnMore:
       if (button.window_type ==
@@ -1145,7 +1145,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
             SettingToQueryString(
-                chromeos::settings::mojom::kSmartInputsSubpagePath,
+                chromeos::settings::mojom::kInputSubpagePath,
                 chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
       }
       if (button.window_type ==

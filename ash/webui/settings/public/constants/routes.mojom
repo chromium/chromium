@@ -146,7 +146,7 @@ enum Subpage {
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
   // 1201 was used for kManageInputMethods. Do not reuse.
-  kSmartInputs = 1202,
+  // 1202 was used for kSmartInputs. Do not reuse.
   kInputMethodOptions = 1203,
   kLanguages = 1204,
   kInput = 1205,
@@ -296,7 +296,6 @@ const string kPrivacyHubMicrophoneSubpagePath =
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";
-const string kSmartInputsSubpagePath = "osLanguages/smartInputs";
 const string kInputMethodOptionsSubpagePath = "osLanguages/inputMethodOptions";
 const string kLanguagesSubpagePath = "osLanguages/languages";
 const string kInputSubpagePath = "osLanguages/input";

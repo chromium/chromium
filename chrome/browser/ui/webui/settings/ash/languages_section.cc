@@ -40,7 +40,6 @@ using ::chromeos::settings::mojom::kInputSubpagePath;
 using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
 using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::kLanguagesSubpagePath;
-using ::chromeos::settings::mojom::kSmartInputsSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -138,11 +137,11 @@ const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
 const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
-       mojom::kSmartInputsSubpagePath,
+       mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kGlobe,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSmartInputs}},
+       {.subpage = mojom::Subpage::kInput}},
   });
   return *tags;
 }
@@ -150,7 +149,7 @@ const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
 const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
-       mojom::kSmartInputsSubpagePath,
+       mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kGlobe,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -657,6 +656,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputPageSettings[] = {
       mojom::Setting::kAddInputMethod,
+      mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kSpellCheck,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputPageSettings,
@@ -692,17 +692,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::Subpage::kInputMethodOptions);
   generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
                                    mojom::Subpage::kInputMethodOptions);
-
-  // Smart inputs.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SUGGESTIONS_TITLE, mojom::Subpage::kSmartInputs,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSmartInputsSubpagePath);
-  static constexpr mojom::Setting kSmartInputsFeaturesSettings[] = {
-      mojom::Setting::kShowEmojiSuggestions,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kSmartInputs,
-                            kSmartInputsFeaturesSettings, generator);
 }
 
 bool LanguagesSection::IsEmojiSuggestionAllowed() const {

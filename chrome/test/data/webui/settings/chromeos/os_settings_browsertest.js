@@ -768,10 +768,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_languages_page/os_edit_dictionary_page_test.js'
  ],
  [
-   'OsLanguagesPageSmartInputsPage',
-   'os_languages_page/smart_inputs_page_test.js'
- ],
- [
    'OsPageAvailability',
    'os_page_availability_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},

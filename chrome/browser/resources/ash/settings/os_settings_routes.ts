@@ -188,7 +188,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_INPUT: Route;
   OS_LANGUAGES_INPUT_METHOD_OPTIONS: Route;
   OS_LANGUAGES_LANGUAGES: Route;
-  OS_LANGUAGES_SMART_INPUTS: Route;
   OS_PRINTING: Route;
   OS_PRIVACY: Route;
   OS_RESET: Route;
@@ -585,9 +584,6 @@ export function createRoutes(): OsSettingsRoutes {
         r.OS_LANGUAGES_INPUT,
         routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
         Subpage.kJapaneseManageUserDictionary);
-    r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.SMART_INPUTS_SUBPAGE_PATH,
-        Subpage.kSmartInputs);
 
     // Search and Assistant subpages.
     r.SEARCH_SUBPAGE = createSubpage(
@@ -667,9 +663,6 @@ export function createRoutes(): OsSettingsRoutes {
         r.OS_LANGUAGES_INPUT,
         routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
         Subpage.kJapaneseManageUserDictionary);
-    r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
-        r.OS_LANGUAGES, routesMojom.SMART_INPUTS_SUBPAGE_PATH,
-        Subpage.kSmartInputs);
 
     // Reset section.
     if (isPowerwashAllowed()) {

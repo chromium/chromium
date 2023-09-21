@@ -142,6 +142,10 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       },
 
       languagePacksInSettingsEnabled_: Boolean,
+
+      allowEmojiSuggestion_: Boolean,
+
+      allowOrca_: Boolean,
     };
   }
 
@@ -158,8 +162,9 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // Internal properties for mixins.
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set([
-    Setting.kShowInputOptionsInShelf,
     Setting.kAddInputMethod,
+    Setting.kShowEmojiSuggestions,
+    Setting.kShowInputOptionsInShelf,
     Setting.kSpellCheck,
   ]);
   // From RouteOriginMixin.
@@ -175,6 +180,9 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private shouldShowLanguagePacksNotice_: boolean;
   private languagePacksInSettingsEnabled_ =
       loadTimeData.getBoolean('languagePacksInSettingsEnabled');
+  private readonly allowEmojiSuggestion_: boolean =
+      loadTimeData.getBoolean('allowEmojiSuggestion');
+  private readonly allowOrca_: boolean = loadTimeData.getBoolean('allowOrca');
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;

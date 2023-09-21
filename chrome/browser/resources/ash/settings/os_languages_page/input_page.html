@@ -85,6 +85,11 @@
     padding-inline-start: 0;
   }
 
+  .subsection > settings-toggle-button:not(:first-of-type),
+  .subsection > cr-link-row:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
   .internal-wrapper,
   .external-wrapper {
     display: flex;
@@ -204,101 +209,128 @@
     </div>
   </div>
 </div>
-<template is="dom-if" if="[[onDeviceGrammarCheckEnabled_]]">
-  <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
-      label="$i18n{spellAndGrammarCheckTitle}"
-      sub-label="$i18n{spellAndGrammarCheckDescription}"
-      pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
-      on-settings-boolean-control-change="onSpellcheckToggleChange_"
-      deep-link-focus-id$="[[Setting.kSpellCheck]]"
-      aria-describedby="spellAndGrammarCheckDescription">
-  </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
-  <!-- This uses the same id as the toggle above, causing |querySelector|s and
-       |getElementById|s to potentially fail.
-       TODO: b/289955380 - Remove this toggle, or change the id of this
-       toggle. -->
-  <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
-      label="$i18n{spellCheckTitle}"
-      pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
-      on-settings-boolean-control-change="onSpellcheckToggleChange_"
-      deep-link-focus-id$="[[Setting.kSpellCheck]]">
-  </settings-toggle-button>
-</template>
-<iron-collapse class="subsection" opened="[[
-    prefs.browser.enable_spellchecking.value]]">
-  <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
-    <settings-toggle-button id="enhancedSpellCheckToggle"
-        label="$i18n{spellCheckEnhancedLabel}"
-        pref="{{prefs.spellcheck.use_spelling_service}}"
-        disabled="[[!prefs.browser.enable_spellchecking.value]]">
+
+<div class="hr bottom-margin">
+  <template is="dom-if" if="[[onDeviceGrammarCheckEnabled_]]">
+    <settings-toggle-button id="enableSpellcheckingToggle"
+        label="$i18n{spellAndGrammarCheckTitle}"
+        sub-label="$i18n{spellAndGrammarCheckDescription}"
+        pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
+        on-settings-boolean-control-change="onSpellcheckToggleChange_"
+        deep-link-focus-id$="[[Setting.kSpellCheck]]"
+        aria-describedby="spellAndGrammarCheckDescription">
     </settings-toggle-button>
   </template>
-  <cr-link-row class="hr" label="$i18n{editDictionaryLabel}"
-      on-click="onEditDictionaryClick_"
-      id="editDictionarySubpageTrigger"
-      disabled="[[!prefs.browser.enable_spellchecking.value]]"
-      role-description="$i18n{subpageArrowRoleDescription}">
-  </cr-link-row>
-  <div id="spellCheckLanguagesListV2">
-    <div class="cr-row hr">
-      <div>
-        $i18n{spellCheckLanguagesListTitle}
+  <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
+    <!-- This uses the same id as the toggle above, causing |querySelector|s and
+         |getElementById|s to potentially fail.
+         TODO: b/289955380 - Remove this toggle, or change the id of this
+         toggle. -->
+    <settings-toggle-button id="enableSpellcheckingToggle"
+        label="$i18n{spellCheckTitle}"
+        pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
+        on-settings-boolean-control-change="onSpellcheckToggleChange_"
+        deep-link-focus-id$="[[Setting.kSpellCheck]]">
+    </settings-toggle-button>
+  </template>
+  <iron-collapse opened="[[prefs.browser.enable_spellchecking.value]]"
+      class="subsection">
+    <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
+      <settings-toggle-button id="enhancedSpellCheckToggle"
+          label="$i18n{spellCheckEnhancedLabel}"
+          pref="{{prefs.spellcheck.use_spelling_service}}"
+          disabled="[[!prefs.browser.enable_spellchecking.value]]">
+      </settings-toggle-button>
+    </template>
+    <cr-link-row class="hr" label="$i18n{editDictionaryLabel}"
+        on-click="onEditDictionaryClick_"
+        id="editDictionarySubpageTrigger"
+        disabled="[[!prefs.browser.enable_spellchecking.value]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div id="spellCheckLanguagesListV2">
+      <div class="cr-row hr">
+        <div>
+          $i18n{spellCheckLanguagesListTitle}
+        </div>
+      </div>
+      <div class="list-frame vertical-list" role="list">
+        <template is="dom-repeat"
+            items="[[spellCheckLanguages_]]"
+            mutable-data>
+          <div class="list-item">
+            <div class="flex name-with-error" aria-hidden="true"
+                disabled$="[[isSpellCheckNameClickDisabled_(item, item.*,
+                    prefs.browser.enable_spellchecking.*)]]">
+              [[item.language.displayName]]
+              <div hidden="[[!item.downloadDictionaryFailureCount]]"
+                  aria-hidden="true">
+                <iron-icon icon="cr:error"></iron-icon>
+                <span>$i18n{languagesDictionaryDownloadError}</span>
+              </div>
+            </div>
+            <cr-button on-click="onRetryDictionaryDownloadClick_"
+                hidden="[[!item.downloadDictionaryFailureCount]]"
+                disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                aria-label$="[[getDictionaryDownloadRetryAriaLabel_(
+                    item)]]">
+              $i18n{languagesDictionaryDownloadRetryLabel}
+            </cr-button>
+            <template is="dom-if" if="[[!item.isManaged]]">
+              <cr-icon-button class="icon-clear"
+                  disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                  on-click="onRemoveSpellcheckLanguageClick_"
+                  title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
+              </cr-icon-button>
+            </template>
+            <template is="dom-if" if="[[item.isManaged]]">
+              <cr-policy-pref-indicator
+                  pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
+                      item.spellCheckEnabled)]]">
+              </cr-policy-pref-indicator>
+              <cr-icon-button class="icon-clear managed-button"
+                  disabled="true"
+                  title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
+              </cr-icon-button>
+            </template>
+          </div>
+        </template>
+        <div class="list-item">
+          <cr-button id="addSpellcheckLanguages"
+              on-click="onAddSpellcheckLanguagesClick_"
+              disabled="[[!prefs.browser.enable_spellchecking.value]]">
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+            $i18n{addLanguages}
+          </cr-button>
+        </div>
       </div>
     </div>
-    <div class="list-frame vertical-list" role="list">
-      <template is="dom-repeat"
-          items="[[spellCheckLanguages_]]"
-          mutable-data>
-        <div class="list-item">
-          <div class="flex name-with-error" aria-hidden="true"
-              disabled$="[[isSpellCheckNameClickDisabled_(item, item.*,
-                  prefs.browser.enable_spellchecking.*)]]">
-            [[item.language.displayName]]
-            <div hidden="[[!item.downloadDictionaryFailureCount]]"
-                aria-hidden="true">
-              <iron-icon icon="cr:error"></iron-icon>
-              <span>$i18n{languagesDictionaryDownloadError}</span>
-            </div>
-          </div>
-          <cr-button on-click="onRetryDictionaryDownloadClick_"
-              hidden="[[!item.downloadDictionaryFailureCount]]"
-              disabled="[[!prefs.browser.enable_spellchecking.value]]"
-              aria-label$="[[getDictionaryDownloadRetryAriaLabel_(
-                  item)]]">
-            $i18n{languagesDictionaryDownloadRetryLabel}
-          </cr-button>
-          <template is="dom-if" if="[[!item.isManaged]]">
-            <cr-icon-button class="icon-clear"
-                disabled="[[!prefs.browser.enable_spellchecking.value]]"
-                on-click="onRemoveSpellcheckLanguageClick_"
-                title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
-            </cr-icon-button>
-          </template>
-          <template is="dom-if" if="[[item.isManaged]]">
-            <cr-policy-pref-indicator
-                pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
-                    item.spellCheckEnabled)]]">
-            </cr-policy-pref-indicator>
-            <cr-icon-button class="icon-clear managed-button"
-                disabled="true"
-                title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
-            </cr-icon-button>
-          </template>
-        </div>
+  </iron-collapse>
+</div>
+
+<template is="dom-if" if="[[allowEmojiSuggestion_]]">
+  <div id="suggestionsSection" class="hr bottom-margin">
+    <h2>$i18n{smartInputsTitle}</h2>
+    <div class="subsection">
+      <template is="dom-if" if="[[allowOrca_]]">
+        <!-- TODO(b/294956432): Replace with the correct label and sub-label -->
+        <settings-toggle-button id="orcaToggle"
+            pref="{{prefs.assistive_input.orca_enabled}}"
+            label="Copy Suggestions"
+            aria-label="Copy Suggestions">
+        </settings-toggle-button>
       </template>
-      <div class="list-item">
-        <cr-button id="addSpellcheckLanguages"
-            on-click="onAddSpellcheckLanguagesClick_"
-            disabled="[[!prefs.browser.enable_spellchecking.value]]">
-          <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-          $i18n{addLanguages}
-        </cr-button>
-      </div>
+
+      <settings-toggle-button id="emojiSuggestionToggle"
+          pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"
+          label="$i18n{emojiSuggestionTitle}"
+          sub-label="$i18n{emojiSuggestionDescription}"
+          aria-label="$i18n{emojiSuggestionTitle}"
+          deep-link-focus-id$="[[Setting.kShowEmojiSuggestions]]">
+      </settings-toggle-button>
     </div>
   </div>
-</iron-collapse>
+</template>
 
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"

@@ -301,7 +301,7 @@ bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
       base::UserMetricsAction("VirtualKeyboard.OpenSuggestionSettings"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kSmartInputsSubpagePath);
+      chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
 

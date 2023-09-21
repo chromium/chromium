@@ -12,7 +12,6 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
@@ -52,16 +51,6 @@ export class LanguageSettingsCardElement extends
       languageHelper: Object,
 
       isRevampWayfindingEnabled_: Boolean,
-
-      /**
-       * This is enabled when any of the smart inputs features are allowed.
-       */
-      smartInputsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowEmojiSuggestion');
-        },
-      },
     };
   }
 
@@ -75,7 +64,6 @@ export class LanguageSettingsCardElement extends
 
   // Internal state.
   private isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
-  private smartInputsEnabled_: boolean;
 
   // Internal properties for mixins.
   // From RouteOriginMixin. This needs to be defined after
@@ -88,7 +76,6 @@ export class LanguageSettingsCardElement extends
 
     this.addFocusConfig(routes.OS_LANGUAGES_LANGUAGES, '#languagesRow');
     this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
-    this.addFocusConfig(routes.OS_LANGUAGES_SMART_INPUTS, '#smartInputsRow');
   }
 
   private onLanguagesV2Click_(): void {
@@ -97,10 +84,6 @@ export class LanguageSettingsCardElement extends
 
   private onInputClick_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
-  }
-
-  private onSmartInputsClick_(): void {
-    Router.getInstance().navigateTo(routes.OS_LANGUAGES_SMART_INPUTS);
   }
 
   /**

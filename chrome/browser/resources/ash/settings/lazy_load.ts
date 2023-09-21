@@ -103,7 +103,6 @@ import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
 import './os_languages_page/os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page/os_languages_page_v2.js';
-import './os_languages_page/smart_inputs_page.js';
 import './os_people_page/os_personalization_options.js';
 import './os_printing_page/cups_add_print_server_dialog.js';
 import './os_printing_page/cups_add_printer_dialog.js';
@@ -237,7 +236,6 @@ export {LanguageHelper, LanguageState} from './os_languages_page/languages_types
 export {OsSettingsEditDictionaryPageElement} from './os_languages_page/os_edit_dictionary_page.js';
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';
 export {OsSettingsLanguagesPageV2Element} from './os_languages_page/os_languages_page_v2.js';
-export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
 export {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {SettingsAccountManagerSubpageElement} from './os_people_page/account_manager_subpage.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';

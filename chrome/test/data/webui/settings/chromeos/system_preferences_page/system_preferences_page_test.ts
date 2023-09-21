@@ -215,10 +215,6 @@ suite('<settings-system-preferences-page>', () => {
         elementTagName: 'settings-input-method-options-page',
       },
       {
-        routeName: 'OS_LANGUAGES_SMART_INPUTS',
-        elementTagName: 'os-settings-smart-inputs-page',
-      },
-      {
         routeName: 'OS_LANGUAGES_EDIT_DICTIONARY',
         elementTagName: 'os-settings-edit-dictionary-page',
       },

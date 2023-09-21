@@ -8,7 +8,7 @@ import {LanguageSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
 import {OsSettingsRoutes, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -35,22 +35,20 @@ suite('<language-settings-card>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Smart inputs row is visible if smart inputs are enabled', () => {
-    loadTimeData.overrideValues({allowEmojiSuggestion: true});
+  test('Languages row is visible', () => {
     createLanguagesCard();
-    const smartInputsRow =
+    const languagesRow =
         languageSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-            '#smartInputsRow');
-    assertTrue(isVisible(smartInputsRow));
+            '#languagesRow');
+    assertTrue(isVisible(languagesRow));
   });
 
-  test('Smart inputs row is hidden if smart inputs are disabled', () => {
-    loadTimeData.overrideValues({allowEmojiSuggestion: false});
+  test('Input row is visible', () => {
     createLanguagesCard();
-    const smartInputsRow =
+    const inputRow =
         languageSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-            '#smartInputsRow');
-    assertFalse(isVisible(smartInputsRow));
+            '#inputRow');
+    assertTrue(isVisible(inputRow));
   });
 
   const subpageTriggerData: SubpageTriggerData[] = [
@@ -61,10 +59,6 @@ suite('<language-settings-card>', () => {
     {
       triggerSelector: '#inputRow',
       routeName: 'OS_LANGUAGES_INPUT',
-    },
-    {
-      triggerSelector: '#smartInputsRow',
-      routeName: 'OS_LANGUAGES_SMART_INPUTS',
     },
   ];
   subpageTriggerData.forEach(({triggerSelector, routeName}) => {

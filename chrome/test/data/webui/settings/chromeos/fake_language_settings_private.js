@@ -474,6 +474,16 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
 export function getFakeLanguagePrefs() {
   const fakePrefs = [
     {
+      key: 'assistive_input.emoji_suggestion_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'assistive_input.orca_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
       key: 'browser.enable_spellchecking',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
