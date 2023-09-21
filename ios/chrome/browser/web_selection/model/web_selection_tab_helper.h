@@ -52,6 +52,12 @@ class WebSelectionTabHelper
   // Called when the selection retrieval times out.
   void Timeout();
 
+  // Call `final_callback_` with `response` asynchronously.
+  // It is possible that `final_callback_` will eventually cause a new selection
+  // fetch which may cause reentrancy problem. To avoid this, post the task
+  // instead of calling it synchronously.
+  void SendResponse(WebSelectionResponse* response);
+
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;

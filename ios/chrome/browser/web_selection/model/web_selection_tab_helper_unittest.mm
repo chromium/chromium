@@ -160,7 +160,8 @@ TEST_F(WebSelectionTabHelperTest, GetSelectionMainFrame) {
       }));
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return response != nil;
       }));
   EXPECT_TRUE(response.valid);
@@ -187,7 +188,8 @@ TEST_F(WebSelectionTabHelperTest, GetSelectionIFrame) {
       }));
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return response != nil;
       }));
   EXPECT_TRUE(response.valid);
@@ -237,7 +239,8 @@ TEST_F(WebSelectionTabHelperTest, GetMultipleWebStateSelections) {
       }));
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return response != nil && response2 != nil && response3 != nil;
       }));
 
@@ -264,7 +267,8 @@ TEST_F(WebSelectionTabHelperTest, GetMultipleWebStateSelections) {
       }));
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return response4 != nil;
       }));
 
