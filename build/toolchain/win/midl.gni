@@ -132,6 +132,10 @@ template("midl") {
       "$out_dir/$header_file",
       "$out_dir/$interface_identifier_file",
     ]
+    if (defined(invoker.dynamic_guids)) {
+      idl_file = "{{source_name_part}}.idl"
+      outputs += [ "$out_dir/$idl_file" ]
+    }
 
     # These files are only added to outputs if the invoker so desires, as it
     # they are not always generated depending on the content of the input idl

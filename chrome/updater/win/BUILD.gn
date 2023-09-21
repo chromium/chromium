@@ -81,8 +81,8 @@ artifact_zip("updater_zip") {
         "$root_build_dir/UpdaterSetup.exe",
         "$root_build_dir/UpdaterSetup_test.exe",
         "$root_build_dir/qualification_app.exe",
-        "$root_gen_dir/chrome/updater/app/server/win/updater_idl.h",
-        "$root_gen_dir/chrome/updater/app/server/win/updater_internal_idl.h",
+        "$root_gen_dir/chrome/updater/app/server/win/updater_idl.idl",
+        "$root_gen_dir/chrome/updater/app/server/win/updater_internal_idl.idl",
       ] + get_target_outputs(":signing")
   deps = [
     ":signing",
