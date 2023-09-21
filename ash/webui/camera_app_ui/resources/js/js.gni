@@ -45,6 +45,7 @@ compile_js_files = [
   "lit/svg_wrapper.ts",
   "local_dev.ts",
   "main.ts",
+  "memory_usage.ts",
   "menu.ts",
   "metrics.ts",
   "models/async_interval.ts",
