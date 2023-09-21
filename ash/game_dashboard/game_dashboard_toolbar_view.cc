@@ -13,7 +13,6 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
-#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -305,8 +304,7 @@ void GameDashboardToolbarView::OnGameControlsButtonPressed() {
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
-          static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kEnabled |
-                                           ArcGameControlsFlag::kHint),
+          static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kHint),
           /*enable_flag=*/!game_controls_button_->toggled()));
 }
 
@@ -386,12 +384,24 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));
+
+  UpdateGameControlsButton(*flags);
+}
+
+void GameDashboardToolbarView::UpdateGameControlsButton(
+    ArcGameControlsFlag flags) {
+  DCHECK(game_controls_button_);
+
   game_controls_button_->SetEnabled(
-      !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
+      game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled) &&
+      !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty));
   if (game_controls_button_->GetEnabled()) {
     game_controls_button_->SetToggled(
-        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
+        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kHint));
   }
+
+  game_dashboard_utils::UpdateGameControlsHintButtonToolTipText(
+      game_controls_button_, flags);
 }
 
 void GameDashboardToolbarView::UpdateRecordGameButton(
@@ -419,17 +429,11 @@ void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,
   ArcGameControlsFlag new_flags = window->GetProperty(kArcGameControlsFlagsKey);
   ArcGameControlsFlag old_flags = static_cast<ash::ArcGameControlsFlag>(old);
 
-  if (game_dashboard_utils::IsFlagChanged(new_flags, old_flags,
-                                          ArcGameControlsFlag::kEmpty)) {
-    game_controls_button_->SetEnabled(!game_dashboard_utils::IsFlagSet(
-        new_flags, ArcGameControlsFlag::kEmpty));
+  if (new_flags == old_flags) {
+    return;
   }
 
-  if (game_dashboard_utils::IsFlagChanged(new_flags, old_flags,
-                                          ArcGameControlsFlag::kEnabled)) {
-    game_controls_button_->SetToggled(game_dashboard_utils::IsFlagSet(
-        new_flags, ArcGameControlsFlag::kEnabled));
-  }
+  UpdateGameControlsButton(new_flags);
 }
 
 BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)

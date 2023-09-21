@@ -64,8 +64,8 @@ class ASH_EXPORT GameDashboardMainMenuView
   void OnGameControlsSetUpButtonPressed();
   void OnGameControlsFeatureSwitchButtonPressed();
 
-  // Updates Game Controls tile text and tooltip text.
-  void UpdateGameControlsTileTextAndTooltipText();
+  // Updates the `game_controls_tile_` states, sub-label and tooltip text.
+  void UpdateGameControlsTile();
 
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();

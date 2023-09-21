@@ -6,7 +6,10 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/button.h"
 
 namespace ash::game_dashboard_utils {
 
@@ -38,6 +41,28 @@ absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
   return game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kAvailable)
              ? absl::make_optional<ArcGameControlsFlag>(flags)
              : absl::nullopt;
+}
+
+void UpdateGameControlsHintButtonToolTipText(views::Button* button,
+                                             ArcGameControlsFlag flags) {
+  DCHECK(button);
+
+  const bool is_enabled = IsFlagSet(flags, ArcGameControlsFlag::kEnabled);
+  const bool is_empty = IsFlagSet(flags, ArcGameControlsFlag::kEmpty);
+  const bool is_hint_on = IsFlagSet(flags, ArcGameControlsFlag::kHint);
+  int tooltip_text_id;
+  if (is_enabled) {
+    if (is_empty) {
+      tooltip_text_id = IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_SETUP;
+    } else if (is_hint_on) {
+      tooltip_text_id = IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_HIDE_CONTROLS;
+    } else {
+      tooltip_text_id = IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_SHOW_CONTROLS;
+    }
+  } else {
+    tooltip_text_id = IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_AVAILABLE;
+  }
+  button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 }
 
 }  // namespace ash::game_dashboard_utils

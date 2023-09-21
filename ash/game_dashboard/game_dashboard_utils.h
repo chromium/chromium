@@ -13,6 +13,10 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace views {
+class Button;
+}  // namespace views
+
 namespace ash::game_dashboard_utils {
 
 // Returns true if `flag` is turned on for `flags`.
@@ -32,6 +36,12 @@ ASH_EXPORT ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
 // Returns flags value if Game Controls is available on `window`. Otherwise, it
 // returns nullopt.
 absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
+
+// Updates Game Controls mapping hint button tooltip text. `button`
+// refers to `game_controls_tile_` in `GameDashboardMainMenuView` or
+// `game_controls_button_` in `GameDashboardToolbarView`.
+void UpdateGameControlsHintButtonToolTipText(views::Button* button,
+                                             ArcGameControlsFlag flags);
 
 }  // namespace ash::game_dashboard_utils
 

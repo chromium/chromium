@@ -165,7 +165,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
     if (hint_tile_states[0]) {
       ASSERT_TRUE(game_controls_button);
-      EXPECT_EQ(feature_switch_states[1], game_controls_button->toggled());
+      EXPECT_EQ(hint_tile_states[1], game_controls_button->GetEnabled());
+      EXPECT_EQ(hint_tile_states[2], game_controls_button->toggled());
     } else {
       EXPECT_FALSE(game_controls_button);
     }
@@ -516,8 +517,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   EXPECT_TRUE(switch_button->GetEnabled());
   EXPECT_FALSE(switch_button->GetIsOn());
   // Toolbar button should also get updated.
-  EXPECT_TRUE(game_controls_button->GetEnabled());
-  EXPECT_FALSE(game_controls_button->toggled());
+  EXPECT_FALSE(game_controls_button->GetEnabled());
 
   EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
       game_window_->GetProperty(kArcGameControlsFlagsKey),

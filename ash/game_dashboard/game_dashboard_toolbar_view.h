@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -77,6 +78,10 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   void AddShortcutTiles();
   // Adds Game Controls button if needed.
   void MayAddGameControlsTile();
+
+  // Updates the `game_controls_button_` states and tooltip text according to
+  // `flags`.
+  void UpdateGameControlsButton(ArcGameControlsFlag flags);
 
   // Updates the `record_game_button_` UI. If `is_recording_game_window` is
   // true, then the button will change to a stop button, otherwise it will show

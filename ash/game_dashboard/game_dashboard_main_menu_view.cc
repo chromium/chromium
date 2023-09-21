@@ -293,17 +293,15 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
-  game_controls_tile_->SetToggled(!game_controls_tile_->IsToggled());
-
   auto* game_window = context_->game_window();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
           ArcGameControlsFlag::kHint,
-          /*enable_flag=*/game_controls_tile_->IsToggled()));
+          /*enable_flag=*/!game_controls_tile_->IsToggled()));
 
-  UpdateGameControlsTileTextAndTooltipText();
+  UpdateGameControlsTile();
 }
 
 void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
@@ -321,10 +319,6 @@ void GameDashboardMainMenuView::OnGameControlsFeatureSwitchButtonPressed() {
   // TODO(b/274690042): Replace the strings with localized strings.
   game_controls_details_->SetSubtitle(is_toggled ? u"On" : u"Off");
 
-  DCHECK(game_controls_tile_);
-  game_controls_tile_->SetEnabled(is_toggled);
-  game_controls_tile_->SetToggled(is_toggled);
-
   auto* game_window = context_->game_window();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
@@ -335,10 +329,12 @@ void GameDashboardMainMenuView::OnGameControlsFeatureSwitchButtonPressed() {
               ArcGameControlsFlag::kHint),
           is_toggled));
 
-  UpdateGameControlsTileTextAndTooltipText();
+  UpdateGameControlsTile();
 }
 
-void GameDashboardMainMenuView::UpdateGameControlsTileTextAndTooltipText() {
+void GameDashboardMainMenuView::UpdateGameControlsTile() {
+  DCHECK(game_controls_tile_);
+
   const auto flags =
       game_dashboard_utils::GetGameControlsFlag(context_->game_window());
   DCHECK(flags);
@@ -350,30 +346,19 @@ void GameDashboardMainMenuView::UpdateGameControlsTileTextAndTooltipText() {
   bool is_hint_on =
       game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kHint);
 
-  if (is_enabled) {
-    if (is_empty) {
-      game_controls_tile_->SetSubLabel(
-          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF));
-      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_SETUP));
-    } else if (is_hint_on) {
-      game_controls_tile_->SetSubLabel(
-          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE));
-      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_HIDE_CONTROLS));
-    } else {
-      game_controls_tile_->SetSubLabel(
-          l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_HIDDEN));
-      game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_SHOW_CONTROLS));
-    }
-  } else {
-    game_controls_tile_->SetSubLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF));
-    game_controls_tile_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_AVAILABLE));
+  game_controls_tile_->SetEnabled(is_enabled && !is_empty);
+  if (game_controls_tile_->GetEnabled()) {
+    game_controls_tile_->SetToggled(is_hint_on);
   }
 
+  game_dashboard_utils::UpdateGameControlsHintButtonToolTipText(
+      game_controls_tile_, *flags);
+
+  game_controls_tile_->SetSubLabel(l10n_util::GetStringUTF16(
+      !is_enabled || is_empty
+          ? IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF
+          : (is_hint_on ? IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE
+                        : IDS_ASH_GAME_DASHBOARD_GC_TILE_HIDDEN)));
   game_controls_tile_->SetSubLabelVisibility(true);
 }
 
@@ -478,15 +463,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*sub_label=*/absl::nullopt));
 
-  game_controls_tile_->SetEnabled(
-      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled) &&
-      !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
-  if (game_controls_tile_->GetEnabled()) {
-    game_controls_tile_->SetToggled(
-        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kHint));
-  }
-
-  UpdateGameControlsTileTextAndTooltipText();
+  UpdateGameControlsTile();
 }
 
 void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
