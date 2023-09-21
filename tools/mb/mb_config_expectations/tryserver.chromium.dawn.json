@@ -94,6 +94,17 @@
       "use_remoteexec": true
     }
   },
+  "dawn-try-mac-arm64-deps-rel": {
+    "gn_args": {
+      "dawn_enable_opengles": true,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "dawn-try-mac-arm64-rel": {
     "gn_args": {
       "dawn_enable_opengles": true,

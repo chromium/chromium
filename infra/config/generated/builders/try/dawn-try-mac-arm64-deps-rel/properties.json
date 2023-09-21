@@ -37,18 +37,12 @@
           "builder": "Dawn Mac arm64 DEPS Release (Apple M2)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "dawn-try-mac-arm64-deps-rel",
-          "group": "tryserver.chromium.dawn"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -56,12 +50,10 @@
     "column_keys": [],
     "grouping_keys": [
       "status",
-      "v.test_suite"
+      "v.test_suite",
+      "v.gpu"
     ]
   },
-  "builder_group": "chromium.dawn",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "dawn"
-  ]
+  "builder_group": "tryserver.chromium.dawn",
+  "recipe": "chromium_trybot"
 }

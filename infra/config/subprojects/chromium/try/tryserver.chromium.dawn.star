@@ -276,6 +276,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-try-mac-arm64-deps-rel",
+    mirrors = [
+        "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
+    ],
+    # TODO(crbug.com/1435476): Switch to a dedicated M2 pool once we have
+    # allocated machines.
+    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+    builderless = True,
+    os = os.MAC_ANY,
+    contact_team_email = "chrome-gpu-infra@google.com",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "dawn-try-mac-arm64-rel",
     mirrors = [
         "ci/Dawn Mac arm64 Release (Apple M2)",

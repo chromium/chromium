@@ -1209,6 +1209,7 @@
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_bot_reclient',
       'dawn-try-linux-tsan-rel': 'dawn_tests_tsan_release_bot_reclient',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_bot_reclient',
+      'dawn-try-mac-arm64-deps-rel': 'dawn_tests_arm64_release_bot_reclient',
       'dawn-try-mac-arm64-rel': 'dawn_tests_arm64_release_bot_reclient',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_bot_reclient',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_win_release_bot_reclient',
