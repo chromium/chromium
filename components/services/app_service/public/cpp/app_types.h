@@ -132,6 +132,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   ~App();
 
+  bool operator==(const App& other) const;
+  bool operator!=(const App& other) const;
+
   std::unique_ptr<App> Clone() const;
 
   AppType app_type;
@@ -218,11 +221,15 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   absl::optional<uint64_t> app_size_in_bytes;
   absl::optional<uint64_t> data_size_in_bytes;
 
-  // When adding new fields to the App type, the `Clone` function and the
-  // `AppUpdate` class should also be updated.
+  // When adding new fields to the App type, the `Clone` function, the
+  // `operator==` function, and the `AppUpdate` class should also be updated.
 };
 
 using AppPtr = std::unique_ptr<App>;
+
+COMPONENT_EXPORT(APP_TYPES)
+bool IsEqual(const std::vector<AppPtr>& source,
+             const std::vector<AppPtr>& target);
 
 COMPONENT_EXPORT(APP_TYPES)
 ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type);

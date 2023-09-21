@@ -100,26 +100,6 @@ class AppStorageFileHandlerTest : public testing::Test {
     return apps;
   }
 
-  void ExpectEq(const AppPtr& source, const AppPtr& target) {
-    EXPECT_EQ(source->app_type, target->app_type);
-    EXPECT_EQ(source->app_id, target->app_id);
-
-    if (source->name.has_value()) {
-      ASSERT_TRUE(target->name.has_value());
-      EXPECT_EQ(source->name.value(), target->name.value());
-    } else {
-      ASSERT_FALSE(target->name.has_value());
-    }
-  }
-
-  void ExpectEq(const std::vector<AppPtr>& source,
-                const std::vector<AppPtr>& target) {
-    EXPECT_EQ(source.size(), target.size());
-    for (size_t i = 0; i < source.size(); i++) {
-      ExpectEq(source[i], target[i]);
-    }
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir tmp_dir_;
@@ -184,13 +164,13 @@ TEST_F(AppStorageFileHandlerTest, ReadAndWriteEmptyData) {
 // Test AppStorageFileHandler can read and write one app.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteOneApp) {
   WriteToFile(CreateOneApp());
-  ExpectEq(CreateOneApp(), ReadFromFile());
+  EXPECT_TRUE(IsEqual(CreateOneApp(), ReadFromFile()));
 }
 
 // Test AppStorageFileHandler can read and write multiple apps.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteMultipleApps) {
   WriteToFile(CreateTwoApps());
-  ExpectEq(CreateTwoApps(), ReadFromFile());
+  EXPECT_TRUE(IsEqual(CreateTwoApps(), ReadFromFile()));
 }
 
 }  // namespace apps
