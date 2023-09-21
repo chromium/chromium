@@ -84,11 +84,14 @@ source_set("common") {
     "platform_video_frame_pool.h",
     "platform_video_frame_utils.cc",
     "platform_video_frame_utils.h",
+    "shaders/shaders.h",
     "vd_video_decode_accelerator.cc",
     "vd_video_decode_accelerator.h",
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
     "video_decoder_pipeline.h",
+    "vulkan_image_processor_backend.cc",
+    "vulkan_image_processor_backend.h",
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
@@ -105,6 +108,7 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
+    "//gpu/vulkan/init:init",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",

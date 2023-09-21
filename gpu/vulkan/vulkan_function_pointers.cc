@@ -476,6 +476,30 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     return false;
   }
 
+  vkCmdBindDescriptorSets = reinterpret_cast<PFN_vkCmdBindDescriptorSets>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdBindDescriptorSets"));
+  if (!vkCmdBindDescriptorSets) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdBindDescriptorSets";
+    return false;
+  }
+
+  vkCmdBindPipeline = reinterpret_cast<PFN_vkCmdBindPipeline>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdBindPipeline"));
+  if (!vkCmdBindPipeline) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdBindPipeline";
+    return false;
+  }
+
+  vkCmdBindVertexBuffers = reinterpret_cast<PFN_vkCmdBindVertexBuffers>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdBindVertexBuffers"));
+  if (!vkCmdBindVertexBuffers) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdBindVertexBuffers";
+    return false;
+  }
+
   vkCmdCopyBuffer = reinterpret_cast<PFN_vkCmdCopyBuffer>(
       vkGetDeviceProcAddr(vk_device, "vkCmdCopyBuffer"));
   if (!vkCmdCopyBuffer) {
@@ -497,6 +521,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   if (!vkCmdCopyImageToBuffer) {
     DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
                   << "vkCmdCopyImageToBuffer";
+    return false;
+  }
+
+  vkCmdDraw = reinterpret_cast<PFN_vkCmdDraw>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdDraw"));
+  if (!vkCmdDraw) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdDraw";
     return false;
   }
 
@@ -529,6 +561,30 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   if (!vkCmdPipelineBarrier) {
     DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
                   << "vkCmdPipelineBarrier";
+    return false;
+  }
+
+  vkCmdPushConstants = reinterpret_cast<PFN_vkCmdPushConstants>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdPushConstants"));
+  if (!vkCmdPushConstants) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdPushConstants";
+    return false;
+  }
+
+  vkCmdSetScissor = reinterpret_cast<PFN_vkCmdSetScissor>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdSetScissor"));
+  if (!vkCmdSetScissor) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdSetScissor";
+    return false;
+  }
+
+  vkCmdSetViewport = reinterpret_cast<PFN_vkCmdSetViewport>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdSetViewport"));
+  if (!vkCmdSetViewport) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdSetViewport";
     return false;
   }
 
@@ -602,6 +658,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   if (!vkCreateImageView) {
     DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
                   << "vkCreateImageView";
+    return false;
+  }
+
+  vkCreatePipelineLayout = reinterpret_cast<PFN_vkCreatePipelineLayout>(
+      vkGetDeviceProcAddr(vk_device, "vkCreatePipelineLayout"));
+  if (!vkCreatePipelineLayout) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCreatePipelineLayout";
     return false;
   }
 
@@ -707,6 +771,22 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   if (!vkDestroyImageView) {
     DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
                   << "vkDestroyImageView";
+    return false;
+  }
+
+  vkDestroyPipeline = reinterpret_cast<PFN_vkDestroyPipeline>(
+      vkGetDeviceProcAddr(vk_device, "vkDestroyPipeline"));
+  if (!vkDestroyPipeline) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkDestroyPipeline";
+    return false;
+  }
+
+  vkDestroyPipelineLayout = reinterpret_cast<PFN_vkDestroyPipelineLayout>(
+      vkGetDeviceProcAddr(vk_device, "vkDestroyPipelineLayout"));
+  if (!vkDestroyPipelineLayout) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkDestroyPipelineLayout";
     return false;
   }
 
@@ -1247,13 +1327,20 @@ void VulkanFunctionPointers::ResetForTesting() {
   vkBindImageMemory = nullptr;
   vkBindImageMemory2 = nullptr;
   vkCmdBeginRenderPass = nullptr;
+  vkCmdBindDescriptorSets = nullptr;
+  vkCmdBindPipeline = nullptr;
+  vkCmdBindVertexBuffers = nullptr;
   vkCmdCopyBuffer = nullptr;
   vkCmdCopyBufferToImage = nullptr;
   vkCmdCopyImageToBuffer = nullptr;
+  vkCmdDraw = nullptr;
   vkCmdEndRenderPass = nullptr;
   vkCmdExecuteCommands = nullptr;
   vkCmdNextSubpass = nullptr;
   vkCmdPipelineBarrier = nullptr;
+  vkCmdPushConstants = nullptr;
+  vkCmdSetScissor = nullptr;
+  vkCmdSetViewport = nullptr;
   vkCreateBuffer = nullptr;
   vkCreateCommandPool = nullptr;
   vkCreateDescriptorPool = nullptr;
@@ -1263,6 +1350,7 @@ void VulkanFunctionPointers::ResetForTesting() {
   vkCreateGraphicsPipelines = nullptr;
   vkCreateImage = nullptr;
   vkCreateImageView = nullptr;
+  vkCreatePipelineLayout = nullptr;
   vkCreateRenderPass = nullptr;
   vkCreateSampler = nullptr;
   vkCreateSemaphore = nullptr;
@@ -1276,6 +1364,8 @@ void VulkanFunctionPointers::ResetForTesting() {
   vkDestroyFramebuffer = nullptr;
   vkDestroyImage = nullptr;
   vkDestroyImageView = nullptr;
+  vkDestroyPipeline = nullptr;
+  vkDestroyPipelineLayout = nullptr;
   vkDestroyRenderPass = nullptr;
   vkDestroySampler = nullptr;
   vkDestroySemaphore = nullptr;

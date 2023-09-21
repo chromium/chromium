@@ -194,13 +194,20 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkBindImageMemory> vkBindImageMemory;
   VulkanFunction<PFN_vkBindImageMemory2> vkBindImageMemory2;
   VulkanFunction<PFN_vkCmdBeginRenderPass> vkCmdBeginRenderPass;
+  VulkanFunction<PFN_vkCmdBindDescriptorSets> vkCmdBindDescriptorSets;
+  VulkanFunction<PFN_vkCmdBindPipeline> vkCmdBindPipeline;
+  VulkanFunction<PFN_vkCmdBindVertexBuffers> vkCmdBindVertexBuffers;
   VulkanFunction<PFN_vkCmdCopyBuffer> vkCmdCopyBuffer;
   VulkanFunction<PFN_vkCmdCopyBufferToImage> vkCmdCopyBufferToImage;
   VulkanFunction<PFN_vkCmdCopyImageToBuffer> vkCmdCopyImageToBuffer;
+  VulkanFunction<PFN_vkCmdDraw> vkCmdDraw;
   VulkanFunction<PFN_vkCmdEndRenderPass> vkCmdEndRenderPass;
   VulkanFunction<PFN_vkCmdExecuteCommands> vkCmdExecuteCommands;
   VulkanFunction<PFN_vkCmdNextSubpass> vkCmdNextSubpass;
   VulkanFunction<PFN_vkCmdPipelineBarrier> vkCmdPipelineBarrier;
+  VulkanFunction<PFN_vkCmdPushConstants> vkCmdPushConstants;
+  VulkanFunction<PFN_vkCmdSetScissor> vkCmdSetScissor;
+  VulkanFunction<PFN_vkCmdSetViewport> vkCmdSetViewport;
   VulkanFunction<PFN_vkCreateBuffer> vkCreateBuffer;
   VulkanFunction<PFN_vkCreateCommandPool> vkCreateCommandPool;
   VulkanFunction<PFN_vkCreateDescriptorPool> vkCreateDescriptorPool;
@@ -210,6 +217,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkCreateGraphicsPipelines> vkCreateGraphicsPipelines;
   VulkanFunction<PFN_vkCreateImage> vkCreateImage;
   VulkanFunction<PFN_vkCreateImageView> vkCreateImageView;
+  VulkanFunction<PFN_vkCreatePipelineLayout> vkCreatePipelineLayout;
   VulkanFunction<PFN_vkCreateRenderPass> vkCreateRenderPass;
   VulkanFunction<PFN_vkCreateSampler> vkCreateSampler;
   VulkanFunction<PFN_vkCreateSemaphore> vkCreateSemaphore;
@@ -223,6 +231,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkDestroyFramebuffer> vkDestroyFramebuffer;
   VulkanFunction<PFN_vkDestroyImage> vkDestroyImage;
   VulkanFunction<PFN_vkDestroyImageView> vkDestroyImageView;
+  VulkanFunction<PFN_vkDestroyPipeline> vkDestroyPipeline;
+  VulkanFunction<PFN_vkDestroyPipelineLayout> vkDestroyPipelineLayout;
   VulkanFunction<PFN_vkDestroyRenderPass> vkDestroyRenderPass;
   VulkanFunction<PFN_vkDestroySampler> vkDestroySampler;
   VulkanFunction<PFN_vkDestroySemaphore> vkDestroySemaphore;
@@ -651,6 +661,33 @@ ALWAYS_INLINE void vkCmdBeginRenderPass(
   return gpu::GetVulkanFunctionPointers()->vkCmdBeginRenderPass(
       commandBuffer, pRenderPassBegin, contents);
 }
+ALWAYS_INLINE void vkCmdBindDescriptorSets(
+    VkCommandBuffer commandBuffer,
+    VkPipelineBindPoint pipelineBindPoint,
+    VkPipelineLayout layout,
+    uint32_t firstSet,
+    uint32_t descriptorSetCount,
+    const VkDescriptorSet* pDescriptorSets,
+    uint32_t dynamicOffsetCount,
+    const uint32_t* pDynamicOffsets) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdBindDescriptorSets(
+      commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount,
+      pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+}
+ALWAYS_INLINE void vkCmdBindPipeline(VkCommandBuffer commandBuffer,
+                                     VkPipelineBindPoint pipelineBindPoint,
+                                     VkPipeline pipeline) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdBindPipeline(
+      commandBuffer, pipelineBindPoint, pipeline);
+}
+ALWAYS_INLINE void vkCmdBindVertexBuffers(VkCommandBuffer commandBuffer,
+                                          uint32_t firstBinding,
+                                          uint32_t bindingCount,
+                                          const VkBuffer* pBuffers,
+                                          const VkDeviceSize* pOffsets) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdBindVertexBuffers(
+      commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+}
 ALWAYS_INLINE void vkCmdCopyBuffer(VkCommandBuffer commandBuffer,
                                    VkBuffer srcBuffer,
                                    VkBuffer dstBuffer,
@@ -678,6 +715,14 @@ ALWAYS_INLINE void vkCmdCopyImageToBuffer(VkCommandBuffer commandBuffer,
   return gpu::GetVulkanFunctionPointers()->vkCmdCopyImageToBuffer(
       commandBuffer, srcImage, srcImageLayout, dstBuffer, regionCount,
       pRegions);
+}
+ALWAYS_INLINE void vkCmdDraw(VkCommandBuffer commandBuffer,
+                             uint32_t vertexCount,
+                             uint32_t instanceCount,
+                             uint32_t firstVertex,
+                             uint32_t firstInstance) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdDraw(
+      commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 ALWAYS_INLINE void vkCmdEndRenderPass(VkCommandBuffer commandBuffer) {
   return gpu::GetVulkanFunctionPointers()->vkCmdEndRenderPass(commandBuffer);
@@ -709,6 +754,29 @@ ALWAYS_INLINE void vkCmdPipelineBarrier(
       commandBuffer, srcStageMask, dstStageMask, dependencyFlags,
       memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
       pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+}
+ALWAYS_INLINE void vkCmdPushConstants(VkCommandBuffer commandBuffer,
+                                      VkPipelineLayout layout,
+                                      VkShaderStageFlags stageFlags,
+                                      uint32_t offset,
+                                      uint32_t size,
+                                      const void* pValues) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdPushConstants(
+      commandBuffer, layout, stageFlags, offset, size, pValues);
+}
+ALWAYS_INLINE void vkCmdSetScissor(VkCommandBuffer commandBuffer,
+                                   uint32_t firstScissor,
+                                   uint32_t scissorCount,
+                                   const VkRect2D* pScissors) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdSetScissor(
+      commandBuffer, firstScissor, scissorCount, pScissors);
+}
+ALWAYS_INLINE void vkCmdSetViewport(VkCommandBuffer commandBuffer,
+                                    uint32_t firstViewport,
+                                    uint32_t viewportCount,
+                                    const VkViewport* pViewports) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdSetViewport(
+      commandBuffer, firstViewport, viewportCount, pViewports);
 }
 ALWAYS_INLINE VkResult vkCreateBuffer(VkDevice device,
                                       const VkBufferCreateInfo* pCreateInfo,
@@ -781,6 +849,14 @@ vkCreateImageView(VkDevice device,
                   VkImageView* pView) {
   return gpu::GetVulkanFunctionPointers()->vkCreateImageView(
       device, pCreateInfo, pAllocator, pView);
+}
+ALWAYS_INLINE VkResult
+vkCreatePipelineLayout(VkDevice device,
+                       const VkPipelineLayoutCreateInfo* pCreateInfo,
+                       const VkAllocationCallbacks* pAllocator,
+                       VkPipelineLayout* pPipelineLayout) {
+  return gpu::GetVulkanFunctionPointers()->vkCreatePipelineLayout(
+      device, pCreateInfo, pAllocator, pPipelineLayout);
 }
 ALWAYS_INLINE VkResult
 vkCreateRenderPass(VkDevice device,
@@ -868,6 +944,19 @@ ALWAYS_INLINE void vkDestroyImageView(VkDevice device,
                                       const VkAllocationCallbacks* pAllocator) {
   return gpu::GetVulkanFunctionPointers()->vkDestroyImageView(device, imageView,
                                                               pAllocator);
+}
+ALWAYS_INLINE void vkDestroyPipeline(VkDevice device,
+                                     VkPipeline pipeline,
+                                     const VkAllocationCallbacks* pAllocator) {
+  return gpu::GetVulkanFunctionPointers()->vkDestroyPipeline(device, pipeline,
+                                                             pAllocator);
+}
+ALWAYS_INLINE void vkDestroyPipelineLayout(
+    VkDevice device,
+    VkPipelineLayout pipelineLayout,
+    const VkAllocationCallbacks* pAllocator) {
+  return gpu::GetVulkanFunctionPointers()->vkDestroyPipelineLayout(
+      device, pipelineLayout, pAllocator);
 }
 ALWAYS_INLINE void vkDestroyRenderPass(
     VkDevice device,
