@@ -162,8 +162,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     // Ghost surface is an overlay widget, so its corners must be rounded. The
     // bottom two corners of the ghost window overlay overlap with the window,
     // so we need to round them.
-    overlay_corners_radii->Set(0, 0, window_corner_radius,
-                               window_corner_radius);
+    overlay_corners_radii =
+        gfx::RoundedCornersF(0, 0, window_corner_radius, window_corner_radius);
   }
 
   shell_surface->controller_surface()->Commit();
