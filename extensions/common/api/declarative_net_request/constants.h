@@ -17,25 +17,25 @@ extern const char kDeclarativeNetRequestPermission[];
 extern const char kFeedbackAPIPermission[];
 
 // Minimum valid value of a declarative rule ID.
-constexpr int kMinValidID = 1;
+inline constexpr int kMinValidID = 1;
 
 // Minimum valid value of a declarative rule priority.
-constexpr int kMinValidPriority = 1;
+inline constexpr int kMinValidPriority = 1;
 
 using RulesetID =
     ::base::IdType<class RulesetIDTag, int, -2 /* invalid value */>;
 
-constexpr RulesetID kMinValidStaticRulesetID(1);
-constexpr RulesetID kDynamicRulesetID(0);
-constexpr RulesetID kSessionRulesetID(-1);
+inline constexpr RulesetID kMinValidStaticRulesetID(1);
+inline constexpr RulesetID kDynamicRulesetID(0);
+inline constexpr RulesetID kSessionRulesetID(-1);
 
 // Prefix for reserved ruleset public IDs. Extensions can't specify static
 // rulesets beginning with this.
-constexpr char kReservedRulesetIDPrefix = '_';
+inline constexpr char kReservedRulesetIDPrefix = '_';
 
 // Default priority used for rules when the priority is not explicity provided
 // by an extension.
-constexpr int kDefaultPriority = 1;
+inline constexpr int kDefaultPriority = 1;
 
 // Keys used in rules.
 extern const char kIDKey[];

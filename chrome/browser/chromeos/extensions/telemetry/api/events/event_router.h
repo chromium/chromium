@@ -20,7 +20,7 @@ namespace chromeos {
 
 namespace {
 
-constexpr auto kCategoriesWithFocusRestriction =
+inline constexpr auto kCategoriesWithFocusRestriction =
     base::MakeFixedFlatSet<crosapi::mojom::TelemetryEventCategoryEnum>({
         crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton,
         crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch,

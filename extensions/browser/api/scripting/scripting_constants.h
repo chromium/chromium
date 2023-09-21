@@ -11,23 +11,23 @@ namespace scripting {
 // TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
 // only used by the legacy version Chromevox extension. We can assume it will
 // always be false here, but it may be added back if needed.
-constexpr bool kScriptsCanExecuteEverywhere = false;
+inline constexpr bool kScriptsCanExecuteEverywhere = false;
 
 // The all_urls_includes_chrome_urls flag is only true for the legacy ChromeVox
 // extension, which does not call this API. Therefore we can assume it to be
 // always false.
-constexpr bool kAllUrlsIncludesChromeUrls = false;
+inline constexpr bool kAllUrlsIncludesChromeUrls = false;
 
 // The key for the field in the extension's StateStore for dynamic content
 // script metadata that persists across sessions.
-constexpr char kRegisteredScriptsStorageKey[] = "dynamic_scripts";
+inline constexpr char kRegisteredScriptsStorageKey[] = "dynamic_scripts";
 
 // The key for storing a dynamic content script's id.
-constexpr char kId[] = "id";
+inline constexpr char kId[] = "id";
 
 // Key corresponding to the set of URL patterns from the extension's persistent
 // dynamic content scripts.
-constexpr const char kPrefPersistentScriptURLPatterns[] =
+inline constexpr const char kPrefPersistentScriptURLPatterns[] =
     "persistent_script_url_patterns";
 
 }  // namespace scripting

@@ -92,7 +92,7 @@ struct UpdateManifestResult {
   int diff_size = 0;
 };
 
-constexpr int kNoDaystart = -1;
+inline constexpr int kNoDaystart = -1;
 struct UpdateManifestResults {
   UpdateManifestResults();
   UpdateManifestResults(const UpdateManifestResults& other);

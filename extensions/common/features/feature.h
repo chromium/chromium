@@ -19,7 +19,7 @@ class GURL;
 
 namespace extensions {
 
-constexpr int kUnspecifiedContextId = -1;
+inline constexpr int kUnspecifiedContextId = -1;
 
 class Extension;
 

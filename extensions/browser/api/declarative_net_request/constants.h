@@ -241,10 +241,10 @@ extern const char kErrorGetMatchedRulesMissingPermissions[];
 
 // The maximum amount of static rules in the global rule pool for a single
 // profile.
-constexpr int kMaxStaticRulesPerProfile = 300000;
+inline constexpr int kMaxStaticRulesPerProfile = 300000;
 
 // The per-extension maximum amount of disabled static rules.
-constexpr int kMaxDisabledStaticRules = 5000;
+inline constexpr int kMaxDisabledStaticRules = 5000;
 
 // Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
 // root.
@@ -254,7 +254,7 @@ extern const char kEmbedderConditionsBufferIdentifier[];
 // (header name, header delimiter). Currently, this list contains all standard
 // HTTP request headers that support multiple values in a single entry. This
 // list may be extended in the future to support custom headers.
-constexpr auto kDNRRequestHeaderAppendAllowList =
+inline constexpr auto kDNRRequestHeaderAppendAllowList =
     base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
         {{"accept", ", "},
          {"accept-encoding", ", "},

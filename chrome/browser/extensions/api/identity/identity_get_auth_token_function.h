@@ -43,7 +43,8 @@ namespace extensions {
 class IdentityGetAuthTokenError;
 
 // Exposed for testing
-constexpr base::TimeDelta kGetAuthTokenInactivityTime = base::Minutes(10);
+inline constexpr base::TimeDelta kGetAuthTokenInactivityTime =
+    base::Minutes(10);
 
 // identity.getAuthToken fetches an OAuth 2 function for the
 // caller. The request has three sub-flows: non-interactive,

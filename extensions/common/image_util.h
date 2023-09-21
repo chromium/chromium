@@ -43,7 +43,7 @@ bool IsRenderedIconAtPathSufficientlyVisible(const base::FilePath& path,
 // Icons should be a reasonable size for analysis. There have been crash
 // reports due to memory allocation issues with calls to
 // SkBitmap::allocN32Pixels. See crbug.com/1155746.
-constexpr int kMaxAllowedPixels = 2048 * 2048;
+inline constexpr int kMaxAllowedPixels = 2048 * 2048;
 
 // Renders the icon bitmap onto another bitmap, combining it with the specified
 // background color. The output bitmap must be empty.
