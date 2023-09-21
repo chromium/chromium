@@ -125,9 +125,7 @@ HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> icon_view,
                          const std::u16string& title,
                          const std::u16string& subtitle,
-                         std::unique_ptr<views::View> secondary_view,
-                         bool resize_row_for_secondary_view,
-                         bool secondary_view_can_process_events)
+                         std::unique_ptr<views::View> secondary_view)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -185,8 +183,7 @@ HoverButton::HoverButton(PressedCallback callback,
   label_observation_.Observe(label_wrapper_.get());
 
   if (secondary_view) {
-    secondary_view->SetCanProcessEventsWithinSubtree(
-        secondary_view_can_process_events);
+    secondary_view->SetCanProcessEventsWithinSubtree(false);
     // |secondary_view| needs a layer otherwise it's obscured by the layer
     // used in drawing ink drops.
     secondary_view->SetPaintToLayer();
@@ -195,17 +192,12 @@ HoverButton::HoverButton(PressedCallback callback,
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-    // If |resize_row_for_secondary_view| is true set vertical margins such that
-    // the vertical distance between HoverButtons is maintained.
-    // Otherwise set vertical margins to 0 and allow the secondary view to grow
-    // into the vertical margins that would otherwise exist due to |icon_view_|
-    // and the |label_wrapper_|.
-    const int secondary_spacing =
-        resize_row_for_secondary_view ? vertical_spacing : 0;
+    // Set vertical margins such that the vertical distance between HoverButtons
+    // is maintained.
     secondary_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(secondary_spacing, icon_label_spacing,
-                          secondary_spacing, 0));
+        gfx::Insets::TLBR(vertical_spacing, icon_label_spacing,
+                          vertical_spacing, 0));
     secondary_view_ = AddChildView(std::move(secondary_view));
   }
 
