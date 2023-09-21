@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -64,11 +66,11 @@ class EligiblityServiceBrowserTest : public InProcessBrowserTest {
         ->FlushNetworkInterfaceForTesting();
   }
 
-  void FireOnClientEligibilityChanged() {
+  void FireOnClientEligibilityChanged(bool is_eligible) {
     auto* eligibility_service =
         tpcd::experiment::EligibilityServiceFactory::GetForProfile(
             browser()->profile());
-    eligibility_service->OnClientEligibilityChanged();
+    eligibility_service->OnClientEligibilityChanged(is_eligible);
   }
 
   net::EmbeddedTestServer https_server_{
@@ -110,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
 
   ASSERT_FALSE(privacy_sandbox_settings->IsCookieDeprecationLabelAllowed());
 
-  FireOnClientEligibilityChanged();
+  FireOnClientEligibilityChanged(/*is_eligible=*/true);
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
@@ -145,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
 
   ASSERT_TRUE(privacy_sandbox_settings->IsCookieDeprecationLabelAllowed());
 
-  FireOnClientEligibilityChanged();
+  FireOnClientEligibilityChanged(/*is_eligible=*/false);
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
@@ -158,6 +160,24 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
                              "Sec-Cookie-Deprecation"));
   EXPECT_EQ(response_b_c->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
+}
+
+IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
+                       EligibilityChanged_OnboardingServiceNotified) {
+  privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
+
+  FireOnClientEligibilityChanged(/*is_eligible=*/true);
+
+  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kEligible);
+
+  FireOnClientEligibilityChanged(/*is_eligible=*/false);
+
+  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kIneligible);
 }
 
 }  // namespace tpcd::experiment

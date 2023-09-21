@@ -5,6 +5,7 @@
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 
@@ -27,7 +28,9 @@ EligibilityServiceFactory::EligibilityServiceFactory()
           "EligibilityServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(

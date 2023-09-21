@@ -10,6 +10,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 
+namespace privacy_sandbox {
+class TrackingProtectionOnboarding;
+}
+
 namespace tpcd::experiment {
 
 class EligibilityService : public KeyedService {
@@ -21,16 +25,20 @@ class EligibilityService : public KeyedService {
 
   static EligibilityService* Get(Profile* profile);
 
+  void Shutdown() override;
+
  private:
   // So EligibilityServiceFactory::BuildServiceInstanceFor can call the
   // constructor.
   friend class EligibilityServiceFactory;
   friend class EligiblityServiceBrowserTest;
 
-  void OnClientEligibilityChanged();
+  void OnClientEligibilityChanged(bool is_eligible);
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  // onboarding_service_ may be null for OTR and system profiles.
+  raw_ptr<privacy_sandbox::TrackingProtectionOnboarding> onboarding_service_;
 };
 
 }  // namespace tpcd::experiment
