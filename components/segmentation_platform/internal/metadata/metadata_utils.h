@@ -51,7 +51,8 @@ enum class ValidationResult {
   kBinnedClassifierEmptyLabels = 23,
   kBinnedClassifierBinsUnsorted = 24,
   kPredictorTypeMissing = 25,
-  kMaxValue = kPredictorTypeMissing,
+  kDiscreteMappingAndOutputConfigFound = 26,
+  kMaxValue = kDiscreteMappingAndOutputConfigFound,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the

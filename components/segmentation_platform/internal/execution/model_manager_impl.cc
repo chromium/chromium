@@ -121,19 +121,11 @@ void ModelManagerImpl::OnSegmentationModelUpdated(
   // field.
   metadata_utils::SetFeatureNameHashesFromName(&metadata.value());
 
-  auto validation =
-      metadata_utils::ValidateMetadataAndFeatures(metadata.value());
-  stats::RecordModelDeliveryMetadataValidation(
-      segment_id, model_source, /* processed = */ false, validation);
-  if (validation != metadata_utils::ValidationResult::kValidationSuccess) {
-    return;
-  }
-
   auto old_segment_info =
       segment_database_->GetCachedSegmentInfo(segment_id, model_source);
   OnSegmentInfoFetchedForModelUpdate(segment_id, model_source,
                                      std::move(metadata.value()), model_version,
-                                     old_segment_info);
+                                     std::move(old_segment_info));
 }
 
 void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
@@ -150,7 +142,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
 
   // Inject the newly updated metadata into the new SegmentInfo.
   auto* new_metadata = new_segment_info.mutable_model_metadata();
-  new_metadata->CopyFrom(metadata);
+  new_metadata->Swap(&metadata);
   new_segment_info.set_model_version(model_version);
 
   int64_t new_model_update_time_s =
@@ -181,7 +173,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
         // If we have an old PredictionResult, we need to keep it around in the
         // new version of the SegmentInfo.
         auto* prediction_result = new_segment_info.mutable_prediction_result();
-        prediction_result->CopyFrom(old_segment_info->prediction_result());
+        prediction_result->Swap(old_segment_info->mutable_prediction_result());
       }
 
       if (old_segment_info->has_model_update_time_s()) {
@@ -204,13 +196,16 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
 
   stats::RecordModelDeliveryMetadataFeatureCount(
       segment_id, model_source,
-      new_segment_info.model_metadata().features_size());
+      new_segment_info.model_metadata().input_features_size());
   // Now that we've merged the old and the new SegmentInfo, we want to store
   // the new version in the database.
-  segment_database_->UpdateSegment(
-      segment_id, model_source, absl::make_optional(new_segment_info),
+  auto update_callback =
       base::BindOnce(&ModelManagerImpl::OnUpdatedSegmentInfoStored,
-                     weak_ptr_factory_.GetWeakPtr(), new_segment_info));
+                     weak_ptr_factory_.GetWeakPtr(), new_segment_info);
+  segment_database_->UpdateSegment(
+      segment_id, model_source,
+      absl::make_optional(std::move(new_segment_info)),
+      std::move(update_callback));
 }
 
 void ModelManagerImpl::OnSegmentInfoDeleted(SegmentId segment_id,

@@ -137,7 +137,7 @@ void SegmentInfoDatabase::UpdateSegment(
   if (segment_info.has_value()) {
     segment_info->set_model_source(model_source);
     entries_to_save->emplace_back(std::make_pair(
-        ToString(segment_id, model_source), segment_info.value()));
+        ToString(segment_id, model_source), std::move(segment_info.value())));
   } else {
     keys_to_delete->emplace_back(ToString(segment_id, model_source));
   }
@@ -203,7 +203,7 @@ void SegmentInfoDatabase::SaveSegmentResult(
             << segmentation_platform::PredictionResultToDebugString(
                    result.value())
             << " for segment id: " << proto::SegmentId_Name(segment_id);
-    segment_info->mutable_prediction_result()->CopyFrom(*result);
+    segment_info->mutable_prediction_result()->Swap(&(*result));
   } else {
     VLOG(1) << "SaveSegmentResult: clearing prediction result for segment "
             << proto::SegmentId_Name(segment_id);
@@ -258,7 +258,8 @@ void SegmentInfoDatabase::OnLoadAllEntries(
     // Add all the entries to the cache on startup.
     for (auto info : *all_infos.get()) {
       ModelSource model_source = GetModelSource(info.model_source());
-      cache_->UpdateSegmentInfo(info.segment_id(), model_source, info);
+      proto::SegmentId segment_id = info.segment_id();
+      cache_->UpdateSegmentInfo(segment_id, model_source, std::move(info));
     }
   }
   std::move(callback).Run(success);

@@ -97045,7 +97045,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="22" label="BinaryClassifierEmptyLabels"/>
   <int value="23" label="BinnedClassifierEmptyLabels"/>
   <int value="24" label="BinnedClassifierBinsUnsorted"/>
-  <int value="25" label="kPredictorTypeMissing"/>
+  <int value="25" label="PredictorTypeMissing"/>
+  <int value="26" label="DiscreteMappingAndOutputConfigFound"/>
 </enum>
 
 <enum name="SegmentationSelectionFailureReason">

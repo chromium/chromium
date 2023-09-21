@@ -129,6 +129,11 @@ ValidationResult ValidateMetadata(
     return ValidationResult::kFeatureListInvalid;
   }
 
+  if (model_metadata.has_output_config() &&
+      model_metadata.discrete_mappings_size() > 0) {
+    return ValidationResult::kDiscreteMappingAndOutputConfigFound;
+  }
+
   if (model_metadata.has_output_config()) {
     auto output_config_result =
         ValidateOutputConfig(model_metadata.output_config());
