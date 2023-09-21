@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
+#include "chromeos/ash/components/network/network_3gpp_handler.h"
 #include "chromeos/ash/components/network/network_activation_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
@@ -103,6 +104,9 @@ NetworkHandler::NetworkHandler()
     text_message_provider_.reset(new TextMessageProvider());
   }
   geolocation_handler_.reset(new GeolocationHandler());
+  if (ash::features::IsCellularCarrierLockEnabled()) {
+    network_3gpp_handler_.reset(new Network3gppHandler());
+  }
 }
 
 NetworkHandler::~NetworkHandler() {
@@ -204,6 +208,9 @@ void NetworkHandler::Init() {
     network_sms_handler_->Init();
   }
   geolocation_handler_->Init();
+  if (ash::features::IsCellularCarrierLockEnabled()) {
+    network_3gpp_handler_->Init();
+  }
 }
 
 // static
@@ -383,6 +390,11 @@ TextMessageProvider* NetworkHandler::text_message_provider() {
 
 GeolocationHandler* NetworkHandler::geolocation_handler() {
   return geolocation_handler_.get();
+}
+
+Network3gppHandler* NetworkHandler::network_3gpp_handler() {
+  DCHECK(ash::features::IsCellularCarrierLockEnabled());
+  return network_3gpp_handler_.get();
 }
 
 ProhibitedTechnologiesHandler*

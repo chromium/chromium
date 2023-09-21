@@ -51,6 +51,7 @@ class NetworkMetadataStore;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 class NetworkSmsHandler;
+class Network3gppHandler;
 class ProhibitedTechnologiesHandler;
 class StubCellularNetworksProvider;
 class TechnologyStateController;
@@ -132,6 +133,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   NetworkConnectionHandler* network_connection_handler();
   NetworkMetadataStore* network_metadata_store();
   NetworkSmsHandler* network_sms_handler();
+  Network3gppHandler* network_3gpp_handler();
   GeolocationHandler* geolocation_handler();
   ProhibitedTechnologiesHandler* prohibited_technologies_handler();
   TechnologyStateController* technology_state_controller();
@@ -190,6 +192,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<ProhibitedTechnologiesHandler>
       prohibited_technologies_handler_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
+  std::unique_ptr<Network3gppHandler> network_3gpp_handler_;
   std::unique_ptr<TextMessageProvider> text_message_provider_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;

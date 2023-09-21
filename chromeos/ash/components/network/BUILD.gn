@@ -125,6 +125,8 @@ component("network") {
     "managed_network_configuration_handler_impl.h",
     "managed_state.cc",
     "managed_state.h",
+    "network_3gpp_handler.cc",
+    "network_3gpp_handler.h",
     "network_activation_handler.h",
     "network_activation_handler_impl.cc",
     "network_activation_handler_impl.h",
@@ -230,6 +232,8 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   sources = [
+    "fake_network_3gpp_handler.cc",
+    "fake_network_3gpp_handler.h",
     "fake_network_activation_handler.cc",
     "fake_network_activation_handler.h",
     "fake_network_connection_handler.cc",
@@ -333,6 +337,7 @@ source_set("unit_tests") {
     "hotspot_state_handler_unittest.cc",
     "managed_cellular_pref_handler_unittest.cc",
     "managed_network_configuration_handler_unittest.cc",
+    "network_3gpp_handler_unittest.cc",
     "network_cert_loader_unittest.cc",
     "network_configuration_handler_unittest.cc",
     "network_connect_unittest.cc",
