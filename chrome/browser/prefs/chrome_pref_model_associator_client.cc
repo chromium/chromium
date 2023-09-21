@@ -7,6 +7,8 @@
 #include <cstdint>
 
 #include "base/check_is_test.h"
+#include "base/memory/singleton.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -16,13 +18,14 @@
 #include "base/json/values_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-ChromePrefModelAssociatorClient::ChromePrefModelAssociatorClient() {}
+ChromePrefModelAssociatorClient::ChromePrefModelAssociatorClient() = default;
 
-ChromePrefModelAssociatorClient::~ChromePrefModelAssociatorClient() {}
+ChromePrefModelAssociatorClient::~ChromePrefModelAssociatorClient() = default;
 
 bool ChromePrefModelAssociatorClient::IsMergeableListPreference(
     const std::string& pref_name) const {
-  return pref_name == prefs::kURLsToRestoreOnStartup;
+  return (pref_name == prefs::kURLsToRestoreOnStartup) ||
+         (pref_name == prefs::kPinnedActions);
 }
 
 bool ChromePrefModelAssociatorClient::IsMergeableDictionaryPreference(

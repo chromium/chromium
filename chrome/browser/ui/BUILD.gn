@@ -1528,6 +1528,8 @@ static_library("ui") {
       "toolbar/toolbar_actions_model.h",
       "toolbar/toolbar_actions_model_factory.cc",
       "toolbar/toolbar_actions_model_factory.h",
+      "toolbar/toolbar_pref_names.cc",
+      "toolbar/toolbar_pref_names.h",
       "translate/translate_bubble_factory.cc",
       "translate/translate_bubble_factory.h",
       "uma_browsing_activity_observer.cc",

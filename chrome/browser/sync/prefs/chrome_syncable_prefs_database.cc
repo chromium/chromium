@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
@@ -284,6 +285,8 @@ enum {
   kAccessibilityReadAnythingSpeechRate = 100229,
   kAccessibilityReadAnythingHighlightGranularity = 100230,
   kAccessibilityReadAnythingHighlightColor = 100231,
+  kPinnedActions = 100232,
+  kPinnedSearchCompanionMigrationComplete = 100233,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -382,6 +385,12 @@ const auto& SyncablePreferences() {
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kSidePanelCompanionEntryPinnedToToolbar,
          {syncable_prefs_ids::kSidePanelCompanionEntryPinnedToToolbar,
+          syncer::PREFERENCES, false, sync_preferences::MergeBehavior::kNone}},
+        {prefs::kPinnedActions,
+         {syncable_prefs_ids::kPinnedActions, syncer::PREFERENCES, false,
+          sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+        {prefs::kPinnedSearchCompanionMigrationComplete,
+         {syncable_prefs_ids::kPinnedSearchCompanionMigrationComplete,
           syncer::PREFERENCES, false, sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
