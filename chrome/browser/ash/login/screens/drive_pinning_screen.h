@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
@@ -21,7 +22,7 @@ class DrivePinningScreenView;
 
 // Controller for the Drive Pinning Screen.
 class DrivePinningScreen : public BaseScreen,
-                           drive::DriveIntegrationServiceObserver {
+                           drive::DriveIntegrationService::Observer {
  public:
   using TView = DrivePinningScreenView;
 
@@ -70,7 +71,8 @@ class DrivePinningScreen : public BaseScreen,
   void OnUserAction(const base::Value::List& args) override;
   ScreenSummary GetScreenSummary() override;
 
-  // drive::DriveIntegrationServiceObserver
+  // DriveIntegrationService::Observer implementation.
+  void OnDriveIntegrationServiceDestroyed() override;
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
   void OnBulkPinInitialized() override;
 
@@ -85,6 +87,10 @@ class DrivePinningScreen : public BaseScreen,
 
   base::WeakPtr<DrivePinningScreenView> view_;
   ScreenExitCallback exit_callback_;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      service_observer_{this};
 };
 
 }  // namespace ash

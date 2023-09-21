@@ -106,13 +106,7 @@ DrivePinningScreen::DrivePinningScreen(
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-DrivePinningScreen::~DrivePinningScreen() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (drive::DriveIntegrationService* const service =
-          drive::DriveIntegrationServiceFactory::FindForProfile(profile)) {
-    service->RemoveObserver(this);
-  }
-}
+DrivePinningScreen::~DrivePinningScreen() = default;
 
 bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests) {
@@ -158,26 +152,38 @@ void DrivePinningScreen::CalculateRequiredSpace() {
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
   if (!service) {
+    LOG(ERROR) << "No Drive integration service";
     return;
   }
-  if (!service->HasObserver(this)) {
-    service->AddObserver(this);
+
+  if (!service_observer_.IsObservingSource(service)) {
+    service_observer_.Reset();
+    service_observer_.Observe(service);
   }
-  if (PinManager* const pin_manager = GetPinManager()) {
-    RecordCHOOBEScreenBulkPinningInitializations(
-        bulk_pinning_initializations_ > 0 ? bulk_pinning_initializations_
-                                          : ++bulk_pinning_initializations_);
-    LOG_IF(ERROR, !pin_manager->CalculateRequiredSpace())
-        << "Failed to calculate required space";
+
+  PinManager* const pin_manager = GetPinManager();
+  if (!pin_manager) {
+    VLOG(1) << "No bulk-pinning manager";
     return;
   }
-  VLOG(1) << "Calculating required space called but manager is not initialized";
+
+  if (bulk_pinning_initializations_ == 0) {
+    ++bulk_pinning_initializations_;
+  }
+
+  RecordCHOOBEScreenBulkPinningInitializations(bulk_pinning_initializations_);
+  LOG_IF(ERROR, !pin_manager->CalculateRequiredSpace())
+      << "Cannot calculate required space";
 }
 
 void DrivePinningScreen::OnProgressForTest(
     const drivefs::pinning::Progress& progress) {
   CHECK_IS_TEST();
   OnBulkPinProgress(progress);
+}
+
+void DrivePinningScreen::OnDriveIntegrationServiceDestroyed() {
+  service_observer_.Reset();
 }
 
 void DrivePinningScreen::OnBulkPinProgress(

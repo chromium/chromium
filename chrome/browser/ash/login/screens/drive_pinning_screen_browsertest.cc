@@ -194,7 +194,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            Stage::kNotEnoughSpace,
                                            Stage::kCannotEnableDocsOffline));
 
-class DrivePinningMockObserver : public drive::DriveIntegrationServiceObserver {
+class DrivePinningMockObserver
+    : public drive::DriveIntegrationService::Observer {
  public:
   MOCK_METHOD(void, OnBulkPinProgress, (const Progress& progress), (override));
 };
