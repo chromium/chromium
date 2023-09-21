@@ -623,9 +623,6 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   } else {
     dirty_rect_.Union(gfx::RectF(gfx::SkIRectToRect(rect)));
   }
-  if (is_rendering_context2d && canvas2d_bridge_) {
-    canvas2d_bridge_->DidDraw();
-  }
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {

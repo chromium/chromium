@@ -334,7 +334,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareIfContextLost) {
 }
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
-  bridge->DidDraw();
+  bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, cc::PaintFlags());
   bridge->FinalizeFrame(FlushReason::kTesting);
   // Grabbing an image forces a flush
   bridge->NewImageSnapshot(FlushReason::kTesting);
@@ -986,7 +986,6 @@ TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
   EXPECT_EQ(bridge->GetPaintCanvas()->getLocalToDevice().rc(0, 3), 5);
   // Drawline so WritePixels has something to flush
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
-  bridge->DidDraw();
 
   // WritePixels flushes recording. Post flush, a new drawing canvas is created
   // that should have the matrix restored onto it.

@@ -51,7 +51,6 @@ bool Canvas2DLayerBridge::IsHibernationEnabled() {
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
-      have_recorded_draw_commands_(false),
       opacity_mode_(opacity_mode),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr) {
@@ -162,7 +161,7 @@ void Canvas2DLayerBridge::Hibernate() {
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
   // 'this' does not already have a surface.
-  DCHECK(!have_recorded_draw_commands_);
+  DCHECK(!resource_host_->ResourceProvider()->HasRecordedDrawOps());
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
@@ -200,7 +199,7 @@ void Canvas2DLayerBridge::LoseContext() {
   }
 
   SkipQueuedDrawCommands();
-  DCHECK(!have_recorded_draw_commands_);
+  DCHECK(!resource_host_->ResourceProvider()->HasRecordedDrawOps());
 
   // Frees canvas resource.
   lose_context_in_background_ = true;
@@ -263,11 +262,6 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
       resource_host_->GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
   if (!resource_provider || !resource_provider->IsValid())
     return nullptr;
-
-  // Calling to DidDraw because GetOrCreateResourceProvider created a new
-  // provider and cleared it
-  // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
-  DidDraw();
 
   if (resource_host_->IsComposited() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
@@ -402,7 +396,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
     if (!GetOrCreateResourceProvider())
       return false;
   }
-  have_recorded_draw_commands_ = false;
 
   bool wrote_pixels =
       ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
@@ -414,7 +407,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 
 void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
   ResourceProvider()->SkipQueuedDrawCommands();
-  have_recorded_draw_commands_ = false;
 }
 
 void Canvas2DLayerBridge::ClearPendingRasterTimers() {
@@ -483,8 +475,10 @@ void Canvas2DLayerBridge::FinishRasterTimers(
 }
 
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
-  if (!have_recorded_draw_commands_ || !GetOrCreateResourceProvider())
+  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
+  if (!provider || !provider->HasRecordedDrawOps()) {
     return;
+  }
 
   TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecording");
 
@@ -541,8 +535,6 @@ void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   // the playback crashed the context.
   if (GetOrCreateResourceProvider())
     ResourceProvider()->ReleaseLockedImages();
-
-  have_recorded_draw_commands_ = false;
 }
 
 bool Canvas2DLayerBridge::IsValid() {
@@ -683,10 +675,6 @@ cc::Layer* Canvas2DLayerBridge::Layer() {
   // Trigger lazy layer creation
   GetOrCreateResourceProvider();
   return layer_.get();
-}
-
-void Canvas2DLayerBridge::DidDraw() {
-  have_recorded_draw_commands_ = true;
 }
 
 void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {

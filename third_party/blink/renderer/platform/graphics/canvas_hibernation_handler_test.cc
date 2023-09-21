@@ -101,7 +101,7 @@ std::map<std::string, uint64_t> GetEntries(
 }
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
-  bridge->DidDraw();
+  bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, cc::PaintFlags());
   bridge->FinalizeFrame(FlushReason::kTesting);
   // Grabbing an image forces a flush
   bridge->NewImageSnapshot(FlushReason::kTesting);

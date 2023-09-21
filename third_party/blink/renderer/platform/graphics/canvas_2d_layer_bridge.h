@@ -71,7 +71,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void PageVisibilityChanged();
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-  void DidDraw();
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   cc::Layer* Layer();
   bool Restore();
@@ -98,8 +97,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   // canvas is in an invisible tab.
   void LoseContext();
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
-
-  bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
 
   scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
 
@@ -166,7 +163,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   scoped_refptr<cc::TextureLayer> layer_;
   std::unique_ptr<Logger> logger_;
-  bool have_recorded_draw_commands_;
   bool hibernation_scheduled_ = false;
   bool always_measure_for_testing_ = false;
   bool context_lost_ = false;
