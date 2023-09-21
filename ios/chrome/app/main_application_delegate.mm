@@ -61,14 +61,15 @@ const int kMainIntentCheckDelay = 1;
   // The set of "scene sessions" that needs to be discarded. See
   // -application:didDiscardSceneSessions: for details.
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
-  // Delegate that handles delivered push notification workflow.
-  PushNotificationDelegate* _pushNotificationDelegate;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
 // determine whether or not shutdown should be invoked from
 // applicationWillTerminate:.
 @property(nonatomic, assign) BOOL didFinishLaunching;
+
+// Delegate that handles delivered push notification workflow.
+@property(nonatomic, strong) PushNotificationDelegate* pushNotificationDelegate;
 
 @end
 
@@ -216,7 +217,7 @@ const int kMainIntentCheckDelay = 1;
   // application. In that case, the user must relaunch the application or must
   // restart the device before the system will launch the application and invoke
   // this function.
-  UIBackgroundFetchResult result = [_pushNotificationDelegate
+  UIBackgroundFetchResult result = [self.pushNotificationDelegate
       applicationWillProcessIncomingRemoteNotification:userInfo];
   if (completionHandler) {
     completionHandler(result);
@@ -229,17 +230,9 @@ const int kMainIntentCheckDelay = 1;
   // APNS and retrieval of the device's APNS token.
   base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
                             true);
-
-  // TODO(crbug.com/1478263) Move PushNotificationDelegate to
-  // property and this should avoid the need to use strongSelf.
-  __weak MainApplicationDelegate* weakSelf = self;
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        MainApplicationDelegate* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf->_pushNotificationDelegate
+        [self.pushNotificationDelegate
             applicationDidRegisterWithAPNS:deviceToken];
       }));
 }
