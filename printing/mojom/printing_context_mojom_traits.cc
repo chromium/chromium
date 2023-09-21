@@ -217,7 +217,7 @@ bool StructTraits<
 
     // Destination format and location are optional.  If present, they must be
     // strings.
-    base::Value* destination_format = system_print_dialog_data.Find(
+    const base::Value* destination_format = system_print_dialog_data.Find(
         printing::kMacSystemPrintDialogDataDestinationFormat);
     if (destination_format) {
       if (!destination_format->is_string()) {
@@ -225,7 +225,7 @@ bool StructTraits<
       }
       ++dictionary_entries;
     }
-    base::Value* destination_location = system_print_dialog_data.Find(
+    const base::Value* destination_location = system_print_dialog_data.Find(
         printing::kMacSystemPrintDialogDataDestinationLocation);
     if (destination_location) {
       if (!destination_location->is_string()) {
@@ -238,10 +238,9 @@ bool StructTraits<
     if (system_print_dialog_data.size() != dictionary_entries) {
       return false;
     }
-
 #elif BUILDFLAG(IS_LINUX)
     // The dictionary must contain three strings.
-    base::Value* value = system_print_dialog_data.Find(
+    const base::Value* value = system_print_dialog_data.Find(
         printing::kLinuxSystemPrintDialogDataPrinter);
     if (!value || !value->is_string()) {
       return false;
@@ -261,7 +260,6 @@ bool StructTraits<
     if (system_print_dialog_data.size() != 3) {
       return false;
     }
-
 #else
 #error "System print dialog support not implemented for this platform."
 #endif

@@ -370,7 +370,6 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
           printing::kLinuxSystemPrintDialogDataPrinter);
   CHECK(printer_name);
 
-  GError* error = nullptr;
   auto printer_list = std::make_unique<GtkPrinterList>();
   printer_ = printer_list->GetPrinterWithName(*printer_name);
   CHECK(printer_);
@@ -382,6 +381,7 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
     page_setup_ = gtk_page_setup_new();
   }
 
+  GError* error = nullptr;
   ScopedGKeyFile settings_key_file =
       GetGKeyFileFromDict(settings.system_print_dialog_data(),
                           printing::kLinuxSystemPrintDialogDataPrintSettings);

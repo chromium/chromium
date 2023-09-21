@@ -140,8 +140,8 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
 
   if (features::kEnableOopPrintDriversJobPrint.Get() &&
       !settings_->system_print_dialog_data().empty()) {
-    CHECK(ui::LinuxUi::instance());
     if (!print_dialog_) {
+      CHECK(ui::LinuxUi::instance());
       print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
     }
     print_dialog_->LoadPrintSettings(*settings_);

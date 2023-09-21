@@ -106,3 +106,13 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+ScopedGKeyFile::ScopedGKeyFile(GKeyFile* key_file) : key_file_(key_file) {}
+
+ScopedGKeyFile::~ScopedGKeyFile() {
+  if (key_file_) {
+    g_key_file_free(key_file_.ExtractAsDangling());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)

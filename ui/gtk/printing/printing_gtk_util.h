@@ -33,12 +33,8 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 class ScopedGKeyFile {
  public:
-  explicit ScopedGKeyFile(GKeyFile* key_file) : key_file_(key_file) {}
-  ~ScopedGKeyFile() {
-    if (key_file_) {
-      g_key_file_free(key_file_);
-    }
-  }
+  explicit ScopedGKeyFile(GKeyFile* key_file);
+  ~ScopedGKeyFile();
 
   GKeyFile* get() { return key_file_; }
 
