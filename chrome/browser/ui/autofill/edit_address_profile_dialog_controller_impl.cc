@@ -90,7 +90,7 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
          is_migration_to_account_;
 }
 
-void EditAddressProfileDialogControllerImpl::OnUserDecision(
+void EditAddressProfileDialogControllerImpl::OnDialogClosed(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     const AutofillProfile& profile_with_edits) {
   if (decision ==
@@ -98,19 +98,9 @@ void EditAddressProfileDialogControllerImpl::OnUserDecision(
     // If the user accepted the flow, save the changes directly.
     std::move(address_profile_save_prompt_callback_)
         .Run(decision, profile_with_edits);
-    return;
-  }
-  // Save callback must get invalidated to not get triggered in the destructor.
-  address_profile_save_prompt_callback_.Reset();
-  // If the user hits "Cancel", run the corresponding callback.
-  std::move(on_cancel_callback_).Run();
-}
-
-void EditAddressProfileDialogControllerImpl::OnDialogClosed() {
-  if (address_profile_save_prompt_callback_) {
-    OnUserDecision(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-        address_profile_to_edit_);
+  } else {
+    // If the user hits "Cancel", run the corresponding callback.
+    std::move(on_cancel_callback_).Run();
   }
   dialog_view_ = nullptr;
 }

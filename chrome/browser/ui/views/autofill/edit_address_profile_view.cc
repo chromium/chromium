@@ -93,7 +93,8 @@ void EditAddressProfileView::Hide() {
 
 void EditAddressProfileView::WindowClosing() {
   if (controller_) {
-    controller_->OnDialogClosed();
+    controller_->OnDialogClosed(decision_,
+                                address_editor_view_->GetAddressProfile());
     controller_ = nullptr;
   }
 }
@@ -109,10 +110,7 @@ AddressEditorView* EditAddressProfileView::GetAddressEditorViewForTesting() {
 
 void EditAddressProfileView::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  if (!controller_)
-    return;
-  controller_->OnUserDecision(decision,
-                              address_editor_view_->GetAddressProfile());
+  decision_ = decision;
 }
 
 void EditAddressProfileView::UpdateActionButtonState(bool is_valid) {

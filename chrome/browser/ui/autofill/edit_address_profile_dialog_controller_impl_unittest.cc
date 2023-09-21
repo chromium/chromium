@@ -69,7 +69,7 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
   EXPECT_CALL(save_callback_, Run).Times(0);
   EXPECT_CALL(cancel_callback_, Run);
 
-  controller()->OnUserDecision(
+  controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored, profile_);
 }
 
@@ -78,7 +78,7 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
   EXPECT_CALL(save_callback_, Run).Times(0);
   EXPECT_CALL(cancel_callback_, Run);
 
-  controller()->OnUserDecision(
+  controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
       profile_);
 }
@@ -91,7 +91,7 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
           profile_));
   EXPECT_CALL(cancel_callback_, Run).Times(0);
 
-  controller()->OnUserDecision(
+  controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
       profile_);
 }

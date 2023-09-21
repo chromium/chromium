@@ -38,11 +38,10 @@ class MockEditAddressProfileDialogController
   MOCK_METHOD(const AutofillProfile&, GetProfileToEdit, (), (const, override));
   MOCK_METHOD(bool, GetIsValidatable, (), (const, override));
   MOCK_METHOD(void,
-              OnUserDecision,
+              OnDialogClosed,
               (AutofillClient::SaveAddressProfileOfferUserDecision decision,
                const AutofillProfile& profile),
               (override));
-  MOCK_METHOD(void, OnDialogClosed, (), (override));
 };
 
 class EditAddressProfileViewTest : public ChromeViewsTestBase {
@@ -142,7 +141,7 @@ TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedFullname) {
 
   EXPECT_CALL(
       *mock_controller(),
-      OnUserDecision(
+      OnDialogClosed(
           AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           AutofillProfileHasInfo(autofill::ServerFieldType::NAME_FULL,
                                  kNewFirstName)));
@@ -170,7 +169,7 @@ TEST_F(EditAddressProfileViewTest,
 
   EXPECT_CALL(
       *mock_controller(),
-      OnUserDecision(
+      OnDialogClosed(
           AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           AutofillProfileHasInfo(
               autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
@@ -194,7 +193,7 @@ TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedEmail) {
 
   EXPECT_CALL(
       *mock_controller(),
-      OnUserDecision(
+      OnDialogClosed(
           AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           AutofillProfileHasInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
                                  kNewEmail)));
