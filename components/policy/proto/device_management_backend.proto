@@ -2959,6 +2959,11 @@ message DeviceRemoteCommandRequest {
   // What type of signature to use. Only valid if send_secure_commmands is true.
   // If NONE is passed, SHA1_RSA will be used instead for compatibility.
   optional PolicyFetchRequest.SignatureType signature_type = 4;
+
+  // A string that represents the type of RemoteCommands that need to be
+  // fetched. This type helps the server redirect the request to different
+  // handlers.
+  optional string type = 5;
 }
 
 message DeviceRemoteCommandResponse {

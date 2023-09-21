@@ -837,6 +837,7 @@ void CloudPolicyClient::FetchRemoteCommands(
     std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
     const std::vector<em::RemoteCommandResult>& command_results,
     em::PolicyFetchRequest::SignatureType signature_type,
+    const std::string& request_type,
     RemoteCommandCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
@@ -864,6 +865,7 @@ void CloudPolicyClient::FetchRemoteCommands(
 
   request->set_send_secure_commands(true);
   request->set_signature_type(signature_type);
+  request->set_type(request_type);
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }

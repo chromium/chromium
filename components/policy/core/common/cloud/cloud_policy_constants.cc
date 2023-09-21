@@ -97,6 +97,12 @@ const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
 const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
 
+const char kChromeAshUserRemoteCommandType[] = "google/ash/user/remotecommand";
+const char kChromeDeviceRemoteCommandType[] = "google/ash/device/remotecommand";
+const char kChromeBrowserRemoteCommandType[] =
+    "google/chrome/browser/remotecommand";
+const char kChromeUserRemoteCommandType[] = "google/chrome/user/remotecommand";
+
 const char kChromeMachineLevelUserCloudPolicyTypeBase64[] =
     "Z29vZ2xlL2Nocm9tZS9tYWNoaW5lLWxldmVsLXVzZXI=";
 

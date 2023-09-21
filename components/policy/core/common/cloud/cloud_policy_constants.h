@@ -78,6 +78,16 @@ extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
 extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 extern const char kChromeRemoteCommandPolicyType[];
 
+// Remote command type for `type` field in DeviceRemoteCommandRequest.
+// Command for Chrome OS Ash user.
+extern const char kChromeAshUserRemoteCommandType[];
+// Command for Chrome OS device.
+extern const char kChromeDeviceRemoteCommandType[];
+// Command for CBCM device on non-CrOS
+extern const char kChromeBrowserRemoteCommandType[];
+// Command for browser profile.
+extern const char kChromeUserRemoteCommandType[];
+
 extern const char kChromeMachineLevelUserCloudPolicyTypeBase64[];
 
 // These codes are sent in the |error_code| field of PolicyFetchResponse.
