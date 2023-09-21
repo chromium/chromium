@@ -11616,7 +11616,14 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
   }
 
   auto is_shutting_down_cb = base::BindRepeating(
-      []() { return GetContentClient()->browser()->IsShuttingDown(); });
+      [](base::WeakPtr<RenderFrameHostImpl> rfh) {
+        if (GetContentClient()->browser()->IsShuttingDown()) {
+          return true;
+        }
+        return !rfh ||
+               rfh->GetLifecycleState() == LifecycleState::kPendingDeletion;
+      },
+      weak_ptr_factory_.GetWeakPtr());
 
   media::MediaMetricsProvider::Create(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
