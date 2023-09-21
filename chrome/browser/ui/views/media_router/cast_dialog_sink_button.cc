@@ -174,7 +174,7 @@ void CastDialogSinkButton::UpdateTitleTextStyle() {
       GetColorProvider()->GetColor(ui::kColorDialogBackground);
   SetTitleTextStyle(
       GetEnabled() ? views::style::STYLE_PRIMARY : views::style::STYLE_DISABLED,
-      background_color);
+      background_color, /*color_id=*/absl::nullopt);
 }
 
 void CastDialogSinkButton::RequestFocus() {

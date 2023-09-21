@@ -80,8 +80,10 @@ class HoverButton : public views::LabelButton {
   // Sets the text style of the title considering the color of the background.
   // Passing |background_color| makes sure that the text color will not be
   // changed to a color that is not readable on the specified background.
+  // Sets the title's enabled color to |color_id|, if present.
   void SetTitleTextStyle(views::style::TextStyle text_style,
-                         SkColor background_color);
+                         SkColor background_color,
+                         absl::optional<ui::ColorId> color_id);
 
   // Set the text context and style of the subtitle.
   void SetSubtitleTextStyle(int text_context,
@@ -126,7 +128,10 @@ class HoverButton : public views::LabelButton {
 };
 
 BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
-VIEW_BUILDER_METHOD(SetTitleTextStyle, views::style::TextStyle, SkColor)
+VIEW_BUILDER_METHOD(SetTitleTextStyle,
+                    views::style::TextStyle,
+                    SkColor,
+                    absl::optional<ui::ColorId>)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(, HoverButton)

@@ -239,13 +239,17 @@ void HoverButton::SetTitleText(const std::u16string& text) {
 }
 
 void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
-                                    SkColor background_color) {
+                                    SkColor background_color,
+                                    absl::optional<ui::ColorId> color_id) {
   if (!title()) {
     return;
   }
 
-  title_->SetDisplayedOnBackgroundColor(background_color);
   title_->SetDefaultTextStyle(text_style);
+  title_->SetDisplayedOnBackgroundColor(background_color);
+  if (color_id) {
+    title_->SetDefaultEnabledColorId(color_id);
+  }
 }
 
 void HoverButton::SetSubtitleTextStyle(int text_context,

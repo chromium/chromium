@@ -334,6 +334,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   // label in the primary action button.
                   .SetBorder(views::CreateEmptyBorder(
                       gfx::Insets::VH(0, icon_label_spacing)))
+                  .SetTitleTextStyle(views::style::STYLE_BODY_5,
+                                     ui::kColorDialogBackground,
+                                     ui::kColorSysOnSurfaceSubtle)
                   .SetTooltipText(l10n_util::GetStringUTF16(
                       IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP))))
       .BuildChildren();
