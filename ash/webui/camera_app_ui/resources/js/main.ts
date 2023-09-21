@@ -26,7 +26,6 @@ import {reportError} from './error.js';
 import * as expert from './expert.js';
 import {Flag} from './flag.js';
 import {GalleryButton} from './gallerybutton.js';
-import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
 import * as metrics from './metrics.js';
@@ -594,16 +593,9 @@ async function main() {
   metrics.sendOpenCameraEvent(cameraManager.getVidPid());
 
   if (autoTake) {
-    const takePromise = cameraView.beginTake(
+    cameraView.beginTake(
         openFrom === 'assistant' ? metrics.ShutterType.ASSISTANT :
                                    metrics.ShutterType.UNKNOWN);
-    if (takePromise === null) {
-      toast.show(
-          mode === Mode.VIDEO ? I18nString.ERROR_MSG_RECORD_START_FAILED :
-                                I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
-    } else {
-      await takePromise;
-    }
   }
 }
 

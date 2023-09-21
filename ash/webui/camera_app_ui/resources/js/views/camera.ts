@@ -9,6 +9,7 @@ import {
   assertInstanceof,
   assertNotReached,
 } from '../assert.js';
+import {AsyncJobQueue, queuedAsyncCallback} from '../async_job_queue.js';
 import {
   CameraConfig,
   CameraManager,
@@ -122,11 +123,33 @@ export class Camera extends View implements CameraViewUI {
   private cameraReady = new WaitableEvent();
 
   /**
-   * Promise for the current take of photo or recording.
+   * Current take of photo or recording queue.
    */
-  private take: Promise<void>|null = null;
+  private readonly takeQueue = new AsyncJobQueue('drop');
 
   private readonly modesGroup = dom.get('#modes-group', HTMLElement);
+
+  private readonly defaultFocus = queuedAsyncCallback('drop', async () => {
+    await this.cameraReady.wait();
+
+    // Check the view is still on the top after await.
+    if (!nav.isTopMostView(ViewName.CAMERA)) {
+      return;
+    }
+
+    this.focusShutterButton();
+  });
+
+  /**
+   * Ends the current take (or clears scheduled further takes if any).
+   *
+   * @return Promise for the operation.
+   */
+  private readonly endTake = queuedAsyncCallback('drop', async () => {
+    timertick.cancel();
+    await this.cameraManager.stopCapture();
+    await this.takeQueue.flush();
+  });
 
   constructor(
       protected readonly resultSaver: ResultSaver,
@@ -310,8 +333,8 @@ export class Camera extends View implements CameraViewUI {
     dom.get('#back-to-review-document', HTMLButtonElement)
         .addEventListener(
             'click',
-            () => {
-              this.reviewDocument();
+            async () => {
+              await this.reviewDocument();
             },
         );
   }
@@ -419,17 +442,6 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  private async defaultFocus(): Promise<void> {
-    await this.cameraReady.wait();
-
-    // Check the view is still on the top after await.
-    if (!nav.isTopMostView(ViewName.CAMERA)) {
-      return;
-    }
-
-    this.focusShutterButton();
-  }
-
   override onShownAsTop(): void {
     this.defaultFocus();
   }
@@ -448,20 +460,18 @@ export class Camera extends View implements CameraViewUI {
    * Begins to take photo or recording with the current options, e.g. timer.
    *
    * @param shutterType The shutter is triggered by which shutter type.
-   * @return Promise resolved when take action completes. Returns null if CCA
-   *     can't start take action.
    */
-  beginTake(shutterType: metrics.ShutterType): Promise<void>|null {
-    if (state.get(state.State.CAMERA_CONFIGURING) ||
-        state.get(state.State.TAKING)) {
-      return null;
-    }
+  beginTake(shutterType: metrics.ShutterType): void {
+    this.takeQueue.push(async () => {
+      if (state.get(state.State.CAMERA_CONFIGURING) ||
+          state.get(state.State.TAKING)) {
+        return;
+      }
 
-    state.set(state.State.TAKING, true);
-    this.shutterType = shutterType;
-    // Refocus the visible shutter button for ChromeVox.
-    this.focusShutterButton();
-    this.take = (async () => {
+      state.set(state.State.TAKING, true);
+      this.shutterType = shutterType;
+      // Refocus the visible shutter button for ChromeVox.
+      this.focusShutterButton();
       let hasError = false;
       try {
         // Record and keep the rotation only at the instance the user starts the
@@ -494,7 +504,6 @@ export class Camera extends View implements CameraViewUI {
             ErrorType.START_CAPTURE_FAILURE, ErrorLevel.ERROR,
             assertInstanceof(e, Error));
       } finally {
-        this.take = null;
         state.set(state.State.TAKING, false, {
           hasError,
           facing: this.getFacing(),
@@ -502,19 +511,7 @@ export class Camera extends View implements CameraViewUI {
         // Refocus the visible shutter button for ChromeVox.
         this.focusShutterButton();
       }
-    })();
-    return this.take;
-  }
-
-  /**
-   * Ends the current take (or clears scheduled further takes if any).
-   *
-   * @return Promise for the operation.
-   */
-  private async endTake(): Promise<void> {
-    timertick.cancel();
-    await this.cameraManager.stopCapture();
-    await this.take;
+    });
   }
 
   private async checkPhotoResult<T>(pendingPhotoResult: Promise<T>):
@@ -729,8 +726,8 @@ export class Camera extends View implements CameraViewUI {
   }
 
   playShutterEffect(): void {
-    sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    animate.play(this.cameraManager.getPreviewVideo().video);
+    void sound.play(dom.get('#sound-shutter', HTMLAudioElement));
+    void animate.play(this.cameraManager.getPreviewVideo().video);
   }
 
   private getLowStorageDialogKeys(dialogType: LowStorageDialogType) {
