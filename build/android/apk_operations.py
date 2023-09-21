@@ -1268,45 +1268,6 @@ class _Command:
       ]
     return self.apk_helper is not None
 
-  def _FindSupportedDevices(self, devices):
-    """Returns supported devices and reasons for each not supported one."""
-    app_abis = self.apk_helper.GetAbis()
-    logging.debug('App supports: %r', app_abis)
-    assert app_abis, 'Unable to find any abis that the app supports.'
-    fully_supported = []
-    not_supported_reasons = {}
-    for device in devices:
-      device_abis = device.GetSupportedABIs()
-      device_primary_abi = device_abis[0]
-      logging.debug('Device primary: %s', device_primary_abi)
-      logging.debug('Device supports: %r', device_abis)
-
-      # x86/x86_64 emulators sometimes advertises arm support but arm builds do
-      # not work on them. Thus these non-functional ABIs need to be filtered out
-      # here to avoid resulting in hard to understand runtime failures.
-      if device_primary_abi in ('x86', 'x86_64'):
-        device_abis = [abi for abi in device_abis if not abi.startswith('arm')]
-        logging.debug('Device supports (filtered): %r', device_abis)
-
-      if any(abi in app_abis for abi in device_abis):
-        fully_supported.append(device)
-      else:  # No common supported ABIs between the device and app.
-        if device_primary_abi == 'x86':
-          target_cpu = 'x86'
-        elif device_primary_abi == 'x86_64':
-          target_cpu = 'x64'
-        elif device_primary_abi.startswith('arm64'):
-          target_cpu = 'arm64'
-        elif device_primary_abi.startswith('armeabi'):
-          target_cpu = 'arm'
-        else:
-          target_cpu = '<something else>'
-        not_supported_reasons[device.serial] = (
-            f"none of the app's ABIs ({','.join(app_abis)}) match this "
-            f"device's ABIs ({','.join(device_abis)}), you may need to set "
-            f'target_cpu="{target_cpu}" in your args.gn.')
-    return fully_supported, not_supported_reasons
-
   def ProcessArgs(self, args):
     self.args = args
     # Ensure these keys always exist. They are set by wrapper scripts, but not
@@ -1359,32 +1320,14 @@ class _Command:
 
     self.devices = []
     if self.need_device_args:
-      # Avoid filtering by ABIs with catapult since some x86 or x86_64 emulators
-      # can still work with the right target_cpu GN arg and the right targets.
-      # Doing this manually allows us to output more informative warnings to
-      # help devs towards the right course, see: https://crbug.com/1335139
-      available_devices = device_utils.DeviceUtils.HealthyDevices(
+      abis = None
+      if self._CreateApkHelpers(args, incremental_apk_path, install_dict):
+        abis = self.apk_helper.GetAbis()
+      self.devices = device_utils.DeviceUtils.HealthyDevices(
           device_arg=args.devices,
           enable_device_files_cache=bool(args.output_directory),
-          default_retries=0)
-      if not available_devices:
-        raise Exception('Cannot find any available devices.')
-
-      if not self._CreateApkHelpers(args, incremental_apk_path, install_dict):
-        self.devices = available_devices
-      else:
-        fully_supported, not_supported_reasons = self._FindSupportedDevices(
-            available_devices)
-        if fully_supported:
-          self.devices = fully_supported
-        else:
-          reason_string = '\n'.join(
-              'The device (serial={}) is not supported because {}'.format(
-                  serial, reason)
-              for serial, reason in not_supported_reasons.items())
-          raise Exception('Cannot find any supported devices for this app.\n\n'
-                          f'{reason_string}')
-
+          default_retries=0,
+          abis=abis)
       # TODO(agrieve): Device cache should not depend on output directory.
       #     Maybe put into /tmp?
       _LoadDeviceCaches(self.devices, args.output_directory)
