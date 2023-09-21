@@ -63109,6 +63109,7 @@ from previous Chrome versions.
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
   <int value="-844067635" label="InterestFeedV2Autoplay:enabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
+  <int value="-842798026" label="LinkCrossDeviceInternals:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-842236618" label="CrOSSystemVoiceIsolationOption:disabled"/>
@@ -66971,6 +66972,7 @@ from previous Chrome versions.
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
   <int value="1090937981" label="ImeFstDecoderParamsUpdate:enabled"/>
   <int value="1091157601" label="SearchNavigationPrefetch:enabled"/>
+  <int value="1091197787" label="LinkCrossDeviceInternals:enabled"/>
   <int value="1091520021" label="LauncherKeywordExtractionScoring:disabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>

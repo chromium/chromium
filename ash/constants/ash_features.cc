@@ -1652,6 +1652,12 @@ BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
              "LinkCrossDeviceDogFoodFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables nearby-internals logs to be automatically saved to disk and attached
+// to feedback reports.
+BASE_FEATURE(kLinkCrossDeviceInternals,
+             "LinkCrossDeviceInternals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables local password as an option for local authentication.
 // (This feature is only available for consumer users)
 BASE_FEATURE(kLocalPasswordForConsumers,
@@ -3549,6 +3555,10 @@ bool IsLicensePackagedOobeFlowEnabled() {
 
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
+}
+
+bool IsLinkCrossDeviceInternalsEnabled() {
+  return base::FeatureList::IsEnabled(kLinkCrossDeviceInternals);
 }
 
 bool AreLocalPasswordsEnabledForConsumers() {

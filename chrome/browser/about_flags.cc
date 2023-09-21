@@ -7631,6 +7631,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowCrossDeviceFeatureSuiteDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowCrossDeviceFeatureSuite)},
 
+    {"link-cross-device-internals",
+     flag_descriptions::kLinkCrossDeviceInternalsName,
+     flag_descriptions::kLinkCrossDeviceInternalsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kLinkCrossDeviceInternals)},
+
     {"allow-repeated-updates", flag_descriptions::kAllowRepeatedUpdatesName,
      flag_descriptions::kAllowRepeatedUpdatesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowRepeatedUpdates)},

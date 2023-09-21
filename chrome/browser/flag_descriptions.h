@@ -3055,6 +3055,9 @@ extern const char kAdvancedDocumentScanApiDescription[];
 extern const char kAllowCrossDeviceFeatureSuiteName[];
 extern const char kAllowCrossDeviceFeatureSuiteDescription[];
 
+extern const char kLinkCrossDeviceInternalsName[];
+extern const char kLinkCrossDeviceInternalsDescription[];
+
 extern const char kAllowDevtoolsInSystemUIName[];
 extern const char kAllowDevtoolsInSystemUIDescription[];
 

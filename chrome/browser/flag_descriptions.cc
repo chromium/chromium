@@ -5264,6 +5264,12 @@ const char kAllowCrossDeviceFeatureSuiteDescription[] =
     "ChromeOS Flex). If disabled, this removes all Cross-Device features and "
     "their entries in the Settings app.";
 
+const char kLinkCrossDeviceInternalsName[] =
+    "Link Cross-Device internals logging to Feedback reports.";
+const char kLinkCrossDeviceInternalsDescription[] =
+    "Improves debugging of Cross-Device features by recording more verbose "
+    "logs and attaching these logs to filed Feedback reports.";
+
 const char kAllowDevtoolsInSystemUIName[] = "Enable DevTools in System UI";
 const char kAllowDevtoolsInSystemUIDescription[] =
     "Enable the developer tools (DevTools) including the page source viewer "
