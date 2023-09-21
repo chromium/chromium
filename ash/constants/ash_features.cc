@@ -454,6 +454,12 @@ BASE_FEATURE(kClipboardHistoryUrlTitles,
              "ClipboardHistoryUrlTitles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, clipboard history explicitly pastes into `content::WebContents`
+// instead of using synthetic key events.
+BASE_FEATURE(kClipboardHistoryWebContentsPaste,
+             "ClipboardHistoryWebContentsPaste",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
@@ -3090,6 +3096,10 @@ bool IsClipboardHistoryLongpressEnabled() {
 bool IsClipboardHistoryUrlTitlesEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryUrlTitles) &&
          chromeos::features::IsClipboardHistoryRefreshEnabled();
+}
+
+bool IsClipboardHistoryWebContentsPasteEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryWebContentsPaste);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {

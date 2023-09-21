@@ -20,6 +20,10 @@ class ASH_EXPORT TestClipboardHistoryControllerDelegateImpl
   TestClipboardHistoryControllerDelegateImpl& operator=(
       const TestClipboardHistoryControllerDelegateImpl&) = delete;
   ~TestClipboardHistoryControllerDelegateImpl() override;
+
+ private:
+  // ClipboardHistoryControllerDelegate:
+  bool Paste() const override;
 };
 
 }  // namespace ash

@@ -12,4 +12,8 @@ TestClipboardHistoryControllerDelegateImpl::
 TestClipboardHistoryControllerDelegateImpl::
     ~TestClipboardHistoryControllerDelegateImpl() = default;
 
+bool TestClipboardHistoryControllerDelegateImpl::Paste() const {
+  return false;
+}
+
 }  // namespace ash

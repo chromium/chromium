@@ -17,6 +17,10 @@ class ClipboardHistoryControllerDelegateImpl
   ClipboardHistoryControllerDelegateImpl& operator=(
       const ClipboardHistoryControllerDelegateImpl&) = delete;
   ~ClipboardHistoryControllerDelegateImpl() override;
+
+ private:
+  // ash::ClipboardHistoryControllerDelegate:
+  bool Paste() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_IMPL_H_

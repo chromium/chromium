@@ -15,6 +15,10 @@ class ASH_EXPORT ClipboardHistoryControllerDelegate {
  public:
   virtual ~ClipboardHistoryControllerDelegate();
 
+  // Performs an explicit paste, which is distinct from an implicit paste via
+  // a synthetic Ctrl+V event. Returns `true` if successful, otherwise `false`.
+  virtual bool Paste() const = 0;
+
  protected:
   ClipboardHistoryControllerDelegate();
 };
