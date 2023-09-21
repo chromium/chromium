@@ -109,7 +109,8 @@ constexpr base::TimeDelta kSendMessageRetryPeriod = base::Milliseconds(250);
 
 // Verify that it is possible to load and paint the initial about:blank page
 // without running BEST_EFFORT tasks.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintAboutBlank) {
+// TODO(https://crbug.com/1484434): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintAboutBlank) {
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(web_contents->GetLastCommittedURL().IsAboutBlank());
@@ -123,7 +124,9 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintAboutBlank) {
 //
 // This test has more dependencies than LoadAndPaintAboutBlank, including
 // loading cookies.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFromNetwork) {
+// TODO(https://crbug.com/1484434): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest,
+                       DISABLED_LoadAndPaintFromNetwork) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::OpenURLParams open(
@@ -139,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFromNetwork) {
 
 // Verify that it is possible to load and paint a file:// URL without running
 // BEST_EFFORT tasks. Regression test for https://crbug.com/973244.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFileScheme) {
+// TODO(https://crbug.com/1484434): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintFileScheme) {
   constexpr base::FilePath::CharType kFile[] = FILE_PATH_LITERAL("links.html");
   GURL file_url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
