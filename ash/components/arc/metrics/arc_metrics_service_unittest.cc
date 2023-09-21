@@ -14,7 +14,6 @@
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,7 +84,7 @@ class ArcMetricsServiceTest : public testing::Test {
         mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0));
     ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
         &fake_process_instance_);
-    context_ = std::make_unique<TestBrowserContext>();
+    context_ = std::make_unique<user_prefs::TestBrowserContextWithPrefs>();
     prefs::RegisterLocalStatePrefs(context_->pref_registry());
     prefs::RegisterProfilePrefs(context_->pref_registry());
     service_ =
@@ -154,7 +154,7 @@ class ArcMetricsServiceTest : public testing::Test {
   session_manager::SessionManager session_manager_;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  std::unique_ptr<TestBrowserContext> context_;
+  std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;
   raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh> service_;
 
   std::unique_ptr<aura::Window> fake_arc_window_;

@@ -8,11 +8,11 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_chrome_feature_flags_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +54,7 @@ class ArcChromeFeatureFlagsBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeChromeFeatureFlagsInstance instance_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const raw_ptr<ArcChromeFeatureFlagsBridge, ExperimentalAsh> bridge_;

@@ -5,5 +5,5 @@ include_rules = [
   "+services/tracing/public",
 
   # Unsafe to use from //chrome. See //chrome/browser/DEPS.
-  "-ash/components/arc/test/test_browser_context.h",
+  "-components/user_prefs/test/test_browser_context_with_prefs.h",
 ]

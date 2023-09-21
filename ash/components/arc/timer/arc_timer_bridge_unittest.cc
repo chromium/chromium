@@ -13,7 +13,6 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_timer_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/components/arc/timer/arc_timer_bridge.h"
 #include "ash/components/arc/timer/arc_timer_mojom_traits.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -140,7 +140,7 @@ class ArcTimerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeTimerInstance timer_instance_;
 
   ArcTimerStore arc_timer_store_;

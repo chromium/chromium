@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
@@ -14,6 +13,7 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +51,7 @@ class ArcDiskQuotaBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   const raw_ptr<ArcDiskQuotaBridge, ExperimentalAsh> bridge_;
 };
 

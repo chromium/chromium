@@ -10,11 +10,11 @@
 
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/components/payments/mock_payment_app_instance.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 
 namespace content {
@@ -71,7 +71,7 @@ class ArcPaymentAppBridgeTestSupport {
 
   // Used for retrieving an instance of ArcPaymentAppBridge owned by a
   // BrowserContext.
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
 
   // The unit test must create an instance of ArcServiceManager for
   // ArcServiceManager::Get() to work correctly.

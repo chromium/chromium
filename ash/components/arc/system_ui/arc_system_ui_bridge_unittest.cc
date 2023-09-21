@@ -10,13 +10,13 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_system_ui_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
@@ -119,7 +119,7 @@ class ArcSystemUIBridgeTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeSystemUiInstance system_ui_instance_;
   std::unique_ptr<TestColorPaletteController> test_palette_;
   const raw_ptr<ArcSystemUIBridge, ExperimentalAsh> bridge_;

@@ -11,10 +11,10 @@
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +69,7 @@ class ArcMetricsAnrTest : public testing::Test {
  protected:
   ArcMetricsAnrTest() {
     prefs::RegisterLocalStatePrefs(local_state_.registry());
-    context_ = std::make_unique<TestBrowserContext>();
+    context_ = std::make_unique<user_prefs::TestBrowserContextWithPrefs>();
     prefs::RegisterLocalStatePrefs(context_->pref_registry());
     prefs::RegisterProfilePrefs(context_->pref_registry());
   }
@@ -86,7 +86,7 @@ class ArcMetricsAnrTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<TestBrowserContext> context_;
+  std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;
 };
 
 TEST_F(ArcMetricsAnrTest, Basic) {

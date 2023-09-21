@@ -12,7 +12,6 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/account_id/account_id.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
@@ -148,7 +148,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   FakeVolumeMounterInstance volume_mounter_instance_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeArcVolumeMounterBridgeDelegate delegate_;
   std::unique_ptr<ArcVolumeMounterBridge> bridge_;
 };

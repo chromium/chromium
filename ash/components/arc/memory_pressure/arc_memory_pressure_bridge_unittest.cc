@@ -12,9 +12,9 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +76,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
 
  private:
   static ArcMemoryPressureBridge* GetBridge(
-      TestBrowserContext& context,
+      user_prefs::TestBrowserContextWithPrefs& context,
       TestingPrefServiceSimple& local_state,
       AppKillObserver& kill_observer) {
     prefs::RegisterLocalStatePrefs(local_state.registry());
@@ -97,7 +97,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeProcessInstance fake_process_instance_;
   const raw_ptr<ArcMemoryPressureBridge, ExperimentalAsh> bridge_;
 };

@@ -8,9 +8,9 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_lock_screen_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +49,7 @@ class ArcLockScreenBridgeTest : public testing::Test {
   session_manager::SessionManager session_manager_;
   ArcServiceManager arc_service_manager_;
   FakeLockScreenInstance lock_screen_instance_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   raw_ptr<ArcLockScreenBridge, ExperimentalAsh> bridge_ = nullptr;
 };
 

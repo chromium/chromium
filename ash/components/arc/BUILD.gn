@@ -369,8 +369,6 @@ static_library("arc_test_support") {
     "test/fake_wallpaper_instance.h",
     "test/fake_webapk_instance.cc",
     "test/fake_webapk_instance.h",
-    "test/test_browser_context.cc",
-    "test/test_browser_context.h",
   ]
 
   data = [
@@ -394,6 +392,7 @@ static_library("arc_test_support") {
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/user_prefs",
+    "//components/user_prefs/test:test_support",
     "//content/test:test_support",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
@@ -501,6 +500,7 @@ source_set("unit_tests") {
     "//components/session_manager/core:core",
     "//components/user_manager",
     "//components/user_manager:test_support",
+    "//components/user_prefs/test:test_support",
     "//content/public/common",
     "//content/test:test_support",
     "//device/bluetooth",
