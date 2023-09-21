@@ -3557,21 +3557,6 @@
             ]
         }
     ],
-    "CloudApAuthAttachAsHeader": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CloudApAuthAttachAsHeader"
-                    ]
-                }
-            ]
-        }
-    ],
     "CodeBasedRBD": [
         {
             "platforms": [
