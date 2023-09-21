@@ -9,6 +9,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +25,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -53,13 +54,9 @@ public class PageImageServiceQueueTest {
     @Before
     public void setUp() {
         // Setup bookmark url fetching.
-        MockitoHelper
-                .doCallback(1,
-                        (Callback<GURL> callback) -> {
-                            callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
-                        })
-                .when(mBookmarkModel)
-                .getImageUrlForBookmark(any(), any());
+        doCallback(1, (Callback<GURL> callback) -> {
+            callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
+        }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
 
         doReturn(true).when(mSyncService).isSyncFeatureActive();
         doReturn(Collections.singleton(ModelType.BOOKMARKS))
@@ -73,9 +70,9 @@ public class PageImageServiceQueueTest {
     public void testQueuedRequests() {
         List<Callback<GURL>> urlCallbacks = new ArrayList<>();
         // Intentionally do nothing so the requests stack up.
-        MockitoHelper.doCallback(1, (Callback<GURL> callback) -> {
-                         urlCallbacks.add(callback);
-                     }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
+        doCallback(1, (Callback<GURL> callback) -> {
+            urlCallbacks.add(callback);
+        }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
 
         // Our limit is 1 for testing.
         mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
