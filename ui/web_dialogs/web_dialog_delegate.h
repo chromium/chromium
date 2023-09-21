@@ -73,14 +73,15 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Get WebUIMessageHandler objects to handle messages from the HTML/JS page.
   // The handlers are used to send and receive messages from the page while it
   // is still open.  Ownership of each handler is taken over by the WebUI
-  // hosting the page.
+  // hosting the page. By default this method adds no handlers.
   virtual void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const = 0;
+      std::vector<content::WebUIMessageHandler*>* handlers) const;
 
   // Get the size of the dialog. Implementations can safely assume |size| is a
   // valid pointer. Callers should be able to handle the case where
   // implementations do not write into |size|.
-  virtual void GetDialogSize(gfx::Size* size) const = 0;
+  virtual void GetDialogSize(gfx::Size* size) const;
+  void set_dialog_size(gfx::Size size) { size_ = size; }
 
   // Get the minimum size of the dialog. The default implementation just calls
   // GetDialogSize().
@@ -92,7 +93,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Gets the JSON string input to use when showing the dialog.
   // TODO: should this just be a base::Value representing the JSON value
   // directly?
-  virtual std::string GetDialogArgs() const = 0;
+  virtual std::string GetDialogArgs() const;
   void set_dialog_args(std::string dialog_args) { args_ = dialog_args; }
 
   // Returns true if the dialog can ever be resized.
@@ -135,7 +136,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // IMPORTANT: Implementations should delete |this| here (unless they've
   // arranged for the delegate to be deleted in some other way, e.g. by
   // registering it as a message handler in the WebUI object).
-  virtual void OnDialogClosed(const std::string& json_retval) = 0;
+  //
+  // The default behavior of this method is to delete |this| and return.
+  // TODO(ellyjones): Change that, and maybe make this class not self-deleting.
+  virtual void OnDialogClosed(const std::string& json_retval);
 
   // A callback to notify the delegate that the dialog is being closed in
   // response to a "dialogClose" message from WebUI.
@@ -147,7 +151,8 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // is set to true, then the dialog is closed.  The default is false.
   // |out_close_dialog| is never NULL.
   virtual void OnCloseContents(content::WebContents* source,
-                               bool* out_close_dialog) = 0;
+                               bool* out_close_dialog);
+  void set_can_close(bool can_close) { can_close_ = can_close; }
 
   // Returns true if escape should immediately close the dialog. Default is
   // true.
@@ -188,6 +193,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // shown (because you want to handle it yourself).
   virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
+  void set_allow_default_context_menu(bool allow_default_context_menu) {
+    allow_default_context_menu_ = allow_default_context_menu;
+  }
 
   // A callback to allow the delegate to open a new URL inside |source|.
   // On return |out_new_contents| should contain the WebContents the URL
@@ -199,6 +207,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // A callback to control whether a WebContents will be created. Returns
   // true to disallow the creation. Return false to use the default handler.
   virtual bool HandleShouldOverrideWebContentsCreation();
+  void set_allow_web_contents_creation(bool allow_web_contents_creation) {
+    allow_web_contents_creation_ = allow_web_contents_creation;
+  }
 
   // Stores the dialog bounds.
   virtual void StoreDialogSize(const gfx::Size& dialog_size) {}
@@ -211,11 +222,13 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   virtual void OnWebContentsFinishedLoad() {}
 
+  // TODO(ellyjones): Document what these do and when they are called.
+  // Especially document what CheckMediaAccessPermission() is supposed to
+  // return.
   virtual void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) {}
-
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
@@ -227,7 +240,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
  private:
   absl::optional<std::u16string> accessible_title_;
+  bool allow_default_context_menu_ = true;
+  bool allow_web_contents_creation_ = true;
   std::string args_;
+  bool can_close_ = false;
   bool can_maximize_ = false;
   bool can_minimize_ = false;
   bool can_resize_ = true;
@@ -240,6 +256,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   std::string name_;
   bool show_close_button_ = true;
   bool show_title_ = true;
+  gfx::Size size_;
   std::u16string title_;
 };
 
