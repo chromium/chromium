@@ -8,6 +8,8 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Browser;
@@ -34,9 +36,20 @@ class TabOrganizationService : public KeyedService {
 
   const TabOrganizationSession* GetSessionForBrowser(Browser* browser);
 
+  void AddObserver(TabOrganizationObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(TabOrganizationObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
  private:
   // mapping of browser to
   BrowserSessionMap browser_session_map_;
+
+  // A list of the observers of a tab organization Service.
+  base::ObserverList<TabOrganizationObserver>::Unchecked observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SERVICE_H_

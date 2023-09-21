@@ -20,6 +20,10 @@ void TabOrganizationService::OnTriggerOccured(Browser* browser) {
 
   browser_session_map_.emplace(browser,
                                std::make_unique<TabOrganizationSession>());
+
+  for (TabOrganizationObserver& observer : observers_) {
+    observer.OnToggleActionUIState(browser, true);
+  }
 }
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(

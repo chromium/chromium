@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -12,6 +13,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "tab_organization_service_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
@@ -64,6 +66,11 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TabOrganizationService> service_;
   std::vector<std::unique_ptr<Browser>> browsers_;
+};
+
+class MockTabOrganizationObserver : public TabOrganizationObserver {
+ public:
+  MOCK_METHOD(void, OnToggleActionUIState, (Browser*, bool), (override));
 };
 
 // Service Factory tests.
@@ -123,4 +130,15 @@ TEST_F(TabOrganizationServiceTest, EachBrowserHasADistinctSession) {
   service()->OnTriggerOccured(browser2);
   EXPECT_NE(service()->GetSessionForBrowser(browser1),
             service()->GetSessionForBrowser(browser2));
+}
+
+TEST_F(TabOrganizationServiceTest, ObserverShowTriggerUICalled) {
+  Browser* browser = AddBrowser();
+
+  MockTabOrganizationObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnToggleActionUIState(browser, true)).Times(1);
+
+  service()->AddObserver(&mock_observer);
+  service()->OnTriggerOccured(browser);
+  service()->RemoveObserver(&mock_observer);
 }
