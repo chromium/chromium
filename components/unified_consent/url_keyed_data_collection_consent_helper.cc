@@ -74,6 +74,7 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
   const bool require_sync_feature_enabled_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::map<syncer::ModelType, syncer::UploadState> sync_data_type_states_;
+  bool sync_feature_state_ = false;
 };
 
 PrefBasedUrlKeyedDataCollectionConsentHelper::
@@ -124,12 +125,12 @@ SyncBasedUrlKeyedDataCollectionConsentHelper::
     sync_service_->RemoveObserver(this);
 }
 
+// Note: This method must only consume cached state (not query anything from
+// SyncService), to ensure that the state-change detection in OnStateChanged()
+// works correctly.
 UrlKeyedDataCollectionConsentHelper::State
 SyncBasedUrlKeyedDataCollectionConsentHelper::GetConsentState() {
-  // TODO(crbug.com/1462552): Find a replacement once IsSyncFeatureEnabled()
-  // starts always returning false.
-  if (require_sync_feature_enabled_ &&
-      (!sync_service_ || !sync_service_->IsSyncFeatureEnabled())) {
+  if (require_sync_feature_enabled_ && !sync_feature_state_) {
     return State::kDisabled;
   }
 
@@ -172,6 +173,12 @@ void SyncBasedUrlKeyedDataCollectionConsentHelper::OnSyncShutdown(
 }
 
 void SyncBasedUrlKeyedDataCollectionConsentHelper::UpdateSyncDataTypeStates() {
+  if (require_sync_feature_enabled_) {
+    // TODO(crbug.com/1462552): Find a replacement once IsSyncFeatureEnabled()
+    // starts always returning false.
+    sync_feature_state_ =
+        sync_service_ && sync_service_->IsSyncFeatureEnabled();
+  }
   for (auto& [model_type, upload_state] : sync_data_type_states_) {
     upload_state = syncer::GetUploadToGoogleState(sync_service_, model_type);
   }
