@@ -71,11 +71,12 @@ enum class OfficeTaskResult {
   kFallbackOther = 1,
   kOpened = 2,
   kMoved = 3,
-  kCancelled = 4,
+  kCancelledAtConfirmation = 4,
   kFailedToUpload = 5,
   kFailedToOpen = 6,
   kCopied = 7,
-  kMaxValue = kCopied,
+  kCancelledAtFallback = 8,
+  kMaxValue = kCancelledAtFallback,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

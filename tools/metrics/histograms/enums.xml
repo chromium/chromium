@@ -78740,10 +78740,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Fallback (Other)"/>
   <int value="2" label="Opened"/>
   <int value="3" label="Moved"/>
-  <int value="4" label="Cancelled"/>
+  <int value="4" label="Cancelled at confirmation"/>
   <int value="5" label="Failed to upload"/>
   <int value="6" label="Failed to open"/>
   <int value="7" label="Copied"/>
+  <int value="8" label="Cancelled at fallback"/>
 </enum>
 
 <enum name="OfflineCapableReason">

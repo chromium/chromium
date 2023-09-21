@@ -1130,10 +1130,10 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     // Do nothing.
   } else if (user_response == kUserActionCancelGoogleDrive) {
     UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kCancelled);
+                              OfficeTaskResult::kCancelledAtConfirmation);
   } else if (user_response == kUserActionCancelOneDrive) {
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kCancelled);
+                              OfficeTaskResult::kCancelledAtConfirmation);
   } else {
     LaunchLocalFileTask(user_response);
   }

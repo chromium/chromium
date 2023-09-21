@@ -1084,10 +1084,12 @@ void OnDialogChoiceReceived(
   } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveOpenErrorUmaAfterFallback(
-          fallback_reason, ash::cloud_upload::OfficeTaskResult::kCancelled);
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback);
     } else if (IsOpenInOfficeTask(task)) {
       LogOneDriveOpenErrorUmaAfterFallback(
-          fallback_reason, ash::cloud_upload::OfficeTaskResult::kCancelled);
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback);
     }
   }
 }
