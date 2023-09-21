@@ -4869,7 +4869,7 @@
       "cthomp",
       "trusty-transport@chromium.org"
     ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "identity-status-consistency",
