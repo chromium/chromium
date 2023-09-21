@@ -60,7 +60,7 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
     test_features_.InitAndEnableFeatures(
-        {commerce::kShoppingList,
+        {commerce::kCommerceAllowChipExpansion, commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
         {commerce::kPriceInsights, commerce::kShoppingCollection});
   }

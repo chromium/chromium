@@ -113,6 +113,10 @@ namespace switches {
 const char kEnableChromeCart[] = "enable-chrome-cart";
 }  // namespace switches
 
+BASE_FEATURE(kCommerceAllowChipExpansion,
+             "CommerceAllowChipExpansion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCommerceAllowLocalImages,
              "CommerceAllowLocalImages",
              base::FEATURE_DISABLED_BY_DEFAULT);

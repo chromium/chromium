@@ -43,6 +43,11 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 
 class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
  public:
+  PriceInsightsIconViewInteractiveTest() {
+    test_features_.InitWithFeatures(
+        {commerce::kCommerceAllowChipExpansion, commerce::kPriceInsights}, {});
+  }
+
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -91,7 +96,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   bool is_browser_context_services_created{false};
 
  private:
-  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
+  base::test::ScopedFeatureList test_features_;
 
   void SetUpTabHelperAndShoppingService() {
     EXPECT_TRUE(is_browser_context_services_created);

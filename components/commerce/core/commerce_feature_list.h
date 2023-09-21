@@ -78,6 +78,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         {"Price Tracking Notifications", kCommercePriceTrackingNotifications,
          std::size(kCommercePriceTrackingNotifications), nullptr}};
 
+BASE_DECLARE_FEATURE(kCommerceAllowChipExpansion);
 BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates);
