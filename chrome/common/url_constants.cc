@@ -163,7 +163,8 @@ const char kFamilyGroupViewURL[] =
     "https://myaccount.google.com/family/details?utm_source=cpwd";
 
 const char kFirstPartySetsLearnMoreURL[] =
-    "https://developer.chrome.com/docs/privacy-sandbox/first-party-sets/";
+    "https://support.google.com/chrome?p=cpn_cookies"
+    "#zippy=%2Callow-related-sites-to-access-your-activity";
 
 const char kFlashDeprecationLearnMoreURL[] =
     "https://blog.chromium.org/2017/07/so-long-and-thanks-for-all-flash.html";
