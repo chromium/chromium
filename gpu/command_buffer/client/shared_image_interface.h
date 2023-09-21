@@ -37,6 +37,10 @@ class GpuFence;
 class Size;
 }  // namespace gfx
 
+namespace viz {
+class TestSharedImageInterface;
+}
+
 namespace gpu {
 class GpuMemoryBufferManager;
 
@@ -70,6 +74,7 @@ class GPU_EXPORT SharedImageInterface {
    private:
     friend class ClientSharedImageInterface;
     friend class SharedImageInterfaceInProcess;
+    friend class viz::TestSharedImageInterface;
 
     ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(

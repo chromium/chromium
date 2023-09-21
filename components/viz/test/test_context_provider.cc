@@ -27,6 +27,7 @@
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -124,6 +125,30 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
   const std::string extension_string_;
 };
 
+// Creates a shared memory region and returns a handle to it.
+gfx::GpuMemoryBufferHandle CreateGMBHandle(SharedImageFormat format,
+                                           const gfx::Size& size,
+                                           gfx::BufferUsage buffer_usage) {
+  static int last_handle_id = 0;
+  auto buffer_format = SinglePlaneSharedImageFormatToBufferFormat(format);
+  size_t buffer_size = 0u;
+  CHECK(
+      gfx::BufferSizeForBufferFormatChecked(size, buffer_format, &buffer_size));
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  CHECK(shared_memory_region.IsValid());
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::SHARED_MEMORY_BUFFER;
+  handle.id = gfx::GpuMemoryBufferId(last_handle_id++);
+  handle.offset = 0;
+  handle.stride = static_cast<uint32_t>(
+      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+  handle.region = std::move(shared_memory_region);
+
+  return handle;
+}
+
 }  // namespace
 
 TestSharedImageInterface::TestSharedImageInterface() = default;
@@ -170,9 +195,19 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
-  return CreateSharedImage(format, size, color_space, surface_origin,
-                           alpha_type, usage, std::move(debug_label),
-                           surface_handle);
+  // Create a GMBHandle and a mailbox and associate the two for usage in
+  // MapSharedImage().
+  auto mailbox =
+      CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
+                        usage, std::move(debug_label), surface_handle);
+
+  auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
+
+  mailbox_to_gmb_handle_info_map_[mailbox] =
+      gpu::SharedImageInterfaceProxy::GpuMemoryBufferHandleInfo(
+          std::move(gmb_handle), format, size, buffer_usage);
+
+  return mailbox;
 }
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
@@ -234,6 +269,7 @@ void TestSharedImageInterface::DestroySharedImage(
     const gpu::Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   shared_images_.erase(mailbox);
+  mailbox_to_gmb_handle_info_map_.erase(mailbox);
   most_recent_destroy_token_ = sync_token;
 }
 
@@ -294,6 +330,18 @@ void TestSharedImageInterface::Flush() {
 scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
     const gpu::Mailbox& mailbox) {
   return nullptr;
+}
+
+std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
+TestSharedImageInterface::MapSharedImage(const gpu::Mailbox& mailbox) {
+  auto it = mailbox_to_gmb_handle_info_map_.find(mailbox);
+  // The mailbox for which the query is made must be present.
+  CHECK(it != mailbox_to_gmb_handle_info_map_.end());
+
+  auto handle_info = it->second;
+  return SharedImageInterface::ScopedMapping::Create(
+      handle_info.handle.Clone(), handle_info.format, handle_info.size,
+      handle_info.buffer_usage);
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

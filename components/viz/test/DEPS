@@ -18,6 +18,7 @@ include_rules = [
   "+gpu/GLES2",
   "+gpu/ipc/gl_in_process_context.h",
   "+gpu/command_buffer/service/gpu_task_scheduler_helper.h",
+  "+gpu/ipc/client/shared_image_interface_proxy.h",
   "+gpu/ipc/raster_in_process_context.h",
   "+gpu/ipc/test_gpu_thread_holder.h",
   "+gpu/skia_bindings/grcontext_for_gles2_interface.h",
