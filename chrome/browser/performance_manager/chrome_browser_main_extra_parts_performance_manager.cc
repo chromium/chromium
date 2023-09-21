@@ -59,7 +59,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/performance_manager/policies/oom_score_policy_lacros.h"
+#include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -136,8 +136,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  graph->PassToGraph(
-      std::make_unique<performance_manager::policies::OomScorePolicyLacros>());
+  graph->PassToGraph(std::make_unique<
+                     performance_manager::policies::OomScorePolicyChromeOS>());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)

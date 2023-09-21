@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/oom_score_policy_lacros.h"
+#include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
 
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"  // For GraphTestHarnessWithMockDiscarder
 #include "components/performance_manager/test_support/mock_graphs.h"  // For TestProcessNodeImpl
@@ -12,31 +12,32 @@
 namespace performance_manager {
 namespace policies {
 
-class MockOomScorePolicyLacros : public OomScorePolicyLacros {
+class MockOomScorePolicyChromeOS : public OomScorePolicyChromeOS {
  public:
   // Overrides OnPassedToGraph to avoid starting the timer.
   void OnPassedToGraph(Graph* graph) override { graph_ = graph; }
 
-  void AssignOomScores() { OomScorePolicyLacros::AssignOomScores(); }
+  void AssignOomScores() { OomScorePolicyChromeOS::AssignOomScores(); }
 
   int GetCachedOomScore(base::ProcessId pid) {
-    return OomScorePolicyLacros::GetCachedOomScore(pid);
+    return OomScorePolicyChromeOS::GetCachedOomScore(pid);
   }
 };
 
-class OomScorePolicyLacrosTest
+class OomScorePolicyChromeOSTest
     : public testing::GraphTestHarnessWithMockDiscarder {
  public:
-  OomScorePolicyLacrosTest() = default;
-  ~OomScorePolicyLacrosTest() override = default;
-  OomScorePolicyLacrosTest(const OomScorePolicyLacrosTest& other) = delete;
-  OomScorePolicyLacrosTest& operator=(const OomScorePolicyLacrosTest&) = delete;
+  OomScorePolicyChromeOSTest() = default;
+  ~OomScorePolicyChromeOSTest() override = default;
+  OomScorePolicyChromeOSTest(const OomScorePolicyChromeOSTest& other) = delete;
+  OomScorePolicyChromeOSTest& operator=(const OomScorePolicyChromeOSTest&) =
+      delete;
 
   void SetUp() override {
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
 
     // Create the policy and pass it to the graph.
-    auto policy = std::make_unique<MockOomScorePolicyLacros>();
+    auto policy = std::make_unique<MockOomScorePolicyChromeOS>();
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
   }
@@ -46,13 +47,13 @@ class OomScorePolicyLacrosTest
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
-  MockOomScorePolicyLacros* policy() { return policy_; }
+  MockOomScorePolicyChromeOS* policy() { return policy_; }
 
  private:
-  raw_ptr<MockOomScorePolicyLacros> policy_;
+  raw_ptr<MockOomScorePolicyChromeOS, DanglingUntriaged> policy_;
 };
 
-TEST_F(OomScorePolicyLacrosTest, DistributeOomScores) {
+TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
   constexpr base::ProcessId kProcessId1 = 1;
   constexpr base::ProcessId kProcessId2 = 2;
   constexpr base::ProcessId kProcessId3 = 3;
@@ -109,7 +110,7 @@ TEST_F(OomScorePolicyLacrosTest, DistributeOomScores) {
   ASSERT_EQ(policy()->GetCachedOomScore(0), -1);
 }
 
-TEST_F(OomScorePolicyLacrosTest, DistributeOomScoresWithPriority) {
+TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
   constexpr base::ProcessId kProcessId1 = 1;
   constexpr base::ProcessId kProcessId2 = 2;
   constexpr base::ProcessId kProcessId3 = 3;
@@ -169,7 +170,7 @@ TEST_F(OomScorePolicyLacrosTest, DistributeOomScoresWithPriority) {
             content::kLowestRendererOomScore);
 }
 
-TEST_F(OomScorePolicyLacrosTest, DistributeOomScoresSharedPid) {
+TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
   constexpr base::ProcessId kProcessId1 = 1;
   constexpr base::ProcessId kProcessId2 = 2;
   constexpr base::ProcessId kProcessId3 = 3;

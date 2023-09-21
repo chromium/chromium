@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/oom_score_policy_lacros.h"
+#include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
 
 #include <algorithm>
 #include <set>
@@ -21,24 +21,24 @@ constexpr base::TimeDelta kOomScoreAssignmentInterval = base::Seconds(10);
 
 }  // namespace
 
-OomScorePolicyLacros::OomScorePolicyLacros() = default;
-OomScorePolicyLacros::~OomScorePolicyLacros() = default;
+OomScorePolicyChromeOS::OomScorePolicyChromeOS() = default;
+OomScorePolicyChromeOS::~OomScorePolicyChromeOS() = default;
 
-void OomScorePolicyLacros::OnPassedToGraph(Graph* graph) {
+void OomScorePolicyChromeOS::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
   timer_.Start(FROM_HERE, kOomScoreAssignmentInterval,
-               base::BindRepeating(&OomScorePolicyLacros::AssignOomScores,
+               base::BindRepeating(&OomScorePolicyChromeOS::AssignOomScores,
                                    weak_factory_.GetWeakPtr()));
 }
 
-void OomScorePolicyLacros::OnTakenFromGraph(Graph* graph) {
+void OomScorePolicyChromeOS::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = nullptr;
   timer_.Stop();
 }
 
-void OomScorePolicyLacros::AssignOomScores() {
+void OomScorePolicyChromeOS::AssignOomScores() {
   PageDiscardingHelper* discarding_helper =
       PageDiscardingHelper::GetFromGraph(graph_);
 
@@ -65,15 +65,17 @@ void OomScorePolicyLacros::AssignOomScores() {
   oom_score_map_ = DistributeOomScore(candidates);
 }
 
-OomScorePolicyLacros::ProcessScoreMap OomScorePolicyLacros::DistributeOomScore(
+OomScorePolicyChromeOS::ProcessScoreMap
+OomScorePolicyChromeOS::DistributeOomScore(
     const std::vector<PageNodeSortProxy>& candidates) {
   ProcessScoreMap score_map;
 
   std::vector<base::ProcessId> pids = GetUniqueSortedPids(candidates);
 
   const int pid_count = pids.size();
-  if (pid_count == 0)
+  if (pid_count == 0) {
     return score_map;
+  }
 
   // Now we distribute oom_score_adj evenly in the range based on the sorted
   // list. We're assigning priorities in the range of kLowestRendererOomScore
@@ -93,9 +95,10 @@ OomScorePolicyLacros::ProcessScoreMap OomScorePolicyLacros::DistributeOomScore(
 
     if (GetCachedOomScore(pid) != adj) {
       VLOG(3) << "Update OOM score " << adj << " for " << pid;
-      if (!base::AdjustOOMScore(pid, adj))
+      if (!base::AdjustOOMScore(pid, adj)) {
         LOG(ERROR) << "Failed to set oom_score_adj to " << adj
                    << " for process " << pid;
+      }
     }
     adj_raw += adj_increment;
   }
@@ -103,7 +106,7 @@ OomScorePolicyLacros::ProcessScoreMap OomScorePolicyLacros::DistributeOomScore(
   return score_map;
 }
 
-std::vector<base::ProcessId> OomScorePolicyLacros::GetUniqueSortedPids(
+std::vector<base::ProcessId> OomScorePolicyChromeOS::GetUniqueSortedPids(
     const std::vector<PageNodeSortProxy>& candidates) {
   std::vector<base::ProcessId> pids;
 
@@ -112,12 +115,14 @@ std::vector<base::ProcessId> OomScorePolicyLacros::GetUniqueSortedPids(
   for (const auto& candidate : candidates) {
     const FrameNode* main_frame_node =
         candidate.page_node()->GetMainFrameNode();
-    if (!main_frame_node)
+    if (!main_frame_node) {
       continue;
+    }
     base::ProcessId pid = main_frame_node->GetProcessNode()->GetProcessId();
 
-    if (pid == base::kNullProcessId || pid_set.find(pid) != pid_set.end())
+    if (pid == base::kNullProcessId || pid_set.find(pid) != pid_set.end()) {
       continue;
+    }
 
     pids.push_back(pid);
     pid_set.insert(pid);
@@ -126,10 +131,11 @@ std::vector<base::ProcessId> OomScorePolicyLacros::GetUniqueSortedPids(
   return pids;
 }
 
-int OomScorePolicyLacros::GetCachedOomScore(base::ProcessHandle pid) {
+int OomScorePolicyChromeOS::GetCachedOomScore(base::ProcessHandle pid) {
   auto it = oom_score_map_.find(pid);
-  if (it == oom_score_map_.end())
+  if (it == oom_score_map_.end()) {
     return -1;
+  }
   return it->second;
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_LACROS_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_LACROS_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_CHROMEOS_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_CHROMEOS_H_
 
 #include <vector>
 
@@ -23,12 +23,12 @@ namespace policies {
 // would be assigned lower oom score adj. See the following web page for more
 // explanation on Linux oom score adj(adjust).
 // [1]: https://man7.org/linux/man-pages/man1/choom.1.html
-class OomScorePolicyLacros : public GraphOwned {
+class OomScorePolicyChromeOS : public GraphOwned {
  public:
-  OomScorePolicyLacros();
-  ~OomScorePolicyLacros() override;
-  OomScorePolicyLacros(const OomScorePolicyLacros& other) = delete;
-  OomScorePolicyLacros& operator=(const OomScorePolicyLacros&) = delete;
+  OomScorePolicyChromeOS();
+  ~OomScorePolicyChromeOS() override;
+  OomScorePolicyChromeOS(const OomScorePolicyChromeOS& other) = delete;
+  OomScorePolicyChromeOS& operator=(const OomScorePolicyChromeOS&) = delete;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
@@ -63,10 +63,10 @@ class OomScorePolicyLacros : public GraphOwned {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<OomScorePolicyLacros> weak_factory_{this};
+  base::WeakPtrFactory<OomScorePolicyChromeOS> weak_factory_{this};
 };
 
 }  // namespace policies
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_LACROS_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_CHROMEOS_H_
