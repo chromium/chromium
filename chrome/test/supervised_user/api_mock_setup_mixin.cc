@@ -11,7 +11,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/supervised_user/api_mock_setup_mixin.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
