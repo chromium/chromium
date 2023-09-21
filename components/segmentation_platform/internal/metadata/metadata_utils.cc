@@ -85,9 +85,6 @@ ValidationResult ValidateBinaryClassifier(
 
 ValidationResult ValidateBinnedClassifier(
     const proto::Predictor::BinnedClassifier& classifier) {
-  if (classifier.underflow_label().empty()) {
-    return ValidationResult::kBinnedClassifierEmptyLabels;
-  }
   float prev = std::numeric_limits<float>::lowest();
   for (const auto& bin : classifier.bins()) {
     if (bin.label().empty()) {
