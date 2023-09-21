@@ -220,6 +220,25 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   CHECK(request_data.requesting_origin.is_valid());
   CHECK(request_data.embedding_origin.is_valid());
 
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data.id.global_render_frame_host_id());
+  CHECK(rfh);
+
+  if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
+      rfh->IsNestedWithinFencedFrame() ||
+      rfh->IsSandboxed(
+          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation)) {
+    // No need to log anything here, since well-behaved renderers have already
+    // done these checks and have logged to the console. This block is to handle
+    // compromised renderers.
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    mojo::ReportBadMessage(
+        "requestStorageAccess: Must not be called by a fenced frame, iframe "
+        "with an opaque origin, credentialless iframe, or sandboxed iframe");
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
+
   // Return early without letting SAA override any explicit user settings to
   // block 3p cookies.
   HostContentSettingsMap* settings_map =
@@ -233,10 +252,6 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_data.id.global_render_frame_host_id());
-  CHECK(rfh);
 
   // Return early without prompting users if cookie access is already allowed.
   // This does not take previously granted SAA permission into account.
