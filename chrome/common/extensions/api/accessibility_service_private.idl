@@ -19,4 +19,13 @@ namespace accessibilityServicePrivate {
     [supportsPromises] static void speakSelectedText(
       optional VoidCallback callback);
   };
+
+  interface Events {
+    // Called when Select to Speak in ChromeOS wants a clipboard copy
+    // event to be performed on the active and focused tab with the
+    // given URL. This is fired when Select to Speak is trying to speak
+    // with search+s but cannot find a selection and the focused node
+    // is in a Google Docs page.
+    static void clipboardCopyInActiveGoogleDoc(DOMString url);
+  };
 };

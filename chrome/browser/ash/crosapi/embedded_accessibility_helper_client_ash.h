@@ -7,6 +7,7 @@
 
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace crosapi {
 
@@ -25,15 +26,22 @@ class EmbeddedAccessibilityHelperClientAsh
   void BindEmbeddedAccessibilityHelperClient(
       mojo::PendingReceiver<crosapi::mojom::EmbeddedAccessibilityHelperClient>
           embeded_ax_helper_client) override;
+  void BindEmbeddedAccessibilityHelper(
+      mojo::PendingRemote<crosapi::mojom::EmbeddedAccessibilityHelper>
+          embedded_ax_helper) override;
 
   // crosapi::mojom::EmbeddedAccessibilityHelperClient:
   void SpeakSelectedText() override;
+
+  void ClipboardCopyInActiveGoogleDoc(const std::string& url);
 
   void BindEmbeddedAccessibilityHelperClientFactoryReceiver(
       mojo::PendingReceiver<
           crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver);
 
  private:
+  mojo::RemoteSet<crosapi::mojom::EmbeddedAccessibilityHelper>
+      embedded_ax_helper_remotes_;
   mojo::ReceiverSet<crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>
       embedded_ax_helper_factory_receivers_;
   mojo::ReceiverSet<crosapi::mojom::EmbeddedAccessibilityHelperClient>

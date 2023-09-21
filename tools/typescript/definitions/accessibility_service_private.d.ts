@@ -8,15 +8,21 @@
  * chrome/common/extensions/api/accessibility_service_private.idl run
  * `tools/json_schema_compiler/compiler.py
  * chrome/common/extensions/api/accessibility_service_private.idl -g
- * definitions` to regenerate.
+ * ts_definitions` to regenerate.
  */
 
+import {ChromeEvent} from './chrome_event.js';
 
+declare global {
+  export namespace chrome {
 
-declare namespace chrome {
-  export namespace accessibilityServicePrivate {
+    export namespace accessibilityServicePrivate {
 
-    export function speakSelectedText(): void;
+      export function speakSelectedText(): Promise<void>;
 
+      export const clipboardCopyInActiveGoogleDoc:
+          ChromeEvent<(url: string) => void>;
+
+    }
   }
 }

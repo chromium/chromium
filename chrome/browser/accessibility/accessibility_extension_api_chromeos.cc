@@ -26,6 +26,9 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -113,6 +116,18 @@ ash::DictationBubbleHintType ConvertDictationHintType(
 }
 
 }  // namespace
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  std::string url = args()[0].GetString();
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->embedded_accessibility_helper_client_ash()
+      ->ClipboardCopyInActiveGoogleDoc(url);
+  return RespondNow(NoArguments());
+}
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateDarkenScreenFunction::Run() {

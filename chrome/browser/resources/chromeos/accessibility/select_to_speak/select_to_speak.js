@@ -492,18 +492,25 @@ export class SelectToSpeak {
       chrome.tabs.query({active: true}, tabs => {
         // Closure doesn't realize that we did a !gsuiteAppRootNode earlier
         // so we check again here.
-        if (tabs.length === 0 || !gsuiteAppRootNode) {
+        if (!gsuiteAppRootNode || gsuiteAppRootNode.url === undefined) {
           return;
         }
-        const tab = tabs[0];
         this.inputHandler_.onRequestReadClipboardData();
         this.currentNodeGroupItem_ =
             new ParagraphUtils.NodeGroupItem(gsuiteAppRootNode, 0, false);
-        chrome.tabs.executeScript(tab.id, {
-          allFrames: true,
-          matchAboutBlank: true,
-          code: 'document.execCommand("copy");',
-        });
+        if (tabs.length > 0 && tabs[0].url === gsuiteAppRootNode.url) {
+          const tab = tabs[0];
+          chrome.tabs.executeScript(tab.id, {
+            allFrames: true,
+            matchAboutBlank: true,
+            code: 'document.execCommand("copy");',
+          });
+        } else {
+          // In Lacros because chrome.tabs didn't return a tab or it
+          // was a tab with a different URL.
+          chrome.accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc(
+              gsuiteAppRootNode.url);
+        }
         if (userRequested) {
           MetricsUtils.recordStartEvent(methodNumber, this.prefsManager_);
         }

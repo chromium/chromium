@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 
+#include <memory>
+
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
@@ -12,12 +14,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/api/accessibility_service_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_l10n_util.h"
@@ -78,6 +82,26 @@ EmbeddedA11yManagerLacros::EmbeddedA11yManagerLacros() = default;
 
 EmbeddedA11yManagerLacros::~EmbeddedA11yManagerLacros() = default;
 
+void EmbeddedA11yManagerLacros::ClipboardCopyInActiveGoogleDoc(
+    const std::string& url) {
+  // Get the `Profile` last used (the `Profile` which owns the most
+  // recently focused window). This is the one on which we want to
+  // request speech.
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
+
+  auto event_args(extensions::api::accessibility_service_private::
+                      ClipboardCopyInActiveGoogleDoc::Create(url));
+  std::unique_ptr<extensions::Event> event(new extensions::Event(
+      extensions::events::
+          ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC,
+      extensions::api::accessibility_service_private::
+          ClipboardCopyInActiveGoogleDoc::kEventName,
+      std::move(event_args)));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kEmbeddedA11yHelperExtensionId, std::move(event));
+}
+
 void EmbeddedA11yManagerLacros::Init() {
   CHECK(!chromevox_enabled_observer_)
       << "EmbeddedA11yManagerLacros::Init should only be called once.";
@@ -101,9 +125,12 @@ void EmbeddedA11yManagerLacros::Init() {
   chromeos::LacrosService* impl = chromeos::LacrosService::Get();
   if (impl->IsAvailable<
           crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()) {
-    impl->GetRemote<crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()
-        ->BindEmbeddedAccessibilityHelperClient(
-            a11y_helper_remote_.BindNewPipeAndPassReceiver());
+    auto& remote = impl->GetRemote<
+        crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>();
+    remote->BindEmbeddedAccessibilityHelperClient(
+        a11y_helper_remote_.BindNewPipeAndPassReceiver());
+    remote->BindEmbeddedAccessibilityHelper(
+        a11y_helper_receiver_.BindNewPipeAndPassRemote());
   }
 
   pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(

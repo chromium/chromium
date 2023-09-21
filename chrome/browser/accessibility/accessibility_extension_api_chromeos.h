@@ -13,6 +13,18 @@
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// API function that is called when the Select-to-Speak wants to perform a
+// clipboard copy in a Lacros Google Doc.
+class AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction() override {
+  }
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION(
+      "accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc",
+      ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC)
+};
+
 // API function that darkens or undarkens the screen.
 class AccessibilityPrivateDarkenScreenFunction : public ExtensionFunction {
   ~AccessibilityPrivateDarkenScreenFunction() override {}

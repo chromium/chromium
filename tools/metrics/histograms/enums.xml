@@ -35743,6 +35743,8 @@ Called by update_extension_histograms.py.-->
   <int value="545"
       label="FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED"/>
   <int value="546" label="OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION"/>
+  <int value="547"
+      label="ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -37668,6 +37670,8 @@ Called by update_extension_histograms.py.-->
   <int value="1827" label="OS_DIAGNOSTICS_STARTROUTINE"/>
   <int value="1828" label="OS_DIAGNOSTICS_CANCELROUTINE"/>
   <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
+  <int value="1830"
+      label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
 </enum>
 
 <enum name="ExtensionIconState">

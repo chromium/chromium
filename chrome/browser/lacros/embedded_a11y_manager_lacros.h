@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_EMBEDDED_A11Y_MANAGER_LACROS_H_
 #define CHROME_BROWSER_LACROS_EMBEDDED_A11Y_MANAGER_LACROS_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
@@ -27,8 +29,10 @@ class Profile;
 // features running in Ash. Installs and uninstalls the extensions on every
 // profile (including guest and incognito) depending on which Ash accessibility
 // features are running and syncs the preferences on all profiles.
-class EmbeddedA11yManagerLacros : public ProfileObserver,
-                                  public ProfileManagerObserver {
+class EmbeddedA11yManagerLacros
+    : public crosapi::mojom::EmbeddedAccessibilityHelper,
+      public ProfileObserver,
+      public ProfileManagerObserver {
  public:
   // Gets the current instance of EmbeddedA11yManagerLacros. There should be one
   // of these across all Lacros profiles.
@@ -39,6 +43,9 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
 
   EmbeddedA11yManagerLacros(EmbeddedA11yManagerLacros&) = delete;
   EmbeddedA11yManagerLacros& operator=(EmbeddedA11yManagerLacros&) = delete;
+
+  // crosapi::mojom::EmbeddedAccessibilityHelper:
+  void ClipboardCopyInActiveGoogleDoc(const std::string& url) override;
 
   // Starts to observe Ash accessibility feature state and profiles.
   // Should be called when Lacros starts up.
@@ -115,6 +122,9 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
 
   mojo::Remote<crosapi::mojom::EmbeddedAccessibilityHelperClient>
       a11y_helper_remote_;
+
+  mojo::Receiver<crosapi::mojom::EmbeddedAccessibilityHelper>
+      a11y_helper_receiver_{this};
 
   base::WeakPtrFactory<EmbeddedA11yManagerLacros> weak_ptr_factory_{this};
 

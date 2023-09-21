@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
 
+#include <string>
+
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 
@@ -14,8 +16,28 @@ EmbeddedAccessibilityHelperClientAsh::EmbeddedAccessibilityHelperClientAsh() =
 EmbeddedAccessibilityHelperClientAsh::~EmbeddedAccessibilityHelperClientAsh() =
     default;
 
+void EmbeddedAccessibilityHelperClientAsh::
+    BindEmbeddedAccessibilityHelperClient(
+        mojo::PendingReceiver<crosapi::mojom::EmbeddedAccessibilityHelperClient>
+            embeded_ax_helper_client) {
+  embedded_ax_helper_receivers_.Add(this, std::move(embeded_ax_helper_client));
+}
+
+void EmbeddedAccessibilityHelperClientAsh::BindEmbeddedAccessibilityHelper(
+    mojo::PendingRemote<crosapi::mojom::EmbeddedAccessibilityHelper>
+        embedded_ax_helper) {
+  embedded_ax_helper_remotes_.Add(std::move(embedded_ax_helper));
+}
+
 void EmbeddedAccessibilityHelperClientAsh::SpeakSelectedText() {
   ash::AccessibilityManager::Get()->OnSelectToSpeakContextMenuClick();
+}
+
+void EmbeddedAccessibilityHelperClientAsh::ClipboardCopyInActiveGoogleDoc(
+    const std::string& url) {
+  for (auto& remote : embedded_ax_helper_remotes_) {
+    remote->ClipboardCopyInActiveGoogleDoc(url);
+  }
 }
 
 void EmbeddedAccessibilityHelperClientAsh::
@@ -26,11 +48,5 @@ void EmbeddedAccessibilityHelperClientAsh::
   embedded_ax_helper_factory_receivers_.Add(this, std::move(receiver));
 }
 
-void EmbeddedAccessibilityHelperClientAsh::
-    BindEmbeddedAccessibilityHelperClient(
-        mojo::PendingReceiver<crosapi::mojom::EmbeddedAccessibilityHelperClient>
-            embeded_ax_helper_client) {
-  embedded_ax_helper_receivers_.Add(this, std::move(embeded_ax_helper_client));
-}
 
 }  // namespace crosapi

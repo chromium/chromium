@@ -7,10 +7,27 @@ const INITIALIZED_KEY: string = 'sts_initialized';
 // flag.
 const SHOW_CONTEXT_MENU = chrome.accessibilityServicePrivate !== undefined;
 
+// Matches one of the known GSuite apps which need the clipboard to find and
+// read selected text. Includes sandbox and non-sandbox versions.
+const GSUITE_APP_REGEXP =
+    /^https:\/\/docs\.(?:sandbox\.)?google\.com\/(?:(?:presentation)|(?:document)|(?:spreadsheets)|(?:drawings)){1}\//;
+
 async function selectToSpeakContextMenusCallback() {
   // Inform Lacros of the context menu click.
   if (SHOW_CONTEXT_MENU) {
     chrome.accessibilityServicePrivate.speakSelectedText();
+  }
+}
+
+async function clipboardCopyInActiveGoogleDoc(url: string) {
+  const queryOptions = {active: true, currentWindow: true};
+  const [tab] = await chrome.tabs.query(queryOptions);
+  if (tab?.id && tab.url && tab.url === url &&
+      GSUITE_APP_REGEXP.exec(tab.url)) {
+    chrome.scripting.executeScript({
+      target: {tabId: tab.id, allFrames: true},
+      files: ['embedded_a11y_helper/clipboard_copy.js'],
+    });
   }
 }
 
@@ -44,6 +61,8 @@ async function onSelectToSpeakChanged(
 
 async function main() {
   chrome.contextMenus.onClicked.addListener(selectToSpeakContextMenusCallback);
+  chrome.accessibilityServicePrivate.clipboardCopyInActiveGoogleDoc.addListener(
+      url => clipboardCopyInActiveGoogleDoc(url));
 
   // Set up based on current state.
   const currentDetails =

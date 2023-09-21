@@ -18,11 +18,32 @@ interface EmbeddedAccessibilityHelperClient {
  SpeakSelectedText@0();
 };
 
+// Interface for EmbeddedAccessibilityHelpers. Implemented by lacros-chrome.
+// Used by ash-chrome for accessibility features in Ash that need actions
+// performed in lacros-chrome.
+[Stable, Uuid="f259d816-7530-4fcc-9836-0e2996d395ec"]
+interface EmbeddedAccessibilityHelper {
+  // Called when Select to Speak in Ash wants a clipboard copy
+  // event to be performed on the active and focused tab with the
+  // given URL. This is fired when Select to Speak is trying to speak
+  // with search+s but cannot find a selection and the focused node
+  // is in a Google Docs page.
+  ClipboardCopyInActiveGoogleDoc@0(string url);
+};
+
 // A factory living in ash-chrome which brokers connections to other
-// processes for EmbeddedAccessibilityHelperClient.
+// processes for EmbeddedAccessibilityHelper and
+// EmbeddedAccessibilityHelperClient.
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="b6216633-c0d5-4eab-848e-d9fdfeaa3c33"]
 interface EmbeddedAccessibilityHelperClientFactory {
- // Binds EmbeddedAccessibilityHelperClient's receiver in lacros-chrome.
- BindEmbeddedAccessibilityHelperClient@0(
-     pending_receiver<EmbeddedAccessibilityHelperClient> embedded_ax_helper_client);
+  // Binds EmbeddedAccessibilityHelperClient's receiver in lacros-chrome.
+  BindEmbeddedAccessibilityHelperClient@0(
+    pending_receiver<EmbeddedAccessibilityHelperClient>
+        embedded_ax_helper_client);
+
+  // Binds EmbeddedAccessibilityHelper's remote in lacros-chrome.
+  [MinVersion=1] BindEmbeddedAccessibilityHelper@1(
+    pending_remote<EmbeddedAccessibilityHelper> embedded_ax_helper);
 };

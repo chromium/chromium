@@ -545,6 +545,13 @@ chrome.accessibilityPrivate.sendSyntheticMouseEvent = function(mouseEvent) {};
 chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
 
 /**
+ * Called by the Select-to-Speak extension to request a clipboard copy in the
+ * active Lacros Google Docs tab for the copy-paste fallback.
+ * @param {string} url URL of the Google Docs tab.
+ */
+chrome.accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc = function(url) {};
+
+/**
  * Called by the Accessibility Common extension when
  * onScrollableBoundsForPointRequested has found a scrolling container. |rect|
  * will be the bounds of the nearest scrollable ancestor of the node at the
