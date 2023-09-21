@@ -13,16 +13,21 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface HistorySyncMediator () <IdentityManagerObserverBridgeDelegate>
+@interface HistorySyncMediator () <ChromeAccountManagerServiceObserver,
+                                   IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation HistorySyncMediator {
   AuthenticationService* _authenticationService;
+  // Account manager service with observer.
   ChromeAccountManagerService* _accountManagerService;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
@@ -43,6 +48,9 @@
   if (self) {
     _authenticationService = authenticationService;
     _accountManagerService = chromeAccountManagerService;
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -53,6 +61,7 @@
 }
 
 - (void)disconnect {
+  _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _accountManagerService = nullptr;
@@ -94,6 +103,12 @@
                 base::SysNSStringToUTF16(identity.userEmail))
           : l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
   [_consumer setFooterText:footerText];
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  [self updateAvatarImageWithIdentity:identity];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
