@@ -125,7 +125,8 @@ HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> icon_view,
                          const std::u16string& title,
                          const std::u16string& subtitle,
-                         std::unique_ptr<views::View> secondary_view)
+                         std::unique_ptr<views::View> secondary_view,
+                         bool add_vertical_label_spacing)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -175,8 +176,9 @@ HoverButton::HoverButton(PressedCallback callback,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
-  label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets::VH(vertical_spacing, 0));
+  label_wrapper->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(add_vertical_label_spacing ? vertical_spacing : 0, 0));
   label_wrapper_ = AddChildView(std::move(label_wrapper));
   // Observe |label_wrapper_| bounds changes to ensure the HoverButton tooltip
   // is kept in sync with the size.

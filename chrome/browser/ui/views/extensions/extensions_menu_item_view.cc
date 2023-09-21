@@ -323,7 +323,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                     ui::kColorIcon, small_icon_size))
                           : nullptr,
                       std::u16string(), std::u16string(),
-                      std::move(site_permissions_button_icon)))
+                      std::move(site_permissions_button_icon),
+                      /*add_vertical_label_spacing=*/false))
                   .CopyAddressTo(&site_permissions_button_)
                   // Align the main and secondary row text by adding the primary
                   // action button's icon size as margin.

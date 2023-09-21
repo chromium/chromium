@@ -52,13 +52,16 @@ class HoverButton : public views::LabelButton {
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
   // will vertically center |title|. |secondary_view|, when set, is shown
   // on the opposite side of the button from |icon_view|.
+  // When |add_vertical_label_spacing| is false it will not add vertical spacing
+  // to the label wrapper.
   // Warning: |icon_view| must have a fixed size and be correctly set during its
   // constructor for the HoverButton to layout correctly.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
               const std::u16string& title,
               const std::u16string& subtitle = std::u16string(),
-              std::unique_ptr<views::View> secondary_view = nullptr);
+              std::unique_ptr<views::View> secondary_view = nullptr,
+              bool add_vertical_label_spacing = true);
 
   HoverButton(const HoverButton&) = delete;
   HoverButton& operator=(const HoverButton&) = delete;
