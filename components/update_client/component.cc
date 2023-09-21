@@ -95,29 +95,36 @@
 namespace update_client {
 namespace {
 
-using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<
-    void(ErrorCategory error_category, int error_code, int extra_code1)>;
+using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<void(
+    ErrorCategory error_category,
+    int error_code,
+    int extra_code1,
+    absl::optional<CrxInstaller::Result> installer_result)>;
 
 void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
                      InstallOnBlockingTaskRunnerCompleteCallback callback,
                      const base::FilePath& unpack_path,
-                     const CrxInstaller::Result& result) {
+                     const CrxInstaller::Result& installer_result) {
   base::ThreadPool::PostTask(
       FROM_HERE, kTaskTraits,
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              InstallOnBlockingTaskRunnerCompleteCallback callback,
              const base::FilePath& unpack_path,
-             const CrxInstaller::Result& result) {
+             const CrxInstaller::Result& installer_result) {
             base::DeletePathRecursively(unpack_path);
-            const ErrorCategory error_category =
-                result.error ? ErrorCategory::kInstall : ErrorCategory::kNone;
+            const ErrorCategory error_category = installer_result.error
+                                                     ? ErrorCategory::kInstall
+                                                     : ErrorCategory::kNone;
             main_task_runner->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), error_category,
-                                          static_cast<int>(result.error),
-                                          result.extended_error));
+                FROM_HERE,
+                base::BindOnce(std::move(callback), error_category,
+                               static_cast<int>(installer_result.error),
+                               installer_result.extended_error,
+                               installer_result));
           },
-          main_task_runner, std::move(callback), unpack_path, result));
+          main_task_runner, std::move(callback), unpack_path,
+          installer_result));
 }
 
 void InstallOnBlockingTaskRunner(
@@ -138,12 +145,14 @@ void InstallOnBlockingTaskRunner(
   if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
           fingerprint)) {
-    const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED,
-                                      logging::GetLastSystemErrorCode());
+    const CrxInstaller::Result installer_result(
+        InstallError::FINGERPRINT_WRITE_FAILED,
+        logging::GetLastSystemErrorCode());
     main_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), ErrorCategory::kInstall,
-                       static_cast<int>(result.error), result.extended_error));
+                       static_cast<int>(installer_result.error),
+                       installer_result.extended_error, absl::nullopt));
     return;
   }
 
@@ -195,9 +204,9 @@ void InstallOnBlockingTaskRunner(
       base::BindOnce(
           [](scoped_refptr<CallbackChecker> callback_checker,
              CrxInstaller::Callback callback,
-             const CrxInstaller::Result& result) {
+             const CrxInstaller::Result& installer_result) {
             callback_checker->set_unsafe();
-            std::move(callback).Run(result);
+            std::move(callback).Run(installer_result);
           },
           callback_checker,
           base::BindOnce(&InstallComplete, main_task_runner,
@@ -244,9 +253,9 @@ void PuffinUnpackCompleteOnBlockingTaskRunner(
     update_client::DeleteFileAndEmptyParentDirectory(crx_path);
     DVLOG(2) << "Unpack failed: " << static_cast<int>(result.error);
     main_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                       static_cast<int>(result.error), result.extended_error));
+        FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
+                                  static_cast<int>(result.error),
+                                  result.extended_error, absl::nullopt));
   } else if (!base::FeatureList::IsEnabled(features::kPuffinPatches) ||
              !optional_crx_cache.has_value()) {
     // If we were unable to create the crx_cache, skip the CrxCache::Put call.
@@ -321,8 +330,9 @@ void OnPuffPatchCompleteOnBlockingTaskRunner(
     update_client::DeleteFileAndEmptyParentDirectory(src_crx_path);
     update_client::DeleteFileAndEmptyParentDirectory(dest_crx_path);
     main_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                                  static_cast<int>(error), extra_code));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
+                       static_cast<int>(error), extra_code, absl::nullopt));
     DVLOG(2) << "PuffPatch failed: " << static_cast<int>(error);
     return;
   }
@@ -355,8 +365,9 @@ void StartPuffPatchOnBlockingTaskRunner(
     const CrxCache::Result& result) {
   if (result.error != UnpackerError::kNone) {
     main_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                                  static_cast<int>(result.error), 0));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
+                       static_cast<int>(result.error), 0, absl::nullopt));
     DVLOG(2) << "crx_cache->Get failed: " << static_cast<int>(result.error);
     return;
   }
@@ -509,6 +520,7 @@ CrxUpdateItem Component::GetCrxUpdateItem() const {
   crx_update_item.error_code = error_code_;
   crx_update_item.extra_code1 = extra_code1_;
   crx_update_item.custom_updatecheck_data = custom_attrs_;
+  crx_update_item.installer_result = installer_result_;
 
   return crx_update_item;
 }
@@ -1160,8 +1172,8 @@ void Component::StateUpdatingDiff::DoHandle() {
         FROM_HERE,
         base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
                        base::Unretained(this), ErrorCategory::kUnpack,
-                       static_cast<int>(UnpackerError::kCrxCacheNotProvided),
-                       0));
+                       static_cast<int>(UnpackerError::kCrxCacheNotProvided), 0,
+                       absl::nullopt));
   }
 }
 
@@ -1175,9 +1187,11 @@ void Component::StateUpdatingDiff::InstallProgress(int install_progress) {
   component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
 }
 
-void Component::StateUpdatingDiff::InstallComplete(ErrorCategory error_category,
-                                                   int error_code,
-                                                   int extra_code1) {
+void Component::StateUpdatingDiff::InstallComplete(
+    ErrorCategory error_category,
+    int error_code,
+    int extra_code1,
+    absl::optional<CrxInstaller::Result>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
@@ -1256,9 +1270,11 @@ void Component::StateUpdating::InstallProgress(int install_progress) {
   component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
 }
 
-void Component::StateUpdating::InstallComplete(ErrorCategory error_category,
-                                               int error_code,
-                                               int extra_code1) {
+void Component::StateUpdating::InstallComplete(
+    ErrorCategory error_category,
+    int error_code,
+    int extra_code1,
+    absl::optional<CrxInstaller::Result> installer_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
@@ -1266,6 +1282,7 @@ void Component::StateUpdating::InstallComplete(ErrorCategory error_category,
   component.error_category_ = error_category;
   component.error_code_ = error_code;
   component.extra_code1_ = extra_code1;
+  component.installer_result_ = installer_result;
 
   if (component.error_code_ != 0) {
     TransitionState(std::make_unique<StateUpdateError>(&component));

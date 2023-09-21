@@ -184,6 +184,23 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
     // Shell command run at the end of the install, if applicable. This string
     // must be escaped to be a command line.
     std::string installer_cmd_line;
+
+    // A `CrxInstaller` instance that runs other application installers needs
+    // the ability to report error codes that `update_client` should not
+    // interpret. For instance:
+    //   * the application installer error code may be an OS error code that
+    //   overlaps with the error codes in `update_client::InstallError`. Error
+    //   code `2` could mean `FINGERPRINT_WRITE_FAILED = 2` or the windows error
+    //   `ERROR_FILE_NOT_FOUND`.
+    //   * the application installer may report a non-zero success code.
+    //   `update_client` views any error code other than `0` as an error.
+    //   `ERROR_SUCCESS_REBOOT_INITIATED`, `ERROR_SUCCESS_REBOOT_REQUIRED`, and
+    //   `ERROR_SUCCESS_RESTART_REQUIRED` are examples of non-zero success
+    //   codes.
+    // In these cases, the `CrxInstaller` may choose to store the application
+    // installer result in `original_error`, and use a zero/non-zero `error`
+    // only to indicate a success/error.
+    int original_error = 0;
   };
 
   struct InstallParams {

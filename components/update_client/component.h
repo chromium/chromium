@@ -114,7 +114,11 @@ class Component {
   bool diff_update_failed() const { return !!diff_error_code_; }
 
   ErrorCategory error_category() const { return error_category_; }
-  int error_code() const { return error_code_; }
+  int error_code() const {
+    return installer_result_ && installer_result_->original_error
+               ? installer_result_->original_error
+               : error_code_;
+  }
   int extra_code1() const { return extra_code1_; }
   ErrorCategory diff_error_category() const { return diff_error_category_; }
   int diff_error_code() const { return diff_error_code_; }
@@ -311,7 +315,8 @@ class Component {
     void InstallProgress(int install_progress);
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
-                         int extra_code1);
+                         int extra_code1,
+                         absl::optional<CrxInstaller::Result> installer_result);
   };
 
   class StateUpdating : public State {
@@ -328,7 +333,8 @@ class Component {
     void InstallProgress(int install_progress);
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
-                         int extra_code1);
+                         int extra_code1,
+                         absl::optional<CrxInstaller::Result> installer_result);
   };
 
   class StateUpdated : public State {
@@ -459,9 +465,12 @@ class Component {
   // the |extra_code1| usually contains a system error, but it can contain
   // any extended information that is relevant to either the category or the
   // error itself.
+  // The `installer_result_` contains the value provided by the `CrxInstaller`
+  // instance when the install completes.
   ErrorCategory error_category_ = ErrorCategory::kNone;
   int error_code_ = 0;
   int extra_code1_ = 0;
+  absl::optional<CrxInstaller::Result> installer_result_;
   ErrorCategory diff_error_category_ = ErrorCategory::kNone;
   int diff_error_code_ = 0;
   int diff_extra_code1_ = 0;

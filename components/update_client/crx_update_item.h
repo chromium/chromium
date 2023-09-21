@@ -56,6 +56,10 @@ struct CrxUpdateItem {
   int error_code = 0;
   int extra_code1 = 0;
   std::map<std::string, std::string> custom_updatecheck_data;
+
+  // The value of this data member is provided to the `UpdateClient` by the
+  // `CrxInstaller` instance when the install completes.
+  absl::optional<CrxInstaller::Result> installer_result;
 };
 
 }  // namespace update_client
