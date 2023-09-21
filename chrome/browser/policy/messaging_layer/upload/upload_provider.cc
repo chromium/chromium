@@ -101,6 +101,8 @@ class EncryptedReportingUploadProvider::UploadHelper
       stored_reservations_ GUARDED_BY_CONTEXT(sequenced_task_checker_);
   bool stored_need_encryption_key_ GUARDED_BY_CONTEXT(sequenced_task_checker_){
       false};
+  int stored_config_file_version_ GUARDED_BY_CONTEXT(sequenced_task_checker_){
+      0};
 
   // Upload client (protected by sequenced task runner). Once set, is used
   // repeatedly.
@@ -208,8 +210,9 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     const bool need_encryption_key =
         std::exchange(stored_need_encryption_key_, false);
     const auto result = upload_client_->EnqueueUpload(
-        need_encryption_key, std::move(records), std::move(scoped_reservation),
-        report_successful_upload_cb_, encryption_key_attached_cb_);
+        need_encryption_key, stored_config_file_version_, std::move(records),
+        std::move(scoped_reservation), report_successful_upload_cb_,
+        encryption_key_attached_cb_);
     LOG_IF(ERROR, !result.ok()) << "Upload failed, error=" << result;
   }
 }
@@ -251,7 +254,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
   }
   std::move(enqueued_cb)
       .Run(upload_client_->EnqueueUpload(
-          need_encryption_key, std::move(records),
+          need_encryption_key, stored_config_file_version_, std::move(records),
           std::move(scoped_reservation), report_successful_upload_cb_,
           encryption_key_attached_cb_));
 }

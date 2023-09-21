@@ -36,6 +36,7 @@ class RecordHandlerImpl : public RecordHandler {
   // Base class RecordHandler method implementation.
   void HandleRecords(
       bool need_encryption_key,
+      int config_file_version,
       std::vector<EncryptedRecord> record,
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete,

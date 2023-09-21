@@ -347,6 +347,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
       }));
 
   handler_->HandleRecords(/*need_encryption_key=*/false,
+                          /*config_file_version=*/-1,
                           std::vector(1, std::move(init_encrypted_record)),
                           std::move(record_reservation), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -396,6 +397,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
         std::move(callback).Run(Status::StatusOK());
       }));
   handler_->HandleRecords(/*need_encryption_key=*/false,
+                          /*config_file_version=*/-1,
                           std::vector(1, std::move(next_step_encrypted_record)),
                           std::move(record_reservation), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -442,6 +444,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulFinalize) {
         std::move(callback).Run(Status::StatusOK());
       }));
   handler_->HandleRecords(/*need_encryption_key=*/false,
+                          /*config_file_version=*/-1,
                           std::vector(1, std::move(fin_encrypted_record)),
                           std::move(record_reservation), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -470,6 +473,7 @@ TEST_F(RecordHandlerUploadTest, AlreadyFinalized) {
   EXPECT_CALL(*test_storage_, AddRecord).Times(0);
 
   handler_->HandleRecords(/*need_encryption_key=*/false,
+                          /*config_file_version=*/-1,
                           std::vector(1, std::move(fin_encrypted_record)),
                           std::move(record_reservation), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -519,6 +523,7 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
         std::move(callback).Run(Status::StatusOK());
       }));
   handler_->HandleRecords(/*need_encryption_key=*/false,
+                          /*config_file_version=*/-1,
                           std::vector(1, std::move(next_step_encrypted_record)),
                           std::move(record_reservation), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
@@ -566,10 +571,10 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
                                          memory_resource_);
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
-    handler_->HandleRecords(/*need_encryption_key=*/false,
-                            std::vector(1, init_encrypted_record),
-                            std::move(record_reservation), responder_event.cb(),
-                            encryption_key_attached_event.repeating_cb());
+    handler_->HandleRecords(
+        /*need_encryption_key=*/false, /*config_file_version=*/-1,
+        std::vector(1, init_encrypted_record), std::move(record_reservation),
+        responder_event.cb(), encryption_key_attached_event.repeating_cb());
     VerifyUploadRequestAndRespond();
     auto response = responder_event.result();
     EXPECT_THAT(response, ResponseEquals(expected_response));
@@ -636,6 +641,7 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
     handler_->HandleRecords(/*need_encryption_key=*/false,
+                            /*config_file_version=*/-1,
                             std::vector(1, std::move(init_encrypted_record)),
                             std::move(record_reservation), responder_event.cb(),
                             encryption_key_attached_event.repeating_cb());
@@ -690,6 +696,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
     handler_->HandleRecords(/*need_encryption_key=*/false,
+                            /*config_file_version=*/-1,
                             std::vector(1, next_step_encrypted_record),
                             std::move(record_reservation), responder_event.cb(),
                             encryption_key_attached_event.repeating_cb());
@@ -762,7 +769,7 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
     handler_->HandleRecords(
-        /*need_encryption_key=*/false,
+        /*need_encryption_key=*/false, /*config_file_version=*/-1,
         std::vector(1, std::move(next_step_encrypted_record)),
         std::move(record_reservation), responder_event.cb(),
         encryption_key_attached_event.repeating_cb());
@@ -815,10 +822,10 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
                                          memory_resource_);
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
-    handler_->HandleRecords(/*need_encryption_key=*/false,
-                            std::vector(1, fin_encrypted_record),
-                            std::move(record_reservation), responder_event.cb(),
-                            encryption_key_attached_event.repeating_cb());
+    handler_->HandleRecords(
+        /*need_encryption_key=*/false, /*config_file_version=*/-1,
+        std::vector(1, fin_encrypted_record), std::move(record_reservation),
+        responder_event.cb(), encryption_key_attached_event.repeating_cb());
     VerifyUploadRequestAndRespond();
     auto response = responder_event.result();
     EXPECT_THAT(response, ResponseEquals(expected_response));
@@ -884,6 +891,7 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
     test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
     test::TestEvent<CompletionResponse> responder_event;
     handler_->HandleRecords(/*need_encryption_key=*/false,
+                            /*config_file_version=*/-1,
                             std::vector(1, std::move(fin_encrypted_record)),
                             std::move(record_reservation), responder_event.cb(),
                             encryption_key_attached_event.repeating_cb());

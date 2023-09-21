@@ -27,7 +27,7 @@ constexpr char kSequenceInformationKey[] = "sequenceInformation";
 constexpr char kSequenceId[] = "sequencingId";
 constexpr char kGenerationId[] = "generationId";
 constexpr char kPriority[] = "priority";
-constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
+constexpr char kConfigurationFileVersionKey[] = "configurationFileVersion";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kSourceKey[] = "source";
 constexpr char kDeviceKey[] = "device";
@@ -328,9 +328,9 @@ const base::flat_set<std::string>&
 EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
   static const base::NoDestructor<base::flat_set<std::string>>
       kTopLevelKeyAllowList{std::initializer_list<std::string>{
-          kAttachConfigurationFileKey, kAttachEncryptionSettingsKey,
-          kBrowserKey, kDeviceKey, kEncryptedRecordListKey, kRequestId,
-          kSourceKey}};
+          kAttachEncryptionSettingsKey, kBrowserKey,
+          kConfigurationFileVersionKey, kDeviceKey, kEncryptedRecordListKey,
+          kRequestId, kSourceKey}};
   return *kTopLevelKeyAllowList;
 }
 

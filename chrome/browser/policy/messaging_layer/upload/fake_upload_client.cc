@@ -29,6 +29,7 @@ void FakeUploadClient::Create(CreatedCallback created_cb) {
 
 Status FakeUploadClient::EnqueueUpload(
     bool need_encryption_key,
+    int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,

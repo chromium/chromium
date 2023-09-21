@@ -41,6 +41,7 @@ void UploadClient::Create(CreatedCallback created_cb) {
 
 Status UploadClient::EnqueueUpload(
     bool need_encryption_key,
+    int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
@@ -50,9 +51,9 @@ Status UploadClient::EnqueueUpload(
     return Status::StatusOK();
   }
 
-  Start<DmServerUploader>(need_encryption_key, std::move(records),
-                          std::move(scoped_reservation), handler_.get(),
-                          std::move(report_upload_success_cb),
+  Start<DmServerUploader>(need_encryption_key, config_file_version,
+                          std::move(records), std::move(scoped_reservation),
+                          handler_.get(), std::move(report_upload_success_cb),
                           std::move(encryption_key_attached_cb),
                           base::DoNothing(), sequenced_task_runner_);
   // Actual outcome is reported through callbacks; here we just confirm

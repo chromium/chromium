@@ -64,9 +64,9 @@ namespace reporting {
 //   // components/reporting/proto/interface.proto
 //   "attachEncryptionSettings": true,
 //   "requestId": "SomeString",
-//   // optional field, corresponding to the configuration file that the
-//   // server provides to the client.
-//   "attachConfigurationFile": true
+//   // optional field, corresponding to the configuration file version
+//   // that the client is holding at the moment.
+//   "configurationFileVersion": 1234
 //   // optional field, only used by the client tast tests to signal to the
 //   // server that this is an automated test from the lab. In production, this
 //   // should always be absent. Even if it is erroneously present in production
@@ -106,8 +106,12 @@ class UploadEncryptedReportingRequestBuilder {
   // RequestId key used to build UploadEncryptedReportingRequest
   static constexpr char kRequestId[] = "requestId";
 
+  // The default values signal the server that it shouldn't attach the
+  // encryption settings and that the config_file_version hasn't been set by
+  // `RecordHandlerImpl`.
   explicit UploadEncryptedReportingRequestBuilder(
-      bool attach_encryption_settings = false);
+      bool attach_encryption_settings = false,
+      int config_file_version = -1);
   ~UploadEncryptedReportingRequestBuilder();
 
   // Adds record, converts it into base::Value::Dict, updates reservation to
@@ -126,7 +130,7 @@ class UploadEncryptedReportingRequestBuilder {
 
   static std::string_view GetEncryptedRecordListPath();
   static std::string_view GetAttachEncryptionSettingsPath();
-  static std::string_view GetAttachConfigurationFilePath();
+  static std::string_view GetConfigurationFileVersionPath();
   static std::string_view GetSourcePath();
 
   absl::optional<base::Value::Dict> result_;

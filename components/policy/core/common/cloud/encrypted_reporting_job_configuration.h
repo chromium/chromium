@@ -57,7 +57,7 @@ namespace policy {
 //     }
 //   ],
 //   "attachEncryptionSettings": true,  // optional field
-//   "attachConfigurationFile": true, // optional field
+//   "configurationFileVersion": 123456, // optional field
 //   "source": "SomeString", // optional field - used only by tast tests
 //   "requestId": "SomeString",
 //   "device": {

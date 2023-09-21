@@ -29,6 +29,7 @@ namespace reporting {
 
 DmServerUploader::DmServerUploader(
     bool need_encryption_key,
+    int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     RecordHandler* handler,
@@ -39,6 +40,7 @@ DmServerUploader::DmServerUploader(
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
+      config_file_version_(config_file_version),
       encrypted_records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
       report_success_upload_cb_(std::move(report_success_upload_cb)),
@@ -108,7 +110,7 @@ Status DmServerUploader::ProcessRecords() {
 void DmServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
-      need_encryption_key_, std::move(encrypted_records_),
+      need_encryption_key_, config_file_version_, std::move(encrypted_records_),
       std::move(scoped_reservation_),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&DmServerUploader::Finalize, base::Unretained(this))),

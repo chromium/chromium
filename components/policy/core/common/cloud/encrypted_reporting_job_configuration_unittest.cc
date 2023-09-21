@@ -63,8 +63,8 @@ constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 // Encryption settings request key
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
-// Configuration file request key
-constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
+// Configuration file version request key
+constexpr char kConfigurationFileVersionKey[] = "configurationFileVersion";
 
 // Source key
 constexpr char kSourceKey[] = "source";
@@ -103,13 +103,13 @@ uint64_t GetNextSequenceId() {
 class RequestPayloadBuilder {
  public:
   explicit RequestPayloadBuilder(bool attach_encryption_settings = false,
-                                 bool attach_configuration_file = false,
+                                 bool request_configuration_file = false,
                                  bool client_automated_test = false) {
     if (attach_encryption_settings) {
       payload_.Set(kAttachEncryptionSettingsKey, true);
     }
-    if (attach_configuration_file) {
-      payload_.Set(kAttachConfigurationFileKey, true);
+    if (request_configuration_file) {
+      payload_.Set(kConfigurationFileVersionKey, 1234);
     }
     if (client_automated_test) {
       payload_.Set(kSourceKey, "tast");
@@ -284,15 +284,6 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     ASSERT_TRUE(*record_list);
   }
 
-  bool GetAttachConfigurationFile(
-      EncryptedReportingJobConfiguration* configuration) {
-    base::Value* const payload = GetPayload(configuration);
-    const auto attach_configuration_file =
-        payload->GetDict().FindBool(kAttachConfigurationFileKey);
-    return attach_configuration_file.has_value() &&
-           attach_configuration_file.value();
-  }
-
   bool GetAttachEncryptionSettings(
       EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
@@ -300,6 +291,15 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
         payload->GetDict().FindBool(kAttachEncryptionSettingsKey);
     return attach_encryption_settings.has_value() &&
            attach_encryption_settings.value();
+  }
+
+  bool VerifyConfigurationFileVersion(
+      EncryptedReportingJobConfiguration* configuration) {
+    base::Value* const payload = GetPayload(configuration);
+    auto* request_configuration_file =
+        payload->GetDict().Find(kConfigurationFileVersionKey);
+    return request_configuration_file->is_int() &&
+           request_configuration_file->GetIfInt() == 1234;
   }
 
   bool VerifySourceIsTast(EncryptedReportingJobConfiguration* configuration) {
@@ -545,7 +545,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
 TEST_F(EncryptedReportingJobConfigurationTest,
        AllowsAttachConfigurationFileAlone) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/false,
-                                /*attach_configuration_file=*/true};
+                                /*request_configuration_file=*/true};
   StrictMock<MockCompleteCb> completion_cb;
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
@@ -558,13 +558,13 @@ TEST_F(EncryptedReportingJobConfigurationTest,
 
   EXPECT_TRUE(record_list->empty());
 
-  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(VerifyConfigurationFileVersion(&configuration));
 }
 
 TEST_F(EncryptedReportingJobConfigurationTest,
        AllowsAttachConfigurationFileAndEncryptionSettingsWithoutRecords) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
-                                /*attach_configuration_file=*/true};
+                                /*request_configuration_file=*/true};
   StrictMock<MockCompleteCb> completion_cb;
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
@@ -578,7 +578,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   EXPECT_TRUE(record_list->empty());
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
-  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(VerifyConfigurationFileVersion(&configuration));
 }
 
 TEST_F(
@@ -588,7 +588,7 @@ TEST_F(
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   base::Value::List records;
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
-                                /*attach_configuration_file=*/true};
+                                /*request_configuration_file=*/true};
   for (auto value : kEncryptedWrappedRecords) {
     records.Append(GenerateSingleRecord(value));
     builder.AddRecord(records.back());
@@ -612,12 +612,12 @@ TEST_F(
   }
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
-  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(VerifyConfigurationFileVersion(&configuration));
 }
 
 TEST_F(EncryptedReportingJobConfigurationTest, AllowsSourceTastAlone) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/false,
-                                /*attach_configuration_file=*/false,
+                                /*request_configuration_file=*/false,
                                 /*client_automated_test=*/true};
   StrictMock<MockCompleteCb> completion_cb;
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
@@ -638,7 +638,7 @@ TEST_F(
     EncryptedReportingJobConfigurationTest,
     AllowsAttachConfigurationFileEncryptionSettingsAndSourceTastWithoutRecords) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
-                                /*attach_configuration_file=*/true,
+                                /*request_configuration_file=*/true,
                                 /*client_automated_test=*/true};
   StrictMock<MockCompleteCb> completion_cb;
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
@@ -653,7 +653,7 @@ TEST_F(
   EXPECT_TRUE(record_list->empty());
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
-  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(VerifyConfigurationFileVersion(&configuration));
   EXPECT_TRUE(VerifySourceIsTast(&configuration));
 }
 
@@ -664,7 +664,7 @@ TEST_F(
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   base::Value::List records;
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
-                                /*attach_configuration_file=*/true,
+                                /*request_configuration_file=*/true,
                                 /*client_automated_test=*/true};
   for (auto value : kEncryptedWrappedRecords) {
     records.Append(GenerateSingleRecord(value));
@@ -689,7 +689,7 @@ TEST_F(
   }
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
-  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(VerifyConfigurationFileVersion(&configuration));
   EXPECT_TRUE(VerifySourceIsTast(&configuration));
 }
 
@@ -958,7 +958,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
 
   base::Value::Dict request;
   request.Set(kEncryptedRecordListKey, base::Value::List());
-  request.Set(kAttachConfigurationFileKey, true);
+  request.Set(kConfigurationFileVersionKey, 1234);
   request.Set(kAttachEncryptionSettingsKey, true);
   request.Set(kSourceKey, "tast");
   request.Set(kDeviceKey, base::Value::Dict());
@@ -977,7 +977,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
   ASSERT_TRUE(payload->is_dict());
   EXPECT_TRUE(payload->GetDict().FindList(kEncryptedRecordListKey));
   EXPECT_TRUE(payload->GetDict().FindBool(kAttachEncryptionSettingsKey));
-  EXPECT_TRUE(payload->GetDict().FindBool(kAttachConfigurationFileKey));
+  EXPECT_TRUE(
+      payload->GetDict().FindInt(kConfigurationFileVersionKey).has_value());
   EXPECT_TRUE(payload->GetDict().FindString(kSourceKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kDeviceKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kBrowserKey));

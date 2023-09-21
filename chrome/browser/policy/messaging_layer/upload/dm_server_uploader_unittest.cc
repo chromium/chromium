@@ -48,18 +48,20 @@ class TestRecordHandler : public RecordHandler {
 
   void HandleRecords(
       bool need_encryption_key,
+      int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete,
       EncryptionKeyAttachedCallback encryption_key_attached_cb) override {
-    HandleRecords_(need_encryption_key, records, std::move(scoped_reservation),
-                   std::move(upload_complete),
+    HandleRecords_(need_encryption_key, config_file_version, records,
+                   std::move(scoped_reservation), std::move(upload_complete),
                    std::move(encryption_key_attached_cb));
   }
 
   MOCK_METHOD(void,
               HandleRecords_,
               (bool,
+               int,
                std::vector<EncryptedRecord>&,
                ScopedReservation scoped_reservation,
                CompletionCallback,
@@ -87,6 +89,10 @@ class DmServerTest {
   std::vector<EncryptedRecord> records_;
 
   const scoped_refptr<ResourceManager> memory_resource_;
+
+  // Using the value -1 since it is the default value when creating the record
+  // in `UploadEncryptedReportingRequestBuilder`.
+  const int config_file_version_ = -1;
 };
 
 class DmServerFailureTest : public DmServerTest,
@@ -114,8 +120,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
   EXPECT_TRUE(record_reservation.reserved());
 
   const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
-      .WillOnce(WithArgs<0, 3, 4>(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
+      .WillOnce(WithArgs<0, 4, 5>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key, CompletionCallback callback,
                      EncryptionKeyAttachedCallback encryption_key_attached_cb) {
@@ -138,9 +144,9 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
                           base::Unretained(&encryption_key_attached));
 
   test::TestEvent<CompletionResponse> callback_waiter;
-  Start<DmServerUploader>(need_encryption_key(), std::move(records_),
-                          std::move(record_reservation), handler_.get(),
-                          std::move(successful_upload_cb),
+  Start<DmServerUploader>(need_encryption_key(), config_file_version_,
+                          std::move(records_), std::move(record_reservation),
+                          handler_.get(), std::move(successful_upload_cb),
                           std::move(encryption_key_attached_cb),
                           callback_waiter.cb(), sequenced_task_runner_);
 
@@ -172,8 +178,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
   EXPECT_TRUE(records_reservation.reserved());
 
   const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
-      .WillOnce(WithArgs<0, 3, 4>(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
+      .WillOnce(WithArgs<0, 4, 5>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key, CompletionCallback callback,
                      EncryptionKeyAttachedCallback encryption_key_attached_cb) {
@@ -196,9 +202,9 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
                           base::Unretained(&encryption_key_attached));
 
   test::TestEvent<CompletionResponse> callback_waiter;
-  Start<DmServerUploader>(need_encryption_key(), std::move(records_),
-                          std::move(records_reservation), handler_.get(),
-                          std::move(successful_upload_cb),
+  Start<DmServerUploader>(need_encryption_key(), config_file_version_,
+                          std::move(records_), std::move(records_reservation),
+                          handler_.get(), std::move(successful_upload_cb),
                           std::move(encryption_key_attached_cb),
                           callback_waiter.cb(), sequenced_task_runner_);
 
@@ -213,8 +219,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
-      .WillOnce(WithArgs<3>(Invoke([](CompletionCallback callback) {
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
+      .WillOnce(WithArgs<4>(Invoke([](CompletionCallback callback) {
         std::move(callback).Run(
             Status(error::FAILED_PRECONDITION, "Fail for test"));
       })));
@@ -230,9 +236,9 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
                           base::Unretained(&encryption_key_attached));
 
   test::TestEvent<CompletionResponse> callback_waiter;
-  Start<DmServerUploader>(need_encryption_key(), std::move(records_),
-                          std::move(record_reservation), handler_.get(),
-                          std::move(successful_upload_cb),
+  Start<DmServerUploader>(need_encryption_key(), config_file_version_,
+                          std::move(records_), std::move(record_reservation),
+                          handler_.get(), std::move(successful_upload_cb),
                           std::move(encryption_key_attached_cb),
                           callback_waiter.cb(), sequenced_task_runner_);
 
@@ -259,8 +265,8 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
 
   const bool force_confirm_flag = force_confirm();
   if (need_encryption_key()) {
-    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
-        .WillOnce(WithArgs<0, 3, 4>(Invoke(
+    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
+        .WillOnce(WithArgs<0, 4, 5>(Invoke(
             [&force_confirm_flag](
                 bool need_encryption_key, CompletionCallback callback,
                 EncryptionKeyAttachedCallback encryption_key_attached_cb) {
@@ -272,15 +278,15 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
                   .force_confirm = force_confirm_flag});
             })));
   } else {
-    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _)).Times(0);
   }
 
   test::TestEvent<CompletionResponse> callback_waiter;
-  Start<DmServerUploader>(need_encryption_key(), std::move(records_),
-                          std::move(no_records_reservation), handler_.get(),
-                          std::move(successful_upload_cb),
-                          std::move(encryption_key_attached_cb),
-                          callback_waiter.cb(), sequenced_task_runner_);
+  Start<DmServerUploader>(
+      need_encryption_key(), config_file_version_, std::move(records_),
+      std::move(no_records_reservation), handler_.get(),
+      std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
+      callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   if (need_encryption_key()) {
@@ -300,8 +306,8 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
-      .WillOnce(WithArgs<3>(Invoke([error_code](CompletionCallback callback) {
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
+      .WillOnce(WithArgs<4>(Invoke([error_code](CompletionCallback callback) {
         std::move(callback).Run(Status(error_code, "Failing for test"));
       })));
 
@@ -317,7 +323,7 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
 
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<DmServerUploader>(
-      /*need_encryption_key=*/true, std::move(records_),
+      /*need_encryption_key=*/true, config_file_version_, std::move(records_),
       std::move(record_reservation), handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);

@@ -188,9 +188,12 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
+  // config_file_version is set to 0 for testing. The default value is -1 and we
+  // want to override it.
   auto enqueue_result = upload_client->EnqueueUpload(
-      need_encryption_key(), std::move(records), std::move(total_reservation),
-      upload_success_event.repeating_cb(), encryption_key_attached_cb);
+      need_encryption_key(), /*config_file_version=*/0, std::move(records),
+      std::move(total_reservation), upload_success_event.repeating_cb(),
+      encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
   task_environment_.RunUntilIdle();
 

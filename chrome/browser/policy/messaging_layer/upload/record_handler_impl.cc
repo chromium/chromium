@@ -351,6 +351,7 @@ class RecordHandlerImpl::ReportUploader
   ReportUploader(
       base::WeakPtr<FileUploadJob::Delegate> delegate,
       bool need_encryption_key,
+      int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete_cb,
@@ -386,6 +387,7 @@ class RecordHandlerImpl::ReportUploader
   const base::WeakPtr<FileUploadJob::Delegate> delegate_;
 
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
+  int config_file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -409,6 +411,7 @@ class RecordHandlerImpl::ReportUploader
 RecordHandlerImpl::ReportUploader::ReportUploader(
     base::WeakPtr<FileUploadJob::Delegate> delegate,
     bool need_encryption_key,
+    int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     CompletionCallback completion_cb,
@@ -418,6 +421,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
                                             sequenced_task_runner),
       delegate_(delegate),
       need_encryption_key_(need_encryption_key),
+      config_file_version_(config_file_version),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {
@@ -458,7 +462,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   }
 
   request_builder_ = std::make_unique<UploadEncryptedReportingRequestBuilder>(
-      need_encryption_key_);
+      need_encryption_key_, config_file_version_);
   ResumeUpload(/*next_record=*/0);
 }
 
@@ -778,6 +782,7 @@ RecordHandlerImpl::~RecordHandlerImpl() {
 
 void RecordHandlerImpl::HandleRecords(
     bool need_encryption_key,
+    int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     CompletionCallback upload_complete_cb,
@@ -790,7 +795,7 @@ void RecordHandlerImpl::HandleRecords(
     delegate = delegate_->GetWeakPtr();
   }
   Start<RecordHandlerImpl::ReportUploader>(
-      delegate, need_encryption_key, std::move(records),
+      delegate, need_encryption_key, config_file_version, std::move(records),
       std::move(scoped_reservation), std::move(upload_complete_cb),
       std::move(encryption_key_attached_cb), sequenced_task_runner_);
 }

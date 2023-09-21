@@ -24,7 +24,8 @@ namespace {
 // UploadEncryptedReportingRequestBuilder list key
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
-constexpr char kAttachConfigurationFile[] = "attachConfigurationFile";
+constexpr std::string_view kConfigurationFileVersion =
+    "configurationFileVersion";
 constexpr char kSourcePath[] = "source";
 
 // EncryptedRecordDictionaryBuilder strings
@@ -57,17 +58,19 @@ BASE_FEATURE(kClientAutomatedTest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
-    bool attach_encryption_settings) {
+    bool attach_encryption_settings,
+    int config_file_version) {
   result_.emplace();
   if (attach_encryption_settings) {
     result_->Set(GetAttachEncryptionSettingsPath(), true);
   }
 
-  // Only request the configuration file from the server if the feature is
-  // enabled. The server will only return the configuration file if there is
-  // something to be blocked at that point.s
+  // Only attach the configuration file version to the request if the feature
+  // is enabled. The server will only return the configuration file if there is
+  // a mismatch between the version in the request and the version that it
+  // holds.
   if (base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
-    result_->Set(GetAttachConfigurationFilePath(), true);
+    result_->Set(GetConfigurationFileVersionPath(), config_file_version);
   }
 
   // This feature signals the server that this is an automated client test.
@@ -151,8 +154,8 @@ UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
 
 // static
 std::string_view
-UploadEncryptedReportingRequestBuilder::GetAttachConfigurationFilePath() {
-  return kAttachConfigurationFile;
+UploadEncryptedReportingRequestBuilder::GetConfigurationFileVersionPath() {
+  return kConfigurationFileVersion;
 }
 
 // static

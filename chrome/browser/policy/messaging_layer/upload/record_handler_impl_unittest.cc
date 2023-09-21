@@ -196,7 +196,8 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -230,7 +231,8 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -258,7 +260,8 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -290,7 +293,8 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -325,7 +329,8 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -358,7 +363,8 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -396,7 +402,8 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -435,7 +442,8 @@ TEST_P(RecordHandlerImplTest,
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -469,7 +477,8 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -490,7 +499,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -526,7 +536,8 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -579,7 +590,8 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> response_event;
 
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
@@ -606,7 +618,8 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
       .force_confirm = force_confirm()};
 
   test::TestEvent<CompletionResponse> responder_event;
-  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
+                          std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
                           base::DoNothing());
   task_environment_.RunUntilIdle();
