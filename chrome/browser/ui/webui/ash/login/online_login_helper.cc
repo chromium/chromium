@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/version/version_loader.h"
+#include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -159,6 +160,24 @@ bool BuildUserContextForGaiaSignIn(
   }
 
   return true;
+}
+
+AccountId GetAccountId(const std::string& authenticated_email,
+                       const std::string& gaia_id,
+                       const AccountType& account_type) {
+  const std::string canonicalized_email =
+      gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id =
+      known_user.GetAccountId(authenticated_email, gaia_id, account_type);
+
+  if (account_id.GetUserEmail() != canonicalized_email) {
+    LOG(WARNING) << "Existing user '" << account_id.GetUserEmail()
+                 << "' authenticated by alias '" << canonicalized_email << "'.";
+  }
+
+  return account_id;
 }
 
 }  // namespace login

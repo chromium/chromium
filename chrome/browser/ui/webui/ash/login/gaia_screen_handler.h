@@ -353,12 +353,6 @@ class GaiaScreenHandler
   FrameState frame_state() const { return frame_state_; }
   net::Error frame_error() const { return frame_error_; }
 
-  // Returns user canonical e-mail. Finds already used account alias, if
-  // user has already signed in.
-  AccountId GetAccountId(const std::string& authenticated_email,
-                         const std::string& id,
-                         const AccountType& account_type) const;
-
   void OnCookieWaitTimeout();
 
   bool is_security_token_pin_dialog_running() const {

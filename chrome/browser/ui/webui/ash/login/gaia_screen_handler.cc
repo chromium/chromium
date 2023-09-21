@@ -319,7 +319,7 @@ void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
                                weak_factory_.GetWeakPtr(), context));
 
   if (!context.email.empty()) {
-    const AccountId account_id = GetAccountId(
+    const AccountId account_id = login::GetAccountId(
         context.email, std::string() /* id */, AccountType::UNKNOWN);
     const user_manager::User* const user =
         user_manager::UserManager::Get()->FindUser(account_id);
@@ -515,8 +515,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   bool is_reauth = !context.email.empty();
   if (is_reauth) {
-    const AccountId account_id =
-        GetAccountId(context.email, context.gaia_id, AccountType::GOOGLE);
+    const AccountId account_id = login::GetAccountId(
+        context.email, context.gaia_id, AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
     DCHECK(user);
     bool is_child_account = user && user->IsChild();
@@ -711,25 +711,6 @@ void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
   UpdateState(error_reason);
 }
 
-AccountId GaiaScreenHandler::GetAccountId(
-    const std::string& authenticated_email,
-    const std::string& id,
-    const AccountType& account_type) const {
-  const std::string canonicalized_email =
-      gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  const AccountId account_id =
-      known_user.GetAccountId(authenticated_email, id, account_type);
-
-  if (account_id.GetUserEmail() != canonicalized_email) {
-    LOG(WARNING) << "Existing user '" << account_id.GetUserEmail()
-                 << "' authenticated by alias '" << canonicalized_email << "'.";
-  }
-
-  return account_id;
-}
-
 void GaiaScreenHandler::HandleCompleteAuthentication(
     const std::string& gaia_id,
     const std::string& email,
@@ -772,7 +753,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   }
 
   const AccountId account_id =
-      GetAccountId(email, gaia_id, AccountType::GOOGLE);
+      login::GetAccountId(email, gaia_id, AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
   // times out and doesn't provide us with services list try to use a saved
   // UserType.
@@ -1018,7 +999,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
   const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
   const AccountId account_id =
-      GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
+      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
@@ -1026,8 +1007,8 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
   SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
           user ? user->GetType() : CalculateUserType(account_id),
-          GetAccountId(typed_email, gaia_id, AccountType::GOOGLE), using_saml,
-          using_saml_api_, password, SamlPasswordAttributes(),
+          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
+          using_saml, using_saml_api_, password, SamlPasswordAttributes(),
           /*sync_trusted_vault_keys=*/absl::nullopt,
           *extension_provided_client_cert_usage_observer_, &user_context,
           &error)) {

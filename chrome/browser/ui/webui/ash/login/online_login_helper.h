@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
+#include "components/account_id/account_id.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -82,6 +83,12 @@ bool BuildUserContextForGaiaSignIn(
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
     SigninError* error);
+
+// Returns user canonical e-mail. Finds already used account alias, if
+// user has already signed in.
+AccountId GetAccountId(const std::string& authenticated_email,
+                       const std::string& gaia_id,
+                       const AccountType& account_type);
 
 }  // namespace login
 
