@@ -6,6 +6,7 @@
 
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_group_item.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -20,7 +21,8 @@ constexpr int kFocusRingRoundedCornerRadius = 20;
 }  // namespace
 
 OverviewGroupContainerView::OverviewGroupContainerView(
-    OverviewGroupItem* overview_group_item) {
+    OverviewGroupItem* overview_group_item)
+    : overview_group_item_(overview_group_item) {
   SetFocusBehavior(FocusBehavior::NEVER);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kFocusRingHaloInset), kFocusRingRoundedCornerRadius);
@@ -40,9 +42,15 @@ views::View* OverviewGroupContainerView::GetView() {
   return this;
 }
 
-void OverviewGroupContainerView::MaybeActivateFocusedView() {}
+void OverviewGroupContainerView::MaybeActivateFocusedView() {
+  overview_group_item_->OnFocusedViewActivated();
+}
 
-void OverviewGroupContainerView::MaybeCloseFocusedView(bool primary_action) {}
+void OverviewGroupContainerView::MaybeCloseFocusedView(bool primary_action) {
+  if (primary_action) {
+    overview_group_item_->OnFocusedViewClosed();
+  }
+}
 
 void OverviewGroupContainerView::MaybeSwapFocusedView(bool right) {}
 

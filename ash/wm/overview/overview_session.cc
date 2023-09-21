@@ -50,6 +50,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
@@ -73,6 +74,28 @@ constexpr int kKeyboardHoldScrollingDp = 15;
 // just was not active in the first place.
 bool EndOverview(OverviewEndAction action) {
   return Shell::Get()->overview_controller()->EndOverview(action);
+}
+
+// Returns the window to be activated when the given `overview_item` is
+// selected.
+aura::Window* GetWindowForSelection(
+    OverviewItemBase* overview_item,
+    const std::vector<aura::Window*>& window_list) {
+  const auto item_windows = overview_item->GetWindows();
+  CHECK(!item_windows.empty());
+  if (item_windows.size() == 1u) {
+    return item_windows[0];
+  }
+
+  // When the given `overview_item` is a group item, return the first window in
+  // the `window_list` that is contained in `item_windows`.
+  for (auto* window : window_list) {
+    if (base::Contains(item_windows, window)) {
+      return window;
+    }
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 // A self-deleting window state observer that runs the given callback when its
@@ -400,11 +423,16 @@ bool OverviewSession::AcceptSelection() {
 }
 
 void OverviewSession::SelectWindow(OverviewItemBase* item) {
-  aura::Window* window = item->GetWindow();
-  aura::Window::Windows window_list =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  // `BuildWindowListIgnoreModal()` is used here to make sure the main window is
+  // included in the `window_list` with the existence of modal transient
+  // window(s) which makes the main window is not activatable.
+  const aura::Window::Windows window_list =
+      Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
+          kActiveDesk);
+  aura::Window* window = GetWindowForSelection(item, window_list);
+
   if (!window_list.empty()) {
-    // Record WindowSelector_ActiveWindowChanged if the user is selecting a
+    // Record `WindowSelector_ActiveWindowChanged` if the user is selecting a
     // window other than the window that was active prior to entering overview
     // mode (i.e., the window at the front of the MRU list).
     if (window_list[0] != window) {
@@ -413,6 +441,7 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
       Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
           TaskSwitchSource::OVERVIEW_MODE);
     }
+
     const auto it = base::ranges::find(window_list, window);
     if (it != window_list.end()) {
       // Record 1-based index so that selecting a top MRU window will record 1.
@@ -420,11 +449,14 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
                                1 + it - window_list.begin());
     }
   }
+
   item->EnsureVisible();
+
   if (window->GetProperty(kPipOriginalWindowKey)) {
     window_util::ExpandArcPipWindow();
     return;
   }
+
   // If the selected window is a minimized window, un-minimize it first before
   // activating it so that the window can use the scale-up animation instead of
   // un-minimizing animation. The activation of the window will happen in an
@@ -444,12 +476,14 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
           }
           wm::ActivateWindow(window_state->window());
         }));
+
     // If we are in split mode, use Show() here to delegate un-minimizing to
     // SplitViewController as it handles auto snapping cases.
-    if (SplitViewController::Get(window)->InSplitViewMode())
+    if (SplitViewController::Get(window)->InSplitViewMode()) {
       window->Show();
-    else
+    } else {
       window_state->Unminimize();
+    }
     return;
   }
 

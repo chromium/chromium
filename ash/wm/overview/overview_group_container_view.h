@@ -41,6 +41,8 @@ class OverviewGroupContainerView : public views::View,
   // Shows or hides the focus ring on `this`.
   void UpdateFocusState(bool focus);
 
+  const raw_ptr<OverviewGroupItem> overview_group_item_;
+
   bool is_focused_ = false;
 };
 

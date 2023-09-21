@@ -938,7 +938,6 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemRoundedCorners) {
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview(OverviewStartAction::kTests,
                                      OverviewEnterExitType::kImmediateEnter);
-
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   const auto* overview_grid =
@@ -977,6 +976,54 @@ TEST_F(SnapGroupEntryPointArm1Test,
     EXPECT_EQ(overview_item->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
+}
+
+// Tests the basic functionality of focus cycling in overview through tabbing,
+// the overview group item will be focused and activated as a group
+TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemFocusCycling) {
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+  EXPECT_TRUE(window_util::IsStackedBelow(window0.get(), window1.get()));
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 2u);
+
+  // Overview items to be cycled:
+  // [window0, window1], window2
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  MruWindowTracker* mru_window_tracker = Shell::Get()->mru_window_tracker();
+  EXPECT_EQ(
+      window_util::GetTopMostWindow(
+          mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)),
+      window2.get());
+
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Overview items to be cycled:
+  // window2, [window0, window1]
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(
+      window_util::GetTopMostWindow(
+          mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)),
+      window1.get());
 }
 
 // Tests that the hit area of the split view divider can be outside of its

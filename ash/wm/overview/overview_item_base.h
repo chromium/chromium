@@ -67,6 +67,10 @@ class OverviewItemBase {
   // Checks if this item is currently being dragged.
   ASH_EXPORT bool IsDragItem() const;
 
+  // Handles focus related events forwarded from the contents view.
+  void OnFocusedViewActivated();
+  void OnFocusedViewClosed();
+
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
   }
@@ -106,6 +110,7 @@ class OverviewItemBase {
   void set_scrolling_bounds(absl::optional<gfx::RectF> scrolling_bounds) {
     scrolling_bounds_ = scrolling_bounds;
   }
+
   absl::optional<gfx::RectF> scrolling_bounds() const {
     return scrolling_bounds_;
   }
@@ -113,6 +118,7 @@ class OverviewItemBase {
   void set_should_use_spawn_animation(bool value) {
     should_use_spawn_animation_ = value;
   }
+
   bool should_use_spawn_animation() const {
     return should_use_spawn_animation_;
   }
@@ -227,8 +233,6 @@ class OverviewItemBase {
   // Handles events forwarded from the contents view.
   virtual void HandleMouseEvent(const ui::MouseEvent& event) = 0;
   virtual void HandleGestureEvent(ui::GestureEvent* event) = 0;
-  virtual void OnFocusedViewActivated() = 0;
-  virtual void OnFocusedViewClosed() = 0;
 
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;

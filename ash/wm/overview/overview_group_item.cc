@@ -210,10 +210,6 @@ void OverviewGroupItem::HandleMouseEvent(const ui::MouseEvent& event) {}
 
 void OverviewGroupItem::HandleGestureEvent(ui::GestureEvent* event) {}
 
-void OverviewGroupItem::OnFocusedViewActivated() {}
-
-void OverviewGroupItem::OnFocusedViewClosed() {}
-
 void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 
 void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {}

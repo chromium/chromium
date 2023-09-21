@@ -59,14 +59,6 @@ class OverviewFocusCyclerTest
     return GetOverviewSession()->focus_cycler();
   }
 
-  // Press the key repeatedly until a window is focused, i.e. ignoring any
-  // desk items.
-  void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key) {
-    do {
-      SendKey(key);
-    } while (!GetOverviewFocusedWindow());
-  }
-
   // Helper to make tests more readable.
   bool AreDeskTemplatesEnabled() const {
     return GetParam().desk_templates_enabled;

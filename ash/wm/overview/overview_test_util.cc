@@ -137,4 +137,10 @@ void DragItemToPoint(OverviewItemBase* item,
   }
 }
 
+void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key) {
+  do {
+    SendKey(key);
+  } while (!GetOverviewFocusedWindow());
+}
+
 }  // namespace ash

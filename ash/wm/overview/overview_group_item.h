@@ -67,8 +67,6 @@ class OverviewGroupItem : public OverviewItemBase,
   void Restack() override;
   void HandleMouseEvent(const ui::MouseEvent& event) override;
   void HandleGestureEvent(ui::GestureEvent* event) override;
-  void OnFocusedViewActivated() override;
-  void OnFocusedViewClosed() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,

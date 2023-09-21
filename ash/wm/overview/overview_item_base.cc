@@ -50,6 +50,14 @@ bool OverviewItemBase::IsDragItem() const {
   return overview_session_->GetCurrentDraggedOverviewItem() == this;
 }
 
+void OverviewItemBase::OnFocusedViewActivated() {
+  overview_session_->OnFocusedItemActivated(this);
+}
+
+void OverviewItemBase::OnFocusedViewClosed() {
+  overview_session_->OnFocusedItemClosed(this);
+}
+
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
     aura::Window* parent_window,
     const std::string& widget_name) const {

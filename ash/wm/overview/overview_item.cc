@@ -920,14 +920,6 @@ void OverviewItem::HandleGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void OverviewItem::OnFocusedViewActivated() {
-  overview_session_->OnFocusedItemActivated(this);
-}
-
-void OverviewItem::OnFocusedViewClosed() {
-  overview_session_->OnFocusedItemClosed(this);
-}
-
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
 

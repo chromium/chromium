@@ -54,6 +54,10 @@ void DragItemToPoint(OverviewItemBase* item,
                      bool by_touch_gestures = false,
                      bool drop = true);
 
+// Press the key repeatedly until a window is focused, i.e. ignoring any
+// desk items.
+void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_TEST_UTIL_H_

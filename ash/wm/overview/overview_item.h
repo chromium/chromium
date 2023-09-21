@@ -109,8 +109,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void CloseWindow() override;
   void HandleMouseEvent(const ui::MouseEvent& event) override;
   void HandleGestureEvent(ui::GestureEvent* event) override;
-  void OnFocusedViewActivated() override;
-  void OnFocusedViewClosed() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
