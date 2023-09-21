@@ -737,18 +737,19 @@ export class BrowsingContextImpl {
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
-    let rect = await this.#parseRect(params.clip);
-
-    const {cssContentSize, cssLayoutViewport} =
-      await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics');
+    const {cssVisualViewport} = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.getLayoutMetrics'
+    );
     const viewport = {
-      x: cssContentSize.x,
-      y: cssContentSize.y,
-      width: cssLayoutViewport.clientWidth,
-      height: cssLayoutViewport.clientHeight,
+      x: cssVisualViewport.pageX,
+      y: cssVisualViewport.pageY,
+      width: cssVisualViewport.clientWidth,
+      height: cssVisualViewport.clientHeight,
     };
 
-    rect = rect ? getIntersectionRect(rect, viewport) : viewport;
+    const rect = params.clip
+      ? getIntersectionRect(await this.#parseRect(params.clip), viewport)
+      : viewport;
 
     if (rect.width === 0 || rect.height === 0) {
       throw new UnableToCaptureScreenException(
@@ -861,10 +862,7 @@ export class BrowsingContextImpl {
    * See
    * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
    */
-  async #parseRect(clip?: BrowsingContext.ClipRectangle) {
-    if (!clip) {
-      return;
-    }
+  async #parseRect(clip: BrowsingContext.ClipRectangle) {
     switch (clip.type) {
       case 'viewport':
         return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
