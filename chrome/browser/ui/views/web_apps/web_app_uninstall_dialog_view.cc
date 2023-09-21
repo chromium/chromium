@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,13 +16,12 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/uninstall_result_code.h"
-#include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,8 +30,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/checkbox.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -61,16 +57,17 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     web_app::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
-    UninstallChoiceCallback uninstall_choice_callback)
+    web_app::UninstallDialogCallback uninstall_choice_callback)
     : app_id_(std::move(app_id)),
       profile_(profile),
       uninstall_choice_callback_(std::move(uninstall_choice_callback)) {
   provider_ = web_app::WebAppProvider::GetForWebApps(profile_)->AsWeakPtr();
   DCHECK(provider_);
 
-  app_start_url_ = provider_->registrar_unsafe().GetAppStartUrl(app_id_);
-  DCHECK(!app_start_url_.is_empty());
-  DCHECK(app_start_url_.is_valid());
+  const GURL app_start_url =
+      provider_->registrar_unsafe().GetAppStartUrl(app_id_);
+  DCHECK(!app_start_url.is_empty());
+  DCHECK(app_start_url.is_valid());
 
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
 
@@ -118,7 +115,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     std::u16string checkbox_label = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
         url_formatter::FormatUrlForSecurityDisplay(
-            app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+            app_start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
     auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
     checkbox->SetMultiLine(true);
@@ -132,30 +129,32 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 WebAppUninstallDialogDelegateView::~WebAppUninstallDialogDelegateView() {
   install_manager_observation_.Reset();
   if (uninstall_choice_callback_) {
-    std::move(uninstall_choice_callback_).Run(/*uninstalled=*/false);
+    std::move(uninstall_choice_callback_).Run(web_app::UninstallUserOptions());
   }
 }
 
 void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   DCHECK(provider_);
   bool is_isolated_web_app = provider_->registrar_unsafe().IsIsolated(app_id_);
+  bool clear_site_data = checkbox_ && checkbox_->GetChecked();
 
   HistogramCloseAction action =
-      is_isolated_web_app || (checkbox_ && checkbox_->GetChecked())
+      is_isolated_web_app || clear_site_data
           ? HistogramCloseAction::kUninstallAndCheckboxChecked
           : HistogramCloseAction::kUninstall;
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action);
 
-  Uninstall();
-  if (checkbox_ && checkbox_->GetChecked()) {
-    ClearWebAppSiteData();
-  }
+  Uninstall(clear_site_data);
 }
 
 void WebAppUninstallDialogDelegateView::OnDialogCanceled() {
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction",
                             HistogramCloseAction::kCancelled);
-  // The user_dialog_choice_callback_ is run in the destructor.
+  // We run this with the default value of web_app::UninstallUserOptions(),
+  // since user_wants_uninstall is set to false by default.
+  if (uninstall_choice_callback_) {
+    std::move(uninstall_choice_callback_).Run(web_app::UninstallUserOptions());
+  }
 }
 
 void WebAppUninstallDialogDelegateView::OnWebAppInstallManagerDestroyed() {
@@ -176,30 +175,12 @@ void WebAppUninstallDialogDelegateView::OnWebAppWillBeUninstalled(
   }
 }
 
-void WebAppUninstallDialogDelegateView::Uninstall() {
-  DCHECK(provider_);
-  if (!provider_->registrar_unsafe().CanUserUninstallWebApp(app_id_)) {
-    std::move(uninstall_choice_callback_).Run(/*uninstalled=*/false);
-    return;
-  }
-
-  std::move(uninstall_choice_callback_).Run(/*uninstalled=*/true);
+void WebAppUninstallDialogDelegateView::Uninstall(bool clear_site_data) {
   install_manager_observation_.Reset();
-}
-
-void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
-  content::ClearSiteData(
-      base::BindRepeating(
-          [](content::BrowserContext* browser_context) {
-            return browser_context;
-          },
-          base::Unretained(profile_)),
-      url::Origin::Create(app_start_url_), content::ClearSiteDataTypeSet::All(),
-      /*storage_buckets_to_remove=*/{},
-      /*avoid_closing_connections=*/false,
-      /*cookie_partition_key=*/absl::nullopt,
-      /*storage_key=*/absl::nullopt,
-      /*partitioned_state_allowed_only=*/false, base::DoNothing());
+  web_app::UninstallUserOptions user_options;
+  user_options.clear_site_data = clear_site_data;
+  user_options.user_wants_uninstall = true;
+  std::move(uninstall_choice_callback_).Run(user_options);
 }
 
 void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
@@ -231,7 +212,7 @@ void ShowWebAppUninstallDialog(
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
-    base::OnceCallback<void(bool)> uninstall_dialog_result_callback) {
+    web_app::UninstallDialogCallback uninstall_dialog_result_callback) {
   auto* view = new WebAppUninstallDialogDelegateView(
       profile, app_id, uninstall_source, std::move(icon_bitmaps),
       std::move(uninstall_dialog_result_callback));

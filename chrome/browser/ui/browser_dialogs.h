@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
@@ -211,7 +212,7 @@ void ShowWebAppUninstallDialog(
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
-    base::OnceCallback<void(bool)> uninstall_dialog_result_callback);
+    web_app::UninstallDialogCallback uninstall_dialog_result_callback);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
