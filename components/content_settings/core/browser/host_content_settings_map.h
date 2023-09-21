@@ -183,6 +183,10 @@ class HostContentSettingsMap : public content_settings::Observer,
   // used immediately the validity of each entry should be checked using
   // IsExpired().
   //
+  // The intended purpose of this method is to display a list of settings in the
+  // settings UI. It should not be used to evaluate whether settings are
+  // enabled. Use GetWebsiteSetting for that.
+  //
   // This may be called on any thread.
   ContentSettingsForOneType GetSettingsForOneType(
       ContentSettingsType content_type,
