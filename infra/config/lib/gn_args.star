@@ -14,6 +14,8 @@ load("./nodes.star", "nodes")
 
 _GN_CONFIG = nodes.create_unscoped_node_type("gn_config")
 
+_GN_ARGS_FILE_NAME = "gn-args.json"
+
 def _get_gn_args_resolver():
     resolved_gn_args_by_config_node = {}
 
@@ -164,6 +166,10 @@ def register_gn_args(builder_group, bucket, builder, gn_args):
         builder: (string) The builder name.
         gn_args: The string name of a GN config, or the return value of
             a gn_args.config method call without setting the "name" parameter.
+
+    Returns:
+        A list of generated GN args file paths relative to the per-builder
+            output root dir if gn_args is set; None otherwise.
     """
     if gn_args:
         if type(gn_args) == "string":
@@ -174,6 +180,9 @@ def register_gn_args(builder_group, bucket, builder, gn_args):
         gn_args["builder_group"] = builder_group
         builder_node_key = _create_gn_config_node("{}/{}".format(bucket, builder), **gn_args)
         graph.add_edge(keys.project(), builder_node_key)
+        return ["{}/{}/{}".format(bucket, builder, _GN_ARGS_FILE_NAME)]
+    else:
+        return None
 
 def _generate_gn_args(ctx):
     """Generator callback for generating "gn-args.json" files.
@@ -185,10 +194,9 @@ def _generate_gn_args(ctx):
     root_out_dir = per_builder_outputs_config().root_dir
     builder_nodes = graph.children(keys.project(), _GN_CONFIG.kind)
     if builder_nodes:
-        gn_args_file_name = "gn-args.json"
         resolve_gn_args = _get_gn_args_resolver()
         for node in builder_nodes:
-            gn_args_file_path = "{}/{}/{}".format(root_out_dir, node.key.id, gn_args_file_name)
+            gn_args_file_path = "{}/{}/{}".format(root_out_dir, node.key.id, _GN_ARGS_FILE_NAME)
             gn_args_dict = resolve_gn_args(node)
             for key in gn_args_dict.keys():
                 if not gn_args_dict[key]:
@@ -200,7 +208,7 @@ def _generate_gn_args(ctx):
             args_gn_locations.setdefault(
                 builder_group,
                 {},
-            )[builder_name] = "{}/{}".format(node.key.id, gn_args_file_name)
+            )[builder_name] = "{}/{}".format(node.key.id, _GN_ARGS_FILE_NAME)
 
     locations_file_path = "{}/gn_args_locations.json".format(root_out_dir)
     ctx.output[locations_file_path] = json.indent(

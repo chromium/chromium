@@ -955,15 +955,23 @@ def builder(
 
     register_recipe_experiments_ref(bucket, name, executable)
 
-    register_builder_config(bucket, name, builder_group, builder_spec, mirrors, try_settings)
+    additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args)
+
+    register_builder_config(
+        bucket,
+        name,
+        builder_group,
+        builder_spec,
+        mirrors,
+        try_settings,
+        additional_exclusions,
+    )
 
     register_bootstrap(bucket, name, bootstrap, executable)
 
     health_spec = defaults.get_value("health_spec", health_spec)
 
     register_health_spec(bucket, name, health_spec, contact_team_email)
-
-    register_gn_args(builder_group, bucket, name, gn_args)
 
     builder_name = "{}/{}".format(bucket, name)
 
