@@ -1,21 +1,9 @@
 <style include="settings-shared input-device-settings-shared">
-  #header {
-    display: flex;
-    height: 24px;
-    padding: 12px 0;
-  }
-
-  #description {
-    color: var(--cros-text-color-secondary);
-    margin-inline-start: 20px;
-  }
 </style>
-<div id="header">
-  <div id="description">[[getDescription_(selectedTablet.*)]]</div>
+<div id="description" class="subpage-description">
+  [[getDescription_(selectedTablet.*)]]
 </div>
-<div class="subsection">
-  <customize-buttons-subsection
-      button-remapping-list="{{selectedTablet.settings.penButtonRemappings}}"
-      action-list$="[[buttonActionList_]]">
-  </customize-buttons-subsection>
-</div>
+<customize-buttons-subsection
+  button-remapping-list="{{selectedTablet.settings.penButtonRemappings}}"
+  action-list$="[[buttonActionList_]]">
+</customize-buttons-subsection>

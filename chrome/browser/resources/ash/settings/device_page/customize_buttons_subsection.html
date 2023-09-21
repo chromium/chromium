@@ -18,15 +18,18 @@
     --cr-dialog-width: 320px;
   }
 </style>
-<template is="dom-repeat"
-    items="{{buttonRemappingList}}"
-    index-as="index">
-  <customize-button-row
-      button-remapping-list="[[buttonRemappingList]]"
-      remapping-index="[[index]]"
-      action-list$="[[actionList]]">
-  </customize-button-row>
-</template>
+<div class="subsection">
+  <template is="dom-repeat"
+      items="{{buttonRemappingList}}"
+      index-as="index">
+    <customize-button-row
+        button-remapping-list="[[buttonRemappingList]]"
+        remapping-index="[[index]]"
+        action-list$="[[actionList]]">
+    </customize-button-row>
+  </template>
+</div>
+
 <template is="dom-if" if="[[shouldShowRenamingDialog_]]" restamp>
   <cr-dialog id="renamingDialog"
       on-close="cancelRenamingDialogClicked_" show-on-attach>

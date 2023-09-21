@@ -13,6 +13,7 @@
 
 .subsection {
   margin-bottom: 16px;
+  margin-top: 8px;
   padding-inline-start: var(--cr-section-indent-width);
 }
 
@@ -68,4 +69,10 @@ cr-dialog [slot='title'] {
 cr-dialog #cancelButton {
   background-color: var(--cros-bg-color);
   border: solid 1px var(--cros-button-stroke-color-secondary);
+}
+
+.subpage-description {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+  padding: 12px 20px;
 }
