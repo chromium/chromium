@@ -71,7 +71,7 @@ void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
     for (auto* match : matches) {
       if (match->starter_pack_id() > 0 &&
           match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        AddStarterPackMatch(*match);
+        AddStarterPackMatch(*match, text);
       }
     }
   }
@@ -201,7 +201,8 @@ void BuiltinProvider::AddBuiltinMatch(const std::u16string& match_string,
   matches_.push_back(match);
 }
 
-void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
+void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
+                                          const std::u16string& text) {
   // The history starter pack engine is disabled in incognito mode.
   if (client_->IsOffTheRecord() &&
       template_url.starter_pack_id() == TemplateURLStarterPackData::kHistory) {
@@ -221,6 +222,7 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
           template_url.starter_pack_id());
   match.fill_into_edit = template_url.keyword();
+  match.inline_autocompletion = match.fill_into_edit.substr(text.length());
   match.destination_url = GURL(destination_url);
   match.contents = destination_url;
   match.contents_class.emplace_back(0, ACMatchClassification::URL);
