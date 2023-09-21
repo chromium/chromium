@@ -91,11 +91,6 @@ public class AwContentsStatics {
         return AwContentsStaticsJni.get().getProductVersion();
     }
 
-    public static void setServiceWorkerIoThreadClient(
-            AwContentsIoThreadClient ioThreadClient, AwBrowserContext browserContext) {
-        AwContentsStaticsJni.get().setServiceWorkerIoThreadClient(ioThreadClient, browserContext);
-    }
-
     @CalledByNative
     private static void safeBrowsingAllowlistAssigned(Callback<Boolean> callback, boolean success) {
         if (callback == null) return;
@@ -205,8 +200,6 @@ public class AwContentsStatics {
         void clearClientCertPreferences(Runnable callback);
         String getUnreachableWebDataUrl();
         String getProductVersion();
-        void setServiceWorkerIoThreadClient(
-                AwContentsIoThreadClient ioThreadClient, AwBrowserContext browserContext);
         void setSafeBrowsingAllowlist(String[] urls, Callback<Boolean> callback);
         void setCheckClearTextPermitted(boolean permitted);
         boolean isMultiProcessEnabled();

@@ -278,6 +278,11 @@ public class AwBrowserContext implements BrowserContextHandle {
         AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
     }
 
+    public void setServiceWorkerIoThreadClient(AwContentsIoThreadClient ioThreadClient) {
+        AwBrowserContextJni.get().setServiceWorkerIoThreadClient(
+                mNativeAwBrowserContext, ioThreadClient);
+    }
+
     private static SharedPreferences createSharedPrefs(String relativePath) {
         return ContextUtils.getApplicationContext().getSharedPreferences(
                 getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
@@ -316,5 +321,7 @@ public class AwBrowserContext implements BrowserContextHandle {
         void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
         boolean hasFormData(long nativeAwBrowserContext);
         void clearFormData(long nativeAwBrowserContext);
+        void setServiceWorkerIoThreadClient(
+                long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
     }
 }

@@ -59,12 +59,6 @@ class AwContentsIoThreadClient {
   static void Associate(content::WebContents* web_contents,
                         const base::android::JavaRef<jobject>& jclient);
 
-  // Sets the |jclient| java instance to which service worker related
-  // callbacks should be delegated.
-  static void SetServiceWorkerIoThreadClient(
-      const base::android::JavaRef<jobject>& jclient,
-      const base::android::JavaRef<jobject>& browser_context);
-
   // |jclient| must hold a non-null Java object.
   explicit AwContentsIoThreadClient(
       const base::android::JavaRef<jobject>& jclient);
@@ -91,11 +85,6 @@ class AwContentsIoThreadClient {
   // render_frame_ids will not be valid anymore for some of the navigations.
   static std::unique_ptr<AwContentsIoThreadClient> FromID(
       int frame_tree_node_id);
-
-  // Returns the global thread client for service worker related callbacks.
-  // A null std::unique_ptr is a valid return value.
-  static std::unique_ptr<AwContentsIoThreadClient>
-  GetServiceWorkerIoThreadClient();
 
   // Called on the IO thread when a subframe is created.
   static void SubFrameCreated(int render_process_id,

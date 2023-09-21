@@ -135,6 +135,8 @@ source_set("browser") {
     "js_java_interaction/aw_web_message_host_factory.h",
     "js_java_interaction/js_reply_proxy.cc",
     "js_java_interaction/js_reply_proxy.h",
+    "network_service/aw_browser_context_io_thread_handle.cc",
+    "network_service/aw_browser_context_io_thread_handle.h",
     "network_service/aw_network_change_notifier.cc",
     "network_service/aw_network_change_notifier.h",
     "network_service/aw_network_change_notifier_factory.cc",

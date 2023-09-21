@@ -112,15 +112,6 @@ void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
 }
 
 // static
-void JNI_AwContentsStatics_SetServiceWorkerIoThreadClient(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& io_thread_client,
-    const base::android::JavaParamRef<jobject>& browser_context) {
-  AwContentsIoThreadClient::SetServiceWorkerIoThreadClient(io_thread_client,
-                                                           browser_context);
-}
-
-// static
 void JNI_AwContentsStatics_SetCheckClearTextPermitted(
     JNIEnv* env,
     jboolean permitted) {

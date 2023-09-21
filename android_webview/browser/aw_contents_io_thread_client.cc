@@ -98,10 +98,6 @@ LazyInstance<RfhToIoThreadClientMap>::DestructorAtExit g_instance_ =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
-LazyInstance<JavaObjectWeakGlobalRef>::DestructorAtExit g_sw_instance_ =
-    LAZY_INSTANCE_INITIALIZER;
-
-// static
 RfhToIoThreadClientMap* RfhToIoThreadClientMap::GetInstance() {
   return g_instance_.Pointer();
 }
@@ -276,23 +272,6 @@ void AwContentsIoThreadClient::Associate(WebContents* web_contents,
   JNIEnv* env = AttachCurrentThread();
   // The ClientMapEntryUpdater lifespan is tied to the WebContents.
   new ClientMapEntryUpdater(env, web_contents, jclient.obj());
-}
-
-// static
-void AwContentsIoThreadClient::SetServiceWorkerIoThreadClient(
-    const base::android::JavaRef<jobject>& jclient,
-    const base::android::JavaRef<jobject>& browser_context) {
-  // TODO: currently there is only one browser context so it is ok to
-  // store in a global variable, in the future use browser_context to
-  // obtain the correct instance.
-  JavaObjectWeakGlobalRef temp(AttachCurrentThread(), jclient.obj());
-  g_sw_instance_.Get() = temp;
-}
-
-// static
-std::unique_ptr<AwContentsIoThreadClient>
-AwContentsIoThreadClient::GetServiceWorkerIoThreadClient() {
-  return WrapOptionalWeakRef(absl::make_optional(g_sw_instance_.Get()));
 }
 
 AwContentsIoThreadClient::AwContentsIoThreadClient(const JavaRef<jobject>& obj)

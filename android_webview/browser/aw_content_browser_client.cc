@@ -26,6 +26,7 @@
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
 #include "android_webview/browser/cookie_manager.h"
+#include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "android_webview/browser/network_service/aw_proxying_restricted_cookie_manager.h"
 #include "android_webview/browser/network_service/aw_proxying_url_loader_factory.h"
@@ -833,7 +834,7 @@ AwContentBrowserClient::CreateLoginDelegate(
 
 bool AwContentBrowserClient::HandleExternalProtocol(
     const GURL& url,
-    content::WebContents::Getter web_contents_getter,
+    content::WebContents::Getter wc_getter,
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
     bool is_primary_main_frame,
@@ -854,6 +855,15 @@ bool AwContentBrowserClient::HandleExternalProtocol(
 
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
       out_factory->InitWithNewPipeAndPassReceiver();
+
+  content::WebContents* web_contents = wc_getter.Run();
+  scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle =
+      web_contents == nullptr
+          ? nullptr
+          : base::MakeRefCounted<AwBrowserContextIoThreadHandle>(
+                static_cast<AwBrowserContext*>(
+                    web_contents->GetBrowserContext()));
+
   // We don't need to care for |security_options| as the factories constructed
   // below are used only for navigation.
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
@@ -861,21 +871,25 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     new android_webview::AwProxyingURLLoaderFactory(
         frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
         true /* intercept_only */, absl::nullopt /* security_options */,
-        nullptr /* xrw_allowlist_matcher */);
+        nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle));
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-               int frame_tree_node_id) {
+               int frame_tree_node_id,
+               scoped_refptr<AwBrowserContextIoThreadHandle>
+                   browser_context_handle) {
               // Manages its own lifetime.
               new android_webview::AwProxyingURLLoaderFactory(
                   frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
                   true /* intercept_only */,
                   absl::nullopt /* security_options */,
-                  nullptr /* xrw_allowlist_matcher */);
+                  nullptr /* xrw_allowlist_matcher */,
+                  std::move(browser_context_handle));
             },
-            std::move(receiver), frame_tree_node_id));
+            std::move(receiver), frame_tree_node_id,
+            std::move(browser_context_handle)));
   }
   return false;
 }
@@ -993,7 +1007,9 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     proxied_receiver = std::move(*factory_receiver);
     *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
   }
-  // Android WebView has one non off-the-record browser context.
+  scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle =
+      base::MakeRefCounted<AwBrowserContextIoThreadHandle>(
+          static_cast<AwBrowserContext*>(browser_context));
   if (frame) {
     auto security_options =
         absl::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
@@ -1026,7 +1042,8 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
         base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
-                       std::move(xrw_allowlist_matcher)));
+                       std::move(xrw_allowlist_matcher),
+                       std::move(browser_context_handle)));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
@@ -1040,7 +1057,8 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
             content::RenderFrameHost::kNoFrameTreeNodeId,
             std::move(proxied_receiver), std::move(target_factory_remote),
             absl::nullopt /* security_options */,
-            aw_browser_context->service_worker_xrw_allowlist_matcher()));
+            aw_browser_context->service_worker_xrw_allowlist_matcher(),
+            std::move(browser_context_handle)));
   }
   return true;
 }

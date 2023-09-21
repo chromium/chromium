@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_URL_LOADER_FACTORY_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_URL_LOADER_FACTORY_H_
 
+#include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "base/memory/weak_ptr.h"
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -72,7 +73,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       bool intercept_only,
       absl::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
 
   AwProxyingURLLoaderFactory(const AwProxyingURLLoaderFactory&) = delete;
   AwProxyingURLLoaderFactory& operator=(const AwProxyingURLLoaderFactory&) =
@@ -87,7 +89,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       absl::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -117,6 +120,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   absl::optional<SecurityOptions> security_options_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
+
+  scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 };

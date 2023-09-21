@@ -42,8 +42,7 @@ public class AwServiceWorkerController {
         mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
         mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
         mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
-        AwContentsStatics.setServiceWorkerIoThreadClient(
-                mServiceWorkerIoThreadClient, mBrowserContext);
+        mBrowserContext.setServiceWorkerIoThreadClient(mServiceWorkerIoThreadClient);
     }
 
     /**
