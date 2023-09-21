@@ -153,6 +153,7 @@ try_.compilator_builder(
     cores = "8|16",
     ssd = True,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
