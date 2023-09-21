@@ -389,7 +389,8 @@ void ImageAnnotationWorker::ProcessNextImage() {
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info({}, image_path, file_info->last_modified);
+  ImageInfo image_info({}, image_path, file_info->last_modified,
+                       file_info->size);
 
   if (use_ocr_ || use_ica_) {
     ash::image_util::DecodeImageFile(

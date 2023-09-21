@@ -27,7 +27,7 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
-constexpr int kVersionNumber = 4;
+constexpr int kVersionNumber = 5;
 
 // Initializes a new annotation table, returning a schema version number
 // on success. The database implements inverted index.
@@ -62,8 +62,12 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
 
 ImageInfo::ImageInfo(const std::set<std::string>& annotations,
                      const base::FilePath& path,
-                     const base::Time& last_modified)
-    : annotations(annotations), path(path), last_modified(last_modified) {}
+                     const base::Time& last_modified,
+                     int64_t file_size)
+    : annotations(annotations),
+      path(path),
+      last_modified(last_modified),
+      file_size(file_size) {}
 
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
@@ -113,7 +117,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
   int64_t document_id;
   if (!DocumentsTable::InsertOrIgnore(sql_database_.get(), image_info.path,
                                       image_info.last_modified,
-                                      DocumentType::kImage) ||
+                                      image_info.file_size) ||
       !DocumentsTable::GetDocumentId(sql_database_.get(), image_info.path,
                                      document_id)) {
     LOG(ERROR) << "Failed to insert into the db.";
@@ -151,11 +155,12 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name,"
+      "d.last_modified_time, d.file_size "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
-          "ORDER BY a.term, d.file_path";
+          "ORDER BY a.term, d.directory_path, d.file_name";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -167,12 +172,17 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
-             << ", " << time;
-    matched_paths.push_back(
-        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
+    const std::string annotation = statement->ColumnString(0);
+    base::FilePath file_path(statement->ColumnString(1));
+    file_path = file_path.Append(statement->ColumnString(2));
+    const base::Time time = statement->ColumnTime(3);
+    const int64_t file_size = statement->ColumnInt64(4);
+    DVLOG(1) << "Select find: " << annotation << ", " << file_path << ", "
+             << time << ", " << file_size;
+    matched_paths.push_back({{std::move(annotation)},
+                             std::move(file_path),
+                             std::move(time),
+                             file_size});
   }
 
   return matched_paths;
@@ -186,11 +196,12 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name,"
+      "d.last_modified_time, d.file_size "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
-          "WHERE d.file_path=? "
+          "WHERE d.directory_path=? AND d.file_name=? "
           "ORDER BY a.term";
   // clang-format on
 
@@ -200,16 +211,21 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
     LOG(ERROR) << "Couldn't create the statement";
     return {};
   }
-  statement->BindString(0, image_path.value());
+  // Safe on ChromeOS.
+  statement->BindString(0, image_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, image_path.BaseName().AsUTF8Unsafe());
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
-             << ", " << time;
-    matched_paths.push_back(
-        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
+    const std::string annotation = statement->ColumnString(0);
+    const base::Time time = statement->ColumnTime(3);
+    const int64_t file_size = statement->ColumnInt64(4);
+    DVLOG(1) << "Select find: " << annotation << ", " << image_path << ", "
+             << time << ", " << file_size;
+    matched_paths.push_back({{std::move(annotation)},
+                             std::move(image_path),
+                             std::move(time),
+                             file_size});
   }
 
   return matched_paths;
@@ -222,12 +238,12 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name, d.last_modified_time "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
           "WHERE a.term LIKE ? "
-          "ORDER BY d.file_path";
+          "ORDER BY d.directory_path, d.file_name";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -250,13 +266,14 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
       continue;
     }
 
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << path << ", "
-             << time << " rl: " << relevance;
+    base::FilePath file_path(statement->ColumnString(1));
+    file_path = file_path.Append(statement->ColumnString(2));
+    const base::Time time = statement->ColumnTime(3);
+    DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << file_path
+             << ", " << time << " rl: " << relevance;
 
-    if (matched_paths.empty() || matched_paths.back().file_path != path) {
-      matched_paths.push_back({path, std::move(time), relevance});
+    if (matched_paths.empty() || matched_paths.back().file_path != file_path) {
+      matched_paths.push_back({file_path, std::move(time), relevance});
     } else if (matched_paths.back().relevance < relevance) {
       matched_paths.back().relevance = relevance;
     }

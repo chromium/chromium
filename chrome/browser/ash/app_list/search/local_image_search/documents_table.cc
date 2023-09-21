@@ -20,9 +20,11 @@ bool DocumentsTable::Create(SqlDatabase* db) {
       // clang-format off
       "CREATE TABLE documents("
           "document_id INTEGER PRIMARY KEY,"
-          "file_path TEXT UNIQUE,"
+          "directory_path TEXT NOT NULL,"
+          "file_name TEXT NOT NULL,"
           "last_modified_time INTEGER NOT NULL,"
-          "document_type INTEGER NOT NULL)";
+          "file_size INTEGER NOT NULL,"
+          "UNIQUE (directory_path, file_name))";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -33,7 +35,8 @@ bool DocumentsTable::Create(SqlDatabase* db) {
   }
 
   static constexpr char kQuery1[] =
-      "CREATE INDEX idx_documents_filepath ON documents(file_path)";
+      "CREATE INDEX idx_documents_filepath "
+      "ON documents(directory_path, file_name)";
 
   std::unique_ptr<sql::Statement> statement1 =
       db->GetStatementForQuery(SQL_FROM_HERE, kQuery1);
@@ -63,12 +66,12 @@ bool DocumentsTable::Drop(SqlDatabase* db) {
 bool DocumentsTable::InsertOrIgnore(SqlDatabase* db,
                                     const base::FilePath& file_path,
                                     const base::Time& last_modified_time,
-                                    DocumentType document_type) {
+                                    int64_t file_size) {
   static constexpr char kQuery[] =
       // clang-format off
       "INSERT OR IGNORE INTO documents"
-        "(file_path, last_modified_time, document_type) "
-        "VALUES(?,?,?)";
+        "(directory_path, file_name, last_modified_time, file_size) "
+        "VALUES(?,?,?,?)";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -78,9 +81,11 @@ bool DocumentsTable::InsertOrIgnore(SqlDatabase* db,
     return false;
   }
 
-  statement->BindString(0, file_path.value());
-  statement->BindTime(1, last_modified_time);
-  statement->BindInt(2, static_cast<int>(document_type));
+  // Safe on ChromeOS.
+  statement->BindString(0, file_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, file_path.BaseName().AsUTF8Unsafe());
+  statement->BindTime(2, last_modified_time);
+  statement->BindInt64(3, file_size);
   if (!statement->Run()) {
     LOG(ERROR) << "Couldn't execute the statement";
     return false;
@@ -95,7 +100,8 @@ bool DocumentsTable::GetDocumentId(SqlDatabase* db,
                                    int64_t& document_id) {
   DVLOG(2) << "GetDocumentId " << file_path;
   static constexpr char kQuery[] =
-      "SELECT document_id FROM documents WHERE file_path=?";
+      "SELECT document_id FROM documents WHERE directory_path=? AND "
+      "file_name=?";
 
   std::unique_ptr<sql::Statement> statement =
       db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
@@ -104,7 +110,8 @@ bool DocumentsTable::GetDocumentId(SqlDatabase* db,
     return false;
   }
 
-  statement->BindString(0, file_path.value());
+  statement->BindString(0, file_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, file_path.BaseName().AsUTF8Unsafe());
   if (!statement->Step()) {
     LOG(ERROR) << "Couldn't execute the statement";
     return false;
@@ -115,8 +122,9 @@ bool DocumentsTable::GetDocumentId(SqlDatabase* db,
 }
 
 // static
-bool DocumentsTable::Remove(SqlDatabase* db, const base::FilePath& image_path) {
-  static constexpr char kQuery[] = "DELETE FROM documents WHERE file_path=?";
+bool DocumentsTable::Remove(SqlDatabase* db, const base::FilePath& file_path) {
+  static constexpr char kQuery[] =
+      "DELETE FROM documents WHERE directory_path=? AND file_name=?";
 
   std::unique_ptr<sql::Statement> statement =
       db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
@@ -125,7 +133,8 @@ bool DocumentsTable::Remove(SqlDatabase* db, const base::FilePath& image_path) {
     return false;
   }
 
-  statement->BindString(0, image_path.value());
+  statement->BindString(0, file_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, file_path.BaseName().AsUTF8Unsafe());
   if (!statement->Run()) {
     LOG(ERROR) << "Couldn't execute the statement";
     return false;

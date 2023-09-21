@@ -24,7 +24,7 @@ class InvertedIndexTable {
   static bool Create(SqlDatabase* db);
   static bool Drop(SqlDatabase* db);
   static bool Insert(SqlDatabase* db, int64_t term_id, int64_t document_id);
-  static bool Remove(SqlDatabase* db, const base::FilePath& image_path);
+  static bool Remove(SqlDatabase* db, const base::FilePath& file_path);
 };
 
 }  // namespace app_list

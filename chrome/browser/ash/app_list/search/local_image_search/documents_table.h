@@ -31,11 +31,11 @@ class DocumentsTable {
   static bool InsertOrIgnore(SqlDatabase* db,
                              const base::FilePath& file_path,
                              const base::Time& last_modified_time,
-                             DocumentType document_type);
+                             int64_t file_size);
   static bool GetDocumentId(SqlDatabase* db,
                             const base::FilePath& file_path,
                             int64_t& document_id);
-  static bool Remove(SqlDatabase* db, const base::FilePath& image_path);
+  static bool Remove(SqlDatabase* db, const base::FilePath& file_path);
 };
 
 }  // namespace app_list

@@ -113,12 +113,12 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   task_environment_.FastForwardBy(base::Seconds(1));
   task_environment_.RunUntilIdle();
 
-  ImageInfo jpg_image({"bar"}, jpg_path, image_time);
-  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time);
-  ImageInfo png_image({"bar2"}, png_path, image_time);
-  ImageInfo JPG_image({"bar5"}, JPG_path, image_time);
-  ImageInfo webp_image({"bar6"}, webp_path, image_time);
-  ImageInfo WEBP_image({"bar7"}, WEBP_path, image_time);
+  ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*file_size=*/16);
+  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, 16);
+  ImageInfo png_image({"bar2"}, png_path, image_time, 16);
+  ImageInfo JPG_image({"bar5"}, JPG_path, image_time, 16);
+  ImageInfo webp_image({"bar6"}, webp_path, image_time, 24);
+  ImageInfo WEBP_image({"bar7"}, WEBP_path, image_time, 24);
 
   auto annotations = storage_->GetAllAnnotations();
   EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
@@ -173,7 +173,8 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time);
+  ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time,
+                      /*file_size=*/16);
 
   EXPECT_THAT(storage_->GetAllAnnotations(),
               testing::ElementsAreArray({bar_image}));
@@ -201,7 +202,8 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated);
+  ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated,
+                              /*file_size=*/16);
   EXPECT_THAT(storage_->GetAllAnnotations(),
               testing::ElementsAreArray({bar_image_updated}));
 

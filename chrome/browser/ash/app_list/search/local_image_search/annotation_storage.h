@@ -28,10 +28,13 @@ struct ImageInfo {
   base::FilePath path;
   // The image's last modified time.
   base::Time last_modified;
+  // File size.
+  int64_t file_size;
 
   ImageInfo(const std::set<std::string>& annotations,
             const base::FilePath& path,
-            const base::Time& last_modified);
+            const base::Time& last_modified,
+            int64_t file_size);
 
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
