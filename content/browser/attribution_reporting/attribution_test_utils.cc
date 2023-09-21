@@ -699,8 +699,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "excessiveAttributions";
     case AttributionTrigger::EventLevelResult::kPriorityTooLow:
       return out << "priorityTooLow";
-    case AttributionTrigger::EventLevelResult::kDroppedForNoise:
-      return out << "noised";
+    case AttributionTrigger::EventLevelResult::kNeverAttributedSource:
+      return out << "neverAttributedSource";
     case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       return out << "excessiveReportingOrigins";
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:

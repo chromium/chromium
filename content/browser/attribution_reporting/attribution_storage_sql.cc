@@ -1440,7 +1440,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // clean sources.
   if (!IsSuccessResult(store_event_level_status) &&
       !IsSuccessResult(store_aggregatable_status) &&
-      store_event_level_status != EventLevelResult::kDroppedForNoise) {
+      store_event_level_status != EventLevelResult::kNeverAttributedSource) {
     if (!transaction.Commit()) {
       return assemble_report_result(EventLevelResult::kInternalError,
                                     AggregatableResult::kInternalError);
@@ -1473,7 +1473,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // |RateLimitTable::ClearDataForSourceIds()| here.
 
   // Reports which are dropped do not need to make any further changes.
-  if (store_event_level_status == EventLevelResult::kDroppedForNoise &&
+  if (store_event_level_status == EventLevelResult::kNeverAttributedSource &&
       !IsSuccessResult(store_aggregatable_status)) {
     if (!transaction.Commit()) {
       return assemble_report_result(EventLevelResult::kInternalError,
@@ -1719,7 +1719,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   }
 
   if (!create_report) {
-    return EventLevelResult::kDroppedForNoise;
+    return EventLevelResult::kNeverAttributedSource;
   }
 
   return maybe_replace_lower_priority_report_result ==

@@ -34,7 +34,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kDeduplicated = 5,
     kExcessiveAttributions = 6,
     kPriorityTooLow = 7,
-    kDroppedForNoise = 8,
+    // Equivalent to the "noised" trigger result described in the spec.
+    kNeverAttributedSource = 8,
     kExcessiveReportingOrigins = 9,
     kNoMatchingSourceFilterData = 10,
     kProhibitedByBrowserPolicy = 11,

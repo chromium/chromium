@@ -144,7 +144,7 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
       return DataTypeIfCookieSet(
           DebugDataType::kTriggerEventNoMatchingConfigurations,
           is_debug_cookie_set);
-    case EventLevelResult::kDroppedForNoise:
+    case EventLevelResult::kNeverAttributedSource:
     case EventLevelResult::kFalselyAttributedSource:
       return DataTypeIfCookieSet(DebugDataType::kTriggerEventNoise,
                                  is_debug_cookie_set);

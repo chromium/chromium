@@ -1375,12 +1375,13 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
-                  DefaultAggregatableTriggerBuilder().Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kDroppedForNoise),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder().Build()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kNeverAttributedSource),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kSuccess)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(AggregatableAttributionDataIs(
@@ -1528,17 +1529,19 @@ TEST_F(AttributionStorageTest,
 
   const auto conversion = DefaultAggregatableTriggerBuilder().Build();
 
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kDroppedForNoise),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(conversion),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kNeverAttributedSource),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kSuccess)));
 
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kDroppedForNoise),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(conversion),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kNeverAttributedSource),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kSuccess)));
 
   auto contributions = DefaultAggregatableHistogramContributions();
   EXPECT_THAT(

@@ -443,7 +443,7 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kExcessiveAttributions;
     case EventLevelStatus::kPriorityTooLow:
       return WebUITriggerStatus::kLowPriority;
-    case EventLevelStatus::kDroppedForNoise:
+    case EventLevelStatus::kNeverAttributedSource:
     case EventLevelStatus::kFalselyAttributedSource:
       return WebUITriggerStatus::kNoised;
     case EventLevelStatus::kExcessiveReportingOrigins:

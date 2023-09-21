@@ -19954,7 +19954,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Deduplicated against existing report"/>
   <int value="6" label="Excessive attributions"/>
   <int value="7" label="Priority lower than existing reports"/>
-  <int value="8" label="Dropped for noise"/>
+  <int value="8" label="Source never attributed (noised)"/>
   <int value="9" label="Excessive reporting origins"/>
   <int value="10" label="No matching source filter data"/>
   <int value="11" label="Prohibited by browser policy"/>

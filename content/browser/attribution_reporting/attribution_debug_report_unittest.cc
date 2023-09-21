@@ -583,7 +583,7 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-low-priority"
        }])json"},
-      {EventLevelResult::kDroppedForNoise,
+      {EventLevelResult::kNeverAttributedSource,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
