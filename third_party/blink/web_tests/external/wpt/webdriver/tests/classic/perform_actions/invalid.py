@@ -200,7 +200,7 @@ def test_input_source_action_sequence_actions_subtype_invalid_value(
 ):
     actions = [
         {
-            "type": value,
+            "type": action_type,
             "id": "foo",
             "actions": [
                 {
@@ -461,38 +461,22 @@ def test_pointer_action_up_down_button_missing(session, pointer_action):
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerUp"])
 @pytest.mark.parametrize("value", [None, "foo", True, 0.1, [], {}])
 def test_pointer_action_up_down_button_invalid_type(session, pointer_action, value):
-    actions = [
-        {
-            "type": "pointer",
-            "id": "foo",
-            "actions": [
-                {
-                    "type": pointer_action,
-                    "button": value,
-                }
-            ],
-        }
-    ]
-    response = perform_actions(session, actions)
+    action = create_pointer_common_object(pointer_action, {"button": value})
+
+    response = perform_actions(
+        session, [{"type": "pointer", "id": "foo", "actions": [action]}]
+    )
     assert_error(response, "invalid argument")
 
 
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerUp"])
 @pytest.mark.parametrize("value", [-1, MAX_INT + 1])
 def test_pointer_action_up_down_button_invalid_value(session, pointer_action, value):
-    actions = [
-        {
-            "type": "pointer",
-            "id": "foo",
-            "actions": [
-                {
-                    "type": pointer_action,
-                    "button": value,
-                }
-            ],
-        }
-    ]
-    response = perform_actions(session, actions)
+    action = create_pointer_common_object(pointer_action, {"button": value})
+
+    response = perform_actions(
+        session, [{"type": "pointer", "id": "foo", "actions": [action]}]
+    )
     assert_error(response, "invalid argument")
 
 
@@ -518,7 +502,7 @@ def test_pointer_action_common_properties_dimensions_invalid_type(
 
 @pytest.mark.parametrize("pointer_action", ["pointerDown", "pointerMove", "pointerUp"])
 @pytest.mark.parametrize("dimension", ["width", "height"])
-@pytest.mark.parametrize("value", [MIN_INT - 1, MAX_INT + 1])
+@pytest.mark.parametrize("value", [-1, MAX_INT + 1])
 def test_pointer_action_common_properties_dimensions_invalid_value(
     session, dimension, pointer_action, value
 ):
@@ -853,9 +837,7 @@ def test_wheel_action_scroll_origin_element_invalid_value(session):
 def test_wheel_action_scroll_missing_property(
     session, test_actions_scroll_page, wheel_chain, missing
 ):
-    target = session.find.css("#scrollable", all=False)
-
-    actions = wheel_chain.scroll(0, 0, 5, 10, origin=target)
+    actions = wheel_chain.scroll(0, 0, 5, 10, origin="viewport")
     del actions._actions[-1][missing]
 
     with pytest.raises(InvalidArgumentException):

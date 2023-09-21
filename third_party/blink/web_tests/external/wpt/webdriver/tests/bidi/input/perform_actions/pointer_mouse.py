@@ -1,5 +1,6 @@
 import pytest
 
+from webdriver.bidi.error import MoveTargetOutOfBoundsException
 from webdriver.bidi.modules.input import Actions, get_element_origin
 
 from tests.support.asserts import assert_move_to_coordinates
@@ -51,6 +52,41 @@ async def test_click_at_coordinates(bidi_session, top_context, load_static_test_
     ]
     filtered_events = [filter_dict(e, expected[0]) for e in events]
     assert expected == filtered_events[1:]
+
+
+@pytest.mark.parametrize("origin", ["pointer", "viewport"])
+async def test_params_actions_origin_outside_viewport(bidi_session, top_context, origin):
+    actions = Actions()
+    actions.add_pointer().pointer_move(x=-50, y=-50, origin=origin)
+
+    with pytest.raises(MoveTargetOutOfBoundsException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=top_context["context"]
+        )
+
+
+async def test_params_actions_origin_element_outside_viewport(
+    bidi_session, top_context, get_actions_origin_page, get_element
+):
+    url = get_actions_origin_page(
+        """width: 100px; height: 50px; background: green;
+           position: relative; left: -200px; top: -100px;"""
+    )
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=url,
+        wait="complete",
+    )
+
+    elem = await get_element("#inner")
+
+    actions = Actions()
+    actions.add_pointer().pointer_move(x=0, y=0, origin=get_element_origin(elem))
+
+    with pytest.raises(MoveTargetOutOfBoundsException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=top_context["context"]
+        )
 
 
 async def test_context_menu_at_coordinates(
