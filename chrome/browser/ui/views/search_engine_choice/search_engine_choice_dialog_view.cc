@@ -44,7 +44,7 @@ void ShowSearchEngineChoiceDialog(
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
-  delegate->SetShowCloseButton(true);
+  delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
 
   auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(
