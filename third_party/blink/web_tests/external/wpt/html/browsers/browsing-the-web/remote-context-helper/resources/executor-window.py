@@ -7,8 +7,12 @@ def main(request, response):
       js_name = json.dumps(header_name.lower().decode("utf-8"))
       js_value = json.dumps(header_value.decode("utf-8"))
       initRequestHeaders += f"window.__requestHeaders.append({js_name}, {js_value});\n"
+      if (b"status" in request.GET):
+            status = int(request.GET.first(b"status"))
+      else:
+            status = 200
 
-  return (200, [("Content-Type", "text/html")], f"""
+  return (status, [("Content-Type", "text/html")], f"""
 <!DOCTYPE HTML>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="./executor-common.js"></script>
