@@ -43,6 +43,8 @@
 #ifndef MALDOCA_OLE_HEADER_H_
 #define MALDOCA_OLE_HEADER_H_
 
+#include <cstdint>
+
 #include "absl/strings/string_view.h"
 
 namespace maldoca {
