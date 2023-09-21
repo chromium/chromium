@@ -26,14 +26,8 @@ CrosapiSystemLogSourceTest*
 TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
--ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
--ChromeVoxISearchTest.Simple
--ChromeVoxPanelTest.FormControlsMenu
--ChromeVoxPanelTest.InternationalFormControlsMenu
--ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
--ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
@@ -41,21 +35,10 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -SwitchAccessPointScanManagerTest.PointScanRightClick
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
--ChromeVoxLiveRegionsTest.FocusThenLiveRegion
--ChromeVoxLiveRegionsTest.LiveRegionAddElement
--ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
--ChromeVoxUserActionMonitorTest.Gestures
 # TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
-# TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
--SwitchAccessPointScanManagerTest.PointScanRightClick
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
--ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
--ChromeVoxAutoScrollHandlerTest.ScrollForward
--ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
--ChromeVoxPanelTest.ActionsMenu
--ChromeVoxPanelTest.SearchMenu
 # TODO(accessibility): these are native C++ tests that need investigation.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
