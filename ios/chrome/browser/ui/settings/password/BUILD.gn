@@ -89,6 +89,7 @@ source_set("password_ui") {
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/prefs",

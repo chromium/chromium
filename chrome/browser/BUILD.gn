@@ -2280,6 +2280,7 @@ static_library("browser") {
     "//components/password_manager/content/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/sharing",
     "//components/password_manager/core/common",

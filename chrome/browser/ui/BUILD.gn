@@ -550,6 +550,7 @@ static_library("ui") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:import_results",
     "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/import:importer",
