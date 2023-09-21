@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-MOVE_TO, 38, 10,
-H_LINE_TO, 10,
-R_V_LINE_TO, 28,
-R_H_LINE_TO, 28,
-V_LINE_TO, 10,
+MOVE_TO, 16, 10,
+R_H_LINE_TO, 16,
+R_ARC_TO, 6, 6, 0, 0, 1, 6, 6,
+R_V_LINE_TO, 16,
+R_ARC_TO, 6, 6, 0, 0, 1, -6, 6,
+R_H_LINE_TO, -16,
+R_ARC_TO, 6, 6, 0, 0, 1, -6, -6,
+R_V_LINE_TO, -16,
+R_ARC_TO, 6, 6, 0, 0, 1, 6, -6,
 CLOSE,
 MOVE_TO, 21.81f, 27.93f,
 R_CUBIC_TO, 0.39f, 0.2f, 0.84f, 0.29f, 1.34f, 0.29f,
