@@ -956,9 +956,12 @@ suite('Mixin', function() {
         testElement.wasScrolledToBottom, 'last text element should be visible');
   });
 
-  test('1px of the last text element not shown', async function() {
+  // The 2 pixels vs 1 pixel choice here is due to intersectionRatio being
+  // sometimes reported as 0.99 instead of 1.
+  // See more at crbug.com/1020466 and b/299120185.
+  test('2px of the last text element not shown', async function() {
     container.style.height =
-        `${fullContainerHeight - LAST_BOTTOM_MARGIN - 1}px`;
+        `${fullContainerHeight - LAST_BOTTOM_MARGIN - 2}px`;
     assertTrue(
         doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
 
