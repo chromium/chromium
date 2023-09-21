@@ -85,7 +85,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             };
     public static final long INVALID_TIMESTAMP = -1;
 
-    private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
     private int mContentStateVersion;
     private String mOpenerAppId;
 
@@ -123,7 +122,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         this(tab);
         mOpenerAppId = openerAppId;
         mTabLaunchTypeAtCreation = launchTypeAtCreation;
-        mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
     }
 
     /**
@@ -242,8 +240,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             CriticalPersistedTabDataFlatBuffer deserialized =
                     CriticalPersistedTabDataFlatBuffer.getRootAsCriticalPersistedTabDataFlatBuffer(
                             bytes);
-            mLastNavigationCommittedTimestampMillis =
-                    deserialized.lastNavigationCommittedTimestampMillis();
             mContentStateVersion = deserialized.contentStateVersion();
             mOpenerAppId = NULL_OPENER_APP_ID.equals(deserialized.openerAppId())
                     ? null
@@ -450,7 +446,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             private ByteBuffer mByteBufferSnapshot;
             private String mOpenerAppIdSnapshot;
             private int mLaunchTypeSnapshot;
-            private long mLastNavigationCommittedTimestampMillisSnapshot;
             private boolean mPreSerialized;
 
             @Override
@@ -483,7 +478,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                             fbb, mLaunchTypeSnapshot);
                     CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, 1 /* unused*/);
                     CriticalPersistedTabDataFlatBuffer.addLastNavigationCommittedTimestampMillis(
-                            fbb, mLastNavigationCommittedTimestampMillisSnapshot);
+                            fbb, -1 /** unused */);
                     int r = CriticalPersistedTabDataFlatBuffer
                                     .endCriticalPersistedTabDataFlatBuffer(fbb);
                     fbb.finish(r);
@@ -501,8 +496,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
                     mOpenerAppIdSnapshot = mOpenerAppId;
                     mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
-                    mLastNavigationCommittedTimestampMillisSnapshot =
-                            mLastNavigationCommittedTimestampMillis;
                 }
                 mPreSerialized = true;
             }
@@ -551,28 +544,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public int getTabId() {
         return mTab.getId();
-    }
-
-    /**
-     * @return timestamp in milliseconds when the tab was last interacted.
-     */
-    public long getLastNavigationCommittedTimestampMillis() {
-        return mLastNavigationCommittedTimestampMillis;
-    }
-
-    /**
-     * Set the last hidden timestamp.
-     *
-     * @param lastNavigationCommittedTimestampMillis The timestamp when the tab was last interacted.
-     */
-    public void setLastNavigationCommittedTimestampMillis(
-            long lastNavigationCommittedTimestampMillis) {
-        if (mLastNavigationCommittedTimestampMillis == lastNavigationCommittedTimestampMillis) {
-            return;
-        }
-
-        mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
-        save();
     }
 
     /**

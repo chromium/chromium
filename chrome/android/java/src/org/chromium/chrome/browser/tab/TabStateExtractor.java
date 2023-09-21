@@ -43,7 +43,7 @@ public class TabStateExtractor {
         tabState.rootId = tab.getRootId();
         tabState.userAgent = tab.getUserAgent();
         tabState.lastNavigationCommittedTimestampMillis =
-                CriticalPersistedTabData.from(tab).getLastNavigationCommittedTimestampMillis();
+                tab.getLastNavigationCommittedTimestampMillis();
         return tabState;
     }
 

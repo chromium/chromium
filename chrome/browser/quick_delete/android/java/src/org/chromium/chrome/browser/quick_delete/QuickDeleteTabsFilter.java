@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
@@ -99,8 +98,7 @@ class QuickDeleteTabsFilter {
             Tab tab = mTabModel.getTabAt(i);
             if (tab == null || tab.isCustomTab()) continue;
 
-            final long recentNavigationTime =
-                    CriticalPersistedTabData.from(tab).getLastNavigationCommittedTimestampMillis();
+            final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
             final long currentTime = getCurrentTime();
 
             if (recentNavigationTime > currentTime - getTimePeriodToMilliseconds(timePeriod)) {

@@ -325,4 +325,9 @@ public interface Tab extends TabLifecycle {
      * @return content state bytes for the {@link Tab}
      */
     WebContentsState getWebContentsState();
+
+    /**
+     * @return timestamp in milliseconds when the tab was last interacted.
+     */
+    long getLastNavigationCommittedTimestampMillis();
 }

@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -107,7 +107,7 @@ public class QuickDeleteControllerTest {
         // Set the time for the initial tab to outside of the quick delete timespan.
         Tab initialTab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData.from(initialTab)
+            ((TabImpl) initialTab)
                     .setLastNavigationCommittedTimestampMillis(
                             System.currentTimeMillis() - FIFTEEN_MINUTES_IN_MS);
         });

@@ -232,6 +232,8 @@ public class TabImpl implements Tab {
      */
     private GURL mUrl;
 
+    private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
+
     /**
      * Creates an instance of a {@link TabImpl}.
      *
@@ -1135,8 +1137,7 @@ public class TabImpl implements Tab {
             showRenderedPage();
         }
 
-        CriticalPersistedTabData.from(this).setLastNavigationCommittedTimestampMillis(
-                System.currentTimeMillis());
+        setLastNavigationCommittedTimestampMillis(System.currentTimeMillis());
     }
 
     /**
@@ -1704,6 +1705,22 @@ public class TabImpl implements Tab {
     @VisibleForTesting
     protected void setTitle(String title) {
         mTitle = title;
+    }
+
+    @Override
+    public long getLastNavigationCommittedTimestampMillis() {
+        return mLastNavigationCommittedTimestampMillis;
+    }
+
+    /**
+     * Set the last hidden timestamp.
+     *
+     * @param lastNavigationCommittedTimestampMillis The timestamp when the tab was last interacted.
+     */
+    @VisibleForTesting
+    public void setLastNavigationCommittedTimestampMillis(
+            long lastNavigationCommittedTimestampMillis) {
+        mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
     }
 
     /**

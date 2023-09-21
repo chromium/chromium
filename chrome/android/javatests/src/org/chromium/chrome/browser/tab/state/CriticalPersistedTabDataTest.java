@@ -183,8 +183,6 @@ public class CriticalPersistedTabDataTest {
         assertEquals(mCriticalPersistedTabData.getOpenerAppId(), OPENER_APP_ID);
         assertEquals(
                 mCriticalPersistedTabData.getTabLaunchTypeAtCreation(), LAUNCH_TYPE_AT_CREATION);
-        assertEquals(mCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis(),
-                LAST_NAVIGATION_COMMITTED_TIMESTAMP);
         Semaphore deleteSemaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mStorage.setSemaphore(deleteSemaphore);
@@ -266,8 +264,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertNotNull(deserialized);
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
         assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
-        assertEquals(LAST_NAVIGATION_COMMITTED_TIMESTAMP,
-                deserialized.getLastNavigationCommittedTimestampMillis());
     }
 
     @UiThreadTest
@@ -286,35 +282,6 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData deserialized =
                 new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         assertEquals(null, deserialized.getOpenerAppId());
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testLastNavigationCommittedTimestampMillisSavedWhenNecessary() {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            CriticalPersistedTabData spyCriticalPersistedTabData =
-                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
-            spyCriticalPersistedTabData.setLastNavigationCommittedTimestampMillis(TIMESTAMP_A);
-            assertEquals(TIMESTAMP_A,
-                    spyCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setLastNavigationCommittedTimestampMillis(TIMESTAMP_A);
-            assertEquals(TIMESTAMP_A,
-                    spyCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setLastNavigationCommittedTimestampMillis(TIMESTAMP_B);
-            assertEquals(TIMESTAMP_B,
-                    spyCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis());
-            verify(spyCriticalPersistedTabData, times(2)).save();
-
-            spyCriticalPersistedTabData.setLastNavigationCommittedTimestampMillis(TIMESTAMP_A);
-            assertEquals(TIMESTAMP_A,
-                    spyCriticalPersistedTabData.getLastNavigationCommittedTimestampMillis());
-            verify(spyCriticalPersistedTabData, times(3)).save();
-        }
     }
 
     @UiThreadTest
