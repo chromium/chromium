@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha03">
+<issues format="6" by="lint 8.3.0-alpha04" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha04">
 
     <issue
         id="MissingClass"
@@ -65,39 +65,6 @@
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
             line="100"
             column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
-        errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
-        errorLine2="                                                             ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
-            line="315"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
-        errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
-        errorLine2="                                                             ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
-            line="353"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Notification.UNKNOWN_TRIM_LEVEL, Notification.TRIM_MEMORY_COMPLETE, Notification.TRIM_MEMORY_MODERATE, Notification.TRIM_MEMORY_BACKGROUND, Notification.TRIM_MEMORY_UI_HIDDEN, Notification.TRIM_MEMORY_RUNNING_CRITICAL, Notification.TRIM_MEMORY_RUNNING_LOW, Notification.TRIM_MEMORY_RUNNING_MODERATE, Notification.ON_LOW_MEMORY"
-        errorLine1="                mHistogramName, notification, Notification.NUM_ENTRIES);"
-        errorLine2="                                                           ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java"
-            line="110"
-            column="60"/>
     </issue>
 
     <issue

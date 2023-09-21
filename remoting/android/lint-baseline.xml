@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha03">
+<issues format="6" by="lint 8.3.0-alpha04" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha04">
 
     <issue
         id="WrongConstant"
@@ -54,17 +54,6 @@
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
             line="294"
             column="54"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: InputMode.UNKNOWN, InputMode.TRACKPAD, InputMode.TOUCH"
-        errorLine1="        for (int i = 0; i &lt; InputMode.NUM_ENTRIES; i++) {"
-        errorLine2="                                      ~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="340"
-            column="39"/>
     </issue>
 
     <issue
