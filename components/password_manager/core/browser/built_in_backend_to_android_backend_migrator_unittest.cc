@@ -164,7 +164,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        AllPrefsAreUpdatedWhenMigrationIsNeeded_SyncOff) {
   feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
   Init();
 
   InitSyncService(/*is_password_sync_enabled=*/false);
@@ -216,7 +216,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        LastAttemptUpdatedInPrefsWhenRollingMigrationEnabled) {
   // Setup the pref to indicate that the initial migration has happened already.
   feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
   Init(/*current_migration_version=*/1);
 
   migrator()->StartMigrationIfNecessary(
@@ -526,7 +526,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   InitSyncService(/*is_password_sync_enabled=*/false);
 
   feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 
   const MigrationParam& p = GetParam();
 
@@ -556,7 +556,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   // Setup the pref to indicate that the initial migration has happened already.
   // This implies that rolling migration will take place!
   feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
   BuiltInBackendToAndroidBackendMigratorTest::Init(
       /*current_migration_version=*/1);
 
@@ -855,7 +855,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
        DoesNotCompleteMigrationWhenWritingToAndroidBackendFails_SyncOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 
   // Sync state doesn't affect this test, run it arbitrarily for non-sync'ing
   // users.

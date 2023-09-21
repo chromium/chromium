@@ -51,8 +51,11 @@ BASE_DECLARE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid);
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
 BASE_DECLARE_FEATURE(kPasswordGenerationBottomSheet);
 BASE_DECLARE_FEATURE(kPasswordSuggestionBottomSheetV2);
+// TODO(crbug.com/1439191): Clean up the UnifiedPasswordManagerAndroid flag.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroid);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+BASE_DECLARE_FEATURE(
+    kUnifiedPasswordManagerLocalPasswordsAndroidWithoutMigration);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kPasswordsInCredMan);
