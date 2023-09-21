@@ -338,6 +338,7 @@ build_webui("build") {
     "deep_linking_mixin.ts",
     "device_page/cros_audio_config.ts",
     "device_page/device_page_browser_proxy.ts",
+    "device_page/drag_and_drop_manager.ts",
     "device_page/drag_mixin.ts",
     "device_page/fake_cros_audio_config.ts",
     "device_page/layout_mixin.ts",

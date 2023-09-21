@@ -10,6 +10,7 @@ import '/shared/settings/controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +18,7 @@ import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {ButtonPressObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 
 import {getTemplate} from './customize_button_row.html.js';
+import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent} from './input_device_settings_types.js';
@@ -75,7 +77,6 @@ function getKeyCombinationLabel(keyEvent: KeyEvent): string {
   }
   return combinationLabel;
 }
-
 
 /**
  * @fileoverview
@@ -174,6 +175,26 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         computed:
             'getButtonRemappingName_(buttonRemappingList.*, remappingIndex)',
       },
+
+      /**
+       * True if this element is being dragged by its handle.
+       * This property is used to apply custom styling to the element when it's
+       * being dragged.
+       */
+      isBeingDragged_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Reference to the HTML element that was last pressed
+       * on. This property is used to determine if a drag event was started
+       * from this element's drag handle or elsewhere on the element..
+       */
+      lastMouseDownTarget_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -200,6 +221,8 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private prevChoice_: string;
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private isBeingDragged_: boolean;
+  private lastMouseDownTarget_: HTMLElement|null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -386,6 +409,74 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     if (buttonsAreEqual(button, this.buttonRemapping_.button)) {
       this.$.remappingActionDropdown!.focus();
     }
+  }
+
+  private onContainerMouseDown_(event: Event): void {
+    this.lastMouseDownTarget_ = event.target as HTMLElement;
+  }
+
+  private onDragStart_(event: DragEvent): void {
+    const dragHandle =
+        strictQuery('.move-button', this.shadowRoot, HTMLElement);
+    // Check if the drag event started from the drag handle.
+    if (!dragHandle.contains(this.lastMouseDownTarget_)) {
+      // Drag didn't start from the handle, so don't allow the drag.
+      event.preventDefault();
+      return;
+    }
+
+    this.isBeingDragged_ = true;
+
+    // Create the grey rectangle used as the drag image.
+    // It's necessary to create a canvas element this way, so that we have
+    // full control over the rendering of the drag image.
+    const canvas = document.createElement('canvas');
+
+    document.body.append(canvas);
+    // We won't need the canvas after this function finishes, so
+    // remove it from the DOM.
+    setTimeout(() => canvas.remove(), 100);
+
+    canvas.width = this.offsetWidth;
+    canvas.height = this.offsetHeight;
+
+    // Position the canvas offscreen.
+    canvas.style.position = 'absolute';
+    canvas.style.top = '-200px';
+
+    // Using the canvas context, draw the grey rectangle that will be displayed
+    // while the user is dragging.
+    const context = canvas.getContext('2d');
+    if (context) {
+      // Using getComputedStyle and getPropertyValue is the only
+      // way to use CSS variables with canvas painting.
+      context.fillStyle = getComputedStyle(canvas).getPropertyValue(
+          '--cros-sys-ripple_neutral_on_subtle');
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = getComputedStyle(canvas).getPropertyValue(
+          '--cros-sys-highlight_shape');
+      context.lineWidth = 1;
+      context.strokeRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if (event.dataTransfer) {
+      event.dataTransfer.setDragImage(canvas, event.offsetX, event.offsetY);
+      // dropEffect and effectAllowed affect the cursor that's
+      // displayed during the drag.
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      // Set data on the event that allows the drop receiver to determine
+      // the index of this row.
+      setDataTransferOriginIndex(event, this.remappingIndex);
+    }
+  }
+
+  private onDragEnd_(): void {
+    this.isBeingDragged_ = false;
+  }
+
+  private isDropdownDisabled_(): boolean {
+    return this.isBeingDragged_;
   }
 }
 

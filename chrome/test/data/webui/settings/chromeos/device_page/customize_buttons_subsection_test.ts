@@ -10,7 +10,7 @@ import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<customize-buttons-subsection>', () => {
@@ -97,5 +97,47 @@ suite('<customize-buttons-subsection>', () => {
         }));
     await flushTasks();
     assertTrue(keyCombinationDialog.isOpen);
+  });
+
+  test('Drop event should trigger remapping', async () => {
+    await initializeCustomizeButtonsSubsection();
+    assertTrue(!!customizeButtonsSubsection);
+    assertTrue(!!customizeButtonsSubsection.get('buttonRemappingList'));
+
+    const buttonRemappingListBefore =
+        structuredClone(customizeButtonsSubsection.buttonRemappingList);
+
+    // Call the callback directly since the event listening functionality
+    // is handled by DragAndDropManager (which is unit tested separately).
+    // @ts-expect-error (we're invoking a private method for the test).
+    customizeButtonsSubsection.onDrop_(1, 0);
+    await flushTasks();
+
+    assertNotEquals(
+        buttonRemappingListBefore[0],
+        customizeButtonsSubsection.buttonRemappingList[0]);
+    assertNotEquals(
+        buttonRemappingListBefore[1],
+        customizeButtonsSubsection.buttonRemappingList[1]);
+
+    const expectedRemappingList = buttonRemappingListBefore.slice();
+    const secondItem = buttonRemappingListBefore[1]!;
+    // Remove second item.
+    expectedRemappingList.splice(1, 1);
+    // Add second item at beginning.
+    expectedRemappingList.splice(0, 0, secondItem);
+
+    assertDeepEquals(
+        expectedRemappingList, customizeButtonsSubsection.buttonRemappingList);
+
+    assertEquals(1, buttonRemappingChangedEventCount);
+
+    // When onDrop_ is called with invalid indices, the button remapping list
+    // should not change.
+    // @ts-expect-error (we're invoking a private method for the test).
+    customizeButtonsSubsection.onDrop_(100, -10);
+    await flushTasks();
+
+    assertEquals(1, buttonRemappingChangedEventCount);
   });
 });
