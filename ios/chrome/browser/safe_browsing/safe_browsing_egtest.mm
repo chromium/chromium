@@ -98,6 +98,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(safe_browsing::kRedInterstitialFacelift);
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.
   config.additional_args.push_back(std::string("--mark_as_phishing=") +
