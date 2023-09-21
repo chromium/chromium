@@ -29,11 +29,6 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
               GetCachedSegmentResult,
               (const std::string&));
   MOCK_METHOD(void,
-              GetSelectedSegmentOnDemand,
-              (const std::string&,
-               scoped_refptr<InputContext>,
-               SegmentSelectionCallback));
-  MOCK_METHOD(void,
               GetClassificationResult,
               (const std::string&,
                const PredictionOptions&,

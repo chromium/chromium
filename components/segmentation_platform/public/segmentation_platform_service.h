@@ -112,13 +112,6 @@ class SegmentationPlatformService : public KeyedService,
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
 
-  // Given a client and a set of inputs, runs the required models on demand and
-  // returns the result in the supplied callback.
-  virtual void GetSelectedSegmentOnDemand(
-      const std::string& segmentation_key,
-      scoped_refptr<InputContext> input_context,
-      SegmentSelectionCallback callback) = 0;
-
   // Called to trigger training data collection for a given request ID. Request
   // IDs are given when |GetClassificationResult| is called.
   virtual void CollectTrainingData(proto::SegmentId segment_id,

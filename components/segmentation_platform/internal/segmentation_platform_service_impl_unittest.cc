@@ -153,23 +153,6 @@ class SegmentationPlatformServiceImplTest
                   segmentation_key));
   }
 
-  void AssertSelectedSegmentOnDemand(
-      const std::string& segmentation_key,
-      bool is_ready,
-      SegmentId expected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
-    SegmentSelectionResult result;
-    result.is_ready = is_ready;
-    if (is_ready)
-      result.segment = expected;
-    base::RunLoop loop;
-    segmentation_platform_service_impl_->GetSelectedSegmentOnDemand(
-        segmentation_key, nullptr,
-        base::BindOnce(
-            &SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
-            base::Unretained(this), loop.QuitClosure(), result));
-    loop.Run();
-  }
-
  protected:
   void TestInitializationFlow() {
     // ServiceProxy will load new segment infos from the DB.
@@ -312,21 +295,6 @@ TEST_F(SegmentationPlatformServiceImplTest,
       base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
                      base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
-}
-
-TEST_F(SegmentationPlatformServiceImplTest,
-       GetSelectedSegmentOnDemandIfDbFailed) {
-  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
-  int pending_queue_size = GetPendingActionsQueueSize();
-  // Initialize the platform
-  FailInitializationFlow();
-  // Platform failed to initialize, so the API call to get the selected
-  // segment on demand is executed with a null result.
-  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
-  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
-  AssertSelectedSegmentOnDemand(kTestSegmentationKey4, /*is_ready=*/false,
-                                SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
-  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
 }
 
 class SegmentationPlatformServiceImplEmptyConfigTest

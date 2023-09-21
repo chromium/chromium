@@ -179,33 +179,6 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
   return selector->GetCachedSegmentResult();
 }
 
-void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
-    const std::string& segmentation_key,
-    scoped_refptr<InputContext> input_context,
-    SegmentSelectionCallback callback) {
-  // TODO(shaktisahu): Delete this API after enabling RequestDispatcher.
-  if (!storage_init_status_.has_value()) {
-    // If the platform isn't fully initialized, cache the input arguments to run
-    // later.
-    pending_actions_.push_back(base::BindOnce(
-        &SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand,
-        weak_ptr_factory_.GetWeakPtr(), segmentation_key,
-        std::move(input_context), std::move(callback)));
-    return;
-  }
-
-  if (!storage_init_status_.value()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), SegmentSelectionResult()));
-    return;
-  }
-
-  CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
-  auto& selector = segment_selectors_.at(segmentation_key);
-  selector->GetSelectedSegmentOnDemand(input_context, std::move(callback));
-}
-
 void SegmentationPlatformServiceImpl::CollectTrainingData(
     SegmentId segment_id,
     TrainingRequestId request_id,

@@ -171,18 +171,6 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
   return selected_segment_;
 }
 
-void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
-    scoped_refptr<InputContext> input_context,
-    SegmentSelectionCallback callback) {
-  DCHECK(!config_->auto_execute_and_cache);
-  // Wrap callback to record metrics.
-  auto wrapped_callback = base::BindOnce(
-      &SegmentSelectorImpl::CallbackWrapper, weak_ptr_factory_.GetWeakPtr(),
-      base::Time::Now(), std::move(callback));
-  GetRankForNextSegment(std::make_unique<SegmentRanks>(), input_context,
-                        std::move(wrapped_callback));
-}
-
 void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   DCHECK(segment_result_provider_);
 
