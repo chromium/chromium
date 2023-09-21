@@ -656,7 +656,7 @@ public class NewTabPageLayout extends LinearLayout {
             if (mIsNtpAsHomeSurfaceEnabled) {
                 if (isScrollableMvtEnabled()) {
                     marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
-                            shouldShowLogo() ? R.dimen.tile_grid_layout_top_margin
+                            shouldShowLogo() ? R.dimen.mvt_container_top_margin_polish
                                              : R.dimen.tile_grid_layout_no_logo_top_margin);
                 } else {
                     // Set a bit more top padding on the tile grid if there is no logo.
@@ -1032,7 +1032,8 @@ public class NewTabPageLayout extends LinearLayout {
                     R.dimen.tile_grid_layout_no_logo_top_margin);
         }
 
-        int resourcesId = R.dimen.tile_grid_layout_top_margin;
+        int resourcesId = mIsSurfacePolishEnabled ? R.dimen.mvt_container_top_margin_polish
+                                                  : R.dimen.tile_grid_layout_top_margin;
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
             resourcesId = R.dimen.tile_grid_layout_top_margin_push_down_large;
