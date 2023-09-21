@@ -57,8 +57,12 @@ class FileTransferAnalysisDelegate {
 
   // The verdict of an analysis.
   enum Verdict {
+    // The file transfer is allowed.
     ALLOWED,
+    // The file transfer is blocked.
     BLOCKED,
+    // A file transfer result verdict is unknown if the file was copied/moved to
+    // a scanned directory after the scan was started
     UNKNOWN,
   };
 
@@ -68,7 +72,9 @@ class FileTransferAnalysisDelegate {
     // Creates a result representing an allowed file transfer.
     static FileTransferAnalysisResult Allowed();
     // Creates a result for a file transfer blocked because of `tag`.
-    static FileTransferAnalysisResult Blocked(const std::string& tag);
+    static FileTransferAnalysisResult Blocked(
+        FinalContentAnalysisResult final_result,
+        const std::string& tag);
     // Represents a file transfer for which there is no known result.
     static FileTransferAnalysisResult Unknown();
 
@@ -81,15 +87,22 @@ class FileTransferAnalysisDelegate {
     bool IsUnknown() const;
 
     const std::string& tag() const;
+    const absl::optional<FinalContentAnalysisResult> final_result() const;
 
    private:
-    FileTransferAnalysisResult(Verdict verdict, const std::string& tag);
+    FileTransferAnalysisResult(
+        Verdict verdict,
+        absl::optional<FinalContentAnalysisResult> final_result,
+        const std::string& tag);
 
     Verdict verdict_ = Verdict::UNKNOWN;
-    // The tag ("dlp" or "malware") is only valid when verdict is BLOCKED. Note
-    // that it can be empty in case the file is blocked because it's encrypted,
-    // it's too large or was copied/moved to a scanned directory after the scan
-    // was started.
+    // The tag ("dlp" or "malware") is only relevant when verdict is BLOCKED.
+    // Note however that results associated with blocked files can have an empty
+    // tag. This may happen when the file is blocked because it's encrypted or
+    // it's too large to be uploaded.
+    // For blocked files with an empty tag, final result contains the reason for
+    // which they were blocked.
+    absl::optional<FinalContentAnalysisResult> final_result_;
     std::string tag_;
   };
 

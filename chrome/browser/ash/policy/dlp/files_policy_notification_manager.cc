@@ -293,13 +293,11 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
   }
 }
 
-// TODO(b/300609399): extend AddConnectorsBlockedFiles to include the reason
-// for which files are blocked, so that it can be used to display custom
-// errors in the error dialog.
 void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
     file_manager::io_task::IOTaskId task_id,
     std::vector<base::FilePath> blocked_files,
-    dlp::FileAction action) {
+    dlp::FileAction action,
+    FilesPolicyDialog::EnterpriseConnectorsBlockReason reason) {
   // Sometimes EC checks are done before FilesPolicyNotificationManager is
   // lazily created, so the task is not tracked and the blocked files won't
   // be added. On the other hand, the IOTask may be aborted/canceled already so
@@ -307,6 +305,7 @@ void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
   if (!HasIOTask(task_id)) {
     AddIOTask(task_id, action);
   }
+  // TODO(b/300643270): store EnterpriseConnectorsBlockReason in the IOTask.
   for (const auto& file : blocked_files) {
     io_tasks_.at(task_id).AddBlockedFile(DlpConfidentialFile(file),
                                          Policy::kEnterpriseConnectors);

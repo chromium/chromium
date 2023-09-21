@@ -77,7 +77,8 @@ class FilesPolicyNotificationManager
   virtual void AddConnectorsBlockedFiles(
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> blocked_files,
-      dlp::FileAction action);
+      dlp::FileAction action,
+      FilesPolicyDialog::EnterpriseConnectorsBlockReason reason);
 
   // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask
   // will be paused. Otherwise a desktop notification will be shown. Virtual

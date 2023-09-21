@@ -160,20 +160,23 @@ namespace enterprise_connectors {
 // static
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::Allowed() {
-  return FileTransferAnalysisResult(Verdict::ALLOWED, /*tag=*/std::string());
+  return FileTransferAnalysisResult(
+      Verdict::ALLOWED, /*final_result=*/absl::nullopt, /*tag=*/std::string());
 }
 
 // static
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::Blocked(
+    FinalContentAnalysisResult final_result,
     const std::string& tag) {
-  return FileTransferAnalysisResult(Verdict::BLOCKED, tag);
+  return FileTransferAnalysisResult(Verdict::BLOCKED, final_result, tag);
 }
 
 // static
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::Unknown() {
-  return FileTransferAnalysisResult(Verdict::UNKNOWN, /*tag=*/std::string());
+  return FileTransferAnalysisResult(
+      Verdict::UNKNOWN, /*final_result=*/absl::nullopt, /*tag=*/std::string());
 }
 
 const std::string&
@@ -181,9 +184,17 @@ FileTransferAnalysisDelegate::FileTransferAnalysisResult::tag() const {
   return tag_;
 }
 
+const absl::optional<FinalContentAnalysisResult>
+FileTransferAnalysisDelegate::FileTransferAnalysisResult::final_result() const {
+  return final_result_;
+}
+
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::
-    FileTransferAnalysisResult(Verdict verdict, const std::string& tag)
-    : verdict_(verdict), tag_(tag) {}
+    FileTransferAnalysisResult(
+        Verdict verdict,
+        absl::optional<FinalContentAnalysisResult> final_result,
+        const std::string& tag)
+    : verdict_(verdict), final_result_(final_result), tag_(tag) {}
 
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::
     ~FileTransferAnalysisResult() = default;
@@ -293,7 +304,8 @@ FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
            results_[i].final_result == FinalContentAnalysisResult::WARNING)) {
         return FileTransferAnalysisResult::Allowed();
       }
-      return FileTransferAnalysisResult::Blocked(results_[i].tag);
+      return FileTransferAnalysisResult::Blocked(results_[i].final_result,
+                                                 results_[i].tag);
     }
   }
   return FileTransferAnalysisResult::Unknown();

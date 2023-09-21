@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -122,6 +124,9 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   void OnCheckIfTransferAllowed(
       std::vector<storage::FileSystemURL> blocked_entries);
 
+  // Returns the total number of files in `connectors_blocked_files_`.
+  size_t GetConnectorsBlockedFilesNum() const;
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
@@ -144,10 +149,12 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // The number of files blocked by policies.
   size_t blocked_files_ = 0;
 
-  // List of pairs (file paths, tag) for blocked files. The tag could be nullopt
-  // in case the file was blocked for an unknown reason.
-  std::vector<std::pair<base::FilePath, absl::optional<std::string>>>
+  // Maps block reasons to their associated enterprise connector blocked file
+  // paths.
+  std::map<policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason,
+           std::vector<base::FilePath>>
       connectors_blocked_files_;
+
   // The name of the first blocked file, if any. Used for notifications.
   std::string blocked_file_name_;
 

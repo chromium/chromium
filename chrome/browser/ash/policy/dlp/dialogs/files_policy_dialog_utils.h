@@ -1,0 +1,22 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_UTILS_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_UTILS_H_
+
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+
+namespace policy {
+
+// Converts a file transfer analysis result representing a block or unknown
+// verdict into a block reason.
+FilesPolicyDialog::EnterpriseConnectorsBlockReason
+GetEnterpriseConnectorsBlockReason(
+    const enterprise_connectors::FileTransferAnalysisDelegate::
+        FileTransferAnalysisResult& result);
+
+}  // namespace policy
+
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_UTILS_H_

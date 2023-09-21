@@ -295,8 +295,9 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
         fpnm_->ShowDlpBlockedFiles(task_id, std::move(blocked_files), action);
         return;
       case Policy::kEnterpriseConnectors:
-        fpnm_->AddConnectorsBlockedFiles(task_id, std::move(blocked_files),
-                                         action);
+        fpnm_->AddConnectorsBlockedFiles(
+            task_id, std::move(blocked_files), action,
+            FilesPolicyDialog::EnterpriseConnectorsBlockReason::kSensitiveData);
         return;
     }
   }

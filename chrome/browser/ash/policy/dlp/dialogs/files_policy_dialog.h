@@ -59,6 +59,20 @@ class FilesPolicyDialog : public PolicyDialogBase {
  public:
   METADATA_HEADER(FilesPolicyDialog);
 
+  // Reasons for which a file can be blocked by an Enterprise Connectors policy.
+  enum class EnterpriseConnectorsBlockReason {
+    // File was blocked but the reason is not known.
+    kUnknown,
+    // File was blocked because it contains sensitive data (e.g., SSNs).
+    kSensitiveData,
+    // File was blocked because it's a malware.
+    kMalware,
+    // File was blocked because it could not be scanned due to encryption.
+    kEncryptedFile,
+    // File was blocked because it could not be uploaded due to its size.
+    kLargeFile,
+  };
+
   FilesPolicyDialog() = delete;
   FilesPolicyDialog(size_t file_count,
                     dlp::FileAction action,

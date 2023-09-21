@@ -2387,6 +2387,8 @@ source_set("ash") {
     "policy/display/display_settings_handler.h",
     "policy/dlp/dialogs/files_policy_dialog.cc",
     "policy/dlp/dialogs/files_policy_dialog.h",
+    "policy/dlp/dialogs/files_policy_dialog_utils.cc",
+    "policy/dlp/dialogs/files_policy_dialog_utils.h",
     "policy/dlp/dialogs/files_policy_error_dialog.cc",
     "policy/dlp/dialogs/files_policy_error_dialog.h",
     "policy/dlp/dialogs/files_policy_warn_dialog.cc",
