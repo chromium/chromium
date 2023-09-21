@@ -6441,6 +6441,79 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PinnedPromiseAppShelfItemType) {
   EXPECT_TRUE(item->is_promise_app);
 }
 
+TEST_F(ChromeShelfControllerPromiseAppsTest,
+       PromiseAppGetsPinnedByMatchingSyncData) {
+  const apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, "com.example.test");
+
+  // Add entry in sync data that has a matching PackageId with the promise app.
+  SendPinChanges(syncer::SyncChangeList(), true);
+  StopAppSyncService();
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      "asdfghjkl", "App Name", /*parent_id=*/std::string(), "ordinal",
+      /*item_pin_ordinal=*/
+      syncer::StringOrdinal::CreateInitialOrdinal().ToDebugString(),
+      /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/true,
+      /*promise_package_id=*/package_id.ToString())));
+  StartAppSyncService(sync_list);
+  base::RunLoop().RunUntilIdle();
+
+  InitShelfController();
+
+  // Register a new promise app.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Verify that the promise app is in the shelf without having to explicitly
+  // pin it.
+  EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
+  ash::ShelfID id(package_id.ToString());
+  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
+  ASSERT_TRUE(item);
+  EXPECT_TRUE(item->is_promise_app);
+}
+
+TEST_F(ChromeShelfControllerPromiseAppsTest,
+       PromiseAppNotPinnedByMatchingSyncDataIfNotReadyToBeShown) {
+  const apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, "com.example.test");
+
+  // Add entry in sync data that has a matching PackageId with our promise app.
+  SendPinChanges(syncer::SyncChangeList(), true);
+  StopAppSyncService();
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      "asdfghjkl", "App Name", /*parent_id=*/std::string(), "ordinal",
+      /*item_pin_ordinal=*/
+      syncer::StringOrdinal::CreateInitialOrdinal().ToDebugString(),
+      /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/true,
+      /*promise_package_id=*/package_id.ToString())));
+  StartAppSyncService(sync_list);
+  base::RunLoop().RunUntilIdle();
+
+  InitShelfController();
+
+  // Verify no promise app shelf item is created if promise app isn't present in
+  // the PromiseAppRegistryCache.
+  EXPECT_FALSE(model_->IsAppPinned(package_id.ToString()));
+
+  // Register a new promise app with the default should_show=false.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Trigger the shelf to update the pinned apps.
+  SendPinChanges(syncer::SyncChangeList(), /*reset_pin_model=*/false);
+
+  // Verify that the promise app is still not on the shelf.
+  EXPECT_FALSE(model_->IsAppPinned(package_id.ToString()));
+}
+
 class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
  public:
   ChromeShelfControllerShortcutTest() {

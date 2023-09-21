@@ -416,13 +416,16 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     }
 
     std::string app_id = GetShelfId(item_id);
+    std::string promise_package_id = sync_item->promise_package_id;
 
     // All sync items must be valid app service apps to be added to the shelf
     // with the exception of ash-chrome, which for legacy reasons does not use
     // the app service.
     bool is_ash_chrome = app_id == app_constants::kChromeAppId;
-    if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id))
+    if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id) &&
+        !helper->IsValidPromisePackageIdFromAppService(promise_package_id)) {
       continue;
+    }
 
     // Prune apps that used to be policy-pinned (`is_user_pinned = false`), but
     // are not a part of the policy anymore.
@@ -631,6 +634,26 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
   profile_ = profile;
   needs_consistency_migrations_ = true;
   sync_service_observer_.Reset();
+}
+
+std::string ChromeShelfPrefs::GetPromisePackageIdForSyncItem(
+    const std::string& app_id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return std::string();
+  }
+
+  auto* syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
+
+  // Some unit tests may not have the service or it may not be initialized.
+  if (!syncable_service || !syncable_service->IsInitialized() ||
+      skip_pinned_apps_from_sync_for_test) {
+    return std::string();
+  }
+
+  const app_list::AppListSyncableService::SyncItem* item =
+      syncable_service->GetSyncItem(app_id);
+  return item->promise_package_id;
 }
 
 bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() const {

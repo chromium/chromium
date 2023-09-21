@@ -1062,9 +1062,15 @@ void ChromeShelfController::OnAppUninstalledPrepared(
 void ChromeShelfController::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
   int index = model_->ItemIndexByAppID(update.PackageId().ToString());
+
+  // If item doesn't exist yet, then we have just created the promise app. Go
+  // through sync and check if the item should be pinned. If it should be
+  // pinned, the UpdatePinnedAppsFromSync() call will create an item for it.
   if (index == kInvalidIndex) {
+    UpdatePinnedAppsFromSync();
     return;
   }
+
   ash::ShelfItem item = model_->items()[index];
   if (update.Progress().has_value()) {
     item.progress = update.Progress().value();
@@ -1335,8 +1341,17 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // the new pin at that position.
   for (const auto& pref_shelf_id : pinned_apps) {
     const std::string& app_id = pref_shelf_id.app_id;
-    // Do not show apps in the shelf if they are explicitly forbidden.
-    if (IsAppHiddenFromShelf(profile(), app_id)) {
+    std::string promise_package_id =
+        shelf_prefs_->GetPromisePackageIdForSyncItem(app_id);
+
+    // Checks whether the sync item matches with a current promise app that can
+    // be shown in the shelf.
+    bool is_ready_promise_app =
+        IsPromiseAppReadyToShowInShelf(profile(), promise_package_id);
+
+    // Do not show apps in the shelf if they are explicitly forbidden (and
+    // provided that they are not promise apps).
+    if (IsAppHiddenFromShelf(profile(), app_id) && !is_ready_promise_app) {
       continue;
     }
 
@@ -1347,12 +1362,15 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
     int app_index = index;
     for (; app_index < model_->item_count(); ++app_index) {
       const ash::ShelfItem& item = model_->items()[app_index];
-      if (item.id == pref_shelf_id)
+      if (item.id == pref_shelf_id || item.id.app_id == promise_package_id) {
         break;
+      }
     }
 
+    std::string item_id = is_ready_promise_app ? promise_package_id : app_id;
+
     const bool item_pinned = EnsureAppPinnedInModelAtIndex(
-        app_id,
+        item_id,
         /*current_index=*/app_index < model_->item_count() ? app_index : -1,
         /*target_index=*/index);
 

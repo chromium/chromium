@@ -91,6 +91,10 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // shorty after initialization.
   void AttachProfile(Profile* profile);
 
+  // Get the `promise_package_id` value if one exists for the sync item with an
+  // item ID of `app_id`.
+  std::string GetPromisePackageIdForSyncItem(const std::string& app_id);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddChromePinExistingOrdinal);

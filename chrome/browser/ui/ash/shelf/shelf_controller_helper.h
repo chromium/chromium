@@ -91,6 +91,9 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   const Profile* profile() const { return profile_; }
   void set_profile(Profile* profile) { profile_ = profile; }
 
+  bool IsValidPromisePackageIdFromAppService(
+      const std::string& promise_package_id) const;
+
  private:
   // ExtensionEnableFlowDelegate:
   void ExtensionEnableFlowFinished() override;

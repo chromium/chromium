@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -110,6 +111,20 @@ bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id) {
 
   return hidden;
 }
+
+bool IsPromiseAppReadyToShowInShelf(Profile* profile,
+                                    const std::string& promise_package_id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return false;
+  }
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(promise_package_id);
+  return promise_app && promise_app->should_show;
+}
+
 bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile) {
