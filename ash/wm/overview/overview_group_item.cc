@@ -43,8 +43,17 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
     // Create the overview items hosted by `this`, which will be the delegate to
     // handle the window destroying if the overview representation for the
     // window is hosted by `this`.
-    overview_items_.push_back(std::make_unique<OverviewItem>(
-        window, overview_session_, overview_grid_, /*delegate=*/this));
+    std::unique_ptr<OverviewItem> overview_item =
+        std::make_unique<OverviewItem>(window, overview_session_,
+                                       overview_grid_, /*delegate=*/this);
+
+    // Disallow events to be forwarded to the individual overview item(s) hosted
+    // by `this` so that we can perform group-level operation on event received
+    // by the contents view of `this`.
+    OverviewItemView* overview_item_view = overview_item->overview_item_view();
+    overview_item_view->SetCanProcessEventsWithinSubtree(false);
+    overview_item_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    overview_items_.push_back(std::move(overview_item));
   }
 }
 
