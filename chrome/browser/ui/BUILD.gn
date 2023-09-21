@@ -3571,6 +3571,7 @@ static_library("ui") {
       "//chromeos/ash/components/phonehub:debug",
       "//chromeos/ash/components/proximity_auth",
       "//chromeos/ash/components/scalable_iph:constants",
+      "//chromeos/ash/components/scalable_iph:logger",
       "//chromeos/ash/components/scalable_iph:scalable_iph",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/string_matching",

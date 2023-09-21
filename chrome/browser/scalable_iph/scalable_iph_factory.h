@@ -23,6 +23,14 @@ class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
   static scalable_iph::ScalableIph* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  // Call `GetBrowserContextToUse` with a logger for debugging purpose.
+  // `GetBrowserContextToUse` is a const member function. We have to pass a
+  // logger from the outside. This function is also marked as const to avoid
+  // accidentally changing its internal state.
+  virtual content::BrowserContext* GetBrowserContextToUseForDebug(
+      content::BrowserContext* browser_context,
+      scalable_iph::Logger* logger) const = 0;
+
   // `ScalableIph` service has a repeating timer in it to invoke time tick
   // events. We want to start this service after a user login (but not during
   // OOBE session). A service must be created via this method to make sure it

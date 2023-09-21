@@ -20,6 +20,7 @@
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -80,64 +81,16 @@ void ScalableIphFactoryImpl::SetDelegateFactoryForTesting(
   delegate_testing_factory_ = std::move(delegate_testing_factory);
 }
 
+content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseForDebug(
+    content::BrowserContext* browser_context,
+    scalable_iph::Logger* logger) const {
+  return GetBrowserContextToUseInternal(browser_context, logger);
+}
+
 content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUse(
     content::BrowserContext* browser_context) const {
-  // TODO(b/286604737): Do not return a ScalableIph services if multi-user
-  // sign-in is used.
-
-  if (!ash::features::IsScalableIphEnabled()) {
-    return nullptr;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile) {
-    return nullptr;
-  }
-
-  if (!ash::IsUserBrowserContext(browser_context) ||
-      !profile->IsRegularProfile()) {
-    return nullptr;
-  }
-
-  if (profile->IsChild()) {
-    return nullptr;
-  }
-
-  if (!ash::multidevice_setup::IsFeatureAllowed(
-          ash::multidevice_setup::mojom::Feature::kPhoneHub,
-          profile->GetPrefs())) {
-    DLOG(WARNING) << "Phone hub feature is disabled by a policy. This is "
-                     "expected only for test code as we are returning early "
-                     "above if a profile is managed.";
-    return nullptr;
-  }
-
-  if (IsSupportedEmailDomain(browser_context)) {
-    return browser_context;
-  }
-
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
-    return nullptr;
-  }
-
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return nullptr;
-  }
-
-  CHECK(user_manager::UserManager::IsInitialized())
-      << "UserManager is required for an eligibility check";
-  // Check that the user profile is the device owner, excepting when
-  // the device owner id is not registered yet (i.e. first sessions).
-  if (user_manager::UserManager::Get()->GetOwnerAccountId() !=
-          EmptyAccountId() &&
-      !user_manager::UserManager::Get()->IsOwnerUser(
-          GetUser(browser_context))) {
-    return nullptr;
-  }
-
-  return browser_context;
+  scalable_iph::Logger logger_unused;
+  return GetBrowserContextToUseInternal(browser_context, &logger_unused);
 }
 
 std::unique_ptr<KeyedService>
@@ -160,6 +113,90 @@ ScalableIphFactoryImpl::BuildServiceInstanceForBrowserContext(
       CreateScalableIphDelegate(profile, logger.get());
   return std::make_unique<scalable_iph::ScalableIph>(
       tracker, std::move(scalable_iph_delegate), std::move(logger));
+}
+
+content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
+    content::BrowserContext* browser_context,
+    scalable_iph::Logger* logger) const {
+  // TODO(b/286604737): Do not return a ScalableIph services if multi-user
+  // sign-in is used.
+
+  if (!ash::features::IsScalableIphEnabled()) {
+    SCALABLE_IPH_LOG(logger) << "ScalableIph flag is off.";
+    return nullptr;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
+    SCALABLE_IPH_LOG(logger) << "Unable to obtain a profile from a browser "
+                                "context. browser_context==nullptr: "
+                             << (browser_context == nullptr);
+    return nullptr;
+  }
+
+  SCALABLE_IPH_LOG(logger) << "Profile user name: "
+                           << profile->GetProfileUserName();
+
+  if (!ash::IsUserBrowserContext(browser_context)) {
+    SCALABLE_IPH_LOG(logger) << "Not a user browser context.";
+    return nullptr;
+  }
+
+  if (!profile->IsRegularProfile()) {
+    SCALABLE_IPH_LOG(logger) << "Profile is not a regular profile.";
+    return nullptr;
+  }
+
+  if (profile->IsChild()) {
+    SCALABLE_IPH_LOG(logger) << "Profile is a child profile.";
+    return nullptr;
+  }
+
+  if (!ash::multidevice_setup::IsFeatureAllowed(
+          ash::multidevice_setup::mojom::Feature::kPhoneHub,
+          profile->GetPrefs())) {
+    SCALABLE_IPH_LOG(logger) << "Phone hub feature is disabled by a policy.";
+    DLOG(WARNING) << "Phone hub feature is disabled by a policy. This is "
+                     "expected only for test code as we are returning early "
+                     "above if a profile is managed.";
+    return nullptr;
+  }
+
+  if (IsSupportedEmailDomain(browser_context)) {
+    SCALABLE_IPH_LOG(logger)
+        << "Provided browser context is in a supported email domain. Returning "
+           "early as an eligible profile.";
+    return browser_context;
+  }
+
+  if (g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->IsDeviceEnterpriseManaged()) {
+    SCALABLE_IPH_LOG(logger) << "Device is managed.";
+    return nullptr;
+  }
+
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    SCALABLE_IPH_LOG(logger) << "Profile is managed.";
+    return nullptr;
+  }
+
+  CHECK(user_manager::UserManager::IsInitialized())
+      << "UserManager is required for an eligibility check";
+  // Check that the user profile is the device owner, excepting when
+  // the device owner id is not registered yet (i.e. first sessions).
+  if (user_manager::UserManager::Get()->GetOwnerAccountId() !=
+          EmptyAccountId() &&
+      !user_manager::UserManager::Get()->IsOwnerUser(
+          GetUser(browser_context))) {
+    SCALABLE_IPH_LOG(logger) << "User is not an owner.";
+    return nullptr;
+  }
+
+  SCALABLE_IPH_LOG(logger)
+      << "This browser context is eligible for ScalableIph.";
+
+  return browser_context;
 }
 
 std::unique_ptr<scalable_iph::ScalableIphDelegate>

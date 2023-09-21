@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 
+#include <sstream>
+
 #include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -17,11 +20,35 @@ namespace ash {
 namespace {
 
 constexpr char kLoggingPath[] = "log.txt";
-constexpr char kDebugMessageScalableIphNotAvailable[] =
-    "ScalableIph keyed service is not created for this profile.";
 
 bool ShouldHandleRequest(const std::string& path) {
   return path == kLoggingPath;
+}
+
+std::string CollectServiceStartUpDebugLog(
+    content::BrowserContext* browser_context) {
+  std::ostringstream log;
+  log << "Failed to get a Scalable Iph service. Collect debug logs for the "
+         "service initialization.\n";
+
+  ScalableIphFactory* scalable_iph_factory = ScalableIphFactory::GetInstance();
+  if (!scalable_iph_factory) {
+    log << "Failed to obtain ScalableIphFactory instance.\n";
+    return log.str();
+  }
+
+  log << "Call ScalableIphFactory::GetBrowserContextToUse for debugging.\n";
+  scalable_iph::Logger logger;
+  content::BrowserContext* result =
+      scalable_iph_factory->GetBrowserContextToUseForDebug(browser_context,
+                                                           &logger);
+  log << "Return value of ScalableIphFactory::GetBrowserContextToUseForDebug: "
+         "result == nullptr: "
+      << (result == nullptr) << "\n";
+  log << "Log from ScalableIphFactory::GetBrowserContextToUseForDebug:\n";
+  log << logger.GenerateLog() << "\n";
+
+  return log.str();
 }
 
 }  // namespace
@@ -50,15 +77,16 @@ void ScalableIphDebugUI::HandleRequest(
     content::WebUIDataSource::GotDataCallback callback) {
   CHECK_EQ(path, kLoggingPath);
 
+  content::BrowserContext* browser_context =
+      web_ui()->GetWebContents()->GetBrowserContext();
   scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext());
+      ScalableIphFactory::GetForBrowserContext(browser_context);
   if (!scalable_iph) {
     // `ScalableIph` might not be available even if the feature flag is on, e.g.
     // pre-conditions don't get satisfied, querying a service before its
     // initialization, etc.
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        kDebugMessageScalableIphNotAvailable));
+        CollectServiceStartUpDebugLog(browser_context)));
     return;
   }
 

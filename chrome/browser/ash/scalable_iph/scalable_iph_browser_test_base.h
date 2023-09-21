@@ -104,6 +104,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Set false in the constructor to disable `ash::features::kScalableIph`.
+  bool enable_scalable_iph_ = true;
+
   // Set false in the constructor to disable `ash::features::kScalableIphDebug`.
   bool enable_scalable_iph_debug_ = true;
 

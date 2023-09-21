@@ -3960,8 +3960,7 @@ bool IsScalableIphEnabled() {
 }
 
 bool IsScalableIphDebugEnabled() {
-  return IsScalableIphEnabled() &&
-         base::FeatureList::IsEnabled(kScalableIphDebug);
+  return base::FeatureList::IsEnabled(kScalableIphDebug);
 }
 
 bool IsSeaPenEnabled() {

@@ -164,6 +164,15 @@ class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
   ScalableIphBrowserTestDebugOff() { enable_scalable_iph_debug_ = false; }
 };
 
+class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestFeatureOffDebugOn() {
+    enable_scalable_iph_ = false;
+    CHECK(enable_scalable_iph_debug_)
+        << "Debug feature is on by default for ScalableIphBrowserTest";
+  }
+};
+
 class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
  public:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -791,6 +800,17 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
   // Last response headers is nullptr if there is no response. See the comment
   // of `RenderFrameHost::GetLastResponseHeaders` for details.
   EXPECT_FALSE(render_frame_host->GetLastResponseHeaders());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFeatureOffDebugOn,
+                       LogPageAvailable) {
+  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+      browser(), GURL(kScalableIphDebugLogTextUrl));
+  ASSERT_TRUE(render_frame_host);
+  ASSERT_TRUE(render_frame_host->GetLastResponseHeaders());
+  EXPECT_EQ(200, render_frame_host->GetLastResponseHeaders()->response_code())
+      << "Debug log page is expected to be available even if ScalableIph "
+         "feature itself is off.";
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {
