@@ -219,7 +219,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -255,7 +254,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -289,7 +287,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -325,7 +322,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -367,7 +363,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -411,7 +406,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -453,7 +447,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -497,7 +490,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -530,7 +522,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -565,7 +556,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -598,7 +588,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -633,7 +622,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -670,7 +658,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -709,7 +696,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -748,7 +734,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -781,7 +766,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -816,7 +800,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -851,7 +834,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -894,7 +876,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -939,7 +920,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -982,7 +962,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1027,7 +1006,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1061,7 +1039,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1097,7 +1074,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1131,7 +1107,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1167,7 +1142,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1201,7 +1175,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1237,7 +1210,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1273,7 +1245,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1307,7 +1278,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1343,7 +1313,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1379,7 +1348,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1416,7 +1384,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1456,7 +1423,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1492,7 +1458,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1530,7 +1495,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1566,7 +1530,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1603,7 +1566,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",

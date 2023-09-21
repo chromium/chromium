@@ -17,7 +17,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "foo_tests",
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:1cb3",

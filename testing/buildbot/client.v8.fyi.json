@@ -22,7 +22,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -63,7 +62,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -95,7 +93,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -127,7 +124,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -169,7 +165,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -202,7 +197,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -235,7 +229,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -269,7 +262,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -304,7 +296,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "N2G48C",
@@ -349,7 +340,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -389,7 +379,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -420,7 +409,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -451,7 +439,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -482,7 +469,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -523,7 +509,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -555,7 +540,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -587,7 +571,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -628,7 +611,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -661,7 +643,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -698,7 +679,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -738,7 +718,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -769,7 +748,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -800,7 +778,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -831,7 +808,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -872,7 +848,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -904,7 +879,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -936,7 +910,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -977,7 +950,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -1010,7 +982,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -1047,7 +1018,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1080,7 +1050,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1113,7 +1082,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1154,7 +1122,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1195,7 +1162,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1236,7 +1202,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1268,7 +1233,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1300,7 +1264,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1332,7 +1295,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1374,7 +1336,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1416,7 +1377,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1458,7 +1418,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1491,7 +1450,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1524,7 +1482,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1557,7 +1514,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1590,7 +1546,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1623,7 +1578,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1657,7 +1611,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1693,7 +1646,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1727,7 +1679,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -2202,7 +2153,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2243,7 +2193,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2275,7 +2224,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2307,7 +2255,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2349,7 +2296,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2382,7 +2328,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2415,7 +2360,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2448,7 +2392,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2482,7 +2425,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2517,7 +2459,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",
@@ -2551,7 +2492,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "display_attached": "1",

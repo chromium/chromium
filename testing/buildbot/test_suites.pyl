@@ -2491,7 +2491,6 @@
             '--smoke-test-mode',
           ],
         },
-        'should_retry_with_patch': False,
       },
     },
 

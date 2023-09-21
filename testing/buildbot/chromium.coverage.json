@@ -24662,7 +24662,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-440.100",
@@ -29160,7 +29159,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184-27.21.14.5638",

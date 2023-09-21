@@ -15,7 +15,6 @@
         "autotest_name": "chromium_Graphics",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "foo_tests",
-        "should_retry_with_patch": false,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }

@@ -137,7 +137,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -171,7 +170,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -205,7 +203,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -247,7 +244,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -289,7 +285,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -322,7 +317,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -355,7 +349,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -392,7 +385,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -425,7 +417,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -458,7 +449,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -501,7 +491,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -544,7 +533,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -578,7 +566,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -612,7 +599,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -646,7 +632,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -680,7 +665,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -716,7 +700,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -753,7 +736,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -789,7 +771,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
@@ -825,7 +806,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_os": "R",
