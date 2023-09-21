@@ -114,27 +114,38 @@ void OfferNotificationHandler::UpdateOfferNotificationForShoppingServiceOffer(
   int64_t offer_id = offer.GetOfferId();
   OfferNotificationOptions offer_notification_options = {
       .notification_has_been_shown = shown_notification_ids_.contains(offer_id),
-      .expand_notification_icon = true};
+      .expand_notification_icon = true,
+      .show_notification_automatically =
+          ShowShoppingServiceOfferNotificationAutomatically(url, offer)};
 
-  // The following order of the if block matters:
-  //   * If the url contains the expected UTM tags, the notification should
-  //   always show automatically, otherwise
-  //   * If the available offer is a merchant-wide offer, the notification
-  //   should always be hidden until the user explicitly clicks on the icon.
-  //   * None of the above, falls back to whether the offer has shown before. If
-  //   the offer has shown before, the bubble will not show automatically.
+  client->UpdateOfferNotification(&offer, offer_notification_options);
+  shown_notification_ids_.insert(offer_id);
+}
+
+bool OfferNotificationHandler::
+    ShowShoppingServiceOfferNotificationAutomatically(
+        const GURL& url,
+        const AutofillOfferData& offer) {
+  bool offer_has_been_shown_before =
+      shown_notification_ids_.contains(offer.GetOfferId());
+
+  // If the URL contains the expected UTM tags, the notification should show
+  // automatically if the offer has not been shown before.
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleDiscounts) &&
       commerce::UrlContainsDiscountUtmTag(url)) {
-    offer_notification_options.show_notification_automatically = true;
-  } else if (offer.IsMerchantWideOffer()) {
-    offer_notification_options.show_notification_automatically = false;
-  } else {
-    offer_notification_options.show_notification_automatically =
-        !shown_notification_ids_.contains(offer_id);
+    return !offer_has_been_shown_before;
   }
-  client->UpdateOfferNotification(&offer, offer_notification_options);
-  shown_notification_ids_.insert(offer_id);
+
+  // If the URL doesn't contains the expected UTM tags and the available offer
+  // is a merchant-wide offer, the notification should not show automatically.
+  if (offer.IsMerchantWideOffer()) {
+    return false;
+  }
+
+  // At this point, the notification should show automatically if it hasn't
+  // been shown before.
+  return !offer_has_been_shown_before;
 }
 
 }  // namespace autofill

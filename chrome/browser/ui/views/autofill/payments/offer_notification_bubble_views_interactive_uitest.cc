@@ -904,7 +904,8 @@ IN_PROC_BROWSER_TEST_P(
              "history-cluster-with-discount");
   const std::string detail = "Discount description detail";
   const std::string discount_code = "freelisting-discount-code";
-  const int64_t discount_id = 123;
+  const int64_t non_merchant_wide_discount_id = 123;
+  const int64_t merchant_wide_discount_id = 456;
   const double expiry_time_sec =
       (AutofillClock::Now() + base::Days(2)).ToDoubleT();
 
@@ -918,14 +919,15 @@ IN_PROC_BROWSER_TEST_P(
       {{with_non_merchant_wide_offer_url,
         {commerce::CreateValidDiscountInfo(
             detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*value_in_text=*/"$10 off", discount_code,
+            non_merchant_wide_discount_id,
             /*is_merchant_wide=*/false, expiry_time_sec)}}});
 
   // Expect to call this once on every navigation, this test is navigated 2
   // times.
   EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(2);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(2);
+      .Times(3);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(3);
 
   SetUpGPayPromoCodeOfferDataWithDomains(
       {GetUrl("www.merchantsite1.com", "/"),
@@ -960,12 +962,27 @@ IN_PROC_BROWSER_TEST_P(
       {{with_merchant_wide_offer_url,
         {commerce::CreateValidDiscountInfo(
             detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*value_in_text=*/"$10 off", discount_code,
+            merchant_wide_discount_id,
             /*is_merchant_wide=*/true, expiry_time_sec)}}});
 
   NavigateToAndWaitForForm(with_merchant_wide_offer_url);
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  // Navigate back to the product page with the non-merchant-wide offer, and
+  // verified bubble will not show automatically.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_non_merchant_wide_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code,
+            non_merchant_wide_discount_id,
+            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+
+  NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
 }  // namespace autofill
