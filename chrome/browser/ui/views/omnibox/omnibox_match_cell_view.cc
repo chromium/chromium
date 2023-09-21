@@ -521,7 +521,10 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
   int height = 0;
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+    height = GetEntityImageSize() +
+             2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
+  } else if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
     height = GetEntityImageSize();
   } else if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
     height = GetEntityImageSize() +
