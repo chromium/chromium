@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.download.home.list.ListItem;
-import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -186,8 +185,6 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
     }
 
     private boolean onMenuItemClick(MenuItem item) {
-        UmaUtils.recordTopMenuAction(item.getItemId());
-
         if (item.getItemId() == R.id.close_menu_id) {
             mDelegate.close();
             return true;

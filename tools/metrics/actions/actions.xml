@@ -3016,6 +3016,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.Menu.Action">
+  <obsolete>Deprecated September 2023.</obsolete>
   <owner>dtrainor@chromium.org</owner>
   <description>
     User triggered actions on the top level menu in download home.

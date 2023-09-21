@@ -2019,16 +2019,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="DELETE_ALL"/>
 </enum>
 
-<enum name="Android.DownloadManager.Menu.Actions">
-  <int value="0" label="CLOSE"/>
-  <int value="1" label="MULTI_DELETE"/>
-  <int value="2" label="MULTI_SHARE"/>
-  <int value="3" label="SHOW_INFO"/>
-  <int value="4" label="HIDE_INFO"/>
-  <int value="5" label="SEARCH"/>
-  <int value="6" label="SETTINGS"/>
-</enum>
-
 <enum name="Android.MemoryPressureNotification">
   <int value="0" label="Unknown onTrimMemory() level"/>
   <int value="1" label="TRIM_MEMORY_COMPLETE"/>
