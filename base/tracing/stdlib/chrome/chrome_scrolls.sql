@@ -5,9 +5,15 @@
 -- Defines slices for all of the individual scrolls in a trace based on the
 -- LatencyInfo-based scroll definition.
 --
--- @column id            The unique identifier of the scroll.
--- @column ts            The start timestamp of the scroll.
--- @column dur           The duration of the scroll.
+-- @column id                          The unique identifier of the scroll.
+-- @column ts                          The start timestamp of the scroll.
+-- @column dur                         The duration of the scroll.
+-- @column gesture_scroll_begin_ts     The earliest timestamp of the
+--                                     InputLatency::GestureScrollBegin for the
+--                                     corresponding scroll id.
+-- @column gesture_scroll_end_ts       The earliest timestamp of the
+--                                     InputLatency::GestureScrollEnd for the
+--                                     corresponding scroll id.
 --
 -- NOTE: this view of top level scrolls is based on the LatencyInfo definition
 -- of a scroll, which differs subtly from the definition based on
@@ -30,14 +36,14 @@ WITH all_scrolls AS (
 scroll_starts AS (
   SELECT
     scroll_id,
-    MIN(ts) AS scroll_start_ts
+    MIN(ts) AS gesture_scroll_begin_ts
   FROM all_scrolls
   WHERE name = 'InputLatency::GestureScrollBegin'
   GROUP BY scroll_id
 ), scroll_ends AS (
   SELECT
     scroll_id,
-    MIN(ts) AS scroll_end_ts
+    MIN(ts) AS gesture_scroll_end_ts
   FROM all_scrolls
   WHERE name = 'InputLatency::GestureScrollEnd'
   GROUP BY scroll_id
@@ -46,8 +52,8 @@ SELECT
   sa.scroll_id AS id,
   MIN(ts) AS ts,
   CAST(MAX(ts + dur) - MIN(ts) AS INT) AS dur,
-  ss.scroll_start_ts AS scroll_start_ts,
-  se.scroll_end_ts AS scroll_end_ts
+  ss.gesture_scroll_begin_ts AS gesture_scroll_begin_ts,
+  se.gesture_scroll_end_ts AS gesture_scroll_end_ts
 FROM all_scrolls sa
   LEFT JOIN scroll_starts ss ON
     sa.scroll_id = ss.scroll_id
