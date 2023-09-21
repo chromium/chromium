@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
+#include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browsing_data/content/fake_browsing_data_model.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -78,18 +80,23 @@ class PageSpecificSiteDataDialogUnitTest
   }
 
   // To prevent tests from being flaky, all |DeleteStoredObjects| calls need to
-  // be used with a RunLoop.
+  // be used with a RunLoop if kMigrateStorageToBDM is off.
   void RunDeleteStoredObjects(test::PageSpecificSiteDataDialogTestApi* delegate,
                               const url::Origin& origin) {
     base::RunLoop loop;
-    auto* remover = profile()->GetBrowsingDataRemover();
-    remover->SetWouldCompleteCallbackForTesting(
-        base::BindLambdaForTesting([&](base::OnceClosure callback) {
-          std::move(callback).Run();
-          loop.Quit();
-        }));
+    if (!base::FeatureList::IsEnabled(
+            browsing_data::features::kMigrateStorageToBDM)) {
+      profile()->GetBrowsingDataRemover()->SetWouldCompleteCallbackForTesting(
+          base::BindLambdaForTesting([&](base::OnceClosure callback) {
+            std::move(callback).Run();
+            loop.Quit();
+          }));
+    }
     delegate->DeleteStoredObjects(origin);
-    loop.Run();
+    if (!base::FeatureList::IsEnabled(
+            browsing_data::features::kMigrateStorageToBDM)) {
+      loop.Run();
+    }
   }
 
   void SetUp() override {
@@ -696,13 +703,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemovePartitionedStorage) {
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
   // Remove origins from the dialog.
   RunDeleteStoredObjects(delegate.get(), exampleUrlOrigin);
-  // Verify that the data remover was called.
-  auto* remover = profile()->GetBrowsingDataRemover();
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
-            remover->GetLastUsedRemovalMaskForTesting());
-  EXPECT_EQ(base::Time::Min(), remover->GetLastUsedBeginTimeForTesting());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            remover->GetLastUsedOriginTypeMaskForTesting());
+  // Verify that the data was removed.
+  ValidateAllowedUnpartitionedSites(delegate.get(), {});
 }
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
