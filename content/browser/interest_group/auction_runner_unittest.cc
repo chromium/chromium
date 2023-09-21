@@ -496,7 +496,7 @@ std::string MakeBidScript(const url::Origin& seller,
           'click', {bucket: 30n, value: 40 + bid});
     }
 
-    reportContextualWin = reportWin;
+    reportAdditionalBidWin = reportWin;
   )";
   return base::StringPrintf(
       kBidScript, seller.Serialize().c_str(), bid.c_str(), render_url.c_str(),
@@ -19968,8 +19968,8 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
                    browserSignals.interestGroupName);
     }
 
-    function reportContextualWin(auctionSignals, perBuyerSignals, sellerSignals,
-                       browserSignals) {
+    function reportAdditionalBidWin(auctionSignals, perBuyerSignals,
+                                    sellerSignals, browserSignals) {
       sendReportTo("https://contextual.test/?" +
                    browserSignals.interestGroupName);
     }

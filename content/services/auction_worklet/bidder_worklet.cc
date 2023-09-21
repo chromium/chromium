@@ -920,8 +920,8 @@ void BidderWorklet::V8State::ReportWin(
           ->CallFunction(
               context, debug_id_.get(),
               v8_helper_->FormatScriptName(unbound_worklet_script),
-              is_for_additional_bid ? "reportContextualWin" : "reportWin", args,
-              total_timeout.get(), errors_out)
+              is_for_additional_bid ? "reportAdditionalBidWin" : "reportWin",
+              args, total_timeout.get(), errors_out)
           .IsEmpty();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
 
