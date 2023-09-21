@@ -58,7 +58,7 @@ bool IsManifestNameValid(const blink::mojom::Manifest& manifest) {
 }
 
 bool IsWebPageMetadataContainValidName(const mojom::WebPageMetadata& metadata) {
-  return !metadata.application_name.empty();
+  return !metadata.application_name.empty() || !metadata.title.empty();
 }
 
 bool HasValidName(const blink::mojom::Manifest& manifest,

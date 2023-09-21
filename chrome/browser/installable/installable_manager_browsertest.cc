@@ -523,6 +523,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, FetchWebPageMetaData) {
     EXPECT_FALSE(tester->manifest_url().is_empty());
 
     EXPECT_EQ(u"Test App Name", tester->metadata().application_name);
+    EXPECT_EQ(u"Web app banner test page", tester->metadata().title);
     EXPECT_EQ(u"description", tester->metadata().description);
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());

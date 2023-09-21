@@ -471,7 +471,13 @@ TEST_F(InstallableEvaluatorUnitTest, ImplicitAppName) {
   EXPECT_FALSE(IsWebAppInstallable());
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 
+  SetMetadata(mojom::WebPageMetadata::New());
   metadata()->application_name = u"Name";
+  EXPECT_TRUE(IsWebAppInstallable());
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+
+  SetMetadata(mojom::WebPageMetadata::New());
+  metadata()->title = u"Title";
   EXPECT_TRUE(IsWebAppInstallable());
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }

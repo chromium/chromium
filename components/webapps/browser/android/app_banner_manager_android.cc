@@ -151,8 +151,6 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.fetch_metadata =
-      base::FeatureList::IsEnabled(features::kUniversalInstallManifest);
   params.installable_criteria =
       base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
           ? InstallableCriteria::kImplicitManifestFieldsHTML
@@ -494,10 +492,11 @@ void AppBannerManagerAndroid::OnNativeAppIconFetched(const SkBitmap& bitmap) {
 
 std::u16string AppBannerManagerAndroid::GetAppName() const {
   if (native_app_data_.is_null()) {
-    // Prefer the short name if it's available. It's guaranteed that at least
-    // one of these is non-empty.
-    std::u16string short_name = manifest().short_name.value_or(u"");
-    return short_name.empty() ? manifest().name.value_or(u"") : short_name;
+    // Prefer manifest short name if it's available, then manifest name, then
+    // application_name from metadata. It's guaranteed that at least one of
+    // these is non-empty.
+    return manifest().short_name.value_or(
+        manifest().name.value_or(GetNameFromMetadata()));
   }
 
   return native_app_title_;

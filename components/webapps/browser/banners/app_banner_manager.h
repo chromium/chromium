@@ -17,6 +17,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/browser/pwa_install_path_tracker.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -220,6 +221,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Simple accessors:
   const blink::mojom::Manifest& manifest() const;
+  const mojom::WebPageMetadata& web_page_metadata() const;
   const SkBitmap& primary_icon() const { return primary_icon_; }
   bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
   const GURL& validated_url() { return validated_url_; }
@@ -296,6 +298,9 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Return a string identifying this app for metrics.
   virtual std::string GetAppIdentifier();
+
+  // Returns the app name from web page metadata.
+  std::u16string GetNameFromMetadata() const;
 
   // Return a string describing what type of banner is being created. Used when
   // alerting websites that a banner is about to be created.
@@ -485,6 +490,10 @@ class AppBannerManager : public content::WebContentsObserver,
   // The manifest object. This is never null, it will instead be an empty
   // manifest so callers don't have to worry about null checks.
   blink::mojom::ManifestPtr manifest_;
+
+  // The web page metadata object. This is never null, it will instead be
+  // empty so callers don't have to worry about null checks.
+  mojom::WebPageMetadataPtr web_page_metadata_;
 
   // We do not want to trigger a banner when the manager is attached to
   // a WebContents that is playing video. Banners triggering on a site in the

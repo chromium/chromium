@@ -112,6 +112,11 @@ std::vector<WebappIcon> ShortcutInfo::GetWebApkIcons() {
 
 void ShortcutInfo::UpdateFromWebPageMetadata(
     const mojom::WebPageMetadata& metadata) {
+  std::u16string title;
+  base::TrimWhitespace(metadata.title, base::TrimPositions::TRIM_ALL, &title);
+  if (!title.empty()) {
+    user_title = title;
+  }
   std::u16string app_name;
   base::TrimWhitespace(metadata.application_name, base::TrimPositions::TRIM_ALL,
                        &app_name);
@@ -120,6 +125,7 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   }
   short_name = user_title;
   name = user_title;
+
   if (!metadata.description.empty()) {
     description = metadata.description;
   }

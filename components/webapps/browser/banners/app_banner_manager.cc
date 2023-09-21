@@ -80,6 +80,8 @@ int gTimeDeltaInDaysForTesting = 0;
 InstallableParams ParamsToGetManifest() {
   InstallableParams params;
   params.check_eligibility = true;
+  params.fetch_metadata =
+      base::FeatureList::IsEnabled(features::kUniversalInstallManifest);
   return params;
 }
 
@@ -276,6 +278,7 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
           web_contents->GetBrowserContext())),
       manager_(InstallableManager::FromWebContents(web_contents)),
       manifest_(blink::mojom::Manifest::New()),
+      web_page_metadata_(mojom::WebPageMetadata::New()),
       status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
 
@@ -332,12 +335,23 @@ std::string AppBannerManager::GetAppIdentifier() {
 }
 
 std::u16string AppBannerManager::GetAppName() const {
-  return manifest().name.value_or(std::u16string());
+  return manifest().name.value_or(GetNameFromMetadata());
+}
+
+std::u16string AppBannerManager::GetNameFromMetadata() const {
+  return web_page_metadata().application_name.empty()
+             ? web_page_metadata().title
+             : web_page_metadata().application_name;
 }
 
 const blink::mojom::Manifest& AppBannerManager::manifest() const {
-  DCHECK(manifest_);
+  CHECK(manifest_);
   return *manifest_;
+}
+
+const mojom::WebPageMetadata& AppBannerManager::web_page_metadata() const {
+  CHECK(web_page_metadata_);
+  return *web_page_metadata_;
 }
 
 std::string AppBannerManager::GetBannerType() {
@@ -374,6 +388,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
   manifest_id_ = blink::GetIdFromManifest(manifest());
+  web_page_metadata_ = data.web_page_metadata->Clone();
 
   // Skip checks for PasswordManager WebUI page.
   if (content::HasWebUIScheme(validated_url_) &&
@@ -532,6 +547,7 @@ void AppBannerManager::ResetCurrentPageData() {
   has_sufficient_engagement_ = false;
   active_media_players_.clear();
   manifest_ = blink::mojom::Manifest::New();
+  web_page_metadata_ = mojom::WebPageMetadata::New();
   manifest_url_ = GURL();
   manifest_id_ = GURL();
   validated_url_ = GURL();

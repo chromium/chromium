@@ -62,8 +62,11 @@ mojom::WebPageMetadataPtr ExtractWebPageMetadata(WebLocalFrame* frame) {
     return metadata;
 
   WebElement head = document.Head();
-  if (head.IsNull())
+  if (head.IsNull()) {
     return metadata;
+  }
+
+  metadata->title = document.Title().Utf16();
 
   GURL document_url = document.Url();
   for (WebNode child = head.FirstChild(); !child.IsNull();

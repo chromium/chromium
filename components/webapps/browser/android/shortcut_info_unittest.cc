@@ -127,6 +127,25 @@ TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
   ASSERT_EQ(blink::mojom::DisplayMode::kStandalone, info_.display);
 }
 
+TEST_F(ShortcutInfoTest, WebPageMetadataTitleAppName) {
+  info_ = ShortcutInfo(GURL());
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+  metadata->title = u"title";
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+  ASSERT_EQ(metadata->title, info_.user_title);
+  ASSERT_EQ(metadata->title, info_.name);
+  ASSERT_EQ(metadata->title, info_.short_name);
+
+  // prefer "application_name" over "title"
+  metadata->application_name = u"app name";
+  info_.UpdateFromWebPageMetadata(*metadata);
+  ASSERT_EQ(metadata->application_name, info_.user_title);
+  ASSERT_EQ(metadata->application_name, info_.name);
+  ASSERT_EQ(metadata->application_name, info_.short_name);
+}
+
 TEST_F(ShortcutInfoTest, UpdateFromEmptyMetadata) {
   GURL test_url("https://example.com");
   info_ = ShortcutInfo(test_url);

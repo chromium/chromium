@@ -1138,6 +1138,27 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest, kImplicitName) {
                 MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
   CheckBannerResult(manager.get());
+  if (GetParam() == InstallableCriteriaType::kImplicitManifestFields) {
+    EXPECT_EQ(manager->GetAppName(), u"TestApp");
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest,
+                       kImplicitNameDocumentTitle) {
+  std::unique_ptr<AppBannerManagerTest> manager(
+      CreateAppBannerManager(browser()));
+
+  GURL test_url = embedded_test_server()->GetURL(
+      "/banners/manifest_test_page.html?manifest="
+      "manifest_empty_name_short_name.json");
+
+  RunBannerTest(browser(), manager.get(), test_url,
+                MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+
+  CheckBannerResult(manager.get());
+  if (GetParam() == InstallableCriteriaType::kImplicitManifestFields) {
+    EXPECT_EQ(manager->GetAppName(), u"Web app banner test page");
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
