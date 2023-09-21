@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -269,4 +271,21 @@ bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
     default:
       return false;
   }
+}
+
+void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
+                                        Profile* profile,
+                                        ash::ShelfLaunchSource source) {
+  // Launches from app list is covered in `AppListClientImpl::ActivateItem`.
+  if (source != ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
+    return;
+  }
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(profile);
+  if (!scalable_iph) {
+    return;
+  }
+
+  scalable_iph->MaybeRecordShelfItemActivationById(app_id);
 }

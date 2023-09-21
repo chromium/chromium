@@ -5,12 +5,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
@@ -834,6 +837,24 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
   app_list_client_impl->ActivateItem(
       /*profile_id=*/0, web_app::kYoutubeAppId, /*event_flags=*/0,
       ash::AppListLaunchedFrom::kLaunchedFromGrid);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
+                       ShelfItemActivationWebApp) {
+  if (!IsGoogleChrome()) {
+    GTEST_SKIP()
+        << "Google Chrome is required for preinstall apps used by this test";
+    return;
+  }
+
+  apps::AppReadinessWaiter(browser()->profile(),
+                           scalable_iph::kWebAppYouTubeAppId)
+      .Await();
+
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameShelfItemActivationYouTube));
+  ash::Shelf::ActivateShelfItem(ash::ShelfModel::Get()->ItemIndexByAppID(
+      scalable_iph::kWebAppYouTubeAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {

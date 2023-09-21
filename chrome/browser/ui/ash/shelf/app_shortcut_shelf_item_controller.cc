@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -321,8 +322,13 @@ void AppShortcutShelfItemController::ItemSelected(
     // LaunchApp may replace and destroy this item controller instance. Run the
     // callback first and copy the id to avoid crashes.
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
-    ChromeShelfController::instance()->LaunchApp(
-        ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
+
+    ChromeShelfController* chrome_shelf_controller =
+        ChromeShelfController::instance();
+    MaybeRecordAppLaunchForScalableIph(
+        shelf_id().app_id, chrome_shelf_controller->profile(), source);
+    chrome_shelf_controller->LaunchApp(ash::ShelfID(shelf_id()), source,
+                                       ui::EF_NONE, display_id);
     return;
   }
 

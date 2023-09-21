@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 
+#include "ash/public/cpp/shelf_types.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
@@ -147,8 +149,14 @@ void BrowserAppShelfItemController::ItemSelected(
     // No instances or if this is a lacros window and there isn't already one on
     // the current workspace, launch.
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
-    ChromeShelfController::instance()->LaunchApp(
-        ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
+
+    ChromeShelfController* chrome_shelf_controller =
+        ChromeShelfController::instance();
+    MaybeRecordAppLaunchForScalableIph(
+        shelf_id().app_id, chrome_shelf_controller->profile(), source);
+
+    chrome_shelf_controller->LaunchApp(ash::ShelfID(shelf_id()), source,
+                                       ui::EF_NONE, display_id);
   } else if (instances.size() == 1) {
     // One instance is running, activate it.
     const base::UnguessableToken id = instances[0].second;

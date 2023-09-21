@@ -60,6 +60,16 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
            kEventNameAppListItemActivationGoogleDocs},
           {ScalableIph::Event::kOpenPersonalizationApp,
            kEventNameOpenPersonalizationApp},
+          {ScalableIph::Event::kShelfItemActivationYouTube,
+           kEventNameShelfItemActivationYouTube},
+          {ScalableIph::Event::kShelfItemActivationGoogleDocs,
+           kEventNameShelfItemActivationGoogleDocs},
+          {ScalableIph::Event::kShelfItemActivationGooglePhotosWeb,
+           kEventNameShelfItemActivationGooglePhotosWeb},
+          {ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid,
+           kEventNameShelfItemActivationGooglePhotosAndroid},
+          {ScalableIph::Event::kShelfItemActivationGooglePlay,
+           kEventNameShelfItemActivationGooglePlay},
       });
   return *event_names_map;
 }
@@ -176,6 +186,17 @@ constexpr auto kAppListItemActivationEventsMap =
          ScalableIph::Event::kAppListItemActivationGoogleDocs},
         {kWebAppYouTubeAppId,
          ScalableIph::Event::kAppListItemActivationYouTube},
+    });
+
+constexpr auto kShelfItemActivationEventsMap =
+    base::MakeFixedFlatMap<std::string_view, ScalableIph::Event>({
+        {kWebAppGoogleDocsAppId,
+         ScalableIph::Event::kShelfItemActivationGoogleDocs},
+        {kWebAppYouTubeAppId, ScalableIph::Event::kShelfItemActivationYouTube},
+        {kWebAppGooglePhotosAppId,
+         ScalableIph::Event::kShelfItemActivationGooglePhotosWeb},
+        {kAndroidGooglePhotosAppId,
+         ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid},
     });
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
@@ -571,6 +592,20 @@ void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
   RecordEvent(it->second);
 }
 
+void ScalableIph::MaybeRecordShelfItemActivationById(const std::string& id) {
+  auto* it = kShelfItemActivationEventsMap.find(id);
+  if (it == kShelfItemActivationEventsMap.end()) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Observed a shelf item activation. But not recording a shelf item "
+           "activation as it's not listed in the map.";
+    return;
+  }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Recording a shelf item activation as event: " << it->second;
+  RecordEvent(it->second);
+}
+
 void ScalableIph::OverrideFeatureListForTesting(
     const std::vector<const base::Feature*> feature_list) {
   CHECK(feature_list_for_testing_.size() == 0)
@@ -956,6 +991,16 @@ std::ostream& operator<<(std::ostream& out, ScalableIph::Event event) {
       return out << "AppListItemActivationGoogleDocs";
     case ScalableIph::Event::kOpenPersonalizationApp:
       return out << "OpenPersonalizationApp";
+    case ScalableIph::Event::kShelfItemActivationGoogleDocs:
+      return out << "ShelfItemActivationGoogleDocs";
+    case ScalableIph::Event::kShelfItemActivationYouTube:
+      return out << "ShelfItemActivationYouTube";
+    case ScalableIph::Event::kShelfItemActivationGooglePhotosWeb:
+      return out << "ShelfItemActivationGooglePhotosWeb";
+    case ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid:
+      return out << "ShelfItemActivationGooglePhotosAndroid";
+    case ScalableIph::Event::kShelfItemActivationGooglePlay:
+      return out << "ShelfItemActivationGooglePlay";
   }
 }
 

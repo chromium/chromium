@@ -87,6 +87,11 @@ class ScalableIph : public KeyedService,
     kAppListItemActivationYouTube,
     kAppListItemActivationGoogleDocs,
     kOpenPersonalizationApp,
+    kShelfItemActivationYouTube,
+    kShelfItemActivationGoogleDocs,
+    kShelfItemActivationGooglePhotosWeb,
+    kShelfItemActivationGooglePhotosAndroid,
+    kShelfItemActivationGooglePlay,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,
@@ -143,8 +148,9 @@ class ScalableIph : public KeyedService,
   void SetHasSavedPrintersChangedClosureForTesting(
       base::RepeatingClosure has_saved_printers_closure);
 
-  // Maybe record an app list item activation of `id`.
+  // Maybe record an app list item or a shelf item activation of `id`.
   void MaybeRecordAppListItemActivation(const std::string& id);
+  void MaybeRecordShelfItemActivationById(const std::string& id);
 
  private:
   void EnsureTimerStarted();
