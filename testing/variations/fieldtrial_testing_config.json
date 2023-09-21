@@ -8774,6 +8774,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "timeout_seconds": "30"
+                    },
                     "enable_features": [
                         "ImageServiceObserveSyncDownloadStatus"
                     ]
