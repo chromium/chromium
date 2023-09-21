@@ -369,8 +369,18 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
-  void HandleTextControlPlaceholder(
+  // This function returns a new value for `NGPreviousInflowPosition::
+  // logical_block_offset`.
+  LayoutUnit HandleTextControlPlaceholder(
       NGBlockNode placeholder,
+      const NGPreviousInflowPosition& previous_inflow_position);
+  // A helper for HandleTextControlPlaceholder().
+  // This function returns a new value for `NGPreviousInflowPosition::
+  // logical_block_offset`.
+  LayoutUnit FinishTextControlPlaceholder(
+      const NGLayoutResult* result,
+      const LogicalOffset& offset,
+      bool apply_fixed_size,
       const NGPreviousInflowPosition& previous_inflow_position);
 
   // Adjusts the inline offset of the slider thumb box from the value of

@@ -1367,14 +1367,16 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return kIndefiniteSize;
   const Element& element = *To<Element>(GetNode());
 
+  const bool apply_fixed_size = StyleRef().ApplyControlFixedSize();
   const auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList())) {
     return MenuListIntrinsicInlineSize(*select, *this);
   }
   const auto* input = DynamicTo<HTMLInputElement>(element);
   if (UNLIKELY(input)) {
-    if (input->IsTextField())
+    if (input->IsTextField() && apply_fixed_size) {
       return TextFieldIntrinsicInlineSize(*input, *this);
+    }
     const AtomicString& type = input->type();
     if (type == input_type_names::kFile)
       return FileUploadControlIntrinsicInlineSize(*input, *this);
@@ -1392,8 +1394,9 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return kIndefiniteSize;
   }
   const auto* textarea = DynamicTo<HTMLTextAreaElement>(element);
-  if (UNLIKELY(textarea))
+  if (UNLIKELY(textarea) && apply_fixed_size) {
     return TextAreaIntrinsicInlineSize(*textarea, *this);
+  }
   if (IsSliderContainer(element))
     return SliderIntrinsicInlineSize(*this);
 
@@ -1406,16 +1409,17 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   // get here.
   DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
 
+  const bool apply_fixed_size = StyleRef().ApplyControlFixedSize();
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     if (select->UsesMenuList())
       return MenuListIntrinsicBlockSize(*select, *this);
     return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
            ComputeLogicalScrollbars().BlockSum();
   }
-  if (IsTextField()) {
+  if (IsTextField() && apply_fixed_size) {
     return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
   }
-  if (IsTextArea()) {
+  if (IsTextArea() && apply_fixed_size) {
     return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
                                       *this);
   }

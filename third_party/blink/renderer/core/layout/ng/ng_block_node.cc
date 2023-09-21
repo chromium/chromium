@@ -290,8 +290,10 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
   else
     inline_size += border_padding.InlineSum();
 
-  if (block_node.IsTextControl())
+  const bool apply_form_sizing = style.ApplyControlFixedSize();
+  if (block_node.IsTextControl() && apply_form_sizing) {
     return inline_size;
+  }
   if (IsA<HTMLSelectElement>(node))
     return inline_size;
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {

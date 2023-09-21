@@ -2493,8 +2493,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Form-sizing utility function
-  bool DisableControlFixedSize() const {
-    return FormSizing() == EFormSizing::kNormal;
+  bool ApplyControlFixedSize() const {
+    return FormSizing() == EFormSizing::kAuto;
   }
 
  private:

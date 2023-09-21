@@ -904,7 +904,7 @@
     {
       // crbug.com/1447058
       name: "CssFormSizing",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSGridTemplatePropertyInterpolation",

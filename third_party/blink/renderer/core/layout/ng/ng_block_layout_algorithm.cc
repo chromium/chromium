@@ -302,9 +302,15 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
     // We don't check IsRubyText() here intentionally. RubyText width should
     // affect this width.
     if (child.IsOutOfFlowPositioned() ||
-        (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()) ||
-        child.IsTextControlPlaceholder())
+        (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc())) {
       continue;
+    }
+
+    if (child.IsTextControlPlaceholder()) {
+      if (Style().ApplyControlFixedSize()) {
+        continue;
+      }
+    }
 
     const ComputedStyle& child_style = child.Style();
     const EClear child_clear = child_style.Clear(Style());
@@ -843,8 +849,11 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
   if (ruby_text_child)
     HandleRubyText(ruby_text_child);
-  if (placeholder_child)
-    HandleTextControlPlaceholder(placeholder_child, previous_inflow_position);
+  if (placeholder_child) {
+    previous_inflow_position.logical_block_offset =
+        HandleTextControlPlaceholder(placeholder_child,
+                                     previous_inflow_position);
+  }
 
   if (UNLIKELY(ConstraintSpace().IsNewFormattingContext() &&
                !ignore_line_clamp_ && lines_until_clamp_ == 0 &&
@@ -3268,17 +3277,19 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
                                LogicalOffset(LayoutUnit(), ruby_text_box_top));
 }
 
-void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
+LayoutUnit NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
     NGBlockNode placeholder,
     const NGPreviousInflowPosition& previous_inflow_position) {
   DCHECK(Node().IsTextControl()) << Node().GetLayoutBox();
 
+  const wtf_size_t kTextBlockIndex = 0u;
   LogicalSize available_size = ChildAvailableSize();
-  // The placeholder should have the width same as "editing-view-port" element,
-  // which is the first grandchild of the text control.
-  if (container_builder_.Children().size() > 0) {
+  bool apply_fixed_size = Style().ApplyControlFixedSize();
+  if (container_builder_.Children().size() > 0 && apply_fixed_size) {
+    // The placeholder should have the width same as "editing-view-port"
+    // element, which is the first grandchild of the text control.
     const NGPhysicalFragment& child =
-        *container_builder_.Children()[0].fragment;
+        *container_builder_.Children()[kTextBlockIndex].fragment;
     if (child.IsTextControlContainer()) {
       const auto& grand_children = child.PostLayoutChildren();
       const auto begin = grand_children.begin();
@@ -3301,14 +3312,14 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   const NGLayoutResult* result = placeholder.Layout(space);
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
   if (Node().IsTextArea()) {
-    container_builder_.AddResult(*result, offset);
-    return;
+    return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                        previous_inflow_position);
   }
   // Usually another child provides the baseline. However it doesn't if
   // another child is out-of-flow.
   if (!container_builder_.FirstBaseline()) {
-    container_builder_.AddResult(*result, offset);
-    return;
+    return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                        previous_inflow_position);
   }
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -3317,13 +3328,43 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   // might be the block-end margin.
   // |fragment| has no FirstBaseline() if it consists of only white-spaces.
   if (fragment.FirstBaseline().has_value()) {
-    offset.block_offset =
-        *container_builder_.FirstBaseline() - *fragment.FirstBaseline();
+    LayoutUnit first_baseline = *container_builder_.FirstBaseline();
+    const LayoutUnit border_padding_block_start =
+        BorderScrollbarPadding().block_start;
+    const LayoutUnit placeholder_baseline = *fragment.FirstBaseline();
+    offset.block_offset = first_baseline - placeholder_baseline;
+    if (!apply_fixed_size && offset.block_offset < border_padding_block_start) {
+      // The placeholder is taller. We should shift down the existing child.
+      const LayoutUnit new_baseline =
+          placeholder_baseline + border_padding_block_start;
+      container_builder_.SetFirstBaseline(new_baseline);
+      container_builder_.SetLastBaseline(new_baseline);
+      const NGLogicalLink& first_child =
+          container_builder_.Children()[kTextBlockIndex];
+      LogicalOffset first_child_offset = first_child.offset;
+      first_child_offset.block_offset += new_baseline - first_baseline;
+      container_builder_.ReplaceChild(kTextBlockIndex, *first_child.fragment,
+                                      first_child_offset);
+      offset.block_offset = border_padding_block_start;
+    }
   }
-  container_builder_.AddResult(*result, offset);
+  return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                      previous_inflow_position);
+}
 
-  // This function doesn't update previous_inflow_position. Other children in
-  // this container should ignore |placeholder|.
+LayoutUnit NGBlockLayoutAlgorithm::FinishTextControlPlaceholder(
+    const NGLayoutResult* result,
+    const LogicalOffset& offset,
+    bool apply_fixed_size,
+    const NGPreviousInflowPosition& previous_inflow_position) {
+  container_builder_.AddResult(*result, offset);
+  LayoutUnit block_offset = previous_inflow_position.logical_block_offset;
+  if (apply_fixed_size) {
+    return block_offset;
+  }
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+  return std::max(block_offset, offset.block_offset + fragment.BlockSize());
 }
 
 LogicalOffset NGBlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
