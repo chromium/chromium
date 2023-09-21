@@ -1,39 +1,39 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 
-import java.util.Map;
-
 /**
- * Tests for {@link CommandLine}.
- * TODO(bauerb): Convert to local JUnit test
+ * Test class for command lines.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Tests java -> native transition")
 public class CommandLineTest {
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]
-    static final String INIT_SWITCHES[] = { "init_command", "--SWITCH", "Arg",
-        "--switch2=brea\\d", "--switch3=and \"butter\"",
-        "--switch4=a \"quoted\" 'food'!",
-        "--", "--actually_an_arg" };
+    static final String[] INIT_SWITCHES = {"init_command", "--switch", "Arg", "--switch2=brea\\d",
+            "--switch3=and \"butter\"", "--switch4=a \"quoted\" 'food'!", "--",
+            "--actually_an_arg"};
 
     // The same command line, but in quoted string format.
-    static final char INIT_SWITCHES_BUFFER[] =
-        ("init_command --SWITCH Arg --switch2=brea\\d --switch3=\"and \\\"butt\"er\\\"   "
-        + "--switch4='a \"quoted\" \\'food\\'!' "
-        + "-- --actually_an_arg").toCharArray();
+    static final char[] INIT_SWITCHES_BUFFER =
+            ("init_command --switch Arg --switch2=brea\\d --switch3=\"and \\\"butt\"er\\\"   "
+                    + "--switch4='a \"quoted\" \\'food\\'!' "
+                    + "-- --actually_an_arg")
+                    .toCharArray();
 
     static final String CL_ADDED_SWITCH = "zappo-dappo-doggy-trainer";
     static final String CL_ADDED_SWITCH_2 = "username";
@@ -41,25 +41,30 @@ public class CommandLineTest {
 
     @Before
     public void setUp() {
-        CommandLine.reset();
+        CommandLine.resetForTesting();
+    }
+
+    void loadJni() {
+        Assert.assertFalse(CommandLine.getInstance().isNativeImplementation());
+        LibraryLoader.getInstance().ensureInitialized();
+        Assert.assertTrue(CommandLine.getInstance().isNativeImplementation());
     }
 
     void checkInitSwitches() {
         CommandLine cl = CommandLine.getInstance();
         Assert.assertFalse(cl.hasSwitch("init_command"));
-        Assert.assertFalse(cl.hasSwitch("switch"));
-        Assert.assertTrue(cl.hasSwitch("SWITCH"));
-        Assert.assertFalse(cl.hasSwitch("--SWITCH"));
-        Assert.assertFalse(cl.hasSwitch("Arg"));
+        Assert.assertTrue(cl.hasSwitch("switch"));
+        Assert.assertFalse(cl.hasSwitch("--switch"));
+        Assert.assertFalse(cl.hasSwitch("arg"));
         Assert.assertFalse(cl.hasSwitch("actually_an_arg"));
         Assert.assertEquals("brea\\d", cl.getSwitchValue("switch2"));
         Assert.assertEquals("and \"butter\"", cl.getSwitchValue("switch3"));
         Assert.assertEquals("a \"quoted\" 'food'!", cl.getSwitchValue("switch4"));
-        Assert.assertNull(cl.getSwitchValue("SWITCH"));
+        Assert.assertNull(cl.getSwitchValue("switch"));
         Assert.assertNull(cl.getSwitchValue("non-existant"));
     }
 
-    void checkSettingThenGettingThenRemoving() {
+    void checkSettingThenGetting() {
         CommandLine cl = CommandLine.getInstance();
 
         // Add a plain switch.
@@ -71,124 +76,61 @@ public class CommandLineTest {
         Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH_2));
         Assert.assertNull(cl.getSwitchValue(CL_ADDED_SWITCH_2));
         cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, CL_ADDED_VALUE_2);
-        Assert.assertEquals(CL_ADDED_VALUE_2, cl.getSwitchValue(CL_ADDED_SWITCH_2));
-
-        // Update a switch's value.
-        cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, "updatedValue");
-        Assert.assertEquals("updatedValue", cl.getSwitchValue(CL_ADDED_SWITCH_2));
+        Assert.assertTrue(CL_ADDED_VALUE_2.equals(cl.getSwitchValue(CL_ADDED_SWITCH_2)));
 
         // Append a few new things.
-        final String switchesAndArgs[] = { "dummy", "--superfast", "--speed=turbo" };
-        Assert.assertFalse(cl.hasSwitch("dummy"));
+        final String[] switchesAndArgs = {"thing", "--superfast", "--speed=turbo"};
+        Assert.assertFalse(cl.hasSwitch("thing"));
         Assert.assertFalse(cl.hasSwitch("superfast"));
         Assert.assertNull(cl.getSwitchValue("speed"));
         cl.appendSwitchesAndArguments(switchesAndArgs);
-        Assert.assertFalse(cl.hasSwitch("dummy"));
+        Assert.assertFalse(cl.hasSwitch("thing"));
         Assert.assertFalse(cl.hasSwitch("command"));
         Assert.assertTrue(cl.hasSwitch("superfast"));
-        Assert.assertEquals("turbo", cl.getSwitchValue("speed"));
-
-        // Get all switches
-        Map<String, String> switches = cl.getSwitches();
-        Assert.assertTrue(switches.containsKey(CL_ADDED_SWITCH));
-        Assert.assertTrue(switches.containsKey(CL_ADDED_SWITCH_2));
-
-        // Remove a plain switch.
-        cl.removeSwitch(CL_ADDED_SWITCH);
-        Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH));
-
-        // Remove a switch with a value.
-        cl.removeSwitch(CL_ADDED_SWITCH_2);
-        Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH_2));
-        Assert.assertNull(cl.getSwitchValue(CL_ADDED_SWITCH_2));
-
-        // Get all switches again to verify it updated.
-        switches = cl.getSwitches();
-        Assert.assertFalse(switches.containsKey(CL_ADDED_SWITCH));
-        Assert.assertFalse(switches.containsKey(CL_ADDED_SWITCH_2));
+        Assert.assertTrue("turbo".equals(cl.getSwitchValue("speed")));
     }
 
-    void checkTokenizer(String[] expected, String toParse) {
-        String[] actual = CommandLine.tokenizeQuotedArguments(toParse.toCharArray());
-        Assert.assertEquals(expected.length, actual.length);
-        for (int i = 0; i < expected.length; ++i) {
-            Assert.assertEquals("comparing element " + i, expected[i], actual[i]);
-        }
+    void checkAppendedSwitchesPassedThrough() {
+        CommandLine cl = CommandLine.getInstance();
+        Assert.assertTrue(cl.hasSwitch(CL_ADDED_SWITCH));
+        Assert.assertTrue(cl.hasSwitch(CL_ADDED_SWITCH_2));
+        Assert.assertTrue(CL_ADDED_VALUE_2.equals(cl.getSwitchValue(CL_ADDED_SWITCH_2)));
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"Android-AppBase"})
-    public void testJavaInitialization() {
+    public void testJavaNativeTransition() {
         CommandLine.init(INIT_SWITCHES);
         checkInitSwitches();
-        checkSettingThenGettingThenRemoving();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Android-AppBase"})
-    public void testBufferInitialization() {
-        CommandLine.init(CommandLine.tokenizeQuotedArguments(INIT_SWITCHES_BUFFER));
+        loadJni();
         checkInitSwitches();
-        checkSettingThenGettingThenRemoving();
+        checkSettingThenGetting();
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"Android-AppBase"})
-    public void testArgumentTokenizer() {
-        String toParse = " a\"\\bc de\\\"f g\"\\h ij    k\" \"lm";
-        String[] expected = { "a\\bc de\"f g\\h",
-                              "ij",
-                              "k lm" };
-        checkTokenizer(expected, toParse);
-
-        toParse = "";
-        expected = new String[0];
-        checkTokenizer(expected, toParse);
-
-        toParse = " \t\n";
-        checkTokenizer(expected, toParse);
-
-        toParse = " \"a'b\" 'c\"d' \"e\\\"f\" 'g\\'h' \"i\\'j\" 'k\\\"l'"
-                + " m\"n\\'o\"p q'r\\\"s't";
-        expected = new String[] { "a'b",
-                                  "c\"d",
-                                  "e\"f",
-                                  "g'h",
-                                  "i\\'j",
-                                  "k\\\"l",
-                                  "mn\\'op",
-                                  "qr\\\"st"};
-        checkTokenizer(expected, toParse);
+    public void testJavaNativeTransitionAfterAppends() {
+        CommandLine.init(INIT_SWITCHES);
+        checkInitSwitches();
+        checkSettingThenGetting();
+        loadJni();
+        checkInitSwitches();
+        checkAppendedSwitchesPassedThrough();
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"Android-AppBase"})
-    public void testUpdatingArgList() {
+    public void testNativeInitialization() {
         CommandLine.init(null);
-        CommandLine cl = CommandLine.getInstance();
-        cl.appendSwitch(CL_ADDED_SWITCH);
-        cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, CL_ADDED_VALUE_2);
-        cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, "updatedValue");
-
-        final String[] expectedValueForBothSwitches = {
-                "",
-                "--" + CL_ADDED_SWITCH,
-                "--" + CL_ADDED_SWITCH_2 + "=" + CL_ADDED_VALUE_2,
-                "--" + CL_ADDED_SWITCH_2 + "=updatedValue",
-        };
-        Assert.assertArrayEquals("Appending a switch multiple times should add multiple args",
-                expectedValueForBothSwitches, CommandLine.getJavaSwitchesOrNull());
-
-        cl.removeSwitch(CL_ADDED_SWITCH_2);
-        final String[] expectedValueWithSecondSwitchRemoved = {
-                "",
-                "--" + CL_ADDED_SWITCH,
-        };
-        Assert.assertArrayEquals("Removing a switch should remove all its args",
-                expectedValueWithSecondSwitchRemoved, CommandLine.getJavaSwitchesOrNull());
+        loadJni();
+        // Drop the program name for use with appendSwitchesAndArguments.
+        String[] args = new String[INIT_SWITCHES.length - 1];
+        System.arraycopy(INIT_SWITCHES, 1, args, 0, args.length);
+        CommandLine.getInstance().appendSwitchesAndArguments(args);
+        checkInitSwitches();
+        checkSettingThenGetting();
     }
 }
