@@ -155,7 +155,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   auto AttemptIPH(
       bool should_show,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    return InBrowser(base::BindLambdaForTesting(
+    return CheckBrowser(base::BindLambdaForTesting(
         [this, should_show, feature](Browser* browser) {
           auto* const tracker = GetTracker(browser);
           if (should_show) {
@@ -166,16 +166,25 @@ class FeaturePromoLifecycleUiTest : public TestBase {
             EXPECT_CALL(*tracker, ShouldTriggerHelpUI(Ref(*feature))).Times(0);
           }
 
-          ASSERT_EQ(should_show,
-                    GetPromoController(browser)->MaybeShowPromo(*feature));
-          ASSERT_EQ(should_show,
-                    GetPromoController(browser)->IsPromoActive(*feature));
+          if (should_show !=
+              GetPromoController(browser)->MaybeShowPromo(*feature)) {
+            LOG(ERROR) << "MaybeShowPromo did not return expected value.";
+            return false;
+          }
+
+          if (should_show !=
+              GetPromoController(browser)->IsPromoActive(*feature)) {
+            LOG(ERROR) << "IsPromoActive did not return expected value.";
+            return false;
+          }
 
           // If shown, Tracker::Dismissed should be called eventually.
           if (should_show) {
             EXPECT_CALL(*tracker, Dismissed(Ref(*feature)));
             last_show_time_.second = base::Time::Now();
           }
+
+          return true;
         }));
   }
 
@@ -448,12 +457,14 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(app_browser->window()->GetElementContext(),
+                           WaitForShow(kToolbarAppMenuButtonElementId),
                            AttemptIPH(true), DismissIPH(), CheckShownForApp());
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(app_browser->window()->GetElementContext(),
+                           WaitForShow(kToolbarAppMenuButtonElementId),
                            AttemptIPH(true), DismissIPH(), FlushEvents(),
                            AttemptIPH(false));
 }
@@ -461,6 +472,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(app_browser->window()->GetElementContext(),
+                           WaitForShow(kToolbarAppMenuButtonElementId),
                            CheckDismissed(false), AttemptIPH(true),
                            DismissIPH(), CheckDismissed(true));
 }
@@ -470,9 +482,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
   Browser* const app_browser2 = LaunchWebAppBrowser(app2_id_);
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(), AttemptIPH(true),
-      DismissIPH(), FlushEvents(),
+      WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(), FlushEvents(),
       InContext(app_browser2->window()->GetElementContext(),
-                Steps(AttemptIPH(true), DismissIPH(), CheckShownForApp())));
+                Steps(WaitForShow(kToolbarAppMenuButtonElementId),
+                      AttemptIPH(true), DismissIPH(), CheckShownForApp())));
 }
 
 class FeaturePromoLifecycleCriticaUiTest : public FeaturePromoLifecycleUiTest {
