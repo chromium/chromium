@@ -102,7 +102,8 @@ class WebAppsCrosapiBrowserTest
       return;
     }
 
-    apps::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb).Await();
+    apps::AppTypeInitializationWaiter(GetAshProfile(), apps::AppType::kWeb)
+        .Await();
   }
 
   std::string InstallWebApp(const std::string& start_url,
@@ -112,14 +113,12 @@ class WebAppsCrosapiBrowserTest
         start_url, mode, app_id_future.GetCallback());
     std::string app_id = app_id_future.Take();
     CHECK(!app_id.empty());
-    apps::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(GetAshProfile(), app_id).Await();
     return app_id;
   }
 
-  Profile* profile() { return browser()->profile(); }
-
   apps::AppServiceProxy* AppServiceProxy() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile());
+    return apps::AppServiceProxyFactory::GetForProfile(GetAshProfile());
   }
 };
 
@@ -263,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
     AppInstanceWaiter app_instance_waiter(AppServiceProxy()->InstanceRegistry(),
                                           app_id, apps::kDestroyed);
     AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
-    apps::AppReadinessWaiter(profile(), app_id,
+    apps::AppReadinessWaiter(GetAshProfile(), app_id,
                              apps::Readiness::kUninstalledByUser)
         .Await();
     app_instance_waiter.Await();
