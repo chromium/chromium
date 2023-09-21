@@ -57,9 +57,9 @@ suite('<os-settings-ui> page visibility', () => {
     flush();
   }
 
-  function queryMenuItemByHref(href: string): HTMLElement|null {
+  function queryMenuItemByPath(path: string): HTMLElement|null {
     return menu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[href="${href}"]`);
+        `os-settings-menu-item[path="${path}"]`);
   }
 
   /**
@@ -191,8 +191,8 @@ suite('<os-settings-ui> page visibility', () => {
         async () => {
           const route = routes[routeName];
 
-          const menuItem = queryMenuItemByHref(route.path);
-          assert(menuItem, `Menu item with href="${route.path}" not found.`);
+          const menuItem = queryMenuItemByPath(route.path);
+          assert(menuItem, `Menu item with path="${route.path}" not found.`);
 
           menuItem.click();
           await flushTasks();

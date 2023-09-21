@@ -94,8 +94,9 @@ suite('<os-settings-ui> menu', () => {
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC, urlParams);
     assertEquals(urlParams.toString(), router.getQueryParameters().toString());
+    const personalizationPath = `/${routesMojom.PERSONALIZATION_SECTION_PATH}`;
     const link = settingsMenu.shadowRoot!.querySelector<HTMLAnchorElement>(
-        `a.item[href="/${routesMojom.PERSONALIZATION_SECTION_PATH}"]`);
+        `os-settings-menu-item[path="${personalizationPath}"]`);
     assertTrue(!!link);
     link.click();
     assertEquals('', router.getQueryParameters().toString());

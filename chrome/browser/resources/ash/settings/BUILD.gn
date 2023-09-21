@@ -304,6 +304,7 @@ build_webui("build") {
     "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",
     "os_search_page/search_subpage.ts",
+    "os_settings_menu/menu_item.ts",
     "os_settings_main/os_settings_main.ts",
     "os_settings_menu/os_settings_menu.ts",
     "os_settings_page/os_settings_animated_pages.ts",

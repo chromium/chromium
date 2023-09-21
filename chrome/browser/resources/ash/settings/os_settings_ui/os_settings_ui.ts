@@ -399,14 +399,13 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   /**
-   * Called when a section is selected.
+   * Called when a menu item is selected.
    */
-  private onSectionSelect_(e: CustomEvent<{selected: string}>) {
+  private onMenuItemSelected_(e: CustomEvent<{selected: string}>) {
     assert(this.showNavMenu_);
-    const url = e.detail.selected;
-    const path = new URL(url).pathname;
+    const path = e.detail.selected;
     const route = Router.getInstance().getRouteForPath(path);
-    assert(route, `os-settings-menu has an item with invalid route: ${path}`);
+    assert(route, `os-settings-menu-item with invalid route: ${path}`);
     this.activeRoute_ = route;
 
     if (this.isNarrow) {

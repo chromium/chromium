@@ -120,7 +120,7 @@
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
             page-availability="[[pageAvailability_]]"
-            on-iron-activate="onSectionSelect_"
+            on-iron-activate="onMenuItemSelected_"
             advanced-opened="{{advancedOpenedInMenu_}}">
         </os-settings-menu>
       </template>
@@ -132,7 +132,7 @@
     <template is="dom-if" if="[[showNavMenu_]]">
       <os-settings-menu
           page-availability="[[pageAvailability_]]"
-          on-iron-activate="onSectionSelect_"
+          on-iron-activate="onMenuItemSelected_"
           advanced-opened="{{advancedOpenedInMenu_}}">
       </os-settings-menu>
     </template>

@@ -1,0 +1,84 @@
+<style include="settings-shared">
+  :host {
+    /* The tap target extends slightly above each visible menu item. */
+    --tap-target-padding: 3px;
+    /* Width of the keyboard focus border. */
+    --focus-border-width: 2px;
+
+    align-items: center;
+    background: transparent;
+    border-block-end-width: var(--focus-border-width);
+    border-block-start-width: var(--focus-border-width);
+    /* Always apply border so item doesn't shift when focused. */
+    border-color: transparent;
+    border-inline-end-width: var(--focus-border-width);
+    /* No border on window edge (left in LTR, right in RTL). */
+    border-inline-start-width: 0;
+    border-radius: 0 20px 20px 0;
+    border-style: solid;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    margin-bottom: 8px;
+    margin-inline-end: 2px;
+    min-height: 32px;
+    padding: var(--tap-target-padding) 0;
+    padding-inline-start: 20px;
+    text-decoration: none;
+  }
+
+  :host-context([dir=rtl]):host {
+    border-radius: 20px 0 0 20px;
+  }
+
+  /* Font */
+  :host-context(body:not(.jelly-enabled)):host {
+    font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled):host {
+    font: var(--cros-button-1-font);
+  }
+
+  /* Hover state */
+  :host-context(body:not(.jelly-enabled)):host(:not(.iron-selected):hover) {
+    background-color: var(--cros-ripple-color) !important;
+  }
+
+  :host-context(body.jelly-enabled):host(:not(.iron-selected):hover) {
+    background-color: var(--cros-sys-hover_on_subtle) !important;
+  }
+
+  /* Focused state */
+  :host-context(.focus-outline-visible):host(:focus) {
+    border-color: var(--cros-focus-ring-color);
+  }
+
+  /* Selected state */
+  :host-context(body:not(.jelly-enabled)):host(.iron-selected) {
+    background-color: var(--cros-highlight-color) !important;
+    color: var(--cros-text-color-selection);
+  }
+
+  :host-context(body.jelly-enabled):host(.iron-selected) {
+    background-color: var(--cros-sys-primary) !important;
+    color: var(--cros-sys-on_primary);
+  }
+
+  /* Icon styles */
+  iron-icon {
+    margin-inline-end: 16px;
+    pointer-events: none;
+    vertical-align: top;
+  }
+
+  :host-context(body:not(.jelly-enabled)):host(.iron-selected) > iron-icon {
+    fill: var(--cros-icon-color-selection);
+  }
+
+  :host-context(body.jelly-enabled):host(.iron-selected) > iron-icon {
+    fill: var(--cros-sys-on_primary);
+  }
+</style>
+
+<iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
+<slot></slot>

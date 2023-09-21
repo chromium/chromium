@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
+import './menu_item.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -30,7 +31,7 @@ const {Section} = routesMojom;
 
 interface MenuItemData {
   section: routesMojom.Section;
-  href: string;
+  path: string;
   icon: string;
   label: string;
 }
@@ -81,15 +82,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       },
 
       /**
-       * The full URL (e.g. chrome://os-settings/internet) of the currently
-       * selected menu item. Not to be confused with the href attribute.
+       * The path of the currently selected menu item. e.g. '/internet'.
        */
-      selectedUrl_: {
+      selectedItemPath_: {
         type: String,
         value: '',
       },
 
-      aboutMenuItemHref_: {
+      aboutMenuItemPath_: {
         type: String,
         value: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
       },
@@ -109,7 +109,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private basicMenuItems_: MenuItemData[];
   private advancedMenuItems_: MenuItemData[];
   private isRevampWayfindingEnabled_: boolean;
-  private selectedUrl_: string;
+  private selectedItemPath_: string;
+  private aboutMenuItemPath_: string;
 
   override ready(): void {
     super.ready();
@@ -128,26 +129,26 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       this.advancedOpened = true;
     }
 
-    this.setSelectedUrlFromRoute_(newRoute);
+    this.setSelectedItemPathForRoute_(newRoute);
   }
 
   /**
-   * Set the selected menu item based on the current route path matching the
-   * href attribute.
+   * Set the selected menu item based on a menu item's route matching or
+   * containing the given |route|.
    */
-  private setSelectedUrlFromRoute_(route: Route) {
-    const anchors =
-        this.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.item');
-    for (const anchor of anchors) {
-      const path = new URL(anchor.href).pathname;
-      const matchingRoute = Router.getInstance().getRouteForPath(path);
+  private setSelectedItemPathForRoute_(route: Route) {
+    const menuItems =
+        this.shadowRoot!.querySelectorAll('os-settings-menu-item');
+    for (const menuItem of menuItems) {
+      const matchingRoute = Router.getInstance().getRouteForPath(menuItem.path);
       if (matchingRoute?.contains(route)) {
-        this.setSelectedUrl_(anchor.href);
+        this.setSelectedItemPath_(menuItem.path);
         return;
       }
     }
 
-    this.setSelectedUrl_('');  // Nothing is selected.
+    // Nothing is selected.
+    this.setSelectedItemPath_('');
   }
 
   private computeBasicMenuItems_(): MenuItemData[] {
@@ -156,136 +157,142 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       basicMenuItems = [
         {
           section: Section.kNetwork,
-          href: `/${routesMojom.NETWORK_SECTION_PATH}`,
+          path: `/${routesMojom.NETWORK_SECTION_PATH}`,
           icon: 'os-settings:network-wifi',
           label: this.i18n('internetPageTitle'),
         },
         {
           section: Section.kBluetooth,
-          href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+          path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
           icon: 'cr:bluetooth',
           label: this.i18n('bluetoothPageTitle'),
         },
         {
           section: Section.kMultiDevice,
-          href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+          path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
           icon: 'os-settings:connected-devices',
           label: this.i18n('multidevicePageTitle'),
         },
         {
           section: Section.kPeople,
-          href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+          path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
           icon: 'os-settings:account',
           label: this.i18n('osPeoplePageTitle'),
         },
         {
           section: Section.kKerberos,
-          href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+          path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
           icon: 'os-settings:auth-key',
           label: this.i18n('kerberosPageTitle'),
         },
         {
           section: Section.kDevice,
-          href: `/${routesMojom.DEVICE_SECTION_PATH}`,
+          path: `/${routesMojom.DEVICE_SECTION_PATH}`,
           icon: 'os-settings:laptop-chromebook',
           label: this.i18n('devicePageTitle'),
         },
         {
           section: Section.kPersonalization,
-          href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+          path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
           icon: 'os-settings:personalization',
           label: this.i18n('personalizationPageTitle'),
         },
         {
           section: Section.kPrivacyAndSecurity,
-          href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+          path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
           icon: 'cr:security',
           label: this.i18n('privacyPageTitle'),
         },
         {
           section: Section.kApps,
-          href: `/${routesMojom.APPS_SECTION_PATH}`,
+          path: `/${routesMojom.APPS_SECTION_PATH}`,
           icon: 'os-settings:apps',
           label: this.i18n('appsPageTitle'),
         },
         {
           section: Section.kAccessibility,
-          href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+          path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
           icon: 'os-settings:accessibility-revamp',
           label: this.i18n('a11yPageTitle'),
         },
         {
           section: Section.kSystemPreferences,
-          href: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
+          path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
           icon: 'os-settings:system-preferences',
           label: this.i18n('systemPreferencesTitle'),
+        },
+        {
+          section: Section.kAboutChromeOs,
+          path: this.aboutMenuItemPath_,
+          icon: 'os-settings:chrome',
+          label: this.i18n('aboutOsPageTitle'),
         },
       ];
     } else {
       basicMenuItems = [
         {
           section: Section.kNetwork,
-          href: `/${routesMojom.NETWORK_SECTION_PATH}`,
+          path: `/${routesMojom.NETWORK_SECTION_PATH}`,
           icon: 'os-settings:network-wifi',
           label: this.i18n('internetPageTitle'),
         },
         {
           section: Section.kBluetooth,
-          href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+          path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
           icon: 'cr:bluetooth',
           label: this.i18n('bluetoothPageTitle'),
         },
         {
           section: Section.kMultiDevice,
-          href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+          path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
           icon: 'os-settings:multidevice-better-together-suite',
           label: this.i18n('multidevicePageTitle'),
         },
         {
           section: Section.kPeople,
-          href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+          path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
           icon: 'cr:person',
           label: this.i18n('osPeoplePageTitle'),
         },
         {
           section: Section.kKerberos,
-          href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+          path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
           icon: 'os-settings:auth-key',
           label: this.i18n('kerberosPageTitle'),
         },
         {
           section: Section.kDevice,
-          href: `/${routesMojom.DEVICE_SECTION_PATH}`,
+          path: `/${routesMojom.DEVICE_SECTION_PATH}`,
           icon: 'os-settings:laptop-chromebook',
           label: this.i18n('devicePageTitle'),
         },
         {
           section: Section.kPersonalization,
-          href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+          path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
           icon: 'os-settings:paint-brush',
           label: this.i18n('personalizationPageTitle'),
         },
         {
           section: Section.kSearchAndAssistant,
-          href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
+          path: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
           icon: 'cr:search',
           label: this.i18n('osSearchPageTitle'),
         },
         {
           section: Section.kPrivacyAndSecurity,
-          href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+          path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
           icon: 'cr:security',
           label: this.i18n('privacyPageTitle'),
         },
         {
           section: Section.kApps,
-          href: `/${routesMojom.APPS_SECTION_PATH}`,
+          path: `/${routesMojom.APPS_SECTION_PATH}`,
           icon: 'os-settings:apps',
           label: this.i18n('appsPageTitle'),
         },
         {
           section: Section.kAccessibility,
-          href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+          path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
           icon: 'os-settings:accessibility',
           label: this.i18n('a11yPageTitle'),
         },
@@ -305,37 +312,37 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     const advancedMenuItems: MenuItemData[] = [
       {
         section: Section.kDateAndTime,
-        href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
+        path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
         icon: 'os-settings:access-time',
         label: this.i18n('dateTimePageTitle'),
       },
       {
         section: Section.kLanguagesAndInput,
-        href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
+        path: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
         icon: 'os-settings:language',
         label: this.i18n('osLanguagesPageTitle'),
       },
       {
         section: Section.kFiles,
-        href: `/${routesMojom.FILES_SECTION_PATH}`,
+        path: `/${routesMojom.FILES_SECTION_PATH}`,
         icon: 'os-settings:folder-outline',
         label: this.i18n('filesPageTitle'),
       },
       {
         section: Section.kPrinting,
-        href: `/${routesMojom.PRINTING_SECTION_PATH}`,
+        path: `/${routesMojom.PRINTING_SECTION_PATH}`,
         icon: 'os-settings:print',
         label: this.i18n('printingPageTitle'),
       },
       {
         section: Section.kCrostini,
-        href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
+        path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
         icon: 'os-settings:developer-tags',
         label: this.i18n('crostiniPageTitle'),
       },
       {
         section: Section.kReset,
-        href: `/${routesMojom.RESET_SECTION_PATH}`,
+        path: `/${routesMojom.RESET_SECTION_PATH}`,
         icon: 'os-settings:restore',
         label: this.i18n('resetPageTitle'),
       },
@@ -350,25 +357,20 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   /**
-   * Prevent clicks on sidebar items from navigating. These are only links for
-   * accessibility purposes, taps are handled separately by <iron-selector>.
+   * @param path The path of the menu item to be selected. This path should be
+   * the pathname portion of a URL, not the full URL. e.g. `/internet`, not
+   * `chrome://os-settings/internet`.
    */
-  private onLinkClick_(event: Event) {
-    if ((event.target as HTMLElement).matches('a')) {
-      event.preventDefault();
-    }
+  private setSelectedItemPath_(path: string): void {
+    this.selectedItemPath_ = path;
   }
 
   /**
-   * |iron-selector| expects a full URL so |element.href| is needed instead of
-   * |element.getAttribute('href')|.
+   * Called when a selectable item from <iron-selector> is clicked. This is
+   * fired before the selected item is changed.
    */
-  private setSelectedUrl_(url: string): void {
-    this.selectedUrl_ = url;
-  }
-
   private onItemActivated_(event: CustomEvent<{selected: string}>): void {
-    this.setSelectedUrl_(event.detail.selected);
+    this.setSelectedItemPath_(event.detail.selected);
   }
 
   private onItemSelected_(e: CustomEvent<{item: HTMLElement}>) {
