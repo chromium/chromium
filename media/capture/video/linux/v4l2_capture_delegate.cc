@@ -4,10 +4,10 @@
 
 #include "media/capture/video/linux/v4l2_capture_delegate.h"
 
+#include <fcntl.h>
 #include <linux/version.h>
 #include <linux/videodev2.h>
 #include <poll.h>
-#include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
