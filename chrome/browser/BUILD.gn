@@ -1277,6 +1277,8 @@ static_library("browser") {
     "predictors/autocomplete_action_predictor_table.h",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.cc",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.cc",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h",
     "predictors/loading_data_collector.cc",
     "predictors/loading_data_collector.h",
     "predictors/loading_predictor.cc",

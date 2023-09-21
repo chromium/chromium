@@ -27,6 +27,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
@@ -906,8 +907,12 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
         loading_predictor()->resource_prefetch_predictor()->GetLcppData(url);
     std::vector<std::string> locators;
     if (lcpp_data) {
-      locators =
-          ResourcePrefetchPredictor::PredictLcpElementLocators(*lcpp_data);
+      absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+          hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
+              *lcpp_data);
+      if (hint) {
+        locators = hint->lcp_element_locators;
+      }
     }
     EXPECT_EQ(expected_locator_count, locators.size()) << from_here.ToString();
     return locators;

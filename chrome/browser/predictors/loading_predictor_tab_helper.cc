@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictors_enums.h"
@@ -164,16 +165,11 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     if (!lcpp_data) {
       return;
     }
-
-    std::vector<std::string> lcp_element_locators =
-        ResourcePrefetchPredictor::PredictLcpElementLocators(*lcpp_data);
-    std::vector<GURL> lcp_influencer_scripts =
-        ResourcePrefetchPredictor::PredictLcpInfluencerScripts(*lcpp_data);
-    if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty()) {
-      navigation_handle.SetLCPPNavigationHint(
-          blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
-              std::move(lcp_element_locators),
-              std::move(lcp_influencer_scripts)));
+    absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+        hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
+            *lcpp_data);
+    if (hint) {
+      navigation_handle.SetLCPPNavigationHint(*hint);
     }
   }
 }

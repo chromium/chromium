@@ -664,57 +664,6 @@ absl::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
   return data;
 }
 
-// static
-std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
-    const LcppData& data) {
-  const auto& buckets =
-      data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_frequency;
-  lcp_element_locators_with_frequency.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_frequency.emplace_back(
-        bucket.frequency(), bucket.lcp_element_locator());
-  }
-
-  std::sort(lcp_element_locators_with_frequency.rbegin(),
-            lcp_element_locators_with_frequency.rend());
-
-  std::vector<std::string> lcp_element_locators;
-  lcp_element_locators.reserve(lcp_element_locators_with_frequency.size());
-  for (auto& bucket : lcp_element_locators_with_frequency) {
-    lcp_element_locators.push_back(std::move(bucket.second));
-  }
-  return lcp_element_locators;
-}
-
-// static
-std::vector<GURL> ResourcePrefetchPredictor::PredictLcpInfluencerScripts(
-    const LcppData& data) {
-  const auto& buckets = data.lcpp_stat().lcp_script_url_stat().main_buckets();
-  std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency;
-  lcp_script_urls_with_frequency.reserve(buckets.size());
-  for (const auto& [script_url, frequency] : buckets) {
-    lcp_script_urls_with_frequency.emplace_back(frequency, script_url);
-  }
-
-  std::sort(lcp_script_urls_with_frequency.rbegin(),
-            lcp_script_urls_with_frequency.rend());
-
-  std::vector<GURL> lcp_script_urls;
-  lcp_script_urls.reserve(lcp_script_urls_with_frequency.size());
-  for (const auto& [frequency, script_url] : lcp_script_urls_with_frequency) {
-    GURL parsed_url(script_url);
-    if (parsed_url.is_empty() || !parsed_url.is_valid() ||
-        !parsed_url.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-
-    lcp_script_urls.push_back(std::move(parsed_url));
-  }
-  return lcp_script_urls;
-}
-
 void ResourcePrefetchPredictor::CreateCaches(
     std::unique_ptr<RedirectDataMap> host_redirect_data,
     std::unique_ptr<OriginDataMap> origin_data,
