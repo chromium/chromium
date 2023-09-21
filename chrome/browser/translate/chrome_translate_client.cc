@@ -64,7 +64,6 @@
 #endif
 
 namespace {
-using base::FeatureList;
 using metrics::TranslateEventProto;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -85,6 +84,25 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
       NOTREACHED();
       return metrics::TranslateEventProto::UNKNOWN;
   }
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Returns the whether or not the Autotranslate Snackbar should be used.
+bool IsMessageUISnackbarEnabled() {
+  constexpr base::FeatureParam<bool> kIsSnackbarEnabled(
+      &translate::kTranslateMessageUI,
+      translate::kTranslateMessageUISnackbarParam, false);
+  return kIsSnackbarEnabled.Get();
+}
+
+// helper function for use in ChromeTranslateClient::ShowTranslateUI.
+bool IsAutomaticTranslationType(translate::TranslationType type) {
+  return type == translate::TranslationType::kAutomaticTranslationByHref ||
+         type == translate::TranslationType::kAutomaticTranslationByLink ||
+         type == translate::TranslationType::kAutomaticTranslationByPref ||
+         type == translate::TranslationType::
+                     kAutomaticTranslationToPredefinedTarget;
 }
 #endif
 
@@ -208,13 +226,29 @@ bool ChromeTranslateClient::ShowTranslateUI(
 
   if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
     // Message UI.
-    if (!translate_message_) {
-      translate_message_ = std::make_unique<translate::TranslateMessage>(
-          web_contents(), translate_manager_->GetWeakPtr(),
-          base::BindRepeating([]() {}));
+
+    // Get the TranslationType from associated manager's language state.
+    translate::TranslationType translate_type =
+        GetLanguageState().translation_type();
+    if (IsAutomaticTranslationType(translate_type) &&
+        IsMessageUISnackbarEnabled()) {
+      // The Automatic translation snackbar is only shown after translation
+      // has completed. The translating step is a no-op with the Snackbar.
+      if (step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) {
+        // An automatic translation has completed show the snackbar.
+        // TODO(https://crbug.com/1462755) Show snackbar here
+      }
+    } else {
+      // Snackbar disabled or not an automatic translation. Use
+      // TranslateMessage.
+      if (!translate_message_) {
+        translate_message_ = std::make_unique<translate::TranslateMessage>(
+            web_contents(), translate_manager_->GetWeakPtr(),
+            base::BindRepeating([]() {}));
+      }
+      translate_message_->ShowTranslateStep(step, source_language,
+                                            target_language);
     }
-    translate_message_->ShowTranslateStep(step, source_language,
-                                          target_language);
   } else {
     // Infobar UI.
     translate::TranslateInfoBarDelegate::Create(

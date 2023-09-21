@@ -434,14 +434,23 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
 
   // Translate the page through TranslateManager.
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
-  manager->TranslatePage(
-      chrome_translate_client->GetLanguageState().source_language(), "en",
-      true);
 
+  LanguageState* language_state = manager->GetLanguageState();
+  EXPECT_EQ(TranslationType::kUninitialized,
+            language_state->translation_type());
+
+  manager->TranslatePage(
+      chrome_translate_client->GetLanguageState().source_language(), "en", true,
+      TranslationType::kAutomaticTranslationByPref);
+
+  EXPECT_EQ(TranslationType::kAutomaticTranslationByPref,
+            language_state->translation_type());
   WaitUntilPageTranslated();
 
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
+  EXPECT_EQ(TranslationType::kUninitialized,
+            language_state->translation_type());
 
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
   histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 148,

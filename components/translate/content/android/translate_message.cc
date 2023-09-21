@@ -124,9 +124,12 @@ void RecordCompactInfobarEvent(InfobarEvent event) {
 
 }  // namespace
 
+// Features
 BASE_FEATURE(kTranslateMessageUI,
              "TranslateMessageUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Params
+const char kTranslateMessageUISnackbarParam[] = "use_snackbar";
 
 TranslateMessage::Bridge::~Bridge() = default;
 

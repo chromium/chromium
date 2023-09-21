@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/language/core/common/language_util.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 
 namespace translate {
 
@@ -87,6 +88,10 @@ class LanguageState {
   bool translate_enabled() const { return translate_enabled_; }
   void SetTranslateEnabled(bool value);
 
+  // The type of the last translation that was initiated, if any.
+  TranslationType translation_type() const { return translation_type_; }
+  void SetTranslationType(TranslationType type) { translation_type_ = type; }
+
   // Whether the current page's language is different from the previous
   // language.
   bool HasLanguageChanged() const;
@@ -158,6 +163,9 @@ class LanguageState {
 
   // Whether the Translate is enabled.
   bool translate_enabled_;
+
+  // The type of the current translation or uninitialized if there is none.
+  TranslationType translation_type_;
 
   // The value of the hrefTranslate attribute on the link that initiated the
   // current navigation, if it was specified.

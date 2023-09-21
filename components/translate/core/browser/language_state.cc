@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "components/translate/core/browser/translate_driver.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 
 namespace translate {
 
@@ -17,7 +18,8 @@ LanguageState::LanguageState(TranslateDriver* driver)
       translation_error_(false),
       translation_declined_(false),
       is_same_document_navigation_(false),
-      translate_enabled_(false) {
+      translate_enabled_(false),
+      translation_type_(TranslationType::kUninitialized) {
   DCHECK(translate_driver_);
 }
 
@@ -49,6 +51,7 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
   translation_pending_ = false;
   translation_error_ = false;
   translation_declined_ = false;
+  translation_type_ = TranslationType::kUninitialized;
   href_translate_ = href_translate;
   navigation_from_google_ = navigation_from_google;
 
