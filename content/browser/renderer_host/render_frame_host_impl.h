@@ -20,7 +20,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -3024,16 +3023,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RecordBackForwardCacheDisablingReason(
       BackForwardCacheDisablingFeature feature);
 
-  void SetCreationInfoForBug1425281(const std::string& current_site_info,
-                                    const std::string& speculative_site_info,
-                                    const std::string& get_frame_host_reason,
-                                    const GURL& initial_url) {
-    current_site_info_ = current_site_info;
-    speculative_site_info_ = speculative_site_info;
-    get_frame_host_reason_ = get_frame_host_reason;
-    initial_url_ = initial_url;
-  }
-
  protected:
   friend class RenderFrameHostFactory;
 
@@ -5227,14 +5216,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See: https://chromestatus.com/feature/6002307972464640
   absl::optional<blink::DocumentToken>
       fullscreen_document_on_document_element_ready_ = absl::nullopt;
-
-  // TODO(crbug.com/1425281): Temporary for debugging.
-  const base::debug::StackTrace create_rfh_stack_trace_;
-  absl::optional<base::debug::StackTrace> last_commit_navigation_stack_trace_;
-  std::string current_site_info_;
-  std::string speculative_site_info_;
-  std::string get_frame_host_reason_;
-  GURL initial_url_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

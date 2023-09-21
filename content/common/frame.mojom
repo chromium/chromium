@@ -374,21 +374,6 @@ enum FrameDeleteIntention {
   kSpeculativeMainFrameForNavigationCancelled,
 };
 
-struct Crbug1425281DebugInfo {
-  // The renderer stack trace when the frame was added to the frame tree. This
-  // is just an array of instruction pointers and should not be used in any way
-  // other than being captured by base::debug::Alias.
-  array<uint64>? added_to_frame_tree_stack_trace;
-  // True if the frame is a main frame.
-  bool is_main_frame;
-  // True if the associated WebFrame reports that `IsProvisional()` is true.
-  bool is_provisional;
-};
-
-interface DebugHelperForCrbug1425281 {
-  Failed(Crbug1425281DebugInfo debug_info);
-};
-
 // Implemented by the frame provider, and must be associated with other content
 // mojoms bound to frames, widgets, views, and currently also with the legacy
 // IPC channel.
@@ -446,14 +431,7 @@ interface Frame {
   // wants to detach, or for speculative main frames which are owned by the
   // browser process. Committed main frames are owned by the renderer's WebView
   // and can not be deleted directly.
-  //
-  // `helper` is temporary to help debug crbug.com/1425281. It is unclear how
-  // the browser process is ending up in a state where it deletes what it thinks
-  // is a speculative render frame but the renderer has somehow already
-  // committed a navigation. It will only be set if `intent` is
-  // `kSpeculativeMainFrameForNavigationCancelled`.
-  Delete(FrameDeleteIntention intention,
-         pending_remote<DebugHelperForCrbug1425281>? helper);
+  Delete(FrameDeleteIntention intention);
 
   // Requests that a speculative RenderFrameHost which the browser has already
   // sent a `CommitNavigation()` to should swap itself back out for a
