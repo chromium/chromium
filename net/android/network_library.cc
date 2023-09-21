@@ -84,7 +84,7 @@ void ClearTestRootCertificates() {
   Java_AndroidNetworkLibrary_clearTestRootCertificates(env);
 }
 
-bool IsCleartextPermitted(const std::string& host) {
+bool IsCleartextPermitted(base::StringPiece host) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> host_string = ConvertUTF8ToJavaString(env, host);
   return Java_AndroidNetworkLibrary_isCleartextPermitted(env, host_string);
@@ -97,7 +97,7 @@ bool HaveOnlyLoopbackAddresses() {
   return Java_AndroidNetworkLibrary_haveOnlyLoopbackAddresses(env);
 }
 
-bool GetMimeTypeFromExtension(const std::string& extension,
+bool GetMimeTypeFromExtension(base::StringPiece extension,
                               std::string* result) {
   JNIEnv* env = AttachCurrentThread();
 

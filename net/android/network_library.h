@@ -49,7 +49,7 @@ void ClearTestRootCertificates();
 
 // Returns true if cleartext traffic to |host| is allowed by the app. Always
 // true on L and older.
-bool IsCleartextPermitted(const std::string& host);
+bool IsCleartextPermitted(base::StringPiece host);
 
 // Returns true if it can determine that only loopback addresses are configured.
 // i.e. if only 127.0.0.1 and ::1 are routable.
@@ -58,8 +58,7 @@ bool HaveOnlyLoopbackAddresses();
 
 // Get the mime type (if any) that is associated with the file extension.
 // Returns true if a corresponding mime type exists.
-bool GetMimeTypeFromExtension(const std::string& extension,
-                              std::string* result);
+bool GetMimeTypeFromExtension(base::StringPiece extension, std::string* result);
 
 // Returns MCC+MNC (mobile country code + mobile network code) as
 // the numeric name of the current registered operator. This function
