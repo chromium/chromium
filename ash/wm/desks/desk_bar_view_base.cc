@@ -554,6 +554,14 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
                           base::Unretained(this)),
       /*is_left_arrow=*/false, this));
   right_scroll_button_->RemoveFromFocusList();
+  // If this is a desk button desk bar, the bar does not paint to a layer,
+  // therefore, the scroll arrow buttons need to be painted.
+  if (type_ == Type::kDeskButton) {
+    left_scroll_button_->SetPaintToLayer();
+    left_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
+    right_scroll_button_->SetPaintToLayer();
+    right_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   // Since we created a `ScrollView` with scrolling with layers enabled, it will
   // automatically create a layer for our contents.
