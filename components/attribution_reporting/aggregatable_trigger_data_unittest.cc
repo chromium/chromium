@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -19,6 +20,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -26,6 +28,12 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Property;
 
 TEST(AggregatableTriggerDataTest, FromJSON) {
   const auto make_aggregatable_trigger_data_with_key_length = [](size_t n) {
@@ -41,15 +49,19 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
   struct {
     const char* description;
     base::Value json;
-    base::expected<AggregatableTriggerData, TriggerRegistrationError> expected;
+    ::testing::Matcher<
+        base::expected<AggregatableTriggerData, TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
           "required_fields_only",
           base::test::ParseJson(R"json({
             "key_piece": "0x1234"
           })json"),
-          *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{}, FilterPair()),
+          ValueIs(
+              AllOf(Property(&AggregatableTriggerData::key_piece, 4660),
+                    Property(&AggregatableTriggerData::source_keys, IsEmpty()),
+                    Property(&AggregatableTriggerData::filters, FilterPair()))),
       },
       {
           "empty_source_keys",
@@ -57,8 +69,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "key_piece": "0x1234",
             "source_keys": []
           })json"),
-          *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{}, FilterPair()),
+          ValueIs(Property(&AggregatableTriggerData::source_keys, IsEmpty())),
       },
       {
           "non_empty_source_keys",
@@ -66,8 +77,8 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "key_piece": "0x1234",
             "source_keys": ["a", "b"]
           })json"),
-          *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{"a", "b"}, FilterPair()),
+          ValueIs(Property(&AggregatableTriggerData::source_keys,
+                           ElementsAre("a", "b"))),
       },
       {
           "filters",
@@ -75,12 +86,12 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "key_piece": "0x1",
             "filters": {"a": ["b", "c"], "_lookback_window": 1}
          })json"),
-          *AggregatableTriggerData::Create(
-              /*key_piece=*/1, /*source_keys=*/{},
-              FilterPair(/*positive=*/{*FilterConfig::Create(
-                             {{"a", {"b", "c"}}},
-                             /*lookback_window=*/base::Seconds(1))},
-                         /*negative=*/{})),
+          ValueIs(Property(&AggregatableTriggerData::filters,
+                           FilterPair(
+                               /*positive=*/{*FilterConfig::Create(
+                                   {{"a", {"b", "c"}}},
+                                   /*lookback_window=*/base::Seconds(1))},
+                               /*negative=*/FiltersDisjunction()))),
       },
       {
           "not_filters",
@@ -88,57 +99,56 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "key_piece": "0x2",
             "not_filters": {"a": ["b", "c"], "_lookback_window": 1 }
           })json"),
-          *AggregatableTriggerData::Create(
-              /*key_piece=*/2, /*source_keys=*/{},
-              FilterPair(/*positive=*/{},
-                         /*negative=*/{*FilterConfig::Create(
-                             {{"a", {"b", "c"}}},
-                             /*lookback_window=*/base::Seconds(1))})),
+          ValueIs(
+              Property(&AggregatableTriggerData::filters,
+                       FilterPair(/*positive=*/FiltersDisjunction(),
+                                  /*negative=*/{*FilterConfig::Create(
+                                      {{"a", {"b", "c"}}},
+                                      /*lookback_window=*/base::Seconds(1))}))),
       },
       {
           "not_dictionary",
           base::Value(base::Value::List()),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableTriggerDataWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableTriggerDataWrongType),
       },
       {
           "key_piece_missing",
           base::Value(base::Value::Dict()),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataKeyPieceMissing),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataKeyPieceMissing),
       },
       {
           "key_piece_wrong_type",
           base::test::ParseJson(R"json({"key_piece":123})json"),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataKeyPieceWrongType),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataKeyPieceWrongType),
       },
       {
           "key_piece_wrong_format",
           base::test::ParseJson(R"json({"key_piece":"1234"})json"),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataKeyPieceWrongFormat),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataKeyPieceWrongFormat),
       },
       {
           "source_keys_wrong_type",
           base::test::ParseJson(
               R"json({"key_piece":"0x1234", "source_keys":{}})json"),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataSourceKeysWrongType),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataSourceKeysWrongType),
       },
       {
           "source_keys_key_wrong_type",
           base::test::ParseJson(
               R"json({"key_piece":"0x1234", "source_keys":[123]})json"),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataSourceKeysKeyWrongType),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataSourceKeysKeyWrongType),
       },
       {
           "source_keys_key_too_long",
           make_aggregatable_trigger_data_with_key_length(
               kMaxBytesPerAggregationKeyId + 1),
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableTriggerDataSourceKeysKeyTooLong),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableTriggerDataSourceKeysKeyTooLong),
       },
       {
           "filters_wrong_type",
@@ -147,7 +157,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "source_keys": ["abc"],
             "filters": 123
           })json"),
-          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+          ErrorIs(TriggerRegistrationError::kFiltersWrongType),
       },
       {
           "not_filters_wrong_type",
@@ -156,14 +166,14 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "source_keys": ["abc"],
             "not_filters": 123
           })json"),
-          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+          ErrorIs(TriggerRegistrationError::kFiltersWrongType),
       },
   };
 
   for (auto& test_case : kTestCases) {
-    EXPECT_EQ(AggregatableTriggerData::FromJSON(test_case.json),
-              test_case.expected)
-        << test_case.description;
+    SCOPED_TRACE(test_case.description);
+    EXPECT_THAT(AggregatableTriggerData::FromJSON(test_case.json),
+                test_case.matches);
   }
 
   {

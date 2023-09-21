@@ -355,26 +355,26 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<TriggerRegistration, TriggerRegistrationError> expected;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
           "aggregation_coordinator_origin_valid",
           R"json({"aggregation_coordinator_origin":"https://aws.example.test"})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregation_coordinator_origin =
-                SuitableOrigin::Create(GURL("https://aws.example.test"));
-          }),
+          ValueIs(
+              Field(&TriggerRegistration::aggregation_coordinator_origin,
+                    *SuitableOrigin::Create(GURL("https://aws.example.test")))),
       },
       {
           "aggregation_coordinator_origin_wrong_type",
           R"json({"aggregation_coordinator_origin":123})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregationCoordinatorWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregationCoordinatorWrongType),
       },
       {
           "aggregation_coordinator_origin_invalid_value",
           R"json({"aggregation_coordinator_origin":"https://unknown.example.test"})json",
-          base::unexpected(
+          ErrorIs(
               TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
   };
@@ -388,10 +388,11 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
       {{"aws_cloud", "https://aws.example.test"}});
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
     base::HistogramTester histograms;
 
     auto trigger = TriggerRegistration::Parse(test_case.json);
-    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
+    EXPECT_THAT(trigger, test_case.matches);
 
     if (trigger.has_value()) {
       histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);
