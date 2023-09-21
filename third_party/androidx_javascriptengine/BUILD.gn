@@ -16,6 +16,7 @@ android_aidl("js_sandbox_aidl") {
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxConsoleCallback.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolate.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateCallback.aidl",
+    "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateClient.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateSyncCallback.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
   ]
@@ -55,6 +56,7 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/MemoryLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/SandboxDeadException.java",
     "src/main/java/androidx/javascriptengine/SandboxUnsupportedException.java",
+    "src/main/java/androidx/javascriptengine/TerminationInfo.java",
   ]
 
   deps = [

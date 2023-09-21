@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -41,6 +42,13 @@ public class JsSandboxService extends Service {
         @Override
         public IJsSandboxIsolate createIsolate() {
             return new JsSandboxIsolate(JsSandboxService.this);
+        }
+
+        @Override
+        public IJsSandboxIsolate createIsolate2(
+                long maxHeapSizeBytes, IJsSandboxIsolateClient isolateClient) {
+            // TODO(ashleynewson): Implement this method.
+            throw new UnsupportedOperationException();
         }
 
         @Override
