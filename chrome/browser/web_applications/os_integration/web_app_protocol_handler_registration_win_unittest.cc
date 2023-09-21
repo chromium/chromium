@@ -49,6 +49,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   WebAppProtocolHandlerRegistrationWinTest() {}
 
   void SetUp() override {
+    registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());

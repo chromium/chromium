@@ -14,6 +14,9 @@
 WebAppTest::~WebAppTest() = default;
 
 void WebAppTest::SetUp() {
+#if BUILDFLAG(IS_WIN)
+  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
+#endif  // BUILDFLAG(IS_WIN)
   ASSERT_TRUE(testing_profile_manager_.SetUp());
   profile_ = testing_profile_manager_.CreateTestingProfile(
       TestingProfile::kDefaultProfileUserName, /*is_main_profile=*/true,

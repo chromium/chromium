@@ -17,6 +17,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace web_app {
 class FakeWebAppProvider;
 }
@@ -80,6 +84,13 @@ class WebAppTest : public content::RenderViewHostTestHarness {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+  // This is used to ensure that the registry starts in a well known state, and
+  // any registry changes by this test don't affect other parts of the registry
+  // on the machine running the test, and are cleaned up.
+  registry_util::RegistryOverrideManager registry_override_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_H_
