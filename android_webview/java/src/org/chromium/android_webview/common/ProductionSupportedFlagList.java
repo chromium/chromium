@@ -199,6 +199,8 @@ public final class ProductionSupportedFlagList {
                     "Parse forms asynchronously outside of the UI thread."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
                     "Enables Autofill to use its new method to retrieve parsing patterns."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
+                    "Enables Autofill to retrieve the page language for form parsing."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PREFER_LABELS_IN_SOME_COUNTRIES,
                     "When enabled, Autofill will first look at field labels and then at field "
                             + "attributes when classifying address fields in Mexico."),

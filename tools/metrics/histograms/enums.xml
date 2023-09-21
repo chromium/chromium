@@ -65989,6 +65989,7 @@ from previous Chrome versions.
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
+  <int value="603897763" label="AutofillPageLanguageDetection:disabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="603999562" label="LauncherImageSearchOcr:disabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
@@ -66285,6 +66286,7 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
+  <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>
