@@ -27,3 +27,21 @@ test(() => {
   ele.append(ele2);
   assert_true(ele2.matches(":dir(rtl)"));
 }, "Non-HTML element without direction has parent element direction");
+
+test(() => {
+  let container1 = document.createElement("div");
+  document.body.appendChild(container1);
+  let container2 = document.createElement("div");
+
+  for (let container of [container1, container2]) {
+    container.dir = "rtl";
+    let e = document.createElement("div");
+    assert_true(e.matches(":dir(ltr)"));
+    container.appendChild(e);
+    assert_false(e.matches(":dir(ltr)"));
+    e.remove();
+    assert_true(e.matches(":dir(ltr)"));
+  }
+
+  container1.remove();
+}, "dir inheritance is correct after insertion and removal from document");

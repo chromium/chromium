@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS dynamic insertion of RTL text in a child element
+PASS dir=auto changes for content insertion and removal, in and out of document
+FAIL dir=auto changes for slot reassignment assert_true: #one with LTR child span expected true got false
+PASS text changes affecting both slot and ancestor with dir=auto
+PASS dynamic changes to subtrees excluded as a result of the dir attribute
+Harness: the test ran to completion.
+

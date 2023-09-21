@@ -1446,6 +1446,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
   }
 
+  void RecomputeDirectionFromParent();
+
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 
   // FIXME: Everyone should allow author shadows.

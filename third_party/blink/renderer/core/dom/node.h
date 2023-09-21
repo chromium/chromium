@@ -1015,9 +1015,7 @@ class CORE_EXPORT Node : public EventTarget {
   bool NeedsInheritDirectionalityFromParent() const {
     return GetFlag(kNeedsInheritDirectionalityFromParent);
   }
-  void SetNeedsInheritDirectionalityFromParent() {
-    SetFlag(kNeedsInheritDirectionalityFromParent);
-  }
+  void SetNeedsInheritDirectionalityFromParent();
   void ClearNeedsInheritDirectionalityFromParent() {
     ClearFlag(kNeedsInheritDirectionalityFromParent);
   }
@@ -1071,6 +1069,8 @@ class CORE_EXPORT Node : public EventTarget {
 
     kSelfOrAncestorHasDirAutoAttribute = 1 << 28,
     kCachedDirectionalityIsRtl = 1 << 29,
+    // TODO(https://crbug.com/576815): Remove this once new dir=auto handling
+    // ships as part of RuntimeEnabledFeatures::CSSPseudoDirEnabled().
     kNeedsInheritDirectionalityFromParent = 1u << 30,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,

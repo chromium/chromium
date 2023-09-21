@@ -2671,6 +2671,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
   DCHECK(!HasRareData() || !GetElementRareData()->HasPseudoElements());
 
+  RecomputeDirectionFromParent();
+
   if (!insertion_point.IsInTreeScope()) {
     return kInsertionDone;
   }
@@ -2795,6 +2797,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       CustomElement::EnqueueDisconnectedCallback(*this);
     }
   }
+
+  RecomputeDirectionFromParent();
 
   document.GetRootScrollerController().ElementRemoved(*this);
 
@@ -4005,6 +4009,33 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
   }
   if (old_document_rules_selectors != new_document_rules_selectors) {
     document_rules->LinkMatchedSelectorsUpdated(link);
+  }
+}
+
+void Element::RecomputeDirectionFromParent() {
+  // This function recomputes the inherited direction if an element inherits
+  // direction from a parent or shadow host.
+  //
+  // It should match the computation done in
+  // HTMLElement::UpdateDirectionalityAndDescendant that applies an inherited
+  // direction change to the descendants that need updating.
+  if (GetDocument().HasDirAttribute() &&
+      RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+      !HTMLElement::ElementAffectsDirectionality(this)) {
+    if (HTMLSlotElement* slot =
+            ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+      SetCachedDirectionality(
+          ContainingShadowRoot()->host().CachedDirectionality());
+    } else {
+      Node* parent = parentNode();
+      if (Element* parent_element = DynamicTo<Element>(parent)) {
+        SetCachedDirectionality(parent_element->CachedDirectionality());
+      } else if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(parent)) {
+        SetCachedDirectionality(shadow_root->host().CachedDirectionality());
+      } else {
+        SetCachedDirectionality(TextDirection::kLtr);
+      }
+    }
   }
 }
 

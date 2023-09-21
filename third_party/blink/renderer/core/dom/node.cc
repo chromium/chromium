@@ -3387,6 +3387,11 @@ void Node::FlatTreeParentChanged() {
 }
 
 void Node::AddCandidateDirectionalityForSlot() {
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    // This code is not needed for the new dir=auto inheritance rules.
+    return;
+  }
+
   ShadowRoot* root = ShadowRootOfParent();
   if (!root || !root->HasSlotAssignment()) {
     // We should add this node as a candidate that needs to recalculate its
@@ -3444,6 +3449,11 @@ HeapHashSet<Member<TreeScope>> Node::GetAncestorTreeScopes() const {
     ancestor_tree_scopes.insert(scope);
   }
   return ancestor_tree_scopes;
+}
+
+void Node::SetNeedsInheritDirectionalityFromParent() {
+  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  SetFlag(kNeedsInheritDirectionalityFromParent);
 }
 
 void Node::Trace(Visitor* visitor) const {

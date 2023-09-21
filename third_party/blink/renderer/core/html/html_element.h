@@ -158,6 +158,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   bool HasDirectionAuto() const;
 
+  static bool ElementAffectsDirectionality(const Node* node);
+
   virtual bool IsHTMLBodyElement() const { return false; }
   // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame
   // origin trial is over.
@@ -215,7 +217,13 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDescendantDirectionality(TextDirection direction);
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
+  enum class UpdateAncestorTraversal {
+    IncludeSelf,  // self and ancestors
+    ExcludeSelf,  // ancestors, but not self
+  };
+  void UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal);
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
+  void AdjustDirectionAutoAfterRecalcAssignedNodes();
 
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);

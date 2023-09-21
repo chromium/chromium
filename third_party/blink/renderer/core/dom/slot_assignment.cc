@@ -331,11 +331,23 @@ void SlotAssignment::RecalcAssignment() {
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    // TODO(https://crbug.com/576815): Once incorrect use of
+    // FlatTreeTraversal is fixed, this can probably move into
+    // DidRecalcAssignedNodes above.
+    for (HTMLSlotElement* slot : Slots()) {
+      if (slot->HasDirectionAuto()) {
+        slot->AdjustDirectionAutoAfterRecalcAssignedNodes();
+      }
+    }
+  }
+
   // Update an dir=auto flag from a host of slots to its all descendants.
   // We should call below functions outside FlatTreeTraversalForbiddenScope
   // because we can go a tree walk to either their ancestors or descendants
   // if needed.
   if (owner_->NeedsDirAutoAttributeUpdate()) {
+    CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
     owner_->SetNeedsDirAutoAttributeUpdate(false);
     if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
       element->UpdateDescendantHasDirAutoAttribute(
