@@ -58,4 +58,9 @@ void WebView::MaybeRecreateGuestContents(
   NOTREACHED();
 }
 
+bool WebView::HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                                const content::ContextMenuParams& params) {
+  return true;
+}
+
 }  // namespace webui_examples

@@ -35,6 +35,8 @@ class WebView : public guest_view::GuestView<WebView> {
                          WebContentsCreatedCallback callback) override;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) final;
 };
 
 }  // namespace webui_examples
