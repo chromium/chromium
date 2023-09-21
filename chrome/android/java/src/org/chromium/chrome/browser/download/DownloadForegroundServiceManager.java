@@ -16,7 +16,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.IBinder;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -29,31 +28,12 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
- * Manager to stop and start the foreground service associated with downloads.
+ * Foreground service implementation of {@link DownloadContinuityManager} that starts and stops a
+ * foreground service when there are active downloads. Only active for Android versions < U.
  */
-public class DownloadForegroundServiceManager {
-    protected static class DownloadUpdate {
-        int mNotificationId;
-        Notification mNotification;
-        @DownloadNotificationService.DownloadStatus
-        int mDownloadStatus;
-        Context mContext;
-
-        DownloadUpdate(int notificationId, @Nullable Notification notification,
-                @DownloadNotificationService.DownloadStatus int downloadStatus, Context context) {
-            mNotificationId = notificationId;
-            mNotification = notification;
-            mDownloadStatus = downloadStatus;
-            mContext = context;
-        }
-    }
-
-    private static final String TAG = "DownloadFg";
+public class DownloadForegroundServiceManager extends DownloadContinuityManager {
+    private static final String TAG = "DownloadFgsm";
     // Delay to ensure start/stop foreground doesn't happen too quickly (b/74236718).
     private static final int WAIT_TIME_MS = 200;
 
@@ -71,8 +51,6 @@ public class DownloadForegroundServiceManager {
     };
     private boolean mStopServiceDelayed;
 
-    private int mPinnedNotificationId = INVALID_NOTIFICATION_ID;
-
     // This is true when context.bindService has been called and before context.unbindService.
     private boolean mIsServiceBound;
 
@@ -83,9 +61,6 @@ public class DownloadForegroundServiceManager {
     // This is non-null when onServiceConnected has been called (aka service is active).
     private DownloadForegroundServiceImpl mBoundService;
 
-    @VisibleForTesting
-    final Map<Integer, DownloadUpdate> mDownloadUpdateQueue = new HashMap<>();
-
     private static <T> void checkNotNull(T reference) {
         if (reference == null) {
             throw new NullPointerException();
@@ -93,28 +68,6 @@ public class DownloadForegroundServiceManager {
     }
 
     public DownloadForegroundServiceManager() {}
-
-    /**
-     * Updates download notification status. In progress notification will have a foreground service
-     * associated. If all notifications are not in progress, foreground service will stop.
-     * @param context Android {@link Context}.
-     * @param downloadStatus Download status. In progress notification will have a foreground
-     *         service.
-     * @param notificationId The notification id.
-     * @param notification The notification associated with the id. Can be null if {@link
-     *         DownloadNotificationService} tries to cancel a notification.
-     */
-    public void updateDownloadStatus(Context context,
-            @DownloadNotificationService.DownloadStatus int downloadStatus, int notificationId,
-            @Nullable Notification notification) {
-        if (downloadStatus != DownloadNotificationService.DownloadStatus.IN_PROGRESS) {
-            Log.w(TAG,
-                    "updateDownloadStatus status: " + downloadStatus + ", id: " + notificationId);
-        }
-        mDownloadUpdateQueue.put(notificationId,
-                new DownloadUpdate(notificationId, notification, downloadStatus, context));
-        processDownloadUpdateQueue(false /* not isProcessingPending */);
-    }
 
     /**
      * Process the notification queue for all cases and initiate any needed actions.
@@ -125,6 +78,7 @@ public class DownloadForegroundServiceManager {
      *                            was made based on during a basic update.
      */
     @VisibleForTesting
+    @Override
     void processDownloadUpdateQueue(boolean isProcessingPending) {
         DownloadUpdate downloadUpdate = findInterestingDownloadUpdate();
         if (downloadUpdate == null) return;
@@ -179,41 +133,7 @@ public class DownloadForegroundServiceManager {
         cleanDownloadUpdateQueue();
     }
 
-    /** Helper code to process download update queue. */
-
-    private @Nullable DownloadUpdate findInterestingDownloadUpdate() {
-        Iterator<Map.Entry<Integer, DownloadUpdate>> entries =
-                mDownloadUpdateQueue.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<Integer, DownloadUpdate> entry = entries.next();
-            // Return an active entry if possible.
-            if (isActive(entry.getValue().mDownloadStatus)) return entry.getValue();
-            // If there are no active entries, just return the last entry.
-            if (!entries.hasNext()) return entry.getValue();
-        }
-        // If there's no entries, return null.
-        return null;
-    }
-
-    private boolean isActive(@DownloadNotificationService.DownloadStatus int downloadStatus) {
-        return downloadStatus == DownloadNotificationService.DownloadStatus.IN_PROGRESS;
-    }
-
-    private void cleanDownloadUpdateQueue() {
-        Iterator<Map.Entry<Integer, DownloadUpdate>> entries =
-                mDownloadUpdateQueue.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<Integer, DownloadUpdate> entry = entries.next();
-            // Remove entry that is not active or pinned.
-            if (!isActive(entry.getValue().mDownloadStatus)
-                    && entry.getValue().mNotificationId != mPinnedNotificationId) {
-                entries.remove();
-            }
-        }
-    }
-
     /** Helper code to bind service. */
-
     @VisibleForTesting
     void startAndBindService(Context context) {
         Log.w(TAG, "startAndBindService");
