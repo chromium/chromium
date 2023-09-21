@@ -135,13 +135,13 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         return;
     }
 
-    DCHECK_EQ(1u, gfx::NumberOfPlanesForLinearBufferFormat(
-                      gpu_memory_buffer_->GetFormat()));
+    CHECK_EQ(1u, gfx::NumberOfPlanesForLinearBufferFormat(
+                     gpu_memory_buffer_->GetFormat()));
     bool rv = gpu_memory_buffer_->Map();
-    DCHECK(rv);
-    DCHECK(gpu_memory_buffer_->memory(0));
+    CHECK(rv);
+    CHECK(gpu_memory_buffer_->memory(0));
     // RasterBufferProvider::PlaybackToMemory only supports unsigned strides.
-    DCHECK_GE(gpu_memory_buffer_->stride(0), 0);
+    CHECK_GE(gpu_memory_buffer_->stride(0), 0);
 
     // TODO(danakj): Implement partial raster with raster_dirty_rect.
     RasterBufferProvider::PlaybackToMemory(
