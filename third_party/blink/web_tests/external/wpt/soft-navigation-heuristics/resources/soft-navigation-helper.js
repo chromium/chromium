@@ -136,10 +136,13 @@ const click = link => {
   }
 }
 
-const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
+const setEvent = (t, button, pushState, addContent, pushUrl, eventType, prepWork) => {
   const eventObject = (eventType == "click") ? button : window;
 
   eventObject.addEventListener(eventType, async e => {
+    if (prepWork &&!prepWork(t)) {
+      return;
+    }
     timestamps[counter]["eventStart"] = performance.now();
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));
