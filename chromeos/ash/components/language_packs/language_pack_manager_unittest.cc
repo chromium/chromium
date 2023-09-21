@@ -18,6 +18,8 @@
 
 using ::dlcservice::DlcState;
 using ::testing::_;
+using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -392,7 +394,9 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
 
   // Add an Observer and expect it to be notified.
   manager_->AddObserver(&observer);
-  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(1);
+  EXPECT_CALL(observer, OnPackStateChanged(_))
+      .With(FieldsAre(Field(&PackResult::language_code, "de")))
+      .Times(1);
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
   base::RunLoop().RunUntilIdle();
@@ -406,7 +410,9 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
 
   // Add an Observer and expect it to be notified.
   manager_->AddObserver(&observer);
-  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(1);
+  EXPECT_CALL(observer, OnPackStateChanged(_))
+      .With(FieldsAre(Field(&PackResult::language_code, "de")))
+      .Times(1);
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
   // Remove the Observer and there should be no more notifications.

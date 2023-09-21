@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -248,7 +249,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
   // Notification method called upon change of DLCs state.
-  void NotifyPackStateChanged(const dlcservice::DlcState& dlc_state);
+  void NotifyPackStateChanged(std::string_view locale,
+                              const dlcservice::DlcState& dlc_state);
 
   base::ObserverList<Observer> observers_;
 };

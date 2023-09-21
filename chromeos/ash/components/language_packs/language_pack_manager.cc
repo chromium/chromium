@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -399,8 +401,10 @@ void LanguagePackManager::RemoveObserver(Observer* const observer) {
 }
 
 void LanguagePackManager::NotifyPackStateChanged(
+    std::string_view locale,
     const dlcservice::DlcState& dlc_state) {
   PackResult result = ConvertDlcStateToPackResult(dlc_state);
+  result.language_code = locale;
   for (Observer& observer : observers_) {
     observer.OnPackStateChanged(result);
   }
@@ -416,7 +420,7 @@ void LanguagePackManager::OnDlcStateChanged(
     return;
   }
 
-  NotifyPackStateChanged(dlc_state);
+  NotifyPackStateChanged(*handwriting_locale, dlc_state);
 }
 
 LanguagePackManager::LanguagePackManager() = default;
