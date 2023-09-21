@@ -194,6 +194,8 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(kNewTitle, notification->title());
   EXPECT_EQ(kNewTextContent, notification->message());
+  EXPECT_TRUE(notification->rich_notification_data()
+                  .should_make_spoken_feedback_for_popup_updates);
 }
 
 TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
