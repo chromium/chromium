@@ -14,17 +14,13 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/time/default_tick_clock.h"
-#include "base/time/tick_clock.h"
 
 namespace ash {
 
 AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(
-    AmbientUiSettings ui_settings,
-    const base::TickClock* tick_clock)
+    AmbientUiSettings ui_settings)
     : ui_settings_(std::move(ui_settings)),
-      clock_(tick_clock ? tick_clock : base::DefaultTickClock::GetInstance()),
-      session_start_time_(clock_->NowTicks()) {
+      session_start_time_(base::TimeTicks::Now()) {
   // Don't record this metric for `kPreview` mode.
   if (AmbientUiModel::Get()->ui_visibility() ==
       AmbientUiVisibility::kShouldShow) {
@@ -36,7 +32,7 @@ AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(
 }
 
 AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
-  auto elapsed = clock_->NowTicks() - session_start_time_;
+  auto elapsed = base::TimeTicks::Now() - session_start_time_;
   DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
   ambient::RecordAmbientModeTimeElapsed(elapsed, Shell::Get()->IsInTabletMode(),
                                         ui_settings_);
@@ -59,7 +55,7 @@ void AmbientSessionMetricsRecorder::RegisterScreen() {
   if (num_registered_screens_ == 1 && AmbientUiModel::Get()->ui_visibility() ==
                                           AmbientUiVisibility::kShouldShow) {
     ambient::RecordAmbientModeStartupTime(
-        clock_->NowTicks() - session_start_time_, ui_settings_);
+        base::TimeTicks::Now() - session_start_time_, ui_settings_);
   }
 }
 

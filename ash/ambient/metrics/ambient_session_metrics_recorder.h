@@ -7,9 +7,7 @@
 
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -24,10 +22,7 @@ namespace ash {
 // Metrics recorded apply to all `AmbientUiSettings`.
 class ASH_EXPORT AmbientSessionMetricsRecorder {
  public:
-  // A custom `tick_clock` may be provided for testing purposes.
-  explicit AmbientSessionMetricsRecorder(
-      AmbientUiSettings ui_settings,
-      const base::TickClock* tick_clock = nullptr);
+  explicit AmbientSessionMetricsRecorder(AmbientUiSettings ui_settings);
   AmbientSessionMetricsRecorder(const AmbientSessionMetricsRecorder&) = delete;
   AmbientSessionMetricsRecorder& operator=(
       const AmbientSessionMetricsRecorder&) = delete;
@@ -39,7 +34,6 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
 
  private:
   const AmbientUiSettings ui_settings_;
-  const raw_ptr<const base::TickClock> clock_;
   const base::TimeTicks session_start_time_;
   int num_registered_screens_ = 0;
 };
