@@ -191,7 +191,6 @@ class SiteSettingsHandler
 
   // Handles setting and resetting an origin permission.
   void HandleResetCategoryPermissionForPattern(const base::Value::List& args);
-  // TODO(1466127): Add tests for HandleSetCategoryPermissionForPattern.
   void HandleSetCategoryPermissionForPattern(const base::Value::List& args);
 
   // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
