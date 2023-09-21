@@ -92,6 +92,14 @@ bool SharedImageInterface::ScopedMapping::IsSharedMemory() {
   return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
 }
 
+void SharedImageInterface::ScopedMapping::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+    uint64_t tracing_process_id,
+    int importance) {
+  buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id, importance);
+}
+
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return 0u;
 }

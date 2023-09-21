@@ -71,6 +71,17 @@ class GPU_EXPORT SharedImageInterface {
     // Returns whether the underlying resource is shared memory.
     bool IsSharedMemory();
 
+    // Dumps information about the memory backing this instance to |pmd|.
+    // The memory usage is attributed to |buffer_dump_guid|.
+    // |tracing_process_id| uniquely identifies the process owning the memory.
+    // |importance| is relevant only for the cases of co-ownership, the memory
+    // gets attributed to the owner with the highest importance.
+    void OnMemoryDump(
+        base::trace_event::ProcessMemoryDump* pmd,
+        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+        uint64_t tracing_process_id,
+        int importance);
+
    private:
     friend class ClientSharedImageInterface;
     friend class SharedImageInterfaceInProcess;
