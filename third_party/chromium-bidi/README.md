@@ -214,6 +214,12 @@ output to the file `log.txt`:
 npm run server -- --port=8081 --headless=false
 ```
 
+### Running with in other project
+
+Sometimes it good to verify that a change will not affect thing downstream for other packages.
+There is a useful `puppeteer` label you can add to any PR to run Puppeteer test with your changes.
+It will bundle `chromium-bidi` and install it in Puppeteer project then run that package test.
+
 ## Running
 
 ### Unit tests
@@ -229,7 +235,7 @@ npm run unit
 The E2E tests are written using Python, in order to learn how to eventually do
 this in web-platform-tests.
 
-### Installation
+#### Installation
 
 Python 3.6+ and some dependencies are required:
 
@@ -237,7 +243,7 @@ Python 3.6+ and some dependencies are required:
 python3 -m pip install --user -r tests/requirements.txt
 ```
 
-### Running
+#### Running
 
 The E2E tests require BiDi server running on the same host. By default, tests
 try to connect to the port `8080`. The server can be run from the project root:
@@ -254,7 +260,7 @@ Use the `PORT` environment variable to connect to another port:
 PORT=8081 npm run e2e
 ```
 
-### Examples
+#### Examples
 
 Refer to [examples/README.md](examples/README.md).
 
@@ -370,7 +376,7 @@ There are 2 main modules:
 2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend,
    and map them to CDP commands.
 
-### Contributing
+## Contributing
 
 The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a
 new command, add it to `_processCommand`, write and call processor for it.
