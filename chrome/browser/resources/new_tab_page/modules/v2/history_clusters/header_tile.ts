@@ -3,26 +3,22 @@
 // found in the LICENSE file.
 
 import '../module_header.js';
+import '../icons.html.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './header_tile.html.js';
 
-export interface HistoryClustersHeaderElementV2 {
-  $: {
-    actionMenu: CrActionMenuElement,
-  };
-}
-
 /** Element that displays a header inside a module. */
-export class HistoryClustersHeaderElementV2 extends I18nMixin
-(PolymerElement) {
+const ElementBase = I18nMixin(PolymerElement);
+export class HistoryClustersHeaderElementV2 extends ElementBase {
   static get is() {
     return 'history-clusters-header-v2';
   }
@@ -34,46 +30,78 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
   static get properties() {
     return {
       clusterLabel: String,
-      dismissText: String,
-      disableText: String,
 
-      /** Whether suggestion chip header will show. */
+      /** Whether suggestion chip header style will show. */
       suggestionChipHeaderEnabled_: {
         type: Boolean,
+        reflectToAttribute: true,
         value: () => loadTimeData.getBoolean(
             'historyClustersSuggestionChipHeaderEnabled'),
-        reflectToAttribute: true,
       },
     };
   }
 
+  clusterId: number;
   clusterLabel: string;
-  dismissText: string;
-  disableText: string;
-  private suggestionChipHeaderEnabled_: boolean;
+  normalizedUrl: Url;
 
-  private onButtonClick_(e: Event) {
-    const action: string = (e.target! as any).dataset.action;
-    assert(action);
-    this.$.actionMenu.close();
+  private onClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent(
+        'show-all-button-click', {bubbles: true, composed: true}));
+  }
+
+  private onSuggestClick_(e: Event) {
+    e.stopPropagation();
     this.dispatchEvent(
-        new Event(`${action}-button-click`, {bubbles: true, composed: true}));
+        new CustomEvent('suggest-click', {bubbles: true, composed: true}));
   }
 
   private onMenuButtonClick_(e: Event) {
-    this.$.actionMenu.showAt(e.target as HTMLElement);
+    e.stopPropagation();
+    const moduleHeader = this.shadowRoot!.querySelector<ModuleHeaderElementV2>(
+        'ntp-module-header-v2')!;
+    moduleHeader.showAt(e);
   }
 
-  private onCustomizeButtonClick_() {
-    this.$.actionMenu.close();
-    this.dispatchEvent(
-        new Event('customize-module', {bubbles: true, composed: true}));
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-clusters-header-v2': HistoryClustersHeaderElementV2;
+  private getMenuItemGroups_(): MenuItem[][] {
+    return [
+      [
+        {
+          action: 'done',
+          icon: 'modules:done',
+          text: this.i18n('modulesJourneysDoneButton'),
+        },
+        {
+          action: 'dismiss',
+          icon: 'modules:thumb_down',
+          text: this.i18n('modulesJourneysDismissButton'),
+        },
+        {
+          action: 'disable',
+          icon: 'modules:block',
+          text: this.i18nRecursive(
+              '', 'modulesDisableButtonTextV2', 'modulesThisTypeOfCardText'),
+        },
+        {
+          action: 'show-all',
+          icon: 'modules:right_panel_open',
+          text: this.i18n('modulesJourneysShowAllButton'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
+        },
+      ],
+      [
+        {
+          action: 'customize-module',
+          icon: 'modules:tune',
+          text: this.i18n('modulesCustomizeButtonText'),
+        },
+      ],
+    ];
   }
 }
 

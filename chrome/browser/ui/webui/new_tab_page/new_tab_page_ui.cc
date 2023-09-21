@@ -236,6 +236,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                                                ntp_features::kNtpModulesLoad));
   source->AddInteger("modulesLoadTimeout",
                      ntp_features::GetModulesLoadTimeout().InMilliseconds());
+  source->AddInteger("modulesMaxColumnCount",
+                     ntp_features::GetModulesMaxColumnCount());
+  source->AddInteger(
+      "multipleLoadedModulesMaxModuleInstanceCount",
+      ntp_features::GetMultipleLoadedModulesMaxModuleInstanceCount());
   source->AddBoolean("mostVisitedReflowOnOverflowEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostVisitedReflowOnOverflow));
@@ -404,7 +409,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesCartLower", IDS_NTP_MODULES_CART_LOWER},
       {"modulesCartLowerThese", IDS_NTP_MODULES_CART_LOWER_THESE},
       {"modulesCartLowerYour", IDS_NTP_MODULES_CART_LOWER_YOUR},
+      {"modulesDisableToastMessage",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE},
       {"modulesDriveSentence", IDS_NTP_MODULES_DRIVE_SENTENCE},
+      {"modulesDriveSentenceV2", IDS_NTP_MODULES_DRIVE_SENTENCE_V2},
       {"modulesDriveSentence2", IDS_NTP_MODULES_DRIVE_SENTENCE2},
       {"modulesDriveFilesSentence", IDS_NTP_MODULES_DRIVE_FILES_SENTENCE},
       {"modulesDriveFilesLower", IDS_NTP_MODULES_DRIVE_FILES_LOWER},
@@ -490,13 +498,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT},
       {"modulesFirstRunExperienceOptOutToast",
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
-      {"modulesJourneysResumeJourney", IDS_NTP_MODULES_RESUME_YOUR_JOURNEY},
       {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
-      {"disableQuestsModuleToastName",
-       IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2},
-      {"disableQuestsModuleToastMessage",
-       IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE},
+      {"modulesThisTypeOfCardText",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME},
       {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
       {"modulesJourneysDismissButton",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON},
@@ -517,6 +522,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_SINGULAR},
       {"modulesJourneysCartTileLabelDefault",
        IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT},
+      {"modulesJourneysResumeJourney",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING},
       {"modulesMoreActions", IDS_NTP_MODULES_MORE_ACTIONS},
 
       // Middle slot promo.
@@ -532,17 +539,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                                                ntp_features::kNtpWideModules));
 
   if (base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)) {
-    source->AddLocalizedString(
-        "modulesJourneysResumeJourney",
-        IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING);
     source->AddLocalizedString("modulesJourneysInfo",
                                IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO2);
-    source->AddLocalizedString(
-        "disableQuestsModuleToastName",
-        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME);
-    source->AddLocalizedString(
-        "disableQuestsModuleToastMessage",
-        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE);
     source->AddLocalizedString(
         "modulesJourneyDisable",
         IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT);

@@ -24,6 +24,7 @@ modules_test_files =
       "modules/module_wrapper_test.ts",
       "modules/modules_test.ts",
       "modules/v2/modules_test.ts",
+      "modules/v2/module_header_test.ts",
     ] + cart_test_files + drive_test_files + drive_v2_test_files +
     feed_test_files + photos_test_files + recipes_test_files +
     history_clusters_test_files + history_clusters_v2_test_files

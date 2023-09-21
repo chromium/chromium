@@ -14,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Cart} from '../../../cart.mojom-webui.js';
 import {Cluster, InteractionState} from '../../../history_cluster_types.mojom-webui.js';
+import {LayoutType} from '../../../history_clusters_layout_type.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {NewTabPageProxy} from '../../../new_tab_page_proxy.js';
 import {InfoDialogElement} from '../../info_dialog';
@@ -59,14 +60,18 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       format: {
         type: String,
-        value: 'narrow',
         reflectToAttribute: true,
       },
 
       imagesEnabled_: {
         type: Boolean,
-        value: true,
         computed: `computeImagesEnabled_(cart)`,
+        reflectToAttribute: true,
+      },
+
+      showRelatedSearches: {
+        type: Boolean,
+        computed: `computeShowRelatedSearches(cluster)`,
         reflectToAttribute: true,
       },
     };
@@ -75,6 +80,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   cart: Cart|null;
   cluster: Cluster;
   format: string;
+  showRelatedSearches: boolean;
   private imagesEnabled_: boolean;
   private setDisabledModulesListenerId_: number|null = null;
 
@@ -108,13 +114,40 @@ export class HistoryClustersModuleElement extends I18nMixin
     }
   }
 
+  override ready() {
+    super.ready();
+
+    HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
+        this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly,
+        this.cluster.id);
+  }
+
+  private computeImagesEnabled_(): boolean {
+    return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
+        !!this.cart;
+  }
+
+  private computeShowRelatedSearches(): boolean {
+    return this.cluster.relatedSearches.length > 1;
+  }
+
+  private computeLabel_(): string {
+    return this.cluster.label.replace(/[“”]+/g, '');
+  }
+
+  private shouldShowCartTile_(cart: Object): boolean {
+    return loadTimeData.getBoolean(
+               'modulesChromeCartInHistoryClustersModuleEnabled') &&
+        !!cart;
+  }
+
   private onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
         message: loadTimeData.getStringF(
-            'disableQuestsModuleToastMessage',
-            loadTimeData.getString('disableQuestsModuleToastName')),
+            'modulesDisableToastMessage',
+            loadTimeData.getString('modulesThisTypeOfCardText')),
       },
     });
     this.dispatchEvent(disableEvent);
@@ -139,25 +172,65 @@ export class HistoryClustersModuleElement extends I18nMixin
     }));
   }
 
+  private onDoneButtonClick_() {
+    HistoryClustersProxyImpl.getInstance()
+        .handler.updateClusterVisitsInteractionState(
+            this.cluster.visits, InteractionState.kDone);
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.cluster.label),
+        restoreCallback: () => {
+          HistoryClustersProxyImpl.getInstance()
+              .handler.updateClusterVisitsInteractionState(
+                  this.cluster.visits, InteractionState.kDefault);
+        },
+      },
+    }));
+  }
+
   private onInfoButtonClick_() {
     this.$.infoDialogRender.get().showModal();
   }
 
-  private onShowAllClick_() {
-    assert(this.cluster.label.length >= 2);
+  private onShowAllButtonClick_() {
+    assert(this.cluster.label.length >= 2, 'Unexpected cluster label length');
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label.substring(1, this.cluster.label.length - 1));
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
-  private shouldShowCartTile_(cart: Object): boolean {
-    return loadTimeData.getBoolean(
-               'modulesChromeCartInHistoryClustersModuleEnabled') &&
-        !!cart;
+  private onSuggestTileClick_(e: Event) {
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Suggest');
+    this.recordClick_();
   }
 
-  private computeImagesEnabled_(): boolean {
-    return loadTimeData.getBoolean('historyClustersImagesEnabled') &&
-        !!this.cart;
+  private onVisitTileClick_(e: Event) {
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Visit');
+    this.recordClick_();
+  }
+
+  private recordTileClickIndex_(tile: HTMLElement, tileType: string) {
+    const layoutType =
+        this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly;
+    const index = Array.from(tile.parentNode!.children).indexOf(tile);
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: `NewTabPage.HistoryClusters.Layout${layoutType}.${
+              tileType!}Tile.ClickIndex`,
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 0,
+          max: 10,
+          buckets: 10,
+        },
+        index);
+  }
+
+  private recordClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 }
 

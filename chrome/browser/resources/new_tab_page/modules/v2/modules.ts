@@ -14,6 +14,7 @@ import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resourc
 import {loadTimeData} from '../../i18n_setup.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
+import {Module} from '../module_descriptor.js';
 import {ModuleRegistry} from '../module_registry.js';
 import {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
 
@@ -30,19 +31,16 @@ export const SUPPORTED_MODULE_WIDTHS: NamedWidth[] = [
   {name: 'wide', value: 728},
 ];
 
-export const MAX_COLUMN_COUNT = 5;
-
 interface QueryDetails {
   maxWidth: number;
   query: string;
 }
 
-/* Derived from 5 * narrow module width + 4 * wrapper gap width. */
-const CONTAINER_MAX_WIDTH = 1592;
-
 const CONTAINER_GAP_WIDTH = 8;
 
 const MARGIN_WIDTH = 48;
+
+const METRIC_NAME_MODULE_DISABLED = 'NewTabPage.Modules.Disabled';
 
 export type UndoActionEvent =
     CustomEvent<{message: string, restoreCallback?: () => void}>;
@@ -82,6 +80,11 @@ export class ModulesV2Element extends PolymerElement {
         value: () => ({all: true, ids: []}),
       },
 
+      modulesShownToUser: {
+        type: Boolean,
+        notify: true,
+      },
+
       /** Data about the most recent un-doable action. */
       undoData_: {
         type: Object,
@@ -90,6 +93,9 @@ export class ModulesV2Element extends PolymerElement {
     };
   }
 
+  modulesShownToUser: boolean;
+  private maxColumnCount_: number;
+  private containerMaxWidth_: number;
   private disabledModules_: {all: boolean, ids: string[]};
   private eventTracker_: EventTracker = new EventTracker();
   private undoData_: {message: string, undo?: () => void}|null;
@@ -111,9 +117,9 @@ export class ModulesV2Element extends PolymerElement {
     const widths: Set<number> = new Set();
     for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
       const namedWidth = SUPPORTED_MODULE_WIDTHS[i];
-      for (let u = 1; u <= MAX_COLUMN_COUNT - i; u++) {
+      for (let u = 1; u <= this.maxColumnCount_ - i; u++) {
         const width = (namedWidth.value * u) + (CONTAINER_GAP_WIDTH * (u - 1));
-        if (width <= CONTAINER_MAX_WIDTH) {
+        if (width <= this.containerMaxWidth_) {
           widths.add(width);
         }
       }
@@ -180,6 +186,10 @@ export class ModulesV2Element extends PolymerElement {
       '--container-gap': `${CONTAINER_GAP_WIDTH}px`,
     });
 
+    this.maxColumnCount_ = loadTimeData.getInteger('modulesMaxColumnCount');
+    this.containerMaxWidth_ =
+        this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
+        (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
     this.loadModules_();
   }
 
@@ -209,6 +219,20 @@ export class ModulesV2Element extends PolymerElement {
                 forwardHostProp: this.forwardHostProp_,
                 instanceProps: {item: true},
               }) as {new (): TemplateInstanceBase & HTMLElement};
+
+
+      if (modules.length > 1) {
+        const maxModuleInstanceCount = loadTimeData.getInteger(
+            'multipleLoadedModulesMaxModuleInstanceCount');
+        if (maxModuleInstanceCount > 0) {
+          modules.forEach(module => {
+            module.elements.splice(
+                maxModuleInstanceCount,
+                module.elements.length - maxModuleInstanceCount);
+          });
+        }
+      }
+
       this.templateInstances_ =
           modules
               .map(module => {
@@ -230,8 +254,31 @@ export class ModulesV2Element extends PolymerElement {
 
       chrome.metricsPrivate.recordSmallCount(
           'NewTabPage.Modules.LoadedModulesCount', modules.length);
-      // TODO(crbug.com/1444758): Add module instances count metric.
+      modulesIdNames.forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
+      chrome.metricsPrivate.recordSmallCount(
+          'NewTabPage.Modules.InstanceCount', this.templateInstances_.length);
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
+      this.recordModuleLoadedWithModules_(modules);
       this.dispatchEvent(new Event('modules-loaded'));
+    }
+  }
+
+  private recordModuleLoadedWithModules_(modules: Module[]) {
+    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+
+    for (const moduleDescriptorId of moduleDescriptorIds) {
+      moduleDescriptorIds.forEach(id => {
+        if (id !== moduleDescriptorId) {
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+        }
+      });
     }
   }
 
@@ -244,12 +291,14 @@ export class ModulesV2Element extends PolymerElement {
   private updateContainerAndChildrenStyles_(availableWidth?: number) {
     if (typeof availableWidth === 'undefined') {
       availableWidth = Math.min(
-          document.body.clientWidth - 2 * MARGIN_WIDTH, CONTAINER_MAX_WIDTH);
+          document.body.clientWidth - 2 * MARGIN_WIDTH,
+          this.containerMaxWidth_);
     }
 
     const moduleWrappers =
         Array.from(this.shadowRoot!.querySelectorAll(
             'ntp-module-wrapper:not([hidden])')) as ModuleWrapperElement[];
+    this.modulesShownToUser = moduleWrappers.length !== 0;
     if (moduleWrappers.length === 0) {
       return;
     }
@@ -263,7 +312,7 @@ export class ModulesV2Element extends PolymerElement {
         Math.floor(
             (availableWidth + CONTAINER_GAP_WIDTH) /
             (CONTAINER_GAP_WIDTH + SUPPORTED_MODULE_WIDTHS[0].value)),
-        MAX_COLUMN_COUNT);
+        this.maxColumnCount_);
 
     let index = 0;
     while (index < moduleWrappers.length) {
@@ -311,9 +360,9 @@ export class ModulesV2Element extends PolymerElement {
     NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
     this.$.undoToast.show();
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled', id);
+        METRIC_NAME_MODULE_DISABLED, id);
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled.ModuleRequest', id);
+        `${METRIC_NAME_MODULE_DISABLED}.ModuleRequest`, id);
   }
 
   private onDisabledModulesChange_() {
@@ -337,12 +386,17 @@ export class ModulesV2Element extends PolymerElement {
             this.$.container.insertBefore(
                 wrapper, this.$.container.childNodes[index]);
             restoreCallback();
+            chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+                'NewTabPage.Modules.Restored', wrapper.module.descriptor.id);
           } :
           undefined,
     };
 
     // Notify the user.
     this.$.undoToast.show();
+
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        'NewTabPage.Modules.Dismissed', wrapper.module.descriptor.id);
   }
 
   private onUndoButtonClick_() {

@@ -1,4 +1,12 @@
 <style include="history-clusters-shared-style">
+  .related-search {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
   a:link,
   a:visited,
   a:hover,
@@ -6,23 +14,44 @@
     text-decoration: none;
   }
 
-  :host-context(.focus-outline-visible) :focus,
-  :focus-visible {
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
     box-shadow: var(--ntp-focus-shadow);
     outline: none;
   }
 
-  .related-search {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
+  .hover-layer {
+    display: none;
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  a,
+  .hover-layer {
+    border-radius: 0 0 var(--ntp-module-item-border-radius)
+      var(--ntp-module-item-border-radius);
+  }
+
+  :host([is-first]) a,
+  :host([is-first]) .hover-layer {
+    border-radius: var(--ntp-module-item-border-radius)
+      var(--ntp-module-item-border-radius) 0 0;
+  }
+
+  a:hover .hover-layer {
+    display: block;
+  }
+
+  a:active .hover-layer {
+    background: var(--color-new-tab-page-active-background);
   }
 
   .title {
     color: var(--color-new-tab-page-primary-foreground);
     font-size: var(--ntp-module-text-size);
-    margin: auto 0;
+    margin: auto 8px auto 0;
   }
 
   .icon {
@@ -33,6 +62,7 @@
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 20px;
+    flex-shrink: 0;
     height: 20px;
     margin: auto 16px;
     width: 20px;
@@ -60,6 +90,7 @@
     href="[[computeSearchUrl_(relatedSearch.query)]]"
     aria-label$="[[i18n('modulesJourneysSearchSuggAcc',
         relatedSearch.query)]]">
+  <div class="hover-layer"></div>
   <div class="icon"
        style="-webkit-mask-image:
        url(//resources/images/icon_search.svg);">

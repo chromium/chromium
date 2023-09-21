@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
-import {DisableModuleEvent, DriveProxy, driveV2Descriptor, DriveV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {DisableModuleEvent, DismissModuleEvent, DriveProxy, driveV2Descriptor, DriveV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -195,4 +195,41 @@ suite('DriveV2Module', () => {
             'You won\'t see Drive files on this page again',
             event.detail.message);
       });
+
+  test('backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const data = {
+      files: [
+        {
+          justificationText: '',
+          title: '',
+          id: '',
+          mimeType: '',
+          itemUrl: {url: ''},
+        },
+      ],
+    };
+    handler.setResultFor('getFiles', Promise.resolve(data));
+    const moduleElement =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!moduleElement);
+    document.body.append(moduleElement);
+
+    // Act.
+    const whenFired = eventToPromise('dismiss-module-instance', moduleElement);
+    ($$(moduleElement, 'ntp-module-header-v2')!
+     ).dispatchEvent(new Event('dismiss-button-click'));
+
+    // Assert.
+    const event: DismissModuleEvent = await whenFired;
+    assertEquals('Files hidden', event.detail.message);
+    assertTrue(!!event.detail.restoreCallback);
+    assertEquals(1, handler.getCallCount('dismissModule'));
+
+    // Act.
+    event.detail.restoreCallback!();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('restoreModule'));
+  });
 });

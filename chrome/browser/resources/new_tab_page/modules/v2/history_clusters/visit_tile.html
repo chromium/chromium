@@ -4,7 +4,17 @@
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
     height: 100%;
+    min-width: 0;
     width: 100%;
+  }
+
+  .hover-layer {
+    display: none;
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    border-radius: var(--ntp-module-item-border-radius);
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   a:link,
@@ -14,8 +24,16 @@
     text-decoration: none;
   }
 
-  :host-context(.focus-outline-visible) :focus,
-  :focus-visible {
+  a:hover .hover-layer {
+    display: block;
+  }
+
+  a:active .hover-layer {
+    background: var(--color-new-tab-page-active-background);
+  }
+
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
     border-radius: var(--ntp-module-item-border-radius);
     box-shadow: var(--ntp-focus-shadow);
     outline: none;
@@ -23,6 +41,7 @@
 
   #content {
     flex: 1;
+    min-width: 0;
     position: relative;
   }
 
@@ -35,8 +54,11 @@
     margin: 16px;
   }
 
-  :host([images-enabled_]) #label-container {
-    border-radius: var(--ntp-module-item-border-radius);
+  :host([images-enabled]) #label-container {
+    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 69.79%);
+    border-radius: var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius) 0 0;
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     font-size: 11px;
@@ -47,31 +69,30 @@
     z-index: 1;
   }
 
-  :host([images-enabled_][image-url_]) #label-container {
-    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.4) 69.79%);
-  }
-
-  /*TODO: mfacey@: Fix label size */
   #label {
-    max-width: 100px;
+    color: var(--color-new-tab-page-secondary-foreground);
   }
 
-  :host([images-enabled_]) #label {
+  :host([images-enabled]) #label {
+    color: white;
     margin-top: 12px;
   }
 
-  :host([images-enabled_]) #icon {
+  :host([images-enabled]) #icon {
     margin: 12px 8px 0 12px;
   }
 
   #image {
-    background: var(--color-new-tab-page-module-item-background);
+    background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     margin: 4px;
     overflow: hidden;
     position: relative;
-    height: 50%;
+    height: 122px;
+  }
+
+  :host([format='wide']:not([show-related-searches])) #image {
+    height: 68px;
   }
 
   #image img {
@@ -97,28 +118,27 @@
 
   #title {
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
     color: var(--color-new-tab-page-primary-foreground);
     display: -webkit-box;
     font-size: var(--ntp-module-text-size);
+    height: 60px;
+    line-height: 20px;
     margin: 16px;
     white-space: initial;
   }
 
   :host([format='wide']) #title {
-    margin: 24px 16px;
-  }
-
-  #title {
-    -webkit-line-clamp: 3;
-    height: 60px;
-    line-height: 20px;
+    margin: 12px 16px;
   }
 
   #date {
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: max-content;
     bottom: 16px;
+    font-size: 11px;
     left: 16px;
+    line-height: 12px;
     position: absolute;
   }
 
@@ -135,20 +155,43 @@
 
     /* Set outline since background isn't visible in hcm */
     a {
-      border-radius: 12px;
+      border-radius: var(--ntp-module-item-border-radius);
       outline: var(--cr-border-hcm);
     }
+  }
+
+  #discountChip {
+    background: var(--color-sys-tertiary-container);
+    border-radius: 4px;
+    color: var(--color-sys-on-tertiary-container);
+    display: inline-block;
+    font-weight: 500;
+    font-size: 11px;
+    height: 18px;
+    line-height: 18px;
+    margin-inline-start: 16px;
+    margin-top: 8px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
+    text-align: center;
+  }
+
+  :host([has-discount]) #title {
+    -webkit-line-clamp: 1;
+    height: 20px;
+    margin-bottom: 0;
   }
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
    aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
+  <div class="hover-layer"></div>
   <div id="label-container">
     <page-favicon id="icon" url="[[visit.normalizedUrl]]"
                   is-known-to-sync="[[visit.isKnownToSync]]">
     </page-favicon>
     <div id="label" class="truncate">[[label_]]</div>
   </div>
-  <div id="image" hidden="[[!imagesEnabled_]]">
+  <div id="image" hidden="[[!imagesEnabled]]">
     <template is="dom-if" if="[[imageUrl_]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
           draggable="false" alt="">
@@ -161,6 +204,9 @@
     </template>
   </div>
   <div id="title" class="truncate">[[visit.pageTitle]]</div>
+  <template is="dom-if" if="[[hasDiscount]]" restamp>
+    <div id="discountChip"></div>
+  </template>
   <template is="dom-if" if="[[annotation_]]">
         <div id="annotation">[[annotation_]]</div>
   </template>

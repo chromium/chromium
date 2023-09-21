@@ -3,15 +3,33 @@
     background-color: var(--color-new-tab-page-module-background);
   }
 
+  @media (forced-colors: active) {
+    /* Set outline since background isn't visible in hcm */
+    ntp-module-header-v2,
+    a {
+      border-radius: var(--ntp-module-item-border-radius);
+      outline: var(--cr-border-hcm);
+     }
+
+    .file {
+      overflow: visible;
+    }
+  }
+
   ntp-module-header-v2 {
     margin: 8px;
+  }
+
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
   }
 
   #files {
     background-color: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     margin: 8px;
-    overflow: hidden;
   }
 
   .file {
@@ -20,11 +38,31 @@
     height: 52px;
     padding-bottom: 2px;
     padding-top: 2px;
+    position: relative;
     text-decoration: none;
+    overflow: hidden;
   }
 
-  .file:hover {
-    background-color: var(--color-new-tab-page-control-background-hovered);
+  .file:hover #hover-layer {
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  #hover-layer {
+    display: none;
+  }
+
+  .file:first-of-type {
+    border-radius: var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius) 0 0;
+  }
+
+  .file:last-of-type {
+    border-radius: 0 0 var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius);
   }
 
   .file-icon {
@@ -58,26 +96,21 @@
   }
 </style>
 <ntp-module-header-v2
-    show-info-button-dropdown
-    disable-text="[[i18nRecursive('',
-                                  'modulesDisableButtonText',
-                                  'modulesDriveSentence2')]]"
-    dismiss-text="[[i18nRecursive('',
-                                  'modulesDismissButtonText',
-                                  'modulesDriveFilesLower')]]"
+    id="moduleHeaderElementV2"
+    header-text="[[i18n('modulesDriveTitleV2')]]"
+    menu-item-groups="[[getMenuItemGroups_()]]"
     more-actions-text="[[i18nRecursive('',
                                   'modulesMoreActions',
                                   'modulesDriveSentence')]]"
-    icon-src="icons/drive_logo.svg"
-    show-info-button on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
     on-disable-button-click="onDisableButtonClick_"
+    on-dismiss-button-click="onDismissButtonClick_"
     on-info-button-click="onInfoButtonClick_"
-    header-text="[[i18n('modulesDriveTitleV2')]]">
+    on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
     <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_">
+      <div id="hover-layer"></div>
       <img is="cr-auto-img"
           class="file-icon"
           draggable="false"

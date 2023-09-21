@@ -1,5 +1,6 @@
 <style include="cr-icons">
   :host {
+    --menu-item-margin: 12px;
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
@@ -24,13 +25,31 @@
     flex-grow: 1;
   }
 
-  cr-icon-button {
+  #menuButton {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
     --cr-icon-button-hover-background-color:
         var(--color-new-tab-page-control-background-hovered);
-    margin-inline-end: -10px;
-    margin-inline-start: 0px;
+    margin-inline: 0 -6px;
+  }
+
+  #actionMenu {
+    --cr-menu-shadow: var(--ntp-menu-shadow);
+  }
+
+  .action-menu-icon {
+    --cr-icon-ripple-size: 20px;
+    -webkit-mask-size: 16px;
+    background-color: transparent;
+    margin-inline-start: calc(-1 * var(--menu-item-margin));
+    margin-inline-end: var(--menu-item-margin);
+  }
+
+  #actionMenuDivider {
+    background-color: var(--color-new-tab-page-module-context-menu-divider);
+    border: none;
+    height: 1px;
+    margin: 0;
   }
 </style>
 <div id="titleContainer">
@@ -41,3 +60,20 @@
       class="icon-more-vert" on-click="onMenuButtonClick_">
   </cr-icon-button>
 </div>
+
+<cr-action-menu id="actionMenu">
+  <template is="dom-repeat"
+      items="[[menuItemGroups]]" as="group">
+    <template is="dom-repeat" items="[[group]]">
+      <button id="[[item.action]]" class="dropdown-item"
+          on-click="onButtonClick_" data-action$="[[item.action]]">
+        <iron-icon
+            class="action-menu-icon cr-icon"
+            icon="[[item.icon]]">
+        </iron-icon>
+        [[item.text]]
+      </button>
+    </template>
+    <hr id="actionMenuDivider" hidden$="[[!showDivider_(index)]]">
+  </template>
+</cr-action-menu>
