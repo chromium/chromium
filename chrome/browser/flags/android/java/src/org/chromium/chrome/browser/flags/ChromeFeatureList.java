@@ -447,6 +447,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE =
             "SyncEnableContactInfoDataTypeInTransportMode";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
+    public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_STRIP_REDESIGN = "TabStripRedesign";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
@@ -597,8 +598,10 @@ public abstract class ChromeFeatureList {
             new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
     public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
-    public static final CachedFlag sTabDragDropAndroid =
+    public static final CachedFlag sTabDragDropAsWindowAndroid =
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
+    public static final CachedFlag sTabLinkDragDropAndroid =
+            new CachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, false);
     public static final CachedFlag sTabStripStartupRefactoring =
             new CachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
@@ -679,7 +682,8 @@ public abstract class ChromeFeatureList {
         sStartSurfaceWithAccessibility,
         sStoreHoursAndroid,
         sSurfacePolish,
-        sTabDragDropAndroid,
+        sTabDragDropAsWindowAndroid,
+        sTabLinkDragDropAndroid,
         sTabStripRedesign,
         sTabStripStartupRefactoring,
         sTabletToolbarReordering,

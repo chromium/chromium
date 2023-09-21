@@ -127,4 +127,16 @@ public class TabUiFeatureUtilities {
         return ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
+
+    /**
+     * @return whether tab drag is enabled (either via drag as window or drag as tab).
+     * TODO(crbug.com/1485628) - merge both flags and use device property instead to differentiate.
+     */
+    public static boolean isTabDragEnabled() {
+        // Both flags should not be enabled together.
+        assert !(ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
+                && ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled());
+        return ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled()
+                || ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled();
+    }
 }

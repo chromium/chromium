@@ -16,8 +16,8 @@ import androidx.core.view.ContentInfoCompat;
 import androidx.core.view.OnReceiveContentListener;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -48,7 +48,7 @@ class TabDropTarget {
     class DropContentReceiver implements OnReceiveContentListener {
         @Override
         public @Nullable ContentInfoCompat onReceiveContent(View view, ContentInfoCompat payload) {
-            if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return payload;
+            if (!TabUiFeatureUtilities.isTabDragEnabled()) return payload;
             if (payload == null) return payload;
 
             // Accept the drop to handle only if all the following conditions are met:

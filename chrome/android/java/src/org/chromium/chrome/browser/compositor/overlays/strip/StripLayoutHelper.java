@@ -3395,7 +3395,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     protected void prepareForDragDrop() {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         mTabDropTarget = new TabDropTarget(this);
         TabDragSource.getInstance().prepareForDragDrop(
@@ -3405,7 +3405,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab, PointF dragStartPointF) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
         // Also start the tab drag only if there are more than one tabs and a tab has been selected
@@ -3429,7 +3429,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     void selectTabAtIndex(int atIndex) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         TabModelUtils.setIndex(mModel, atIndex, true);
     }
@@ -3440,7 +3440,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         // The start position is in the view coordinate system and related to the top left position
         // of the toolbar container view. Convert it to the screen coordinate system for window drag

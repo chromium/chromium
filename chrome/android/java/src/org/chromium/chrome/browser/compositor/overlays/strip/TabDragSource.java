@@ -23,9 +23,9 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /**
  * A singleton class manages initiating tab drag and drop and handles the events that are received
@@ -399,7 +399,7 @@ public class TabDragSource {
      */
     public boolean startTabDragAction(View tabsToolbarView,
             StripLayoutHelper sourceStripLayoutHelper, Tab tabBeingDragged, PointF startPoint) {
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return false;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return false;
         if (getDragSourceTabsToolbarHashCode() != 0) return false;
 
         assert (tabsToolbarView != null);
@@ -432,7 +432,7 @@ public class TabDragSource {
      */
     public void prepareForDragDrop(View tabsToolbarView, MultiInstanceManager multiInstanceManager,
             TabDropTarget tabDropTarget) {
-        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         assert (tabsToolbarView != null);
         assert (multiInstanceManager != null);
