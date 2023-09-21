@@ -1084,30 +1084,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-// TODO(crbug.com/1453477): test is flaky on linux, mac and chromeos.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WebRequestSubresourceRedirects \
-  DISABLED_WebRequestSubresourceRedirects
-#else
-#define MAYBE_WebRequestSubresourceRedirects WebRequestSubresourceRedirects
-#endif
+// TODO(crbug.com/1453477): test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       MAYBE_WebRequestSubresourceRedirects) {
+                       DISABLED_WebRequestSubresourceRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects"))
       << message_;
 }
 
-// TODO(crbug.com/1453477): test is flaky on linux, mac and chromeos.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders \
-  DISABLED_WebRequestSubresourceRedirectsWithExtraHeaders
-#else
-#define MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders \
-  WebRequestSubresourceRedirectsWithExtraHeaders
-#endif
+// TODO(crbug.com/1453477): test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders) {
+                       DISABLED_WebRequestSubresourceRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects",
                                {.custom_arg = R"({"useExtraHeaders": true})"}))
