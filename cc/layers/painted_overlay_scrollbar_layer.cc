@@ -137,6 +137,7 @@ bool PaintedOverlayScrollbarLayer::Update() {
   updated |= UpdateProperty(scrollbar_.Read(*this)->ThumbRect().size(),
                             &thumb_size_.Write(*this));
   updated |= PaintThumbIfNeeded();
+  updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
   updated |= PaintTickmarks();
 
   return updated;
@@ -172,7 +173,7 @@ bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
 }
 
 bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
-  if (!scrollbar_.Read(*this)->HasTickmarks()) {
+  if (!has_find_in_page_tickmarks()) {
     if (!track_resource_.Read(*this)) {
       return false;
     } else {

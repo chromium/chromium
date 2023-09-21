@@ -70,6 +70,16 @@ void ScrollbarLayerBase::SetScrollElementId(ElementId element_id) {
   SetNeedsCommit();
 }
 
+bool ScrollbarLayerBase::SetHasFindInPageTickmarks(
+    bool has_find_in_page_tickmarks) {
+  if (has_find_in_page_tickmarks_.Read(*this) == has_find_in_page_tickmarks) {
+    return false;
+  }
+  has_find_in_page_tickmarks_.Write(*this) = has_find_in_page_tickmarks;
+  SetNeedsPushProperties();
+  return true;
+}
+
 void ScrollbarLayerBase::PushPropertiesTo(
     LayerImpl* layer,
     const CommitState& commit_state,
@@ -80,6 +90,8 @@ void ScrollbarLayerBase::PushPropertiesTo(
   DCHECK_EQ(scrollbar_layer_impl->orientation(), orientation_);
   DCHECK_EQ(scrollbar_layer_impl->is_left_side_vertical_scrollbar(),
             is_left_side_vertical_scrollbar_);
+  scrollbar_layer_impl->SetHasFindInPageTickmarks(
+      has_find_in_page_tickmarks_.Read(*this));
   scrollbar_layer_impl->SetScrollElementId(scroll_element_id_.Read(*this));
 }
 

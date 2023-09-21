@@ -177,6 +177,7 @@ bool PaintedScrollbarLayer::Update() {
   updated |= ScrollbarLayerBase::Update();
   updated |= UpdateInternalContentScale();
   updated |= UpdateThumbAndTrackGeometry();
+  updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
 
   gfx::Size size = bounds();
   gfx::Size scaled_size = internal_content_bounds_.Read(*this);

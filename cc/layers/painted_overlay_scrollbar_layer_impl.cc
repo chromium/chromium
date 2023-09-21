@@ -239,8 +239,4 @@ const char* PaintedOverlayScrollbarLayerImpl::LayerTypeAsString() const {
   return "cc::PaintedOverlayScrollbarLayerImpl";
 }
 
-bool PaintedOverlayScrollbarLayerImpl::HasFindInPageTickmarks() const {
-  return track_ui_resource_id_ != 0;
-}
-
 }  // namespace cc

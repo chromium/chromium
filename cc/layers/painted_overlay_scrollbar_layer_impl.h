@@ -57,8 +57,6 @@ class CC_EXPORT PaintedOverlayScrollbarLayerImpl
     track_ui_resource_id_ = uid;
   }
 
-  bool HasFindInPageTickmarks() const override;
-
  protected:
   PaintedOverlayScrollbarLayerImpl(LayerTreeImpl* tree_impl,
                                    int id,

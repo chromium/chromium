@@ -77,9 +77,13 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual bool JumpOnTrackClick() const;
   virtual ScrollbarPart IdentifyScrollbarPart(
       const gfx::PointF position_in_widget) const;
-  // Only PaintedOverlayScrollbar(Aura Overlay Scrollbar) need to know
-  // tickmarks's state.
-  virtual bool HasFindInPageTickmarks() const;
+  // Only Aura (PaintedOverlayScrollbar) and Fluent (PaintedScrollbar) overlay
+  // scrollbars need to know tickmarks's state to trigger the painting of the
+  // scrollbar's track.
+  bool has_find_in_page_tickmarks() const {
+    return has_find_in_page_tickmarks_;
+  }
+  void SetHasFindInPageTickmarks(bool has_find_in_page_tickmarks);
 
   // Mac overlay scrollbars are faded during paint but the compositor layer is
   // always fully opaque where as Aura scrollbars fade by animating the layer
@@ -122,6 +126,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   // Difference between the clip layer's height and the visible viewport
   // height (which may differ in the presence of top-controls hiding).
   float vertical_adjust_;
+  bool has_find_in_page_tickmarks_;
 
   FRIEND_TEST_ALL_PREFIXES(ScrollbarLayerTest,
                            ScrollElementIdPushedAcrossCommit);

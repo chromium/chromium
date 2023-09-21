@@ -27,7 +27,8 @@ ScrollbarLayerImplBase::ScrollbarLayerImplBase(
       scroll_layer_length_(0.f),
       orientation_(orientation),
       is_left_side_vertical_scrollbar_(is_left_side_vertical_scrollbar),
-      vertical_adjust_(0.f) {}
+      vertical_adjust_(0.f),
+      has_find_in_page_tickmarks_(false) {}
 
 ScrollbarLayerImplBase::~ScrollbarLayerImplBase() {
   layer_tree_impl()->UnregisterScrollbar(this);
@@ -37,6 +38,7 @@ void ScrollbarLayerImplBase::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
   DCHECK(layer->IsScrollbarLayer());
   ScrollbarLayerImplBase* scrollbar_layer = ToScrollbarLayer(layer);
+  scrollbar_layer->SetHasFindInPageTickmarks(has_find_in_page_tickmarks_);
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_scrollbar_);
   scrollbar_layer->SetScrollElementId(scroll_element_id());
 }
@@ -287,8 +289,13 @@ ScrollbarLayerImplBase::GetScrollbarAnimator() const {
   return layer_tree_impl()->settings().scrollbar_animator;
 }
 
-bool ScrollbarLayerImplBase::HasFindInPageTickmarks() const {
-  return false;
+void ScrollbarLayerImplBase::SetHasFindInPageTickmarks(
+    bool has_find_in_page_tickmarks) {
+  if (has_find_in_page_tickmarks_ == has_find_in_page_tickmarks) {
+    return;
+  }
+  has_find_in_page_tickmarks_ = has_find_in_page_tickmarks;
+  NoteLayerPropertyChanged();
 }
 
 float ScrollbarLayerImplBase::OverlayScrollbarOpacity() const {

@@ -898,9 +898,10 @@ void LayerTreeImpl::HandleTickmarksVisibilityChange() {
 
     // Android Overlay Scrollbar don't have FindInPage Tickmarks.
     if (scrollbar->GetScrollbarAnimator() != LayerTreeSettings::AURA_OVERLAY)
-      DCHECK(!scrollbar->HasFindInPageTickmarks());
+      DCHECK(!scrollbar->has_find_in_page_tickmarks());
 
-    controller->UpdateTickmarksVisibility(scrollbar->HasFindInPageTickmarks());
+    controller->UpdateTickmarksVisibility(
+        scrollbar->has_find_in_page_tickmarks());
   }
 }
 

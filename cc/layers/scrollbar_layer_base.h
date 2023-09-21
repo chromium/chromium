@@ -24,6 +24,10 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   bool is_left_side_vertical_scrollbar() const {
     return is_left_side_vertical_scrollbar_;
   }
+  bool has_find_in_page_tickmarks() const {
+    return has_find_in_page_tickmarks_.Read(*this);
+  }
+  bool SetHasFindInPageTickmarks(bool has_find_in_page_tickmarks);
 
   void PushPropertiesTo(LayerImpl* layer,
                         const CommitState& commit_state,
@@ -47,6 +51,7 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   const ScrollbarOrientation orientation_;
   const bool is_left_side_vertical_scrollbar_;
   ProtectedSequenceReadable<ElementId> scroll_element_id_;
+  ProtectedSequenceReadable<bool> has_find_in_page_tickmarks_;
 };
 
 }  // namespace cc
