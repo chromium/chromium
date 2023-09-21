@@ -50,6 +50,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
                                         bool requires_anonymized_data,
                                         bool is_crash_scenario) override;
 
+  bool ShouldSaveUnuploadedTrace() const override;
   bool IsSystemWideTracingEnabled() override;
 
   absl::optional<base::Value::Dict> GenerateMetadataDict() override;

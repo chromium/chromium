@@ -245,6 +245,10 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
   return true;
 }
 
+bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {
+  return true;
+}
+
 bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Always allow system tracing in dev mode images.
