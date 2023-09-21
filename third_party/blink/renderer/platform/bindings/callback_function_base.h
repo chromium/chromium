@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
 namespace blink {
 
@@ -168,12 +169,15 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
  public:
   ~CallbackFunctionWithTaskAttributionBase() override = default;
 
-  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
-    return parent_task_id_;
+  scheduler::TaskAttributionInfo* GetParentTask() const { return parent_task_; }
+
+  void SetParentTask(scheduler::TaskAttributionInfo* task) {
+    parent_task_ = task;
   }
 
-  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
-    parent_task_id_ = task_id;
+  void Trace(Visitor* visitor) const override {
+    CallbackFunctionBase::Trace(visitor);
+    visitor->Trace(parent_task_);
   }
 
  protected:
@@ -181,7 +185,7 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
       : CallbackFunctionBase(object) {}
 
  private:
-  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 };
 
 }  // namespace blink

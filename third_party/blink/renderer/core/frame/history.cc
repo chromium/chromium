@@ -224,12 +224,17 @@ void History::go(ScriptState* script_state,
     // Pass the current task ID so it'd be set as the parent task for the future
     // popstate event.
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-    absl::optional<scheduler::TaskAttributionId> task_id;
-    if (tracker && script_state->World().IsMainWorld()) {
-      task_id = tracker->RunningTaskAttributionId(script_state);
+    scheduler::TaskAttributionInfo* task = nullptr;
+    if (tracker && script_state->World().IsMainWorld() &&
+        frame->IsOutermostMainFrame()) {
+      task = tracker->RunningTask(script_state);
+      tracker->AddSameDocumentNavigationTask(task);
     }
     DCHECK(frame->Client());
-    if (frame->Client()->NavigateBackForward(delta, task_id)) {
+    if (frame->Client()->NavigateBackForward(
+            delta,
+            task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
+                 : absl::nullopt)) {
       if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }

@@ -88,14 +88,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace {
-absl::optional<blink::scheduler::TaskAttributionId> GetRunningTaskId(
+blink::scheduler::TaskAttributionInfo* GetRunningTask(
     blink::ScriptState* script_state) {
   auto* tracker =
       blink::ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (!script_state || !script_state->World().IsMainWorld() || !tracker) {
-    return absl::nullopt;
+    return nullptr;
   }
-  return tracker->RunningTaskAttributionId(script_state);
+  return tracker->RunningTask(script_state);
 }
 
 }  // namespace
@@ -912,7 +912,7 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,
-            defer, GetRunningTaskId(script_state));
+            defer, GetRunningTask(script_state));
         prepared_pending_script_ = pending_script;
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
@@ -1049,7 +1049,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
-            script_location_type, options, GetRunningTaskId(script_state));
+            script_location_type, options, GetRunningTask(script_state));
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1104,7 +1104,7 @@ PendingScript* ScriptLoader::PrepareScript(
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
             element_, module_tree_client, is_external_script_,
-            GetRunningTaskId(script_state));
+            GetRunningTask(script_state));
         break;
       }
     }
@@ -1334,7 +1334,7 @@ void ScriptLoader::FetchModuleScriptTree(
                        ModuleScriptCustomFetchType::kNone, module_tree_client);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
       element_, module_tree_client, is_external_script_,
-      GetRunningTaskId(modulator->GetScriptState()));
+      GetRunningTask(modulator->GetScriptState()));
 }
 
 PendingScript* ScriptLoader::TakePendingScript(

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -144,7 +145,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
  protected:
   PendingScript(ScriptElementBase*,
                 const TextPosition& starting_position,
-                absl::optional<scheduler::TaskAttributionId> parent_task_id);
+                scheduler::TaskAttributionInfo* parent_task);
 
   virtual void DisposeInternal() = 0;
 
@@ -193,7 +194,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   const bool created_during_document_write_;
 
   // The ID of the parent task that loaded the script.
-  const absl::optional<scheduler::TaskAttributionId> parent_task_id_;
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 };
 
 }  // namespace blink

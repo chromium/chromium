@@ -65,7 +65,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     const WTF::TextEncoding& encoding,
     ScriptElementBase* element,
     FetchParameters::DeferOption defer,
-    absl::optional<scheduler::TaskAttributionId> parent_task_id) {
+    scheduler::TaskAttributionInfo* parent_task) {
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
@@ -83,7 +83,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
-          /*is_external=*/true, parent_task_id);
+          /*is_external=*/true, parent_task);
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -126,11 +126,11 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
     const String& source_text,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
-    absl::optional<scheduler::TaskAttributionId> parent_task_id) {
+    scheduler::TaskAttributionInfo* parent_task) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
-          source_location_type, options, /*is_external=*/false, parent_task_id);
+          source_location_type, options, /*is_external=*/false, parent_task);
   pending_script->CheckState();
   return pending_script;
 }
@@ -144,8 +144,8 @@ ClassicPendingScript::ClassicPendingScript(
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
     bool is_external,
-    absl::optional<scheduler::TaskAttributionId> parent_task_id)
-    : PendingScript(element, starting_position, parent_task_id),
+    scheduler::TaskAttributionInfo* parent_task)
+    : PendingScript(element, starting_position, parent_task),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
       base_url_for_inline_script_(base_url_for_inline_script),

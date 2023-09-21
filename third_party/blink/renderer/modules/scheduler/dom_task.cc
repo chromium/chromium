@@ -113,7 +113,7 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   if (script_state->World().IsMainWorld()) {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
+      parent_task_ = tracker->RunningTask(script_state);
     }
   }
 
@@ -133,6 +133,7 @@ void DOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(priority_source_);
   visitor->Trace(abort_handle_);
   visitor->Trace(task_queue_);
+  visitor->Trace(parent_task_);
 }
 
 void DOMTask::Invoke() {
@@ -192,7 +193,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // is no tracker.
   if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, parent_task_id_,
+        script_state, parent_task_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
         abort_source_, priority_source_);
   } else if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
@@ -200,7 +201,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
     ScriptWrappableTaskState::SetCurrent(
         script_state,
         MakeGarbageCollected<ScriptWrappableTaskState>(
-            scheduler::TaskAttributionId(), abort_source_, priority_source_));
+            /*TaskAttributionInfo=*/nullptr, abort_source_, priority_source_));
   }
 
   ScriptValue result;

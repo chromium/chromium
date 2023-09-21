@@ -155,6 +155,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -948,6 +949,23 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     }
   }
 
+  scheduler::TaskAttributionInfo* parent_task = nullptr;
+  if (heuristics && soft_navigation_heuristics_task_id) {
+    // if `heuristics` exists it means we're in an outermost main frame, and in
+    // the main world.
+
+    CHECK(ThreadScheduler::Current());
+    if (auto* tracker =
+            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+      // Get the TaskId from tracker. We're passing that to dispatchEvent
+      // further down, but regardless, we want to get it and previous tasks out
+      // of the tracker's task queue, to enable them to get garbage collected if
+      // needed, even if popstate is never called.
+      parent_task = tracker->CommitSameDocumentNavigation(
+          soft_navigation_heuristics_task_id.value());
+    }
+  }
+
   // Anything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.
   if (same_document_navigation_type !=
@@ -962,11 +980,13 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       scoped_refptr<SerializedScriptValue> state_object =
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
-      frame_->DomWindow()->DispatchPopstateEvent(
-          std::move(state_object), soft_navigation_heuristics_task_id);
+      frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
+                                                 parent_task);
     }
   }
   if (heuristics) {
+    // if `heuristics` exists it means we're in an outermost main frame, and in
+    // the main world.
     CHECK(script_state);
     heuristics->SameDocumentNavigationCommitted(script_state, new_url);
   }
@@ -2473,6 +2493,13 @@ void DocumentLoader::CommitNavigation() {
   frame_->DomWindow()
       ->GetRuntimeFeatureStateOverrideContext()
       ->ApplyOverrideValuesFromParams(modified_runtime_features_);
+
+  // Previous same-document navigation tasks are not relevant once a
+  // cross-document navigation has happened.
+  CHECK(ThreadScheduler::Current());
+  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    tracker->ResetSameDocumentNavigationTasks();
+  }
 
   MaybeStartLoadingBodyInBackground(body_loader_.get(), frame_, url_,
                                     response_);

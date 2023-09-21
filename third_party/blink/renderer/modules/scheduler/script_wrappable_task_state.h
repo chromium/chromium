@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCRIPT_WRAPPABLE_TASK_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCRIPT_WRAPPABLE_TASK_STATE_H_
 
-#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
 namespace blink {
 class AbortSignal;
@@ -29,13 +29,11 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   // preserved embedder data.
   static void SetCurrent(ScriptState*, ScriptWrappableTaskState*);
 
-  ScriptWrappableTaskState(scheduler::TaskAttributionId id,
+  ScriptWrappableTaskState(scheduler::TaskAttributionInfo* task,
                            AbortSignal* abort_source,
                            DOMTaskSignal* priority_source);
 
-  scheduler::TaskAttributionId GetTaskAttributionId() const {
-    return task_attribution_id_;
-  }
+  scheduler::TaskAttributionInfo* GetTask() const { return task_.Get(); }
 
   AbortSignal* GetAbortSource() { return abort_source_; }
   DOMTaskSignal* GetPrioritySource() { return priority_source_; }
@@ -43,7 +41,7 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  const scheduler::TaskAttributionId task_attribution_id_;
+  const Member<scheduler::TaskAttributionInfo> task_;
   const Member<AbortSignal> abort_source_;
   const Member<DOMTaskSignal> priority_source_;
 };

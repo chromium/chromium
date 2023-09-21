@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -42,6 +43,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -57,10 +60,12 @@ class CORE_EXPORT MessagePort : public EventTarget,
                                 public ActiveScriptWrappable<MessagePort>,
                                 public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(MessagePort, Dispose);
 
  public:
   explicit MessagePort(ExecutionContext&);
-  ~MessagePort() override;
+  ~MessagePort() override = default;
+  void Dispose();
 
   void postMessage(ScriptState*,
                    const ScriptValue& message,
@@ -74,7 +79,7 @@ class CORE_EXPORT MessagePort : public EventTarget,
   void start();
   void close();
 
-  void Entangle(MessagePortDescriptor);
+  void Entangle(MessagePortDescriptor, MessagePort*);
   void Entangle(MessagePortChannel);
   MessagePortChannel Disentangle();
 
@@ -134,9 +139,41 @@ class CORE_EXPORT MessagePort : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
+  class PostMessageTaskContainer
+      : public GarbageCollected<PostMessageTaskContainer> {
+   public:
+    void AddPostMessageTask(scheduler::TaskAttributionInfo* task);
+
+    scheduler::TaskAttributionInfo* GetAndDecrementPostMessageTask(
+        absl::optional<scheduler::TaskAttributionId> id);
+
+    void Trace(Visitor* visitor) const { visitor->Trace(post_message_tasks_); }
+
+   private:
+    class PostMessageTask : public GarbageCollected<PostMessageTask> {
+     public:
+      PostMessageTask() = default;
+      explicit PostMessageTask(scheduler::TaskAttributionInfo* task)
+          : task_(task) {}
+      scheduler::TaskAttributionInfo* GetTask() { return task_; }
+      size_t DecrementAndReturnCounter() { return --counter_; }
+      void IncrementCounter() { ++counter_; }
+      void Trace(Visitor* visitor) const { visitor->Trace(task_); }
+
+     private:
+      Member<scheduler::TaskAttributionInfo> task_;
+      size_t counter_ = 1;
+    };
+
+    // A container of pending PostMessage tasks.
+    HeapHashMap<scheduler::TaskAttributionIdType, Member<PostMessageTask>>
+        post_message_tasks_;
+  };
+
   // mojo::MessageReceiver implementation.
   bool Accept(mojo::Message*) override;
   Event* CreateMessageEvent(BlinkTransferableMessage& message);
+  void OnEntangledPortDisconnected();
 
   std::unique_ptr<mojo::Connector> connector_;
 
@@ -147,7 +184,13 @@ class CORE_EXPORT MessagePort : public EventTarget,
 
   // The internal port owned by this class. The handle itself is moved into the
   // |connector_| while entangled.
-  MessagePortDescriptor port_;
+  MessagePortDescriptor port_descriptor_;
+
+  // The entangled port. Only set on initial entanglement, and gets unset as
+  // soon as the ports are disentangled.
+  Member<MessagePort> initially_entangled_port_;
+
+  Member<PostMessageTaskContainer> post_message_task_container_;
 };
 
 }  // namespace blink

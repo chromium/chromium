@@ -36,8 +36,8 @@ MessageChannel::MessageChannel(ExecutionContext* context)
     : port1_(MakeGarbageCollected<MessagePort>(*context)),
       port2_(MakeGarbageCollected<MessagePort>(*context)) {
   MessagePortDescriptorPair pipe;
-  port1_->Entangle(pipe.TakePort0());
-  port2_->Entangle(pipe.TakePort1());
+  port1_->Entangle(pipe.TakePort0(), port2_);
+  port2_->Entangle(pipe.TakePort1(), port1_);
 }
 
 void MessageChannel::Trace(Visitor* visitor) const {

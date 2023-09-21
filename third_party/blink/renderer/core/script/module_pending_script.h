@@ -45,11 +45,10 @@ class ModulePendingScriptTreeClient final : public ModuleTreeClient {
 // https://html.spec.whatwg.org/C/#module-script.
 class CORE_EXPORT ModulePendingScript : public PendingScript {
  public:
-  ModulePendingScript(
-      ScriptElementBase*,
-      ModulePendingScriptTreeClient*,
-      bool is_external,
-      absl::optional<scheduler::TaskAttributionId> parent_task_id);
+  ModulePendingScript(ScriptElementBase*,
+                      ModulePendingScriptTreeClient*,
+                      bool is_external,
+                      scheduler::TaskAttributionInfo* parent_task);
   ~ModulePendingScript() override;
 
   void NotifyModuleTreeLoadFinished();

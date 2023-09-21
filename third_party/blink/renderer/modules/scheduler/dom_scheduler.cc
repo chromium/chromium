@@ -179,13 +179,12 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
     // Can happen when a feature flag disables TaskAttribution.
     return 0;
   }
-  absl::optional<scheduler::TaskAttributionId> task_id =
-      scheduler->GetTaskAttributionTracker()->RunningTaskAttributionId(
-          script_state);
-  // task_id cannot be unset here, as a task has presumably already ran in order
+  scheduler::TaskAttributionInfo* task =
+      scheduler->GetTaskAttributionTracker()->RunningTask(script_state);
+  // task cannot be nullptr here, as a task has presumably already ran in order
   // for this API call to be called.
-  DCHECK(task_id);
-  return task_id.value().value();
+  DCHECK(task);
+  return task->Id().value();
 }
 
 AtomicString DOMScheduler::isAncestor(

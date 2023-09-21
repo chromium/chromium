@@ -42,29 +42,27 @@ class CORE_EXPORT ClassicPendingScript final
       const WTF::TextEncoding&,
       ScriptElementBase*,
       FetchParameters::DeferOption,
-      absl::optional<scheduler::TaskAttributionId> parent_task_id);
+      scheduler::TaskAttributionInfo* parent_task);
 
   // For an inline script.
-  static ClassicPendingScript* CreateInline(
-      ScriptElementBase*,
-      const TextPosition&,
-      const KURL& source_url,
-      const KURL& base_url,
-      const String& source_text,
-      ScriptSourceLocationType,
-      const ScriptFetchOptions&,
-      absl::optional<scheduler::TaskAttributionId>);
+  static ClassicPendingScript* CreateInline(ScriptElementBase*,
+                                            const TextPosition&,
+                                            const KURL& source_url,
+                                            const KURL& base_url,
+                                            const String& source_text,
+                                            ScriptSourceLocationType,
+                                            const ScriptFetchOptions&,
+                                            scheduler::TaskAttributionInfo*);
 
-  ClassicPendingScript(
-      ScriptElementBase*,
-      const TextPosition&,
-      const KURL& source_url_for_inline_script,
-      const KURL& base_url_for_inline_script,
-      const String& source_text_for_inline_script,
-      ScriptSourceLocationType,
-      const ScriptFetchOptions&,
-      bool is_external,
-      absl::optional<scheduler::TaskAttributionId> parent_task_id);
+  ClassicPendingScript(ScriptElementBase*,
+                       const TextPosition&,
+                       const KURL& source_url_for_inline_script,
+                       const KURL& base_url_for_inline_script,
+                       const String& source_text_for_inline_script,
+                       ScriptSourceLocationType,
+                       const ScriptFetchOptions&,
+                       bool is_external,
+                       scheduler::TaskAttributionInfo* parent_task);
   ~ClassicPendingScript() override;
 
   void Trace(Visitor*) const override;

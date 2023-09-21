@@ -36,7 +36,7 @@ class V8IdleTask : public IdleTask {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
+      parent_task_ = tracker->RunningTask(script_state);
     }
   }
 
@@ -57,7 +57,7 @@ class V8IdleTask : public IdleTask {
             script_state, WebSchedulingPriority::kBackgroundPriority);
       }
       task_attribution_scope =
-          tracker->CreateTaskScope(script_state, parent_task_id_,
+          tracker->CreateTaskScope(script_state, parent_task_,
                                    scheduler::TaskAttributionTracker::
                                        TaskScopeType::kRequestIdleCallback,
                                    /*abort_source=*/nullptr, signal);
@@ -67,12 +67,13 @@ class V8IdleTask : public IdleTask {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callback_);
+    visitor->Trace(parent_task_);
     IdleTask::Trace(visitor);
   }
 
  private:
   Member<V8IdleRequestCallback> callback_;
-  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 };
 
 }  // namespace

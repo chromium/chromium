@@ -136,6 +136,7 @@ blink_platform_sources("scheduler") {
     "public/rail_mode_observer.h",
     "public/scheduling_lifecycle_state.h",
     "public/scheduling_policy.h",
+    "public/task_attribution_info.h",
     "public/task_attribution_tracker.h",
     "public/thread.h",
     "public/thread_cpu_throttler.h",
