@@ -3996,6 +3996,7 @@ if (!is_android) {
     # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS and desktop.
     if (enable_supervised_users) {
       sources += [
+        "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
         "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
         "../browser/supervised_user/supervised_user_service_browsertest.cc",
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
@@ -4007,11 +4008,7 @@ if (!is_android) {
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
           "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         ]
-      }
-
-      if (is_chromeos_ash) {
-        sources += [ "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc" ]
-        if (enable_extensions) {
+        if (is_chromeos_ash) {
           sources += [ "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc" ]
         }
       }
