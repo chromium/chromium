@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -54,17 +59,35 @@ bool MaybeReturnCachedStatus(
   return false;
 }
 
-bool IsReauthRequired(const TokenHandleUtil::Status& status) {
-  return status == TokenHandleUtil::Status::kInvalid;
+bool IsReauthRequired(const TokenHandleUtil::Status& status,
+                      bool user_has_gaia_password) {
+  switch (status) {
+    case TokenHandleUtil::Status::kUnknown:
+    case TokenHandleUtil::Status::kValid:
+      return false;
+    case TokenHandleUtil::Status::kInvalid:
+      return true;
+    case TokenHandleUtil::Status::kExpired:
+      // When the status of the token is `kExpired`, enforce re-authentication
+      // only if the user is using their Gaia password for logging in.
+      return user_has_gaia_password;
+  }
+  NOTREACHED();
+  return false;
 }
 
-void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
-                     const AccountId& account_id,
-                     const std::string& token,
-                     const TokenHandleUtil::Status& status) {
+void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
+                      const std::string& token,
+                      const AccountId& account_id,
+                      const TokenHandleUtil::Status& status,
+                      absl::optional<bool> user_has_gaia_password) {
+  bool has_gaia_pass = user_has_gaia_password.value_or(true);
+  if (!has_gaia_pass) {
+    CHECK(features::AreLocalPasswordsEnabledForConsumers());
+  }
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // Check that the token that was checked matches the latest known token.
-  // (This may happen if token check took too long, and user went through
+  // This may happen if token check took too long, and user went through
   // online sign-in and obtained new token during that time.
   if (const std::string* latest_token =
           known_user.FindStringPath(account_id, kTokenHandlePref)) {
@@ -80,13 +103,13 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
     known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
                        base::TimeToValue(base::Time::Now()));
   }
-
-  if (status == TokenHandleUtil::Status::kInvalid) {
+  bool is_reauth_required = IsReauthRequired(status, has_gaia_pass);
+  if (is_reauth_required) {
     known_user.SetStringPref(account_id, kTokenHandleStatusPref,
                              kHandleStatusInvalid);
   }
   std::move(callback).Run(account_id, token,
-                          /*reauth_required=*/IsReauthRequired(status));
+                          /*reauth_required=*/is_reauth_required);
 }
 
 // Checks if token handle is explicitly marked as `kValid` for `account_id`.
@@ -98,9 +121,28 @@ bool HasTokenStatusInvalid(const AccountId& account_id) {
   return status && *status == kHandleStatusInvalid;
 }
 
+// Callback used in `AuthFactorEditor::GetAuthFactorsConfiguration()`.
+absl::optional<bool> DoesUserUseGaiaPassword(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    // We don't know what auth factors the user has.
+    return absl::nullopt;
+  }
+
+  auto* factor = user_context->GetAuthFactorsConfiguration().FindFactorByType(
+      cryptohome::AuthFactorType::kPassword);
+  if (factor && factor->ref().label().value() == ash::kCryptohomeGaiaKeyLabel) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
-TokenHandleUtil::TokenHandleUtil() = default;
+TokenHandleUtil::TokenHandleUtil()
+    : factor_editor_(UserDataAuthClient::Get()) {}
 
 TokenHandleUtil::~TokenHandleUtil() = default;
 
@@ -168,7 +210,8 @@ void TokenHandleUtil::IsReauthRequired(
   validation_delegates_[*token] = std::make_unique<TokenDelegate>(
       weak_factory_.GetWeakPtr(), account_id, *token,
       std::move(url_loader_factory),
-      base::BindOnce(&OnStatusChecked, std::move(callback)));
+      base::BindOnce(&TokenHandleUtil::OnStatusChecked,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // static
@@ -194,6 +237,31 @@ void TokenHandleUtil::SetLastCheckedPrefForTesting(const AccountId& account_id,
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
                      base::TimeToValue(time));
+}
+
+void TokenHandleUtil::OnStatusChecked(TokenValidationCallback callback,
+                                      const AccountId& account_id,
+                                      const std::string& token,
+                                      const Status& status) {
+  if (!features::AreLocalPasswordsEnabledForConsumers()) {
+    FinishWithStatus(std::move(callback), token, account_id, status,
+                     /*user_has_gaia_password=*/true);
+    return;
+  }
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
+    NOTREACHED() << "Invalid user";
+    FinishWithStatus(std::move(callback), token, account_id, status,
+                     /*user_has_gaia_password=*/true);
+    return;
+  }
+  factor_editor_.GetAuthFactorsConfiguration(
+      std::make_unique<UserContext>(*user),
+      base::BindOnce(&DoesUserUseGaiaPassword)
+          .Then(base::BindOnce(&FinishWithStatus, std::move(callback), token,
+                               account_id, status)));
 }
 
 void TokenHandleUtil::OnValidationComplete(const std::string& token) {
@@ -247,8 +315,9 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
   Status outcome = Status::kUnknown;
   if (!token_info.Find("error")) {
     absl::optional<int> expires_in = token_info.FindInt("expires_in");
-    if (expires_in)
-      outcome = (*expires_in < 0) ? Status::kInvalid : Status::kValid;
+    if (expires_in) {
+      outcome = (*expires_in < 0) ? Status::kExpired : Status::kValid;
+    }
   }
 
   std::move(callback_).Run(account_id_, token_, outcome);

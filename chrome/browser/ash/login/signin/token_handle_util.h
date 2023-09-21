@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 
@@ -33,7 +34,13 @@ class TokenHandleUtil {
   ~TokenHandleUtil();
 
   // Status of the token handle.
-  enum class Status { kValid, kInvalid, kUnknown };
+  enum class Status {
+    kValid,    // The token is valid and reauthentication is not required.
+    kInvalid,  // The token is invalid and reauthentication is required.
+    kExpired,  // The token is valid, but `expires_in` value is negative. This
+               // can happen if the user changed password on the same device.
+    kUnknown,  // The token status is unknown.
+  };
 
   // `account_id`: The account for which the token handle check was performed.
   // `token`: The token which was checked. Empty if we could not find a token
@@ -111,11 +118,18 @@ class TokenHandleUtil {
     gaia::GaiaOAuthClient gaia_client_;
   };
 
+  // Callback passed to `TokenDelegate`.
+  void OnStatusChecked(TokenValidationCallback callback,
+                       const AccountId& account_id,
+                       const std::string& token,
+                       const Status& status);
   void OnValidationComplete(const std::string& token);
 
   // Map of pending check operations.
   base::flat_map<std::string, std::unique_ptr<TokenDelegate>>
       validation_delegates_;
+
+  AuthFactorEditor factor_editor_;
 
   base::WeakPtrFactory<TokenHandleUtil> weak_factory_{this};
 };

@@ -51,6 +51,8 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    // Required to initialize TokenHandleUtil.
+    ash::UserDataAuthClient::InitializeFake();
 
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<FakeChromeUserManager>());
@@ -68,6 +70,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     // will be destroyed as part of the TearDown() process.
     identity_test_env_profile_adaptor_.reset();
 
+    ash::UserDataAuthClient::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 
