@@ -6006,16 +6006,6 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
       response_head_->load_timing.receive_non_informational_headers_start;
   navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
 
-  // 103 Early Hints experiment (https://crbug.com/1093693).
-  if (is_first_response) {
-    DCHECK(
-        navigation_handle_timing_.early_hints_for_first_request_time.is_null());
-    navigation_handle_timing_.early_hints_for_first_request_time =
-        response_head_->load_timing.first_early_hints_time;
-  }
-  navigation_handle_timing_.early_hints_for_final_request_time =
-      response_head_->load_timing.first_early_hints_time;
-
   // |navigation_commit_sent_time| will be updated by
   // UpdateNavigationHandleTimingsOnCommitSent() later.
   DCHECK(navigation_handle_timing_.navigation_commit_sent_time.is_null());
