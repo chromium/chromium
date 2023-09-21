@@ -9,8 +9,10 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -415,6 +418,40 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
   EnumerateDevices(tab, &devices2);
   EXPECT_EQ(devices.size(), devices2.size());
   CheckEnumerationsAreDifferent(devices, devices2);
+}
+
+IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
+                       PRE_SaltsDeletedForSessionOnlyCookies) {
+  if (!IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled()) {
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::vector<MediaDeviceInfo> devices;
+  EnumerateDevices(tab, &devices);
+
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+  base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
+  salt_service->GetAllStorageKeys(keys_future.GetCallback());
+  EXPECT_FALSE(keys_future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
+                       SaltsDeletedForSessionOnlyCookies) {
+  if (!IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled()) {
+    return;
+  }
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+  base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
+  salt_service->GetAllStorageKeys(keys_future.GetCallback());
+  EXPECT_TRUE(keys_future.Get().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
