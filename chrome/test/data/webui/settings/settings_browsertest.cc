@@ -848,7 +848,8 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   SettingsPrivacyPageTest() {
     scoped_feature_list1_.InitWithFeatures(
         {privacy_sandbox::kPrivacySandboxSettings4,
-         permissions::features::kPermissionStorageAccessAPI},
+         permissions::features::kPermissionStorageAccessAPI,
+         features::kSafetyCheckNotificationPermissions, features::kSafetyHub},
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
         features::kFedCm, {
@@ -890,6 +891,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, NotificationPermissionReview) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('NotificationPermissionReview')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       NotificationPermissionReviewSafetyHubDisabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('NotificationPermissionReviewSafetyHubDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       NotificationPermissionReviewDisabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('NotificationPermissionReviewDisabled')");
 }
 
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).

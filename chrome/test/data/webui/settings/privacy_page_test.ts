@@ -841,13 +841,8 @@ suite('NotificationPermissionReview', function() {
   test('InvisibleWhenGuestMode', async function() {
     loadTimeData.overrideValues({
       isGuest: true,
-      safetyCheckNotificationPermissionsEnabled: true,
     });
-
-    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
     await createPage();
-
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
 
     // The UI should remain invisible even when there's an event that the
     // notification permissions may have changed.
@@ -864,34 +859,88 @@ suite('NotificationPermissionReview', function() {
     });
   });
 
-  test('InvisibleWhenFeatureDisabled', async function() {
-    loadTimeData.overrideValues({
-      safetyCheckNotificationPermissionsEnabled: false,
-    });
-    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
+  test('VisibilityWithChangingPermissionList', async function() {
+    // The element is not visible when there is nothing to review.
     await createPage();
+    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
 
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        oneElementMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        oneElementMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
+  });
+});
+
+// TODO(crbug.com/1443466): Remove the test once Safety Hub has been rolled out.
+suite('NotificationPermissionReviewSafetyHubDisabled', function() {
+  let page: SettingsPrivacyPageElement;
+  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
+
+  const oneElementMockData = [{
+    origin: 'www.example.com',
+    notificationInfoString: 'About 4 notifications a day',
+  }];
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSafetyHub: false,
+    });
   });
 
-  test('InvisibleWhenFeatureDisabledWithItemsToReview', async function() {
+  setup(function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  function createPage() {
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
+  test('InvisibleWhenGuestMode', async function() {
     loadTimeData.overrideValues({
-      safetyCheckNotificationPermissionsEnabled: false,
+      isGuest: true,
     });
-    siteSettingsBrowserProxy.setNotificationPermissionReview(
-        oneElementMockData);
     await createPage();
 
+    // The UI should remain invisible even when there's an event that the
+    // notification permissions may have changed.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        oneElementMockData);
+    await flushTasks();
+
     assertFalse(isChildVisible(page, 'review-notification-permissions'));
+
+    // Set guest mode back to false.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
-    loadTimeData.overrideValues({
-      safetyCheckNotificationPermissionsEnabled: true,
-    });
-
     // The element is not visible when there is nothing to review.
-    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
     await createPage();
     assertFalse(isChildVisible(page, 'review-notification-permissions'));
 
@@ -913,6 +962,55 @@ suite('NotificationPermissionReview', function() {
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
+  });
+});
+
+// TODO(crbug.com/1443466): Remove the test once Notification Permission Review
+// feature has been rolled out.
+suite('NotificationPermissionReviewDisabled', function() {
+  let page: SettingsPrivacyPageElement;
+  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
+
+  const oneElementMockData = [{
+    origin: 'www.example.com',
+    notificationInfoString: 'About 4 notifications a day',
+  }];
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSafetyHub: false,
+      safetyCheckNotificationPermissionsEnabled: false,
+    });
+  });
+
+  setup(function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  function createPage() {
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
+  test('InvisibleWhenFeatureDisabled', async function() {
+    // The element should not be visible if there is no element in the list.
+    await createPage();
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+
+    // The element should not be visible even if there is any element in the
+    // list.
+    siteSettingsBrowserProxy.setNotificationPermissionReview(
+        oneElementMockData);
+    await createPage();
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
   });
 });
 

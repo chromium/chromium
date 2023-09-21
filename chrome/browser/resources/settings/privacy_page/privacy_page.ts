@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/settings_toggle_button.js';
+import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
@@ -29,6 +30,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -312,6 +314,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
+      notificationPermissionsReviewHeader_: String,
+      notificationPermissionsReviewSubeader_: String,
     };
   }
 
@@ -341,6 +345,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showPreloadingSubpage_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
+  private notificationPermissionsReviewHeader_: string;
+  private notificationPermissionsReviewSubheader_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -518,7 +524,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         /* removeSearch */ true);
   }
 
-  private onReviewNotificationPermissionListChanged_(
+  private async onReviewNotificationPermissionListChanged_(
       permissions: NotificationPermission[]) {
     // The notification permissions review is shown when there are items to
     // review (provided the feature is enabled and should be shown). Once
@@ -530,6 +536,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.showNotificationPermissionsReview_ = !this.isGuest_ &&
         this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
+
+    this.notificationPermissionsReviewHeader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewPrimaryLabel',
+            permissions.length);
+    this.notificationPermissionsReviewSubheader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewSecondaryLabel',
+            permissions.length);
   }
 
   private interactedWithPage_() {
@@ -590,6 +605,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private isPrivacySandboxSettings3CookiesPageEnabled_(): boolean {
     return !this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
+  }
+
+  private onSafetyHubButtonClick_() {
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
   }
 }
 
