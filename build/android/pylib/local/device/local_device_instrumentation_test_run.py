@@ -452,7 +452,7 @@ class LocalDeviceInstrumentationTestRun(
         logging.info('Pushing data dependencies.')
         for h, d in host_device_tuples_substituted:
           logging.debug('  %r -> %r', h, d)
-        local_device_environment.place_nomedia_on_device(dev, device_root)
+        dev.PlaceNomediaFile(device_root)
         dev.PushChangedFiles(host_device_tuples_substituted,
                              delete_device_stale=True,
                              as_root=self._env.force_main_user)

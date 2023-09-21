@@ -430,8 +430,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         host_device_tuples_substituted = [
             (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
             for h, d in host_device_tuples]
-        local_device_environment.place_nomedia_on_device(
-            dev, device_root, as_root=self._env.force_main_user)
+        dev.PlaceNomediaFile(device_root)
         dev.PushChangedFiles(
             host_device_tuples_substituted,
             delete_device_stale=True,
