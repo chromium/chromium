@@ -607,11 +607,10 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
 
   if (redirect_count != commit_params->redirects.size()) {
     // We currently incorrectly send empty redirect_response and redirect_infos
-    // on frame reloads and some cases involving throttles.
+    // on frame reloads and some cases involving throttles. There are also other
+    // reports of non-empty cases, so further investigation is still needed.
     // TODO(https://crbug.com/1171225): Fix this.
-    DCHECK_EQ(0u, redirect_count);
-    DCHECK_EQ(0u, commit_params->redirect_infos.size());
-    DCHECK_NE(0u, commit_params->redirects.size());
+    redirect_count = std::min(redirect_count, commit_params->redirects.size());
   }
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);
