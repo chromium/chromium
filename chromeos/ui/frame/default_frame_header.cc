@@ -61,8 +61,13 @@ bool ShouldApplyDynamicColor(aura::Window* window) {
       static_cast<int>(ash::AppType::SYSTEM_APP)) {
     return false;
   }
-#endif
   return true;
+#else
+  // Default frame is used for non-browser frames in Lacros. In Lacros, we
+  // never need dynamic colors as we don't display SWAs. This will need to be
+  // redesigned if SWAs run in Lacros.
+  return false;
+#endif
 }
 
 }  // namespace
