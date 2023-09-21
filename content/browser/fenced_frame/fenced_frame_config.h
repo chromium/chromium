@@ -93,6 +93,10 @@ class FencedFrameURLMapping;
 extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
+// Used by the fenced frame properties getter. It specifies the node source
+// of the fenced frame properties.
+enum class FencedFramePropertiesNodeSource { kFrameTreeRoot, kClosestAncestor };
+
 // Returns a new string based on input where the matching substrings have been
 // replaced with the corresponding substitutions. This function avoids repeated
 // string operations by building the output based on all substitutions, one

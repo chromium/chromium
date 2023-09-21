@@ -9183,17 +9183,21 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
 }
 
 const absl::optional<FencedFrameProperties>&
-NavigationRequest::ComputeFencedFrameProperties() const {
+NavigationRequest::ComputeFencedFrameProperties(
+    FencedFramePropertiesNodeSource node_source) const {
   if (fenced_frame_properties_) {
     return fenced_frame_properties_;
   }
-  return frame_tree_node_->GetFencedFrameProperties();
+  return frame_tree_node_->GetFencedFrameProperties(node_source);
 }
 
 const absl::optional<base::UnguessableToken>
 NavigationRequest::ComputeFencedFrameNonce() const {
+  // For partition nonce, all nested frame inside a fenced frame tree should
+  // operate on the partition nonce of the frame tree root.
   const absl::optional<FencedFrameProperties>&
-      computed_fenced_frame_properties = ComputeFencedFrameProperties();
+      computed_fenced_frame_properties = ComputeFencedFrameProperties(
+          /*node_source=*/FencedFramePropertiesNodeSource::kFrameTreeRoot);
   if (!computed_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }

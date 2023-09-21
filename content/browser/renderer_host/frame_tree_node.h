@@ -580,18 +580,25 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     fenced_frame_properties_ = fenced_frame_properties;
   }
 
-  // By default, this function checks the fenced frame root's properties if one
-  // exists, and then otherwise traverses the frame tree to find urn iframe
-  // roots. This doesn't work correctly for urn iframes nested inside of fenced
-  // frames. Enable `force_tree_traversal` to skip the fenced frame root short
-  // circuit and always traverse the tree.
-  // TODO(crbug.com/1355857): This function has the correct semantics when
-  // `force_tree_traversal` is set to true. It is set to false for urn iframes
-  // nested in fenced frames to work correctly in some cases. For example,
-  // storage partitioning. Once those issues are resolved, remove this parameter
-  // entirely.
+  // This function returns the fenced frame properties associated with the given
+  // source.
+  // - If `source_node` is set to `kClosestAncestor`, the fenced frame
+  // properties are obtained by a bottom-up traversal from this node.
+  // - If `source_node` is set tp `kFrameTreeRoot`, the fenced frame properties
+  // from the fenced frame tree root are returned.
+  // For example, for an urn iframe that is nested inside a fenced frame.
+  // Calling this function from the nested urn iframe with `source_node` set to:
+  // - `kClosestAncestor`: returns the fenced frame properties from the urn
+  // iframe.
+  // - `kFrameTreeRoot`: returns the fenced frame properties from the fenced
+  // frame.
+  // Clients should decide which one to use depending on how the application of
+  // the fenced frame properties interact with urn iframes.
+  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // is deprecated, remove the parameter `node_source`.
   const absl::optional<FencedFrameProperties>& GetFencedFrameProperties(
-      bool force_tree_traversal = false);
+      FencedFramePropertiesNodeSource node_source =
+          FencedFramePropertiesNodeSource::kClosestAncestor);
 
   // Called from the currently active document via the
   // `Fence.setReportEventDataForAutomaticBeacons` JS API.
@@ -778,7 +785,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // See comments for `GetFencedFrameProperties()`.
   absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing(
-      bool force_tree_traversal = false);
+      FencedFramePropertiesNodeSource node_source =
+          FencedFramePropertiesNodeSource::kClosestAncestor);
 
   // See `RestartBackForwardCachedNavigationAsync()`.
   void RestartBackForwardCachedNavigationImpl(int nav_entry_id);

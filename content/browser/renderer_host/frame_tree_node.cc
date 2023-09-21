@@ -932,26 +932,28 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
 }
 
 const absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFrameProperties(bool force_tree_traversal) {
-  return GetFencedFramePropertiesForEditing(force_tree_traversal);
+FrameTreeNode::GetFencedFrameProperties(
+    FencedFramePropertiesNodeSource node_source) {
+  return GetFencedFramePropertiesForEditing(node_source);
 }
 
 absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFramePropertiesForEditing(bool force_tree_traversal) {
-  if (!force_tree_traversal && IsInFencedFrameTree()) {
+FrameTreeNode::GetFencedFramePropertiesForEditing(
+    FencedFramePropertiesNodeSource node_source) {
+  if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot) {
     return frame_tree().root()->fenced_frame_properties_;
   }
 
-  // If we might be in a urn iframe, try to find the "urn iframe root",
-  // and, if it exists, return the attached `FencedFrameProperties`.
-  if (force_tree_traversal || blink::features::IsAllowURNsInIframeEnabled()) {
-    FrameTreeNode* node = this;
-    while (node) {
-      if (node->fenced_frame_properties_.has_value()) {
-        return node->fenced_frame_properties_;
-      }
-      node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
+  // The only other option is `kClosestAncestor`. In this case the fenced frame
+  // properties are obtained by a bottom-up traversal.
+  CHECK_EQ(node_source, FencedFramePropertiesNodeSource::kClosestAncestor);
+
+  FrameTreeNode* node = this;
+  while (node) {
+    if (node->fenced_frame_properties_.has_value()) {
+      return node->fenced_frame_properties_;
     }
+    node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
   }
 
   return fenced_frame_properties_;
@@ -959,7 +961,7 @@ FrameTreeNode::GetFencedFramePropertiesForEditing(bool force_tree_traversal) {
 
 void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData() {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing(/*force_tree_traversal=*/true);
+      GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid.
   if (!properties) {
@@ -975,8 +977,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
         attribution_reporting_runtime_features,
     bool once) {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing(
-          /*force_tree_traversal=*/true);
+      GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
@@ -1030,7 +1031,10 @@ size_t FrameTreeNode::GetFencedFrameDepth(
 }
 
 absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
-  auto& root_fenced_frame_properties = GetFencedFrameProperties();
+  // For partition nonce, all nested frame inside a fenced frame tree should
+  // operate on the partition nonce of the frame tree root.
+  auto& root_fenced_frame_properties = GetFencedFrameProperties(
+      /*node_source=*/FencedFramePropertiesNodeSource::kFrameTreeRoot);
   if (!root_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }
@@ -1061,6 +1065,15 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
     return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
   }
 
+  // See test "NestedUrnIframeUnderFencedFrameUnfencedTopNavigation" in
+  // "FencedFrameParameterizedBrowserTest" for why tree traversal is
+  // needed here to obtain the correct fenced frame properties.
+  // TODO(crbug.com/1475682): Now the fenced frame properties here are obtained
+  // via tree traversal, we should make sure it does not break things at
+  // renderers, for example, `_unfencedTop` navigation. Note these issues are
+  // pre-existing.
+  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // is deprecated, the issue above will no longer be relevant.
   auto& root_fenced_frame_properties = GetFencedFrameProperties();
   if (!root_fenced_frame_properties.has_value()) {
     return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
