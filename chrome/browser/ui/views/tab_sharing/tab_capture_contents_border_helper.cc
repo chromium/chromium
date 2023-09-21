@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/gfx/color_palette.h"
 
 #if BUILDFLAG(IS_WIN)

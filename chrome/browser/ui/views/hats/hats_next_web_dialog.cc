@@ -4,16 +4,16 @@
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"

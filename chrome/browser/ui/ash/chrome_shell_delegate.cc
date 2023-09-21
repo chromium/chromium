@@ -75,6 +75,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/chromeos/multi_capture_service.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
