@@ -38,7 +38,7 @@
   .back, .section {
     font-weight: bold;
   }
-  #font-size-decrease{
+  #font-size-decrease {
     margin-left: 16px;
   }
   .font-size {
@@ -82,32 +82,14 @@
       on-click="onHighlightClick_">
     </cr-icon-button>
   </span>
-  <cr-icon-button
-      id="font-size"
-      iron-icon="read-anything:font-size"
-      on-click="onShowFontSizeMenuClick_">
-  </cr-icon-button>
-  <cr-icon-button
-      id="font"
-      iron-icon="read-anything:font"
-      on-click="onShowFontMenuClick_">
-  </cr-icon-button>
-  <cr-icon-button
-      id="color"
-      iron-icon="read-anything:color"
-      on-click="onShowColorMenuClick_">
-  </cr-icon-button>
-  <cr-icon-button
-      id="line-spacing"
-      iron-icon="read-anything:line-spacing"
-      on-click="onShowLineSpacingMenuClick_">
-  </cr-icon-button>
-  <cr-icon-button
-      id="letter-spacing"
-      iron-icon="read-anything:letter-spacing"
-      on-click="onShowLetterSpacingMenuClick_">
-  </cr-icon-button>
-
+  <template is="dom-repeat" items="[[textStyleOptions_]]">
+    <cr-icon-button
+      class="toolbar-button"
+      id="[[item.id]]"
+      iron-icon="[[item.icon]]"
+      on-click="onTextStyleMenuButtonClick_">
+    </cr-icon-button>
+  </template>
   <cr-action-menu id="rateMenu">
     <template is="dom-repeat" items="[[rateOptions_]]">
       <button class="dropdown-item" on-click="onRateClick_">

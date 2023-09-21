@@ -38,6 +38,14 @@ interface MenuStateItem {
   callback: () => void;
 }
 
+interface MenuButton {
+  id: string;
+  icon: string;
+  // This is a function instead of just the menu itself because the menu isn't
+  // ready by the time we create the MenuButton entries.
+  menuToOpen: () => CrActionMenuElement;
+}
+
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -73,6 +81,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       lineSpacingOptions_: Array,
       colorOptions_: Array,
       rateOptions_: Array,
+      textStyleOptions_: Array,
     };
   }
 
@@ -161,6 +170,34 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   ];
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+
+  private textStyleOptions_: MenuButton[] = [
+    {
+      id: 'font-size',
+      icon: 'read-anything:font-size',
+      menuToOpen: () => this.$.fontSizeMenu,
+    },
+    {
+      id: 'font',
+      icon: 'read-anything:font',
+      menuToOpen: () => this.$.fontMenu,
+    },
+    {
+      id: 'color',
+      icon: 'read-anything:color',
+      menuToOpen: () => this.$.colorMenu,
+    },
+    {
+      id: 'line-spacing',
+      icon: 'read-anything:line-spacing',
+      menuToOpen: () => this.$.lineSpacingMenu,
+    },
+    {
+      id: 'letter-spacing',
+      icon: 'read-anything:letter-spacing',
+      menuToOpen: () => this.$.letterSpacingMenu,
+    },
+  ];
 
   private showAtPositionConfig_: ShowAtPositionConfig = {
     top: 20,
@@ -282,28 +319,12 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     }
   }
 
+  private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
+    this.openMenu_(event.model.item.menuToOpen(), event.target as HTMLElement);
+  }
+
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
-  }
-
-  private onShowColorMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.colorMenu, event.target as HTMLElement);
-  }
-
-  private onShowLineSpacingMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.lineSpacingMenu, event.target as HTMLElement);
-  }
-
-  private onShowLetterSpacingMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.letterSpacingMenu, event.target as HTMLElement);
-  }
-
-  private onShowFontMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.fontMenu, event.target as HTMLElement);
-  }
-
-  private onShowFontSizeMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.fontSizeMenu, event.target as HTMLElement);
   }
 
   private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
