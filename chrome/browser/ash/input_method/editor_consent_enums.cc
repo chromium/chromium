@@ -17,8 +17,6 @@ ConsentStatus GetConsentStatusFromInteger(int status_value) {
       return ConsentStatus::kApproved;
     case base::to_underlying(ConsentStatus::kDeclined):
       return ConsentStatus::kDeclined;
-    case base::to_underlying(ConsentStatus::kImplicitlyDeclined):
-      return ConsentStatus::kImplicitlyDeclined;
     case base::to_underlying(ConsentStatus::kPending):
       return ConsentStatus::kPending;
     default:

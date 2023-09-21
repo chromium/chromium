@@ -19,8 +19,6 @@ enum class PromoCardAction {
 enum class ConsentAction : int {
   // User explicitly hits "Yes/Agree" button.
   kApproved,
-  // User dismisses the consent window.
-  kDismissed,
   // User explicitly hits "No/Disagree" button.
   kDeclined
 };
@@ -34,9 +32,6 @@ enum class ConsentStatus : int {
   // User has disagreed to consent by pressing "No/Disagree" button to any
   // dialog from the consent window.
   kDeclined,
-  // User has dismissed the consent page too many times and is deemed to
-  // implicitly decline the consent.
-  kImplicitlyDeclined,
   // Invalid state of the consent result.
   kInvalid,
   // No explicit consent to use the feature has been received yet.

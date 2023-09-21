@@ -37,12 +37,6 @@ class EditorConsentStore {
   // Updates the consent status based on the change in the user prefs.
   void OnUserPrefChanged();
 
-  int GetConsentWindowDismissCount();
-
-  void IncrementConsentWindowDismissCount();
-
-  void ResetConsentWindowDismissCount();
-
   void OverrideUserPref(bool new_pref_value);
 
   // Not owned by this class.

@@ -8,11 +8,6 @@
 #include "base/types/cxx23_to_underlying.h"
 
 namespace ash::input_method {
-namespace {
-
-constexpr int kConsentWindowDisplayUpperLimit = 3;
-
-}  // namespace
 
 EditorConsentStore::EditorConsentStore(PrefService* pref_service)
     : pref_service_(pref_service),
@@ -54,17 +49,6 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
     if (consent_action == ConsentAction::kDeclined) {
       SetConsentStatus(ConsentStatus::kDeclined);
       OverrideUserPref(/*new_pref_value=*/false);
-      return;
-    }
-
-    if (consent_action == ConsentAction::kDismissed) {
-      SetConsentStatus(ConsentStatus::kPending);
-      IncrementConsentWindowDismissCount();
-    }
-
-    if (GetConsentWindowDismissCount() >= kConsentWindowDisplayUpperLimit) {
-      SetConsentStatus(ConsentStatus::kImplicitlyDeclined);
-      OverrideUserPref(/*new_pref_value=*/false);
     }
   }
 }
@@ -81,24 +65,9 @@ void EditorConsentStore::OnUserPrefChanged() {
   // If the user has previously (implicitly) declined the consent status and
   // now switches the toggle on, then reset the consent status.
   if (pref_service_->GetBoolean(ash::prefs::kOrcaEnabled) &&
-      (current_consent_status == ConsentStatus::kImplicitlyDeclined ||
-       current_consent_status == ConsentStatus::kDeclined)) {
+      current_consent_status == ConsentStatus::kDeclined) {
     SetConsentStatus(ConsentStatus::kUnset);
-    ResetConsentWindowDismissCount();
   }
-}
-
-int EditorConsentStore::GetConsentWindowDismissCount() {
-  return pref_service_->GetInteger(prefs::kOrcaConsentWindowDismissCount);
-}
-
-void EditorConsentStore::IncrementConsentWindowDismissCount() {
-  pref_service_->SetInteger(prefs::kOrcaConsentWindowDismissCount,
-                            GetConsentWindowDismissCount() + 1);
-}
-
-void EditorConsentStore::ResetConsentWindowDismissCount() {
-  pref_service_->SetInteger(prefs::kOrcaConsentWindowDismissCount, 0);
 }
 
 void EditorConsentStore::OverrideUserPref(bool new_pref_value) {
