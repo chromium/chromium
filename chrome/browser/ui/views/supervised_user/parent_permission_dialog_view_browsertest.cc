@@ -260,10 +260,6 @@ class ParentPermissionDialogViewTest
     // Default ::SetUpOnMainThread() of all dependent mixins are invoked here.
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
-    // Do not continue until family is loaded. Otherwise tests will start
-    // without family permissions set (and crash or fail).
-    family_fetched_lock_.Wait();
-
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(
             browser()->profile(), /*enabled=*/true);
@@ -284,9 +280,6 @@ class ParentPermissionDialogViewTest
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
-  // Order is important: family_notifier_ will start observing family
-  // preferences before supervision_mixin_ will launch fetches.
-  supervised_user::FamilyFetchedLock family_fetched_lock_{mixin_host_, this};
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,

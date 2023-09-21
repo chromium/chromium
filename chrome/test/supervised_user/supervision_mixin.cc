@@ -10,28 +10,23 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -161,35 +156,6 @@ signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
 void SupervisionMixin::SetNextReAuthStatus(
     GaiaAuthConsumer::ReAuthProofTokenStatus status) {
   fake_gaia_mixin_.fake_gaia()->SetNextReAuthStatus(status);
-}
-
-FamilyFetchedLock::FamilyFetchedLock(
-    InProcessBrowserTestMixinHost& test_mixin_host,
-    raw_ptr<InProcessBrowserTest> test_base)
-    : InProcessBrowserTestMixin(&test_mixin_host), test_base_(test_base) {}
-FamilyFetchedLock::~FamilyFetchedLock() = default;
-
-void FamilyFetchedLock::SetUpOnMainThread() {
-  CHECK(test_base_->browser()->profile())
-      << "Must be called after the profile was initialized.";
-  pref_change_registrar_.Init(test_base_->browser()->profile()->GetPrefs());
-  pref_change_registrar_.Add(
-      std::string(prefs::kSupervisedUserCustodianName),
-      base::BindRepeating(&FamilyFetchedLock::OnDone, base::Unretained(this)));
-}
-void FamilyFetchedLock::TearDownOnMainThread() {
-  pref_change_registrar_.RemoveAll();
-}
-
-// Waits until the preference is ready, if the preference is pending load.
-void FamilyFetchedLock::Wait() {
-  base::RunLoop run_loop;
-  done_ = run_loop.QuitClosure();
-  run_loop.Run();
-}
-
-void FamilyFetchedLock::OnDone() {
-  std::move(done_).Run();
 }
 
 std::ostream& operator<<(std::ostream& stream,
