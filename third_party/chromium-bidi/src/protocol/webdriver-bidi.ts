@@ -219,13 +219,13 @@ export type BrowsingContextCommand =
 export type BrowsingContextEvent =
   | BrowsingContext.ContextCreated
   | BrowsingContext.ContextDestroyed
-  | BrowsingContext.NavigationStarted
-  | BrowsingContext.FragmentNavigated
   | BrowsingContext.DomContentLoaded
-  | BrowsingContext.Load
   | BrowsingContext.DownloadWillBegin
+  | BrowsingContext.FragmentNavigated
+  | BrowsingContext.Load
   | BrowsingContext.NavigationAborted
   | BrowsingContext.NavigationFailed
+  | BrowsingContext.NavigationStarted
   | BrowsingContext.UserPromptClosed
   | BrowsingContext.UserPromptOpened;
 export type BrowsingContextResult =

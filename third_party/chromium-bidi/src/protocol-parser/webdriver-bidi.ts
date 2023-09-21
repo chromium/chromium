@@ -296,13 +296,13 @@ export const BrowsingContextEventSchema = z.lazy(() =>
   z.union([
     BrowsingContext.ContextCreatedSchema,
     BrowsingContext.ContextDestroyedSchema,
-    BrowsingContext.NavigationStartedSchema,
-    BrowsingContext.FragmentNavigatedSchema,
     BrowsingContext.DomContentLoadedSchema,
-    BrowsingContext.LoadSchema,
     BrowsingContext.DownloadWillBeginSchema,
+    BrowsingContext.FragmentNavigatedSchema,
+    BrowsingContext.LoadSchema,
     BrowsingContext.NavigationAbortedSchema,
     BrowsingContext.NavigationFailedSchema,
+    BrowsingContext.NavigationStartedSchema,
     BrowsingContext.UserPromptClosedSchema,
     BrowsingContext.UserPromptOpenedSchema,
   ])
