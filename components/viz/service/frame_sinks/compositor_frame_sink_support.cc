@@ -876,8 +876,7 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
   // send a separate Ack, so they can unthrottle and begin frame production.
   if (ShouldMergeBeginFrameWithAcks() &&
       !was_pending_manual_begin_frame_source_ &&
-      (!base::FeatureList::IsEnabled(features::kOnBeginFrameAllowLateAcks) ||
-       !ack_pending_during_on_begin_frame_)) {
+      !ack_pending_during_on_begin_frame_) {
     ack_queued_for_client_count_++;
     UpdateNeedsBeginFramesInternal();
     return;
