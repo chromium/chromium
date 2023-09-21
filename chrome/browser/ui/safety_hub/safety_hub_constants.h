@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_CONSTANTS_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace safety_hub {
 
 extern const char kCardHeaderKey[];
@@ -21,6 +23,12 @@ enum class SafetyHubCardState {
   kSafe = 3,
   kMaxValue = kSafe,
 };
+
+// Smallest time duration between two subsequent password checks.
+extern const base::TimeDelta kMinTimeBetweenPasswordChecks;
+// When the password check didn't run at its scheduled time (e.g. client was
+// offline) it will be scheduled to run within this time frame.
+extern const base::TimeDelta kPasswordCheckOverdueTimeWindow;
 
 }  // namespace safety_hub
 

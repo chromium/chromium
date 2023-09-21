@@ -83,6 +83,8 @@ class PasswordStatusCheckService
  private:
   FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
                            CheckTimeUpdatedAfterRunScheduledInThePast);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
+                           CheckTimeUpdatedAfterRunScheduledLongTimeInThePast);
 
   // Triggers Password Manager's password check to discover new credential
   // issues.

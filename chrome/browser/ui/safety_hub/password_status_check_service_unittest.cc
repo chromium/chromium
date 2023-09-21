@@ -121,11 +121,11 @@ PasswordForm LeakedForm() {
 }
 
 PasswordForm ReusedForm1() {
-  return MakeForm(kUsername3, kPassword);
+  return MakeForm(kUsername3, kPassword2);
 }
 
 PasswordForm ReusedForm2() {
-  return MakeForm(kUsername4, kPassword, kOrigin2);
+  return MakeForm(kUsername4, kPassword2, kOrigin2);
 }
 
 }  // namespace
@@ -550,27 +550,25 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   ASSERT_EQ(check_time_before + interval_before, check_time_after);
 }
 
-// TODO(crbug.com/1485068): Re-enable this test
 TEST_F(PasswordStatusCheckServiceBaseTest,
-       DISABLED_CheckTimeUpdatedAfterRunScheduledInThePast) {
+       CheckTimeUpdatedAfterRunScheduledInThePast) {
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  // Set scheduled time to be in the past.
+  // Set scheduled time to be a bit in the past (less than interval).
   service()->SetPasswordCheckSchedulePrefsWithInterval(
-      service()->GetScheduledPasswordCheckTime() -
-      service()->GetScheduledPasswordCheckInterval());
+      base::Time::Now() - 0.5 * service()->GetScheduledPasswordCheckInterval());
 
   base::TimeDelta interval_before =
       service()->GetScheduledPasswordCheckInterval();
   base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
 
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
+
   service()->StartRepeatedUpdates();
 
   // If the scheduled check time is in the past, it should run within an hour.
   task_environment()->AdvanceClock(base::Hours(1));
-
-  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
-  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
   RunUntilIdle();
 
   // After password check is completed, the next one should be scheduled.
@@ -580,6 +578,30 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
 
   ASSERT_EQ(interval_before, interval_after);
   ASSERT_EQ(check_time_before + interval_before, check_time_after);
+  ASSERT_GT(check_time_after, base::Time::Now());
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest,
+       CheckTimeUpdatedAfterRunScheduledLongTimeInThePast) {
+  // Set scheduled time to be a long time (more than interval) in the past.
+  service()->SetPasswordCheckSchedulePrefsWithInterval(
+      base::Time::Now() - 5 * service()->GetScheduledPasswordCheckInterval());
+  base::TimeDelta interval_before =
+      service()->GetScheduledPasswordCheckInterval();
+
+  service()->StartRepeatedUpdates();
+
+  // If the scheduled check time is in the past, it should run within an hour.
+  task_environment()->AdvanceClock(base::Hours(1));
+  RunUntilIdle();
+
+  // After password check is completed, the next one should be scheduled.
+  base::TimeDelta interval_after =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
+
+  ASSERT_EQ(interval_before, interval_after);
+  ASSERT_GT(check_time_after, base::Time::Now());
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
