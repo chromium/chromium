@@ -379,8 +379,8 @@ std::string KAnonKeyForAdBid(const url::Origin& owner,
                              const GURL& bidding_url,
                              const blink::AdDescriptor& ad_descriptor) {
   // TODO(crbug.com/1442242): Add size back to this check.
-  return "AdBid\n" + owner.GetURL().spec() + '\n' + bidding_url.spec() + '\n' +
-         ad_descriptor.url.spec();
+  return base::StrCat({kKAnonKeyForAdBidPrefix, owner.GetURL().spec(), "\n",
+                       bidding_url.spec(), "\n", ad_descriptor.url.spec()});
 }
 
 std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
@@ -390,7 +390,8 @@ std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
 std::string KAnonKeyForAdComponentBid(
     const blink::AdDescriptor& ad_descriptor) {
   // TODO(crbug.com/1442242): Add size back to this check.
-  return "ComponentBid\n" + ad_descriptor.url.spec();
+  return base::StrCat(
+      {kKAnonKeyForAdComponentBidPrefix, ad_descriptor.url.spec()});
 }
 
 std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
@@ -402,13 +403,15 @@ std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
                                      group.bidding_url.value_or(GURL()).spec(),
                                      "\n", ad.render_url.spec(), "\n"});
   if (ad.buyer_and_seller_reporting_id.has_value()) {
-    return base::StrCat({"BuyerAndSellerReportId\n", middle,
-                         *ad.buyer_and_seller_reporting_id});
+    return base::StrCat({kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix,
+                         middle, *ad.buyer_and_seller_reporting_id});
   }
   if (ad.buyer_reporting_id.has_value()) {
-    return base::StrCat({"BuyerReportId\n", middle, *ad.buyer_reporting_id});
+    return base::StrCat({kKAnonKeyForAdNameReportingBuyerReportIdPrefix, middle,
+                         *ad.buyer_reporting_id});
   }
-  return base::StrCat({"NameReport\n", middle, group.name});
+  return base::StrCat(
+      {kKAnonKeyForAdNameReportingNamePrefix, middle, group.name});
 }
 
 }  // namespace blink

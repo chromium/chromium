@@ -39,6 +39,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   static constexpr base::TimeDelta kHistoryLength = base::Days(30);
   static constexpr base::TimeDelta kMaintenanceInterval = base::Hours(1);
   static constexpr base::TimeDelta kIdlePeriod = base::Seconds(30);
+  // Store a KAnon key after its corresponding interest group or ad is
+  // no longer present for this amount longer.
+  static constexpr base::TimeDelta kAdditionalKAnonStoragePeriod =
+      base::Days(1);
   // After a successful interest group update, delay the next update until
   // kUpdateSucceededBackoffPeriod time has passed.
   static constexpr base::TimeDelta kUpdateSucceededBackoffPeriod =

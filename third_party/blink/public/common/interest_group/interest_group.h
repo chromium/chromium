@@ -25,6 +25,14 @@
 
 namespace blink {
 
+constexpr char kKAnonKeyForAdComponentBidPrefix[] = "ComponentBid\n";
+constexpr char kKAnonKeyForAdBidPrefix[] = "AdBid\n";
+constexpr char kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix[] =
+    "BuyerAndSellerReportId\n";
+constexpr char kKAnonKeyForAdNameReportingBuyerReportIdPrefix[] =
+    "BuyerReportId\n";
+constexpr char kKAnonKeyForAdNameReportingNamePrefix[] = "NameReport\n";
+
 // Interest group used by FLEDGE auctions. Typemapped to
 // blink::mojom::InterestGroup, primarily so the typemap can include validity
 // checks on the origins of the provided URLs.
@@ -122,7 +130,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
   absl::optional<AdditionalBidKey> additional_bid_key;
 
-  static_assert(__LINE__ == 125, R"(
+  static_assert(__LINE__ == 133, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
