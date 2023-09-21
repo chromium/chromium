@@ -6758,3 +6758,6 @@ crbug.com/1482345 [ Mac13-arm64 Release ] fast/events/touch/touch-handler-count.
 crbug.com/1485427 [ Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure ]
 crbug.com/1485427 [ Mac ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure ]
 crbug.com/1485427 [ Win ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure ]
+
+# Gardener 2023-09-21
+external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-empty-document/window-open-204-fragment.html [ Failure ]
