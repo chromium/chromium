@@ -86,24 +86,26 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   EXPECT_EQ(key_old_format, key_new_format);
 }
 
-// Test that '<' in the url::Origin parameters passed to
-// FederatedIdentityAccountKeyedPermissionContext::GrantPermission() are
-// escaped.
-// '<' is used as a separator in
-// FederatedIdentityAccountKeyedPermissionContextTest::GetKeyForObject().
+// Test a URL with a '<' character, which is used as a separator in
+// FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject().
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, VerifyKeySeparator) {
-  const url::Origin rp = url::Origin::Create(GURL("https://rp<.example</<?<"));
+  // Assert that URL host part can't include '<'.
+  ASSERT_FALSE(GURL("https://rp<.example/").is_valid());
+
+  // FederatedIdentityAccountKeyedPermissionContext accepts only valid URLs.
+  // So test a URL with '<', but not in the host part.
+  const url::Origin rp = url::Origin::Create(GURL("https://<@rp.example/<?<"));
   const url::Origin idp =
-      url::Origin::Create(GURL("https://idp<.example</<?<"));
+      url::Origin::Create(GURL("https://<@idp.example/<?<"));
   const url::Origin rp_embedder =
-      url::Origin::Create(GURL("https://rp-embedder<.example</<?<"));
+      url::Origin::Create(GURL("https://<@rp-embedder.example/<?<"));
   const std::string account("consetogo");
 
   context()->GrantPermission(rp, rp_embedder, idp, account);
   auto granted_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, granted_objects.size());
   std::string key = context()->GetKeyForObject(granted_objects[0]->value);
-  EXPECT_EQ("https://idp%3C.example%3C<https://rp-embedder%3C.example%3C", key);
+  EXPECT_EQ("https://idp.example<https://rp-embedder.example", key);
 }
 
 // Test calling

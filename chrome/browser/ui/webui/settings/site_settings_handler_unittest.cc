@@ -172,7 +172,8 @@ const struct PatternContentTypeTestCase {
   } expected;
 } kPatternsAndContentTypeTestCases[]{
     {{"https://google.com", "cookies"}, {true, ""}},
-    {{";", "cookies"}, {false, "Not a valid web address"}},
+    {{";", "cookies"}, {true, ""}},
+    {{"^", "cookies"}, {false, "Not a valid web address"}},
     {{"*", "cookies"}, {false, "Not a valid web address"}},
     {{"chrome://test", "popups"}, {false, "Not a valid web address"}},
     {{"chrome-untrusted://test", "popups"}, {false, "Not a valid web address"}},

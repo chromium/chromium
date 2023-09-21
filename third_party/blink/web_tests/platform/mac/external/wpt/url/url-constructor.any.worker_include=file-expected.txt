@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 126 tests; 78 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 82 PASS, 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <file:/example.com/> against <http://example.org/foo/bar>
 PASS Parsing: <file://example:1/> without base
@@ -10,7 +10,7 @@ FAIL Parsing: <file:c:\foo\bar.html> against <file:///tmp/mock/path> assert_equa
 FAIL Parsing: <  File:c|////foo\bar.html> against <file:///tmp/mock/path> assert_equals: href expected "file:///c:////foo/bar.html" but got "file:///tmp/mock/c%7C////foo/bar.html"
 FAIL Parsing: <C|/foo/bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file:///tmp/mock/C%7C/foo/bar"
 FAIL Parsing: </C|\foo\bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file:///C%7C/foo/bar"
-FAIL Parsing: <//C|/foo/bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file://c%7C/foo/bar"
+FAIL Parsing: <//C|/foo/bar> against <file:///tmp/mock/path> Failed to construct 'URL': Invalid URL
 PASS Parsing: <//server/file> against <file:///tmp/mock/path>
 PASS Parsing: <\\server\file> against <file:///tmp/mock/path>
 PASS Parsing: </\server/file> against <file:///tmp/mock/path>
@@ -32,18 +32,10 @@ PASS Parsing: <file:a> against <http://www.example.com/test>
 PASS Parsing: <file:///C%3A/> without base
 PASS Parsing: <file:///C%7C/> without base
 PASS Parsing: <file://%43%3A> without base
-FAIL Parsing: <file://%43%7C> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://%43|> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://C%7C> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://%43%7C/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <file://%43%7C> without base
+PASS Parsing: <file://%43|> without base
+PASS Parsing: <file://C%7C> without base
+PASS Parsing: <file://%43%7C/> without base
 PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html>
 FAIL Parsing: <..> against <file:///C:/> assert_equals: href expected "file:///C:/" but got "file:///"
 PASS Parsing: <..> against <file:///>
@@ -103,7 +95,7 @@ FAIL Parsing: <file://C:/> against <file://host/> Failed to construct 'URL': Inv
 PASS Parsing: <///C:/> against <file://host/>
 PASS Parsing: <file:///C:/> against <file://host/>
 FAIL Parsing: <file:/C|/> without base assert_equals: href expected "file:///C:/" but got "file:///C%7C/"
-FAIL Parsing: <file://C|/> without base assert_equals: href expected "file:///C:/" but got "file://c%7C/"
+FAIL Parsing: <file://C|/> without base Failed to construct 'URL': Invalid URL
 PASS Parsing: <file:> without base
 PASS Parsing: <file:?q=v> without base
 PASS Parsing: <file:#frag> without base

@@ -8,12 +8,15 @@
 <body>
 
 <script>
+// This test depends on non-compliant behavior of the URL.
+// The test assumes that '*' character is escaped, but that
+// should be fixed. See https://crbug.com/1416013.
 if (document.location.hostname == "127.0.0.1") {
-  document.location.hostname = "sub,.subdomain.example.test";
+  document.location.hostname = "sub*.subdomain.example.test";
 } else {
   test(function() {
       // Properly canonicalize the host.
-      assert_equals(document.location.hostname, "sub%2C.subdomain.example.test");
+      assert_equals(document.location.hostname, "sub%2A.subdomain.example.test");
 
       document.domain = 'EXAMPLE.TEST';
       assert_equals(document.domain, 'example.test');
@@ -21,10 +24,9 @@ if (document.location.hostname == "127.0.0.1") {
       document.domain = 'subdomain.eXamPle.tEst';
       assert_equals(document.domain, 'subdomain.example.test');
 
-      document.domain = 'sub,.subdomain.example.test';
-      assert_equals(document.domain, 'sub%2C.subdomain.example.test');
+      document.domain = 'sub*.subdomain.example.test';
+      assert_equals(document.domain, 'sub%2A.subdomain.example.test');
 
   }, 'document.domain goes through proper canonicalization.');
 }
 </script>
-

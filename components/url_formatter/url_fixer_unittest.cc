@@ -391,14 +391,14 @@ struct FixupCase {
     {"http;//www.google.com/", "http://www.google.com/"},
     {"about;help", "chrome://help/"},
     // Semicolon in non-standard schemes is not replaced by colon.
-    {"whatsup;//fool", "http://whatsup%3B//fool"},
+    {"whatsup;//fool", "http://whatsup;//fool"},
     // Semicolon left as-is in URL itself.
     {"http://host/port?query;moar", "http://host/port?query;moar"},
     // Fewer slashes than expected.
     {"http;www.google.com/", "http://www.google.com/"},
     {"http;/www.google.com/", "http://www.google.com/"},
     // Semicolon at start.
-    {";http://www.google.com/", "http://%3Bhttp//www.google.com/"},
+    {";http://www.google.com/", "http://;http//www.google.com/"},
     // DevTools scheme.
     {"devtools://bundled/devtools/node.html",
      "devtools://bundled/devtools/node.html"},

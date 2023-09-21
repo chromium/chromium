@@ -265,7 +265,7 @@ PASS Parsing origin: <wow:%NBD> against <about:blank>
 PASS Parsing origin: <wow:%1G> against <about:blank>
 PASS Parsing origin: <wow:￿> against <about:blank>
 FAIL Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: origin expected "http://example.com" but got ""
-FAIL Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got ""
+FAIL Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got "http://!\"$&'()%2A+,-.;=_`{}~"
 PASS Parsing origin: <sc://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
 PASS Parsing origin: <ftp://%e2%98%83> against <about:blank>
 PASS Parsing origin: <https://%e2%98%83> against <about:blank>
@@ -340,7 +340,7 @@ PASS Parsing origin: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:b
 PASS Parsing origin: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
 PASS Parsing origin: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
 PASS Parsing origin: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got ""
+FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "wss://!\"$&'()%2A+,-.;=_`{}~"
 PASS Parsing origin: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>

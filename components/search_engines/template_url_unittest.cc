@@ -381,17 +381,17 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
   const SearchTermsData& stdata = search_terms_data_;
 
   TemplateURL url(data);
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsearch/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
             url.url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dalternate/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}alternate/?q=X",
             url.url_refs()[0].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsearch/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
             url.url_refs()[1].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsuggest/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}suggest/?q=X",
             url.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}image/",
             url.image_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dimage/?translate",
+  EXPECT_EQ("http://foo{fhqwhgads}image/?translate",
             url.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}newtab/",
             url.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
@@ -2102,7 +2102,7 @@ TEST_F(TemplateURLTest, GenerateKeyword) {
   // stores TemplateURLs in maps using keyword as key.
   EXPECT_TRUE(IsLowerCase(TemplateURL::GenerateKeyword(GURL("http://BLAH/"))));
   EXPECT_TRUE(IsLowerCase(
-      TemplateURL::GenerateKeyword(GURL("http://embeddedhtml.<head>/"))));
+      TemplateURL::GenerateKeyword(GURL("http://embeddedhtml.-head-/"))));
 }
 
 TEST_F(TemplateURLTest, KeepSearchTermsInURL) {

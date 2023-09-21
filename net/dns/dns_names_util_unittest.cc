@@ -770,8 +770,8 @@ TEST(DnsNameUtilTest, IpAddressNotValidDnsRecordName) {
 TEST(DnsUtilTest, CanonicalizeNames) {
   EXPECT_EQ(UrlCanonicalizeNameIfAble("GOOGLE.test"), "google.test");
 
-  EXPECT_EQ(UrlCanonicalizeNameIfAble("g{oo}gle.test"), "g%7Boo%7Dgle.test");
-  EXPECT_EQ(UrlCanonicalizeNameIfAble("G{OO}GLE.test"), "g%7Boo%7Dgle.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("g{oo}gle.test"), "g{oo}gle.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("G{OO}GLE.test"), "g{oo}gle.test");
 
   // gügle.test
   EXPECT_EQ(UrlCanonicalizeNameIfAble("g\u00FCgle.test"), "xn--ggle-0ra.test");
@@ -780,6 +780,11 @@ TEST(DnsUtilTest, CanonicalizeNames) {
 
 TEST(DnsUtilTest, IgnoreUncanonicalizeableNames) {
   EXPECT_EQ(UrlCanonicalizeNameIfAble(""), "");
+
+  // Forbidden domain code point.
+  // https://url.spec.whatwg.org/#forbidden-domain-code-point
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("g<oo>gle.test"), "g<oo>gle.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("G<OO>GLE.test"), "G<OO>GLE.test");
 
   // Invalid UTF8 character.
   EXPECT_EQ(UrlCanonicalizeNameIfAble("g\x00FCgle.test"), "g\x00fcgle.test");

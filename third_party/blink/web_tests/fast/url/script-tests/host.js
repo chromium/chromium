@@ -3,8 +3,13 @@ description("Canonicalization of host names.");
 cases = [ 
   // Basic canonicalization, uppercase should be converted to lowercase.
   ["GoOgLe.CoM", "google.com"],
-  // Spaces and some other characters should be escaped.
-  ["Goo%20 goo%7C|.com", "goo%20%20goo%7C%7C.com"],
+  // Space and asterisk are escaped, but this is not standard-compliant.
+  // See https://crbug.com/1416013.
+  ["Goo%20 goo.com", "goo%20%20goo.com"],
+  ["Goo%2A*goo.com", "goo%2A%2Agoo.com"],
+  // Forbidden punctuation characters
+  ["Goo^goo.com"],
+  ["Goo|goo.com"],
   // Exciting different types of spaces!
   ["GOO\u00a0\u3000goo.com", "goo%20%20goo.com"],
   // Other types of space (no-break, zero-width, zero-width-no-break) are
@@ -53,9 +58,9 @@ cases = [
   // Broken IP addresses get marked as such.
   ["192.168.0.257", "192.168.0.257"],
   ["[google.com]", "[google.com]"],
-  // Cyrillic letter followed buy ( should return punicode for ( escaped before punicode string was created. I.e.
-  // if ( is escaped after punicode is created we would get xn--%28-8tb (incorrect).
-  ["\u0442(", "xn--%28-7ed"],
+  // This is an outdated test that was written with incorrectly escaping '('.
+  // However, let's keep this with the updated correct expectation.
+  ["\u0442(", "xn--(-8tb"],
   ["go\\\\@ogle.com","go/@ogle.com"],
   ["go/@ogle.com","go/@ogle.com"],
   ["www.lookout.net::==80::==443::"],

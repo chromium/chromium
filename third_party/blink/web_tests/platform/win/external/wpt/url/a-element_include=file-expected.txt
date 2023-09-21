@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 126 tests; 70 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 74 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL Parsing: <file:/example.com/> against <http://example.org/foo/bar> assert_equals: href expected "file:///example.com/" but got "file://example.com/"
 PASS Parsing: <file://example:1/> against <about:blank>
@@ -32,10 +32,10 @@ FAIL Parsing: <file:a> against <http://www.example.com/test> assert_equals: href
 PASS Parsing: <file:///C%3A/> against <about:blank>
 PASS Parsing: <file:///C%7C/> against <about:blank>
 PASS Parsing: <file://%43%3A> against <about:blank>
-FAIL Parsing: <file://%43%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <file://%43|> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <file://C%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <file://%43%7C/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+PASS Parsing: <file://%43%7C> against <about:blank>
+PASS Parsing: <file://%43|> against <about:blank>
+PASS Parsing: <file://C%7C> against <about:blank>
+PASS Parsing: <file://%43%7C/> against <about:blank>
 PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html>
 PASS Parsing: <..> against <file:///C:/>
 PASS Parsing: <..> against <file:///>
@@ -55,7 +55,7 @@ PASS Parsing: <file:#x> against <file:///test?test#test>
 FAIL Parsing: <file:\\//> against <about:blank> assert_equals: href expected "file:////" but got "file:///"
 FAIL Parsing: <file:\\\\> against <about:blank> assert_equals: href expected "file:////" but got "file:///"
 FAIL Parsing: <file:\\\\?fox> against <about:blank> assert_equals: href expected "file:////?fox" but got "file:\\\\\\\\?fox"
-FAIL Parsing: <file:\\\\#guppy> against <about:blank> assert_equals: href expected "file:////#guppy" but got "file://%23guppy/"
+FAIL Parsing: <file:\\\\#guppy> against <about:blank> assert_equals: href expected "file:////#guppy" but got "file:\\\\\\\\#guppy"
 PASS Parsing: <file://spider///> against <about:blank>
 FAIL Parsing: <file:\\localhost//> against <about:blank> assert_equals: href expected "file:////" but got "file://localhost//"
 PASS Parsing: <file:///localhost//cat> against <about:blank>
@@ -98,7 +98,7 @@ PASS Parsing: <file:/C|/> against <about:blank>
 PASS Parsing: <file://C|/> against <about:blank>
 PASS Parsing: <file:> against <about:blank>
 FAIL Parsing: <file:?q=v> against <about:blank> assert_equals: href expected "file:///?q=v" but got "file:?q=v"
-FAIL Parsing: <file:#frag> against <about:blank> assert_equals: href expected "file:///#frag" but got "file://%23frag/"
+FAIL Parsing: <file:#frag> against <about:blank> assert_equals: href expected "file:///#frag" but got "file:#frag"
 PASS Parsing: <file:///Y:> against <about:blank>
 PASS Parsing: <file:///Y:/> against <about:blank>
 PASS Parsing: <file:///./Y> against <about:blank>

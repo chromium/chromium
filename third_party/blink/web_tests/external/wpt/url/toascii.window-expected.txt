@@ -128,14 +128,14 @@ PASS xn--a.ß (using <area>)
 PASS xn--a.ß (using <area>.host)
 PASS xn--a.ß (using <area>.hostname)
 FAIL xn--ls8h= (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
-FAIL xn--ls8h= (using URL.host) assert_equals: expected "x" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using URL.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <a>) assert_equals: expected "" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <a>.host) assert_equals: expected "x" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <a>.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <area>) assert_equals: expected "" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <area>.host) assert_equals: expected "x" but got "xn--ls8h%3D"
-FAIL xn--ls8h= (using <area>.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using URL.host) assert_equals: expected "x" but got "xn--ls8h="
+FAIL xn--ls8h= (using URL.hostname) assert_equals: expected "x" but got "xn--ls8h="
+FAIL xn--ls8h= (using <a>) assert_equals: expected "" but got "xn--ls8h="
+FAIL xn--ls8h= (using <a>.host) assert_equals: expected "x" but got "xn--ls8h="
+FAIL xn--ls8h= (using <a>.hostname) assert_equals: expected "x" but got "xn--ls8h="
+FAIL xn--ls8h= (using <area>) assert_equals: expected "" but got "xn--ls8h="
+FAIL xn--ls8h= (using <area>.host) assert_equals: expected "x" but got "xn--ls8h="
+FAIL xn--ls8h= (using <area>.hostname) assert_equals: expected "x" but got "xn--ls8h="
 PASS xn--tešla (using URL)
 PASS xn--tešla (using URL.host)
 PASS xn--tešla (using URL.hostname)

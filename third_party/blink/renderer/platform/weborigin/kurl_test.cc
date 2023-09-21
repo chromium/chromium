@@ -991,10 +991,10 @@ TEST(KURL, SetProtocolToFileFromInvalidURL) {
   // reflects the validity after the transformation. All the URLs are
   // invalid before it.
   constexpr URLAndExpectedValidity kInvalidURLs[] = {
-      {"http://@/", kValid},          {"http://@@/", kValid},
+      {"http://@/", kValid},          {"http://@@/", kInvalid},
       {"http://::/", kInvalid},       {"http://:/", kValid},
       {"http://:@/", kValid},         {"http://@:/", kValid},
-      {"http://:@:/", kValid},        {"http://foo@/", kValid},
+      {"http://:@:/", kValid},        {"http://foo@/", kInvalid},
       {"http://localhost:/", kValid},
   };
 

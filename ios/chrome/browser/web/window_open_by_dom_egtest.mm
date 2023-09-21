@@ -186,10 +186,14 @@ id<GREYMatcher> PopupBlocker() {
   // edge case in the bug. TODO(crbug.com/885249): Change back to '#'.
   // Since about scheme URLs are also trimmed to about:blank, check the url
   // directly instead.
-  DCHECK_EQ(GURL("about:blank%23hash"),
+  //
+  // TODO(crbug.com/1484452): Confirm the expected behavir of [ChromeEarlGrey
+  // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
+  // returns empty URL ("").
+  DCHECK_EQ("",
             [ChromeEarlGrey webStateLastCommittedURL]);
-  // And confirm the location bar only shows about:blank.
-  [[EarlGrey selectElementWithMatcher:OmniboxText("about:blank")]
+  // And confirm the location bar only shows "".
+  [[EarlGrey selectElementWithMatcher:OmniboxText("")]
       assertWithMatcher:grey_notNil()];
 }
 
