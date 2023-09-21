@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -107,6 +108,14 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
   const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   if (requests.size() == 1) {
     if (requests[0]->request_type() == RequestType::kStorageAccess) {
+      if (base::FeatureList::IsEnabled(
+              permissions::features::kPermissionStorageAccessAPI)) {
+        return l10n_util::GetStringFUTF16(
+            IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
+            url_formatter::FormatUrlForSecurityDisplay(
+                delegate_->GetRequestingOrigin(),
+                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+      }
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
           url_formatter::FormatUrlForSecurityDisplay(
@@ -115,9 +124,8 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
           url_formatter::FormatUrlForSecurityDisplay(
               delegate_->GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    } else {
-      return requests[0]->GetDialogMessageText();
     }
+    return requests[0]->GetDialogMessageText();
   }
   CheckValidRequestGroup(requests);
   return l10n_util::GetStringFUTF16(
@@ -125,6 +133,25 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
       url_formatter::FormatUrlForSecurityDisplay(
           delegate_->GetRequestingOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+}
+
+std::u16string PermissionPromptAndroid::GetSecondaryText() const {
+  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
+  CHECK_GT(requests.size(), 0U);
+
+  if (requests[0]->request_type() == RequestType::kStorageAccess &&
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionStorageAccessAPI)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
+        url_formatter::FormatUrlForSecurityDisplay(
+            delegate_->GetRequestingOrigin(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+        url_formatter::FormatUrlForSecurityDisplay(
+            delegate_->GetEmbeddingOrigin(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  }
+  return std::u16string();
 }
 
 }  // namespace permissions

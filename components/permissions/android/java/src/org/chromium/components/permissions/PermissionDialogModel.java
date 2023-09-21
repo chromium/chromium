@@ -34,13 +34,20 @@ class PermissionDialogModel {
         TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 messageTextView, delegate.getDrawableId(), 0, 0, 0);
 
+        String secondaryText = delegate.getSecondaryText();
+        if (!secondaryText.isEmpty()) {
+            TextView secondaryTextView = customView.findViewById(R.id.secondary);
+            secondaryTextView.setText(secondaryText);
+            secondaryTextView.setVisibility(View.VISIBLE);
+        }
+
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
                 .with(ModalDialogProperties.FOCUS_DIALOG, true)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, delegate.getPrimaryButtonText())
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, delegate.getSecondaryButtonText())
-                .with(ModalDialogProperties.CONTENT_DESCRIPTION, delegate.getMessageText())
+                .with(ModalDialogProperties.CONTENT_DESCRIPTION, messageText)
                 .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
                 .with(ModalDialogProperties.TOUCH_FILTERED_CALLBACK, touchFilteredCallback)
                 .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,

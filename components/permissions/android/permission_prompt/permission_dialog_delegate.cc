@@ -50,6 +50,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
       ConvertUTF16ToJavaString(env, permission_prompt_->GetMessageText()),
+      ConvertUTF16ToJavaString(env, permission_prompt_->GetSecondaryText()),
       primaryButtonText, secondaryButtonText));
 }
 
