@@ -471,27 +471,41 @@ void FileSystemUnderlyingSink::WriteComplete(
     mojom::blink::FileSystemAccessErrorPtr result,
     uint64_t bytes_written) {
   DCHECK(pending_operation_);
-  file_system_access_error::ResolveOrReject(pending_operation_, *result);
-  pending_operation_ = nullptr;
 
   if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
     // Advance offset.
     offset_ += bytes_written;
+
+    pending_operation_->Resolve();
+  } else {
+    // An error of any kind puts the underlying stream into an unrecoverable
+    // error state. See https://crbug.com/1380650#c5. Close the mojo pipe to
+    // clean up resources held by the browser process - including the file lock.
+    writer_remote_.reset();
+    file_system_access_error::Reject(pending_operation_, *result);
   }
+  pending_operation_ = nullptr;
 }
 
 void FileSystemUnderlyingSink::TruncateComplete(
     uint64_t to_size,
     mojom::blink::FileSystemAccessErrorPtr result) {
   DCHECK(pending_operation_);
-  file_system_access_error::ResolveOrReject(pending_operation_, *result);
-  pending_operation_ = nullptr;
 
   if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
     // Set offset to smallest last set size so that a subsequent write is not
     // out of bounds.
     offset_ = to_size < offset_ ? to_size : offset_;
+
+    pending_operation_->Resolve();
+  } else {
+    // An error of any kind puts the underlying stream into an unrecoverable
+    // error state. See https://crbug.com/1380650#c5. Close the mojo pipe to
+    // clean up resources held by the browser process - including the file lock.
+    writer_remote_.reset();
+    file_system_access_error::Reject(pending_operation_, *result);
   }
+  pending_operation_ = nullptr;
 }
 
 void FileSystemUnderlyingSink::CloseComplete(
