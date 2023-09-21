@@ -8,7 +8,4 @@ namespace network {
 
 const char kDefaultAcceptHeaderValue[] = "*/*";
 
-const base::FilePath::CharType kSharedDictionaryDbDirName[] =
-    FILE_PATH_LITERAL("db");
-
 }  // namespace network
