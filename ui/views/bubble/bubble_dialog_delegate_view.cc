@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -25,9 +25,11 @@
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -436,8 +438,8 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Shadow shadow)
     : arrow_(arrow),
       shadow_(shadow),
-      close_on_deactivate_pins_(
-          std::make_unique<CloseOnDeactivatePin::Pins>()) {
+      close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
+      bubble_created_time_(base::TimeTicks::Now()) {
   SetOwnedByWidget(true);
   SetAnchorView(anchor_view);
   SetArrow(arrow);
@@ -459,6 +461,25 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
         bubble_delegate->UpdateColorsFromTheme();
       },
       this));
+
+  // Bind a callback to the compositor for logging time from bubble creation to
+  // successful presentation of the next frame.
+  if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    RegisterWidgetInitializedCallback(base::BindOnce(
+        [](WidgetDelegate* delegate, base::TimeTicks bubble_created_time) {
+          delegate->GetWidget()
+              ->GetCompositor()
+              ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+                  [](base::TimeTicks bubble_created_time,
+                     base::TimeTicks presentation_timestamp) {
+                    base::UmaHistogramMediumTimes(
+                        "Bubble.All.CreateToPresentationTime",
+                        presentation_timestamp - bubble_created_time);
+                  },
+                  bubble_created_time));
+        },
+        base::Unretained(this), *bubble_created_time_));
+  }
 }
 
 BubbleDialogDelegate::~BubbleDialogDelegate() {
@@ -947,6 +968,22 @@ void BubbleDialogDelegate::UpdateColorsFromTheme() {
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
+  // Log time from bubble dialog delegate creation to bubble becoming
+  // visible.
+  if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi) && visible &&
+      bubble_created_time_.has_value()) {
+    GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+        base::BindOnce(
+            [](base::TimeTicks bubble_created_time,
+               base::TimeTicks presentation_timestamp) {
+              base::UmaHistogramMediumTimes(
+                  "Bubble.All.CreateToVisibleTime",
+                  presentation_timestamp - bubble_created_time);
+            },
+            *bubble_created_time_));
+    bubble_created_time_.reset();
+  }
+
   UpdateHighlightedButton(visible);
 
   // Fire ax::mojom::Event::kAlert for bubbles marked as

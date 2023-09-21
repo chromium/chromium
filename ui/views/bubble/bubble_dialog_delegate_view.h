@@ -457,6 +457,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // Used to ensure the button remains anchored while this dialog is open.
   absl::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
+
+  absl::optional<base::TimeTicks> bubble_created_time_;
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
