@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
@@ -54,7 +53,6 @@ using password_manager::WarningType;
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     PasswordCheckupCoordinatorDelegate,
-    PasswordsInOtherAppsCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate,
@@ -94,10 +92,6 @@ using password_manager::WarningType;
 
 // Coordinator for add password details.
 @property(nonatomic, strong) AddPasswordCoordinator* addPasswordCoordinator;
-
-// Coordinator for passwords in other apps promotion view.
-@property(nonatomic, strong)
-    PasswordsInOtherAppsCoordinator* passwordsInOtherAppsCoordinator;
 
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
@@ -211,10 +205,6 @@ using password_manager::WarningType;
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
-
-  [self.passwordsInOtherAppsCoordinator stop];
-  self.passwordsInOtherAppsCoordinator.delegate = nil;
-  self.passwordsInOtherAppsCoordinator = nil;
 
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
@@ -467,18 +457,6 @@ using password_manager::WarningType;
   [self showDetailedViewForCredential:credential];
   [self.passwordDetailsCoordinator
           showPasswordDetailsInEditModeWithoutAuthentication];
-}
-
-#pragma mark - PasswordsInOtherAppsCoordinatorDelegate
-
-- (void)passwordsInOtherAppsCoordinatorDidRemove:
-    (PasswordsInOtherAppsCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordsInOtherAppsCoordinator, coordinator);
-  [self.passwordsInOtherAppsCoordinator stop];
-  self.passwordsInOtherAppsCoordinator.delegate = nil;
-  self.passwordsInOtherAppsCoordinator = nil;
-
-  [self restartReauthCoordinator];
 }
 
 #pragma mark - PasswordSettingsCoordinatorDelegate
