@@ -199,7 +199,9 @@ constexpr auto kHDRTransferMap =
         {{ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR,
           TransferFnVersion(SkNamedTransferFn::kLinear, kDefaultSinceVersion)},
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR,
-          TransferFnVersion(SkNamedTransferFnExt::kSRGB, kDefaultSinceVersion)},
+          TransferFnVersion(
+              SkNamedTransferFnExt::kSRGB,
+              ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION)},
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ,
           TransferFnVersion(SkNamedTransferFn::kPQ, kDefaultSinceVersion)},
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_HLG,
