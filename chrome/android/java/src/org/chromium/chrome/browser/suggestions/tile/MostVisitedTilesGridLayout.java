@@ -187,9 +187,17 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
                 gridStart = 0;
             }
         }
-
-        assert horizontalSpacing >= mMinHorizontalSpacing;
-        assert horizontalSpacing <= mMaxHorizontalSpacing;
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        String logMessage = "|horizontalSpacing| = " + horizontalSpacing
+                + " |numColumns| = " + numColumns + " |availableWidth| = " + availableWidth
+                + " |screenWidth| = " + screenWidth + " |screenHeight| = " + screenHeight + ".";
+        assert horizontalSpacing >= mMinHorizontalSpacing
+            : "Horizontal spacing shouldn't be smaller than minimal horizontal spacing: "
+              + logMessage;
+        assert horizontalSpacing <= mMaxHorizontalSpacing
+            : "Horizontal spacing shouldn't be larger than maximal horizontal spacing: "
+              + logMessage;
 
         return Pair.create(gridStart, Math.round(horizontalSpacing));
     }
