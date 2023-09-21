@@ -13,9 +13,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#if defined(AIDA_SCOPE)
-#include "chrome/browser/devtools/aida_client.h"
-#endif
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
@@ -24,18 +21,17 @@
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/signin/public/identity_manager/access_token_fetcher.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
-#include "google_apis/gaia/google_service_auth_error.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(AIDA_SCOPE)
+#include "chrome/browser/devtools/aida_client.h"
+#endif
+
 class DevToolsAndroidBridge;
-class Profile;
 class PortForwardingStatusSerializer;
+class Profile;
 
 namespace content {
 class NavigationHandle;

@@ -92,6 +92,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -108,21 +109,21 @@ struct FrameNavigateParams;
 
 namespace {
 
-static const char kFrontendHostId[] = "id";
-static const char kFrontendHostMethod[] = "method";
-static const char kFrontendHostParams[] = "params";
-static const char kTitleFormat[] = "DevTools - %s";
+const char kFrontendHostId[] = "id";
+const char kFrontendHostMethod[] = "method";
+const char kFrontendHostParams[] = "params";
+const char kTitleFormat[] = "DevTools - %s";
 
-static const char kRemotePageActionInspect[] = "inspect";
-static const char kRemotePageActionReload[] = "reload";
-static const char kRemotePageActionActivate[] = "activate";
-static const char kRemotePageActionClose[] = "close";
+const char kRemotePageActionInspect[] = "inspect";
+const char kRemotePageActionReload[] = "reload";
+const char kRemotePageActionActivate[] = "activate";
+const char kRemotePageActionClose[] = "close";
 
-static const char kConfigDiscoverUsbDevices[] = "discoverUsbDevices";
-static const char kConfigPortForwardingEnabled[] = "portForwardingEnabled";
-static const char kConfigPortForwardingConfig[] = "portForwardingConfig";
-static const char kConfigNetworkDiscoveryEnabled[] = "networkDiscoveryEnabled";
-static const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
+const char kConfigDiscoverUsbDevices[] = "discoverUsbDevices";
+const char kConfigPortForwardingEnabled[] = "portForwardingEnabled";
+const char kConfigPortForwardingConfig[] = "portForwardingConfig";
+const char kConfigNetworkDiscoveryEnabled[] = "networkDiscoveryEnabled";
+const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 
 // This constant should be in sync with
 // the constant
