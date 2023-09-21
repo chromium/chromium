@@ -169,6 +169,7 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
@@ -616,6 +617,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIUserNotesSidePanelHost)
     return &NewWebUI<UserNotesSidePanelUI>;
+  if (url.host_piece() == chrome::kChromeUIPerformanceSidePanelHost) {
+    return &NewWebUI<PerformanceSidePanelUI>;
+  }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)
     return &NewWebUI<settings::SettingsUI>;

@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module side_panel.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Factory to create the performance page handler.
+interface PerformancePageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePerformancePageHandler(
+      pending_remote<PerformancePage> page,
+      pending_receiver<PerformancePageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PerformancePageHandler {
+
+};
+
+// WebUI-side handler for requests from the browser.
+interface PerformancePage {
+
+};
