@@ -717,26 +717,15 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
   return filesystem_url.path();
 }
 
-void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
-                         Profile* profile,
-                         const std::vector<GURL>& file_urls,
+void GetSelectedFileInfo(Profile* profile,
+                         std::vector<base::FilePath> local_paths,
                          GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback) {
-  DCHECK(render_frame_host);
-  DCHECK(profile);
-
   std::unique_ptr<GetSelectedFileInfoParams> params =
       std::make_unique<GetSelectedFileInfoParams>();
   params->local_path_option = local_path_option;
   params->callback = std::move(callback);
-
-  for (const GURL& url : file_urls) {
-    base::FilePath path = GetLocalPathFromURL(render_frame_host, profile, url);
-    if (!path.empty()) {
-      DVLOG(1) << "Selected: file path: " << path;
-      params->file_paths.push_back(std::move(path));
-    }
-  }
+  params->file_paths = std::move(local_paths);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
