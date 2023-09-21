@@ -7,12 +7,13 @@ import base64
 import functools
 import os
 import shutil
+import struct
 import sys
 
 import attr
 import pytest
 from selenium.webdriver.remote.webelement import WebElement
-from typing import Tuple
+from typing import List, Tuple
 
 # The module skia_gold_common is relative to its own path, add "build" dir
 # to the search path.
@@ -32,6 +33,18 @@ def _get_skia_gold_args() -> argparse.Namespace:
   return skia_options
 
 
+def _get_png_image_info(data: bytes) -> Tuple[int, int]:
+  if _is_png(data):
+    weight, height = struct.unpack('>LL', data[16:24])
+    return int(weight), int(height)
+  else:
+    raise RuntimeError('not a png image')
+
+
+def _is_png(data: bytes) -> bool:
+  return data[:6] == b'\x89PNG\r\n' and data[12:16] == b'IHDR'
+
+
 @attr.attrs()
 class VariationsSkiaGoldUtil:
   """Wrapper test util class for skia gold API."""
@@ -45,25 +58,58 @@ class VariationsSkiaGoldUtil:
     """Returns a file name that should be used for diff comparison."""
     return os.path.join(self.img_dir, f'{name}.png')
 
+  def _inexact_matching_args(self, max_diff: int) -> List[str]:
+    # Fuzzy matching algorithms allow to diff in a certain number of pixels.
+    # https://skia.googlesource.com/buildbot/+/main/gold-client/go/imgmatching/fuzzy/fuzzy.go
+    return[
+      '--add-test-optional-key',
+      'image_matching_algorithm:fuzzy',
+      # Some hardware may cause rasterization inconsistency, resulting two
+      # completely different pixels. Here we tolerate some level of hardware
+      # rendering on each pixel even those two pixels are completely different,
+      # without compromising significant visual differences.
+      '--add-test-optional-key',
+      'fuzzy_pixel_per_channel_delta_threshold:255',
+      '--add-test-optional-key',
+      f'fuzzy_max_different_pixels:{max_diff}',
+    ]
+
   @staticmethod
   def screenshot_from_element(ele: WebElement) -> bytes:
     """Convenient method to screenshot an selement."""
     return base64.b64decode(ele.screenshot_as_base64)
 
-  def compare(self, name: str, png_data: bytes) -> Tuple[int, str]:
+  def compare(self, name: str,
+              png_data: bytes,
+              threshold: float = 0.001) -> Tuple[int, str]:
     """Compares image using skia gold API.
 
     It saves png data into a file first and compares using `goldctl`. The image
     can be inspected after test runs. It runs locally or on a bot, and only
     upload gold images for triaging on a bot.
+
+    Args:
+      name: the image name used to identify the comparison result.
+      png_data: the raw data saving png contents.
+      threshold: the percentage to allow pixel differences.
+
+    Returns:
+      The tuple of status code and optional error message.
+
+    Raises:
+      RuntimeError if the png_data is not a PNG content.
     """
+    weight, height = _get_png_image_info(png_data)
+    max_pixel = int(weight * height * threshold)
     png_file = self._png_file_for_name(name)
     with open(png_file, "wb") as f:
       f.write(png_data)
 
     image_name = f'{self.test_name}:{name}'
     status, error_msg = self.skia_gold_session.RunComparison(
-      name=image_name, png_file=png_file, use_luci=self.use_luci)
+      name=image_name, png_file=png_file,
+      inexact_matching_args=self._inexact_matching_args(max_pixel),
+      use_luci=self.use_luci)
 
     # Screenshots for variations are in chrome-gold.skia.org
     triage_link = self.skia_gold_session.GetTriageLinks(image_name)[1]
