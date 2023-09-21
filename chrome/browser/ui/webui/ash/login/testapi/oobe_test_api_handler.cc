@@ -98,6 +98,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
                                       const std::string& pin) {
+  VLOG(1) << "LoginWithPin";
   LoginScreenClientImpl::Get()->AuthenticateUserWithPasswordOrPin(
       AccountId::FromUserEmail(username), pin, /*authenticated_by_pin=*/true,
       base::BindOnce([](bool success) {
@@ -106,10 +107,12 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
 }
 
 void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
+  VLOG(1) << "AdvanceToScreen(" << screen << ")";
   LoginDisplayHost::default_host()->StartWizard(OobeScreenId(screen));
 }
 
 void OobeTestAPIHandler::SkipToLoginForTesting() {
+  VLOG(1) << "SkipToLoginForTesting";
   WizardController* controller = WizardController::default_controller();
   if (!controller || !controller->is_initialized()) {
     LOG(ERROR)
@@ -124,6 +127,7 @@ void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
   HIDDetectionScreen* screen_ = static_cast<HIDDetectionScreen*>(
       WizardController::default_controller()->GetScreen(
           HIDDetectionView::kScreenId));
+  VLOG(1) << "EmulateDevicesConnectedForTesting";
   auto touchscreen = device::mojom::InputDeviceInfo::New();
   touchscreen->id = "fake_touchscreen";
   touchscreen->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
@@ -147,11 +151,13 @@ void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
+  VLOG(1) << "SkipPostLoginScreens";
   WizardController::default_controller()
       ->SkipPostLoginScreensForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::LoginAsGuest() {
+  VLOG(1) << "LoginAsGuest";
   WizardController::default_controller()->SkipToLoginForTesting();  // IN-TEST
   CHECK(ExistingUserController::current_controller());
   UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
@@ -160,6 +166,7 @@ void OobeTestAPIHandler::LoginAsGuest() {
 }
 
 void OobeTestAPIHandler::ShowGaiaDialog() {
+  VLOG(1) << "ShowGaiaDialog";
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
 }
 
