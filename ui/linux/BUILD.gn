@@ -79,6 +79,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//skia",
+    "//ui/base/ime/linux",
     "//ui/gfx",
     "//ui/native_theme",
     "//ui/shell_dialogs",
