@@ -6695,3 +6695,7 @@ crbug.com/1478028 [ Linux ] external/wpt/pointerevents/coalesced_events_attribut
 # Gardener 2023-09-05
 # Flaky on Webkit Linux Leak
 crbug.com/1478891 [ Linux ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Failure Pass ]
+
+# Gardener 2023-09-07
+crbug.com/1480070 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Pass Failure ]
+crbug.com/1480070 [ Win ] virtual/threaded/external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary.html [ Pass Failure ]
