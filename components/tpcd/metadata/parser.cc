@@ -45,6 +45,8 @@ void Parser::ParseMetadata(const std::string& raw_metadata) {
   CHECK(metadata.ParseFromString(raw_metadata));
 
   metadata_ = ToMetadataEntries(metadata);
+
+  CallOnMetadataReady();
 }
 
 MetadataEntries ParseMetadataFromFeatureParam(
@@ -61,6 +63,20 @@ MetadataEntries ParseMetadataFromFeatureParam(
   CHECK(metadata.ParseFromString(uncompressed));
 
   return ToMetadataEntries(metadata);
+}
+
+void Parser::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void Parser::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void Parser::CallOnMetadataReady() {
+  for (auto& observer : observers_) {
+    observer.OnMetadataReady();
+  }
 }
 
 MetadataEntries Parser::GetMetadata() {
@@ -80,7 +96,7 @@ MetadataEntries Parser::GetMetadata() {
 }
 
 // Start Parser testing methods impl:
-MetadataEntries Parser::GetMetadataForTesting() {
+MetadataEntries Parser::GetInstalledMetadataForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return metadata_.value_or(MetadataEntries());

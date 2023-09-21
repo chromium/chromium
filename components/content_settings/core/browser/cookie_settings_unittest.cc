@@ -1503,10 +1503,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
 
-  settings_map_->SetContentSettingCustomScope(
+  ContentSettingsForOneType tpcd_metadata_grants;
+  tpcd_metadata_grants.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::TPCD_METADATA_GRANTS, CONTENT_SETTING_ALLOW);
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(), false);
+  cookie_settings_->SetContentSettingsFor3pcdMetadataGrants(
+      tpcd_metadata_grants);
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),

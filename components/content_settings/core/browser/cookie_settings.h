@@ -115,6 +115,31 @@ class CookieSettings : public CookieSettingsBase,
   // not covered by user bypass at this state of art.
   bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url);
 
+  // Sets the `settings_for_3pcd_metadata_grants_` `ContentSettingsForOneType`
+  // to be held and accessed from memory by the cookie settings object.
+  void SetContentSettingsFor3pcdMetadataGrants(
+      const ContentSettingsForOneType settings) {
+    settings_for_3pcd_metadata_grants_ = settings;
+  }
+
+  ContentSetting GetContentSettingForTesting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info = nullptr) {
+    return GetContentSetting(primary_url, secondary_url, content_type);
+  }
+
+  ContentSettingsForOneType GetContentSettingsForOneTypeForTesting(
+      ContentSettingsType content_type) {
+    switch (content_type) {
+      case ContentSettingsType::TPCD_METADATA_GRANTS:
+        return settings_for_3pcd_metadata_grants_;
+      default:
+        NOTREACHED_NORETURN() << static_cast<int>(content_type);
+    }
+  }
+
   // Resets the cookie setting for the given url.
   //
   // This should only be called on the UI thread.
@@ -206,6 +231,11 @@ class CookieSettings : public CookieSettingsBase,
   PrefChangeRegistrar pref_change_registrar_;
   const bool is_incognito_;
   const char* extension_scheme_;  // Weak.
+
+  // Used to represent content settings for 3PC accesses granted via the
+  // component updater service. This type will only be populated when
+  // `net::features::kTpcdMetadataGrants` is enabled.
+  ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);

@@ -325,6 +325,7 @@ static_library("test_support") {
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/segmentation_platform/public:test_support",
     "//components/spellcheck/renderer",
+    "//components/tpcd/metadata",
     "//components/ukm:test_support",
     "//components/user_education/common",
     "//components/user_manager",
@@ -2146,6 +2147,7 @@ if (!is_android) {
       "../browser/media/webrtc/region_capture_browsertest.cc",
       "../browser/media/webrtc/same_origin_observer_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
+      "../browser/tpcd/metadata/updater_service_browsertest.cc",
 
       # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
       # "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",

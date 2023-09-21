@@ -8,8 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/tpcd/metadata/metadata.pb.h"
@@ -22,9 +23,22 @@ using MetadataEntries = std::vector<MetadataEntry>;
 class Parser {
  public:
   static Parser* GetInstance();
+  class Observer {
+   public:
+    virtual void OnMetadataReady() = 0;
+  };
+
+  Parser();
+  virtual ~Parser();
 
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
+
+  // Adds/Removes an Observer.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void CallOnMetadataReady();
 
   // ParseMetadata deserializes the proto content from `raw_metadata`.
   // NOTE: The validation of `raw_metadata` will be performed within the
@@ -37,19 +51,17 @@ class Parser {
   // Component Updater.
   MetadataEntries GetMetadata();
 
-  MetadataEntries GetMetadataForTesting();
+  static constexpr char const* kMetadataFeatureParamName = "Metadata";
+
+  // Start Parser testing methods:
+  MetadataEntries GetInstalledMetadataForTesting();
   void ResetStatesForTesting();
   MetadataEntries ParseMetadataFromFeatureParamForTesting(
       const base::FieldTrialParams& params);
-
-  static constexpr char const* kMetadataFeatureParamName = "Metadata";
+  // End Parser testing methods.
 
  private:
-  friend class base::NoDestructor<Parser>;
-
-  Parser();
-  ~Parser();
-
+  base::ObserverList<Observer>::Unchecked observers_;
   absl::optional<MetadataEntries> metadata_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 

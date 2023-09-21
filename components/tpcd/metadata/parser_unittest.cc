@@ -4,6 +4,7 @@
 
 #include "components/tpcd/metadata/parser.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,10 +39,10 @@ class ParserTest : public ::testing::Test {
   ParserTest() {
     CHECK(fake_install_dir_.CreateUniqueTempDir());
     CHECK(fake_install_dir_.IsValid());
-    parser_ = Parser::GetInstance();
+    parser_ = std::make_unique<Parser>();
   }
 
-  ~ParserTest() override { parser_->ResetStatesForTesting(); }
+  ~ParserTest() override = default;
 
  protected:
   // NOTE: we can initialize the ScopedFeatureList this way since this
@@ -74,7 +75,7 @@ class ParserTest : public ::testing::Test {
     return raw_metadata;
   }
 
-  Parser* parser() { return parser_; }
+  Parser* parser() { return parser_.get(); }
 
   // The death test is not reliable on old x86 Android:
   // https://crbug.com/815537 &
@@ -93,7 +94,7 @@ class ParserTest : public ::testing::Test {
   }
 
  private:
-  raw_ptr<Parser> parser_;
+  std::unique_ptr<Parser> parser_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir fake_install_dir_;
 };
@@ -214,7 +215,7 @@ TEST_F(ParserTest, ParseMetadata_NonEmptyList) {
   ExecFakeComponentInstallation(metadata.SerializeAsString());
   parser()->ParseMetadata(GetFakeComponent());
 
-  MetadataEntries me = parser()->GetMetadataForTesting();
+  MetadataEntries me = parser()->GetInstalledMetadataForTesting();
   ASSERT_EQ(me.size(), 1u);
   ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
   ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);
@@ -287,7 +288,7 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterThenFeatureParams) {
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata_pairs)}});
 
-    MetadataEntries me = parser()->GetMetadataForTesting();
+    MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     ASSERT_EQ(me.size(), 1u);
     ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
     ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);
@@ -311,7 +312,7 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_1) {
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata_pairs)}});
 
-    MetadataEntries me = parser()->GetMetadataForTesting();
+    MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     EXPECT_THAT(me, IsEmpty());
 
     me = parser()->GetMetadata();
@@ -352,7 +353,7 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata_pairs)}});
 
-    MetadataEntries me = parser()->GetMetadataForTesting();
+    MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     EXPECT_THAT(me, IsEmpty());
 
     me = parser()->GetMetadata();
@@ -370,7 +371,7 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
     ExecFakeComponentInstallation(metadata.SerializeAsString());
     parser()->ParseMetadata(GetFakeComponent());
 
-    MetadataEntries me = parser()->GetMetadataForTesting();
+    MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     ASSERT_EQ(me.size(), 1u);
     ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
     ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);

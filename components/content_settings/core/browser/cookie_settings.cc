@@ -239,6 +239,20 @@ ContentSetting CookieSettings::GetContentSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
+  if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
+    const auto& entry = base::ranges::find_if(
+        settings_for_3pcd_metadata_grants_,
+        [&](const ContentSettingPatternSource& entry) {
+          CHECK(IsAllowed(
+              content_settings::ValueToContentSetting(entry.setting_value)));
+          return entry.primary_pattern.Matches(primary_url) &&
+                 entry.secondary_pattern.Matches(secondary_url);
+        });
+    return entry != settings_for_3pcd_metadata_grants_.end()
+               ? CONTENT_SETTING_ALLOW
+               : CONTENT_SETTING_BLOCK;
+  }
+
   return host_content_settings_map_->GetContentSetting(
       primary_url, secondary_url, content_type, info);
 }

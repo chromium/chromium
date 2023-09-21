@@ -154,7 +154,6 @@ void RegisterTpcdMetadataComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Third Party Cookie Deprecation Metadata component.";
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      // TODO(http://b/290039145): Integrate the component with CookieSettings.
       std::make_unique<TpcdMetadataComponentInstaller>(
           base::BindRepeating([](std::string raw_metadata) {
             tpcd::metadata::Parser::GetInstance()->ParseMetadata(raw_metadata);
