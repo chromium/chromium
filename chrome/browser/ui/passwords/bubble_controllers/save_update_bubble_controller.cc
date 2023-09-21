@@ -108,7 +108,6 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
           delegate,
           display_reason,
           ComputeDisplayDisposition(display_reason, delegate->GetState())),
-
       clock_(base::DefaultClock::GetInstance()) {
   existing_credentials_ = DeepCopyForms(delegate_->GetCurrentForms());
   // The condition for the password reauth:
