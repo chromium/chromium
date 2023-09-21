@@ -673,7 +673,14 @@ void FakeUserDataAuthClient::IsMounted(
   ::user_data_auth::IsMountedReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  reply.set_is_mounted(true);
+  bool result;
+  if (request.username().empty()) {
+    result = !mounted_user_dirs_.empty();
+  } else {
+    result =
+        mounted_user_dirs_.find(request.username()) != mounted_user_dirs_.end();
+  }
+  reply.set_is_mounted(result);
 }
 
 void FakeUserDataAuthClient::Unmount(
@@ -681,6 +688,7 @@ void FakeUserDataAuthClient::Unmount(
     UnmountCallback callback) {
   ::user_data_auth::UnmountReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  mounted_user_dirs_.clear();
 }
 
 void FakeUserDataAuthClient::Remove(
@@ -1107,6 +1115,7 @@ void FakeUserDataAuthClient::PreparePersistentVault(
 
   reply.set_sanitized_username(
       GetStubSanitizedUsername(authenticated_auth_session->account));
+  mounted_user_dirs_.insert(authenticated_auth_session->account.account_id());
 }
 
 void FakeUserDataAuthClient::PrepareVaultForMigration(
