@@ -77,8 +77,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
 
-    sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -109,7 +107,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
                                   GetForBrowserState(browser_state_.get())
                   prefService:browser_state_->GetPrefs()
           initialAccountState:initialAccountState];
-    mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;
   }
 
@@ -118,7 +115,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
             IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
@@ -130,7 +128,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   void SimulateFirstSetupSyncOff() {
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
@@ -161,7 +160,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
 
   syncer::MockSyncService* sync_service_mock_;
-  SyncSetupServiceMock* sync_setup_service_mock_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
