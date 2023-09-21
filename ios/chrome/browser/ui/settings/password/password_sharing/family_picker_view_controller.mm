@@ -33,7 +33,7 @@ const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
-@interface FamilyPickerViewController ()
+@interface FamilyPickerViewController () <PopoverLabelViewControllerDelegate>
 
 @property(nonatomic, strong) NSArray<RecipientInfoForIOSDisplay*>* recipients;
 
@@ -60,6 +60,7 @@ const CGFloat kAccessorySymbolSize = 22;
       kFamilyPickerShareButtonId;
 
   self.tableView.allowsMultipleSelection = YES;
+  self.tableView.accessibilityIdentifier = kFamilyPickerTableViewId;
 
   [self loadModel];
 }
@@ -137,6 +138,9 @@ const CGFloat kAccessorySymbolSize = 22;
     [infoButton addTarget:self
                    action:@selector(infoButtonTapped:)
          forControlEvents:UIControlEventTouchUpInside];
+    infoButton.accessibilityIdentifier =
+        [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonId,
+                                   _recipients[indexPath.row].email];
     cell.accessoryView = infoButton;
   }
 
@@ -200,6 +204,12 @@ const CGFloat kAccessorySymbolSize = 22;
       kFamilyPickerCancelButtonId;
 }
 
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  [self.delegate learnMoreLinkWasTapped];
+}
+
 #pragma mark - Private
 
 - (UIImage*)checkmarkCircleIcon {
@@ -229,7 +239,7 @@ const CGFloat kAccessorySymbolSize = 22;
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
-    // TODO(crbug.com/1463882): Add HC article link once it's ready.
+    // Opening HC article is handled by the delegate.
     NSLinkAttributeName : @"",
   };
 
@@ -239,7 +249,7 @@ const CGFloat kAccessorySymbolSize = 22;
                                               text, textAttributes,
                                               linkAttributes)
                 secondaryAttributedString:nil];
-
+  popoverViewController.delegate = self;
   popoverViewController.popoverPresentationController.sourceView = button;
   popoverViewController.popoverPresentationController.sourceRect =
       button.bounds;

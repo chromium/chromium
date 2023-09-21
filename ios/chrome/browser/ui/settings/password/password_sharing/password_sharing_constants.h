@@ -7,22 +7,21 @@
 
 #import <Foundation/Foundation.h>
 
-// The accessibility identifier of the family picker back button.
+// The accessibility identifiers of the family picker view.
+extern NSString* const kFamilyPickerTableViewId;
 extern NSString* const kFamilyPickerBackButtonId;
-
-// The accessibility identifier of the family picker cancel button.
 extern NSString* const kFamilyPickerCancelButtonId;
-
-// The accessibility identifier of the family picker share button.
 extern NSString* const kFamilyPickerShareButtonId;
+extern NSString* const kFamilyPickerInfoButtonId;
 
-// The accessibility identifier of the password picker cancel button.
+// The accessibility identifiers of the password picker view.
 extern NSString* const kPasswordPickerCancelButtonId;
-
-// The accessibility identifier of the password picker next button.
 extern NSString* const kPasswordPickerNextButtonId;
 
 // Link for creating family group with Google Families.
 extern const char kFamilyGroupSiteURL[];
+
+// Link for the password sharing HC article.
+extern const char kPasswordSharingLearnMoreURL[];
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_CONSTANTS_H_

@@ -22,6 +22,10 @@
 // view.
 - (void)familyPickerNavigatedBack:(FamilyPickerViewController*)controller;
 
+// Called when the user clicks "Learn more" in the info button popover of the
+// recipient that is not eligible to receive passwords.
+- (void)learnMoreLinkWasTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

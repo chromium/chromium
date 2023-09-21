@@ -6,12 +6,16 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -107,6 +111,15 @@
 - (void)familyPickerNavigatedBack:(FamilyPickerViewController*)controller {
   [self.baseNavigationController popViewControllerAnimated:YES];
   [self.delegate familyPickerCoordinatorNavigatedBack:self];
+}
+
+- (void)learnMoreLinkWasTapped {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:GURL(kPasswordSharingLearnMoreURL)];
+  [handler closeSettingsUIAndOpenURL:command];
+  [self.delegate familyPickerCoordinatorWasDismissed:self];
 }
 
 @end

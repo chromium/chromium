@@ -31,6 +31,9 @@ void FakeRecipientsFetcher::FetchFamilyMembers(
       recipient.public_key.key_version = 0;
       recipients.push_back(recipient);
     }
+
+    // Make one recipient ineligible for sharing.
+    recipients[4].public_key.key.clear();
   }
 
   std::move(callback).Run(recipients, status_);

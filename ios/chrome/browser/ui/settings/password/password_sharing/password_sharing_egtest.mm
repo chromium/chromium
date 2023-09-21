@@ -27,6 +27,8 @@ using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::SavePasswordForm;
 
+constexpr char kGoogleHelpCenterURL[] = "support.google.com";
+
 void SignInAndEnableSync() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
@@ -303,6 +305,40 @@ void SignInAndEnableSync() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerNextButtonId)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testTappingLearnMoreInFamilyPickerInfoPopup {
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Scroll down to the last recipient (the ineligible ones are on the bottom).
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewId)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Tap on the info button next to the ineligible recipient row.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID([NSString
+                         stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonId,
+                                          @"user4@gmail.com"]),
+                     grey_kindOfClass([UIButton class]), nil)]
+      performAction:grey_tap()];
+
+  // Tap the "Learn more" link in the popup.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
+      performAction:grey_tap()];
+
+  // Check that the help center article was opened.
+  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the help center article.");
 }
 
 @end
