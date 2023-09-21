@@ -171,6 +171,22 @@ TEST_F('OSSettingsCrostiniPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsCrostiniSettingsCardTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_settings_card_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniSettingsCardTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 var OSSettingsCrostiniExtraContainerPageTest =
     class extends OSSettingsBrowserTest {
   /** @override */

@@ -28,6 +28,7 @@ build_webui_tests("build") {
     "cellular_roaming_toggle_button_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
+    "crostini_settings_card_test.js",
     "esim_remove_profile_dialog_test.js",
     "fake_canvas_context.js",
     "fake_input_method_private.js",
