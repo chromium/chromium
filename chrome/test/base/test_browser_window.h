@@ -264,6 +264,7 @@ class TestBrowserWindow : public BrowserWindow {
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
+  void NotifyPromoFeatureUsed(const base::Feature& iph_feature) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.

@@ -644,7 +644,16 @@ class BrowserWindow : public ui::BaseWindow {
   // Records that the user has engaged with a particular feature that has an
   // associated promo; this information is used to determine whether to show
   // specific promos in the future.
+  //
+  // If `event_name` corresponds to the "used" event for an IPH, prefer using
+  // `NotifyFeaturePromoFeatureUsed()` for clarity instead.
   virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
+
+  // Records that the user has engaged the specific feature associated with
+  // the promo `iph_feature`; this information is used to determine whether to
+  // show the promo in the future. Prefer this to
+  // `NotifyFeatureEngagementEvent()` where possible.
+  virtual void NotifyPromoFeatureUsed(const base::Feature& iph_feature) = 0;
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;

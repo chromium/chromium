@@ -21,6 +21,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -1256,6 +1257,31 @@ TEST_F(TrackerImplTest, TestNotifyEvent) {
   EXPECT_EQ(1u, bar_event.events(0).day());
   EXPECT_EQ(1u, bar_event.events(0).count());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(TrackerImplTest, TestNotifyUsedEvent) {
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  tracker_->NotifyUsedEvent(kTrackerTestFeatureFoo);
+
+  // Used event will record both NotifyEvent and NotifyUsedEvent. Explicitly
+  // specify the whole user action string here.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "InProductHelp.NotifyUsedEvent.test_foo"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "InProductHelp.NotifyEvent.test_foo"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "InProductHelp.NotifyUsedEvent.test_bar"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "InProductHelp.NotifyEvent.test_bar"));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(TrackerImplTest, ShouldPassThroughAcquireDisplayLock) {
   auto lock_handle = std::make_unique<DisplayLockHandle>(base::DoNothing());

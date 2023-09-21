@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/test_browser_window.h"
 
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
@@ -390,6 +391,9 @@ TestBrowserWindow::CloseFeaturePromoAndContinue(
 }
 
 void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
+
+void TestBrowserWindow::NotifyPromoFeatureUsed(
+    const base::Feature& iph_feature) {}
 
 user_education::FeaturePromoController*
 TestBrowserWindow::SetFeaturePromoController(

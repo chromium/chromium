@@ -192,6 +192,15 @@ void TrackerImpl::NotifyEvent(const std::string& event) {
                            event_model_->IsReady());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void TrackerImpl::NotifyUsedEvent(const base::Feature& feature) {
+  const auto& feature_config = configuration_->GetFeatureConfig(feature);
+  if (!feature_config.used.name.empty()) {
+    NotifyEvent(feature_config.used.name);
+  }
+}
+#endif
+
 bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
   return ShouldTriggerHelpUIWithSnooze(feature).ShouldShowIph();
 }

@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,6 +48,9 @@ class TrackerImpl : public Tracker {
 
   // Tracker implementation.
   void NotifyEvent(const std::string& event) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void NotifyUsedEvent(const base::Feature& feature) override;
+#endif
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
   TriggerDetails ShouldTriggerHelpUIWithSnooze(
       const base::Feature& feature) override;

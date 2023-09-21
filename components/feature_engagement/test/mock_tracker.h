@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,6 +31,9 @@ class MockTracker : public Tracker {
 
   // Tracker implememtation.
   MOCK_METHOD1(NotifyEvent, void(const std::string& event));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD1(NotifyUsedEvent, void(const base::Feature& feature));
+#endif
   MOCK_METHOD1(ShouldTriggerHelpUI, bool(const base::Feature& feature));
   MOCK_METHOD1(ShouldTriggerHelpUIWithSnooze,
                TriggerDetails(const base::Feature& feature));

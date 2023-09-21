@@ -4912,10 +4912,19 @@ user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
 }
 
 void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
-  if (!feature_promo_controller_)
+  if (!feature_promo_controller_) {
     return;
+  }
   feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
       event_name);
+}
+
+void BrowserView::NotifyPromoFeatureUsed(const base::Feature& iph_feature) {
+  if (!feature_promo_controller_) {
+    return;
+  }
+  feature_promo_controller_->feature_engagement_tracker()->NotifyUsedEvent(
+      iph_feature);
 }
 
 bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,
