@@ -17,6 +17,8 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
@@ -31,6 +33,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -51,6 +54,8 @@ constexpr int kPaddingHeight = 20;
 constexpr int kCenterPadding = 8;
 // Main Menu fixed width.
 constexpr int kMainMenuFixedWidth = 416;
+// Background radius.
+constexpr float kBackgroundRadius = 12;
 
 // Creates an individual Game Dashboard Tile.
 std::unique_ptr<FeatureTile> CreateTile(
@@ -144,7 +149,7 @@ class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
         container->AddChildView(std::make_unique<views::View>());
     icon_container->SetLayoutManager(std::make_unique<views::FillLayout>());
     icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase, /*radius=*/12));
+        cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
     icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     icon_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -377,7 +382,9 @@ void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
 }
 
 void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
-  // TODO(b/273641035): Add support when feedback button is pressed.
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kGameDashboard,
+      /*description_template=*/"#GameDashboard\n\n");
 }
 
 void GameDashboardMainMenuView::OnHelpButtonPressed() {
@@ -589,6 +596,8 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE)));
+  feedback_button->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
   feedback_button->SetID(VIEW_ID_GD_FEEDBACK_BUTTON);
   feedback_button->SetImageLabelSpacing(kCenterPadding);
   feedback_button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

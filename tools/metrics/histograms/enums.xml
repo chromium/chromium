@@ -44532,6 +44532,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="32" label="Window Layout Menu"/>
   <int value="33" label="Price Insights"/>
   <int value="34" label="Cookie Controls"/>
+  <int value="35" label="Game Dashboard"/>
 </enum>
 
 <enum name="FeedContentOrder">

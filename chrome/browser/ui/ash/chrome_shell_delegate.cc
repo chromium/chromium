@@ -16,6 +16,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -115,9 +116,13 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 chrome::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
+    case ash::ShellDelegate::FeedbackSource::kGameDashboard:
+      return chrome::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }
+  NOTREACHED_NORETURN()
+      << "Unable to retrieve FeedbackSource due to unknown source type.";
 }
 
 }  // namespace

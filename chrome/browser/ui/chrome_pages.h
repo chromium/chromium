@@ -123,6 +123,7 @@ enum FeedbackSource {
   kFeedbackSourceWindowLayoutMenu,
   kFeedbackSourcePriceInsights,
   kFeedbackSourceCookieControls,
+  kFeedbackSourceGameDashboard,
 
   // Must be last.
   kFeedbackSourceCount,

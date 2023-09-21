@@ -50,6 +50,7 @@ class WindowState;
 class ASH_EXPORT ShellDelegate {
  public:
   enum class FeedbackSource {
+    kGameDashboard,
     kWindowLayoutMenu,
   };
 
