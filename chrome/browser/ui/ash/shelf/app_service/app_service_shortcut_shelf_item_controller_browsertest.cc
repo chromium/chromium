@@ -169,8 +169,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
   EXPECT_FALSE(controller()->GetItem(ash::ShelfID(shortcut_id.value())));
 }
 
+// TODO(crbug.com/1485630):  Re-enable once segfault is resolved.
 IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
-                       ContextMenuRemove) {
+                       DISABLED_ContextMenuRemove) {
   GURL app_url = GURL("https://example.org/");
   std::u16string shortcut_name = u"Example";
   apps::ShortcutId shortcut_id =
