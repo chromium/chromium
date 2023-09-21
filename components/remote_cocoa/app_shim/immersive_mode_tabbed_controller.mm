@@ -40,8 +40,8 @@ ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
   tab_titlebar_view_controller_ = nil;
 }
 
-void ImmersiveModeTabbedController::Enable() {
-  ImmersiveModeController::Enable();
+void ImmersiveModeTabbedController::Init() {
+  ImmersiveModeController::Init();
   BridgedContentView* tab_content_view =
       base::apple::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
   [tab_content_view removeFromSuperview];

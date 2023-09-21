@@ -979,7 +979,7 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
     immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
         ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window());
   }
-  immersive_mode_controller_->Enable();
+  immersive_mode_controller_->Init();
 
   // It is possible for the fullscreen transition to complete before the
   // immersive mode controller is created. Mark the transition as complete as
@@ -1033,7 +1033,7 @@ bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsEnabled() {
   if (!immersive_mode_controller_) {
     return false;
   }
-  return immersive_mode_controller_->is_enabled();
+  return immersive_mode_controller_->is_initialized();
 }
 
 bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsTabbed() {

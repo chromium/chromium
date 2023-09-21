@@ -273,9 +273,9 @@ ImmersiveModeController::~ImmersiveModeController() {
   }
 }
 
-void ImmersiveModeController::Enable() {
-  DCHECK(!enabled_);
-  enabled_ = true;
+void ImmersiveModeController::Init() {
+  DCHECK(!initialized_);
+  initialized_ = true;
   [browser_window_ addTitlebarAccessoryViewController:
                        immersive_mode_titlebar_view_controller_];
 

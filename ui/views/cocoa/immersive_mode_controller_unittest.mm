@@ -115,7 +115,7 @@ TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
   // Controller under test.
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeController>(browser(), overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 1u);
 }
 
@@ -124,7 +124,7 @@ TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
   // Controller under test.
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeController>(browser(), overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
 
   // Autohide top chrome.
   immersive_mode_controller->UpdateToolbarVisibility(
@@ -295,7 +295,7 @@ TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
                                                       tab_overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
 
   // NSWindowStyleMaskFullSizeContentView is set until the fullscreen transition
   // is complete.
@@ -320,7 +320,7 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
                                                       tab_overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
 
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
   immersive_mode_controller->UpdateToolbarVisibility(
@@ -334,7 +334,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
                                                       tab_overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Autohide top chrome.
@@ -371,7 +371,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
                                                       tab_overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Autohide top chrome.
@@ -398,7 +398,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   auto immersive_mode_controller =
       std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
                                                       tab_overlay());
-  immersive_mode_controller->Enable();
+  immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Create a popup.
@@ -430,7 +430,7 @@ TEST_F(CocoaImmersiveModeControllerTest, NoRevealUnlockDuringChildReordering) {
   // Controller under test.
   testing::StrictMock<MockImmersiveModeTabbedController>
       immersive_mode_controller(browser(), overlay(), tab_overlay());
-  immersive_mode_controller.Enable();
+  immersive_mode_controller.Init();
   immersive_mode_controller.FullscreenTransitionCompleted();
 
   // Create a popup.

@@ -40,14 +40,18 @@ namespace remote_cocoa {
 // stop existing.
 REMOTE_COCOA_APP_SHIM_EXPORT bool IsNSToolbarFullScreenWindow(NSWindow* window);
 
+// Manages a single fullscreen session.
 class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
  public:
   explicit ImmersiveModeController(NativeWidgetMacNSWindow* browser_window,
                                    NativeWidgetMacNSWindow* overlay_window);
   virtual ~ImmersiveModeController();
 
-  virtual void Enable();
-  bool is_enabled() { return enabled_; }
+  // Must be called once and only once after construction. Prevents the side-
+  // effects of adding a toolbar accessory from accessing partially constructed
+  // objects.
+  virtual void Init();
+  bool is_initialized() { return initialized_; }
 
   virtual void FullscreenTransitionCompleted();
   virtual void OnTopViewBoundsChanged(const gfx::Rect& bounds);
@@ -136,7 +140,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Notify the browser window that the reveal status changes.
   void NotifyBrowserWindowAboutToolbarRevealChanged();
 
-  bool enabled_ = false;
+  bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
 

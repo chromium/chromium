@@ -26,11 +26,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   ~ImmersiveModeTabbedController() override;
 
   // ImmersiveModeController overrides
-  // TODO(https://crbug.com/1426944): Enable() does not add the controller. It
+  // TODO(https://crbug.com/1426944): Init() does not add the controller. It
   // will be added / removed from the view controller tree during
   // UpdateToolbarVisibility(). Remove this comment once the bug has been
   // resolved.
-  void Enable() override;
+  void Init() override;
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
   void RevealLock() override;
