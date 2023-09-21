@@ -148,7 +148,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_cmd_line = "some cmd line";
     const auto installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, 0);
-    EXPECT_EQ(installer_result.extended_error, 0);
+    EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_TRUE(installer_result.installer_text.empty());
     EXPECT_STREQ(installer_result.installer_cmd_line.c_str(), "some cmd line");
   }

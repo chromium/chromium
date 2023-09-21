@@ -400,8 +400,6 @@ std::string GetTextForSystemError(int error) {
 // As much as possible, the implementation of this function is intended to be
 // backward compatible with the implementation of the Installer API in
 // Omaha/Google Update. Some edge cases could be missing.
-// TODO(crbug.com/1172866): remove the hardcoded assumption that error must
-// be zero to indicate success.
 Installer::Result MakeInstallerResult(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code) {
@@ -419,6 +417,14 @@ Installer::Result MakeInstallerResult(
   }
 
   Installer::Result result;
+
+  // Read and set the installer extra code in all cases if available. Installers
+  // can use the `installer_extracode1` to transmit a custom value even in the
+  // case of success.
+  if (outcome.installer_extracode1) {
+    result.extended_error = *outcome.installer_extracode1;
+  }
+
   switch (*outcome.installer_result) {
     case InstallerResult::kSuccess:
       // This is unconditional success:
@@ -454,9 +460,6 @@ Installer::Result MakeInstallerResult(
                   result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
               ? 0
               : kErrorApplicationInstallerFailed;
-      if (outcome.installer_extracode1) {
-        result.extended_error = *outcome.installer_extracode1;
-      }
       result.installer_text =
           outcome.installer_text ? *outcome.installer_text
                                  : GetTextForSystemError(result.original_error);
