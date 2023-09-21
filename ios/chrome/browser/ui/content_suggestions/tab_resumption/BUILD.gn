@@ -70,6 +70,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ntp_tiles/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tabs/tests:eg_test_support+eg2",
