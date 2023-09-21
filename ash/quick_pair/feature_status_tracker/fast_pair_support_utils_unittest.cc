@@ -50,6 +50,14 @@ TEST_F(FastPairSupportUtilsTest, HasHardwareSupportForFlagState) {
   EXPECT_TRUE(HasHardwareSupport(adapter_));
 }
 
+TEST_F(FastPairSupportUtilsTest, DisableAllowCrossDeviceFeatureSuite) {
+  EXPECT_TRUE(HasHardwareSupport(adapter_));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAllowCrossDeviceFeatureSuite);
+  EXPECT_FALSE(HasHardwareSupport(adapter_));
+}
+
 TEST_F(FastPairSupportUtilsTest, HasHardwareSupportFalseForAdapterState) {
   EXPECT_TRUE(HasHardwareSupport(adapter_));
 

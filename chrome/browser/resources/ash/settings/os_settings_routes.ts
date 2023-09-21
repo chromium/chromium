@@ -288,14 +288,16 @@ export function createRoutes(): OsSettingsRoutes {
   r.BLUETOOTH_DEVICE_DETAIL = createSubpage(
       r.BLUETOOTH, routesMojom.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
       Subpage.kBluetoothDeviceDetail);
-  if (loadTimeData.getBoolean('enableSavedDevicesFlag')) {
+  if (loadTimeData.getBoolean('enableSavedDevicesFlag') &&
+      loadTimeData.getBoolean('isCrossDeviceFeatureSuiteEnabled')) {
     r.BLUETOOTH_SAVED_DEVICES = createSubpage(
         r.BLUETOOTH, routesMojom.BLUETOOTH_SAVED_DEVICES_SUBPAGE_PATH,
         Subpage.kBluetoothSavedDevices);
   }
 
   // MultiDevice section.
-  if (!isGuest()) {
+  if (!isGuest() &&
+      loadTimeData.getBoolean('isCrossDeviceFeatureSuiteEnabled')) {
     r.MULTIDEVICE = createSection(
         r.BASIC, routesMojom.MULTI_DEVICE_SECTION_PATH, Section.kMultiDevice);
     r.MULTIDEVICE_FEATURES = createSubpage(

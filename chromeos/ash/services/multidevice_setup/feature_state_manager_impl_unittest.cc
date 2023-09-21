@@ -79,8 +79,9 @@ multidevice::RemoteDeviceRef CreateTestHostDevice(
   raw_device->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
       multidevice::SoftwareFeatureState::kSupported;
 
-  if (empty_mac_address)
+  if (empty_mac_address) {
     raw_device->bluetooth_public_address.clear();
+  }
 
   return host_device;
 }
@@ -286,6 +287,59 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
 
   std::unique_ptr<FeatureStateManager> manager_;
 };
+
+TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
+       DisableAllowCrossDeviceFeatureSuiteFlag) {
+  // Disable the "AllowCrossDeviceFeatureSuite" flag, which should force all
+  // Cross Device features to be unsupported.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kAllowCrossDeviceFeatureSuite);
+
+  // Enable all features
+  SetupFeatureStateManager();
+  SetVerifiedHost();
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kBetterTogetherClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kInstantTetheringClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kSmartLockClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kMessagesForWebClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kPhoneHubClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kWifiSyncClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+
+  // Verify that all features are unsupported.
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kBetterTogetherSuite);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kInstantTethering);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kMessages);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kSmartLock);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kPhoneHub);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kPhoneHubNotifications);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kPhoneHubTaskContinuation);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kWifiSync);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kEche);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kPhoneHubCameraRoll);
+}
 
 TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, BetterTogetherSuite) {
   SetupFeatureStateManager();
@@ -579,8 +633,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
       mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
-  for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
+  for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     TryAllUnverifiedHostStatesAndVerifyFeatureState(phone_hub_feature);
+  }
 
   SetVerifiedHost();
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
@@ -664,8 +719,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
       mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
-  for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
+  for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     TryAllUnverifiedHostStatesAndVerifyFeatureState(phone_hub_feature);
+  }
 
   SetVerifiedHost();
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
@@ -742,8 +798,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
       mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation};
 
-  for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
+  for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     TryAllUnverifiedHostStatesAndVerifyFeatureState(phone_hub_feature);
+  }
 
   SetVerifiedHost();
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {

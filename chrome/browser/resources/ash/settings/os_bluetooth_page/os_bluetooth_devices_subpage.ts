@@ -267,7 +267,8 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isFastPairSavedDevicesRowVisible_(): boolean {
     return loadTimeData.getBoolean('enableFastPairFlag') &&
         loadTimeData.getBoolean('enableSavedDevicesFlag') &&
-        !loadTimeData.getBoolean('isGuest');
+        !loadTimeData.getBoolean('isGuest') &&
+        loadTimeData.getBoolean('isCrossDeviceFeatureSuiteEnabled');
   }
 
   private onClicked_(event: Event): void {

@@ -57,13 +57,19 @@ bool IsEligibleForFeature(
   // normally, then an administrator prohibits the policy during the user
   // session. If this occurs, we consider the session ineligible for using Phone
   // Hub.
-  if (feature_state == FeatureState::kProhibitedByPolicy)
+  if (feature_state == FeatureState::kProhibitedByPolicy) {
     return false;
+  }
+
+  if (feature_state == FeatureState::kNotSupportedByChromebook) {
+    return false;
+  }
 
   // If the local device has not yet been enrolled, no phone can serve as its
   // Phone Hub host.
-  if (!local_device)
+  if (!local_device) {
     return false;
+  }
 
   // If the local device does not support being a Phone Hub client, no phone can
   // serve as its host.
@@ -74,23 +80,27 @@ bool IsEligibleForFeature(
 
   // If the local device does not have an enrolled Bluetooth address, no phone
   // can serve as its host.
-  if (local_device->bluetooth_public_address().empty())
+  if (local_device->bluetooth_public_address().empty()) {
     return false;
+  }
 
   // If the host device is not an eligible host, do not initialize Phone Hub.
-  if (host_status.first == HostStatus::kNoEligibleHosts)
+  if (host_status.first == HostStatus::kNoEligibleHosts) {
     return false;
+  }
 
   // If there is a host device available, check if the device is eligible for
   // Phonehub.
-  if (host_status.second.has_value())
+  if (host_status.second.has_value()) {
     return IsEligiblePhoneHubHost(*(host_status.second));
+  }
 
   // Otherwise, check if there is any available remote device that is
   // eligible for Phonehub.
   for (const RemoteDeviceRef& device : remote_devices) {
-    if (IsEligiblePhoneHubHost(device))
+    if (IsEligiblePhoneHubHost(device)) {
       return true;
+    }
   }
 
   // If none of the devices return true above, there are no phones capable of
@@ -109,8 +119,9 @@ bool IsPhonePendingSetup(HostStatus host_status, FeatureState feature_state) {
 
   // The device has been set up with the back-end, but the phone has not yet
   // enabled itself.
-  if (host_status == HostStatus::kHostSetButNotYetVerified)
+  if (host_status == HostStatus::kHostSetButNotYetVerified) {
     return true;
+  }
 
   // The phone has enabled itself for the multi-device suite but has not yet
   // enabled itself for Phone Hub. Note that kNotSupportedByPhone is a bit of a
@@ -158,8 +169,9 @@ FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
   device_sync_client_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
   connection_manager_->RemoveObserver(this);
-  if (bluetooth_adapter_)
+  if (bluetooth_adapter_) {
     bluetooth_adapter_->RemoveObserver(this);
+  }
   session_manager_->RemoveObserver(this);
   power_manager_client_->RemoveObserver(this);
 }
@@ -212,8 +224,9 @@ void FeatureStatusProviderImpl::OnBluetoothAdapterReceived(
 
   // If |status_| has not yet been set, this call occurred synchronously in the
   // constructor, so status_ has not yet been initialized.
-  if (status_.has_value())
+  if (status_.has_value()) {
     UpdateStatus();
+  }
 }
 
 void FeatureStatusProviderImpl::OnConnectionStatusChanged() {
@@ -230,8 +243,9 @@ void FeatureStatusProviderImpl::UpdateStatus() {
   DCHECK(status_.has_value());
 
   FeatureStatus computed_status = ComputeStatus();
-  if (computed_status == *status_)
+  if (computed_status == *status_) {
     return;
+  }
 
   PA_LOG(INFO) << "Phone Hub feature status: " << *status_ << " => "
                << computed_status;
@@ -259,20 +273,25 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
     return FeatureStatus::kNotEligibleForFeature;
   }
 
-  if (session_manager_->IsScreenLocked() || is_suspended_)
+  if (session_manager_->IsScreenLocked() || is_suspended_) {
     return FeatureStatus::kLockOrSuspended;
+  }
 
-  if (host_status == HostStatus::kEligibleHostExistsButNoHostSet)
+  if (host_status == HostStatus::kEligibleHostExistsButNoHostSet) {
     return FeatureStatus::kEligiblePhoneButNotSetUp;
+  }
 
-  if (IsPhonePendingSetup(host_status, feature_state))
+  if (IsPhonePendingSetup(host_status, feature_state)) {
     return FeatureStatus::kPhoneSelectedAndPendingSetup;
+  }
 
-  if (IsFeatureDisabledByUser(feature_state))
+  if (IsFeatureDisabledByUser(feature_state)) {
     return FeatureStatus::kDisabled;
+  }
 
-  if (!IsBluetoothOn())
+  if (!IsBluetoothOn()) {
     return FeatureStatus::kUnavailableBluetoothOff;
+  }
 
   switch (connection_manager_->GetStatus()) {
     case secure_channel::ConnectionManager::Status::kDisconnected:
@@ -287,8 +306,9 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
 }
 
 bool FeatureStatusProviderImpl::IsBluetoothOn() const {
-  if (!bluetooth_adapter_)
+  if (!bluetooth_adapter_) {
     return false;
+  }
 
   return bluetooth_adapter_->IsPresent() && bluetooth_adapter_->IsPowered();
 }

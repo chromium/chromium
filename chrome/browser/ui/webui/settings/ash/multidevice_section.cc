@@ -588,6 +588,10 @@ void MultiDeviceSection::AddLoadTimeData(
           IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY,
           GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
 
+  html_source->AddBoolean("isCrossDeviceFeatureSuiteEnabled",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kAllowCrossDeviceFeatureSuite));
+
   // We still need to register strings even if Nearby Share is not supported.
   // For example, the HTML is always built but only displayed if Nearby Share is
   // supported.
@@ -712,6 +716,12 @@ void MultiDeviceSection::OnHostStatusChanged(
   updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kAllowCrossDeviceFeatureSuite)) {
+    // Do not add multidevice search tags if Cross Device is disabled.
+    return;
+  }
+
   if (IsOptedIn(host_status_with_device.first)) {
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
   } else {
@@ -728,6 +738,12 @@ void MultiDeviceSection::OnFeatureStatesChanged(
       GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
+
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kAllowCrossDeviceFeatureSuite)) {
+    // Do not add multidevice search tags if Cross Device is disabled.
+    return;
+  }
 
   if (IsFeatureSupported(Feature::kPhoneHub)) {
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());

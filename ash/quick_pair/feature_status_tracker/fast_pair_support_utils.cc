@@ -12,11 +12,17 @@ namespace ash {
 namespace quick_pair {
 
 bool HasHardwareSupport(scoped_refptr<device::BluetoothAdapter> adapter) {
-  if (!adapter || !adapter->IsPresent())
+  if (!base::FeatureList::IsEnabled(features::kAllowCrossDeviceFeatureSuite)) {
     return false;
+  }
 
-  if (features::IsFastPairSoftwareScanningEnabled())
+  if (!adapter || !adapter->IsPresent()) {
+    return false;
+  }
+
+  if (features::IsFastPairSoftwareScanningEnabled()) {
     return true;
+  }
 
   return adapter->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
          device::BluetoothAdapter::

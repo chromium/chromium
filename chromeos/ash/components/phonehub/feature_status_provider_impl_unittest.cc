@@ -154,11 +154,13 @@ class FeatureStatusProviderImplTest : public testing::Test {
     fake_device_sync_client_.set_local_device_metadata(local_device);
 
     multidevice::RemoteDeviceRefList synced_devices;
-    if (local_device)
+    if (local_device) {
       synced_devices.push_back(*local_device);
+    }
     for (const auto& phone_device : phone_devices) {
-      if (phone_device)
+      if (phone_device) {
         synced_devices.push_back(*phone_device);
+      }
     }
     fake_device_sync_client_.set_synced_devices(synced_devices);
 
@@ -194,8 +196,9 @@ class FeatureStatusProviderImplTest : public testing::Test {
   }
 
   void SetAdapterPresentState(bool present) {
-    if (is_adapter_present_ == present)
+    if (is_adapter_present_ == present) {
       return;
+    }
 
     is_adapter_present_ = present;
 
@@ -205,8 +208,9 @@ class FeatureStatusProviderImplTest : public testing::Test {
   }
 
   void SetAdapterPoweredState(bool powered) {
-    if (is_adapter_powered_ == powered)
+    if (is_adapter_powered_ == powered) {
       return;
+    }
 
     is_adapter_powered_ = powered;
 
@@ -693,6 +697,19 @@ TEST_F(FeatureStatusProviderImplTest, EligiblePhoneHubHostsFound) {
 
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
   EXPECT_EQ(GetNumEligibleHostObserverCalls(), 2u);
+}
+
+TEST_F(FeatureStatusProviderImplTest, NotSupportedByChromebook) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified,
+                      FeatureState::kNotSupportedByChromebook,
+                      /*supports_better_together_host=*/true,
+                      /*supports_phone_hub=*/true,
+                      /*has_bluetooth_address=*/true);
+
+  // When the multidevice feature state is kNotSupportedByChromebook, then the
+  // Phonehub status is kNotEligibleForFeature.
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 }
 
 }  // namespace ash::phonehub

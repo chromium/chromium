@@ -33,6 +33,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
   setup(() => {
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
+    loadTimeData.overrideValues({isCrossDeviceFeatureSuiteEnabled: true});
   });
 
   teardown(() => {
@@ -63,7 +64,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
 
   function setFastPairPrefEnabled(enabled: boolean): void {
     bluetoothDevicesSubpage.prefs = {
-      'ash': {'fast_pair': {'enabled': {value: enabled}}},
+      ash: {fast_pair: {enabled: {value: enabled}}},
     };
   }
 
@@ -78,7 +79,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
 
   test('Only show saved devices link row when flag is true', async () => {
     bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
-    loadTimeData.overrideValues({'enableSavedDevicesFlag': true});
+    loadTimeData.overrideValues({enableSavedDevicesFlag: true});
     await init();
 
     assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
@@ -86,7 +87,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
 
     bluetoothDevicesSubpage.remove();
     // Set flag to False and check that the row is not visible.
-    loadTimeData.overrideValues({'enableSavedDevicesFlag': false});
+    loadTimeData.overrideValues({enableSavedDevicesFlag: false});
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
     document.body.appendChild(bluetoothDevicesSubpage);
@@ -96,10 +97,24 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
   });
 
   test(
+      'Hide saved devices link row when Cross Device suite disabled',
+      async () => {
+        bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+        loadTimeData.overrideValues({
+          isCrossDeviceFeatureSuiteEnabled: false,
+          enableSavedDevicesFlag: true,
+        });
+        await init();
+
+        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
+            '#savedDevicesRowLink')));
+      });
+
+  test(
       'Selecting saved devices row routes to saved devices subpage',
       async () => {
         bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
-        loadTimeData.overrideValues({'enableSavedDevicesFlag': true});
+        loadTimeData.overrideValues({enableSavedDevicesFlag: true});
         await init();
 
         const link =
