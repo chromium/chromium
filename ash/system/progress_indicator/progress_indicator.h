@@ -167,7 +167,7 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // Cached progress returned from `CalculateProgress()` just prior to painting.
   // NOTE: If absent, progress is indeterminate.
   // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
-  absl::optional<float> progress_;
+  absl::optional<float> progress_ = kProgressComplete;
 
   // The list of callbacks for which to notify `progress_` changes.
   base::RepeatingClosureList progress_changed_callback_list_;

@@ -464,6 +464,46 @@ TEST_P(AppListItemViewTestWithDragDropController,
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
+TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
+  AppListItem* item = CreatePromiseAppListItem("TestItem 1");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+
+  // Promise apps are created with app_status kPending.
+  ProgressIndicator* progress_indicator = view->GetProgressIndicatorForTest();
+
+  EXPECT_EQ(view->item()->progress(), -1.0f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+
+  // Change app status to installing and send a progress update. Verify that the
+  // progress indicator correctly reflects the progress.
+  item->UpdateAppStatusForTesting(AppStatus::kInstalling);
+  item->SetProgress(0.3f);
+  EXPECT_EQ(view->item()->progress(), 0.3f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.3f);
+
+  // Change app status back to pending state. Verify that even if the item had
+  // progress previously associated to it, the progress indicator reflects as
+  // indeterminate progress since it is pending.
+  item->UpdateAppStatusForTesting(AppStatus::kPending);
+  EXPECT_EQ(view->item()->progress(), 0.3f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+
+  // Send another progress update. Since the app status is still pending, the
+  // progress indicator still be indeterminate
+  item->SetProgress(0.8f);
+  EXPECT_EQ(view->item()->progress(), 0.8f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+
+  // Set the last status update to kReady as if the app had finished installing.
+  item->UpdateAppStatusForTesting(AppStatus::kReady);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+}
+
 TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 

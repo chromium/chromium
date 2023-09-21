@@ -42,7 +42,7 @@ using ProgressIndicatorTest = AshTestBase;
 // It should delegate progress calculation to a constructor provided callback
 // and manage progress animations as needed.
 TEST_F(ProgressIndicatorTest, CreateDefaultInstance) {
-  absl::optional<float> progress;
+  absl::optional<float> progress = ProgressIndicator::kProgressComplete;
 
   // Create a default instance of `ProgressIndicator` that paints `progress`
   // whenever visual state is updated.

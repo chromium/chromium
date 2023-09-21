@@ -1829,8 +1829,6 @@ void AppListItemView::ItemBeingDestroyed() {
 }
 
 void AppListItemView::ItemProgressUpdated() {
-  // TODO(b/297866854): Wire logic to handle updates on app status
-  // AppStatus::kPending -> AppStatus::kInstalling
   if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
     return;
   }
@@ -1839,6 +1837,9 @@ void AppListItemView::ItemProgressUpdated() {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
             [](AppListItemView* view) -> absl::optional<float> {
+              if (view->item()->app_status() == AppStatus::kPending) {
+                return absl::nullopt;
+              }
               // If download is in-progress, return the progress as a decimal.
               // Otherwise, the progress indicator shouldn't be painted.
               float progress = view->item()->GetMetadata()->progress;
