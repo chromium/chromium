@@ -1030,8 +1030,14 @@ void StorageHandler::OnInterestGroupAccessed(
     case AccessType::kBid:
       type_enum = Storage::InterestGroupAccessTypeEnum::Bid;
       break;
+    case AccessType::kAdditionalBid:
+      type_enum = Storage::InterestGroupAccessTypeEnum::AdditionalBid;
+      break;
     case AccessType::kWin:
       type_enum = Storage::InterestGroupAccessTypeEnum::Win;
+      break;
+    case AccessType::kAdditionalBidWin:
+      type_enum = Storage::InterestGroupAccessTypeEnum::AdditionalBidWin;
       break;
   };
   frontend_->InterestGroupAccessed(access_time.ToDoubleT(), type_enum,

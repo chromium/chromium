@@ -90,7 +90,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   class CONTENT_EXPORT InterestGroupObserver : public base::CheckedObserver {
    public:
-    enum AccessType { kJoin, kLeave, kUpdate, kLoaded, kBid, kWin };
+    enum AccessType {
+      kJoin,
+      kLeave,
+      kUpdate,
+      kLoaded,
+      kBid,
+      kAdditionalBid,
+      kWin,
+      kAdditionalBidWin
+    };
     virtual void OnInterestGroupAccessed(const base::Time& access_time,
                                          AccessType type,
                                          const url::Origin& owner_origin,
@@ -190,6 +199,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBids(const blink::InterestGroupSet& groups);
+
   // Adds an entry to the win history for this interest group. `ad_json` is a
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
@@ -342,6 +352,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     k_anonymity_manager_ = std::move(k_anonymity_manager);
   }
 
+  void NotifyInterestGroupAccessed(InterestGroupObserver::AccessType type,
+                                   const url::Origin& owner_origin,
+                                   const std::string& name);
+
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
@@ -420,9 +434,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // To be called only by `update_manager_`.
   void ReportUpdateFailed(const blink::InterestGroupKey& group_key,
                           bool parse_failure);
-  void NotifyInterestGroupAccessed(InterestGroupObserver::AccessType type,
-                                   const url::Origin& owner_origin,
-                                   const std::string& name);
 
   void OnGetInterestGroupsComplete(
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,

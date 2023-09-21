@@ -9357,6 +9357,8 @@ experimental domain Storage
       loaded
       bid
       win
+      additionalBid
+      additionalBidWin
 
   # Ad advertising element inside an interest group.
   type InterestGroupAd extends object

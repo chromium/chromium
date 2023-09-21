@@ -4,6 +4,31 @@
   const baseOrigin = 'https://a.test:8443/';
   const base = baseOrigin + 'inspector-protocol/resources/';
 
+  // Order by phase.
+  function typeSortKey(type) {
+    switch (type) {
+      case 'join':
+        return 0;
+      case 'loaded':
+        return 1;
+      case 'bid':
+        return 2;
+      case 'win':
+        return 3;
+      default:
+        return type;
+    }
+  }
+
+  // Helper for sorting IG devtools events.
+  function compareEvents(a, b) {
+    let aTypeOrder = typeSortKey(a.type);
+    let bTypeOrder = typeSortKey(b.type);
+    return (aTypeOrder - bTypeOrder) ||
+        a.ownerOrigin.localeCompare(b.ownerOrigin, 'en') ||
+        a.name.localeCompare(b.name, 'en');
+  }
+
   async function joinInterestGroups(id) {
     const joinJs = `
     navigator.joinAdInterestGroup({
@@ -37,6 +62,9 @@
   events = [];
   async function logAndClearEvents() {
     testRunner.log(`Events logged: ${events.length}`);
+    // We need to sort events before dumping since ordering of bids is not
+    // deterministic.
+    events.sort(compareEvents);
     for (event of events) {
       testRunner.log(
         JSON.stringify(event, ['ownerOrigin', 'name', 'type'], 2));

@@ -97,7 +97,7 @@ class TestInterestGroupManagerImpl
   std::vector<GURL> TakeReportUrlsOfType(ReportType report_type);
 
   // Returns all interest groups that bid, removing them from the internal list
-  // in the process.
+  // in the process. This is based on observer events, not database ones.
   std::vector<blink::InterestGroupKey> TakeInterestGroupsThatBid();
 
   // Returns all K-anon sets that have been joined, removing them from the

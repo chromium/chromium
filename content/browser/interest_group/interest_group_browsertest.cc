@@ -16458,12 +16458,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   for (bool should_win : {true, false}) {
     SCOPED_TRACE(should_win);
+    AttachInterestGroupObserver();
     ClearReceivedRequests();
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
     std::string auction_nonce = CreateAuctionNonceAndWait();
 
     GURL additional_bid_logic_url = https_server_->GetURL(
         "b.test", "/interest_group/bidding_logic_additional_bid.js");
+    url::Origin additional_bid_origin =
+        url::Origin::Create(additional_bid_logic_url);
 
     std::string auction_config = JsReplace(
         R"({
@@ -16488,7 +16491,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         test_origin,
         https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
         auction_nonce, additional_bid_ad_url, additional_bid_logic_url,
-        url::Origin::Create(additional_bid_logic_url), should_win ? 1.99 : 0.1);
+        additional_bid_origin, should_win ? 1.99 : 0.1);
 
     RunAuctionAndWaitForURLAndNavigateIframe(
         auction_config, should_win ? additional_bid_ad_url : ad_url);
@@ -16498,10 +16501,24 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           https_server_->GetURL("a.test", "/echoall?report_bidder_additional"));
       EXPECT_FALSE(HasServerSeenUrl(
           https_server_->GetURL("a.test", "/echoall?report_bidder")));
+      WaitForAccessObserved({
+          {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+          {TestInterestGroupObserver::kBid, test_origin, "cars"},
+          {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
+           "campaign123"},
+          {TestInterestGroupObserver::kAdditionalBidWin, additional_bid_origin,
+           "campaign123"},
+      });
     } else {
       WaitForUrl(https_server_->GetURL("a.test", "/echoall?report_bidder"));
       EXPECT_FALSE(HasServerSeenUrl(https_server_->GetURL(
           "a.test", "/echoall?report_bidder_additional")));
+      WaitForAccessObserved(
+          {{TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+           {TestInterestGroupObserver::kBid, test_origin, "cars"},
+           {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
+            "campaign123"},
+           {TestInterestGroupObserver::kWin, test_origin, "cars"}});
     }
   }
 }
