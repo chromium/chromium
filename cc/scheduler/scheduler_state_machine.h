@@ -519,6 +519,8 @@ class CC_EXPORT SchedulerStateMachine {
   // Number of consecutive BeginMainFrames that were aborted without updates.
   int aborted_begin_main_frame_count_ = 0;
 
+  bool draw_aborted_for_paused_begin_frame_ = false;
+
   unsigned consecutive_cant_draw_count_ = 0u;
 };
 

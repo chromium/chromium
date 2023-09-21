@@ -1084,6 +1084,9 @@ void SchedulerStateMachine::SetMainThreadWantsBeginMainFrameNotExpectedMessages(
 }
 
 void SchedulerStateMachine::AbortDraw() {
+  if (begin_frame_source_paused_) {
+    draw_aborted_for_paused_begin_frame_ = true;
+  }
   // Pretend like the draw was successful.
   // Note: We may abort at any time and cannot DCHECK that
   // we haven't drawn in or swapped in the last frame here.
@@ -1445,6 +1448,10 @@ void SchedulerStateMachine::SetVisible(bool visible) {
 
 void SchedulerStateMachine::SetBeginFrameSourcePaused(bool paused) {
   begin_frame_source_paused_ = paused;
+  if (!paused) {
+    needs_redraw_ = draw_aborted_for_paused_begin_frame_;
+    draw_aborted_for_paused_begin_frame_ = false;
+  }
 }
 
 void SchedulerStateMachine::SetResourcelessSoftwareDraw(
