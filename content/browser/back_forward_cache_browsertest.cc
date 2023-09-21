@@ -151,10 +151,15 @@ BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
     // be flaky due calls to `LocalFrameHost::DidFocusFrame()` after entering
     // BFCache. So we ignore it for now by removing it if it's present until we
     // can fix the root cause.
+    // TODO(https://crbug.com/1470528): Remove this.
+    // As above but `LocalMainFrameHost::DidFirstVisuallyNonEmptyPaint()`.
     std::erase_if(samples, [](base::Bucket bucket) {
       return bucket.min ==
-             static_cast<base::HistogramBase::Sample>(
-                 base::HashMetricName(blink::mojom::LocalFrameHost::Name_));
+                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                     blink::mojom::LocalFrameHost::Name_)) ||
+             bucket.min ==
+                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                     blink::mojom::LocalMainFrameHost::Name_));
     });
 
     EXPECT_THAT(samples, testing::ElementsAre());
