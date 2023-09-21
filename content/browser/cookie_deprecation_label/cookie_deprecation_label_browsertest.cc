@@ -535,6 +535,64 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
             "error");
 }
 
+class CookieDeprecationLabelEnabledEmptyLabelBrowserTest
+    : public CookieDeprecationLabelBrowserTestBase {
+ public:
+  CookieDeprecationLabelEnabledEmptyLabelBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting, {{"label", ""}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledEmptyLabelBrowserTest,
+                       EmptyLabel_CookieDeprecationLabelHeaderNotAdded) {
+  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+  auto response_a_a =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/a_a");
+  auto response_a_b =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/a_b");
+
+  ASSERT_TRUE(https_server->Start());
+
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server->GetURL("d.test", "/hello.html")));
+  AddImageToDocument(/*src_url=*/https_server->GetURL("a.test", "/a_a"));
+
+  // [a.test/a] - Non opted-in request should not receive a label header.
+  response_a_a->WaitForRequest();
+  ASSERT_FALSE(base::Contains(response_a_a->http_request()->headers,
+                              "Sec-Cookie-Deprecation"));
+  auto http_response_a_a =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response_a_a->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response_a_a->AddCustomHeader(
+      "Location", https_server->GetURL("a.test", "/a_b").spec());
+  // a.test opts in to receiving the label.
+  http_response_a_a->AddCustomHeader(
+      "Set-Cookie",
+      "receive-cookie-deprecation=any-value; Secure; HttpOnly; "
+      "Path=/; SameSite=None; Partitioned");
+  response_a_a->Send(http_response_a_a->ToResponseString());
+  response_a_a->Done();
+
+  // [a.test/b] - Even if opted-in, the request should not receive a label
+  //              header when the label is empty.
+  response_a_b->WaitForRequest();
+  ASSERT_FALSE(base::Contains(response_a_b->http_request()->headers,
+                              "Sec-Cookie-Deprecation"));
+
+  auto http_response_a_b =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response_a_b->set_code(net::HTTP_OK);
+  response_a_b->Send(http_response_a_b->ToResponseString());
+  response_a_b->Done();
+}
+
 }  // namespace
 
 }  // namespace content

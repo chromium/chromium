@@ -768,7 +768,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
       size_t n_partitioned_cookies = 0;
       bool may_set_sec_cookie_deprecation_header =
-          request_->context()->cookie_deprecation_label().has_value();
+          !request_->context()->cookie_deprecation_label().value_or("").empty();
 
       // TODO(crbug.com/1031664): Reduce the number of times the cookie list
       // is iterated over. Get metrics for every cookie which is included.
