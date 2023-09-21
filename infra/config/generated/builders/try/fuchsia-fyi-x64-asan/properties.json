@@ -39,18 +39,12 @@
           "builder": "fuchsia-fyi-x64-asan",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "fuchsia-fyi-x64-asan",
-          "group": "tryserver.chromium.fuchsia"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -61,9 +55,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuchsia.fyi",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "fuchsia"
-  ]
+  "builder_group": "tryserver.chromium.fuchsia",
+  "recipe": "chromium_trybot"
 }

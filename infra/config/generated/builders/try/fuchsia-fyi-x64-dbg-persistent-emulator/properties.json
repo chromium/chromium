@@ -69,21 +69,22 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
+          "builder": "fuchsia-fyi-x64-dbg",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
+          "bucket": "ci",
           "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
-          "group": "tryserver.chromium.fuchsia"
+          "project": "chromium"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -94,9 +95,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuchsia.fyi",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "fuchsia"
-  ]
+  "builder_group": "tryserver.chromium.fuchsia",
+  "recipe": "chromium_trybot"
 }

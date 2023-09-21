@@ -125,8 +125,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "fuchsia-fyi-x64-asan",
+    mirrors = ["ci/fuchsia-fyi-x64-asan"],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+    execution_timeout = 10 * time.hour,
+)
+
+try_.builder(
     name = "fuchsia-fyi-x64-dbg",
     mirrors = ["ci/fuchsia-fyi-x64-dbg"],
+)
+
+try_.builder(
+    name = "fuchsia-fyi-x64-dbg-persistent-emulator",
+    mirrors = ["ci/fuchsia-fyi-x64-dbg-persistent-emulator"],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+    execution_timeout = 10 * time.hour,
 )
 
 try_.orchestrator_builder(

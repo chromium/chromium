@@ -101,7 +101,27 @@
       "use_remoteexec": true
     }
   },
+  "fuchsia-fyi-x64-asan": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "target_os": "fuchsia",
+      "use_remoteexec": true
+    }
+  },
   "fuchsia-fyi-x64-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_remoteexec": true
+    }
+  },
+  "fuchsia-fyi-x64-dbg-persistent-emulator": {
     "gn_args": {
       "is_component_build": true,
       "is_debug": true,
