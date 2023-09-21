@@ -71,6 +71,7 @@ std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
 }
 
 void AmbientVideoUiLauncher::Finalize() {
+  weak_factory_.InvalidateWeakPtrs();
   weather_refresher_.reset();
   is_active_ = false;
 }

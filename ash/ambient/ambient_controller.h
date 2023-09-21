@@ -26,6 +26,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
+#include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -382,6 +383,7 @@ class ASH_EXPORT AmbientController
       screensaver_images_policy_handler_;
 
   std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;
+  base::CancelableOnceCallback<void(bool)> ui_launcher_init_callback_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

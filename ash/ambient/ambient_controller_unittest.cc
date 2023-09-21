@@ -877,6 +877,19 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
+TEST_P(AmbientControllerTestForAnyUiSettings, ShowThenImmediatelyClose) {
+  // Try to launch ambient mode. It may not finish initialization or start
+  // rendering. Then close it immediately. Wait a while, and make sure no
+  // pending tasks run that may launch the UI unexpectedly afterwards.
+  ambient_controller()->SetUiVisibilityShouldShow();
+  ASSERT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  CloseAmbientScreen();
+  ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(GetContainerView());
+}
+
 TEST_F(AmbientControllerTest,
        ShouldDismissContainerViewOnKeyEventWhenLockScreenInBackground) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);

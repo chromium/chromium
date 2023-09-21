@@ -1236,6 +1236,7 @@ void AmbientController::CreateAndShowWidgets() {
 void AmbientController::StopScreensaver() {
   CloseAllWidgets(close_widgets_immediately_);
   session_metrics_recorder_.reset();
+  ui_launcher_init_callback_.Cancel();
   ambient_ui_launcher_->Finalize();
 }
 
@@ -1256,9 +1257,10 @@ void AmbientController::MaybeStartScreenSaver() {
 
   SetUpPreTargetHandler();
 
-  ambient_ui_launcher_->Initialize(
+  ui_launcher_init_callback_.Reset(
       base::BindOnce(&AmbientController::OnUiLauncherInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+  ambient_ui_launcher_->Initialize(ui_launcher_init_callback_.callback());
 }
 
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
