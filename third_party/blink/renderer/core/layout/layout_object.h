@@ -75,8 +75,8 @@ class Cursor;
 }
 
 namespace blink {
+class AccompaniedFragmentIterator;
 class AffineTransform;
-class FragmentDataIterator;
 class HitTestLocation;
 class HitTestRequest;
 class LayoutBlock;
@@ -2858,7 +2858,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // FragmentData (and therefore also next fragmentainer), if any.
   Vector<PhysicalRect> CollectOutlineRectsAndAdvance(
       NGOutlineType,
-      FragmentDataIterator& iterator) const;
+      AccompaniedFragmentIterator& iterator) const;
 
   struct OutlineInfo {
     int width = 0;

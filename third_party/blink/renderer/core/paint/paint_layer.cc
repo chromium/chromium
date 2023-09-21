@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -946,7 +947,6 @@ void PaintLayer::CollectFragments(
     ShouldRespectOverflowClipType respect_overflow_clip,
     const FragmentData* root_fragment_arg) const {
   PaintLayerFragment fragment;
-  const auto& first_fragment_data = GetLayoutObject().FirstFragment();
   const auto& first_root_fragment_data =
       root_layer->GetLayoutObject().FirstFragment();
 
@@ -962,8 +962,9 @@ void PaintLayer::CollectFragments(
   // The inherited offset_from_root does not include any pagination offsets.
   // In the presence of fragmentation, we cannot use it.
   wtf_size_t physical_fragment_idx = 0u;
-  for (auto* fragment_data = &first_fragment_data; fragment_data;
-       fragment_data = fragment_data->NextFragment(), physical_fragment_idx++) {
+  for (FragmentDataIterator iterator(GetLayoutObject()); !iterator.IsDone();
+       ++iterator, physical_fragment_idx++) {
+    const FragmentData* fragment_data = iterator.GetFragmentData();
     const FragmentData* root_fragment_data = nullptr;
     if (root_fragment_arg) {
       DCHECK(this != root_layer);
@@ -1353,14 +1354,15 @@ PaintLayer* PaintLayer::HitTestLayer(
     DCHECK(!Preserves3D());
     // We need transform state for the first time, or to offset the container
     // state, so create it here.
+    FragmentDataIterator iterator(layout_object);
     const FragmentData* local_fragment_for_transform_state =
-        &layout_object.FirstFragment();
+        iterator.GetFragmentData();
     const FragmentData* container_fragment_for_transform_state;
     if (container_fragment_data) {
       container_fragment_for_transform_state = container_fragment_data;
       const auto& container_transform =
           container_fragment_data->ContentsProperties().Transform();
-      while (local_fragment_for_transform_state) {
+      while (!iterator.IsDone()) {
         // Find the first local fragment that is a descendant of
         // container_fragment.
         if (container_transform.IsAncestorOf(
@@ -1368,8 +1370,8 @@ PaintLayer* PaintLayer::HitTestLayer(
                     .Transform())) {
           break;
         }
-        local_fragment_for_transform_state =
-            local_fragment_for_transform_state->NextFragment();
+        ++iterator;
+        local_fragment_for_transform_state = iterator.GetFragmentData();
       }
       if (!local_fragment_for_transform_state)
         return nullptr;

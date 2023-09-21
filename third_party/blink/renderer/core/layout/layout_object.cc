@@ -4910,7 +4910,7 @@ bool LayoutObject::CanBeSelectionLeaf() const {
 
 Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
     NGOutlineType outline_type,
-    FragmentDataIterator& iterator) const {
+    AccompaniedFragmentIterator& iterator) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> outline_rects;
   PhysicalOffset paint_offset = iterator.GetFragmentData()->PaintOffset();

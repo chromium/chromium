@@ -11,8 +11,9 @@
 
 namespace blink {
 
-FragmentDataIterator::FragmentDataIterator(const LayoutObject& object) {
-  fragment_data_ = &object.FirstFragment();
+AccompaniedFragmentIterator::AccompaniedFragmentIterator(
+    const LayoutObject& object)
+    : FragmentDataIterator(object) {
   if (const auto* box = DynamicTo<LayoutBox>(&object)) {
     if (box->IsLayoutNGObject())
       ng_layout_box_ = box;
@@ -25,14 +26,14 @@ FragmentDataIterator::FragmentDataIterator(const LayoutObject& object) {
   }
 }
 
-const NGPhysicalBoxFragment* FragmentDataIterator::GetPhysicalBoxFragment()
-    const {
+const NGPhysicalBoxFragment*
+AccompaniedFragmentIterator::GetPhysicalBoxFragment() const {
   if (ng_layout_box_)
     return ng_layout_box_->GetPhysicalFragment(box_fragment_index_);
   return nullptr;
 }
 
-bool FragmentDataIterator::Advance() {
+bool AccompaniedFragmentIterator::Advance() {
   if (!fragment_data_)
     return false;
 
@@ -46,7 +47,8 @@ bool FragmentDataIterator::Advance() {
       return true;
   }
 
-  fragment_data_ = fragment_data_->NextFragment();
+  FragmentDataIterator::Advance();
+
   if (!fragment_data_) {
 #if DCHECK_IS_ON()
     // We're done, since there are no more FragmentData entries. Assert that
@@ -58,6 +60,7 @@ bool FragmentDataIterator::Advance() {
                 box_fragment_index_ + 1);
     }
 #endif
+    ng_layout_box_ = nullptr;
     return false;
   }
 
