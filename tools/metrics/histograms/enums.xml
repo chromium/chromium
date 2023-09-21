@@ -65520,6 +65520,7 @@ from previous Chrome versions.
   <int value="362623880"
       label="HoldingSpaceInProgressDownloadsIntegration:disabled"/>
   <int value="362644448" label="memlog-in-process"/>
+  <int value="362852280" label="CompanionEnablePageContent:enabled"/>
   <int value="362853088" label="AmbientColor:disabled"/>
   <int value="363650124" label="OmniboxSiteSearchStarterPack:enabled"/>
   <int value="363997248" label="UseXpsForPrinting:enabled"/>
@@ -67391,6 +67392,7 @@ from previous Chrome versions.
   <int value="1297007123" label="ServiceWorkerBypassFetchHandler:enabled"/>
   <int value="1298187304"
       label="OmniboxDocumentProviderNoSyncRequirement:disabled"/>
+  <int value="1298352720" label="CompanionEnablePageContent:disabled"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>

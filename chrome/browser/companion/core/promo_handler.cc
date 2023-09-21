@@ -4,11 +4,14 @@
 
 #include "chrome/browser/companion/core/promo_handler.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/unified_consent/pref_names.h"
 
 namespace companion {
 
@@ -100,7 +103,13 @@ void PromoHandler::OnPcoPromo(PromoAction promo_action) {
       IncrementPref(kPcoPromoDeclinedCountPref);
       return;
     case PromoAction::kAccepted:
-      // TODO(crbug.com/1476887): Turn on PCO.
+      // The promo shouldn't be shown unless the user has this feature enabled.
+      // But since this relies on google3 code, it's safer to use guard instead
+      // of `CHECK` and crash.
+      if (base::FeatureList::IsEnabled(features::kCompanionEnablePageContent)) {
+        pref_service_->SetBoolean(
+            unified_consent::prefs::kPageContentCollectionEnabled, true);
+      }
       return;
   }
 }

@@ -1208,14 +1208,17 @@ extern const char kLensImageTranslateDescription[];
 extern const char kEnableLensPingName[];
 extern const char kEnableLensPingDescription[];
 
-extern const char kCscName[];
-extern const char kCscDescription[];
+extern const char kCscCompanionEnablePageContentName[];
+extern const char kCscCompanionEnablePageContentDescription[];
 
-extern const char kCscPinnedName[];
-extern const char kCscPinnedDescription[];
+extern const char kCscForceCompanionPinnedStateName[];
+extern const char kCscForceCompanionPinnedStateDescription[];
 
-extern const char kCscVssName[];
-extern const char kCscVssDescription[];
+extern const char kCscSidePanelCompanionName[];
+extern const char kCscSidePanelCompanionDescription[];
+
+extern const char kCscVisualSearchSuggestionsName[];
+extern const char kCscVisualSearchSuggestionsDescription[];
 
 extern const char kLensOnQuickActionSearchWidgetName[];
 extern const char kLensOnQuickActionSearchWidgetDescription[];

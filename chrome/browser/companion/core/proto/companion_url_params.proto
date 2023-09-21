@@ -39,15 +39,17 @@ message PromoState {
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-// Next ID: 15
+// Next ID: 16
 message CompanionUrlParams {
   reserved 4, 5;
 
   // URL of the main contents. Empty, if MSBB is off.
   string page_url = 1;
 
-  // Whether make searches and browsing better is enabled in the settings.
-  bool is_msbb_enabled = 2;
+  // Whether *either* make searches and browsing better is *or* page content
+  // sharing are enabled in the settings; since enabling either grants
+  // permission to share the user's URLs with CSC.
+  bool is_page_url_sharing_enabled = 2;
 
   // State for driving promo related decisions.
   PromoState promo_state = 3;
@@ -73,9 +75,16 @@ message CompanionUrlParams {
   // Whether the hard refresh protocol message is supported on Chrome.
   optional bool is_hard_refresh_supported = 12;
 
-  // Whether page content opt-in is enabled in the settings.
-  bool is_pco_enabled = 13;
+  // Whether page content sharing is enabled in the settings.
+  bool is_page_content_sharing_enabled = 13;
 
   // The timestamp of the user requesting to open the companion for a query.
   optional Timestamp query_start_time = 14;
+
+  // Whether the companion page content feature is enabled. The user preference
+  // may be disabled though. The PCO promo should only be shown if this is true,
+  // because asking the user to opt-in to a no-op seems bad. The PCO promo does
+  // not necessarily have to be shown when this is true; e.g. maybe the user has
+  // already opted-in.
+  bool is_page_content_enabled = 15;
 }

@@ -3319,7 +3319,7 @@ constexpr FeatureEntry::FeatureParam kCscNewTabVariation[] = {
     {"open-links-in-current-tab", "false"},
 };
 
-constexpr FeatureEntry::FeatureVariation kCscVariations[] = {
+constexpr FeatureEntry::FeatureVariation kSidePanelCompanionVariations[] = {
     {"with staging URL", kCscStagingEnvVariation,
      std::size(kCscStagingEnvVariation), nullptr},
     {"with clobber", kCscClobberVariation, std::size(kCscClobberVariation),
@@ -3328,7 +3328,7 @@ constexpr FeatureEntry::FeatureVariation kCscVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::Choice kSidePanelPinnedStateChoices[] = {
+const FeatureEntry::Choice kForceCompanionPinnedStateChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"Forced Pinned", companion::switches::kForceCompanionPinnedState,
      "pinned"},
@@ -9078,19 +9078,26 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-    {"csc", flag_descriptions::kCscName, flag_descriptions::kCscDescription,
-     kOsDesktop,
+    {"csc-companion-enable-page-content",
+     flag_descriptions::kCscCompanionEnablePageContentName,
+     flag_descriptions::kCscCompanionEnablePageContentDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(companion::features::kCompanionEnablePageContent)},
+
+    {"csc-force-companion-pinned-state",
+     flag_descriptions::kCscForceCompanionPinnedStateName,
+     flag_descriptions::kCscForceCompanionPinnedStateDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kForceCompanionPinnedStateChoices)},
+
+    {"csc-side-panel-companion", flag_descriptions::kCscSidePanelCompanionName,
+     flag_descriptions::kCscSidePanelCompanionDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          companion::features::internal::kSidePanelCompanion,
-         kCscVariations,
+         kSidePanelCompanionVariations,
          "CSC")},
 
-    {"csc-pinned-state", flag_descriptions::kCscPinnedName,
-     flag_descriptions::kCscPinnedDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kSidePanelPinnedStateChoices)},
-
-    {"csc-vss", flag_descriptions::kCscVssName,
-     flag_descriptions::kCscVssDescription, kOsDesktop,
+    {"csc-visual-search-suggestions",
+     flag_descriptions::kCscVisualSearchSuggestionsName,
+     flag_descriptions::kCscVisualSearchSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          companion::visual_search::features::kVisualSearchSuggestions)},
 

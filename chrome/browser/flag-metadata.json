@@ -1496,17 +1496,22 @@
     "expiry_milestone": 120
   },
   {
-    "name": "csc",
+    "name": "csc-companion-enable-page-content",
+    "owners": ["manukh@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "csc-force-companion-pinned-state",
     "owners": ["stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120
   },
   {
-    "name": "csc-pinned-state",
+    "name": "csc-side-panel-companion",
     "owners": ["stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120
   },
   {
-    "name": "csc-vss",
+    "name": "csc-visual-search-suggestions",
     "owners": ["pstjuste@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120
   },

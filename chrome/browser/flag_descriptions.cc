@@ -2145,14 +2145,18 @@ const char kEnableLensPingDescription[] =
     "Enables a ping to the Lens Standalone server before a request is sent. "
     "This ping is used to proactively set cookies needed by Lens.";
 
-const char kCscName[] = "CSC";
-const char kCscDescription[] = "";
+const char kCscCompanionEnablePageContentName[] = "CSC Page Contents";
+const char kCscCompanionEnablePageContentDescription[] =
+    "Share the page contents with Chrome search companion.";
 
-const char kCscPinnedName[] = "CSC Pin State";
-const char kCscPinnedDescription[] = "";
+const char kCscForceCompanionPinnedStateName[] = "CSC Pin State";
+const char kCscForceCompanionPinnedStateDescription[] = "";
 
-const char kCscVssName[] = "CSC-VSS";
-const char kCscVssDescription[] = "";
+const char kCscSidePanelCompanionName[] = "CSC";
+const char kCscSidePanelCompanionDescription[] = "Chrome search companion.";
+
+const char kCscVisualSearchSuggestionsName[] = "CSC-VSS";
+const char kCscVisualSearchSuggestionsDescription[] = "";
 
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";

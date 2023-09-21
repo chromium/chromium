@@ -696,13 +696,13 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
 
   // Inspect the URL from the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        SubsequentNavigationWithAndWithoutMsbb) {
-  // Load a page on the active tab and open companion side panel
+  // Load a page on the active tab and open companion side panel.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl3)));
   proto = GetLastCompanionProtoFromPostMessage();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
 }
 
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
 
   // Inspect the URL from the proto. This will reset the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
 
   // Turn on Msbb via promo. This should auto refresh the companion page.
@@ -1127,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
 
   WaitForCompanionIframeReload();
   proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   // Inspect the URL from the proto. This will reset the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
 
   // Navigate to a new tab.
@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   nav_observer.Wait();
   proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
 }
 
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   WaitForCompanionToBeLoaded();
   auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 
   // Post message so that shown events are flushed.
@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   nav_observer.Wait();
 
   proto = GetLastCompanionProtoFromPostMessage();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 
   CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceShown);
@@ -1829,7 +1829,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   WaitForCompanionToBeLoaded();
   auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 
   // Simulate a message to refresh companion page.
@@ -1838,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   WaitForCompanionIframeReload();
   proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
+  ASSERT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 

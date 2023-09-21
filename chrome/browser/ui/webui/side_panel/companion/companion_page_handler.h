@@ -15,6 +15,7 @@
 #include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/navigation_handle.h"
@@ -88,6 +89,9 @@ class CompanionPageHandler
       unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper)
       override;
 
+  // Called when page content setting pref changes.
+  void OnPageContentPrefChanged();
+
   // Attempts to retrieve a search query string and initiate a search if
   // available. If it does not load a companion page, returns false.
   bool OnSearchTextQuery();
@@ -154,7 +158,7 @@ class CompanionPageHandler
   // The current URL of the main frame.
   GURL page_url_;
 
-  // Observers for sign-in and MSBB status.
+  // Observers for sign-in, MSBB, and page content status.
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
@@ -162,6 +166,7 @@ class CompanionPageHandler
       unified_consent::UrlKeyedDataCollectionConsentHelper,
       unified_consent::UrlKeyedDataCollectionConsentHelper::Observer>
       consent_helper_observation_{this};
+  PrefChangeRegistrar pref_change_registrar_;
 
   absl::optional<base::TimeTicks> full_load_start_time_;
   absl::optional<base::TimeTicks> reload_start_time_;

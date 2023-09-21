@@ -5,9 +5,11 @@
 #include "chrome/browser/companion/core/companion_url_builder.h"
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
 #include "chrome/browser/companion/core/utils.h"
@@ -80,7 +82,7 @@ GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
       kOriginQueryParameterValue);
 
   // TODO(b/274714162): Remove URL param.
-  if (IsUserPermittedToSharePageInfoWithCompanion(pref_service_) &&
+  if (IsUserPermittedToSharePageURLWithCompanion(pref_service_) &&
       IsValidPageURLForCompanion(page_url)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kUrlQueryParameterKey, page_url.spec());
@@ -98,15 +100,17 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
     std::unique_ptr<base::Time> text_query_start_time) {
   // Fill the protobuf with the required query params.
   companion::proto::CompanionUrlParams url_params;
-  if (IsUserPermittedToSharePageInfoWithCompanion(pref_service_) &&
+  if (IsUserPermittedToSharePageURLWithCompanion(pref_service_) &&
       IsValidPageURLForCompanion(page_url)) {
     url_params.set_page_url(page_url.spec());
   }
 
-  url_params.set_is_msbb_enabled(
+  url_params.set_is_page_url_sharing_enabled(
       IsUserPermittedToSharePageURLWithCompanion(pref_service_));
-  // TODO(crbug.com/1476887): Set PCO pref value similarly.
-  url_params.set_is_pco_enabled(false);
+  url_params.set_is_page_content_sharing_enabled(
+      IsUserPermittedToSharePageContentWithCompanion(pref_service_));
+  url_params.set_is_page_content_enabled(
+      base::FeatureList::IsEnabled(features::kCompanionEnablePageContent));
   url_params.set_is_sign_in_allowed(signin_delegate_->AllowedSignin());
   url_params.set_is_signed_in(signin_delegate_->IsSignedIn());
   url_params.set_links_open_in_new_tab(
