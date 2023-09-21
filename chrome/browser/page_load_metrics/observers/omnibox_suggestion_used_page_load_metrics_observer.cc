@@ -47,7 +47,14 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  // We don't record metrics for prerendering in this class. Instead, we record
+  // variant metrics in PrerenderPageLoadMetricsObserver. For example,
+  // PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint.Embedder_DirectURLInput
+  // instead of
+  // Omnibox.SuggestionUsed.URL.NavigationToFirstContentfulPaint.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/10FNXtDdWdEA79VTI45VbmHjkFm0OYujZ8wT-etbah4I/edit?resourcekey=0-_w_JjHBzSLWWaniuNxXqFQ
   return STOP_OBSERVING;
 }
 
