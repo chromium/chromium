@@ -6319,10 +6319,10 @@
                     ]
                 },
                 {
-                    "name": "Prestable_rs4_rr2_im0_rvip0_20230719",
+                    "name": "Prestable_rs2_rr05_im0_rvip0_20230921",
                     "params": {
-                        "rangeRatio": "2",
-                        "rangeSize": "4",
+                        "rangeRatio": "0.5",
+                        "rangeSize": "2",
                         "useIncrementalMount": "false",
                         "useRecyclerViewItemPrefetch": "false"
                     },
@@ -6343,12 +6343,12 @@
                     ]
                 },
                 {
-                    "name": "Prestable_rs2_rr2_im0_rvip0_20230726",
+                    "name": "Prestable_rs2_rr05_im0_rvip1_20230921",
                     "params": {
-                        "rangeRatio": "2",
+                        "rangeRatio": "0.5",
                         "rangeSize": "2",
                         "useIncrementalMount": "false",
-                        "useRecyclerViewItemPrefetch": "false"
+                        "useRecyclerViewItemPrefetch": "true"
                     },
                     "enable_features": [
                         "FeedPerformanceStudy"
