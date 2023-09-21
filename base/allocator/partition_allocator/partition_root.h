@@ -77,16 +77,6 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
-// We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
-// size as other alloc code.
-#define CHECK_MAX_SIZE_OR_RETURN_NULLPTR(size, flags)        \
-  if (size > partition_alloc::internal::MaxDirectMapped()) { \
-    if (flags & AllocFlags::kReturnNull) {                   \
-      return nullptr;                                        \
-    }                                                        \
-    PA_CHECK(false);                                         \
-  }
-
 namespace partition_alloc::internal {
 
 // We want this size to be big enough that we have time to start up other
@@ -918,6 +908,20 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                              size_t* usable_size,
                                              bool* is_already_zeroed)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
+
+  // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
+  // size as other alloc code.
+  template <unsigned int flags>
+  PA_ALWAYS_INLINE static bool AllocWithMemoryToolProlog(size_t size) {
+    if (size > partition_alloc::internal::MaxDirectMapped()) {
+      if constexpr (flags & AllocFlags::kReturnNull) {
+        // Early return indicating not to proceed with allocation
+        return false;
+      }
+      PA_CHECK(false);
+    }
+    return true;  // Allocation should proceed
+  }
 
   bool TryReallocInPlaceForNormalBuckets(void* object,
                                          SlotSpan* slot_span,
@@ -1906,7 +1910,10 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
     if constexpr (!(flags & AllocFlags::kNoMemoryToolOverride)) {
-      CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
+      if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(requested_size)) {
+        // Early return if AllocWithMemoryToolProlog returns false
+        return nullptr;
+      }
       constexpr bool zero_fill = flags & AllocFlags::kZeroFill;
       void* result =
           zero_fill ? calloc(1, requested_size) : malloc(requested_size);
@@ -2252,7 +2259,10 @@ void* PartitionRoot::ReallocInline(void* ptr,
                                    size_t new_size,
                                    const char* type_name) {
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  CHECK_MAX_SIZE_OR_RETURN_NULLPTR(new_size, flags);
+  if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(new_size)) {
+    // Early return if AllocWithMemoryToolProlog returns false
+    return nullptr;
+  }
   void* result = realloc(ptr, new_size);
   PA_CHECK(result || flags & AllocFlags::kReturnNull);
   return result;
