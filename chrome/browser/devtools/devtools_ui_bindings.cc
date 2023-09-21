@@ -42,11 +42,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/pref_names.h"
@@ -143,16 +141,6 @@ base::Value::Dict CreateFileSystemValue(
   return file_system_value;
 }
 
-Browser* FindBrowser(content::WebContents* web_contents) {
-  for (auto* browser : *BrowserList::GetInstance()) {
-    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(
-        web_contents);
-    if (tab_index != TabStripModel::kNoTab)
-      return browser;
-  }
-  return nullptr;
-}
-
 // DevToolsUIDefaultDelegate --------------------------------------------------
 
 class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
@@ -199,7 +187,7 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
   content::OpenURLParams params(GURL(url), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  Browser* browser = FindBrowser(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   browser->OpenURL(params);
 }
 
