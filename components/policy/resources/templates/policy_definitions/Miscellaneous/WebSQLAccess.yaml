@@ -1,9 +1,7 @@
 caption: Force WebSQL to be enabled.
 default: false
 desc: |-
-  WebSQL is on by default as of M101, but can be disabled via Chrome flag.
-            If this policy is set to false or unset, WebSQL can be disabled.
-            If this policy is set to true, WebSQL cannot be disabled.
+  As of M119, if this policy is set to false or unset, WebSQL is disabled, but can be enabled via Chrome flag "web-sql-access". If the policy is set to true, WebSQL access is enabled.
 example_value: true
 features:
   dynamic_refresh: false
@@ -13,10 +11,10 @@ future_on:
 items:
 - caption: Force WebSQL to be enabled.
   value: true
-- caption: Allow WebSQL to be disabled by Chrome flag.
+- caption: Allow WebSQL to be enabled by Chrome flag.
   value: false
 owners:
-- arichiv@chromium.org
+- ayui@chromium.org
 - chrome-owp-storage@google.com
 schema:
   type: boolean

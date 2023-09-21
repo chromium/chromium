@@ -3702,7 +3702,7 @@ const char kSkipServiceWorkerFetchHandlerDescription[] =
 
 const char kWebSQLAccessName[] = "Allows access to WebSQL APIs";
 const char kWebSQLAccessDescription[] =
-    "The WebSQL API is enabled by default, but can be disabled here.";
+    "The WebSQL API is disabled by default, but can be enabled here.";
 
 const char kUseGpuSchedulerDfsName[] = "Use new gpu scheduler.";
 const char kUseGpuSchedulerDfsDescription[] =
