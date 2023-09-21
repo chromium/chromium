@@ -78,6 +78,13 @@ export class LanguageSettingsCardElement extends
     this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
   }
 
+  private getHeaderText_(): string {
+    if (this.isRevampWayfindingEnabled_) {
+      return this.i18n('languagesPageTitle');
+    }
+    return this.i18n('osLanguagesPageTitle');
+  }
+
   private onLanguagesV2Click_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   }

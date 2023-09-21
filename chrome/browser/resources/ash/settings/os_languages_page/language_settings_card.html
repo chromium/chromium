@@ -1,6 +1,6 @@
 <style include="settings-shared"></style>
 
-<settings-card header-text="$i18n{osLanguagesPageTitle}">
+<settings-card header-text="[[getHeaderText_()]]">
   <cr-link-row
       id="languagesRow"
       label="$i18n{languagesPageTitle}"
@@ -9,13 +9,15 @@
       on-click="onLanguagesV2Click_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
-  <cr-link-row
-      id="inputRow"
-      class="hr"
-      label="$i18n{inputPageTitle}"
-      sub-label="[[getInputMethodDisplayName_(
-        languages.inputMethods.currentId, languageHelper)]]"
-      on-click="onInputClick_"
-      role-description="$i18n{subpageArrowRoleDescription}">
-  </cr-link-row>
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <cr-link-row
+        id="inputRow"
+        class="hr"
+        label="$i18n{inputPageTitle}"
+        sub-label="[[getInputMethodDisplayName_(
+          languages.inputMethods.currentId, languageHelper)]]"
+        on-click="onInputClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
 </settings-card>
