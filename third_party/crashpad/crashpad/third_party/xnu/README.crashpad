@@ -6,6 +6,7 @@ Version: 6153.11.26 (from macOS 10.15.0)
 License: APSL 2.0
 License File: APPLE_LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 XNU is the operating system kernel used on macOS and other Apple systems.

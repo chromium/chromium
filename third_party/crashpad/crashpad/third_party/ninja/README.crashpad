@@ -5,6 +5,7 @@ Revision: See the CIPD version in DEPS
 License: Apache License 2.0
 License File: https://github.com/ninja-build/ninja/blob/master/COPYING
 Security Critical: no
+Shipped: no
 
 Description:
 Ninja is a small build system with a focus on speed, and is used to build

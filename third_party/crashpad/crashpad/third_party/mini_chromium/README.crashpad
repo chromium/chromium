@@ -5,6 +5,7 @@ Revision: See DEPS
 License: BSD 3-clause
 License File: mini_chromium/LICENSE
 Security Critical: yes
+Shipped in Chromium: no
 
 Description:
 mini_chromium is a small collection of useful low-level (“base”) routines from

@@ -667,7 +667,7 @@ void VerifyImageExistenceAndTimestamp(const char* path, time_t timestamp) {
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
-  if (_dyld_shared_cache_contains_path &&
+  if (&_dyld_shared_cache_contains_path &&
       _dyld_shared_cache_contains_path(path)) {
 #pragma clang diagnostic pop
     // The timestamp will either match the timestamp of the dyld_shared_cache

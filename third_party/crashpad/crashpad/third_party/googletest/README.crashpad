@@ -5,6 +5,7 @@ Revision: See DEPS
 License: BSD 3-clause
 License File: googletest/googletest/LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Google Test (Google C++ Testing Framework) is Google’s framework for writing C++
