@@ -256,13 +256,14 @@ public class TabListCoordinator
                 priceWelcomeMessageController, componentName, itemType);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
-            if (!attachToParent) {
-                mRecyclerView = (TabListRecyclerView) LayoutInflater.from(context).inflate(
-                        R.layout.tab_list_recycler_view_layout, parentView, false);
-            } else {
-                LayoutInflater.from(context).inflate(
-                        R.layout.tab_list_recycler_view_layout, parentView, true);
-                mRecyclerView = parentView.findViewById(R.id.tab_list_recycler_view);
+            // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are
+            // created with the same parentView. Using attachToParent and subsequently trying to
+            // locate the View with findViewById could then resolve to the wrong view. Instead use
+            // LayoutInflater to return the inflated view and addView to circumvent the issue.
+            mRecyclerView = (TabListRecyclerView) LayoutInflater.from(context).inflate(
+                    R.layout.tab_list_recycler_view_layout, parentView, /*attachToParent=*/false);
+            if (attachToParent) {
+                parentView.addView(mRecyclerView);
             }
 
             if (mode == TabListMode.CAROUSEL) {
