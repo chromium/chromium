@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/test_renderer_host.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -95,6 +97,7 @@ Suggestion CreateSuggestionWithChildren(
     std::vector<Suggestion> children,
     const std::u16string& name = u"Suggestion") {
   Suggestion parent(name);
+  parent.popup_item_id = PopupItemId::kAddressEntry;
   parent.children = std::move(children);
   return parent;
 }
@@ -765,6 +768,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 
   // Create autofill menu.
   controller().set_suggestions({suggestion});
+
   CreateAndShowView();
 
   // Verify that the accessibility layer gets the right string to read out.
@@ -772,6 +776,31 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
   GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(voice_over_value,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
+  // Set up the popup with suggestions.
+  std::u16string address_line = u"Address line #1";
+  Suggestion suggestion(address_line, PopupItemId::kAddressEntry);
+  suggestion.children = {Suggestion(PopupItemId::kFillFullAddress),
+                         Suggestion(PopupItemId::kFillFullName)};
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  // Verify that the accessibility layer gets the right string to read out.
+  ui::AXNodeData node_data;
+  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      base::JoinString(
+          {address_line,
+           l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FULL_ADDRESS_A11Y_ADDON),
+           l10n_util::GetStringFUTF16(
+               IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT,
+               l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT))},
+          u". "));
 }
 
 TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
