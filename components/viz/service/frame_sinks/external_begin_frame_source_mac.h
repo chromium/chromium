@@ -48,7 +48,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
 
-  // ExternalBeginFrameSource implementation.
+  // BeginFrameSource implementation.
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   base::TimeDelta GetMaximumRefreshFrameInterval() override;
@@ -58,6 +58,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // CVDisplayLink Callback on the Viz thread.
   void OnDisplayLinkCallback(ui::VSyncParamsMac params);
 
+  // BeginFrameSource implementation.
   // Callback to RootCompositorFrameSinkImpl::SetDisplayVSyncParameters.
   // When the frame rate changes, VSyncParameters should be updated.
   void SetUpdateVSyncParametersCallback(
@@ -128,6 +129,10 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
 
+  // BeginFrameSource implementation.
+  void SetUpdateVSyncParametersCallback(
+      UpdateVSyncParametersCallback callback) override;
+
  private:
   // Request a callback from DisplayLinkMac, and the callback function.
   void RequestTimeSourceParamsUpdate();
@@ -143,6 +148,11 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
 
   // Used for recording histogram Viz.BeginFrameSource.Accuracy.AverageDelta.
   bool just_started_begin_frame_ = false;
+
+  // The frame interval received from VCDisplayLinkCallback.
+  base::TimeDelta last_hw_interval_;
+
+  UpdateVSyncParametersCallback update_vsync_params_callback_;
 
   base::WeakPtrFactory<DelayBasedBeginFrameSourceMac> weak_factory_{this};
 };
