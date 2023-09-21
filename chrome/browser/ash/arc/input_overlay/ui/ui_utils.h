@@ -9,6 +9,14 @@
 
 #include "ui/events/keycodes/dom/dom_code.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace arc::input_overlay {
 
 // Get text of `code` displayed on input mappings.
@@ -28,6 +36,9 @@ int GetIndexOfActionName(const std::vector<std::u16string>& action_names,
 std::u16string GetActionNameAtIndex(
     const std::vector<std::u16string>& action_names,
     int index);
+
+// Returns bounds of `root_window` excluding the shelf if the shelf is visible.
+gfx::Rect CalculateAvailableBounds(aura::Window* root_window);
 
 }  // namespace arc::input_overlay
 

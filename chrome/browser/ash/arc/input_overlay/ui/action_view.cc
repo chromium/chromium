@@ -287,7 +287,7 @@ gfx::Point ActionView::GetTouchCenterInWindow() const {
 }
 
 gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
-    const gfx::Rect& root_window_bounds,
+    const gfx::Rect& available_bounds,
     const gfx::Point& window_content_origin,
     ArrowContainer* attached_view) const {
   auto origin_in_window = origin();
@@ -304,7 +304,7 @@ gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
   const int attached_view_width_extra =
       kAttachMargin + attached_view_size.width();
   if (origin_in_window.x() + width() + attached_view_width_extra <=
-      root_window_bounds.width()) {
+      available_bounds.width()) {
     can_attach_on_right = true;
   }
 
@@ -333,8 +333,8 @@ gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
     } else {
       // Attach `attached_view` on the right side of this view.
       x = origin_in_window.x() + width() + kAttachMargin;
-      if (x + attached_view_size.width() > root_window_bounds.width()) {
-        x = root_window_bounds.width() - attached_view_size.width();
+      if (x + attached_view_size.width() > available_bounds.width()) {
+        x = available_bounds.width() - attached_view_size.width();
       }
     }
   } else {
@@ -354,7 +354,7 @@ gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
   // of the display.
   int y = std::max(0, window_content_origin.y() + touch_center_in_window.y() -
                           attached_view_size.height() / 2);
-  y = std::min(y, root_window_bounds.height() - attached_view_size.height());
+  y = std::min(y, available_bounds.height() - attached_view_size.height());
   attached_view->SetArrowVerticalOffset(
       touch_center_in_window.y() -
       (y - window_content_origin.y() + attached_view_size.height() / 2));

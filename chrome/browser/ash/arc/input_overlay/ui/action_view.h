@@ -111,7 +111,7 @@ class ActionView : public views::View {
 
   // Returns the `attached_view` position and update the attached_view.
   gfx::Point CalculateAttachViewPositionInRootWindow(
-      const gfx::Rect& root_window_bounds,
+      const gfx::Rect& available_bounds,
       const gfx::Point& window_content_origin,
       ArrowContainer* attached_view) const;
 

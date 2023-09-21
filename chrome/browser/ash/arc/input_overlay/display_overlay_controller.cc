@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_base.h"
@@ -708,7 +709,8 @@ void DisplayOverlayController::AddButtonLabelListWidget(Action* action) {
   UpdateWidgetBoundsInRootWindow(
       button_label_list_widget_.get(),
       gfx::Rect(action->action_view()->CalculateAttachViewPositionInRootWindow(
-                    touch_injector_->window()->GetRootWindow()->bounds(),
+                    CalculateAvailableBounds(
+                        touch_injector_->window()->GetRootWindow()),
                     touch_injector_->content_bounds().origin(), view),
                 view->GetPreferredSize()));
   button_label_list_widget_->Show();
@@ -779,7 +781,8 @@ void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
   UpdateWidgetBoundsInRootWindow(
       button_options_widget_.get(),
       gfx::Rect(action->action_view()->CalculateAttachViewPositionInRootWindow(
-                    touch_injector_->window()->GetRootWindow()->bounds(),
+                    CalculateAvailableBounds(
+                        touch_injector_->window()->GetRootWindow()),
                     touch_injector_->content_bounds().origin(), menu),
                 menu->GetPreferredSize()));
 }

@@ -6,6 +6,11 @@
 
 #include <memory>
 
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/style/icon_button.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
@@ -13,11 +18,13 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/view.h"
 
@@ -91,6 +98,22 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     ActionEditView* action_edit = menu->action_edit_;
     DCHECK(action_edit);
     action_edit->OnClicked();
+  }
+
+  void PressDoneButton(ButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    LeftClickOn(menu->done_button_);
+  }
+
+  void MouseDragActionBy(Action* action, int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    auto* touch_point = action->action_view()->touch_point();
+    DCHECK(touch_point);
+    event_generator->MoveMouseTo(
+        touch_point->GetBoundsInScreen().CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
+    event_generator->ReleaseLeftButton();
   }
 
   bool IsActionInTouchInjector(Action* action) {
@@ -208,6 +231,33 @@ TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
   PressActionEdit(menu);
   EXPECT_FALSE(IsEditLabelFocused(menu, /*index=*/0));
   EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/1));
+}
+
+TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
+  // Display is 1000*800. Set window position to lower part.
+  auto* game_window = widget_->GetNativeWindow();
+  game_window->SetBounds(gfx::Rect(310, 200, 300, 500));
+
+  auto* root_window = game_window->GetRootWindow();
+  auto* shelf = ash::RootWindowController::ForWindow(root_window)->shelf();
+  DCHECK(shelf);
+  shelf->SetAlignment(ash::ShelfAlignment::kBottom);
+  // Drag action to bottom.
+  MouseDragActionBy(tap_action_two_, /*x=*/0, /*y=*/500);
+  auto* menu = ShowButtonOptionsMenu(tap_action_two_);
+  // Menu should show right on top of the shelf.
+  EXPECT_EQ(
+      root_window->bounds().bottom() - ash::ShelfConfig::Get()->shelf_size(),
+      menu->GetWidget()->GetNativeWindow()->bounds().bottom());
+  // Close menu.
+  PressDoneButton(menu);
+  // Set shelf to auto hide.
+  shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
+  EXPECT_FALSE(shelf->IsVisible());
+  menu = ShowButtonOptionsMenu(tap_action_two_);
+  // Menu should align to the bottom of the root window if the shelf is hidden.
+  EXPECT_EQ(root_window->bounds().bottom(),
+            menu->GetWidget()->GetNativeWindow()->bounds().bottom());
 }
 
 }  // namespace arc::input_overlay
