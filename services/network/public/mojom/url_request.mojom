@@ -165,7 +165,10 @@ struct URLRequest {
   // content script of an extension, with its own, separate origin).  This
   // needs to be true even if the request might be "proxied" in the browser
   // process on behalf of a web origin (e.g. as is the case for PaymentRequest
-  // API).
+  // API). In that sense, it is equivalent to the Fetch Standard's request
+  // origin concept [1].
+  //
+  // [1]: https://fetch.spec.whatwg.org/#concept-request-origin
   //
   // |request_initiator| should be omitted (i.e. set to absl::nullopt) for
   // browser-initiated requests (e.g. navigations initiated via omnibox or
