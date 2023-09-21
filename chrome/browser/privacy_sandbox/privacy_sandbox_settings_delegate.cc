@@ -161,20 +161,13 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
   // TODO(linnan): Returns the final client-level decision from
   // `ExperimentManager`.
 
-  PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
-
-  // The 3PCD experiment eligibility is a one-time decision.
-  if (pref_service->HasPrefPath(
-          prefs::kPrivacySandboxCookieDeprecationExperimentEligible)) {
-    return pref_service->GetBoolean(
-        prefs::kPrivacySandboxCookieDeprecationExperimentEligible);
+  // The 3PCD experiment eligibility persists for the browser session.
+  if (!is_cookie_deprecation_experiment_eligible_.has_value()) {
+    is_cookie_deprecation_experiment_eligible_ =
+        IsCookieDeprecationExperimentCurrentlyEligible();
   }
 
-  bool is_eligible = IsCookieDeprecationExperimentCurrentlyEligible();
-  pref_service->SetBoolean(
-      prefs::kPrivacySandboxCookieDeprecationExperimentEligible, is_eligible);
-  return is_eligible;
+  return *is_cookie_deprecation_experiment_eligible_;
 }
 
 bool PrivacySandboxSettingsDelegate::

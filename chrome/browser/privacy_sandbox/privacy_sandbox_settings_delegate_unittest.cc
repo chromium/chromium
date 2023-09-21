@@ -277,11 +277,12 @@ struct CookieDeprecationExperimentEligibilityTestCase {
   ContentSetting cookie_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
   bool privacy_sandbox_eea_notice_acknowledged_pref = false;
   bool privacy_sandbox_row_notice_acknowledged_pref = false;
-  absl::optional<bool> cookie_deprecation_eligible_pref;
   absl::optional<base::Time> install_date = kValidInstallDate;
 #if BUILDFLAG(IS_ANDROID)
   std::vector<std::string> origins_with_installed_app;
 #endif
+  // The eligibility before the set up, which should be sticky.
+  absl::optional<bool> expected_eligible_before;
   bool expected_eligible;
   bool expected_currently_eligible;
 };
@@ -328,11 +329,6 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_currently_eligible = false,
         },
         {
-            .cookie_deprecation_eligible_pref = true,
-            .expected_eligible = true,
-            .expected_currently_eligible = false,
-        },
-        {
             .is_subject_to_enterprise_policies = true,
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = false,
@@ -353,6 +349,12 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_currently_eligible = false,
         },
 #endif
+        {
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible_before = false,
+            .expected_eligible = false,
+            .expected_currently_eligible = true,
+        },
 };
 
 class CookieDeprecationExperimentEligibilityTest
@@ -396,6 +398,11 @@ class CookieDeprecationExperimentEligibilityTest
 TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   const CookieDeprecationExperimentEligibilityTestCase& test_case = GetParam();
 
+  if (test_case.expected_eligible_before) {
+    EXPECT_EQ(delegate()->IsCookieDeprecationExperimentEligible(),
+              *test_case.expected_eligible_before);
+  }
+
   if (test_case.is_subject_to_enterprise_policies.has_value()) {
     // Sign the user in.
     identity_test_env()->MakePrimaryAccountAvailable(
@@ -416,12 +423,6 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   if (test_case.install_date.has_value()) {
     local_state_.Get()->SetInt64(metrics::prefs::kInstallDate,
                                  test_case.install_date->ToTimeT());
-  }
-
-  if (test_case.cookie_deprecation_eligible_pref.has_value()) {
-    prefs()->SetBoolean(
-        prefs::kPrivacySandboxCookieDeprecationExperimentEligible,
-        *test_case.cookie_deprecation_eligible_pref);
   }
 
 #if BUILDFLAG(IS_ANDROID)

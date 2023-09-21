@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -42,6 +43,9 @@ class PrivacySandboxSettingsDelegate
   bool PrivacySandboxRestrictedNoticeRequired() const;
   bool IsSubjectToEnterprisePolicies() const;
   raw_ptr<Profile> profile_;
+  // TODO(linnan): Remove this field when
+  // `IsCookieDeprecationExperimentEligible()` consults `ExperimentManager`.
+  mutable absl::optional<bool> is_cookie_deprecation_experiment_eligible_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebappRegistry> webapp_registry_;
