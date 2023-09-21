@@ -4,8 +4,12 @@
 
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
+#include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
 namespace autofill::autofill_metrics {
 
@@ -82,6 +86,32 @@ void LogShadowPredictionComparison(const AutofillField& field) {
       GetShadowPrediction(field.heuristic_type(HeuristicSource::kExperimental),
                           field.heuristic_type(HeuristicSource::kNextGen),
                           submitted_types));
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.DefaultServerToMLModel",
+        GetShadowPrediction(
+            field.server_type(),
+            field.heuristic_type(HeuristicSource::kMachineLearning),
+            submitted_types));
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
+        GetShadowPrediction(
+            field.heuristic_type(HeuristicSource::kLegacy),
+            field.heuristic_type(HeuristicSource::kMachineLearning),
+            submitted_types));
+#else
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
+        GetShadowPrediction(
+            field.heuristic_type(HeuristicSource::kDefault),
+            field.heuristic_type(HeuristicSource::kMachineLearning),
+            submitted_types));
+#endif
+  }
 #endif
 }
 
