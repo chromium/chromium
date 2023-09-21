@@ -686,6 +686,8 @@ component("platform") {
     "fonts/opentype/open_type_caps_support_mpl.cc",
     "fonts/opentype/open_type_cpal_lookup.cc",
     "fonts/opentype/open_type_cpal_lookup.h",
+    "fonts/opentype/open_type_features.cc",
+    "fonts/opentype/open_type_features.h",
     "fonts/opentype/open_type_math_stretch_data.h",
     "fonts/opentype/open_type_math_support.cc",
     "fonts/opentype/open_type_math_support.h",

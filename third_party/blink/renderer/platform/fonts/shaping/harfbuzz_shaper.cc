@@ -843,10 +843,10 @@ void HarfBuzzShaper::ShapeSegment(
     CapsFeatureSettingsScopedOverlay caps_overlay(
         &range_data->font_features,
         caps_support.FontFeatureToUse(small_caps_behavior));
-    EastAsianSpacing east_asian_sapcing(text_, range_data->start,
-                                        range_data->end, *adjusted_font,
-                                        range_data->font_features);
     hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
+    EastAsianSpacing east_asian_sapcing(
+        text_, range_data->start, range_data->end, *adjusted_font,
+        HB_DIRECTION_IS_HORIZONTAL(direction), range_data->font_features);
 
     if (!ShapeRange(range_data->buffer, range_data->font_features,
                     adjusted_font, current_font_data_for_range_set->Ranges(),

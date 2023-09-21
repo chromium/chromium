@@ -36,23 +36,42 @@ class EastAsianSpacing {
                    wtf_size_t start,
                    wtf_size_t end,
                    const SimpleFontData& font_data,
+                   bool is_horizontal,
                    FontFeatures& features) {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
     // TODO(crbug.com/1463890): Add more conditions to fail fast.
-    ComputeKerning(text, start, end, font_data, features);
+    ComputeKerning(text, start, end, font_data, is_horizontal, features);
   }
 
- private:
-  enum class CharType {
+  enum class CharType : uint8_t {
     kOther,
     kOpen,
     kClose,
     kMiddle,
   };
 
-  static CharType GetCharType(UChar ch);
+  // Data retrieved from fonts for `EastAsianSpacing`.
+  struct FontData {
+    FontData(const SimpleFontData& font, bool is_horizontal);
+
+    // True if this font has `halt` (or `vhal` in vertical.)
+    // https://learn.microsoft.com/en-us/typography/opentype/spec/features_fj#tag-halt
+    bool has_alternate_spacing;
+    // True if this font has `chws` (or `vchw` in vertical.)
+    // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#tag-chws
+    bool has_contextual_spacing;
+
+    // `CharType` for "fullwidth dot punctuation."
+    // https://drafts.csswg.org/css-text-4/#text-spacing-classes
+    CharType type_for_dot;
+    // `CharType` for "fullwidth colon punctuation."
+    CharType type_for_colon;
+  };
+
+ private:
+  static CharType GetCharType(UChar ch, const FontData& font_data);
 
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
@@ -61,6 +80,7 @@ class EastAsianSpacing {
                              wtf_size_t start,
                              wtf_size_t end,
                              const SimpleFontData& font_data,
+                             bool is_horizontal,
                              FontFeatures& features);
 };
 
