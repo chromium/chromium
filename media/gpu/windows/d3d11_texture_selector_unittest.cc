@@ -147,26 +147,26 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGBInHDR) {
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
-TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8BitInSDR) {
-  // Should copy to 8 bit RGB if the video processor can't handle P010, if we're
-  // not in HDR mode.
-  AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
+TEST_F(D3D11TextureSelectorUnittest,
+       P010BindsToP010InSDRWithVideoProcessorSupport) {
+  // Should bind P010 if the video processor can handle P010, in such situation
+  // viz may overlay or may not, if we're not in HDR mode.
+  AllowFormatCheckerSupportExcept({});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
-  // Note that this might also produce 8 bit rgb, but for now always
-  // tries for fp16.
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_B8G8R8A8_UNORM);
-  EXPECT_TRUE(tex_sel->WillCopyForTesting());
-  // TODO(liberato): Check output color space, somehow.
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
+  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
-TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010InSDR) {
-  // Should bind P010 if the video processor can handle P010, if we're not
-  // int HDR mode.
-  AllowFormatCheckerSupportExcept({});
+TEST_F(D3D11TextureSelectorUnittest,
+       P010BindsToP010InSDRWithoutVideoProcessorSupport) {
+  // Should still bind P010 if the video processor can't handle P010, we choose
+  // to always disable viz overlay to avoid using video processor, if we're not
+  // in HDR mode.
+  AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);

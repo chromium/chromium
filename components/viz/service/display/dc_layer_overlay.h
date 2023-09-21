@@ -60,6 +60,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   void OnOverlayCapsChanged() override;
   void UpdateHasHwOverlaySupport();
   void UpdateSystemHDRStatus();
+  void UpdateP010VideoProcessorSupport();
 
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
     frames_since_last_qualified_multi_overlays_ = value;
@@ -127,6 +128,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       std::vector<QuadList::Iterator>& candidates);
 
   bool has_overlay_support_;
+  bool has_p010_video_processor_support_ = false;
   bool system_hdr_enabled_ = false;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;

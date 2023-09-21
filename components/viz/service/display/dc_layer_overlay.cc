@@ -60,14 +60,17 @@ enum DCLayerResult {
   DC_LAYER_FAILED_HDR_TONE_MAPPING = 17,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT,
 };
 
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
+    const gfx::BufferFormat& buffer_format,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata,
     bool has_overlay_support,
+    bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count) {
   // Note: Do not override this value based on base::Feature values. It is the
@@ -99,6 +102,13 @@ DCLayerResult ValidateYUVOverlay(
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
   }
 
+  // Only promote overlay for 10bit+ contents when video processor can
+  // handle P010 contents, otherwise disable overlay.
+  if (buffer_format == gfx::BufferFormat::P010 &&
+      !has_p010_video_processor_support) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT;
+  }
+
   return DC_LAYER_SUCCESS;
 }
 
@@ -106,6 +116,7 @@ DCLayerResult ValidateYUVQuad(
     const YUVVideoDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
     bool has_overlay_support,
+    bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
     DisplayResourceProvider* resource_provider) {
@@ -157,6 +168,12 @@ DCLayerResult ValidateYUVQuad(
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
   }
 
+  // Only promote overlay for 10bit+ contents when video processor can
+  // handle P010 contents, otherwise disable overlay.
+  if (quad->bits_per_channel >= 10 && !has_p010_video_processor_support) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT;
+  }
+
   return DC_LAYER_SUCCESS;
 }
 
@@ -201,6 +218,7 @@ DCLayerResult ValidateTextureQuad(
     const TextureDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
     bool has_overlay_support,
+    bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
     DisplayResourceProvider* resource_provider) {
@@ -228,10 +246,13 @@ DCLayerResult ValidateTextureQuad(
   if (quad->is_video_frame) {
     auto color_space =
         resource_provider->GetOverlayColorSpace(quad->resource_id());
-    auto result = ValidateYUVOverlay(quad->protected_video_type, color_space,
-                                     quad->hdr_metadata, has_overlay_support,
-                                     allowed_yuv_overlay_count,
-                                     processed_yuv_overlay_count);
+    auto buffer_format =
+        resource_provider->GetBufferFormat(quad->resource_id());
+    auto result = ValidateYUVOverlay(
+        quad->protected_video_type, color_space, buffer_format,
+        quad->hdr_metadata, has_overlay_support,
+        has_p010_video_processor_support, allowed_yuv_overlay_count,
+        processed_yuv_overlay_count);
     return result;
   }
 
@@ -539,6 +560,7 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
     UpdateSystemHDRStatus();
+    UpdateP010VideoProcessorSupport();
     gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
   }
   allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
@@ -560,11 +582,17 @@ void DCLayerOverlayProcessor::UpdateSystemHDRStatus() {
   system_hdr_enabled_ = hdr_enabled;
 }
 
+void DCLayerOverlayProcessor::UpdateP010VideoProcessorSupport() {
+  has_p010_video_processor_support_ =
+      gl::CheckVideoProcessorFormatSupport(DXGI_FORMAT_P010);
+}
+
 // Called on the Viz Compositor thread.
 void DCLayerOverlayProcessor::OnOverlayCapsChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   UpdateHasHwOverlaySupport();
   UpdateSystemHDRStatus();
+  UpdateP010VideoProcessorSupport();
 }
 
 void DCLayerOverlayProcessor::ClearOverlayState() {
@@ -779,8 +807,9 @@ void DCLayerOverlayProcessor::Process(
       case DrawQuad::Material::kYuvVideoContent:
         result = ValidateYUVQuad(
             YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
-            has_overlay_support_, allowed_yuv_overlay_count_,
-            processed_yuv_overlay_count_, resource_provider);
+            has_overlay_support_, has_p010_video_processor_support_,
+            allowed_yuv_overlay_count_, processed_yuv_overlay_count_,
+            resource_provider);
         is_yuv_overlay = true;
         break;
       case DrawQuad::Material::kTextureContent: {
@@ -793,8 +822,8 @@ void DCLayerOverlayProcessor::Process(
         } else {
           result = ValidateTextureQuad(
               tex_quad, backdrop_filter_rects, has_overlay_support_,
-              allowed_yuv_overlay_count_, processed_yuv_overlay_count_,
-              resource_provider);
+              has_p010_video_processor_support_, allowed_yuv_overlay_count_,
+              processed_yuv_overlay_count_, resource_provider);
         }
 
         is_yuv_overlay = tex_quad->is_video_frame;
