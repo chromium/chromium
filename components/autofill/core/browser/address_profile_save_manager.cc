@@ -143,13 +143,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   DCHECK(personal_data_manager_);
 
-  // If the profiles changed at all, reset the full list of AutofillProfiles in
-  // the personal data manager.
-  if (import_process->ProfilesChanged()) {
-    std::vector<AutofillProfile> resulting_profiles =
-        import_process->GetResultingProfiles();
-    personal_data_manager_->SetProfilesForAllSources(&resulting_profiles);
-  }
+  import_process->ApplyImport();
 
   AdjustNewProfileStrikes(*import_process);
   AdjustUpdateProfileStrikes(*import_process);

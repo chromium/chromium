@@ -57,7 +57,7 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& form_source_url,
-    const PersonalDataManager* personal_data_manager,
+    PersonalDataManager* personal_data_manager,
     bool allow_only_silent_updates,
     ProfileImportMetadata import_metadata)
     : import_id_(GetImportId()),
@@ -297,54 +297,31 @@ void ProfileImportProcess::MaybeSetMigrationCandidate(
   }
 }
 
-std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
+void ProfileImportProcess::ApplyImport() {
   // At this point, a user decision must have been supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
-
-  std::vector<AutofillProfile> resulting_profiles;
-  std::set<std::string> guids_of_changed_profiles;
-
-  // Add all silently updated profiles.
-  for (const auto& updated_profile : silently_updated_profiles_) {
-    resulting_profiles.push_back(updated_profile);
-    guids_of_changed_profiles.insert(updated_profile.guid());
+  if (!ProfilesChanged()) {
+    return;
   }
 
-  // If there is a confirmed import candidate, add it.
-  if (confirmed_import_candidate_.has_value()) {
-    // Confirming an import candidate corresponds to either a new/update profile
-    // or a migration prompt.
-    if (is_migration()) {
-      AutofillProfile migrated_profile =
-          confirmed_import_candidate_->ConvertToAccountProfile();
-      CHECK_NE(migrated_profile.guid(), confirmed_import_candidate_->guid());
-      resulting_profiles.push_back(migrated_profile);
-      guids_of_changed_profiles.insert(migrated_profile.guid());
-      // Adding the `confirmed_import_candidate_`'s GUID ensures that it isn't
-      // revived below as one of the unchanged profiles.
-      guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
-      // If the `import_candidate_` was silently updated, it is part of
-      // `silently_updated_profiles_`. Remove the corresponding
-      // `confirmed_import_candidate_` from `reesulting_profiles`, so it doesn't
-      // get revived.
-      base::EraseIf(resulting_profiles, [&](const AutofillProfile& profile) {
-        return profile.guid() == confirmed_import_candidate_->guid();
-      });
-    } else {
-      resulting_profiles.emplace_back(confirmed_import_candidate_.value());
-      guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
-    }
+  // Apply silent updates.
+  for (const AutofillProfile& updated_profile : silently_updated_profiles_) {
+    personal_data_manager_->UpdateProfile(updated_profile);
   }
 
-  // Add all other profiles that are currently available in the personal data
-  // manager.
-  for (const auto* unchanged_profile : personal_data_manager_->GetProfiles()) {
-    if (!guids_of_changed_profiles.contains(unchanged_profile->guid())) {
-      resulting_profiles.push_back(*unchanged_profile);
-    }
+  if (!confirmed_import_candidate_.has_value()) {
+    return;
   }
-
-  return resulting_profiles;
+  const AutofillProfile& confirmed_profile = *confirmed_import_candidate_;
+  // Confirming an import candidate corresponds to either a new/update profile
+  // or a migration prompt.
+  if (is_migration()) {
+    personal_data_manager_->MigrateProfileToAccount(confirmed_profile);
+  } else if (is_confirmable_update()) {
+    personal_data_manager_->UpdateProfile(confirmed_profile);
+  } else {
+    personal_data_manager_->AddProfile(confirmed_profile);
+  }
 }
 
 void ProfileImportProcess::SetUserDecision(
