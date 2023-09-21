@@ -6,6 +6,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "../ax_media_app.h",
     "fake_ax_media_app.cc",
     "fake_ax_media_app.h",
   ]

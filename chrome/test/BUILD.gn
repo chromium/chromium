@@ -5821,6 +5821,7 @@ test("unit_tests") {
   sources = [
     # All unittests in browser, common, renderer and service.
     "../browser/about_flags_unittest.cc",
+    "../browser/accessibility/media_app/ax_media_app_handler_unittest.cc",
     "../browser/active_use_util_unittest.cc",
     "../browser/after_startup_task_utils_unittest.cc",
     "../browser/apps/icon_standardizer_unittest.cc",
@@ -6424,6 +6425,7 @@ test("unit_tests") {
     "//chrome/browser:get_proxy_config_proto",
     "//chrome/browser:permissions_proto",
     "//chrome/browser:theme_properties",
+    "//chrome/browser/accessibility/media_app/test:test_support",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",

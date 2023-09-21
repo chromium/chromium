@@ -15,10 +15,10 @@ AXMediaAppHandlerFactory* AXMediaAppHandlerFactory::GetInstance() {
 AXMediaAppHandlerFactory::AXMediaAppHandlerFactory() = default;
 AXMediaAppHandlerFactory::~AXMediaAppHandlerFactory() = default;
 
-AXMediaAppHandler& AXMediaAppHandlerFactory::CreateAXMediaAppHandler() {
-  auto handler = std::make_unique<AXMediaAppHandler>();
-  handlers_.push_back(std::move(handler));
-  return *(handlers_[handlers_.size() - 1u].get());
+std::unique_ptr<AXMediaAppHandler>
+AXMediaAppHandlerFactory::CreateAXMediaAppHandler(AXMediaApp* media_app) {
+  CHECK(media_app);
+  return std::make_unique<AXMediaAppHandler>(media_app);
 }
 
 }  // namespace ash

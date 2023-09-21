@@ -225,12 +225,12 @@ bool IsAccessibilityGameFaceIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityGameFaceIntegration);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kBacklightOcr, "BacklightOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsBacklightOcrEnabled() {
   return base::FeatureList::IsEnabled(features::kBacklightOcr);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kAugmentExistingImageLabels,
              "AugmentExistingImageLabels",

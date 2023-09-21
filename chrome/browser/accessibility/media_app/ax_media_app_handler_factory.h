@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler.h"
 
 namespace ash {
 
 // Factory to create an instance of `AXMediaAppHandler` used by the Media App
-// (AKA Backlight) to communicate with the accessibility code.
+// (AKA Backlight) to communicate with the accessibility layer.
 class AXMediaAppHandlerFactory final {
  public:
   static AXMediaAppHandlerFactory* GetInstance();
@@ -23,18 +24,13 @@ class AXMediaAppHandlerFactory final {
   AXMediaAppHandlerFactory& operator=(const AXMediaAppHandlerFactory&) = delete;
   ~AXMediaAppHandlerFactory();
 
-  const std::vector<std::unique_ptr<AXMediaAppHandler>>& handlers() const {
-    return handlers_;
-  }
-
-  AXMediaAppHandler& CreateAXMediaAppHandler();
+  std::unique_ptr<AXMediaAppHandler> CreateAXMediaAppHandler(
+      AXMediaApp* media_app);
 
  private:
   friend base::NoDestructor<AXMediaAppHandlerFactory>;
 
   AXMediaAppHandlerFactory();
-
-  std::vector<std::unique_ptr<AXMediaAppHandler>> handlers_;
 };
 
 }  // namespace ash
