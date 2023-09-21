@@ -466,6 +466,17 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   if (status.IsError())
     return status;
 
+  if (command.HasSwitch("remote-debugging-port") &&
+      PipeBuilder::PlatformIsSupported()) {
+    VLOG(logging::LOGGING_INFO)
+        << "ChromeDriver supports communication with Chrome via pipes. "
+           "This is more reliable and more secure.";
+    VLOG(logging::LOGGING_INFO)
+        << "Use the --remote-debugging-pipe Chrome switch "
+           "instead of the default --remote-debugging-port "
+           "to enable this communication mode.";
+  }
+
   base::LaunchOptions options;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
