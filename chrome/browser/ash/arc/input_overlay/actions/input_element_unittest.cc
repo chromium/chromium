@@ -57,4 +57,24 @@ TEST(InputElementTest, TestInputElementOverlap) {
   EXPECT_FALSE(tap_b->IsOverlapped(*tap_a));
 }
 
+TEST(InputElementTest, TestInputElementUnbound) {
+  auto input_element = std::make_unique<InputElement>();
+  EXPECT_TRUE(input_element->IsUnbound());
+
+  auto move_a = InputElement::CreateActionMoveKeyElement(
+      {ui::DomCode::US_A, ui::DomCode::NONE, ui::DomCode::NONE,
+       ui::DomCode::NONE});
+  EXPECT_FALSE(move_a->IsUnbound());
+
+  auto move_b = InputElement::CreateActionMoveKeyElement(
+      {ui::DomCode::NONE, ui::DomCode::NONE, ui::DomCode::NONE,
+       ui::DomCode::NONE});
+  EXPECT_TRUE(move_b->IsUnbound());
+
+  auto tap_a = InputElement::CreateActionTapKeyElement(ui::DomCode::US_A);
+  EXPECT_FALSE(tap_a->IsUnbound());
+
+  auto tap_b = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
+  EXPECT_TRUE(tap_b->IsUnbound());
+}
 }  // namespace arc::input_overlay

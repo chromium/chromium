@@ -285,7 +285,7 @@ void Action::InitByChangingActionType(Action* action) {
 }
 
 bool IsInputBound(const InputElement& input_element) {
-  return input_element.input_sources() != InputSource::IS_NONE;
+  return !input_element.IsUnbound();
 }
 
 bool IsKeyboardBound(const InputElement& input_element) {
@@ -470,7 +470,8 @@ void Action::RemoveDefaultAction() {
 }
 
 bool Action::IsDeleted() {
-  return IsDefaultAction() && !IsInputBound(*current_input_);
+  return IsDefaultAction() &&
+         current_input_->input_sources() == InputSource::IS_NONE;
 }
 
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,

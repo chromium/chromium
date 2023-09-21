@@ -61,13 +61,13 @@ class ActionTap::ActionTapView : public ActionView {
   ~ActionTapView() override = default;
 
   void SetViewContent(BindingOption binding_option) override {
+    DCHECK(!action_->IsDeleted());
     InputElement* input_binding =
         GetInputBindingByBindingOption(action_, binding_option);
     if (!input_binding) {
       return;
     }
 
-    DCHECK(IsInputBound(*input_binding));
     if (labels_.empty()) {
       // Create new action label when initializing.
       labels_ = ActionLabel::Show(this, ActionType::TAP, *input_binding,

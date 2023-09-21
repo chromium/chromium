@@ -45,6 +45,8 @@ class InputElement {
 
   // Return true if there is key overlapped or the mouse action is overlapped.
   bool IsOverlapped(const InputElement& input_element) const;
+  // Returns true if no input is bound.
+  bool IsUnbound() const;
   // Set key in the `keys_` list at the `index` to `code`.
   void SetKey(size_t index, ui::DomCode code);
   // Set keys to `keys`.
@@ -68,6 +70,9 @@ class InputElement {
   bool operator!=(const InputElement& other) const;
 
  private:
+  // Returns true if the `input_source` is set as one of the `input_sources_`.
+  bool IsInputSourceSet(InputSource input_source) const;
+
   // Input source for this input element, could be keyboard or mouse or both.
   int input_sources_ = InputSource::IS_NONE;
 
