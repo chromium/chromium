@@ -18,6 +18,11 @@ base::expected<webnn::mojom::blink::OperatorPtr, String> ConvertToMojoOperator(
     const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
     const MLOperator* op);
 
+base::expected<webnn::mojom::blink::OperationPtr, String>
+ConvertToMojoOperation(
+    const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
+    const MLOperator* op);
+
 }  // namespace blink
 
 namespace mojo {

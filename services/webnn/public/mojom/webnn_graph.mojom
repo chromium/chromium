@@ -85,11 +85,26 @@ struct Conv2dAttributes {
   Operator? activation;
 };
 
-// Contains the attributes of pool2d operator.
-// The `roundingType` and `outputSizes` array in MLPool2dOptions are not
-// included because they are used to calculate the output dimensions of poo2d in
-// blink side.
-struct Pool2dAttributes {
+// Represents an average or max pooling operation across all the elements with
+// moving window over the input tensor.
+// This struct also contains the attributes of pool2d operator, but the
+// `roundingType` and `outputSizes` array in MLPool2dOptions are not included
+// because they are used to calculate the output dimensions of pool2d in blink
+// side.
+struct Pool2d {
+  enum Kind {
+    kAveragePool2d,
+    kMaxPool2d,
+  };
+
+  Kind kind;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
   // The dimensions of the sliding window which is supplied by user or the
   // element of input operand height and width.
   Size2d window_dimensions;
@@ -125,7 +140,6 @@ union OperatorAttributes {
   ClampAttributes clamp;
   Conv2dAttributes conv2d;
   GemmAttributes gemm;
-  Pool2dAttributes pool2d;
 };
 
 // Represents the operations defined in `MLGraphBuilder` that describes the
@@ -143,8 +157,6 @@ struct Operator {
     kMin,
     kPow,
     kGemm,
-    kAveragePool2d,
-    kMaxPool2d,
     kRelu,
     kReshape,
     kSoftmax,
@@ -162,18 +174,25 @@ struct Operator {
   OperatorAttributes? attributes;
 };
 
+// Holds one of operator.
+union Operation {
+  Pool2d pool2d;
+};
+
 // Describes an entire WebNN graph information.
 struct GraphInfo {
   // A map of all operands used in this `GraphInfo`, the key is the operand id.
   map<uint64, Operand> id_to_operand_map;
-  // The id array from the `GraphInfo.operands` is used to identify the input
-  // operands of this graph.
+  // The id array from the `GraphInfo.id_to_operand_map` is used to identify the
+  // input operands of this graph.
   array<uint64> input_operands;
-  // The id array from the `GraphInfo.operands` is used to identify the output
-  // operands of this graph.
+  // The id array from the `GraphInfo.id_to_operand_map` is used to identify the
+  // output operands of this graph.
   array<uint64> output_operands;
-  // The operators are sorted in the topological order.
+  // TODO(crbug.com/1273291): The operators will be replaced by operations.
   array<Operator> operators;
+  // The operations are sorted in the topological order.
+  array<Operation> operations;
   // The constant weight data specified through the MLGraphBuilder.constant()
   // method defined in the WebIDL, the key is the constant operand id.
   map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;

@@ -283,7 +283,7 @@ struct Pool2dTester {
     mojom::InputOperandLayout layout;
   };
   Pool2dAttributes attributes;
-  mojom::Operator::Kind kind;
+  mojom::Pool2d::Kind kind;
   OperandInfo output;
 
   void Test(WebNNGraphDMLImplTest& helper) {
@@ -293,24 +293,8 @@ struct Pool2dTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::Pool2dAttributesPtr mojo_attributes = mojom::Pool2dAttributes::New();
-    mojo_attributes->window_dimensions = mojom::Size2d::New(
-        attributes.window_dimensions[0], attributes.window_dimensions[1]);
-    mojo_attributes->padding = mojom::Padding2d::New(
-        mojom::Size2d::New(attributes.padding[0],
-                           attributes.padding[2]) /*beginning padding*/,
-        mojom::Size2d::New(attributes.padding[1],
-                           attributes.padding[3]) /*ending padding*/);
-    mojo_attributes->strides =
-        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
-    mojo_attributes->dilations =
-        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
-    mojo_attributes->layout = attributes.layout;
-    mojom::OperatorAttributesPtr pool2d_attributes =
-        mojom::OperatorAttributes::NewPool2d(std::move(mojo_attributes));
-
-    builder.BuildOperator(kind, {input_operand_id}, {output_operand_id},
-                          std::move(pool2d_attributes));
+    builder.BuildPool2d(kind, input_operand_id, output_operand_id,
+                        std::move(attributes));
     EXPECT_TRUE(helper.CreateAndBuildGraph(builder.GetGraphInfo()));
   }
 };
@@ -328,7 +312,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorAveragePool2d) {
                        .strides = {2, 2},
                        .dilations = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsFirst},
-        .kind = mojom::Operator::Kind::kAveragePool2d,
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 3, 3, 3}}}
         .Test(*this);
@@ -344,7 +328,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorAveragePool2d) {
                        .strides = {2, 2},
                        .dilations = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Operator::Kind::kAveragePool2d,
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 4, 4, 3}}}
         .Test(*this);
@@ -366,7 +350,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMaxPool2d) {
                        .strides = {2, 2},
                        .dilations = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsFirst},
-        .kind = mojom::Operator::Kind::kMaxPool2d,
+        .kind = mojom::Pool2d::Kind::kMaxPool2d,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 3, 3, 3}}}
         .Test(*this);

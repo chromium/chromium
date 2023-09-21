@@ -45,6 +45,36 @@ class GraphInfoBuilder final {
       const std::vector<uint64_t>& outputs,
       mojom::OperatorAttributesPtr operator_attributes = nullptr);
 
+  // The generic type `T` is the pool2d attributes from different unit test.
+  template <typename T>
+  void BuildPool2d(mojom::Pool2d::Kind kind,
+                   uint64_t input_operand_id,
+                   uint64_t output_operand_id,
+                   const T& attributes) {
+    mojom::Pool2dPtr pool2d = mojom::Pool2d::New();
+    pool2d->kind = kind;
+    pool2d->input_operand_id = input_operand_id;
+    pool2d->output_operand_id = output_operand_id;
+
+    auto& window_dimensions = attributes.window_dimensions;
+    CHECK_EQ(window_dimensions.size(), 2u);
+    pool2d->window_dimensions =
+        mojom::Size2d::New(window_dimensions[0], window_dimensions[1]);
+    pool2d->padding = mojom::Padding2d::New(
+        mojom::Size2d::New(attributes.padding[0],
+                           attributes.padding[2]) /* beginning padding*/,
+        mojom::Size2d::New(attributes.padding[1],
+                           attributes.padding[3]) /* ending padding*/);
+    pool2d->strides =
+        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
+    pool2d->dilations =
+        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
+    pool2d->layout = attributes.layout;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewPool2d(std::move(pool2d)));
+  }
+
   const mojom::GraphInfoPtr& GetGraphInfo() const { return graph_info_; }
 
   // Get a clone of internal graph info. This is used by
