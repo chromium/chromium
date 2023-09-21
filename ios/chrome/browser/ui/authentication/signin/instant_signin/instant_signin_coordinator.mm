@@ -42,6 +42,8 @@
   // Whether a snackbar displaying the signed-in account and an "Undo" button
   // should be displayed after successful sign-in.
   BOOL _showSnackbarAfterSuccessfulSignin;
+  // Action recorded if sign-in succeeded.
+  signin_metrics::AccountConsistencyPromoAction _actionToRecordOnSuccess;
 }
 
 #pragma mark - Public
@@ -69,6 +71,7 @@
 
 - (void)start {
   [super start];
+  signin_metrics::LogSignInStarted(_accessPoint);
   ChromeBrowserState* chromeState = self.browser->GetBrowserState();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(chromeState);
@@ -80,6 +83,14 @@
     // ensure the full signed-in account is shown at least once.
     _showSnackbarAfterSuccessfulSignin = YES;
     // If an identity was selected, sign-in can start now.
+    // No need to record the event of sign-in started here because the success
+    // rate should be high. We're only interested in computing CTRs.
+    // TODO(crbug.com/1480440): This is always the default identity today,
+    // but nothing prevents a call with a different identity in the future.
+    // Check and log accordingly. Logging SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT
+    // now would mix the data with the recording further below.
+    _actionToRecordOnSuccess = signin_metrics::AccountConsistencyPromoAction::
+        SIGNED_IN_WITH_DEFAULT_ACCOUNT;
     [self startSignInOnlyFlow];
     return;
   }
@@ -93,10 +104,23 @@
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
   if (!accountManagerService->HasIdentities()) {
+    signin_metrics::RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
+        _accessPoint);
+    _actionToRecordOnSuccess = signin_metrics::AccountConsistencyPromoAction::
+        SIGNED_IN_WITH_NO_DEVICE_ACCOUNT;
     [self startAddAccountForSignInOnly];
     return;
   }
   // Otherwise, the user needs to choose an identity.
+  signin_metrics::RecordConsistencyPromoUserAction(
+      signin_metrics::AccountConsistencyPromoAction::SHOWN, _accessPoint);
+  // TODO(crbug.com/1480440): Stop hardcoding "non-default identity" here. The
+  // user might still choose the default one, or a new one, those map to
+  // different actions. Instead, plumb the correct value to didSigninWithResult.
+  _actionToRecordOnSuccess = signin_metrics::AccountConsistencyPromoAction::
+      SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT;
   _identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
@@ -196,6 +220,8 @@
   [self removeActivityOverlay];
   switch (result) {
     case SigninCoordinatorResultSuccess: {
+      signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
+                                                       _accessPoint);
       SigninCompletionInfo* info =
           [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
       [self runCompletionCallbackWithSigninResult:SigninCoordinatorResultSuccess
