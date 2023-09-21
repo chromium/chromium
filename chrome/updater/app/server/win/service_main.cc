@@ -168,8 +168,12 @@ HRESULT ServiceMain::Run(const base::CommandLine& command_line) {
     return RunCOMServer();
   }
 
-  VLOG(2) << "Running Wake task from the Windows Service";
-  return RunWakeTask();
+  if (IsInternalService()) {
+    VLOG(2) << "Running Wake task from the Windows Service";
+    return RunWakeTask();
+  }
+
+  return S_OK;
 }
 
 HRESULT ServiceMain::RunCOMServer() {
