@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -318,7 +319,13 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
       *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 2.0);
 }
 
-class IsAnimatedLCPTest : public MetricIntegrationTest {
+// TODO(crbug.com/1365773): Flaky on lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_IsAnimatedLCPTest DISABLED_IsAnimatedLCPTest
+#else
+#define MAYBE_IsAnimatedLCPTest IsAnimatedLCPTest
+#endif
+class MAYBE_IsAnimatedLCPTest : public MetricIntegrationTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
@@ -351,13 +358,14 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest, LargestContentfulPaint_IsAnimated) {
+IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
+                       LargestContentfulPaint_IsAnimated) {
   test_is_animated("/is_animated.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
                        LargestContentfulPaint_IsNotAnimated) {
   test_is_animated("/non_animated.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
@@ -365,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    IsAnimatedLCPTest,
+    MAYBE_IsAnimatedLCPTest,
     LargestContentfulPaint_AnimatedImageWithLargerTextFirst) {
   test_is_animated("/animated_image_with_larger_text_first.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
@@ -373,14 +381,20 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // crbug.com/1373885: This test is unreliable on ChromeOS, Linux and Mac
-IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
                        DISABLED_LargestContentfulPaint_IsVideo) {
   test_is_animated("/is_video.html", blink::LargestContentfulPaintType::kVideo,
                    /*expected=*/true, /*entries=*/0);
 }
 
-class MouseoverLCPTest : public MetricIntegrationTest,
-                         public testing::WithParamInterface<bool> {
+// TODO(crbug.com/1365773): Flaky on lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MouseoverLCPTest DISABLED_MouseoverLCPTest
+#else
+#define MAYBE_MouseoverLCPTest MouseoverLCPTest
+#endif
+class MAYBE_MouseoverLCPTest : public MetricIntegrationTest,
+                               public testing::WithParamInterface<bool> {
  public:
   void test_mouseover(const char* html_name,
                       blink::LargestContentfulPaintType flag_set,
@@ -490,9 +504,11 @@ class MouseoverLCPTest : public MetricIntegrationTest,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, MouseoverLCPTest, ::testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(All,
+                         MAYBE_MouseoverLCPTest,
+                         ::testing::Values(false, true));
 
-IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -503,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -514,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverBody) {
   test_mouseover("/mouseover.html",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -525,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -536,9 +552,9 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-class MouseoverLCPTestWithHeuristicFlag : public MouseoverLCPTest {
+class MouseoverLCPTestWithHeuristicFlag : public MAYBE_MouseoverLCPTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    MouseoverLCPTest::SetUpCommandLine(command_line);
+    MAYBE_MouseoverLCPTest::SetUpCommandLine(command_line);
     feature_list_.InitWithFeatures(
         {blink::features::kLCPMouseoverHeuristics} /*enabled*/,
         {} /*disabled*/);
@@ -561,8 +577,17 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
-                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+// TODO(crbug.com/1365773): Flaky on lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_LargestContentfulPaint_MouseoverOverLCPImageReplace \
+  DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace
+#else
+#define MAYBE_LargestContentfulPaint_MouseoverOverLCPImageReplace \
+  LargestContentfulPaint_MouseoverOverLCPImageReplace
+#endif
+IN_PROC_BROWSER_TEST_P(
+    MouseoverLCPTestWithHeuristicFlag,
+    MAYBE_LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
                  blink::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"1",
