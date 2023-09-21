@@ -12,7 +12,7 @@
 <translation id="1242008676835033345">Integruar në <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1289742167380433257">Për të ruajtur të dhënat, imazhet e kësaj faqeje janë optimizuar nga Google.</translation>
-<translation id="129382876167171263">Skedarët e ruajtur nga sajtet e uebit shfaqen këtu</translation>
+<translation id="129382876167171263">Skedarët e ruajtur nga uebsajtet shfaqen këtu</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1317194122196776028">Harroje këtë sajt</translation>
 <translation id="1343356790768851700">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera</translation>
@@ -114,7 +114,7 @@
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
-<translation id="300526633675317032">Kjo do të pastrojë të gjitha <ph name="SIZE_IN_KB" /> të hapësirës ruajtëse të sajtit të uebit.</translation>
+<translation id="300526633675317032">Kjo do të pastrojë të gjitha <ph name="SIZE_IN_KB" /> të hapësirës ruajtëse të uebsajtit.</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>

@@ -4260,7 +4260,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र अन्य <ph name="NUMBER_OF_OTHER_SWITCHES" /> वटा स्विच थपिए</translation>
 <translation id="439266289085815679">ब्लुटुथ कन्फिगुरेसन <ph name="USER_EMAIL" /> द्वारा नियन्त्रित छ।</translation>
 <translation id="4392896746540753732">कन्फिगुरेसन फाइल सम्पादन गर्नुहोस्</translation>
-<translation id="4393713825278446281"><ph name="PRIMARY_EMAIL" /> मा सेभ गरिएका डिभाइसहरू फास्ट पेयर गर्नुहोस्</translation>
+<translation id="4393713825278446281"><ph name="PRIMARY_EMAIL" /> मा सेभ गरिएका फास्ट पेयर डिभाइसहरू</translation>
 <translation id="4394049700291259645">असक्षम गर्नुहोस्</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;सबै खोल्नुहोस्}=1{&amp;पुस्तक चिन्ह लगाइएको साइट खोल्नुहोस्}other{&amp;सबै खोल्नुहोस् ({COUNT})}}</translation>
 <translation id="4397372003838952832">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>

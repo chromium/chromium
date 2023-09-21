@@ -776,7 +776,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4192112279662688596">O</translation>
 <translation id="4193857202545160520">Mostrar clics y teclas pulsadas</translation>
 <translation id="4195579532193195633">Versión actual: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
-<translation id="4195814663415092787">Abrir todo como estaba antes de cerrar</translation>
+<translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
 <translation id="4197790712631116042">Desactivado</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
@@ -1015,7 +1015,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
 <translation id="5163434717504750796">Estado de la batería: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Guardar escritorio como plantilla</translation>
-<translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
+<translation id="5168181903108465623">Dispositivos de emisión disponibles</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar una parte de la pantalla</translation>
 <translation id="5187627942836026988">Mostrar detalles del punto de acceso. Tu administrador ha bloqueado el punto de acceso.</translation>

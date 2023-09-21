@@ -90,6 +90,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1293264513303784526">Appareil USB-C (port de gauche)</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1293699935367580298">Échapp.</translation>
+<translation id="1294046132466831888">Ouvrir Explorer</translation>
 <translation id="1294929383540927798">Modifier les paramètres de notification de l'écran de verrouillage</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
@@ -389,6 +390,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
 <translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="2620900772667816510">Super résolution Bluetooth</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="2624588537172718173">Audio de l'appareil et du microphone</translation>
 <translation id="263399434338050016">« Tout sélectionner »</translation>
@@ -513,6 +515,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> est en train de restaurer votre <ph name="DEVICE_TYPE" />. Votre appareil sera réinitialisé, et toutes les données seront supprimées.</translation>
 <translation id="3171170659304083361">Paramètres des méthodes d'entrée</translation>
+<translation id="3176221688814061633">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version de Bluetooth. Activez la super résolution Bluetooth ou utilisez le microphone interne pour une meilleure qualité audio.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre un certain temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Règler une minuterie</translation>
@@ -1500,6 +1503,7 @@ Nouvelle installation</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus?</translation>
 <translation id="7198435252016571249">Caméra alignée sur le coin inférieur droit. Conflit avec la surface du système.</translation>
 <translation id="7219573373513695352">Aucun appareil n'est connecté</translation>
+<translation id="7229029500464092426">Mémoire <ph name="AVAILABLE_MEMORY" /> | Total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Cela peut prendre jusqu'à une minute.</translation>
 <translation id="7256634071279256947">Microphone arrière</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
@@ -1525,6 +1529,7 @@ Nouvelle installation</translation>
 <translation id="7360036564632145207">Modifier les paramètres de protection d'accès aux données des périphériques peut optimiser les performances</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
+<translation id="7372069265635026568">Mémoire : <ph name="AVAILABLE_MEMORY" /> disponible sur <ph name="TOTAL_MEMORY" /> au total</translation>
 <translation id="737315737514430195">Ceci permet à toutes les applications et à tous les sites Web ayant l'autorisation du microphone d'accéder au microphone</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée.</translation>
 <translation id="7377481913241237033">Connecter avec un code</translation>

@@ -259,7 +259,7 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Κεντρικός υπολογιστής SOCKS</translation>
 <translation id="3104793765551262433">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
-<translation id="3113153474486991170">Δεν ήταν δυνατό το άνοιγμα του <ph name="PATH" /> από αυτήν την τοποθεσία. Αντιγράψτε το στον φάκελο Τα αρχεία μου για άνοιγμα.</translation>
+<translation id="3113153474486991170">Δεν ήταν δυνατό το άνοιγμα του <ph name="PATH" /> από αυτή την τοποθεσία. Αντιγράψτε το στον φάκελο Τα αρχεία μου για άνοιγμα.</translation>
 <translation id="3113592018909187986">Απομένει 1 ακόμη προσπάθεια. Δεν θα μπορείτε να χρησιμοποιήσετε αυτό το δίκτυο μέχρι να ρυθμίσετε ένα νέο PIN.</translation>
 <translation id="3124404833828281817">Άτομο που ονειροπολεί</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -424,7 +424,7 @@
 <translation id="4380245540200674032">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="4387004326333427325">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε απομακρυσμένα</translation>
 <translation id="4394214039309501350">Εξωτερικός σύνδεσμος</translation>
-<translation id="4394980935660306080">Νωρίτερα αυτήν την εβδομάδα</translation>
+<translation id="4394980935660306080">Νωρίτερα αυτή την εβδομάδα</translation>
 <translation id="4398096759193130964">Επαναφέρετε τα στοιχεία ή σύρετέ τα σε νέο φάκελο εκτός του κάδου.</translation>
 <translation id="4401287888955153199">Εξαγωγή όλων</translation>
 <translation id="4410695710508688828">Η λειτουργία εξαγωγής απέτυχε. <ph name="ERROR_MESSAGE" /></translation>
@@ -1069,7 +1069,7 @@
 <translation id="9007990314804111233">Συνδεθείτε στον λογαριασμό σας Microsoft</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>
-<translation id="9035012421917565900">Τα στοιχεία δεν είναι δυνατό να επιστρέψουν στο "<ph name="DESTINATION_NAME" />", επομένως δεν θα μπορείτε να αναιρέσετε αυτήν την ενέργεια.</translation>
+<translation id="9035012421917565900">Τα στοιχεία δεν είναι δυνατό να επιστρέψουν στο "<ph name="DESTINATION_NAME" />", επομένως δεν θα μπορείτε να αναιρέσετε αυτή την ενέργεια.</translation>
 <translation id="9035689366572880647">Εισαγάγετε τρέχον PIN</translation>
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>

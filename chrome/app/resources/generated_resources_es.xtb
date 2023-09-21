@@ -4032,7 +4032,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4195001808989442226">No se puede abrir Steam para Chromebook (beta)</translation>
 <translation id="4195378859392041564">Haz clic en cualquier tecla con el ratón y, a continuación, pulsa una tecla del teclado para personalizarla</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
-<translation id="4195814663415092787">Abrir todo como estaba antes de cerrar</translation>
+<translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
 <translation id="4198268995694216131">Más sitios</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nueva pes&amp;taña</translation>
@@ -7852,7 +7852,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7382085868019811559">La compatibilidad con navegadores antiguos (LBS) permite que se abran patrones de URL concretos en un navegador alternativo que admita las funciones antiguas necesarias para ejecutar correctamente los sitios que las requieran.</translation>
 <translation id="7382980704744807223">Sospechosa</translation>
 <translation id="738322632977123193">No se puede subir. Usa una imagen que tenga uno de estos formatos: .jpg, .gif, .png, .bmp, .tif o .webp.</translation>
-<translation id="73843634555824551">Métodos de entrada y teclados</translation>
+<translation id="73843634555824551">Métodos de introducción de texto y teclados</translation>
 <translation id="7384687527486377545">Repetición automática del teclado</translation>
 <translation id="7384804382450832142">Conectar con Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Todos los archivos y datos locales de todos los usuarios de este <ph name="DEVICE_TYPE" /> se eliminarán de forma permanente.</translation>

@@ -91,6 +91,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1430915738399379752">Imprimer</translation>
+<translation id="1443958768615272145">Poursuivre la navigation</translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour profiter d'une sécurité accrue, servez-vous de la protection améliorée.</translation>
 <translation id="149095475893949513">Ce site Web tente de télécharger un profil de configuration.</translation>
@@ -170,6 +171,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1930989359703290198">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
+<translation id="194449685234099560">Vous pouvez trouver tous vos onglets ouverts ici.</translation>
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1959441496380398824">Maintenez le doigt sur une date.</translation>
 <translation id="1959679933317802873">En attente de contenu…</translation>
@@ -192,6 +194,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisant le même mot de passe</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} mode de paiement enregistré proposé en haut du clavier.}one{{count} mode de paiement enregistré proposé en haut du clavier.}other{{count} modes de paiement enregistrés proposés en haut du clavier.}}</translation>
+<translation id="2055515971416882518">Ouvrez « Paramètres ».</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
@@ -250,6 +253,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2459155039684421202">Dans la barre d'adresse, entrez une tâche comme « effacer mon historique » ou « modifier les mots de passe ».</translation>
 <translation id="2461070143328828326">Paramètres des mots de passe</translation>
+<translation id="2462736546165239215">Vous pouvez retrouver tout votre historique de navigation ici.</translation>
 <translation id="2469960372084740698">Désactiver la navigation sécurisée?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour le site <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non sélectionné</translation>
@@ -351,6 +355,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
 <translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
 <translation id="2956733177489514605">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe et bien plus encore.</translation>
+<translation id="2958271635022991876">Vous pouvez ouvrir un nouvel onglet ici.</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2961210776189273067">Titre</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
@@ -1445,6 +1450,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="9097506547406246598">Le désabonnement a échoué. Un problème est survenu.</translation>
 <translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe?</translation>
 <translation id="9100610230175265781">Une phrase de passe est requise</translation>
+<translation id="9106655997975673326">De « <ph name="SOURCE_DEVICE" /> »</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9120217828624527905">Passer à la traduction de la page complète</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
