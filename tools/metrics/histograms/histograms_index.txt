@@ -127,7 +127,6 @@ tools/metrics/histograms/metadata/sharing/histograms.xml
 tools/metrics/histograms/metadata/side_search/histograms.xml
 tools/metrics/histograms/metadata/signin/histograms.xml
 tools/metrics/histograms/metadata/simple/histograms.xml
-tools/metrics/histograms/metadata/software/histograms.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
 tools/metrics/histograms/metadata/start_surface/histograms.xml
 tools/metrics/histograms/metadata/startup/histograms.xml

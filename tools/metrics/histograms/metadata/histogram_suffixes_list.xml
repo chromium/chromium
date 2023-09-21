@@ -927,14 +927,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="MobileStartup.ToolbarInflationTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeCleanerFetchCompletedReason" separator="_">
-  <suffix name="DownloadFailure"
-      label="Download failed without an OK HTTP response code."/>
-  <suffix name="DownloadSuccess" label="Download succeeded."/>
-  <suffix name="NetworkError" label="Download failed due to a network error."/>
-  <affected-histogram name="SoftwareReporter.Cleaner.TimeToCompleteDownload"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ChromeOS_Camera_JpegProcessMethod" separator=".">
   <suffix name="Hardware" label=""/>
   <suffix name="Software" label=""/>
