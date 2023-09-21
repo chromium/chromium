@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
@@ -33,6 +34,7 @@ namespace ash {
 
 namespace {
 
+using ::base::EqualsProto;
 using local_discovery::ServiceDescription;
 using ::testing::ElementsAreArray;
 
@@ -48,15 +50,6 @@ constexpr char kUnknownScannerName[] = "Unknown Scanner";
 
 // Model which contains the manufacturer.
 constexpr char kModelContainingManufacturer[] = "TEST Model X";
-
-// Matcher that verifies two protobufs contain the same data.
-MATCHER_P(ProtobufEquals, expected_message, "") {
-  std::string arg_dumped;
-  arg.SerializeToString(&arg_dumped);
-  std::string expected_message_dumped;
-  expected_message.SerializeToString(&expected_message_dumped);
-  return arg_dumped == expected_message_dumped;
-}
 
 // Returns a ScannerInfo object with the given |name| and |model|, if provided.
 lorgnette::ScannerInfo CreateLorgnetteScanner(
@@ -644,7 +637,7 @@ TEST_F(LorgnetteScannerManagerTest, OpenScanner) {
   OpenScanner();
   WaitForResult();
   ASSERT_TRUE(open_scanner_response());
-  EXPECT_THAT(response, ProtobufEquals(open_scanner_response().value()));
+  EXPECT_THAT(response, EqualsProto(open_scanner_response().value()));
 }
 
 // Test closing a scanner.
@@ -660,7 +653,7 @@ TEST_F(LorgnetteScannerManagerTest, CloseScanner) {
   CloseScanner();
   WaitForResult();
   ASSERT_TRUE(close_scanner_response());
-  EXPECT_THAT(response, ProtobufEquals(close_scanner_response().value()));
+  EXPECT_THAT(response, EqualsProto(close_scanner_response().value()));
 }
 
 // Test that scanning fails when GetScannerNames() has never been called.

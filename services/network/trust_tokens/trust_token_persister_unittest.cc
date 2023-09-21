@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -26,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::base::EqualsProto;
 using ::testing::IsNull;
 using ::testing::Pointee;
 
@@ -93,15 +95,6 @@ const auto AlwaysTrueKeyMatcher = base::BindRepeating(
 
 const auto AlwaysTrueTimeMatcher = base::BindRepeating(
     [](const base::Time& creation_time) -> bool { return true; });
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 class InMemoryTrustTokenPersisterFactory {
  public:

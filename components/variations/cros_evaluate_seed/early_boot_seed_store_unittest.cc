@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
@@ -20,14 +21,7 @@ namespace variations::cros_early_boot::evaluate_seed {
 
 namespace {
 
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
+using ::base::EqualsProto;
 
 // Populates |seed| with simple test data. The resulting seed will contain one
 // study called "test", which contains one experiment called "abc" with

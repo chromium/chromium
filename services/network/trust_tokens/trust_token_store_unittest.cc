@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
@@ -24,21 +25,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using ::base::EqualsProto;
 using ::testing::ElementsAre;
 using ::testing::Optional;
 
 namespace network::trust_tokens {
-
-namespace {
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
-}  // namespace
 
 TEST(TrustTokenStoreTest, RecordsIssuances) {
   // A newly initialized store should not think it's

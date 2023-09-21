@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
@@ -33,6 +34,7 @@
 #include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using ::base::EqualsProto;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -273,15 +275,6 @@ MATCHER_P(HasMember, name, "") {
     return false;
   }
   return true;
-}
-
-// Matcher that verifies two protobufs contain the same data.
-MATCHER_P(ProtobufEquals, expected_message, "") {
-  std::string arg_dumped;
-  arg.SerializeToString(&arg_dumped);
-  std::string expected_message_dumped;
-  expected_message.SerializeToString(&expected_message_dumped);
-  return arg_dumped == expected_message_dumped;
 }
 
 }  // namespace
@@ -583,7 +576,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     lorgnette::OpenScannerRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateOpenScannerRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateOpenScannerRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*callback), open_scanner_response_));
@@ -598,7 +591,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     lorgnette::CloseScannerRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateCloseScannerRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateCloseScannerRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*callback), close_scanner_response_));
@@ -613,7 +606,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     lorgnette::StartScanRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateStartScanRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateStartScanRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*callback), start_scan_response_));
   }
@@ -631,7 +624,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     ASSERT_TRUE(message_reader.PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(
         request,
-        ProtobufEquals(CreateGetNextImageRequest(response_and_uuid.second)));
+        EqualsProto(CreateGetNextImageRequest(response_and_uuid.second)));
     // Save the file descriptor so we can write to it later.
     EXPECT_TRUE(message_reader.PopFileDescriptor(&fd_));
 
@@ -650,7 +643,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     lorgnette::CancelScanRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateCancelScanRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateCancelScanRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*callback), cancel_scan_response_));
   }
@@ -711,7 +704,7 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
   GetClient()->ListScanners(base::BindLambdaForTesting(
       [&](absl::optional<lorgnette::ListScannersResponse> result) {
         ASSERT_TRUE(result.has_value());
-        EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+        EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
         run_loop.Quit();
       }));
 
@@ -742,7 +735,7 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
   GetClient()->ListScanners(base::BindLambdaForTesting(
       [&](absl::optional<lorgnette::ListScannersResponse> result) {
         ASSERT_TRUE(result.has_value());
-        EXPECT_THAT(result.value(), ProtobufEquals(kExpectedScannerList));
+        EXPECT_THAT(result.value(), EqualsProto(kExpectedScannerList));
         run_loop.Quit();
       }));
 
@@ -873,7 +866,7 @@ TEST_F(LorgnetteManagerClientTest, AsyncDiscoverySession) {
 
   run_loop.Run();
 
-  EXPECT_THAT(actual_response, ProtobufEquals(kExpectedScannerList));
+  EXPECT_THAT(actual_response, EqualsProto(kExpectedScannerList));
 }
 
 // Test that the client can retrieve capabilities for a scanner.
@@ -891,7 +884,7 @@ TEST_F(LorgnetteManagerClientTest, GetScannerCapabilities) {
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ScannerCapabilities> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -948,7 +941,7 @@ TEST_F(LorgnetteManagerClientTest, OpenScanner) {
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::OpenScannerResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -1005,7 +998,7 @@ TEST_F(LorgnetteManagerClientTest, CloseScanner) {
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::CloseScannerResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 

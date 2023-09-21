@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_service.pb.h"
 #include "dbus/message.h"
@@ -22,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using ::base::EqualsProto;
 using ::testing::_;
 using ::testing::Return;
 
@@ -104,15 +106,6 @@ MATCHER_P(HasMember, name, "") {
     return false;
   }
   return true;
-}
-
-// Matcher that veries two protobufs contain the same data.
-MATCHER_P(ProtobufEquals, expected_message, "") {
-  std::string arg_dumped;
-  arg.SerializeToString(&arg_dumped);
-  std::string expected_message_dumped;
-  expected_message.SerializeToString(&expected_message_dumped);
-  return arg_dumped == expected_message_dumped;
 }
 
 }  // namespace
@@ -212,8 +205,8 @@ class PrintscanmgrClientTest : public testing::Test {
     printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(
-                             CreateCupsAddManuallyConfiguredPrinterRequest()));
+    EXPECT_THAT(request,
+                EqualsProto(CreateCupsAddManuallyConfiguredPrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*callback),
@@ -231,7 +224,7 @@ class PrintscanmgrClientTest : public testing::Test {
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request,
-                ProtobufEquals(CreateCupsAddAutoConfiguredPrinterRequest()));
+                EqualsProto(CreateCupsAddAutoConfiguredPrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*callback),
                                   cups_add_autoconfigured_printer_response_,
@@ -246,7 +239,7 @@ class PrintscanmgrClientTest : public testing::Test {
     printscanmgr::CupsRemovePrinterRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateCupsRemovePrinterRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateCupsRemovePrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*callback), cups_remove_printer_response_));
@@ -260,7 +253,7 @@ class PrintscanmgrClientTest : public testing::Test {
     printscanmgr::CupsRetrievePpdRequest request;
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
-    EXPECT_THAT(request, ProtobufEquals(CreateCupsRetrievePpdRequest()));
+    EXPECT_THAT(request, EqualsProto(CreateCupsRetrievePpdRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*callback), cups_retrieve_ppd_response_));
@@ -303,7 +296,7 @@ TEST_F(PrintscanmgrClientTest, CupsAddManuallyConfiguredPrinter) {
           [&](absl::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -325,7 +318,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsAddManuallyConfiguredPrinter) {
           [&](absl::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -349,7 +342,7 @@ TEST_F(PrintscanmgrClientTest,
           [&](absl::optional<
               printscanmgr::CupsAddManuallyConfiguredPrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -373,7 +366,7 @@ TEST_F(PrintscanmgrClientTest, CupsAddAutoConfiguredPrinter) {
           [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -395,7 +388,7 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsAddAutoConfiguredPrinter) {
           [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -418,7 +411,7 @@ TEST_F(PrintscanmgrClientTest, EmptyResponseToCupsAddAutoConfiguredPrinter) {
           [&](absl::optional<printscanmgr::CupsAddAutoConfiguredPrinterResponse>
                   result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }));
 
@@ -441,7 +434,7 @@ TEST_F(PrintscanmgrClientTest, CupsRemovePrinter) {
       base::BindLambdaForTesting(
           [&](absl::optional<printscanmgr::CupsRemovePrinterResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }),
       base::BindLambdaForTesting([&]() { error_callback_called = true; }));
@@ -508,7 +501,7 @@ TEST_F(PrintscanmgrClientTest, CupsRetrievePpd) {
       base::BindLambdaForTesting(
           [&](absl::optional<printscanmgr::CupsRetrievePpdResponse> result) {
             ASSERT_TRUE(result.has_value());
-            EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
             run_loop.Quit();
           }),
       base::BindLambdaForTesting([&]() { error_callback_called = true; }));
