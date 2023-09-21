@@ -1204,38 +1204,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
   };
 
   // Use a helper function to print the values of the stored types.
-  const ServerFieldType field_types_to_print[] = {
-      NAME_FULL,
-      NAME_HONORIFIC_PREFIX,
-      NAME_FIRST,
-      NAME_MIDDLE,
-      NAME_LAST,
-      NAME_LAST_FIRST,
-      NAME_LAST_CONJUNCTION,
-      NAME_LAST_SECOND,
-      EMAIL_ADDRESS,
-      COMPANY_NAME,
-      ADDRESS_HOME_ADDRESS,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_LINE3,
-      ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_STREET_LOCATION,
-      ADDRESS_HOME_STREET_NAME,
-      ADDRESS_HOME_HOUSE_NUMBER,
-      ADDRESS_HOME_APT_NUM,
-      ADDRESS_HOME_FLOOR,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_SUBPREMISE,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_SORTING_CODE,
-      ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_LANDMARK,
-      ADDRESS_HOME_BETWEEN_STREETS,
-      ADDRESS_HOME_ADMIN_LEVEL2,
-      PHONE_HOME_WHOLE_NUMBER};
+  ServerFieldTypeSet field_types_to_print;
+  profile.GetSupportedTypes(&field_types_to_print);
 
   base::ranges::for_each(field_types_to_print, print_values_lambda);
 
