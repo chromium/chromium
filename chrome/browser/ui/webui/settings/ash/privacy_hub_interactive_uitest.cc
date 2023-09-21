@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -88,15 +89,19 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
 class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
  public:
   PrivacyHubV1InteractiveUiTest() {
-    feature_list_.InitAndEnableFeature(features::kCrosPrivacyHub);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCrosPrivacyHub,
+                              features::kCrosPrivacyHubV0},
+        /*disabled_features=*/{});
+    CHECK(features::IsCrosPrivacyHubEnabled());
+    CHECK(features::IsCrosPrivacyHubLocationEnabled());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Fails on linux-chromeos-chrome official builder, http://b/301322535
-IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, DISABLED_SettingsPage) {
+IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
 
   RunTestSequence(
