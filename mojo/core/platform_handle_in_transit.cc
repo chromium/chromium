@@ -34,6 +34,11 @@ HANDLE TransferHandle(HANDLE handle,
     DcheckIfFileHandleIsUnsafe(handle);
   }
 
+  // Duplicating INVALID_HANDLE_VALUE passes a process handle. If you intend to
+  // do this, you must open a valid process handle, not pass the result of
+  // GetCurrentProcess(). e.g. https://crbug.com/243339.
+  CHECK(handle != INVALID_HANDLE_VALUE);
+
   HANDLE out_handle;
   BOOL result =
       ::DuplicateHandle(from_process, handle, to_process, &out_handle, 0, FALSE,

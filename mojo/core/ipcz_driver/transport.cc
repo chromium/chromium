@@ -130,7 +130,10 @@ bool EncodeHandle(PlatformHandle& handle,
                   HandleOwner handle_owner,
                   HandleData& out_handle_data,
                   bool is_remote_process_untrusted) {
-  DCHECK(handle.is_valid());
+  // Duplicating INVALID_HANDLE_VALUE passes a process handle. If you intend to
+  // do this, you must open a valid process handle, not pass the result of
+  // GetCurrentProcess(). e.g. https://crbug.com/243339.
+  CHECK(handle.is_valid());
   if (handle_owner == HandleOwner::kSender) {
     // Nothing to do when sending handles that belong to us. The recipient must
     // be sufficiently privileged and equipped to duplicate such handles to
