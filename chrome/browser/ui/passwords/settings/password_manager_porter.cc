@@ -70,7 +70,13 @@ PasswordManagerPorter::PasswordManagerPorter(
       presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
-PasswordManagerPorter::~PasswordManagerPorter() = default;
+PasswordManagerPorter::~PasswordManagerPorter() {
+  // There may be open file selection dialogs. We need to let them know that we
+  // have gone away so that they do not attempt to call us back.
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
