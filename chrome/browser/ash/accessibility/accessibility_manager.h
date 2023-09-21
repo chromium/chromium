@@ -50,6 +50,10 @@ class Rect;
 
 namespace ash {
 
+namespace language_packs {
+struct PackResult;
+}  // namespace language_packs
+
 class AccessibilityExtensionLoader;
 class Dictation;
 class PumpkinInstaller;
@@ -431,6 +435,10 @@ class AccessibilityManager
   // Reads the contents of a DLC file and runs `callback` with the results.
   void GetDlcContents(::extensions::api::accessibility_private::DlcType dlc,
                       GetDlcContentsCallback callback);
+  // A helper for GetDlcContents, which is called after retrieving the state
+  // of the target DLC.
+  void GetDlcContentsOnPackState(GetDlcContentsCallback callback,
+                                 const language_packs::PackResult& pack_result);
   void SetDlcPathForTest(base::FilePath path);
 
  protected:

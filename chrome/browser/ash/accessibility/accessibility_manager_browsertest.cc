@@ -502,10 +502,6 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     return AccessibilityManager::Get()->chromevox_panel_;
   }
 
-  base::FilePath TtsDlcTypeToPath(DlcType dlc) {
-    return AccessibilityManager::Get()->TtsDlcTypeToPath(dlc);
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -948,36 +944,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
   EXPECT_EQ(600, panel->GetWidget()->GetWindowBoundsInScreen().width());
   EXPECT_TRUE(root_windows[0]->GetBoundsInScreen().Contains(
       panel->GetWidget()->GetWindowBoundsInScreen()));
-}
-
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
-  auto get_full_path = [](const std::string& locale) -> std::string {
-    return base::StringPrintf(
-        "/run/imageloader/tts-%s/package/root/voice.zvoice", locale.c_str());
-  };
-
-  EXPECT_EQ(base::FilePath(get_full_path("de-de")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSDEDE));
-  EXPECT_EQ(base::FilePath(get_full_path("en-us")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSENUS));
-  EXPECT_EQ(base::FilePath(get_full_path("es-es")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
-  EXPECT_EQ(base::FilePath(get_full_path("es-us")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESUS));
-  EXPECT_EQ(base::FilePath(get_full_path("fr-fr")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSFRFR));
-  EXPECT_EQ(base::FilePath(get_full_path("hi-in")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
-  EXPECT_EQ(base::FilePath(get_full_path("it-it")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSITIT));
-  EXPECT_EQ(base::FilePath(get_full_path("ja-jp")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSJAJP));
-  EXPECT_EQ(base::FilePath(get_full_path("nl-nl")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));
-  EXPECT_EQ(base::FilePath(get_full_path("pt-br")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSPTBR));
-  EXPECT_EQ(base::FilePath(get_full_path("sv-se")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
 }
 
 class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
