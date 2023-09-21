@@ -89,6 +89,35 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
         r'*/chrome/updater/*=2')
     self.RunCommand(instance_name, cmd)
 
+  def GetChromeVersion(self, instance_name):
+    """Get Chrome Version by querying Windows registry"""
+    cmd = (
+        r'reg query' +
+        r' "HKLM\SOFTWARE\Google\Update\Clients\{8A69D345-D564-463C-AFF1-A69D9E530F96}"'
+        + r' /reg:32 /v pv')
+    chrome_version = self.RunCommand(instance_name, cmd)
+
+    return chrome_version.decode().split()[-1]
+
+  def RunGoogleUpdaterTaskSchedulerCommand(self, instance_name, cmd):
+    """Run task scheduler powershell command to Google Updater"""
+    script = r'Get-ScheduledTask -TaskPath \GoogleSystem\GoogleUpdater\ | ' + cmd
+    return self.clients[instance_name].RunPowershell(script).decode().strip()
+
+  def WaitForUpdateCheck(self, instance_name):
+    """Wait for the updater task to be ready again"""
+    max_wait_time_secs = 120
+    total_wait_time_secs = 0
+    delta_secs = 5
+
+    while total_wait_time_secs < max_wait_time_secs:
+      time.sleep(delta_secs)
+      total_wait_time_secs += delta_secs
+      state = self.RunGoogleUpdaterTaskSchedulerCommand(
+          instance_name, 'Select -ExpandProperty "State"')
+      if state == 'Ready':
+        break
+
   def InstallChrome(self, instance_name, system_level=False):
     """Installs chrome.
 
@@ -161,6 +190,14 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
              "-Key %s -ValueName %s -Value %s -Type %s") % (
                  key, policy_name, policy_value, policy_type)
       self.clients[instance_name].RunPowershell(cmd)
+
+  def SetOmahaPolicy(self, instance_name, policy_name, policy_value,
+                     policy_type):
+    key = r'HKLM\Software\Policies\Google\Update'
+    cmd = (r"Set-GPRegistryValue -Name 'Default Domain Policy' "
+           "-Key %s -ValueName %s -Value %s -Type %s") % (
+               key, policy_name, policy_value, policy_type)
+    self.clients[instance_name].RunPowershell(cmd)
 
   def RemoveDeviceTrustKey(self, instance_name):
     """Removes a device trust key in registry.
