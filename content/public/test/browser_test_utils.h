@@ -1450,11 +1450,6 @@ class MainThreadFrameObserver {
   int routing_id_;
 };
 
-// Blocks the current execution until the renderer main thread is in a steady
-// state, so the caller can issue an `viz::CopyOutputRequest` against the
-// current `WebContents`.
-void WaitForCopyableViewInWebContents(WebContents* web_contents);
-
 // Watches for an input msg to be consumed.
 class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
  public:
