@@ -630,8 +630,16 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The discarded status in the hover card footer should disappear after a
 // discarded tab is reloaded
+// TODO(crbug.com/1485605): Re-enable after resolving flakiness.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_HoverCardStopShowingDiscardStatusOnReload \
+  DISABLED_HoverCardStopShowingDiscardStatusOnReload
+#else
+#define MAYBE_HoverCardStopShowingDiscardStatusOnReload \
+  HoverCardStopShowingDiscardStatusOnReload
+#endif
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       HoverCardStopShowingDiscardStatusOnReload) {
+                       MAYBE_HoverCardStopShowingDiscardStatusOnReload) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),
