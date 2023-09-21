@@ -791,6 +791,22 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testEvaluateScript(self):
     self.assertEqual(1, self._driver.ExecuteScript('return 1'))
     self.assertEqual(None, self._driver.ExecuteScript(''))
+    self.assertEqual(None, self._driver.ExecuteScript('return null'))
+    self.assertEqual(None, self._driver.ExecuteScript('return undefined'))
+    self.assertEqual("Chrome", self._driver.ExecuteScript('return "Chrome"'))
+    self.assertEqual([], self._driver.ExecuteScript('return []'))
+    self.assertEqual([5, 6.1, "WebDriver"],
+                     self._driver.ExecuteScript('return [5, 6.1, "WebDriver"]'))
+    self.assertEqual({}, self._driver.ExecuteScript('return {}'))
+    self.assertEqual({'one': 2, 'two': [3]},
+                     self._driver.ExecuteScript(
+                         'return {"one": 2, "two": [3]}'))
+    self.assertEqual({},
+                     self._driver.ExecuteScript(
+                         'return new Map([["one", 2], ["two", [3]]])'))
+    self.assertEqual({},
+                     self._driver.ExecuteScript(
+                         'return new Set(["one", 2])'))
 
   def testEvaluateScriptWithArgs(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

@@ -122,7 +122,9 @@ function isElement(value) {
  */
 function isCollection(value) {
   const Symbol = window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol || window.Symbol;
-  return (typeof value[Symbol.iterator] === 'function');
+  return (typeof value[Symbol.iterator] === 'function') &&
+      ('length' in value) &&
+      (typeof value['length'] === 'number');
 }
 
 /**
