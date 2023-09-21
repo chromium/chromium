@@ -969,7 +969,7 @@ class PrintContextAcceleratedCanvasTest : public PrintContextTest {
     accelerated_canvas_scope_ =
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
 
     PrintContextTest::SetUp();
 
@@ -1032,7 +1032,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
         /*shared_image_interface=*/nullptr,
         /*support_locking=*/false);
 
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
 
     PrintContextTest::SetUp();
 

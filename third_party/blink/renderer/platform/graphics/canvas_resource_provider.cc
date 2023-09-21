@@ -1020,7 +1020,6 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // can be used for rendering with Skia, and Skia's Graphite backend doesn't
   // support bottom left origin SkSurfaces.
   constexpr bool kIsOriginTopLeft = true;
-
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       adjusted_info, filter_quality, context_provider_wrapper, kIsOriginTopLeft,
       is_accelerated, shared_image_usage_flags);
@@ -1279,6 +1278,11 @@ CanvasResourceProvider::~CanvasResourceProvider() {
   if (context_provider_wrapper_)
     context_provider_wrapper_->RemoveObserver(this);
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+
+  // Last chance for outstanding GPU timers to record metrics.
+  if (RasterInterface()) {
+    CheckGpuTimers(RasterInterface());
+  }
 }
 
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
@@ -1458,6 +1462,8 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   if (!HasRecordedDrawOps()) {
     return absl::nullopt;
   }
+  ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
+                          always_enable_raster_timers_for_testing_);
   DCHECK(reason != FlushReason::kNone);
   bool want_to_preserve_recording =
       (IsPrinting() && reason != FlushReason::kClear) ||

@@ -1149,6 +1149,8 @@ component("platform") {
     "graphics/replaying_canvas.h",
     "graphics/resource_id_traits.h",
     "graphics/scoped_interpolation_quality.h",
+    "graphics/scoped_raster_timer.cc",
+    "graphics/scoped_raster_timer.h",
     "graphics/scrollbar_theme_settings.cc",
     "graphics/scrollbar_theme_settings.h",
     "graphics/skia/sk_image_info_hash.h",
@@ -2693,6 +2695,7 @@ source_set("unit_tests") {
     "graphics/image_frame_generator_test.cc",
     "graphics/offscreen_canvas_placeholder_test.cc",
     "graphics/paint_worklet_paint_dispatcher_test.cc",
+    "graphics/scoped_raster_timer_test.cc",
     "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.

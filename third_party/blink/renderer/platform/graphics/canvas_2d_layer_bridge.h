@@ -89,7 +89,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
                    size_t row_bytes,
                    int x,
                    int y);
-  void AlwaysMeasureForTesting() { always_measure_for_testing_ = true; }
   void SetCanvasResourceHost(CanvasResourceHost* host);
 
   void Hibernate();
@@ -164,7 +163,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   scoped_refptr<cc::TextureLayer> layer_;
   std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
-  bool always_measure_for_testing_ = false;
   bool context_lost_ = false;
   bool lose_context_in_background_ = false;
   bool lose_context_in_background_scheduled_ = false;
@@ -181,24 +179,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   };
   mutable SnapshotState snapshot_state_;
 
-  void ClearPendingRasterTimers();
-  void FinishRasterTimers(gpu::raster::RasterInterface*);
-  struct RasterTimer {
-    // The id for querying the duration of the gpu-side of the draw
-    GLuint gl_query_id = 0u;
-
-    // The duration of the CPU-side of the draw
-    base::TimeDelta cpu_raster_duration;
-  };
-
   CanvasResourceHost* resource_host_;
   viz::TransferableResource previous_frame_resource_;
-
-  // For measuring a sample of frames for end-to-end raster time
-  // Every frame has a 1% chance of being sampled
-  static constexpr float kRasterMetricProbability = 0.01;
-  base::MetricsSubSampler metrics_subsampler_;
-  Deque<RasterTimer> pending_raster_timers_;
 
   absl::optional<cc::PaintRecord> last_recording_;
 

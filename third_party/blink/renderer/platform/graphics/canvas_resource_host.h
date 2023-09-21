@@ -81,6 +81,9 @@ class PLATFORM_EXPORT CanvasResourceHost {
     return ++frames_since_last_commit_;
   }
   void ResetFramesSinceLastCommit() { frames_since_last_commit_ = 0; }
+  void AlwaysEnableRasterTimersForTesting() {
+    always_enable_raster_timers_for_testing_ = true;
+  }
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);
@@ -94,6 +97,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   gfx::HDRMetadata hdr_metadata_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
+  bool always_enable_raster_timers_for_testing_ = false;
 };
 
 }  // namespace blink

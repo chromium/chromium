@@ -369,6 +369,15 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster() {
 
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster(
+    std::unique_ptr<TestRasterInterface> raster) {
+  CHECK(raster);
+  return base::MakeRefCounted<TestContextProvider>(
+      std::make_unique<TestContextSupport>(), std::move(raster),
+      /*support_locking=*/false);
+}
+
+// static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster(
     std::unique_ptr<TestContextSupport> context_support) {
   CHECK(context_support);
   return base::MakeRefCounted<TestContextProvider>(

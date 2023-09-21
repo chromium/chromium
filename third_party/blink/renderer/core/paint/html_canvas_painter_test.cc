@@ -31,7 +31,7 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
  protected:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
     PaintControllerPaintTestBase::SetUp();
   }
 

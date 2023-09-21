@@ -140,9 +140,9 @@ class SharedGpuContextTestViz : public Test {
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
             task_runner_);
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get(),
-                               /*cache = */ nullptr,
-                               SetIsContextLost::kSetToFalse);
+    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                    /*cache = */ nullptr,
+                                    SetIsContextLost::kSetToFalse);
   }
 
   void TearDown() override {

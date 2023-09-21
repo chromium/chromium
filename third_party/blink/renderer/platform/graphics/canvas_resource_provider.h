@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -69,7 +70,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
     : public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public base::CheckedObserver,
       public CanvasMemoryDumpClient,
-      public MemoryManagedPaintCanvas::Client {
+      public MemoryManagedPaintCanvas::Client,
+      public ScopedRasterTimer::Host {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -262,6 +264,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static void NotifyWillTransfer(cc::PaintImage::ContentId content_id);
 
+  void AlwaysEnableRasterTimersForTesting(bool value) {
+    always_enable_raster_timers_for_testing_ = value;
+  }
+
  protected:
   class CanvasImageProvider;
 
@@ -361,6 +367,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool resource_recycling_enabled_ = true;
   bool is_single_buffered_ = false;
   bool oopr_uses_dmsaa_ = false;
+  bool always_enable_raster_timers_for_testing_ = false;
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.

@@ -219,7 +219,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
     auto sii = std::make_unique<viz::TestSharedImageInterface>();
     sii_ = sii.get();
     context_provider_ = viz::TestContextProvider::Create(std::move(sii));
-    InitializeSharedGpuContext(context_provider_.get());
+    InitializeSharedGpuContextGLES2(context_provider_.get());
   }
 
   void TearDown() override {

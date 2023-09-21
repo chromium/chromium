@@ -33,7 +33,6 @@ class CanvasHibernationHandlerTest : public Test {
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         std::make_unique<Canvas2DLayerBridge>(opacity_mode);
-    bridge->AlwaysMeasureForTesting();
     if (custom_host) {
       host_ = std::move(custom_host);
     }
@@ -47,7 +46,7 @@ class CanvasHibernationHandlerTest : public Test {
 
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
   }
 
   virtual bool NeedsMockGL() { return false; }

@@ -173,6 +173,8 @@ class TestContextProvider
   // Creates a context backed by TestRasterInterface with no lock.
   static scoped_refptr<TestContextProvider> CreateRaster();
   static scoped_refptr<TestContextProvider> CreateRaster(
+      std::unique_ptr<TestRasterInterface> raster);
+  static scoped_refptr<TestContextProvider> CreateRaster(
       std::unique_ptr<TestContextSupport> support);
 
   // Creates a worker context provider that can be used on any thread. This is

@@ -118,20 +118,20 @@ class Canvas2DLayerBridgeTest : public Test {
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         std::make_unique<Canvas2DLayerBridge>(opacity_mode);
-    bridge->AlwaysMeasureForTesting();
     if (custom_host)
       host_ = std::move(custom_host);
     if (!host_)
       host_ = std::make_unique<FakeCanvasResourceHost>(size);
     host_->SetPreferred2DRasterMode(raster_mode);
+    host_->AlwaysEnableRasterTimersForTesting();
     bridge->SetCanvasResourceHost(host_.get());
     return bridge;
   }
 
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get(),
-                               &image_decode_cache_);
+    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                    &image_decode_cache_);
   }
 
   virtual bool NeedsMockGL() { return false; }
@@ -363,7 +363,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
     host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
     bridge->SetCanvasResourceHost(host_.get());
-    bridge->AlwaysMeasureForTesting();
+    host_->AlwaysEnableRasterTimersForTesting();
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());  // We don't yet know that
                                            // allocation will fail.

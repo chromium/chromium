@@ -39,6 +39,8 @@ CanvasResourceHost::ReplaceResourceProvider(
   resource_provider_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
   if (resource_provider_) {
+    resource_provider_->AlwaysEnableRasterTimersForTesting(
+        always_enable_raster_timers_for_testing_);
     resource_provider_->SetCanvasResourceHost(this);
     resource_provider_->Canvas()->restoreToCount(1);
     InitializeForRecording(resource_provider_->Canvas());

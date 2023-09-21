@@ -116,7 +116,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
 
   context_provider->UnboundTestContextGL()
       ->set_supports_gpu_memory_buffer_format(buffer_format, true);
-  InitializeSharedGpuContext(context_provider.get());
+  InitializeSharedGpuContextGLES2(context_provider.get());
 
   // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent
   // by a canvas's CanvasResourceDispatcher, we have to override the Mojo

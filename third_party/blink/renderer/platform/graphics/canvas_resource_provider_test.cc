@@ -58,8 +58,8 @@ class CanvasResourceProviderTest : public Test {
                                                    true);
     test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::RGBA_F16,
                                                    true);
-    InitializeSharedGpuContext(test_context_provider_.get(),
-                               &image_decode_cache_);
+    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                    &image_decode_cache_);
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 

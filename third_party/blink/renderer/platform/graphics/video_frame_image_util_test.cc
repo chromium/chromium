@@ -40,7 +40,7 @@ class ScopedFakeGpuContext {
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU);
     }
 
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
   }
 
   scoped_refptr<viz::ContextProvider> context_provider() const {
