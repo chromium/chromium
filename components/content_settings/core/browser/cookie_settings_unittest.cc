@@ -802,12 +802,12 @@ TEST_P(CookieSettingsTest, CookiesExplicitSessionOnly) {
   EXPECT_TRUE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
 }
 
-#if !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
 #define MAYBE_ThirdPartyExceptionSessionOnly \
   DISABLED_ThirdPartyExceptionSessionOnly
 #else
 #define MAYBE_ThirdPartyExceptionSessionOnly ThirdPartyExceptionSessionOnly
-#endif  // !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#endif  // BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
 TEST_P(CookieSettingsTest, MAYBE_ThirdPartyExceptionSessionOnly) {
   cookie_settings_->SetThirdPartyCookieSetting(kBlockedSite,
                                                CONTENT_SETTING_SESSION_ONLY);
@@ -1139,13 +1139,13 @@ TEST_P(CookieSettingsTest, DeletionWithSubDomains) {
   EXPECT_TRUE(ShouldDeleteCookieOnExit(kSubDomain, true));
 }
 
-#if !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
 #define MAYBE_DeleteCookiesWithThirdPartyException \
   DISABLED_DeleteCookiesWithThirdPartyException
 #else
 #define MAYBE_DeleteCookiesWithThirdPartyException \
   DeleteCookiesWithThirdPartyException
-#endif  // !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#endif  // BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
 TEST_P(CookieSettingsTest, MAYBE_DeleteCookiesWithThirdPartyException) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
   cookie_settings_->SetThirdPartyCookieSetting(kHttpsSite,
