@@ -307,6 +307,11 @@ HEADER = headers.header(
                     alt = "Fuchsia",
                 ),
                 headers.link(
+                    text = "fuzz",
+                    url = "/p/{}/g/tryserver.chromium.fuzz/builders".format(settings.project),
+                    alt = "Fuzz",
+                ),
+                headers.link(
                     text = "linux",
                     branch_selector = branches.selector.LINUX_BRANCHES,
                     url = "/p/{}/g/tryserver.chromium.linux/builders".format(settings.project),

@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "TSAN Release",
+              "builder": "TSAN Debug",
               "project": "chromium"
             },
             "builder_spec": {
@@ -23,7 +23,7 @@
                   "tsan2",
                   "clobber"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "chromium_clang",
                 "target_bits": 64
               },
@@ -37,21 +37,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "TSAN Release",
+          "builder": "TSAN Debug",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-tsan-rel",
-          "group": "tryserver.chromium.fuzz"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -62,9 +56,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuzz",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.fuzz",
+  "recipe": "chromium_trybot"
 }

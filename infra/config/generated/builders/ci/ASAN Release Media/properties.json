@@ -39,6 +39,12 @@
           "builder": "ASAN Release Media",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-asan-media-rel",
+          "group": "tryserver.chromium.fuzz"
+        }
       ]
     }
   },

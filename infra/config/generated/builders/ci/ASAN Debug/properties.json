@@ -39,6 +39,12 @@
           "builder": "ASAN Debug",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-asan-dbg",
+          "group": "tryserver.chromium.fuzz"
+        }
       ]
     }
   },

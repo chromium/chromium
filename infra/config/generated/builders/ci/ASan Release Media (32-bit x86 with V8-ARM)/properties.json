@@ -40,6 +40,12 @@
           "builder": "ASan Release Media (32-bit x86 with V8-ARM)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-asan-media-v8-arm-rel",
+          "group": "tryserver.chromium.fuzz"
+        }
       ]
     }
   },

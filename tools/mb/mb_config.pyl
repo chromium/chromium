@@ -1241,6 +1241,27 @@
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
     },
 
+    'tryserver.chromium.fuzz': {
+      'linux-asan-dbg': 'asan_lsan_debug_bot_reclient',
+      'linux-asan-media-rel': 'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient',
+      'linux-asan-media-v8-arm-rel': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
+      'linux-asan-rel': 'asan_lsan_fuzzer_v8_heap_release_bot_reclient',
+      'linux-asan-v8-arm-dbg': 'asan_v8_heap_debug_bot_hybrid_reclient',
+      'linux-asan-v8-arm-rel': 'asan_fuzzer_v8_heap_release_bot_hybrid_reclient',
+      'linux-chromeos-asan-rel': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
+      'linux-msan-chained-origins-rel': 'msan_release_bot_reclient',
+      'linux-msan-no-origins-rel': 'msan_no_origins_release_bot_reclient',
+      'linux-tsan-dbg': 'tsan_disable_nacl_debug_bot_reclient',
+      'linux-tsan-rel': 'tsan_disable_nacl_release_bot_reclient',
+      'linux-ubsan-rel': 'ubsan_release_bot_reclient',
+      'linux-ubsan-vptr-rel': 'ubsan_vptr_release_bot_reclient',
+      'mac-asan-media-rel': 'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
+      'mac-asan-rel': 'asan_disable_nacl_fuzzer_v8_heap_release_bot_reclient',
+      'win-asan-media-rel': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
+      'win-asan-rel': 'asan_fuzzer_v8_heap_release_bot_reclient',
+
+    },
+
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
       'chromeos-js-code-coverage': 'chromeos_js_coverage_reclient',

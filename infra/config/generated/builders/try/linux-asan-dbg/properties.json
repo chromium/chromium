@@ -6,25 +6,24 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "TSAN Release",
+              "builder": "ASAN Debug",
               "project": "chromium"
             },
             "builder_spec": {
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
-                "archive_name_prefix": "tsan",
+                "archive_name_prefix": "asan",
                 "gs_acl": "public-read",
-                "gs_bucket": "chromium-browser-tsan"
+                "gs_bucket": "chromium-browser-asan"
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb",
-                  "tsan2",
                   "clobber"
                 ],
-                "build_config": "Release",
-                "config": "chromium_clang",
+                "build_config": "Debug",
+                "config": "chromium_asan",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
@@ -37,21 +36,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "TSAN Release",
+          "builder": "ASAN Debug",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-tsan-rel",
-          "group": "tryserver.chromium.fuzz"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -62,9 +55,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuzz",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.fuzz",
+  "recipe": "chromium_trybot"
 }

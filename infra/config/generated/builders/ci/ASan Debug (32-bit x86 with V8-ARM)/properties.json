@@ -40,6 +40,12 @@
           "builder": "ASan Debug (32-bit x86 with V8-ARM)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-asan-v8-arm-dbg",
+          "group": "tryserver.chromium.fuzz"
+        }
       ]
     }
   },

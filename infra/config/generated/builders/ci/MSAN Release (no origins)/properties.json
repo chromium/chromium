@@ -40,6 +40,12 @@
           "builder": "MSAN Release (no origins)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-msan-no-origins-rel",
+          "group": "tryserver.chromium.fuzz"
+        }
       ]
     }
   },
