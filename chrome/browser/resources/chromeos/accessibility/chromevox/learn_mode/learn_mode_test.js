@@ -157,10 +157,10 @@ AX_TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
       .expectSpeechWithQueueMode('Touch explore', QueueMode.CATEGORY_FLUSH)
 
       // Test for inclusion of commandDescriptionMsgId when provided.
-      .call(doLearnModeGesture(Gesture.SWIPE_LEFT2))
+      .call(doLearnModeGesture(Gesture.SWIPE_RIGHT2))
       .expectSpeechWithQueueMode(
-          'Swipe two fingers left', QueueMode.CATEGORY_FLUSH)
-      .expectSpeechWithQueueMode('Escape', QueueMode.QUEUE);
+          'Swipe two fingers right', QueueMode.CATEGORY_FLUSH)
+      .expectSpeechWithQueueMode('Enter', QueueMode.QUEUE);
 
   await mockFeedback.replay();
 });
