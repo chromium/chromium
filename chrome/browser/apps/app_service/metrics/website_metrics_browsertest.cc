@@ -5,12 +5,16 @@
 #include <memory>
 #include <set>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/metrics/website_metrics_browser_test_base.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,10 +25,13 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -108,16 +115,23 @@ class MockObserver : public WebsiteMetrics::Observer {
   MOCK_METHOD(void, OnWebsiteMetricsDestroyed, (), (override));
 };
 
-class WebsiteMetricsBrowserTest : public WebsiteMetricsBrowserTestBase {
+class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    WebsiteMetricsBrowserTestBase::SetUpOnMainThread();
-
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/banners");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(::switches::kNoStartupWindow);
+  }
+
+  Browser* CreateBrowser() {
+    return website_metrics_browser_test_mixin_.CreateBrowser();
   }
 
   Browser* CreateAppBrowser(const std::string& app_id) {
@@ -128,6 +142,22 @@ class WebsiteMetricsBrowserTest : public WebsiteMetricsBrowserTestBase {
     Browser* browser = Browser::Create(params);
     browser->window()->Show();
     return browser;
+  }
+
+  ::content::WebContents* InsertForegroundTab(Browser* browser,
+                                              const std::string& url) {
+    return website_metrics_browser_test_mixin_.InsertForegroundTab(browser,
+                                                                   url);
+  }
+
+  ::content::WebContents* InsertBackgroundTab(Browser* browser,
+                                              const std::string& url) {
+    return website_metrics_browser_test_mixin_.InsertBackgroundTab(browser,
+                                                                   url);
+  }
+
+  void NavigateActiveTab(Browser* browser, const std::string& url) {
+    return website_metrics_browser_test_mixin_.NavigateActiveTab(browser, url);
   }
 
   web_app::AppId InstallWebApp(
@@ -226,7 +256,15 @@ class WebsiteMetricsBrowserTest : public WebsiteMetricsBrowserTestBase {
     return test_ukm_recorder_.get();
   }
 
+  Profile* profile() { return ProfileManager::GetPrimaryUserProfile(); }
+
+  WebsiteMetrics* website_metrics() {
+    return website_metrics_browser_test_mixin_.website_metrics();
+  }
+
  protected:
+  WebsiteMetricsBrowserTestMixin website_metrics_browser_test_mixin_{
+      &mixin_host_};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
@@ -387,8 +425,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   auto website_metrics_ptr =
       std::make_unique<apps::TestWebsiteMetrics>(profile());
   auto* const metrics = website_metrics_ptr.get();
-  metrics_service()->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  website_metrics_browser_test_mixin_.metrics_service()
+      ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -447,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   auto website_metrics_ptr =
       std::make_unique<apps::TestWebsiteMetrics>(profile());
   auto* const metrics = website_metrics_ptr.get();
-  metrics_service()->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  website_metrics_browser_test_mixin_.metrics_service()
+      ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -521,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   auto website_metrics_ptr =
       std::make_unique<apps::TestWebsiteMetrics>(profile());
   auto* const metrics = website_metrics_ptr.get();
-  metrics_service()->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  website_metrics_browser_test_mixin_.metrics_service()
+      ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -712,8 +750,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   auto website_metrics_ptr =
       std::make_unique<apps::TestWebsiteMetrics>(profile());
   auto* const metrics = website_metrics_ptr.get();
-  metrics_service()->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  website_metrics_browser_test_mixin_.metrics_service()
+      ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   // Create a browser with two tabs.
   auto* browser1 = CreateBrowser();

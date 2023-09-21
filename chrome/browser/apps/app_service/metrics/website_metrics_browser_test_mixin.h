@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_BASE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_MIXIN_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_MIXIN_H_
 
-#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -23,17 +22,24 @@
 
 namespace apps {
 
-// Base class with basic browser test environment setup for the `WebsiteMetrics`
-// component. Also includes relevant helpers that can be used by browser tests
-// for simulating browser window/tab interaction.
-class WebsiteMetricsBrowserTestBase : public InProcessBrowserTest {
- protected:
-  // InProcessBrowserTest:
-  void SetUpOnMainThread() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
+// A browser test mixin that can be used to set up the `WebsiteMetrics`
+// component for the primary user profile (if supported). The mixin also
+// includes relevant accessors and helpers for interacting with the website
+// metrics component (if initialized) as well as other browser components.
+class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
+ public:
+  explicit WebsiteMetricsBrowserTestMixin(InProcessBrowserTestMixinHost* host);
+  WebsiteMetricsBrowserTestMixin(const WebsiteMetricsBrowserTestMixin&) =
+      delete;
+  WebsiteMetricsBrowserTestMixin& operator=(
+      const WebsiteMetricsBrowserTestMixin&) = delete;
+  ~WebsiteMetricsBrowserTestMixin() override;
 
-  // Creates and activates a browser window. Returns a pointer to the browser
-  // instance.
+  // InProcessBrowserTestMixin:
+  void SetUpOnMainThread() override;
+
+  // Creates and activates a browser window with the primary user profile.
+  // Returns a pointer to the created browser instance.
   Browser* CreateBrowser();
 
   // Navigates to a given URL in the specified browser instance using the given
@@ -56,19 +62,15 @@ class WebsiteMetricsBrowserTestBase : public InProcessBrowserTest {
                                               const std::string& url);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns the `WebsiteMetricsServiceLacros` component.
+  // Returns the `WebsiteMetricsServiceLacros` component if initialized.
   WebsiteMetricsServiceLacros* metrics_service();
 #else
-  // Returns the `AppPlatformMetricsService` component.
+  // Returns the `AppPlatformMetricsService` component if initialized.
   AppPlatformMetricsService* metrics_service();
 #endif
 
-  // Returns the initialized `WebsiteMetrics` component.
+  // Returns the `WebsiteMetrics` component if initialized.
   WebsiteMetrics* website_metrics();
-
-  // Returns a pointer to the main user profile that was used to initialize
-  // website metric components.
-  Profile* profile();
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -81,4 +83,4 @@ class WebsiteMetricsBrowserTestBase : public InProcessBrowserTest {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_MIXIN_H_
