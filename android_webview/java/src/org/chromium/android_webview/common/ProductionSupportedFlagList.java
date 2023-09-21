@@ -202,8 +202,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PREFER_LABELS_IN_SOME_COUNTRIES,
                     "When enabled, Autofill will first look at field labels and then at field "
                             + "attributes when classifying address fields in Mexico."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
-                    "Enables Autofill to retrieve the page language for form parsing."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ALWAYS_PARSE_PLACEHOLDERS,
                     "When enabled, Autofill local heuristics consider the placeholder attribute "
                             + "for determining field types."),

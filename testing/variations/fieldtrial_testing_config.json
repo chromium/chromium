@@ -1532,6 +1532,34 @@
             ]
         }
     ],
+    "AutofillParsingPatternProvider": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prediction_source": "default"
+                    },
+                    "enable_features": [
+                        "AutofillParsingPatternProvider"
+                    ],
+                    "disable_features": [
+                        "AutofillPageLanguageDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillPopupDoesNotOverlapWithContextMenu": [
         {
             "platforms": [
