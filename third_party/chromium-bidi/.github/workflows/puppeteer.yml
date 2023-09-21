@@ -64,8 +64,7 @@ jobs:
       - name: Install BiDi
         working-directory: puppeteer
         run: |
-          bidi_pkg=(../chromium-bidi-*.tgz)
-          tar -xf ${bidi_pkg[0]} --strip-components 1 -C node_modules/chromium-bidi
+          npm i ../$(ls ../ | grep chromium-bidi-) -w puppeteer-core
       - name: Setup cache for browser binaries
         uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with:
