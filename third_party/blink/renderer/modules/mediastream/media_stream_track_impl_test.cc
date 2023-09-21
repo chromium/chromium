@@ -76,6 +76,7 @@ MakeLocalMediaStreamAudioSource() {
       /*blink::WebLocalFrame=*/nullptr, device,
       /*requested_buffer_size=*/nullptr,
       /*disable_local_echo=*/false,
+      /*enable_system_echo_cancellation=*/false,
       blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
 }

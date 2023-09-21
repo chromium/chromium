@@ -32,11 +32,14 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // audio data. Audio parameters and (optionally) a pre-existing audio session
   // ID are read from |device_info|. |requested_buffer_size| is the desired
   // buffer size for the audio hardware, a nullptr means to use the default.
+  // |enable_system_echo_cancellation| specifies whether to apply system echo
+  // cancellation, and may only be enabled if supported by the device.
   LocalMediaStreamAudioSource(
       LocalFrame* consumer_frame,
       const MediaStreamDevice& device,
       const int* requested_buffer_size,
       bool disable_local_echo,
+      bool enable_system_echo_cancellation,
       ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

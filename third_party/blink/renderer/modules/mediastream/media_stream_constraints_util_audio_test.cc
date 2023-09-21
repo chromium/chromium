@@ -170,7 +170,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         /*blink::WebLocalFrame=*/nullptr, device, requested_buffer_size,
-        disable_local_echo,
+        enable_system_echo_canceller, disable_local_echo,
         blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -2020,6 +2020,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
   auto result = SelectSettingsAudioCapture(
       source.get(), constraint_factory_.CreateMediaConstraints());
   EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationDisabled);
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {

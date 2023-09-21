@@ -22,6 +22,7 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
     const MediaStreamDevice& device,
     const int* requested_buffer_size,
     bool disable_local_echo,
+    bool enable_system_echo_cancellation,
     ConstraintsRepeatingCallback started_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MediaStreamAudioSource(std::move(task_runner),
@@ -29,8 +30,30 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
                              disable_local_echo),
       consumer_frame_(consumer_frame),
       started_callback_(std::move(started_callback)) {
-  DVLOG(1) << "LocalMediaStreamAudioSource::LocalMediaStreamAudioSource()";
-  SetDevice(device);
+  DVLOG(1) << "LocalMediaStreamAudioSource::LocalMediaStreamAudioSource("
+              "device.input="
+           << device.input.AsHumanReadableString()
+           << "requested_buffer_size=" << requested_buffer_size
+           << "enable_system_echo_cancellation="
+           << (enable_system_echo_cancellation ? "true" : "false") << ")";
+  const int device_supported_effects = device.input.effects();
+  MediaStreamDevice device_to_request(device);
+  if (enable_system_echo_cancellation) {
+    // Echo cancellation may only be requested if supported by the device,
+    // otherwise a different MediaStreamSource implementation should be used.
+    DCHECK_NE(device_supported_effects &
+                  (media::AudioParameters::ECHO_CANCELLER |
+                   media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER),
+              0);
+    // The EXPERIMENTAL_ECHO_CANCELLER bit only signals presence of a device
+    // effect, we need to toggle the ECHO_CANCELLER bit to request the effect.
+    device_to_request.input.set_effects(device_supported_effects |
+                                        media::AudioParameters::ECHO_CANCELLER);
+  } else {
+    device_to_request.input.set_effects(
+        device_supported_effects & ~media::AudioParameters::ECHO_CANCELLER);
+  }
+  SetDevice(device_to_request);
 
   int frames_per_buffer = device.input.frames_per_buffer();
   if (requested_buffer_size)
@@ -51,6 +74,7 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
   if (device.input.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE) {
     DCHECK_LE(device.input.channels(), 2);
   }
+  params.set_effects(device_to_request.input.effects());
   SetFormat(params);
 }
 

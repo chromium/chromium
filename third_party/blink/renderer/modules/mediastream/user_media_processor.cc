@@ -1549,8 +1549,10 @@ UserMediaProcessor::CreateAudioSource(
         frame_, device,
         base::OptionalToPtr(current_request_info_->audio_capture_settings()
                                 .requested_buffer_size()),
-        stream_controls->disable_local_echo, std::move(source_ready),
-        task_runner_);
+        stream_controls->disable_local_echo,
+        audio_processing_properties.echo_cancellation_type ==
+            EchoCancellationType::kEchoCancellationSystem,
+        std::move(source_ready), task_runner_);
   }
 
   // The audio device is not associated with screen capture and also requires
