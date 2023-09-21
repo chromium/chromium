@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -497,9 +498,6 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
-  raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-
   std::unique_ptr<PinManager> pin_manager_;
 
   int drivefs_total_failures_count_ = 0;
@@ -514,6 +512,10 @@ class DriveIntegrationService : public KeyedService,
   int64_t last_offline_storage_size_result_;
 
   PrefChangeRegistrar registrar_;
+
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandlerObserver>
+      network_state_handler_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

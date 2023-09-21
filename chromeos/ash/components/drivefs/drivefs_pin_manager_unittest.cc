@@ -2270,7 +2270,7 @@ TEST_F(DriveFsPinManagerTest, OnSpaceUpdate) {
   EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_EQ(manager.progress_.pinned_files, 0);
 
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
   FakeSpacedClient::Get()->set_connected(true);
 
   // Transition to kNotEnoughSpace.
@@ -2281,7 +2281,7 @@ TEST_F(DriveFsPinManagerTest, OnSpaceUpdate) {
   EXPECT_EQ(manager.progress_.required_space, 0);
   EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_EQ(manager.progress_.pinned_files, 0);
-  EXPECT_TRUE(manager.spaced_);
+  EXPECT_TRUE(manager.spaced_client_.IsObserving());
 
   // Still in kNotEnoughSpace.
   event.clear_free_space_bytes();
@@ -2291,7 +2291,7 @@ TEST_F(DriveFsPinManagerTest, OnSpaceUpdate) {
   EXPECT_EQ(manager.progress_.required_space, 0);
   EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_EQ(manager.progress_.pinned_files, 0);
-  EXPECT_TRUE(manager.spaced_);
+  EXPECT_TRUE(manager.spaced_client_.IsObserving());
 
   // Go back to enough space.
   event.set_free_space_bytes(int64_t(2) << 30);
@@ -2301,7 +2301,7 @@ TEST_F(DriveFsPinManagerTest, OnSpaceUpdate) {
   EXPECT_EQ(manager.progress_.required_space, 0);
   EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_EQ(manager.progress_.pinned_files, 0);
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
 
   manager.progress_.stage = Stage::kStopped;
 }
@@ -2310,29 +2310,29 @@ TEST_F(DriveFsPinManagerTest, StartMonitoringSpace) {
   PinManager manager(profile_path_, mount_path_, &drivefs_, kMaxQueueSize);
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
 
   // If SpacedClient is not connected, then StartMonitoringSpace should fail.
   FakeSpacedClient::Get()->set_connected(false);
   EXPECT_FALSE(manager.StartMonitoringSpace());
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
 
   // If SpacedClient is connected, then StartMonitoringSpace should succeed.
   FakeSpacedClient::Get()->set_connected(true);
   EXPECT_TRUE(manager.StartMonitoringSpace());
-  EXPECT_TRUE(manager.spaced_);
+  EXPECT_TRUE(manager.spaced_client_.IsObserving());
 
   // StartMonitoringSpace called when it is already monitoring.
   EXPECT_TRUE(manager.StartMonitoringSpace());
-  EXPECT_TRUE(manager.spaced_);
+  EXPECT_TRUE(manager.spaced_client_.IsObserving());
 
   // Stop monitoring.
   manager.StopMonitoringSpace();
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
 
   // Stop monitoring when it is already stopped.
   manager.StopMonitoringSpace();
-  EXPECT_FALSE(manager.spaced_);
+  EXPECT_FALSE(manager.spaced_client_.IsObserving());
 
   manager.progress_.stage = Stage::kStopped;
 }

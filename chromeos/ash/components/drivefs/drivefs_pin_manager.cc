@@ -663,24 +663,14 @@ PinManager::PinManager(Path profile_path,
       queue_size_(queue_size),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
-  ash::UserDataAuthClient::Get()->AddObserver(this);
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
-  chromeos::PowerManagerClient::Get()->GetBatterySaverModeState(base::BindOnce(
+  chromeos::PowerManagerClient* const p = chromeos::PowerManagerClient::Get();
+  power_manager_.Observe(p);
+  p->GetBatterySaverModeState(base::BindOnce(
       &PinManager::OnGotBatterySaverState, weak_ptr_factory_.GetWeakPtr()));
+  user_data_auth_client_.Observe(ash::UserDataAuthClient::Get());
 }
 
-PinManager::~PinManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  StopMonitoringSpace();
-  ash::UserDataAuthClient::Get()->RemoveObserver(this);
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-
-  DCHECK(!InProgress(progress_.stage))
-      << "Pin manager is " << Quote(progress_.stage);
-
-  observers_.Clear();
-}
+PinManager::~PinManager() = default;
 
 void PinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1200,7 +1190,7 @@ void PinManager::StartPinning() {
 
 bool PinManager::StartMonitoringSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (spaced_) {
+  if (spaced_client_.IsObserving()) {
     VLOG(1) << "SpacedClient::Observer is already registered";
     return true;
   }
@@ -1212,19 +1202,14 @@ bool PinManager::StartMonitoringSpace() {
     return false;
   }
 
-  spaced_ = spaced;
-  spaced_->AddObserver(this);
+  spaced_client_.Observe(spaced);
   VLOG(1) << "Added SpacedClient::Observer";
   return true;
 }
 
 void PinManager::StopMonitoringSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (spaced_) {
-    spaced_->RemoveObserver(this);
-    spaced_ = nullptr;
-    VLOG(1) << "Removed SpacedClient::Observer";
-  }
+  spaced_client_.Reset();
 }
 
 void PinManager::EnableDocsOffline() {
