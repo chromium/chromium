@@ -974,8 +974,31 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
-  // TODO(crbug.com/1450749): Implement OnUserDidDecideOnCvcUploadSave.
-  NOTIMPLEMENTED();
+  switch (user_decision) {
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted: {
+      // TODO(crbug.com/1450749): Remove strikes.
+      CHECK(card_save_candidate_.instrument_id());
+      if (CreditCard* old_credit_card =
+              personal_data_manager_->GetCreditCardByInstrumentId(
+                  card_save_candidate_.instrument_id())) {
+        CHECK(old_credit_card->cvc() != card_save_candidate_.cvc());
+        // If existing card doesn't have CVC, we insert CVC into
+        // `kServerStoredCvcTable` table. If the existing card does have CVC, we
+        // update CVC for `kServerStoredCvcTable` table.
+        if (old_credit_card->cvc().empty()) {
+          personal_data_manager_->AddServerCvc(
+              card_save_candidate_.instrument_id(), card_save_candidate_.cvc());
+        } else {
+          personal_data_manager_->UpdateServerCvc(
+              card_save_candidate_.instrument_id(), card_save_candidate_.cvc());
+        }
+      }
+      break;
+    }
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+      NOTREACHED_NORETURN();
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

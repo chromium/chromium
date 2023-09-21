@@ -287,7 +287,8 @@ class PersonalDataManager : public KeyedService,
 
   // Methods to add, update, remove, or clear server CVC in the web database.
   virtual void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
-  void UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  virtual void UpdateServerCvc(int64_t instrument_id,
+                               const std::u16string& cvc);
   void RemoveServerCvc(int64_t instrument_id);
   void ClearServerCvcs();
 

@@ -136,6 +136,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               UpdateLocalCvc,
               (const std::string& guid, const std::u16string& cvc),
               (override));
+  MOCK_METHOD(void,
+              UpdateServerCvc,
+              (int64_t instrument_id, const std::u16string& cvc),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -244,7 +248,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         form, false, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
-  void UserHasAcceptedUpload(
+  void UserHasAcceptedCardUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
         AutofillClient::SaveCardOfferUserDecision::kAccepted,
@@ -254,6 +258,13 @@ class CreditCardSaveManagerTest : public testing::Test {
   void UserDidDecideCvcLocalSave(
       AutofillClient::SaveCardOfferUserDecision user_decision) {
     credit_card_save_manager_->OnUserDidDecideOnCvcLocalSave(user_decision);
+  }
+
+  void UserHasAcceptedCvcUpload(
+      AutofillClient::UserProvidedCardDetails user_provided_card_details) {
+    credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
+        AutofillClient::SaveCardOfferUserDecision::kAccepted,
+        user_provided_card_details);
   }
 
   // Returns a `FormData` with data corresponding to a simple credit card form.
@@ -592,7 +603,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED);
 
   // Simulate that the user has accepted the upload from the prompt.
-  UserHasAcceptedUpload({});
+  UserHasAcceptedCardUpload({});
   // We should find that full addresses are included in the UploadCard request,
   // even though only countries were included in GetUploadDetails.
   EXPECT_THAT(
@@ -1031,6 +1042,44 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify that user decline a offer will add a strike count for that CVC.
   EXPECT_EQ(1, cvc_storage_strike_database.GetStrikes(local_card.guid()));
+}
+
+// Tests that when triggering AttemptToOfferCvcUploadSave function and user
+// accept, AddServerCvc function will be triggered with old empty CVC.
+TEST_F(
+    CreditCardSaveManagerTest,
+    AttemptToOfferCvcUploadSave_UserAccept_ShouldAddServerCvcWithOldEmptyCvc) {
+  CreditCard credit_card = test::GetMaskedServerCard();
+  personal_data().AddServerCreditCard(credit_card);
+  const std::u16string kCvc = u"555";
+  credit_card.set_cvc(kCvc);
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(
+      /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
+      credit_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_CALL(personal_data(), AddServerCvc(credit_card.instrument_id(), kCvc));
+  UserHasAcceptedCvcUpload({});
+}
+
+// Tests that when triggering AttemptToOfferCvcUploadSave function and user
+// accept, UpdateServerCvc function will be triggered with different non-empty
+// CVC.
+TEST_F(
+    CreditCardSaveManagerTest,
+    AttemptToOfferCvcUploadSave_UserAccept_ShouldUpdateServerCvcWithDifferentCvc) {
+  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  personal_data().AddServerCreditCard(credit_card);
+  const std::u16string kCvc = u"555";
+  credit_card.set_cvc(kCvc);
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(
+      /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
+      credit_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_CALL(personal_data(),
+              UpdateServerCvc(credit_card.instrument_id(), kCvc));
+  UserHasAcceptedCvcUpload({});
 }
 #endif
 
@@ -5019,7 +5068,7 @@ TEST_F(CreditCardSaveManagerTest, OnUserDidAcceptUpload_NotifiesPDM) {
   EXPECT_CALL(personal_data(), OnUserAcceptedUpstreamOffer);
 
   // Simulate that the user has accepted the upload from the prompt.
-  UserHasAcceptedUpload({});
+  UserHasAcceptedCardUpload({});
 }
 
 // Tests that if a card doesn't fall in any of the supported bin ranges, local
