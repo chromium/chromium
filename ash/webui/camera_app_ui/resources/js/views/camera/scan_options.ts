@@ -63,7 +63,8 @@ export class ScanOptions implements CameraUI {
     // ready.
     dom.get('#scan-barcode', HTMLInputElement).checked = true;
 
-    (async () => {
+    // TODO(pihsun): Move this outside of the constructor.
+    void (async () => {
       const {supported} =
           await ChromeHelper.getInstance().getDocumentScannerReadyState();
       dom.get('#scan-document-option', HTMLElement).hidden = !supported;
@@ -75,9 +76,9 @@ export class ScanOptions implements CameraUI {
           evt.preventDefault();
         }
       });
-      option.addEventListener('change', () => {
+      option.addEventListener('change', async () => {
         if (option.checked) {
-          this.switchToScanType(this.getToggledScanOption());
+          await this.switchToScanType(this.getToggledScanOption());
         }
       });
     }
@@ -129,12 +130,14 @@ export class ScanOptions implements CameraUI {
     const {deviceId} = video.getVideoSettings();
     this.documentCornerOverlay.attach(deviceId);
     const scanType = this.getToggledScanOption();
-    (async () => {
+    // Not awaiting here since this is for teardown after preview video
+    // expires.
+    void (async () => {
       await video.onExpired.wait();
       this.detachPreview();
     })();
     await this.switchToScanType(scanType);
-    this.checkDocumentModeReadiness();
+    await this.checkDocumentModeReadiness();
   }
 
   /**
