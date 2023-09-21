@@ -326,7 +326,7 @@
 <translation id="1640180200866533862">用户政策</translation>
 <translation id="1640244768702815859">请尝试<ph name="BEGIN_LINK" />访问该网站的首页<ph name="END_LINK" />。</translation>
 <translation id="1641976391427233992">将输出时间延迟至</translation>
-<translation id="164212631332220697">结帐时使用 <ph name="CARD_DETAIL" /> 付款。</translation>
+<translation id="164212631332220697">结账时使用 <ph name="CARD_DETAIL" /> 付款。</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645368109819982629">协议不受支持</translation>
 <translation id="1650602712345345441">管理您的 Google 设置</translation>
@@ -1762,7 +1762,7 @@
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
 <translation id="4882314601499260499">未应用任何用户政策。若要添加用户政策，贵组织必须<ph name="LINK_BEGIN" />验证您的域名<ph name="LINK_END" />。</translation>
-<translation id="4885256590493466218">结帐时使用 <ph name="CARD_DETAIL" /> 付款</translation>
+<translation id="4885256590493466218">结账时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
 <translation id="4888600795924685526">外语学习</translation>
 <translation id="4892518386797173871">后方</translation>

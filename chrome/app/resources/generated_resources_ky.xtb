@@ -876,7 +876,7 @@
     бардыгы, же ачык-айкын, же мезгил-мезгили менен купуялык
     саясатыбызга ылайык корголот. Ушул пикирди жөнөтүү менен, Google'га
     пикириңиз аркылуу Google өнүмүн же кызматын жакшыртууга уруксат бересиз.</translation>
-<translation id="1708291623166985230">Хотспот өчүрүлдү</translation>
+<translation id="1708291623166985230">Байланыш түйүнү өчүрүлдү</translation>
 <translation id="1708338024780164500">(Жигерсиз)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
 <translation id="1708979186656821319">Жүктөлүп бүткөндө көрсөтүлбөсүн</translation>
@@ -1959,7 +1959,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2575713839157415345">{YEARS,plural, =1{Түзмөк 1 жыл сакталып, кийинки жолу кодсуз туташа аласыз. Бул параметрди администраторуңуз орноткон.}other{Түзмөк {YEARS} жыл сакталып, кийинки жолу кодсуз туташа аласыз. Бул параметрди администраторуңуз орноткон.}}</translation>
 <translation id="2577446426265992344">Omnibox'суз</translation>
 <translation id="257779572837908839">Жыйналыштар үчүн Chromebox'ту жөндөө</translation>
-<translation id="2579309488038515659">Хотспотту иштетүү</translation>
+<translation id="2579309488038515659">Байланыш түйүнүн иштетүү</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> бир нече файлды жүктөп алууга ар дайым уруксат берилсин</translation>
 <translation id="258095186877893873">Узак</translation>
 <translation id="2581455244799175627">Үчүнчү тараптын cookie файлдарына уруксат берүү тууралуу кеңири маалымат</translation>
@@ -1999,7 +1999,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2618797463720777311">Nearby Share функциясын тууралоо</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> файлын коопсуз жүктөп алууга болбойт.</translation>
-<translation id="2620245777360407679">Учурда хотспотко туташып турган түзмөктөр</translation>
+<translation id="2620245777360407679">Учурда байланыш түйүнүнө туташып турган түзмөктөр</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="262154978979441594">Google Жардамчыга үнүңүздүн үлгүсүн үйрөтүңүз</translation>
 <translation id="26224892172169984">Бир да сайт протокол жүргүзбөсүн</translation>
@@ -3578,7 +3578,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3965811923470826124">Төмөнкү менен:</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> профилинен чыгуу</translation>
 <translation id="3966072572894326936">Башка куржун тандаңыз…</translation>
-<translation id="3966094581547899417">Хотспот жөнүндө маалымат</translation>
+<translation id="3966094581547899417">Байланыш түйүнү жөнүндө маалымат</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3967841595862839006">Тил жана баскычтопту тандаңыз</translation>
 <translation id="3968739731834770921">Кана</translation>
@@ -7243,7 +7243,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7163202347044721291">Жандандыруу коду текшерилүүдө…</translation>
 <translation id="7165263843655074092">Бул түзмөктө стандартуу коопсуздук тутумун колдонуп жатасыз</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" белгиленген жерлердеги сүрөттөрдү, видеону жана үн файлдарын окуй алат.</translation>
-<translation id="7166815366658507447">Хотспот иштетилди</translation>
+<translation id="7166815366658507447">Байланыш түйүнү иштетилди</translation>
 <translation id="7167327771183668296">Автоматтык чыкылдатуулар</translation>
 <translation id="7167486101654761064">Мындай түрдөгү файлдар &amp;ар дайым ачылсын</translation>
 <translation id="716775164025088943">Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башка параметрлер мындан ары шайкештирилбейт.</translation>

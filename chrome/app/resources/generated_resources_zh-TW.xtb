@@ -518,7 +518,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟體更新</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
-<translation id="1433478348197382180">朗讀模式</translation>
+<translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1434696352799406980">這項功能會重設您的起始網頁、新分頁、搜尋引擎和固定分頁，同時停用所有擴充功能並清除 Cookie 等暫存資料，但不會清除您的書籤、歷史記錄和已儲存的密碼。</translation>
 <translation id="1434886155212424586">首頁是新分頁</translation>
 <translation id="1435940442311036198">在其他裝置上使用密碼金鑰</translation>
@@ -563,7 +563,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="1470350905258700113">使用這部裝置</translation>
 <translation id="1470946456740188591">如要開啟或關閉鍵盤瀏覽功能，請使用快速鍵 Ctrl 鍵 + 搜尋鍵 + 7</translation>
-<translation id="1471034383866732283">朗讀模式無法找出這個頁面的主要內容</translation>
+<translation id="1471034383866732283">閱讀模式無法找出這個頁面的主要內容</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473223074251193484">設定網路共用設定</translation>
 <translation id="1474785664565228650">必須重新啟動 Parallels Desktop，麥克風設定的變更才會生效。請重新啟動 Parallels Desktop 以繼續操作。</translation>
@@ -3758,7 +3758,7 @@
 <translation id="4135746311382563554">《Google Chrome 和 ChromeOS 附加服務條款》</translation>
 <translation id="4136203100490971508">夜燈功能將於日出時自動關閉</translation>
 <translation id="41365691917097717">如果繼續，系統將啟用 ADB 偵錯功能建立及測試 Android 應用程式。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且必須將裝置恢復原廠設定才能停用。</translation>
-<translation id="4137923333452716643">請標示你想在朗讀模式中開啟的文字內容</translation>
+<translation id="4137923333452716643">請標示你想在閱讀模式中開啟的文字內容</translation>
 <translation id="4138267921960073861">在登入畫面中顯示使用者名稱和相片</translation>
 <translation id="4138598238327913711">文法檢查功能目前僅支援英文</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - 已連線至 HID 裝置</translation>
@@ -6153,7 +6153,7 @@
 <translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
 <translation id="6237297174664969437">你隨時可以在 Chrome 設定中選擇要同步處理哪些瀏覽器資料。在<ph name="LINK_BEGIN" />裝置設定<ph name="LINK_END" />中，可以控管透過 Chrome 瀏覽器安裝的網頁應用程式的同步處理功能。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
-<translation id="623755660902014047">朗讀模式</translation>
+<translation id="623755660902014047">閱讀模式</translation>
 <translation id="6238767809035845642">從其他裝置分享的文字</translation>
 <translation id="6238923052227198598">在鎖定畫面上顯示最新記事</translation>
 <translation id="6238982280403036866">允許使用 JavaScript</translation>
@@ -6305,7 +6305,7 @@
 <translation id="6377268785556383139">有 1 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6378392501584240055">開啟 Wi-Fi 網路清單</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
-<translation id="6383382161803538830">這個頁面上無法使用朗讀模式</translation>
+<translation id="6383382161803538830">這個頁面上無法使用閱讀模式</translation>
 <translation id="638418309848716977">支援的連結</translation>
 <translation id="6384275966486438344">將你的搜尋設定變更為：<ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
@@ -7841,7 +7841,7 @@
 <translation id="7684212569183643648">由您的管理員安裝</translation>
 <translation id="7684559058815332124">造訪監控式入口網站登入頁面</translation>
 <translation id="7684718995427157417">如要建立並測試你的應用程式，請啟用 Android Debug Bridge (ADB)。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且需要將裝置恢復原廠設定才能停用。</translation>
-<translation id="7684913007876670600">如要顯示這個頁面的簡易檢視畫面，請開啟側邊面板並選取「朗讀模式」</translation>
+<translation id="7684913007876670600">如要顯示這個頁面的簡易檢視畫面，請開啟側邊面板並選取「閱讀模式」</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">請輸入 PIN 碼</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
