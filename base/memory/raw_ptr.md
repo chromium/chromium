@@ -1,42 +1,64 @@
-# raw_ptr&lt;T&gt; (aka MiraclePtr, aka BackupRefPtr)
+# raw_ptr&lt;T&gt; (aka. MiraclePtr, aka. BackupRefPtr, aka. BRP)
+
+Before telling you what `raw_ptr<T>` is, we'd like you to follow one simple
+rule: think of it as a raw C++ pointer. In particular:
+- Initialize it yourself, don't assume the constructor default-initializes it
+  (it may or may not). (Always use the `raw_ptr<T> member_ = nullptr;` form of
+  initialization rather than the so-called uniform initialization form
+  (empty braces) `raw_ptr<T> member_{};` whose meaning varies with the
+  implementation.)
+- Don't assume that moving clears the pointer (it may or may not).
+- The owner of the memory must free it when the time is right, don't assume
+  `raw_ptr<T>` will free it for  you (it won't). Unlike `std::unique_ptr<T>`,
+  `base::scoped_refptr<T>`, etc., it does not manage ownership or lifetime of
+  an allocated object.
+  - If this is the owner of the memory, consider using an alternative smart
+    pointer.
+- Don't assume `raw_ptr<T>` will protect you from freeing memory too early (it
+  likely will, but there are gotchas; one of them is that dereferencing will
+  result in other type of undefined behavior).
+
+(There are other, much more subtle rules that you should follow. They're also
+harder to violate. More about it in
+[the "Extra pointer rules" section](#Extra-pointer-rules).)
 
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
 raw pointers.  It behaves just like a raw pointer on platforms where
-USE_BACKUP_REF_PTR is off, and almost like one when it's on. The main
-difference is that when USE_BACKUP_REF_PTR is enabled, `raw_ptr<T>` is
-beneficial for security, because it can prevent a significant percentage of
+ENABLE_BACKUP_REF_PTR_SUPPORT is off, and almost like one when it's on. The main
+difference is that when ENABLE_BACKUP_REF_PTR_SUPPORT is enabled, `raw_ptr<T>`
+is beneficial for security, because it can prevent a significant percentage of
 Use-after-Free (UaF) bugs from being exploitable. It does this by poisoning
 the freed memory and quarantining it as long as a dangling `raw_ptr<T>`
 exists.
 
-When USE_BACKUP_REF_PTR is on, `raw_ptr<T>` it is zero-initialized and cleared
-on destruction and move. However, when USE_BACKUP_REF_PTR is off, this is not
-the case. You must continue to explicitly initialize raw_ptr members to ensure
-consistent behavior across all cases. Because the underlying implementation
-may vary, always use the `raw_ptr<T> member_ = nullptr;` form of
-initialization rather than the so-called uniform initialization form
-(empty braces) `raw_ptr<T> member_{};` whose meaning varies with the
-implementation.
-
-Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., `raw_ptr<T>`
-does not manage ownership or lifetime of an allocated object - you are still
-responsible for freeing the object when no longer used, just as you would
-with a raw C++ pointer.
-
 `raw_ptr<T>` has limited impact on stability - dereferencing
 a dangling pointer remains Undefined Behavior (although poisoning may
 lead to earlier, easier to debug crashes).
-Note that the security protection is not yet enabled by default.
 
 `raw_ptr<T>` is a part of
 [the MiraclePtr project](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
 and currently implements
 [the BackupRefPtr algorithm](https://docs.google.com/document/d/1m0c63vXXLyGtIGBi9v6YFANum7-IRC3-dmiYBCWqkMk/edit?usp=sharing).
 If needed, please reach out to
-[memory-safety-dev@chromium.org](https://groups.google.com/u/1/a/chromium.org/g/memory-safety-dev)
+[memory-safety-dev@chromium.org](https://groups.google.com/a/chromium.org/g/memory-safety-dev)
 or (Google-internal)
 [chrome-memory-safety@google.com](https://groups.google.com/a/google.com/g/chrome-memory-safety)
 with questions or concerns.
+
+As of M116, it is enabled by default in all non-Renderer processes, on:
+- Android (incl. AndroidWebView, Android WebEngine)
+- Windows
+- ChromeOS (Ash), except for the `ExperimentalAsh` pointers
+- macOS
+- Linux
+
+In particular, it isn't enabled by default on those platforms:
+- iOS
+- ChromeOS (Lacros)
+- ChromeCast
+- Fuchsia
+- Aix
+- Zos
 
 [TOC]
 
@@ -47,21 +69,13 @@ asks to use `raw_ptr<T>` for class and struct fields in place of
 a raw C++ pointer `T*` whenever possible, except in Renderer-only code.
 This guide offers more details.
 
-The usage guidelines are *not* enforced currently (the MiraclePtr team will turn
-on enforcement via Chromium Clang Plugin after confirming performance results
-via Stable channel experiments).  Afterwards we plan to allow
+The usage guidelines are currently enforced via Chromium Clang Plugin. We allow
 exclusions via:
-- [manual-paths-to-ignore.txt](../../tools/clang/rewrite_raw_ptr_fields/manual-paths-to-ignore.txt)
-  to exclude at a directory level.  Examples:
-    - Renderer-only code (i.e. code in paths that contain `/renderer/` or
-      `third_party/blink/public/web/`)
-    - Code that cannot depend on `//base`
-    - Code in `//ppapi`
 - `RAW_PTR_EXCLUSION` C++ attribute to exclude individual fields.  Examples:
     - Cases where `raw_ptr<T>` won't compile (e.g. cases covered in
       [the "Unsupported cases leading to compile errors" section](#Unsupported-cases-leading-to-compile-errors)).
       Make sure to also look at
-      [the "Recoverable compile-time problems" section](#Recoverable-compile_time-problems).
+      [the "Recoverable compile-time problems" section](#Recoverable-compile-time-problems).
     - Cases where the pointer always points outside of PartitionAlloc
       (e.g.  literals, stack allocated memory, shared memory, mmap'ed memory,
       V8/Oilpan/Java heaps, TLS, etc.).
@@ -70,7 +84,14 @@ exclusions via:
       Make sure to look at
       [the "Extra pointer rules" section](#Extra-pointer-rules)
       before resorting to this exclusion.
-- No explicit exclusions will be needed for:
+- [RawPtrManualPathsToIgnore.h](../../tools/clang/plugins/RawPtrManualPathsToIgnore.h)
+  to exclude at a directory level (NOTE, use it as last resort, and be aware
+  it'll require a Clang plugin roll).  Examples:
+    - Renderer-only code (i.e. code in paths that contain `/renderer/` or
+      `third_party/blink/public/web/`)
+    - Code that cannot depend on `//base`
+    - Code in `//ppapi`
+- No explicit exclusions are needed for:
     - `const char*`, `const wchar_t*`, etc.
     - Function pointers
     - ObjC pointers
@@ -108,17 +129,17 @@ In particular, `raw_ptr<T>` implements
 `operator->`, `operator*` and other operators
 that one expects from a raw pointer.
 Cases where other code needs to be modified are described in
-[the "Recoverable compile-time problems" section](#Recoverable-compile_time-problems)
+[the "Recoverable compile-time problems" section](#Recoverable-compile-time-problems)
 below.
 
 ## Performance
 
 ### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T\*|
 
-Compared to a raw C++ pointer, on platforms where USE_BACKUP_REF_PTR is on,
-`raw_ptr<T>` incurs additional runtime
+Compared to a raw C++ pointer, on platforms where ENABLE_BACKUP_REF_PTR_SUPPORT
+is on, `raw_ptr<T>` incurs additional runtime
 overhead for initialization, destruction, and assignment (including
-`ptr++` and `ptr += ...`).
+`ptr++`, `ptr += ...`, etc.).
 There is no overhead when dereferencing or extracting a pointer (including
 `*ptr`, `ptr->foobar`, `ptr.get()`, or implicit conversions to a raw C++
 pointer).
@@ -131,14 +152,16 @@ This happens in `raw_ptr<T>`'s
 constructor, destructor, and assignment operators.
 If the pointed memory is unprotected,
 then `raw_ptr<T>` behaves just like a `T*`
-and the runtime overhead is limited to the extra check.
+and the runtime overhead is limited to that extra check.
 (The security protection incurs additional overhead
 described in
-[the "Performance impact of enabling Use-after-Free protection" section](#Performance-impact-of-enabling-Use_after_Free-protection)
+[the "Performance impact of enabling Use-after-Free protection" section](#Performance-impact-of-enabling-Use-after-Free-protection)
 below.)
 
 Some additional overhead comes from setting `raw_ptr<T>` to `nullptr`
-when default-constructed, destructed, or moved.
+when default-constructed, destructed, or moved. (Yes, we said above to not rely
+on it, but to be precise this will always happen when
+ENABLE_BACKUP_REF_PTR_SUPPORT is on; no guarantees otherwise.)
 
 During
 [the "Big Rewrite"](https://groups.google.com/a/chromium.org/g/chromium-dev/c/vAEeVifyf78/m/SkBUc6PhBAAJ)
@@ -151,30 +174,32 @@ have seen a slight increase in jankiness metrics
 (for more detailed results see
 [the document here](https://docs.google.com/document/d/1MfDT-JQh_UIpSQw3KQttjbQ_drA7zw1gQDwU3cbB6_c/edit?usp=sharing)).
 
-### Performance impact of enabling Use-after-Free protection
+### Performance impact of enabling Use-after-Free protection {#Performance-impact-of-enabling-Use-after-Free-protection}
 
 When the Use-after-Free protection is enabled, then `raw_ptr<T>` has some
-additional performance overhead.  This protection is currently disabled
-by default.  We will enable the protection incrementally, starting with
-more non-Renderer processes first.
+additional performance overhead.
 
 The protection can increase memory usage:
 - For each memory allocation Chromium's allocator (PartitionAlloc)
-  allocates extra 16 bytes (4 bytes to store the BackupRefPtr's
-  ref-count associated with the allocation, the rest to maintain
-  alignment requirements).
+  carves out extra 4 bytes. (That doesn't necessarily mean that each allocation
+  grows by 4B. Allocation sizes come from predefined buckets, so it's possible
+  for an allocation to stay within the same bucket and incur no additional
+  overhead, or hop over to the next bucket and incur much higher overhead.)
 - Freed memory is quarantined and not available for reuse as long
-  as dangling `raw_ptr<T>` pointers exist.
-- Enabling protection requires additional partitions in PartitionAlloc,
-  which increases memory fragmentation.
+  as dangling `raw_ptr<T>` pointers exist. (In practice this overhead has been
+  observed to be low, but on a couple occasions it led to significant memory
+  leaks, fortunately caught early.)
 
-The protection can increase runtime costs - `raw_ptr<T>`'s constructor,
-destructor, and assignment operators (including `ptr++` and `ptr += ...`) need
-to maintain BackupRefPtr's ref-count.
+The protection increases runtime costs - `raw_ptr<T>`'s constructor,
+destructor, and assignment operators need to maintain BackupRefPtr's ref-count
+(atomic increment/decrement). `ptr++`, `ptr += ...`, etc. don't need to do that,
+but instead have to incur the cost
+of verifying that resulting pointer stays within the same allocation (important
+for BRP integrity).
 
 ## When it is okay to continue using raw C++ pointers
 
-### Unsupported cases leading to compile errors
+### Unsupported cases leading to compile errors {#Unsupported-cases-leading-to-compile-errors}
 
 Continue to use raw C++ pointers in the following cases, which may otherwise
 result in compile errors:
@@ -182,10 +207,6 @@ result in compile errors:
 - Pointers to Objective-C objects
 - Pointer fields in classes/structs that are used as global, static, or
   `thread_local` variables (see more details in the
-  [Rewrite exclusion statistics](https://docs.google.com/document/d/1uAsWnwy8HfIJhDPSh1efohnqfGsv2LJmYTRBj0JzZh8/edit#heading=h.dg4eebu87wg9)
-  )
-- Pointer fields that require non-null, constexpr initialization
-  (see more details in the
   [Rewrite exclusion statistics](https://docs.google.com/document/d/1uAsWnwy8HfIJhDPSh1efohnqfGsv2LJmYTRBj0JzZh8/edit#heading=h.dg4eebu87wg9)
   )
 - Pointer fields in classes/structs that have to be trivially constructible or
@@ -206,9 +227,6 @@ Therefore in the following cases raw C++ pointers may be used instead of
   TLS, etc.
 - `const char*` (and `const wchar_t*`) pointer fields, unless you’re convinced
   they can point to a heap-allocated object, not just a string literal
-- Pointer fields that can only point to aligned allocations (requested via
-  PartitionAlloc’s `AlignedAlloc` or `memalign` family of functions, with
-  alignment higher than `base::kAlignment`)
 - Pointer fields in Renderer-only code.  (This might change in the future
   as we explore expanding `raw_ptr<T>` usage in https://crbug.com/1273204.)
 
@@ -223,9 +241,9 @@ As a performance optimization, raw C++ pointers may be used instead of
 Use raw C++ pointers instead of `raw_ptr<T>` in the following scenarios:
 - Pointers in local variables and function parameters and return values. This
   includes pointer fields in classes/structs that are used only on the stack.
-  (We plan to enforce this in the Chromium Clang Plugin.  Using `raw_ptr<T>`
-  here would cumulatively lead to performance regression and the security
-  benefit of UaF protection is lower for such short-lived pointers.)
+  (Using `raw_ptr<T>` here would cumulatively lead to performance regression and
+  the security benefit of UaF protection is lower for such short-lived
+  pointers.)
 - Pointer fields in unions. However, note that a much better, modern alternative
   is `absl::variant` + `raw_ptr<T>`. If use of C++ union is absolutely
   unavoidable, prefer a regular C++ pointer: incorrect management of a
@@ -233,7 +251,9 @@ Use raw C++ pointers instead of `raw_ptr<T>` in the following scenarios:
 - Pointers whose addresses are used only as identifiers and which are
   never dereferenced (e.g. keys in a map). There is a performance gain
   by not using `raw_ptr` in this case; prefer to use `uintptr_t` to
-  emphasize that the entity can dangle and must not be dereferenced.
+  emphasize that the entity can dangle and must not be dereferenced. (NOTE,
+  this is a dangerous practice irrespective of raw_ptr usage, as there is a risk
+  of memory being freed and another pointer allocated with the same address!)
 
 You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
 - Pointers that are used as an element type of collections/wrappers. E.g.
@@ -242,13 +262,13 @@ You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
   optimizations above might still apply and argue for using a raw C++ pointer).
 
 
-## Extra pointer rules
+## Extra pointer rules {#Extra-pointer-rules}
 
 `raw_ptr<T>` requires following some extra rules compared to a raw C++ pointer:
 - Don’t assign invalid, non-null addresses (this includes previously valid and
   now freed memory,
   [Win32 handles](https://crbug.com/1262017), and more). You can only assign an
-  address of memory that is allocated at the time of assignment. Exceptions:
+  address of memory that is valid at the time of assignment. Exceptions:
     - a pointer to the end of a valid allocation (but not even 1 byte further)
     - a pointer to the last page of the address space, e.g. for sentinels like
       `reinterpret_cast<void*>(-1)`
@@ -257,11 +277,11 @@ You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
   `memcpy(reinterpret_cast<void*>(&obj_with_raw_ptr), buffer)`.
 - Don’t assign to a `raw_ptr<T>` concurrently, even if the same value.
 - Don’t rely on moved-from pointers to keep their old value. Unlike raw
-  pointers, `raw_ptr<T>` is cleared upon moving.
+  pointers, `raw_ptr<T>` may be cleared upon moving.
 - Don't use the pointer after it is destructed. Unlike raw pointers,
-  `raw_ptr<T>` is cleared upon destruction. This may happen e.g. when fields are
-  ordered such that the pointer field is destructed before the class field whose
-  destructor uses that pointer field (e.g. see
+  `raw_ptr<T>` may be cleared upon destruction. This may happen e.g. when fields
+  are ordered such that the pointer field is destructed before the class field
+  whose destructor uses that pointer field (e.g. see
   [Esoteric Issues](https://docs.google.com/document/d/14Ol_adOdNpy4Ge-XReI7CXNKMzs_LL5vucDQIERDQyg/edit#heading=h.yoba1l8bnfmv)).
 - Don’t assign to a `raw_ptr<T>` until its constructor has run. This may happen
   when a base class’s constructor uses a not-yet-initialized field of a derived
@@ -277,7 +297,7 @@ an obscure crash may occur. Those crashes often manifest themselves as SEGV or
 `RawPtrBackupRefImpl::ReleaseInternal()`, but you may also experience memory
 corruption or a silent drop of UaF protection.
 
-## Recoverable compile-time problems
+## Recoverable compile-time problems {#Recoverable-compile-time-problems}
 
 ### Explicit |raw_ptr.get()| might be needed
 
@@ -290,8 +310,8 @@ calling `.get()`. Examples:
       copy the pointer, which incurs a performance overhead.
 - `return condition ? raw_ptr : wrapped_ptr_.get();` (ternary operator needs
   identical types in both branches)
-- `base::WrapUniquePtr(wrapped_ptr_.get());` (implicit cast doesn't kick in for
-  arguments in templates)
+- `TemplatedFunction(wrapped_ptr_.get());` (implicit cast doesn't kick in for
+  `T*` arguments in templates)
 - `printf("%p", wrapped_ptr_.get());` (can't pass class type arguments to
   variadic functions)
 - `reinterpret_cast<SomeClass*>(wrapped_ptr_.get())` (`const_cast` and
@@ -677,7 +697,7 @@ with an increased quarantine capacity as follows:
 ASAN_OPTIONS=quarantine_size_mb=1024 path/to/chrome
 ```
 
-## Appendix: Is raw\_ptr Live?
+## Appendix: Is raw_ptr Live?
 
 ![Diagram showing how both code support and feature flag must be present
   for raw_ptr to be BRP.](./raw_ptr_liveness.png)
