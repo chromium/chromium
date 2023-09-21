@@ -28,6 +28,8 @@ let statsTable = null;
 let userMediaTable = null;
 let dumpCreator = null;
 
+const searchParameters = new URLSearchParams(window.location.search);
+
 // Exporting these on window since they are directly accessed by tests.
 window.setCurrentGetStatsMethod = function(method) {
   currentGetStatsMethod = method;
@@ -160,7 +162,6 @@ function initialize() {
 
   // Requests stats from all peer connections every second unless specified via
   // ?statsInterval=(milliseconds >= 100ms)
-  const searchParameters = new URLSearchParams(window.location.search);
   let statsInterval = 1000;
   if (searchParameters.has('statsInterval')) {
     statsInterval = Math.max(
@@ -305,6 +306,7 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
 
 /**
  * Removes all information about a peer connection.
+ * Use ?keepRemovedConnections url parameter to prevent the removal.
  *
  * @param {!Object<number>} data The object containing the rid and lid of a peer
  *     connection.
@@ -313,8 +315,9 @@ function removePeerConnection(data) {
   // Disable getElementById restriction here, since |getPeerConnectionId| does
   // not return valid selectors.
   // eslint-disable-next-line no-restricted-properties
+
   const element = document.getElementById(getPeerConnectionId(data));
-  if (element) {
+  if (element && !searchParameters.has('keepRemovedConnections')) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
   }
