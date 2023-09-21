@@ -36,11 +36,8 @@
 class ChromeAttributionBrowserTest : public InProcessBrowserTest {
  public:
   ChromeAttributionBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kPrivacySandboxAdsAPIsOverride,
-         privacy_sandbox::kEnforcePrivacySandboxAttestations},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPrivacySandboxAdsAPIsOverride);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

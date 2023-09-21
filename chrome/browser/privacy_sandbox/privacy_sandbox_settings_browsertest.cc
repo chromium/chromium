@@ -190,10 +190,7 @@ enum class AttestedApiStatus {
 class PrivacySandboxSettingsAttestationsBrowserTestBase
     : public PrivacySandboxSettingsBrowserTest {
  public:
-  PrivacySandboxSettingsAttestationsBrowserTestBase() {
-    attestations_feature_.InitAndEnableFeature(
-        privacy_sandbox::kEnforcePrivacySandboxAttestations);
-  }
+  PrivacySandboxSettingsAttestationsBrowserTestBase() = default;
 
   void SetUpOnMainThread() override {
     // `PrivacySandboxAttestations` has a member of type
@@ -298,7 +295,6 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
   std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
       scoped_attestations_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  base::test::ScopedFeatureList attestations_feature_;
 };
 
 class PrivacySandboxSettingsEventReportingBrowserTest

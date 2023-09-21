@@ -11,6 +11,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_browser_test.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
@@ -189,6 +191,13 @@ class InspectUISharedStorageTest : public InspectUITest {
 #define MAYBE_SharedStorageWorklet SharedStorageWorklet
 #endif
 IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, MAYBE_SharedStorageWorklet) {
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
+      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  // Mark all Privacy Sandbox APIs as attested since the test case is testing
+  // behaviors not related to attestations.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAllPrivacySandboxAttestedForTesting(true);
+
   GURL main_frame_url = https_server_.GetURL("a.test", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 

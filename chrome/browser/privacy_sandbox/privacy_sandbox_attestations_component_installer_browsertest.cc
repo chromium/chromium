@@ -26,10 +26,7 @@
 namespace privacy_sandbox {
 class PrivacySandboxAttestationsBrowserTest : public InProcessBrowserTest {
  public:
-  PrivacySandboxAttestationsBrowserTest() {
-    attestations_feature_.InitAndEnableFeature(
-        kEnforcePrivacySandboxAttestations);
-  }
+  PrivacySandboxAttestationsBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     // `PrivacySandboxAttestations` has a member of type

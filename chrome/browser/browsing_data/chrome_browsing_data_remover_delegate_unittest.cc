@@ -135,6 +135,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -3202,6 +3204,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
   privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
+
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
+      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  // Mark all Privacy Sandbox APIs as attested since the test case is testing
+  // behaviors not related to attestations.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAllPrivacySandboxAttestedForTesting(true);
 
   auto auction_party = url::Origin::Create(GURL("https://auction-party.com"));
 
