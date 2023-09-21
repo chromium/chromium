@@ -821,6 +821,12 @@ template("test_runner_script") {
       ]
     }
 
+    if (use_jacoco_coverage) {
+      # Keep in sync with recipe constant for recipe to find coverage data
+      # files from local java tests: https://bit.ly/3Zul6do
+      _jacoco_coverage_dir_name = "java_coverage"
+    }
+
     _device_test = true
     if (_test_type == "gtest") {
       assert(defined(invoker.test_suite))
@@ -898,7 +904,8 @@ template("test_runner_script") {
         # Set a default coverage output directory (can be overridden by user
         # passing the same flag).
         _rebased_coverage_dir =
-            rebase_path("$root_out_dir/coverage", root_build_dir)
+            rebase_path("$root_out_dir/$_jacoco_coverage_dir_name",
+                        root_build_dir)
         executable_args += [
           "--coverage-dir",
           "@WrappedPath(${_rebased_coverage_dir})",
@@ -932,7 +939,8 @@ template("test_runner_script") {
         # Set a default coverage output directory (can be overridden by user
         # passing the same flag).
         _rebased_coverage_dir =
-            rebase_path("$root_out_dir/coverage", root_build_dir)
+            rebase_path("$root_out_dir/$_jacoco_coverage_dir_name",
+                        root_build_dir)
         executable_args += [
           "--coverage-dir",
           "@WrappedPath(${_rebased_coverage_dir})",
