@@ -206,13 +206,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     ON_CALL(*session_sync_service, GetGlobalIdMapper())
         .WillByDefault(Return(&global_id_mapper_));
 
-    SyncSetupServiceMock* syncSetupService = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
-    ON_CALL(*syncSetupService,
-            IsDataTypePreferred(syncer::UserSelectableType::kTabs))
-        .WillByDefault(Return(true));
-
     if (signed_in) {
       AuthenticationService* authentication_service =
           AuthenticationServiceFactory::GetForBrowserState(

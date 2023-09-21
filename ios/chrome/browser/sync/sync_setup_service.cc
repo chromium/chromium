@@ -19,15 +19,6 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 
 SyncSetupService::~SyncSetupService() {}
 
-bool SyncSetupService::IsDataTypeActive(syncer::ModelType datatype) const {
-  return sync_service_->GetActiveDataTypes().Has(datatype);
-}
-
-bool SyncSetupService::IsDataTypePreferred(
-    syncer::UserSelectableType datatype) const {
-  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(datatype);
-}
-
 bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
