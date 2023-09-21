@@ -400,8 +400,7 @@ void CanvasRenderingContext2D::WillDraw(
   }
 }
 
-void CanvasRenderingContext2D::FlushCanvas(
-    CanvasResourceProvider::FlushReason reason) {
+void CanvasRenderingContext2D::FlushCanvas(FlushReason reason) {
   if (Host() && Host()->ResourceProvider()) {
     Host()->ResourceProvider()->FlushCanvas(reason);
   }
@@ -575,7 +574,7 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
-    CanvasResourceProvider::FlushReason reason) {
+    FlushReason reason) {
   if (!IsPaintable())
     return nullptr;
   return canvas()->GetCanvas2DLayerBridge()->NewImageSnapshot(reason);
@@ -596,8 +595,7 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
 }
 
-void CanvasRenderingContext2D::FinalizeFrame(
-    CanvasResourceProvider::FlushReason reason) {
+void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "CanvasRenderingContext2D::FinalizeFrame");
   if (IsPaintable())
     canvas()->GetCanvas2DLayerBridge()->FinalizeFrame(reason);

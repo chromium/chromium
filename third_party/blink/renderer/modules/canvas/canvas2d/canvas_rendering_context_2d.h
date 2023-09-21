@@ -166,12 +166,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
     return color_params_.GetSkColorInfo();
   }
-  scoped_refptr<StaticBitmapImage> GetImage(
-      CanvasResourceProvider::FlushReason) final;
+  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
-  void FinalizeFrame(CanvasResourceProvider::FlushReason) override;
+  void FinalizeFrame(FlushReason) override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
   ExecutionContext* GetTopExecutionContext() const override;
@@ -182,7 +181,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void WillDrawImage(CanvasImageSource*) const final;
 
-  void FlushCanvas(CanvasResourceProvider::FlushReason) override;
+  void FlushCanvas(FlushReason) override;
 
   void Trace(Visitor*) const override;
 

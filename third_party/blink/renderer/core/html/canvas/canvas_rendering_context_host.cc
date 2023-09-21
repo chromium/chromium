@@ -346,8 +346,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
   // Finalize frame will be called in GetImage, but if there's no
   // resourceProvider yet then the IsPaintable check will fail
   if (RenderingContext()) {
-    RenderingContext()->FinalizeFrame(
-        CanvasResourceProvider::FlushReason::kToBlob);
+    RenderingContext()->FinalizeFrame(FlushReason::kToBlob);
   }
 
   if (!IsPaintable() || Size().IsEmpty()) {
@@ -365,8 +364,8 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  scoped_refptr<StaticBitmapImage> image_bitmap = RenderingContext()->GetImage(
-      CanvasResourceProvider::FlushReason::kToBlob);
+  scoped_refptr<StaticBitmapImage> image_bitmap =
+      RenderingContext()->GetImage(FlushReason::kToBlob);
   if (image_bitmap) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
         script_state, exception_state.GetContext());

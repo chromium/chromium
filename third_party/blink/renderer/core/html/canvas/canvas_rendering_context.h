@@ -153,8 +153,7 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContextHost* Host() const { return host_; }
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
 
-  virtual scoped_refptr<StaticBitmapImage> GetImage(
-      CanvasResourceProvider::FlushReason) = 0;
+  virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
   virtual bool IsAccelerated() const = 0;
   virtual bool IsOriginTopLeft() const {
@@ -237,7 +236,7 @@ class CORE_EXPORT CanvasRenderingContext
   // This method gets called at the end of script tasks that modified
   // the contents of the canvas (called didDraw). It marks the completion
   // of a presentable frame.
-  virtual void FinalizeFrame(CanvasResourceProvider::FlushReason) {}
+  virtual void FinalizeFrame(FlushReason) {}
 
   // Thread::TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) override;

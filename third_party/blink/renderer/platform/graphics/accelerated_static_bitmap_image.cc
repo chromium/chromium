@@ -496,8 +496,7 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
   paint.setBlendMode(SkBlendMode::kSrc);
   provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0,
                                 SkSamplingOptions(), &paint);
-  return provider->Snapshot(CanvasResourceProvider::FlushReason::kNon2DCanvas,
-                            orientation_);
+  return provider->Snapshot(FlushReason::kNon2DCanvas, orientation_);
 }
 
 uint32_t AcceleratedStaticBitmapImage::GetUsage() const {

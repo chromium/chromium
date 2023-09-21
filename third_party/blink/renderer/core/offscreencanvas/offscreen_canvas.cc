@@ -244,7 +244,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 }
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
-    CanvasResourceProvider::FlushReason reason,
+    FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF& size,
     const AlphaDisposition alpha_disposition) {
@@ -282,8 +282,7 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (context_) {
-    context_->FinalizeFrame(
-        CanvasResourceProvider::FlushReason::kCreateImageBitmap);
+    context_->FinalizeFrame(FlushReason::kCreateImageBitmap);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state,

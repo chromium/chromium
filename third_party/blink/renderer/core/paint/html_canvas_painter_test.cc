@@ -74,8 +74,8 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
 
   // Force the page to paint.
   element->PreFinalizeFrame();
-  context->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
-  element->PostFinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  context->FinalizeFrame(FlushReason::kTesting);
+  element->PostFinalizeFrame(FlushReason::kTesting);
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(context->IsComposited());

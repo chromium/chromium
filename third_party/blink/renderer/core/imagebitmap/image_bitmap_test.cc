@@ -262,8 +262,8 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, /*shared_image_usage_flags=*/0u);
 
-  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot(
-      CanvasResourceProvider::FlushReason::kTesting);
+  scoped_refptr<StaticBitmapImage> bitmap =
+      resource_provider->Snapshot(FlushReason::kTesting);
   ASSERT_TRUE(bitmap->IsTextureBacked());
 
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);

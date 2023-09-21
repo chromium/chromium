@@ -57,14 +57,14 @@ enum SourceImageStatus {
 // to be premultiplied or if it was unpremultiplied and it is requested to be
 // unpremultiplied).
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
-    CanvasResourceProvider::FlushReason,
+    FlushReason,
     scoped_refptr<StaticBitmapImage>&&,
     const AlphaDisposition);
 
 class CORE_EXPORT CanvasImageSource {
  public:
   virtual scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) = 0;

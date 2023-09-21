@@ -40,7 +40,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 }  // anonymous namespace
 
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
-    CanvasResourceProvider::FlushReason reason,
+    FlushReason reason,
     scoped_refptr<StaticBitmapImage>&& image,
     const AlphaDisposition alpha_disposition) {
   if (!image)

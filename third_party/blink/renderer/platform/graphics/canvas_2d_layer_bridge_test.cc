@@ -156,10 +156,9 @@ TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferCPU, kNonOpaque);
 
-  bool has_backend_texture =
-      bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting)
-          ->PaintImageForCurrentFrame()
-          .IsTextureBacked();
+  bool has_backend_texture = bridge->NewImageSnapshot(FlushReason::kTesting)
+                                 ->PaintImageForCurrentFrame()
+                                 .IsTextureBacked();
 
   EXPECT_FALSE(has_backend_texture);
 }
@@ -175,7 +174,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
   test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_EQ(nullptr, bridge->GetOrCreateResourceProvider());
   // The following passes by not crashing
-  bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->NewImageSnapshot(FlushReason::kTesting);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
@@ -183,9 +182,8 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
 
   EXPECT_TRUE(bridge->IsAccelerated());
-  bridge->FinalizeFrame(
-      CanvasResourceProvider::FlushReason::kTesting);  // Trigger the creation
-                                                       // of a backing store
+  bridge->FinalizeFrame(FlushReason::kTesting);  // Trigger the creation
+                                                 // of a backing store
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
   test_context_provider_->TestContextGL()->set_context_lost(true);
@@ -226,7 +224,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+    bridge->FinalizeFrame(FlushReason::kTesting);
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
     EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
@@ -244,7 +242,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
     {
       std::unique_ptr<Canvas2DLayerBridge> bridge = MakeBridge(
           gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-      bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+      bridge->FinalizeFrame(FlushReason::kTesting);
       bridge->PrepareTransferableResource(nullptr, &resource,
                                           &release_callback);
       // |bridge| goes out of scope and would normally be destroyed, but
@@ -267,7 +265,7 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+    bridge->FinalizeFrame(FlushReason::kTesting);
     EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
   }
@@ -288,7 +286,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());
   }
@@ -299,7 +297,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());
   }
@@ -310,7 +308,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_FALSE(bridge->IsAccelerated());
   }
@@ -321,7 +319,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_FALSE(bridge->IsAccelerated());
   }
@@ -337,9 +335,9 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareIfContextLost) {
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
   bridge->DidDraw();
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->FinalizeFrame(FlushReason::kTesting);
   // Grabbing an image forces a flush
-  bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->NewImageSnapshot(FlushReason::kTesting);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
@@ -350,7 +348,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());
     scoped_refptr<StaticBitmapImage> snapshot =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsAccelerated());
     EXPECT_TRUE(snapshot->IsTextureBacked());
   }
@@ -374,7 +372,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     gr->abandonContext();
     DrawSomething(bridge.get());
     scoped_refptr<StaticBitmapImage> snapshot =
-        bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+        bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_FALSE(bridge->IsAccelerated());
     EXPECT_FALSE(snapshot->IsTextureBacked());
   }
@@ -556,7 +554,7 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
 
   // Take a snapshot and verify that it is not accelerated due to hibernation
   scoped_refptr<StaticBitmapImage> image =
-      bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+      bridge->NewImageSnapshot(FlushReason::kTesting);
   EXPECT_FALSE(image->IsTextureBacked());
   image = nullptr;
 
@@ -842,7 +840,7 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
   bridge->GetPaintCanvas()->drawImageRect(
       images[1].paint_image(), SkRect::MakeWH(5u, 5u), SkRect::MakeWH(5u, 5u),
       SkCanvas::kFast_SrcRectConstraint);
-  bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->NewImageSnapshot(FlushReason::kTesting);
 
   EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
 }
@@ -866,7 +864,7 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
   bridge->GetPaintCanvas()->drawImageRect(
       images[1].paint_image(), SkRect::MakeWH(5u, 5u), SkRect::MakeWH(5u, 5u),
       SkCanvas::kFast_SrcRectConstraint);
-  bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->NewImageSnapshot(FlushReason::kTesting);
 
   EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
 }
@@ -890,16 +888,14 @@ TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {
   // First 2 images are budgeted, they should remain locked after the op.
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
   bridge->GetPaintCanvas()->drawImage(images[1].paint_image(), 0u, 0u);
-  bridge->GetOrCreateResourceProvider()->FlushCanvas(
-      CanvasResourceProvider::FlushReason::kTesting);
+  bridge->GetOrCreateResourceProvider()->FlushCanvas(FlushReason::kTesting);
   EXPECT_EQ(image_decode_cache_.num_locked_images(), 2);
 
   // Next image is not budgeted, we should unlock all images other than the last
   // image.
   image_decode_cache_.set_budget_exceeded(true);
   bridge->GetPaintCanvas()->drawImage(images[2].paint_image(), 0u, 0u);
-  bridge->GetOrCreateResourceProvider()->FlushCanvas(
-      CanvasResourceProvider::FlushReason::kTesting);
+  bridge->GetOrCreateResourceProvider()->FlushCanvas(FlushReason::kTesting);
   EXPECT_EQ(image_decode_cache_.num_locked_images(), 1);
 
   // Ask the provider to release everything, no locked images should remain.
@@ -917,8 +913,7 @@ TEST_F(Canvas2DLayerBridgeTest, QueuesCleanupTaskForLockedImages) {
                              cc::TargetColorParams());
   bridge->GetPaintCanvas()->drawImage(image.paint_image(), 0u, 0u);
 
-  bridge->GetOrCreateResourceProvider()->FlushCanvas(
-      CanvasResourceProvider::FlushReason::kTesting);
+  bridge->GetOrCreateResourceProvider()->FlushCanvas(FlushReason::kTesting);
   EXPECT_EQ(image_decode_cache_.num_locked_images(), 1);
 
   base::RunLoop().RunUntilIdle();
@@ -1012,8 +1007,8 @@ TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
   EXPECT_TRUE(bridge->IsValid());
   Host()->SetIsDisplayed(true);
   EXPECT_FALSE(!!Host()->RateLimiter());
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
   EXPECT_TRUE(!!Host()->RateLimiter());
 }
 
@@ -1022,13 +1017,13 @@ TEST_F(Canvas2DLayerBridgeTest, NonDisplayedCanvasIsNotRateLimited) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   Host()->SetIsDisplayed(true);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
   EXPECT_TRUE(!!Host()->RateLimiter());
   Host()->SetIsDisplayed(false);
   EXPECT_FALSE(!!Host()->RateLimiter());
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(FlushReason::kCanvasPushFrame);
   EXPECT_FALSE(!!Host()->RateLimiter());
 }
 

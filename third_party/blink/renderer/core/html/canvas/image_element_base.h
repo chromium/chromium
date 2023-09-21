@@ -34,7 +34,7 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
                                   ExceptionState&) override;
 
   scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;

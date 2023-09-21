@@ -157,7 +157,7 @@ void Canvas2DLayerBridge::Hibernate() {
   // No HibernationEvent reported on success. This is on purppose to avoid
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
-  FlushRecording(CanvasResourceProvider::FlushReason::kHibernating);
+  FlushRecording(FlushReason::kHibernating);
   // The following checks that the flush succeeded, which should always be the
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
@@ -166,8 +166,7 @@ void Canvas2DLayerBridge::Hibernate() {
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
-      resource_host_->ResourceProvider()->Snapshot(
-          CanvasResourceProvider::FlushReason::kHibernating);
+      resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
   if (!snapshot) {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
@@ -399,7 +398,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
       y + orig_info.height() >= resource_host_->Size().height()) {
     SkipQueuedDrawCommands();
   } else {
-    FlushRecording(CanvasResourceProvider::FlushReason::kWritePixels);
+    FlushRecording(FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
       return false;
   }
@@ -483,8 +482,7 @@ void Canvas2DLayerBridge::FinishRasterTimers(
   }
 }
 
-void Canvas2DLayerBridge::FlushRecording(
-    CanvasResourceProvider::FlushReason reason) {
+void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   if (!have_recorded_draw_commands_ || !GetOrCreateResourceProvider())
     return;
 
@@ -646,10 +644,9 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
   // the event listener and its associated FinalizeFrame call. So in order to
   // preserve the display list for printing, FlushRecording needs to know
   // whether any printing occurred in the current task.
-  CanvasResourceProvider::FlushReason reason =
-      CanvasResourceProvider::FlushReason::kCanvasPushFrame;
+  FlushReason reason = FlushReason::kCanvasPushFrame;
   if (resource_host_->PrintedInCurrentTask() || resource_host_->IsPrinting()) {
-    reason = CanvasResourceProvider::FlushReason::kCanvasPushFrameWhilePrinting;
+    reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
   FlushRecording(reason);
 
@@ -692,8 +689,7 @@ void Canvas2DLayerBridge::DidDraw() {
   have_recorded_draw_commands_ = true;
 }
 
-void Canvas2DLayerBridge::FinalizeFrame(
-    CanvasResourceProvider::FlushReason reason) {
+void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
   CHECK(resource_host_);
 
@@ -703,7 +699,7 @@ void Canvas2DLayerBridge::FinalizeFrame(
     return;
 
   FlushRecording(reason);
-  if (reason == CanvasResourceProvider::FlushReason::kCanvasPushFrame) {
+  if (reason == FlushReason::kCanvasPushFrame) {
     if (resource_host_->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.
       constexpr unsigned kMaxCanvasAnimationBacklog = 2;
@@ -728,7 +724,7 @@ void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
-    CanvasResourceProvider::FlushReason reason) {
+    FlushReason reason) {
   if (snapshot_state_ == kInitialSnapshotState)
     snapshot_state_ = kDidAcquireSnapshot;
   if (IsHibernating()) {

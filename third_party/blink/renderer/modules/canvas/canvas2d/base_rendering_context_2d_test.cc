@@ -169,7 +169,7 @@ class TestRenderingContext2D final
   void WillOverwriteCanvas() override {}
 
  private:
-  void FlushCanvas(CanvasResourceProvider::FlushReason) override {}
+  void FlushCanvas(FlushReason) override {}
 
   Member<ExecutionContext> execution_context_;
   cc::InspectablePaintRecorder recorder_;

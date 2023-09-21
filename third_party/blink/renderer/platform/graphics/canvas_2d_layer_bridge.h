@@ -67,7 +67,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
-  void FinalizeFrame(CanvasResourceProvider::FlushReason);
+  void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
@@ -101,8 +101,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
 
-  scoped_refptr<StaticBitmapImage> NewImageSnapshot(
-      CanvasResourceProvider::FlushReason);
+  scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
 
   cc::TextureLayer* layer_for_testing() { return layer_.get(); }
 
@@ -136,7 +135,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
     logger_ = std::move(logger);
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
-  void FlushRecording(CanvasResourceProvider::FlushReason);
+  void FlushRecording(FlushReason);
 
   cc::PaintRecord* getLastRecord() {
     return last_record_tainted_by_write_pixels_

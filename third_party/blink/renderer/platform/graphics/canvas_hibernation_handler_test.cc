@@ -102,9 +102,9 @@ std::map<std::string, uint64_t> GetEntries(
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
   bridge->DidDraw();
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->FinalizeFrame(FlushReason::kTesting);
   // Grabbing an image forces a flush
-  bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->NewImageSnapshot(FlushReason::kTesting);
 }
 
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
@@ -378,8 +378,7 @@ TEST_F(CanvasHibernationHandlerTest, CanvasSnapshottedInBackground) {
   EXPECT_TRUE(handler.is_encoded());
 
   EXPECT_TRUE(bridge->IsHibernating());
-  auto image =
-      bridge->NewImageSnapshot(CanvasResourceProvider::FlushReason::kTesting);
+  auto image = bridge->NewImageSnapshot(FlushReason::kTesting);
   EXPECT_TRUE(bridge->IsHibernating());
   // Do not discard the encoded representation.
   EXPECT_TRUE(handler.is_encoded());

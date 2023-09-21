@@ -109,10 +109,9 @@ void CanvasRenderingContext::DidProcessTask(
   // at which the current frame may be considered complete.
   if (Host())
     Host()->PreFinalizeFrame();
-  CanvasResourceProvider::FlushReason reason =
-      did_print_in_current_task_
-          ? CanvasResourceProvider::FlushReason::kCanvasPushFrameWhilePrinting
-          : CanvasResourceProvider::FlushReason::kCanvasPushFrame;
+  FlushReason reason = did_print_in_current_task_
+                           ? FlushReason::kCanvasPushFrameWhilePrinting
+                           : FlushReason::kCanvasPushFrame;
   FinalizeFrame(reason);
   did_print_in_current_task_ = false;
   if (Host())
