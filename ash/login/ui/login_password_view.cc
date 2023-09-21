@@ -156,11 +156,6 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
 
     SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                            corner_radius));
-
-    if (chromeos::features::IsJellyrollEnabled()) {
-      SetBackground(views::CreateThemedRoundedRectBackground(
-          cros_tokens::kCrosSysSystemBaseElevated, 8));
-    }
   }
 
   ~LoginPasswordRow() override = default;
@@ -349,6 +344,16 @@ LoginPasswordView::LoginPasswordView()
 
   password_row_ = password_row_container->AddChildView(
       std::make_unique<LoginPasswordRow>());
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    password_row_->SetBorder(std::make_unique<views::HighlightBorder>(
+        kJellyPasswordRowCornerRadiusDp,
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
+
+    password_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
+  }
+
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, kInternalHorizontalPaddingPasswordRowDp),
