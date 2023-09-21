@@ -13,6 +13,8 @@ namespace manta {
 enum class MantaStatusCode {
   kOk = 0,
   kGenericError = 1,
+  // The input parameters to the manta service API don't meet the requirements,
+  // e.g. missing some essential fields.
   kInvalidInput = 2,
   kResourceExhausted = 3,
   kBackendFailure = 4,
