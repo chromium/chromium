@@ -17,13 +17,19 @@ if (use_atk) {
                                       "--version-as-components",
                                     ],
                                 "value")
-    atspi_major_version = atspi_version[0]
-    atspi_minor_version = atspi_version[1]
-    atspi_micro_version = atspi_version[2]
-    defines = [
-      "ATSPI_MAJOR_VERSION=$atspi_major_version",
-      "ATSPI_MINOR_VERSION=$atspi_minor_version",
-      "ATSPI_MICRO_VERSION=$atspi_micro_version",
-    ]
+    major = atspi_version[0]
+    minor = atspi_version[1]
+    micro = atspi_version[2]
+
+    # ATSPI 2.49.90 now defines these for us and it's an error for us to
+    # redefine them on the compiler command line.
+    # See ATSPI 927344a34cd5bf81fc64da4968241735ecb4f03b
+    if (minor < 49 || (minor == 49 && micro < 90)) {
+      defines = [
+        "ATSPI_MAJOR_VERSION=$major",
+        "ATSPI_MINOR_VERSION=$minor",
+        "ATSPI_MICRO_VERSION=$micro",
+      ]
+    }
   }
 }
