@@ -88,7 +88,9 @@ class PinSetupScreenTest : public OobeBaseTest {
     UserContext* context = LoginDisplayHost::default_host()
                                ->GetWizardContext()
                                ->extra_factors_auth_session.get();
-    CHECK(context);
+    // LoginManagerMixin uses StubAuthenticator that fills out authsession.
+    // Reset Authsession to correctly interact with FakeUserDataAuthClient.
+    context->ResetAuthSessionIds();
     cryptohome_.MarkUserAsExisting(context->GetAccountId());
     auto session_ids =
         cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);

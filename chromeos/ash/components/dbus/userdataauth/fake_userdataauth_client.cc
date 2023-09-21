@@ -20,6 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -106,10 +108,6 @@ namespace {
 constexpr int kDircryptoMigrationUpdateIntervalMs = 200;
 // The number of updates the MigrateToDircrypto will send before it completes.
 constexpr uint64_t kDircryptoMigrationMaxProgress = 15;
-
-// Timeout after which an authenticated session is destroyed by the real
-// cryptohome service.
-constexpr int kSessionTimeoutSeconds = 5 * 60;
 
 // Template for auth session ID.
 constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
@@ -1063,6 +1061,10 @@ void FakeUserDataAuthClient::CreatePersistentUser(
   }
 
   auth_session.authenticated = true;
+  // TODO(b/301078137): once proto includes lifetime information, add it
+  // to the reply.
+  auth_session.lifetime =
+      base::Time::Now() + cryptohome::kAuthsessionInitialLifetime;
 }
 
 void FakeUserDataAuthClient::PreparePersistentVault(
@@ -1169,8 +1171,13 @@ void FakeUserDataAuthClient::ExtendAuthSession(
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-  GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  auto* session_data =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
+  if (session_data) {
+    auth_sessions_.find(request.auth_session_id())->second.lifetime =
+        base::Time::Now() + base::Seconds(request.extension_duration());
+  }
 }
 
 void FakeUserDataAuthClient::AddAuthFactor(
@@ -1310,8 +1317,10 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   session.authenticated = true;
   session.authorized_auth_session_intent.Put(
       session.requested_auth_session_intent);
+  session.lifetime =
+      base::Time::Now() + cryptohome::kAuthsessionInitialLifetime;
   reply.add_authorized_for(session.requested_auth_session_intent);
-  reply.set_seconds_left(kSessionTimeoutSeconds);
+  reply.set_seconds_left(cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
 void FakeUserDataAuthClient::UpdateAuthFactor(
@@ -1398,7 +1407,6 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
 
   const std::string auth_session_id = request.auth_session_id();
   auto auth_session = auth_sessions_.find(auth_session_id);
-
   // Check if the token refers to a valid AuthSession.
   if (auth_session == auth_sessions_.end()) {
     reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
@@ -1409,9 +1417,15 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
         ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
     return;
   }
+  base::TimeDelta time_left = auth_session->second.lifetime - base::Time::Now();
+  if (time_left.is_negative()) {
+    reply.set_status(
+        ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION);
+    return;
+  }
   reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
   // Use 5 minutes timeout - as if auth session has just started.
-  reply.set_time_left(5 * 60);
+  reply.set_time_left(time_left.InSeconds());
 }
 
 void FakeUserDataAuthClient::PrepareAuthFactor(

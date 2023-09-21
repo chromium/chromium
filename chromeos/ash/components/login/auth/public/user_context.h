@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
 
     base::Time GetSessionLifetime() const;
     void SetSessionLifetime(const base::Time& valid_until);
+
     void AddAuthorizedIntent(AuthSessionIntent auth_intent);
     AuthSessionIntents GetAuthorizedIntents() const;
 
@@ -236,6 +237,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   void ResetAuthSessionIds();
   const std::string& GetAuthSessionId() const;
   const std::string& GetBroadcastId() const;
+
   base::Time GetSessionLifetime() const;
   void SetSessionLifetime(const base::Time& valid_until);
 

@@ -191,6 +191,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Indication that session is set to listen for FP events.
     bool is_listening_for_fingerprint_events = false;
+    base::Time lifetime;
   };
 
   FakeUserDataAuthClient();

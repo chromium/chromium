@@ -91,6 +91,7 @@ void UserContext::CryptohomeContext::SetAuthSessionIds(
     const std::string& broadcast_id) {
   LOG_IF(WARNING, !authsession_id_.empty())
       << "Overwriting existing auth session ID";
+  DCHECK(authsession_id_.empty());
   authsession_id_ = authsession_id;
   broadcast_id_ = broadcast_id;
 }

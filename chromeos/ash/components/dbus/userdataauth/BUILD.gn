@@ -15,6 +15,7 @@ component("userdataauth") {
   deps = [
     ":userdataauth_proto",
     "//base",
+    "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/common",
