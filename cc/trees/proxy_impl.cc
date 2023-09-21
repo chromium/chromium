@@ -514,11 +514,17 @@ void ProxyImpl::RenewTreePriority() {
   // - When the active scroll gesture requires main-thread repainting for the
   //   scroll offset change to be visible.
   if (host_impl_->active_tree()->GetDeviceViewport().size().IsEmpty() ||
-      host_impl_->EvictedUIResourcesExist() ||
-      host_impl_->IsCurrentScrollMainRepainted()) {
+      host_impl_->EvictedUIResourcesExist()) {
     // Once we enter NEW_CONTENTS_TAKES_PRIORITY mode, visible tiles on active
     // tree might be freed. We need to set RequiresHighResToDraw to ensure that
     // high res tiles will be required to activate pending tree.
+    //
+    // TODO(crbug.com/1477299): It would be better to use this path during
+    // main-repainted scrolls (host_impl_->IsCurrentScrollMainRepainted()), but
+    // the RequiresHighResToDraw mode has a page-freezing bug triggered by
+    // animating scaled directly-composited images. To address the urgent
+    // regression, we have restored the pre-crbug.com/1418368 behavior, which
+    // makes main-repainted scrolls use SAME_PRIORITY_FOR_BOTH_TREES.
     host_impl_->SetRequiresHighResToDraw();
     tree_priority = NEW_CONTENT_TAKES_PRIORITY;
   }
