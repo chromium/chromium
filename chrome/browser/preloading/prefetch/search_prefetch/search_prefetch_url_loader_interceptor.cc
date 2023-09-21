@@ -116,14 +116,14 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    // Note, if SearchPrerenderFallbackToPrefetchIsEnabled() is true, prerender
-    // cannot take the prefetch response away, and it can only make a copy of
-    // the response. In this case, TakePrerenderFromMemoryCache cannot be
-    // called, and no URLLoader would be returned, so we stop at this point.
     if (!prerender_utils::IsSearchSuggestionPrerenderEnabled() ||
         !prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
       return {};
     }
+    // Note, if SearchPreloadShareableCacheIsEnabled() is true, prerender
+    // cannot take the prefetch response away, and it can only make a copy of
+    // the response. In this case, TakePrerenderFromMemoryCache cannot be
+    // called, and no URLLoader would be returned, so we stop at this point.
     if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
       return service->MaybeCreateResponseReader(tentative_resource_request);
     }
