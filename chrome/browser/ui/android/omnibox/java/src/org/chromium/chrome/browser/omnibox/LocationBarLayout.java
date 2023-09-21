@@ -225,7 +225,7 @@ public class LocationBarLayout extends FrameLayout {
                 LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
                 if (childView == mUrlBar) {
                     if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
-                            && mUrlFocusPercentage > 0.0f) {
+                            && (mUrlFocusPercentage > 0.0f || mUrlBar.hasFocus())) {
                         // Set a margin that places the url bar in its final, focused position.
                         // During animation this will be compensated against using translation of
                         // decreasing magnitude to avoid a jump.
