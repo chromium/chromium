@@ -9208,9 +9208,19 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
 const absl::optional<FencedFrameProperties>&
 NavigationRequest::ComputeFencedFrameProperties(
     FencedFramePropertiesNodeSource node_source) const {
+  if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot &&
+      !frame_tree_node_->IsFencedFrameRoot()) {
+    // Sometimes nodes other than the frame tree root (urn iframes) have
+    // FencedFrameProperties in their navigation requests. When the node source
+    // is kFrameTreeRoot and this navigation request is not for the frame tree
+    // root, get the properties from the frame tree root.
+    return frame_tree_node_->GetFencedFrameProperties(node_source);
+  }
+
   if (fenced_frame_properties_) {
     return fenced_frame_properties_;
   }
+
   return frame_tree_node_->GetFencedFrameProperties(node_source);
 }
 
