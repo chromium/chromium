@@ -309,7 +309,6 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
 }
 
 void Action::BindPending() {
-  set_is_new(false);
   // Check whether position is adjusted.
   if (pending_position_) {
     current_positions_[0] = *pending_position_;
@@ -322,6 +321,7 @@ void Action::BindPending() {
     return;
   }
 
+  set_is_new(false);
   current_input_.reset();
   current_input_ = std::move(pending_input_);
   DCHECK(!pending_input_);

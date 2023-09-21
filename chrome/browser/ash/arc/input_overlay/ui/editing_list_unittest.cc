@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "ash/style/icon_button.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -76,6 +79,16 @@ class EditingListTest : public OverlayViewTestBase {
         static_cast<EditingList*>(GetEditingListWidget()->GetContentsView())
             ->editing_header_label_->GetBoundsInScreen()
             .CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
+    event_generator->ReleaseLeftButton();
+  }
+
+  void MouseDragActionViewBy(Action* action, int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    auto* touch_point = action->action_view()->touch_point();
+    event_generator->MoveMouseTo(
+        touch_point->GetBoundsInScreen().CenterPoint());
     event_generator->PressLeftButton();
     event_generator->MoveMouseBy(x, y);
     event_generator->ReleaseLeftButton();
@@ -177,6 +190,19 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_2 = GetButtonOptionsAction();
   EXPECT_NE(action_1, action_2);
+}
+
+TEST_F(EditingListTest, TestDragAtNewAction) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  PressAddButton();
+  EXPECT_TRUE(ButtonOptionsMenuExists());
+  auto* action = GetButtonOptionsAction();
+  EXPECT_TRUE(action->is_new());
+  MouseDragActionViewBy(action, /*x=*/10, /*y=*/10);
+  EXPECT_FALSE(ButtonOptionsMenuExists());
+  EXPECT_TRUE(action->is_new());
 }
 
 TEST_F(EditingListTest, TestReposition) {
