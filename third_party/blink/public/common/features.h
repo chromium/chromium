@@ -221,8 +221,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasCompressHibernatedImage);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasFreeMemoryWhenHidden);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanChangeToUrlForHistoryApiUpdate);
-
 // If enabled, the HTMLDocumentParser will only check its budget after parsing a
 // commonly slow token or for one out of 10 fast tokens. Note that this feature
 // is a no-op if kTimedHTMLParserBudget is disabled.
