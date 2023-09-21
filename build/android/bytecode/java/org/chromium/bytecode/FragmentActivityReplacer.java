@@ -55,7 +55,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
 
     @Override
     protected boolean shouldRewriteClass(String classPath) {
-        return true;
+        return false;
     }
 
     @Override
