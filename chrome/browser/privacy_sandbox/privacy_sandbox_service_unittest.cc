@@ -746,10 +746,12 @@ void SetupPromptTestState(
     sync_preferences::TestingPrefServiceSyncable* pref_service,
     const PromptTestState& test_state) {
   feature_list->Reset();
-  feature_list->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings3,
-      {{"consent-required", test_state.consent_required ? "true" : "false"},
-       {"notice-required", !test_state.consent_required ? "true" : "false"}});
+  feature_list->InitWithFeaturesAndParameters(
+      {{privacy_sandbox::kPrivacySandboxSettings3,
+        {{"consent-required", test_state.consent_required ? "true" : "false"},
+         {"notice-required",
+          !test_state.consent_required ? "true" : "false"}}}},
+      {privacy_sandbox::kPrivacySandboxSettings4});
 
   pref_service->SetUserPref(
       prefs::kPrivacySandboxApisEnabled,
@@ -916,7 +918,12 @@ class PrivacySandboxServiceTest : public testing::Test {
     first_party_sets_policy_service_.ResetForTesting();
   }
 
-  virtual void InitializeFeaturesBeforeStart() {}
+  virtual void InitializeFeaturesBeforeStart() {
+    // Setup a default state that can be overridden using the inner scoped
+    // feature list by tests as required.
+    outer_feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxSettings4);
+  }
 
   virtual std::unique_ptr<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
@@ -969,7 +976,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
     return privacy_sandbox_settings_.get();
   }
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+  base::test::ScopedFeatureList* feature_list() { return &inner_feature_list_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
   }
@@ -1016,7 +1023,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
 
   TestingProfile profile_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList outer_feature_list_;
+  base::test::ScopedFeatureList inner_feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
@@ -3003,6 +3011,9 @@ class PrivacySandboxServicePromptTestBase {
  public:
   PrivacySandboxServicePromptTestBase() {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
+    feature_list()->InitWithFeatures(
+        {privacy_sandbox::kPrivacySandboxSettings3},
+        {privacy_sandbox::kPrivacySandboxSettings4});
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

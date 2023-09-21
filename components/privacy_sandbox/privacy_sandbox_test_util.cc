@@ -897,8 +897,17 @@ void CheckOutput(
 
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
-MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
-    default;
+
+MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() {
+  // Setup some reasonable default responses that generally allow APIs.
+  // Tests can further override the responses as required.
+  SetUpIsPrivacySandboxRestrictedResponse(false);
+  SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(true);
+  SetUpIsIncognitoProfileResponse(false);
+  SetUpHasAppropriateTopicsConsentResponse(true);
+  SetUpIsSubjectToM1NoticeRestrictedResponse(false);
+}
+
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
     default;
 

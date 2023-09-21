@@ -202,7 +202,10 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
   virtual void InitializePrefsBeforeStart() {}
 
-  virtual void InitializeFeaturesBeforeStart() {}
+  virtual void InitializeFeaturesBeforeStart() {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxSettings4);
+  }
 
   virtual void InitializeDelegateBeforeStart() {
     mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
@@ -235,7 +238,14 @@ class PrivacySandboxSettingsTest : public testing::Test {
     return privacy_sandbox_settings_.get();
   }
   void ResetDisabledTopicsFeature(const std::string& topics_to_disable) {
-    SetUp();
+    // Recreate the service to reset the cache of topics blocked via Finch.
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate_ = mock_delegate.get();
+    privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
+        std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
+        tracking_protection_settings_.get(), prefs());
+
     disabled_topics_feature_list_.Reset();
     disabled_topics_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kBrowsingTopicsParameters,
