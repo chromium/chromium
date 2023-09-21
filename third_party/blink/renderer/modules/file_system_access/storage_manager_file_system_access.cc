@@ -29,20 +29,6 @@ namespace {
 // The name to use for the root directory of a sandboxed file system.
 constexpr const char kSandboxRootDirectoryName[] = "";
 
-// Gets the OPFS for the default bucket.
-void GetSandboxedFileSystemForDefaultBucket(ScriptPromiseResolver* resolver) {
-  FileSystemAccessManager::From(resolver->GetExecutionContext())
-      ->GetSandboxedFileSystem(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
-             mojom::blink::FileSystemAccessErrorPtr result,
-             mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
-                 handle) {
-            StorageManagerFileSystemAccess::DidGetSandboxedFileSystem(
-                resolver, std::move(result), std::move(handle));
-          },
-          WrapPersistent(resolver)));
-}
-
 // Called with the result of browser-side permissions checks.
 void OnGotAccessAllowed(
     ScriptPromiseResolver* resolver,
@@ -72,9 +58,14 @@ ScriptPromise StorageManagerFileSystemAccess::getDirectory(
     ScriptState* script_state,
     const StorageManager& storage,
     ExceptionState& exception_state) {
-  auto run_if_allowed = WTF::BindOnce(&GetSandboxedFileSystemForDefaultBucket);
-  return CheckGetDirectoryIsAllowed(script_state, exception_state,
-                                    std::move(run_if_allowed));
+  return CheckGetDirectoryIsAllowed(
+      script_state, exception_state,
+      WTF::BindOnce([](ScriptPromiseResolver* resolver) {
+        FileSystemAccessManager::From(resolver->GetExecutionContext())
+            ->GetSandboxedFileSystem(WTF::BindOnce(
+                &StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
+                WrapPersistent(resolver)));
+      }));
 }
 
 // static
