@@ -4,8 +4,7 @@
       "cros_board": "brya",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "brya-release/R119-15622.0.0",
-      "autotest_name": "tast.chrome-from-gcs",
-      "shards": 10
+      "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "BRYA_RELEASE_LKGM"
   },
@@ -169,8 +168,7 @@
       "cros_board": "jacuzzi",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "jacuzzi-release/R119-15622.0.0",
-      "autotest_name": "tast.chrome-from-gcs",
-      "shards": 10
+      "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
   },
@@ -240,8 +238,7 @@
       "cros_board": "octopus",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "octopus-release/R119-15622.0.0",
-      "autotest_name": "tast.chrome-from-gcs",
-      "shards": 10
+      "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM"
   },
@@ -323,8 +320,7 @@
       "cros_board": "trogdor",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "trogdor-release/R119-15622.0.0",
-      "autotest_name": "tast.chrome-from-gcs",
-      "shards": 10
+      "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "TROGDOR_RELEASE_LKGM"
   },
@@ -347,8 +343,7 @@
       "cros_board": "volteer",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "volteer-release/R119-15622.0.0",
-      "autotest_name": "tast.chrome-from-gcs",
-      "shards": 10
+      "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "VOLTEER_RELEASE_LKGM"
   }

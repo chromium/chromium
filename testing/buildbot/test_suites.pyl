@@ -617,6 +617,7 @@
 
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
+        'shards': 10,
         # `tast_expr` must be a non-empty string to run the tast tests. But the value of
         # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
         # put the stub string here.
@@ -629,6 +630,7 @@
     # Test suite for running critical Tast tests.
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
+        'shards': 3,
         # `tast_expr` must be a non-empty string to run the tast tests. But the value of
         # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
         # put the stub string here.
@@ -643,6 +645,7 @@
     # them. The test suite should not be critical to builders.
     'chromeos_chrome_disabled_tast_tests': {
       'chrome_disabled_tast_tests': {
+        'shards': 2,
         # `tast_expr` must be a non-empty string to run the tast tests. But the value of
         # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
         # put the stub string here.

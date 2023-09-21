@@ -434,7 +434,6 @@
       'cros_board': 'brya',
       'cros_img': 'brya-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
-      'shards': 10,
     },
   },
   'CROS_DEDEDE_RELEASE_LKGM': {
@@ -566,7 +565,6 @@
       'cros_board': 'jacuzzi',
       'cros_img': 'jacuzzi-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
-      'shards': 10,
     },
   },
   'CROS_JACUZZI_RELEASE_STABLE': {
@@ -624,7 +622,6 @@
       'cros_board': 'octopus',
       'cros_img': 'octopus-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
-      'shards': 10,
     },
   },
   'CROS_OCTOPUS_RELEASE_LKGM': {
@@ -690,7 +687,6 @@
       'cros_board': 'trogdor',
       'cros_img': 'trogdor-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
-      'shards': 10,
     },
   },
   'CROS_VOLTEER_PUBLIC_LKGM': {
@@ -711,7 +707,6 @@
       'cros_board': 'volteer',
       'cros_img': 'volteer-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
-      'shards': 10,
     },
   },
   'LACROS_AMD64_GENERIC': {
