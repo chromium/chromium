@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_base.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
