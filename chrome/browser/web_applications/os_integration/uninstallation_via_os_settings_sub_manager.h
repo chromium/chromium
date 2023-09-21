@@ -18,10 +18,6 @@ namespace web_app {
 
 class WebAppProvider;
 
-// Allows skipping the entire Execute() step for the sub manager.
-// Useful for testing crbug.com/1434577.
-extern bool g_skip_execute_os_settings_sub_manager_for_testing;
-
 // Used to perform registration/unregistration of uninstalling through OS
 // settings. Currently this is only used on Windows OS.
 class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {

@@ -37,8 +37,6 @@ bool ShouldRegisterOsUninstall(
 
 }  // namespace
 
-bool g_skip_execute_os_settings_sub_manager_for_testing = false;
-
 UninstallationViaOsSettingsSubManager::UninstallationViaOsSettingsSubManager(
     const base::FilePath& profile_path,
     WebAppProvider& provider)
@@ -79,12 +77,6 @@ void UninstallationViaOsSettingsSubManager::Execute(
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
-  if (g_skip_execute_os_settings_sub_manager_for_testing) {
-    CHECK_IS_TEST();
-    std::move(callback).Run();
-    return;
-  }
-
   if (!ShouldRegisterOsUninstall(current_state) &&
       !ShouldRegisterOsUninstall(desired_state)) {
     std::move(callback).Run();

@@ -308,10 +308,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -377,10 +374,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
   }
 
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -421,10 +415,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -673,6 +664,108 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
   } else {
     ASSERT_FALSE(updated_os_integration_state.has_shortcut_menus());
   }
+}
+
+TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
+       ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_WIN)
+  const std::wstring app_user_model_id =
+      web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+          app_user_model_id));
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
+       ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_supress = absl::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // Shortcuts menu should should still be registered with the OS.
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+  scoped_supress.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(

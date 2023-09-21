@@ -31,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1014,6 +1015,15 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
   // Adding install_url, source and placeholder information to the web_app DB.
   app_to_update->AddExternalSourceInformation(
       ConvertExternalInstallSourceToSource(source), url, is_placeholder);
+}
+
+void SynchronizeOsIntegration(Profile* profile,
+                              const AppId& app_id,
+                              absl::optional<SynchronizeOsOptions> options) {
+  base::test::TestFuture<void> sync_future;
+  WebAppProvider::GetForTest(profile)->scheduler().SynchronizeOsIntegration(
+      app_id, sync_future.GetCallback(), options);
+  EXPECT_TRUE(sync_future.Wait());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

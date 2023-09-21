@@ -134,10 +134,26 @@ void RunOnOsLoginSubManager::Execute(
                      std::move(execute_done)));
 }
 
-// TODO(b/279068663): Implement if needed.
 void RunOnOsLoginSubManager::ForceUnregister(const AppId& app_id,
                                              base::OnceClosure callback) {
-  std::move(callback).Run();
+  if (!DoesRunOnOsLoginRequireExecution()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ResultCallback unregistation_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Unregistration.Result",
+                                  (result == Result::kOk));
+      }).Then(std::move(callback));
+
+  internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &internals::UnregisterRunOnOsLogin, app_id, profile_->GetPath(),
+          base::UTF8ToUTF16(
+              provider_->registrar_unsafe().GetAppShortName(app_id))),
+      std::move(unregistation_callback));
 }
 
 void RunOnOsLoginSubManager::StartUnregistration(

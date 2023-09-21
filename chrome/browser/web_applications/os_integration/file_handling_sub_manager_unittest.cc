@@ -437,6 +437,112 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   }
 }
 
+TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
+       ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::FileHandlers file_handlers;
+
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Foo opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                         app_name, extension));
+  }
+}
+
+TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
+       ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::FileHandlers file_handlers;
+
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Foo opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+
+  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_supress = absl::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // File extensions should still be left behind, even though the app has been
+  // uninstalled.
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_on_app_missing = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                         app_name, extension));
+  }
+  scoped_supress.reset();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FileHandlingSubManagerConfigureAndExecuteTest,

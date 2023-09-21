@@ -156,10 +156,21 @@ void FileHandlingSubManager::Execute(
                             desired_state, std::move(callback)));
 }
 
-// TODO(b/279068663): Implement if needed.
 void FileHandlingSubManager::ForceUnregister(const AppId& app_id,
                                              base::OnceClosure callback) {
-  std::move(callback).Run();
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.FileHandlersUnregistration.Result",
+                                  (result == Result::kOk));
+      }).Then(std::move(callback));
+
+  UnregisterFileHandlersWithOs(app_id, profile_path_,
+                               std::move(metrics_callback));
 }
 
 void FileHandlingSubManager::Unregister(

@@ -214,9 +214,10 @@ void OsIntegrationManager::Synchronize(
     absl::optional<SynchronizeOsOptions> options) {
   first_synchronize_called_ = true;
 
-  // This is usually called whenever the app is missing in the web app registry,
-  // to clean up left over OS integration states.
-  if (options.has_value() && options.value().force_unregister_on_app_missing) {
+  // This is usually called to clean up OS integration states on the OS,
+  // regardless of whether there are apps existing in the app registry or not.
+  if (AreSubManagersExecuteEnabled() && options.has_value() &&
+      options.value().force_unregister_on_app_missing) {
     ForceUnregisterOsIntegrationOnSubManager(app_id, /*index=*/0,
                                              std::move(callback));
     return;
