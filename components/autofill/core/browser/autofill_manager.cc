@@ -657,7 +657,7 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
 std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
 AutofillManager::CreateFormInteractionsUkmLogger() {
   return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-      unsafe_client().GetUkmRecorder(), unsafe_client().GetUkmSourceId());
+      &unsafe_client(), unsafe_client().GetUkmRecorder());
 }
 
 size_t AutofillManager::FindCachedFormsBySignature(
