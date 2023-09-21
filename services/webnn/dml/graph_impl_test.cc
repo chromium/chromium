@@ -75,16 +75,184 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorClamp) {
   EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
 }
 
+template <typename T>
 struct OperandInfo {
   mojom::Operand::DataType type;
   std::vector<uint32_t> dimensions;
+  std::vector<T> values;
 };
 
-struct ElementWiseBinaryTester {
-  OperandInfo lhs;
-  OperandInfo rhs;
+struct ActivationOperator {
   mojom::Operator::Kind kind;
-  OperandInfo output;
+  mojom::OperatorAttributesPtr attributes;
+};
+
+template <typename T>
+struct Conv2dTester {
+  OperandInfo<T> input;
+  OperandInfo<T> filter;
+  struct Conv2dAttributes {
+    std::vector<uint32_t> padding = {0, 0, 0, 0};
+    std::vector<uint32_t> strides = {1, 1};
+    std::vector<uint32_t> dilations = {1, 1};
+    uint32_t groups = 1;
+    mojom::InputOperandLayout input_layout =
+        mojom::InputOperandLayout::kChannelsFirst;
+    absl::optional<OperandInfo<T>> bias;
+    absl::optional<ActivationOperator> activation;
+  };
+  Conv2dAttributes attributes;
+  OperandInfo<T> output;
+
+  void Test(WebNNGraphDMLImplTest& helper) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t filter_operand_id =
+        builder.BuildConstant(filter.dimensions, filter.type,
+                              base::as_bytes(base::make_span(filter.values)));
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    mojom::Conv2dAttributesPtr mojo_attributes = mojom::Conv2dAttributes::New();
+    mojo_attributes->padding = mojom::Padding2d::New(
+        mojom::Size2d::New(attributes.padding[0],
+                           attributes.padding[2]) /*beginning padding*/,
+        mojom::Size2d::New(attributes.padding[1],
+                           attributes.padding[3]) /*ending padding*/);
+    mojo_attributes->strides =
+        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
+    mojo_attributes->dilations =
+        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
+    mojo_attributes->groups = attributes.groups;
+    mojo_attributes->input_layout = attributes.input_layout;
+
+    if (attributes.bias.has_value()) {
+      mojo_attributes->bias_operand_id = builder.BuildConstant(
+          attributes.bias->dimensions, attributes.bias->type,
+          base::as_bytes(base::make_span(attributes.bias->values)));
+    }
+
+    if (attributes.activation.has_value()) {
+      mojo_attributes->activation = mojom::Operator::New();
+      mojo_attributes->activation->kind =
+          std::move(attributes.activation.value().kind);
+      mojo_attributes->activation->attributes =
+          std::move(attributes.activation.value().attributes);
+    }
+
+    builder.BuildOperator(
+        mojom::Operator::Kind::kConv2d, {input_operand_id, filter_operand_id},
+        {output_operand_id},
+        mojom::OperatorAttributes::NewConv2d(std::move(mojo_attributes)));
+    EXPECT_TRUE(helper.CreateAndBuildGraph(builder.GetGraphInfo()));
+  }
+};
+
+// Test building a DML graph with single operator conv2d.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorConv2d) {
+  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, fusing with bias.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}}}
+        .Test(*this);
+  }
+  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, without bias.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .attributes = {.padding = {1, 1, 1, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}}}
+        .Test(*this);
+  }
+  // Test conv2d with NHWC layout, padding = {1, 1, 1, 1}.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 5, 5, 1}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 5, 1}}}
+        .Test(*this);
+  }
+  // Test conv2d with NHWC layout, fusing with relu activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 5, 5, 1}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1.0}},
+                       .activation =
+                           ActivationOperator{mojom::Operator::Kind::kRelu,
+                                              nullptr}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 5, 1}}}
+        .Test(*this);
+  }
+  // Test depthwise conv2d by setting groups to input channels.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 4, 2, 2}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 1, 2, 2},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 1.0, 4.0, 7.0, 2.0,
+                              5.0, 8.0}},
+        .attributes = {.padding = {0, 0, 0, 0},
+                       .groups = 4,
+                       .input_layout =
+                           mojom::InputOperandLayout::kChannelsFirst,
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {4},
+                               .values = {1.0, 2.0, 3.0, 4.0}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 1, 1}}}
+        .Test(*this);
+  }
+}
+
+template <typename T>
+struct ElementWiseBinaryTester {
+  OperandInfo<T> lhs;
+  OperandInfo<T> rhs;
+  mojom::Operator::Kind kind;
+  OperandInfo<T> output;
   void Test(WebNNGraphDMLImplTest& helper) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -105,7 +273,7 @@ struct ElementWiseBinaryTester {
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   // Test building a DML graph with single operator add.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 4}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -117,7 +285,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator add using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -129,7 +297,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator div.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 3, 3, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -141,7 +309,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator div using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 1, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -153,7 +321,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator max.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 5, 3, 3}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -165,7 +333,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator max using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 5, 3, 3}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -177,7 +345,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator min.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 3, 3, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -189,7 +357,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator min using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 3, 1, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -201,7 +369,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator mul.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 5, 3, 3}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -213,7 +381,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator mul using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 5, 3, 3}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -225,7 +393,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator pow.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 4}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -237,7 +405,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator pow using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 4}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -249,7 +417,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator sub.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 4}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -261,7 +429,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
   // Test building a DML graph with single operator sub using broadcasting.
   {
-    ElementWiseBinaryTester{
+    ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 4}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -273,8 +441,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
   }
 }
 
+template <typename T>
 struct Pool2dTester {
-  OperandInfo input;
+  OperandInfo<T> input;
   struct Pool2dAttributes {
     std::vector<uint32_t> window_dimensions;
     std::vector<uint32_t> padding;
@@ -284,7 +453,7 @@ struct Pool2dTester {
   };
   Pool2dAttributes attributes;
   mojom::Pool2d::Kind kind;
-  OperandInfo output;
+  OperandInfo<T> output;
 
   void Test(WebNNGraphDMLImplTest& helper) {
     // Build the graph with mojo type.
@@ -304,7 +473,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorAveragePool2d) {
   {
     // Test average pool2d with nchw layout, strides=2, padding=1, and floor
     // rounding.
-    Pool2dTester{
+    // Since there is no float16 data type in C++, we use uint16 to store the
+    // binary data of float16.
+    Pool2dTester<uint16_t>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 3, 7, 7}},
         .attributes = {.window_dimensions = {4, 4},
@@ -320,7 +491,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorAveragePool2d) {
   {
     // Test average pool2d with nhwc layout, strides=2, padding=1 and ceil
     // rounding.
-    Pool2dTester{
+    Pool2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 7, 7, 3}},
         .attributes = {.window_dimensions = {4, 4},
@@ -342,7 +513,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMaxPool2d) {
   {
     // Test max pool2d with nchw layout, strides=2, padding=1, and floor
     // rounding.
-    Pool2dTester{
+    Pool2dTester<uint16_t>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 3, 7, 7}},
         .attributes = {.window_dimensions = {4, 4},
@@ -357,10 +528,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMaxPool2d) {
   }
 }
 
+template <typename T>
 struct UnaryOperatorTester {
   mojom::Operator::Kind kind;
-  OperandInfo input;
-  OperandInfo output;
+  OperandInfo<T> input;
+  OperandInfo<T> output;
   void Test(WebNNGraphDMLImplTest& helper) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -377,11 +549,12 @@ struct UnaryOperatorTester {
 // Test building a DML graph with single operator relu.
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorRelu) {
   {
-    UnaryOperatorTester{.kind = mojom::Operator::Kind::kRelu,
-                        .input = {.type = mojom::Operand::DataType::kFloat32,
-                                  .dimensions = {1, 2, 3, 4}},
-                        .output = {.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {1, 2, 3, 4}}}
+    UnaryOperatorTester<float>{
+        .kind = mojom::Operator::Kind::kRelu,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
         .Test(*this);
   }
 }
@@ -392,11 +565,12 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorSoftmax) {
   // introduced in DML_FEATURE_LEVEL_3_0.
   SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
-    UnaryOperatorTester{.kind = mojom::Operator::Kind::kSoftmax,
-                        .input = {.type = mojom::Operand::DataType::kFloat32,
-                                  .dimensions = {2, 3}},
-                        .output = {.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2, 3}}}
+    UnaryOperatorTester<float>{
+        .kind = mojom::Operator::Kind::kSoftmax,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3}}}
         .Test(*this);
   }
 }
@@ -525,19 +699,20 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoOutputs) {
   EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
 }
 
+template <typename T>
 struct GemmTester {
   mojom::Operator::Kind kind;
-  OperandInfo input_a;
-  OperandInfo input_b;
+  OperandInfo<T> input_a;
+  OperandInfo<T> input_b;
   struct GemmAttributes {
-    absl::optional<OperandInfo> input_c;
+    absl::optional<OperandInfo<T>> input_c;
     float alpha = 1.0;
     float beta = 1.0;
     bool a_transpose = false;
     bool b_transpose = false;
   };
   GemmAttributes attributes;
-  OperandInfo output;
+  OperandInfo<T> output;
 
   void Test(WebNNGraphDMLImplTest& helper) {
     // Build the graph with mojo type.
@@ -575,24 +750,24 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
 
   // Test building a DML graph with single operator gemm.
   {
-    GemmTester{.input_a = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {2, 2}},
-               .input_b = {.type = mojom::Operand::DataType::kFloat32,
-                           .dimensions = {2, 2}},
-               .output = {.type = mojom::Operand::DataType::kFloat32,
-                          .dimensions = {2, 2}}}
+    GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 2}},
+                      .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 2}},
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {2, 2}}}
         .Test(*this);
   }
 
   // Test gemm with a third input.
   {
-    GemmTester{
+    GemmTester<float>{
         .input_a = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .input_b = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .attributes = {.input_c =
-                           OperandInfo{
+                           OperandInfo<float>{
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {2, 2}}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -602,13 +777,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
 
   // Test broadcasting the third input's dimensions from  {1,2} to {2,2}.
   {
-    GemmTester{
+    GemmTester<float>{
         .input_a = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .input_b = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .attributes = {.input_c =
-                           OperandInfo{
+                           OperandInfo<float>{
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1, 2}}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -618,13 +793,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
 
   // Test broadcasting the third input's dimensions from  {2,1} to {2,2}.
   {
-    GemmTester{
+    GemmTester<float>{
         .input_a = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .input_b = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .attributes = {.input_c =
-                           OperandInfo{
+                           OperandInfo<float>{
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {2, 1}}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -634,13 +809,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
 
   // Test gemm with a third input which is a scalar.
   {
-    GemmTester{
+    GemmTester<float>{
         .input_a = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .input_b = {.type = mojom::Operand::DataType::kFloat32,
                     .dimensions = {2, 2}},
         .attributes = {.input_c =
-                           OperandInfo{
+                           OperandInfo<float>{
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1}}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -697,10 +872,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
       builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
-  uint64_t input_b_operand_id = builder.BuildConstant(
-      {2, 2}, mojom::Operand::DataType::kFloat32,
-      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
-                      constant_data.size() * sizeof(float)));
+  uint64_t input_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
   uint64_t output_operand_id =
       builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
   mojom::GemmAttributesPtr attributes = mojom::GemmAttributes::New();
@@ -729,14 +903,12 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleInputsAppendingConstants) {
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
   std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
-  uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, mojom::Operand::DataType::kFloat32,
-      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
-                      constant_data.size() * sizeof(float)));
-  uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, mojom::Operand::DataType::kFloat32,
-      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
-                      constant_data.size() * sizeof(float)));
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
 
   // The order of inputs are [input_a, constant_a, input_b, constant_b].
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
@@ -779,14 +951,12 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
   std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
-  uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, mojom::Operand::DataType::kFloat32,
-      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
-                      constant_data.size() * sizeof(float)));
-  uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, mojom::Operand::DataType::kFloat32,
-      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
-                      constant_data.size() * sizeof(float)));
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
 
   // The order of inputs are [constant_a, input_a, constant_b, input_b].
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(

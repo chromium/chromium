@@ -298,6 +298,157 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
+    const IdToOperandMap& id_to_operand_map,
+    const OperatorPtr& operation,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& input_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 0);
+  auto input_tensor_desc =
+      graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
+  CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
+
+  const auto& filter_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 1);
+  auto filter_tensor_desc =
+      graph_builder.GetNodeOutput(filter_node_output_info).tensor_desc;
+
+  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
+
+  CHECK(operation->attributes);
+  auto& conv2d_attributes = operation->attributes->get_conv2d();
+  CHECK(conv2d_attributes);
+
+  std::vector<NodeOutputInfo> input_node_output_infos = {
+      input_node_output_info, filter_node_output_info};
+  absl::optional<TensorDesc> reshaped_bias_tensor_desc;
+  auto& bias_operand_id = conv2d_attributes->bias_operand_id;
+  if (bias_operand_id) {
+    const auto bias_node_output_iterator =
+        id_to_node_output_map.find(bias_operand_id.value());
+    CHECK(bias_node_output_iterator != id_to_node_output_map.end());
+
+    auto bias_node_output =
+        graph_builder.GetNodeOutput(bias_node_output_iterator->second);
+    const auto& bias_tensor_desc = bias_node_output.tensor_desc;
+    const auto& bias_dims = bias_tensor_desc.GetDimensions();
+    CHECK_EQ(bias_dims.size(), 1u);
+
+    // In WebNN spec bias specifies the additional 1-D tensor with the shape of
+    // {outputChannels}. But for DML the expected dimensions of the BiasTensor
+    // are { 1, OutputChannelCount, 1, 1 } for 4D. So reshape the bias:
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
+    std::vector<uint32_t> reshaped_bias_dims = {1, bias_dims[0], 1, 1};
+    reshaped_bias_tensor_desc =
+        TensorDesc(bias_tensor_desc.GetDataType(), bias_tensor_desc.GetFlags(),
+                   std::move(reshaped_bias_dims));
+
+    auto reshaped_bias_node_output_info = graph_builder.CreateNodeOutput(
+        bias_node_output.node_info, reshaped_bias_tensor_desc.value());
+    input_node_output_infos.push_back(reshaped_bias_node_output_info);
+  }
+
+  switch (conv2d_attributes->input_layout) {
+    case mojom::InputOperandLayout::kChannelsFirst: {
+      break;
+    }
+    // DML convolution operator only support nchw layout according to
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
+    //
+    // To support other layouts, we can transpose the input and output
+    // tensors
+    case mojom::InputOperandLayout::kChannelsLast: {
+      input_tensor_desc.Transpose(kNhwcToNchwPermutation);
+      output_tensor_desc.Transpose(kNhwcToNchwPermutation);
+      break;
+    }
+  }
+
+  std::array<uint32_t, 2> strides = {conv2d_attributes->strides->height,
+                                     conv2d_attributes->strides->width};
+  std::array<uint32_t, 2> dilations = {conv2d_attributes->dilations->height,
+                                       conv2d_attributes->dilations->width};
+  std::array<uint32_t, 2> start_padding = {
+      conv2d_attributes->padding->beginning->height,
+      conv2d_attributes->padding->beginning->width};
+  std::array<uint32_t, 2> end_padding = {
+      conv2d_attributes->padding->ending->height,
+      conv2d_attributes->padding->ending->width};
+  // The outputPadding parameter is used in the ConTranspose2d operator, and is
+  // only used to disambiguate output shape when needed.
+  std::array<uint32_t, 2> default_out_padding = {0, 0};
+
+  // Currently only DML_OPERATOR_ACTIVATION_RELU is supported as the fused
+  // activation. DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the
+  // DirectML version upper than DML_FEATURE_LEVEL_6_0.
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
+  //
+  // TODO: Use a union of all activation operator structures to support and
+  // simplify the creation of fused activation operators.
+  absl::optional<DML_ACTIVATION_RELU_OPERATOR_DESC> dml_relu_desc;
+  absl::optional<DML_OPERATOR_DESC> dml_activation_desc;
+  if (conv2d_attributes->activation) {
+    switch (conv2d_attributes->activation->kind) {
+      case Operator::Kind::kRelu: {
+        dml_relu_desc = DML_ACTIVATION_RELU_OPERATOR_DESC{
+            .InputTensor = nullptr, .OutputTensor = nullptr};
+        dml_activation_desc =
+            DML_OPERATOR_DESC{.Type = DML_OPERATOR_ACTIVATION_RELU,
+                              .Desc = &dml_relu_desc.value()};
+        break;
+      }
+      default: {
+        DLOG(ERROR) << "This fusion type is not supported.";
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                              "This fusion type is not supported."));
+      }
+    }
+  }
+
+  DML_CONVOLUTION_OPERATOR_DESC conv2d_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .FilterTensor = &filter_tensor_desc.GetDMLTensorDesc(),
+      .BiasTensor = (reshaped_bias_tensor_desc.has_value())
+                        ? &reshaped_bias_tensor_desc->GetDMLTensorDesc()
+                        : nullptr,
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Mode = DML_CONVOLUTION_MODE_CROSS_CORRELATION,
+      .Direction = DML_CONVOLUTION_DIRECTION_FORWARD,
+      .DimensionCount =
+          2u, /*Determines the size of the Strides, Dilations, StartPadding,
+                 EndPadding, and OutputPadding arrays.*/
+      .Strides = strides.data(),
+      .Dilations = dilations.data(),
+      .StartPadding = start_padding.data(),
+      .EndPadding = end_padding.data(),
+      .OutputPadding = default_out_padding.data(),
+      .GroupCount = conv2d_attributes->groups,
+      .FusedActivation = (dml_activation_desc.has_value())
+                             ? &dml_activation_desc.value()
+                             : nullptr};
+
+  auto conv2d_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, input_node_output_infos);
+  if (conv2d_node.type == NodeInfo::Type::kInvalid) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create conv2d operator."));
+  }
+
+  if (conv2d_attributes->input_layout ==
+      mojom::InputOperandLayout::kChannelsLast) {
+    // Transpose the output tensor from nchw to nhwc layout.
+    output_tensor_desc.Transpose(kNchwToNhwcPermutation);
+  }
+
+  CreateNodeOutput(operation, graph_builder, conv2d_node, output_tensor_desc,
+                   id_to_node_output_map);
+
+  return base::ok();
+}
+
 template <typename DML_OPERATOR_DESC>
 NodeInfo CreateBinaryOperator(
     const TensorDesc& a_tensor,
@@ -451,9 +602,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       output_tensor_desc.Transpose(kNhwcToNchwPermutation);
       break;
     }
-    default:
-      DLOG(ERROR) << "Invalid Pool2d layout";
-      NOTREACHED_NORETURN();
   }
 
   std::array<uint32_t, 2> strides = {pool2d->strides->height,
@@ -949,6 +1097,11 @@ void GraphImpl::CreateAndBuild(
     switch (operation->kind) {
       case Operator::Kind::kClamp: {
         create_operator_result = CreateOperatorNodeForClamp(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operator::Kind::kConv2d: {
+        create_operator_result = CreateOperatorNodeForConv2d(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
