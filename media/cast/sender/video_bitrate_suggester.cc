@@ -59,23 +59,22 @@ void VideoBitrateSuggester::RecordShouldDropNextFrame(bool should_drop) {
   }
 
   // We don't want to change the bitrate too frequently in order to give
-  // things time to adjust, so only adjust every 100 frames (about 3 seconds
-  // at 30FPS).
-  constexpr int kWindowSize = 100;
+  // things time to adjust, so only adjust roughly once a second.
+  constexpr int kWindowSize = 30;
   if (number_of_frames_requested_ == kWindowSize) {
-    constexpr int kBitrateSteps = 8;
     DCHECK_GE(max_bitrate_, min_bitrate_);
-    const int adjustment = (max_bitrate_ - min_bitrate_) / kBitrateSteps;
+
+    // We want to be more conservative about increasing the frame rate than
+    // decreasing it.
+    constexpr double kIncrease = 1.1;
+    constexpr double kDecrease = 0.8;
 
     // Generally speaking we shouldn't be dropping any frames, so even one is
     // a bad sign.
-    if (number_of_frames_dropped_ > 0) {
-      suggested_max_bitrate_ =
-          std::max(min_bitrate_, suggested_max_bitrate_ - adjustment);
-    } else {
-      suggested_max_bitrate_ =
-          std::min(max_bitrate_, suggested_max_bitrate_ + adjustment);
-    }
+    suggested_max_bitrate_ =
+        (number_of_frames_dropped_ > 0)
+            ? std::max<int>(min_bitrate_, suggested_max_bitrate_ * kDecrease)
+            : std::min<int>(max_bitrate_, suggested_max_bitrate_ * kIncrease);
 
     // Reset the recorded frame drops to start a new window.
     number_of_frames_requested_ = 0;

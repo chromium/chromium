@@ -86,19 +86,19 @@ TEST_F(VideoBitrateSuggesterTest, SuggestsBitratesCorrectly) {
   // After a period with multiple frame drops, this should go down.
   RecordShouldDropNextFrame(true);
   RecordShouldDropNextFrame(true);
-  for (int i = 0; i < 99; ++i) {
+  for (int i = 0; i < 29; ++i) {
     RecordShouldDropNextFrame(false);
   }
 
   // It should now go down.
-  EXPECT_EQ(4412500, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(4000000, video_bitrate_suggester().GetSuggestedBitrate());
 
   // It should continue to go down to the minimum as long as frames are being
   // dropped.
-  int last_suggestion = 4412500;
-  for (int i = 0; i < 7; ++i) {
+  int last_suggestion = 4685120;
+  for (int i = 0; i < 12; ++i) {
     RecordShouldDropNextFrame(true);
-    for (int j = 0; j < 99; ++j) {
+    for (int j = 0; j < 29; ++j) {
       RecordShouldDropNextFrame(false);
     }
 
@@ -113,8 +113,8 @@ TEST_F(VideoBitrateSuggesterTest, SuggestsBitratesCorrectly) {
 
   // It should increase once we stop dropping frames.
   last_suggestion = 300000;
-  for (int i = 0; i < 8; ++i) {
-    for (int j = 0; j < 100; ++j) {
+  for (int i = 0; i < 30; ++i) {
+    for (int j = 0; j < 30; ++j) {
       RecordShouldDropNextFrame(false);
     }
     const int suggestion = video_bitrate_suggester().GetSuggestedBitrate();

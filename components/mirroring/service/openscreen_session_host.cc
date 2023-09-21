@@ -991,9 +991,9 @@ int OpenscreenSessionHost::GetSuggestedVideoBitrate(int min_bitrate,
 }
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {
-  int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
-                               ? forced_bandwidth_estimate_for_testing_
-                               : session_->GetEstimatedNetworkBandwidth();
+  const int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
+                                     ? forced_bandwidth_estimate_for_testing_
+                                     : session_->GetEstimatedNetworkBandwidth();
 
   // Nothing to do yet.
   if (bandwidth_estimate <= 0) {
