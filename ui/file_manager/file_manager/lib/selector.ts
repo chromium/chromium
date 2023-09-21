@@ -128,10 +128,13 @@ export class SelectorNode<T> implements Selector<T> {
    *     not enforced here because SelectorNodes are only meant to be created by
    *     the Store. Users of the Store should use `createSelectorX()` to combine
    *     selectors.
+   * @param name An optional human-readable name used for debugging purposes.
+   *     Named selectors will log to the console when window.DEBUG_STORE is set,
+   *     whenever they emit a new value.
    */
   constructor(
       parents: Array<SelectorNode<any>|Selector<any>>,
-      public select: (...values: any[]) => T) {
+      public select: (...values: any[]) => T, public name?: string) {
     this.parents = parents as Array<SelectorNode<any>>;
   }
 
@@ -162,8 +165,8 @@ export class SelectorNode<T> implements Selector<T> {
    * Disconnected nodes are exclusively used internally by slices and are not
    * meant to be used outside of it.
    */
-  static createDisconnectedNode<T>() {
-    return new SelectorNode<T>([], () => undefined as T);
+  static createDisconnectedNode<T>(name?: string) {
+    return new SelectorNode<T>([], () => undefined as T, name);
   }
 
   /**
@@ -216,6 +219,11 @@ export class SelectorNode<T> implements Selector<T> {
 
     if (newValue === this.value_) {
       return false;
+    }
+
+    if (window.DEBUG_STORE && this.name) {
+      console.log(`Selector '${this.name}' emitted a new value:`);
+      console.log(newValue);
     }
 
     this.value_ = newValue;

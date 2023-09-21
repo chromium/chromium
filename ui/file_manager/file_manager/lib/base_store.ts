@@ -54,16 +54,14 @@ export class Slice<State, LocalState> {
    * The slice's default selector - a selector that is created automatically
    * when the slice is constructed. It selects the slice's part of the state.
    */
-  selector: SelectorNode<LocalState> = SelectorNode.createDisconnectedNode();
+  selector: SelectorNode<LocalState> =
+      SelectorNode.createDisconnectedNode(this.name);
 
   /**
    * @param name The prefix to be used when registering action types with
    *     this slice.
-   * @param debug Whether this slice's reducers should log when they are
-   *     triggered. This is useful when tracing Store operations is desired but
-   *     tracing the result of every dispatched action would be too verbose.
    */
-  constructor(public name: string, public debug?: boolean) {}
+  constructor(public name: string) {}
 
   /**
    * Returns the full action name given by prepending the slice's name to the
@@ -331,7 +329,6 @@ export class BaseStore<State> {
     if (window.DEBUG_STORE) {
       console.groupCollapsed(`Action: ${action.type}`);
       console.dir(action.payload);
-      console.groupEnd();
     }
 
     const reducers = this.reducers_.get(action.type);
@@ -350,6 +347,10 @@ export class BaseStore<State> {
     }
     if (this.selector.get() !== this.state_) {
       this.selectorEmitter_.processChange();
+    }
+
+    if (window.DEBUG_STORE) {
+      console.groupEnd();
     }
   }
 
