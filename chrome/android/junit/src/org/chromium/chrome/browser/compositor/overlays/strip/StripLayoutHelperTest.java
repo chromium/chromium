@@ -36,8 +36,10 @@ import android.view.ContextThemeWrapper;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -46,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -83,6 +86,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -120,6 +124,8 @@ public class StripLayoutHelperTest {
     private ActivityInfo mActivityInfo;
     @Mock
     private PackageManager mPackageManager;
+    @Mock
+    private View mTabHoverCardView;
 
     private Activity mActivity;
     private Context mContext;
@@ -2507,5 +2513,143 @@ public class StripLayoutHelperTest {
 
         // Cleanup for DragDrop
         clearTabDragSourceMock();
+    }
+
+    @Test
+    public void testUpdateLastHoveredTab() {
+        initializeTabHoverTest(false, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        var titleView = mock(TextView.class);
+        var urlView = mock(TextView.class);
+        var url = JUnitTestGURLs.EXAMPLE_URL;
+        when(mTabHoverCardView.findViewById(R.id.title)).thenReturn(titleView);
+        when(mTabHoverCardView.findViewById(R.id.url)).thenReturn(urlView);
+        when(mModel.getTabAt(1).getUrl()).thenReturn(url);
+
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+
+        verify(titleView).setText(eq(mModel.getTabAt(1).getTitle()));
+        verify(urlView).setText(eq(mModel.getTabAt(1).getUrl().getHost()));
+        verify(mTabHoverCardView).setX(anyFloat());
+        verify(mTabHoverCardView).setY(anyFloat());
+        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
+
+        // Test chrome:// tab hover card display text.
+        url = JUnitTestGURLs.NTP_URL;
+        when(mModel.getTabAt(1).getUrl()).thenReturn(url);
+
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        verify(urlView).setText(eq(mModel.getTabAt(1).getUrl().getSpec().replaceFirst("/$", "")));
+    }
+
+    @Test
+    public void testGetHoverCardPosition() {
+        // Use TSR detached treatment for additional coverage that includes position adjustments.
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        initializeTabHoverTest(false, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+        // Set simulated hovered StripLayoutTab drawX for expected hover card position.
+        hoveredTab.setDrawX(10f);
+
+        float[] position = mStripLayoutHelper.getHoverCardPosition(hoveredTab, false);
+        float detachedCardOffset =
+                mContext.getResources().getDimension(R.dimen.tsr_no_feet_tab_hover_card_x_offset);
+        assertEquals("Card x position is incorrect.", hoveredTab.getDrawX() + detachedCardOffset,
+                position[0], 0f);
+        assertEquals("Card y position is incorrect.",
+                SCREEN_HEIGHT + StripLayoutHelper.FOLIO_DETACHED_BOTTOM_MARGIN_DP, position[1], 0f);
+    }
+
+    @Test
+    public void testGetHoverCardPosition_CardWidthExceedsWindowWidth() {
+        initializeTabHoverTest(false, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        // Set window width to be slightly smaller than the default card width.
+        float cardWidth = mContext.getResources().getDimension(R.dimen.tab_hover_card_width);
+        mContext.getResources().getDisplayMetrics().widthPixels = (int) (cardWidth - 1);
+        // Set simulated hovered StripLayoutTab drawX for expected hover card position.
+        hoveredTab.setDrawX(10f);
+        var originalLayoutParams = new LayoutParams((int) cardWidth, 200);
+        when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);
+
+        float[] position = mStripLayoutHelper.getHoverCardPosition(hoveredTab, false);
+        ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
+        verify(mTabHoverCardView).setLayoutParams(captor.capture());
+        assertEquals("Card width is incorrect.", Math.round(0.9f * (cardWidth - 1)),
+                captor.getValue().width);
+        assertEquals("Card x position is incorrect.", hoveredTab.getDrawX(), position[0], 0f);
+        assertEquals("Card y position is incorrect.", SCREEN_HEIGHT, position[1], 0f);
+    }
+
+    @Test
+    public void testGetHoverCardPosition_CardCrossesWindowBounds() {
+        initializeTabHoverTest(false, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+        float windowHorizontalMargin = mContext.getResources().getDimension(
+                R.dimen.tab_hover_card_window_horizontal_margin);
+
+        // Assume that the tab's hover card is positioned beyond the left edge of the app window.
+        hoveredTab.setDrawX(-1f);
+        float[] position = mStripLayoutHelper.getHoverCardPosition(hoveredTab, false);
+        assertEquals("Card should maintain a minimum margin from the left edge of the app window.",
+                windowHorizontalMargin, position[0], 0f);
+
+        // Assume that the tab's hover card extends beyond the right edge of the app window.
+        int windowWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        float cardWidth = mContext.getResources().getDimension(R.dimen.tab_hover_card_width);
+        hoveredTab.setDrawX(windowWidth - cardWidth + 1);
+        position = mStripLayoutHelper.getHoverCardPosition(hoveredTab, false);
+        assertEquals("Card should maintain a minimum margin from the right edge of the app window.",
+                windowWidth - cardWidth - windowHorizontalMargin, position[0], 0f);
+    }
+
+    @Test
+    public void testGetHoverCardPosition_RtlLayout() {
+        // Use TSR detached treatment for additional coverage that includes position adjustments.
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        initializeTabHoverTest(true, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        float cardWidth = mContext.getResources().getDimension(R.dimen.tab_hover_card_width);
+        // Set simulated hovered StripLayoutTab drawX and width for expected hover card position.
+        hoveredTab.setDrawX(28f);
+        hoveredTab.setWidth(cardWidth - 2);
+
+        float[] position = mStripLayoutHelper.getHoverCardPosition(hoveredTab, false);
+        float detachedCardOffset =
+                mContext.getResources().getDimension(R.dimen.tsr_no_feet_tab_hover_card_x_offset);
+        assertEquals("Card x position is incorrect.",
+                hoveredTab.getDrawX() - (cardWidth - hoveredTab.getWidth()) - detachedCardOffset,
+                position[0], 0f);
+    }
+
+    @Test
+    public void testIsTabCompletelyHidden() {
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        initializeTabHoverTest(false, false);
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        // Set simulated hovered StripLayoutTab drawX and width to assume a position beyond the left
+        // fade.
+        hoveredTab.setDrawX(-50f);
+        hoveredTab.setWidth(
+                StripLayoutHelperManager.FADE_SHORT_TSR_WIDTH_DP - 1 - hoveredTab.getDrawX());
+        assertTrue("Tab should be considered hidden for hover state.",
+                mStripLayoutHelper.isTabCompletelyHidden(hoveredTab));
+
+        // Set simulated hovered StripLayoutTab drawX to assume a position beyond the right fade.
+        hoveredTab.setDrawX(SCREEN_WIDTH - StripLayoutHelperManager.FADE_MEDIUM_TSR_WIDTH_DP + 1);
+        assertTrue("Tab should be considered hidden for hover state.",
+                mStripLayoutHelper.isTabCompletelyHidden(hoveredTab));
+    }
+
+    private void initializeTabHoverTest(boolean rtl, boolean incognito) {
+        initializeTest(rtl, incognito, false, 0, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
+        // For ease of dp/px calculation.
+        mContext.getResources().getDisplayMetrics().density = 1f;
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_hover_card_holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/tab_hover_card_layout_padding"
+    android:visibility="gone"
+    android:elevation="@dimen/tab_hover_card_elevation"
+    android:orientation="vertical"
+    android:background="@drawable/tab_hover_card_background">
+
+  <TextView
+      android:id="@+id/title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="2"
+      android:textDirection="locale"
+      android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+
+  <TextView
+      android:id="@+id/url"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/tab_hover_card_url_top_margin"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:textDirection="locale"
+      android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+</LinearLayout>

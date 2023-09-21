@@ -84,4 +84,14 @@ found in the LICENSE file.
     <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
     <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
     <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
+
+    <!-- Tab hover card dimensions -->
+    <dimen name="tab_hover_card_width">264dp</dimen>
+    <dimen name="tab_hover_card_window_horizontal_margin">8dp</dimen>
+    <dimen name="tab_hover_card_layout_padding">16dp</dimen>
+    <dimen name="tab_hover_card_url_top_margin">4dp</dimen>
+    <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="tab_hover_card_corner_radius">8dp</dimen>
+    <dimen name="tab_hover_card_elevation">6dp</dimen>
+    <dimen name="tsr_no_feet_tab_hover_card_x_offset">16dp</dimen>
 </resources>

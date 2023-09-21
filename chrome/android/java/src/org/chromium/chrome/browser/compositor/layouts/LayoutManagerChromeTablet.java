@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -79,6 +82,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *         to support tab drag and drop.
      * @param toolbarContainerView @{link View} passed to @{link StripLayoutHelper} to support tab
      *         drag and drop.
+     * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
@@ -89,7 +93,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ViewGroup tabSwitcherViewHolder, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callable<ViewGroup> delayedStartSurfaceCallable,
-            MultiInstanceManager multiInstanceManager, View toolbarContainerView) {
+            MultiInstanceManager multiInstanceManager, View toolbarContainerView,
+            @NonNull ViewStub tabHoverCardViewStub) {
         super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
                 browserControlsStateProvider, tabContentManagerSupplier, topUiThemeColorProvider,
                 tabSwitcherViewHolder, scrimCoordinator);
@@ -100,7 +105,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 ()
                         -> mLayerTitleCache,
                 tabModelStartupInfoSupplier, lifecycleDispatcher, multiInstanceManager,
-                toolbarContainerView);
+                toolbarContainerView, tabHoverCardViewStub);
         mScrimCoordinator = scrimCoordinator;
         mCreateStartSurfaceCallable = delayedStartSurfaceCallable;
         addSceneOverlay(mTabStripLayoutHelperManager);

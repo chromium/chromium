@@ -127,6 +127,13 @@ found in the LICENSE file.
             android:inflatedId="@+id/tab_switcher_view_holder"
             android:layout="@layout/tab_switcher_view_holder" />
 
+        <ViewStub
+            android:id="@+id/tab_hover_card_holder_stub"
+            android:layout_width="@dimen/tab_hover_card_width"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/tab_hover_card_holder"
+            android:layout="@layout/tab_hover_card_holder" />
+
         <org.chromium.components.messages.MessageContainer
             android:id="@+id/message_container"
             android:layout_width="match_parent"

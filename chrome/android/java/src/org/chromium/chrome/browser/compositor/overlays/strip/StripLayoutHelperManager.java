@@ -12,8 +12,10 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -147,6 +149,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
 
+    private final ViewStub mTabHoverCardViewStub;
+
     private float mModelSelectorWidth;
     // 3-dots menu button with tab strip end padding
     private float mMenuButtonPadding;
@@ -169,6 +173,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
+            // Clear any persisting tab strip hover state on a down event on the strip.
+            getActiveStripLayoutHelper().onHoverExit();
             if (mModelSelectorButton.onDown(x, y)) return;
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
         }
@@ -217,12 +223,19 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         @Override
         public void onHoverEnter(float x, float y) {
-            getActiveStripLayoutHelper().onHoverEnter(x, y);
+            // Inflate the hover card ViewStub if not already inflated.
+            if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+                    && mTabHoverCardViewStub.getParent() != null) {
+                mTabHoverCardViewStub.inflate();
+                // TODO (crbug.com/1483432): Update view background on low-end devices.
+            }
+            getActiveStripLayoutHelper().onHoverEnter(x);
         }
 
         @Override
         public void onHoverMove(float x, float y) {
-            getActiveStripLayoutHelper().onHoverMove(x, y);
+            getActiveStripLayoutHelper().onHoverMove(x);
         }
 
         @Override
@@ -277,13 +290,15 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link TabDragSource} for
      *         drag and drop.
      * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
+     * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      */
     public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            MultiInstanceManager multiInstanceManager, View toolbarContainerView) {
+            MultiInstanceManager multiInstanceManager, View toolbarContainerView,
+            @NonNull ViewStub tabHoverCardViewStub) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -378,10 +393,17 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mBrowserScrimShowing = false;
 
+        mTabHoverCardViewStub = tabHoverCardViewStub;
         mNormalHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, false,
                 mModelSelectorButton, multiInstanceManager, toolbarContainerView);
         mIncognitoHelper = new StripLayoutHelper(context, managerHost, updateHost, renderHost, true,
                 mModelSelectorButton, multiInstanceManager, toolbarContainerView);
+
+        tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
+            mNormalHelper.setTabHoverCardView(view);
+            mIncognitoHelper.setTabHoverCardView(view);
+            getActiveStripLayoutHelper().updateHoverCardColors();
+        });
 
         if (tabModelStartupInfoSupplier != null) {
             if (tabModelStartupInfoSupplier.hasValue()) {
@@ -445,7 +467,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     @Override
-    public void onPauseWithNative() {}
+    public void onPauseWithNative() {
+        // Clear any persisting tab strip hover state when the activity is paused.
+        getActiveStripLayoutHelper().onHoverExit();
+    }
 
     private void handleModelSelectorButtonClick() {
         if (mTabModelSelector == null) return;
@@ -874,6 +899,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mNormalHelper.tabModelSelected(!mIsIncognito);
 
         updateModelSwitcherButton();
+        // Update the tab hover card background and text colors for the active tab model when it is
+        // selected (provided that the hover card view that is shared across the tab models is
+        // already inflated), since the colors will be the same for a given tab model, but different
+        // across tab models.
+        getActiveStripLayoutHelper().updateHoverCardColors();
 
         mUpdateHost.requestUpdate();
     }
@@ -924,5 +954,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     void setTabStripTreeProviderForTesting(TabStripSceneLayer tabStripTreeProvider) {
         mTabStripTreeProvider = tabStripTreeProvider;
+    }
+
+    ViewStub getTabHoverCardViewStubForTesting() {
+        return mTabHoverCardViewStub;
+    }
+
+    TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
+        return mTabModelSelectorObserver;
     }
 }

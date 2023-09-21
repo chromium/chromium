@@ -672,6 +672,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // clang-format off
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
+            ViewStub tabHoverCardViewStub = (ViewStub) findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                 mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
@@ -679,7 +680,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mTabModelStartupInfoSupplier, tabSwitcherViewHolder,
                 mRootUiCoordinator.getScrimCoordinator(), getLifecycleDispatcher(),
                 () -> createAndSetStartSurfaceForTablet(), mMultiInstanceManager,
-                toolbarContainerView);
+                toolbarContainerView, tabHoverCardViewStub);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
