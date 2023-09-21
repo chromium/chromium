@@ -1296,7 +1296,11 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
       FinalizeDragDesk();
       return false;
     case DeskDragProxy::State::kStarted:
-      EndDragDesk(mini_view, /*end_by_user=*/true);
+      // During a mouse drag, if we touch any other mini view, since the other
+      // mini view receives `ET_GESTURE_END` event, hence `mini_view` here might
+      // be different than `drag_view_`. Thus, we use `drag_view_`. Please refer
+      // to b/296106746.
+      EndDragDesk(drag_view_, /*end_by_user=*/true);
       break;
     default:
       NOTREACHED();
