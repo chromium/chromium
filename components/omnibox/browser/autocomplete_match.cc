@@ -104,7 +104,12 @@ bool RichAutocompletionApplicable(bool enabled_all_providers,
 
 // Gives a basis for match comparison that prefers some providers over others
 // while remaining neutral with a default score of zero for most providers.
-int GetDeduplicationProviderPreferenceScore(AutocompleteProvider::Type type) {
+int GetDeduplicationProviderPreferenceScore(
+    const AutocompleteProvider* provider) {
+  if (!provider) {
+    return 0;
+  }
+  const AutocompleteProvider::Type type = provider->type();
   const static int shortcuts_preference =
       base::FeatureList::IsEnabled(
           omnibox::kPreferNonShortcutMatchesWhenDeduping)
@@ -680,9 +685,9 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
 
   // Prefer some providers above others according to score (default is zero).
   const int match1_score =
-      GetDeduplicationProviderPreferenceScore(match1.provider->type());
+      GetDeduplicationProviderPreferenceScore(match1.provider);
   const int match2_score =
-      GetDeduplicationProviderPreferenceScore(match2.provider->type());
+      GetDeduplicationProviderPreferenceScore(match2.provider);
   if (match1_score != match2_score) {
     return match1_score > match2_score;
   }
@@ -1502,9 +1507,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   // bookmark paths and document metadata. Don't edit the omnibox text (i.e.
   // `fill_into_edit`, `inline_autocompletion`, and `additional_text`) as the
   // duplicate may not be `allowed_to_be_default_match`.
-  if (GetDeduplicationProviderPreferenceScore(
-          duplicate_match.provider->type()) >
-      GetDeduplicationProviderPreferenceScore(provider->type())) {
+  if (GetDeduplicationProviderPreferenceScore(duplicate_match.provider) >
+      GetDeduplicationProviderPreferenceScore(provider)) {
     contents = duplicate_match.contents;
     contents_class = duplicate_match.contents_class;
     description = duplicate_match.description;
@@ -1900,24 +1904,26 @@ OmniboxAction* AutocompleteMatch::GetActionAt(size_t index) const {
   return index >= actions.size() ? nullptr : actions[index].get();
 }
 
-void AutocompleteMatch::ConvertFromTakeoverAction() {
-  CHECK(takeover_action);
-  CHECK(takeover_action->ActionId() == OmniboxActionId::PEDAL);
+AutocompleteMatch AutocompleteMatch::CreateActionMatch(
+    size_t action_index) const {
+  CHECK_LT(action_index, actions.size());
+  CHECK_EQ(actions[action_index]->ActionId(), OmniboxActionId::PEDAL);
 
-  swap_contents_and_description = false;
-  transition = ui::PAGE_TRANSITION_GENERATED;
-  type = AutocompleteMatchType::PEDAL;
-  suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+  AutocompleteMatch action_match(nullptr, relevance, false,
+                                 AutocompleteMatchType::PEDAL);
+  action_match.takeover_action = actions[action_index];
+  action_match.transition = ui::PAGE_TRANSITION_GENERATED;
+  action_match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
 
   // Use the pedal text as primary match `contents`.
-  contents = takeover_action->GetLabelStrings().hint;
-  if (contents.empty()) {
-    contents_class.clear();
+  action_match.contents = action_match.takeover_action->GetLabelStrings().hint;
+  if (action_match.contents.empty()) {
+    action_match.contents_class.clear();
   } else {
-    contents_class = {{0, ACMatchClassification::NONE}};
+    action_match.contents_class = {{0, ACMatchClassification::NONE}};
   }
-  description.clear();
-  description_class.clear();
+
+  return action_match;
 }
 
 #if DCHECK_IS_ON()

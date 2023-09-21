@@ -179,8 +179,11 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // particularly noticeable when the user types the next char before the
   // copied matches are expired leading to outdated matches surviving multiple
   // input changes, e.g. 'gooooooooo[oogle.com]'.
+  // Also exclude action matches since matches are annotated and converted
+  // on every pass to keep them associated with the triggering match.
   base::EraseIf(old_matches->matches_, [](const auto& old_match) {
-    return old_match.provider && old_match.provider->done();
+    return old_match.type == AutocompleteMatchType::PEDAL ||
+           (old_match.provider && old_match.provider->done());
   });
 
   if (old_matches->empty())
@@ -582,12 +585,8 @@ void AutocompleteResult::SplitActionsToSuggestions() {
   for (size_t i = 0; i < matches_.size(); i++) {
     for (size_t j = 0; j < matches_[i].actions.size(); j++) {
       if (matches_[i].actions[j]->ActionId() == OmniboxActionId::PEDAL) {
-        AutocompleteMatch& action_match =
-            *matches_.insert(matches_.begin() + i + 1, matches_[i]);
-        action_match.actions.clear();
-        action_match.takeover_action = matches_[i].actions[j];
-        action_match.ConvertFromTakeoverAction();
-
+        *matches_.insert(matches_.begin() + i + 1,
+                         matches_[i].CreateActionMatch(j));
         // Remove this action from the primary match and repeat checking at this
         // same index, which will hence be the next action.
         matches_[i].actions.erase(matches_[i].actions.begin() + j);
