@@ -55,6 +55,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -74,9 +75,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/aura_constants.h"
@@ -1745,6 +1748,83 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // mouse/touch was released.
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
+}
+
+class TestDialog : public views::DialogDelegateView {
+ public:
+  TestDialog() {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetModalType(ui::MODAL_TYPE_CHILD);
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().OverrideName("Test dialog");
+  }
+
+  TestDialog(const TestDialog&) = delete;
+  TestDialog& operator=(const TestDialog&) = delete;
+
+  ~TestDialog() override {}
+
+  views::View* GetInitiallyFocusedView() override { return this; }
+};
+
+// Drags from browser that has a web dialog to separate window.
+// The dialog should follow the new browser window.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DetachToOwnWindowWithDialog) {
+  const gfx::Rect initial_bounds(browser()->window()->GetBounds());
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  // Create a web modal dialog on the first tab.
+  views::Widget* dialog = constrained_window::ShowWebModalDialogViews(
+      new TestDialog, browser()->tab_strip_model()->GetWebContentsAt(0));
+
+  // Capture the initial offset of the dialog relative to the browser before
+  // dragging.
+  gfx::Point dialog_initial_position = dialog->GetRestoredBounds().origin();
+  gfx::Vector2d initial_offset =
+      dialog_initial_position - initial_bounds.origin();
+
+  // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
+  gfx::Point initial_drag_position =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  int detach_y = GetDetachY(tab_strip);
+  DragTabAndNotify(
+      tab_strip,
+      base::BindOnce(
+          base::IgnoreResult(base::BindOnce(
+              // Drags further.
+              &DetachToBrowserTabDragControllerTest::DragInputTo,
+              base::Unretained(this),
+              initial_drag_position + gfx::Vector2d(0, 2 * detach_y))))
+          .Then(base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                                   ReleaseInputAfterWindowDetached,
+                               base::Unretained(this), tab_0_width)));
+
+  // There should now be another browser.
+  ASSERT_EQ(2u, browser_list->size());
+
+  // The dialog should be attached to the new browser.
+  Browser* new_browser = browser_list->get(1);
+
+  // Check that the dialog's parent window is the new browser's window.
+  EXPECT_EQ(dialog->parent(), views::Widget::GetWidgetForNativeWindow(
+                                  new_browser->window()->GetNativeWindow()));
+
+  // The relative offset from the new browser to the dialog should remain
+  // unchanged after dragging.
+  gfx::Point dialog_position = dialog->GetRestoredBounds().origin();
+  gfx::Point browser_position = new_browser->window()->GetBounds().origin();
+  gfx::Vector2d offset = dialog_position - browser_position;
+
+  EXPECT_EQ(initial_offset, offset);
+
+  // The bounds of the initial window should not have changed.
+  EXPECT_EQ(initial_bounds.ToString(),
+            browser()->window()->GetBounds().ToString());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

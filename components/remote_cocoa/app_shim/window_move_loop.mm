@@ -4,9 +4,11 @@
 
 #include "components/remote_cocoa/app_shim/window_move_loop.h"
 
+#include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -42,6 +44,47 @@
 }
 @end
 
+namespace {
+
+// This class addresses a macOS 14 issue where child windows don't follow
+// the parent during tab dragging.
+class ChildWindowMover {
+ public:
+  ChildWindowMover(NSWindow* window) : window_(window) {
+    for (NSWindow* child in window.childWindows) {
+      initial_origins_.emplace_back(child, child.frame.origin);
+    }
+  }
+
+  // Moves child windows based on a given offset vector relative to their
+  // initial origins captured at the construction of this class.
+  void MoveByOffset(gfx::Vector2d move_offset) {
+    if (!window_) {
+      return;
+    }
+
+    for (const auto& [child, initial_origin] : initial_origins_) {
+      if (!child || child.parentWindow != window_) {
+        continue;
+      }
+      gfx::Point expected_origin = initial_origin + move_offset;
+      // On macOS 14, child windows occasionally fail to follow their parent
+      // during tab dragging. A workaround for this issue is to temporarily
+      // remove the child window, set its frame origin, and then re-add it.
+      [window_ removeChildWindow:child];
+      [child
+          setFrameOrigin:NSMakePoint(expected_origin.x(), expected_origin.y())];
+      [window_ addChildWindow:child ordered:NSWindowAbove];
+    }
+  }
+
+ private:
+  NSWindow* __weak window_;
+  std::vector<std::pair<NSWindow * __weak, gfx::Point>> initial_origins_;
+};
+
+}  // namespace
+
 namespace remote_cocoa {
 
 CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
@@ -65,6 +108,7 @@ bool CocoaWindowMoveLoop::Run() {
   exit_reason_ref_ = &exit_reason;
   NSWindow* window = owner_->ns_window();
   const NSRect initial_frame = [window frame];
+  __block ChildWindowMover child_window_mover(window);
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
@@ -97,11 +141,13 @@ bool CocoaWindowMoveLoop::Run() {
 
     if ([event type] == NSEventTypeLeftMouseDragged) {
       const NSPoint mouse_in_screen = [NSEvent mouseLocation];
-
-      NSRect ns_frame = NSOffsetRect(
-          initial_frame, mouse_in_screen.x - initial_mouse_in_screen_.x,
+      gfx::Vector2d mouse_offset(
+          mouse_in_screen.x - initial_mouse_in_screen_.x,
           mouse_in_screen.y - initial_mouse_in_screen_.y);
+      NSRect ns_frame =
+          NSOffsetRect(initial_frame, mouse_offset.x(), mouse_offset.y());
       [window setFrame:ns_frame display:NO animate:NO];
+      child_window_mover.MoveByOffset(mouse_offset);
       // `setFrame:...` may have destroyed `this`, so do the weak check again.
       bool is_valid = [weak_cocoa_window_move_loop weak].get() == strong;
       if (is_valid && !has_moved) {
