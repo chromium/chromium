@@ -580,7 +580,7 @@ TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeValid) {
   EXPECT_TRUE(bridge()->IsEntityDataValid(data));
 }
 
-TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValid) {
+TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValidIfItHasEmptyUrl) {
   auto entry = base::MakeRefCounted<ReadingListEntry>(
       GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
@@ -590,4 +590,88 @@ TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValid) {
   *data.specifics.mutable_reading_list() = *specifics;
 
   EXPECT_FALSE(bridge()->IsEntityDataValid(data));
+}
+
+TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValidIfItHasInvalidUrl) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_url() = "InvalidUrl";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(data));
+}
+
+TEST_F(ReadingListSyncBridgeTest,
+       EntityDataShouldBeNotValidIfTitleContainsNonUTF8) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_title() = "\xFC\x9C\xBF\x80\xBF\x80";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(data));
+}
+
+// TODO(crbug.com/1484570): The below tests should be removed once the invalid
+// specifics get filtered earlier before reaching the bridge.
+TEST_F(ReadingListSyncBridgeTest,
+       ShouldIgnoreEmptyUrlInIncrementalSyncChanges) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_url() = "";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd("", std::move(data)));
+
+  ASSERT_EQ(0ul, model_->size());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
+  EXPECT_EQ(0ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest,
+       ShouldIgnoreInvalidUrlInIncrementalSyncChanges) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_url() = "InvalidUrl";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd("", std::move(data)));
+
+  ASSERT_EQ(0ul, model_->size());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
+  EXPECT_EQ(0ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest,
+       ShouldIgnoreTitleContainsNonUTF8InIncrementalSyncChanges) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_title() = "\xFC\x9C\xBF\x80\xBF\x80";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd("", std::move(data)));
+
+  ASSERT_EQ(0ul, model_->size());
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
+  EXPECT_EQ(0ul, model_->size());
 }
