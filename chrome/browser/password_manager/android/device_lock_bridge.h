@@ -45,6 +45,11 @@ class DeviceLockBridge {
   // Returns true iff the device has a device lock (ex: pin/password).
   bool IsDeviceSecure();
 
+  // Returns true iff the device lock page has already been passed (i.e. the
+  // device lock page has been shown to and affirmatively acknowledged by the
+  // user).
+  bool DeviceLockPageHasBeenPassed();
+
   // This object is an instance of DeviceLockBridge.java (the Java counterpart
   // to this class).
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

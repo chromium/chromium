@@ -41,7 +41,8 @@ void DeviceLockBridge::OnDeviceLockUiFinished(JNIEnv* env,
 }
 
 bool DeviceLockBridge::ShowDeviceLockUiBeforeSavingPassword() {
-  return RequiresDeviceLock() && !IsDeviceSecure();
+  return RequiresDeviceLock() &&
+         (!IsDeviceSecure() || !DeviceLockPageHasBeenPassed());
 }
 
 bool DeviceLockBridge::RequiresDeviceLock() {
@@ -50,5 +51,10 @@ bool DeviceLockBridge::RequiresDeviceLock() {
 
 bool DeviceLockBridge::IsDeviceSecure() {
   return Java_DeviceLockBridge_isDeviceSecure(
+      base::android::AttachCurrentThread(), java_object_);
+}
+
+bool DeviceLockBridge::DeviceLockPageHasBeenPassed() {
+  return Java_DeviceLockBridge_deviceLockPageHasBeenPassed(
       base::android::AttachCurrentThread(), java_object_);
 }

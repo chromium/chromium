@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -49,7 +51,7 @@ public class DeviceLockBridge {
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
                     DeviceLockActivityLauncherSupplier.from(windowAndroid).get();
-            deviceLockActivityLauncher.launchDeviceLockActivity(context, null, true, windowAndroid,
+            deviceLockActivityLauncher.launchDeviceLockActivity(context, null, false, windowAndroid,
                     (resultCode, unused)
                             -> DeviceLockBridgeJni.get().onDeviceLockUiFinished(
                                     mNativeDeviceLockBridge, resultCode == Activity.RESULT_OK));
@@ -68,6 +70,12 @@ public class DeviceLockBridge {
         return ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.KEYGUARD_SERVICE))
                 .isDeviceSecure();
+    }
+
+    @CalledByNative
+    private boolean deviceLockPageHasBeenPassed() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
     }
 
     /**
