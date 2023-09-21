@@ -14,11 +14,11 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages, set_ffx_isolate_dir, \
-                   start_ffx_daemon, stop_ffx_daemon
+                   register_log_args, resolve_packages
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
 from flash_device import register_update_args, update
+from isolate_daemon import IsolateDaemon
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
@@ -88,36 +88,22 @@ def main():
         runner_args.device = True
 
     with ExitStack() as stack:
+        log_manager = LogManager(runner_args.logs_dir)
         if running_unattended():
-            # Updating configurations to meet the requirement of isolate.
-            os.environ['FUCHSIA_ANALYTICS_DISABLED'] = '1'
-            stop_ffx_daemon()
             if runner_args.extra_path:
                 os.environ['PATH'] += os.pathsep + os.pathsep.join(
                     runner_args.extra_path)
-            set_ffx_isolate_dir(
-                stack.enter_context(tempfile.TemporaryDirectory()))
-            # The following configurations are persistent, they are less
-            # problematic if ScopedFfxConfig cannot clear them correctly.
-            stack.enter_context(
-                ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
-            stack.enter_context(ScopedFfxConfig('daemon.autostart', 'false'))
-            stack.enter_context(
-                ScopedFfxConfig('discovery.zedboot.enabled', 'false'))
-            stack.enter_context(
-                ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'))
-            stack.enter_context(ScopedFfxConfig('log.level', 'debug'))
+
+            extra_inits = [log_manager]
             if runner_args.everlasting:
-                # Setting the emu.instance_dir to match the named cache, so we
-                # can keep these files across multiple runs.
-                stack.enter_context(
+                # Setting the emu.instance_dir to match the named cache, so
+                # we can keep these files across multiple runs.
+                extra_inits.append(
                     ScopedFfxConfig(
                         'emu.instance_dir',
                         os.path.join(os.environ['HOME'],
                                      '.fuchsia_emulator/')))
-            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
-            start_ffx_daemon()
-            stack.callback(stop_ffx_daemon)
+            stack.enter_context(IsolateDaemon(extra_inits))
         else:
             if runner_args.logs_dir:
                 logging.warning(
@@ -125,7 +111,7 @@ def main():
                     'daemon is started with the logs.dir config '
                     'updated. We won\'t restart the daemon randomly'
                     ' anymore.')
-            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+            stack.enter_context(log_manager)
 
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
