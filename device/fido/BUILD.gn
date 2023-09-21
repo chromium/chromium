@@ -200,6 +200,8 @@ component("fido") {
       "u2f_register_operation.h",
       "u2f_sign_operation.cc",
       "u2f_sign_operation.h",
+      "value_response_conversions.cc",
+      "value_response_conversions.h",
       "virtual_ctap2_device.cc",
       "virtual_ctap2_device.h",
       "virtual_fido_device.cc",
