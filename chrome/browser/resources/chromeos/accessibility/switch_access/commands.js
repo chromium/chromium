@@ -25,6 +25,13 @@ export class SACommands {
         command => this.runCommand_(command));
   }
 
+  static init() {
+    if (SACommands.instance) {
+      throw new Error('Cannot create more than one SACommands instance.');
+    }
+    SACommands.instance = new SACommands();
+  }
+
   /**
    * Run the function binding for the specified command.
    * @param {!Command} command
@@ -35,3 +42,6 @@ export class SACommands {
     AutoScanManager.restartIfRunning();
   }
 }
+
+/** @type {SACommands} */
+SACommands.instance;

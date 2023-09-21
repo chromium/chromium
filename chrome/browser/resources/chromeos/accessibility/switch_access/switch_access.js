@@ -6,10 +6,8 @@ import {AsyncUtil} from '../common/async_util.js';
 import {EventHandler} from '../common/event_handler.js';
 import {FlagName, Flags} from '../common/flags.js';
 
-import {SACommands} from './commands.js';
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
-import {PreferenceManager} from './preference_manager.js';
 import {ErrorType, Mode} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
@@ -26,23 +24,15 @@ const readyPromise = new Promise(resolve => readyCallback = resolve);
  * codebase.
  */
 export class SwitchAccess {
-  static async init() {
-    await Flags.init();
+  /** @param {!AutomationNode} desktop */
+  static async init(desktop) {
     if (SwitchAccess.instance) {
       throw new Error('Cannot create two SwitchAccess.instances');
     }
     SwitchAccess.instance = new SwitchAccess();
 
-    const desktop = await AsyncUtil.getDesktop();
     const currentFocus = await AsyncUtil.getFocus();
-
-    await SwitchAccess.waitForFocus_(desktop, currentFocus);
-
-    // Navigator must be initialized first.
-    Navigator.initializeSingletonInstances(desktop);
-
-    SwitchAccess.commands = new SACommands();
-    PreferenceManager.initialize();
+    await SwitchAccess.instance.waitForFocus_(desktop, currentFocus);
   }
 
   /** Starts Switch Access behavior. */
@@ -61,7 +51,7 @@ export class SwitchAccess {
    * @param {AutomationNode} currentFocus
    * @private
    */
-  static async waitForFocus_(desktop, currentFocus) {
+  async waitForFocus_(desktop, currentFocus) {
     return new Promise(resolve => {
       // Focus is available. Finish init without waiting for further events.
       // Disallow web view nodes, which indicate a root web area is still

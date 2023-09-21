@@ -202,6 +202,9 @@ js_library("auto_scan_manager") {
 
 js_library("switch_access_loader") {
   deps = [
+    ":commands",
+    ":navigator",
+    ":preference_manager",
     ":switch_access",
     "../common:instance_checker",
   ]
@@ -433,10 +436,8 @@ js_library("slider_node") {
 js_library("switch_access") {
   deps = [
     ":auto_scan_manager",
-    ":commands",
     ":menu_manager",
     ":navigator",
-    ":preference_manager",
     ":switch_access_constants",
     "../common:constants",
     "../common:flags",

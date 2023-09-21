@@ -27,11 +27,12 @@ function resetState() {
 
 AX_TEST_F(
     'SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', async function() {
+      await this.runWithLoadedTree('');
       // Build a new SwitchAccess instance with hooks.
       let initCount = 0;
       const oldInit = SwitchAccess.init;
-      SwitchAccess.init = async () => {
-        await oldInit();
+      SwitchAccess.init = async (...args) => {
+        await oldInit(...args);
         initCount++;
         assertNotNullNorUndefined(this.promiseCallback);
         this.promiseCallback();
@@ -51,7 +52,7 @@ AX_TEST_F(
 
       // Initialize; we should not have incremented initCount since there's no
       // focus.
-      SwitchAccess.init();
+      SwitchAccess.init(this.desktop);
       await this.waitForCallback();
       assertEquals(0, initCount);
 
@@ -60,7 +61,7 @@ AX_TEST_F(
 
       // Restub this to pass a "focused" node.
       chrome.automation.getFocus = callback => callback({});
-      SwitchAccess.init();
+      SwitchAccess.init(this.desktop);
       await this.waitForCallback();
       assertEquals(1, initCount);
     });
