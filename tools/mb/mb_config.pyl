@@ -4169,8 +4169,7 @@
     'cronet_android_mainline_clang': {
       'gn_args': ('clang_base_path = \"//third_party/cronet_android_mainline_clang/linux-amd64\" '
                   'clang_use_chrome_plugins=false '
-                  'use_lenient_compiler_flags=true '
-                  'use_ml_inliner=false '  # https://crbug.com/1468680
+                  'llvm_android_mainline=true '  # https://crbug.com/1481060
                  ),
     },
 

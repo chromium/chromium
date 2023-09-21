@@ -138,7 +138,8 @@ declare_args() {
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
-  use_ml_inliner = host_os == "linux" && is_android
+  use_ml_inliner = host_os == "linux" && is_android &&
+                   !llvm_android_mainline  # https://crbug.com/1468680
 
   # Set to true to use the android unwinder V2 implementation.
   use_android_unwinder_v2 = true
