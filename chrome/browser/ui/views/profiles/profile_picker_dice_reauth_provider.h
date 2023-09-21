@@ -47,6 +47,8 @@ class ProfilePickerDiceReauthProvider
   ProfilePickerDiceReauthProvider& operator=(
       const ProfilePickerDiceReauthProvider&) = delete;
 
+  content::WebContents* contents() const { return contents_.get(); }
+
   // Start the reauth process.
   void SwitchToReauth();
 

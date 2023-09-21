@@ -125,3 +125,15 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
                                      // Hence there is no extension blocked.
       profile);
 }
+
+base::OnceClosure
+ProfileManagementFlowController::CreateSwitchToCurrentStepPopCallback() {
+  return base::BindOnce(
+      &ProfileManagementFlowController::SwitchToStep,
+      // Binding as Unretained as `this` outlives the step
+      // controllers.
+      base::Unretained(this), current_step(),
+      /*reset_state=*/false,
+      /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
+      /*pop_step_callback=*/base::OnceClosure());
+}

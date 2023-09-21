@@ -654,6 +654,16 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     return &test_url_loader_factory_;
   }
 
+  void SimulateNavigateBack() {
+    // Use "Command [" for Mac and "Alt Left" for the other operating systems.
+#if BUILDFLAG(IS_MAC)
+    view()->AcceleratorPressed(
+        ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
+#else
+    view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
+#endif
+  }
+
  protected:
   const GURL kLocalProfileCreationUrl = AppendProfileCustomizationQueryParams(
       GURL("chrome://profile-customization"),
@@ -1055,6 +1065,69 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
 }
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninReauthNavigateBackShouldAbort) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(initial_browser_count, 0u);
+
+  const std::vector<Profile*> profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  ASSERT_GE(profiles.size(), 1u);
+  Profile* profile = profiles[0];
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+
+  ASSERT_TRUE(entry->IsSigninRequired());
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  const std::string email("test@managedchrome.com");
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSignin);
+  // Only managed accounts are allowed to reauth.
+  entry->SetUserAcceptedAccountManagement(true);
+
+  CoreAccountId primary_account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.empty());
+
+  // Simulate an invalid account.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Opening the locked profile from the profile picker should trigger the
+  // reauth.
+  OpenProfileFromPicker(entry->GetPath(), false);
+  WaitForLoadStop(GetChromeReauthURL(email));
+
+  // Simulate a redirect within the reauth page (requesting a password for
+  // example), the actual URL is not important for the testing purposes.
+  GURL redirect_url("https://www.google.com/");
+  web_contents()->GetController().LoadURL(redirect_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                          std::string());
+  WaitForLoadStop(redirect_url);
+
+  // Simulate a back navigation within the reauth redirect.
+  SimulateNavigateBack();
+
+  // Expect it to take us back to the initial reauth page.
+  WaitForLoadStop(GetChromeReauthURL(email));
+
+  // Simulate a back navigation within the reauth page.
+  SimulateNavigateBack();
+
+  // Expect the profile picker to be opened since it was the last step before
+  // reauth, and the profile to be still locked.
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
+  EXPECT_TRUE(entry->IsSigninRequired());
+}
 #endif
 
 // Regression test for crbug.com/1266415.
@@ -1220,13 +1293,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   Profile* profile_being_created = StartDiceSignIn();
 
   // Navigate back from the sign in step.
-  // Use "Command [" for Mac and "Alt Left" for the other operating systems.
-#if BUILDFLAG(IS_MAC)
-  view()->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
-#else
-  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
-#endif
+  SimulateNavigateBack();
 
   // Simulate the sign-in screen get re-entered with a different color
   // (configured on the local profile screen).
@@ -2592,13 +2659,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                       "Joe");
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
-// Navigate back does nothing.
-#if BUILDFLAG(IS_MAC)
-  view()->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
-#else
-  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
-#endif
+  // Navigate back does nothing.
+  SimulateNavigateBack();
+
   EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
 }
 

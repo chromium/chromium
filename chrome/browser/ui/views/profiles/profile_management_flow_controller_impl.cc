@@ -62,18 +62,10 @@ void ProfileManagementFlowControllerImpl::
                 // outlives the step controllers.
                 base::Unretained(this))));
   }
-  auto pop_closure = base::BindOnce(
-      &ProfileManagementFlowControllerImpl::SwitchToStep,
-      // Binding as Unretained as `this` outlives the step
-      // controllers.
-      base::Unretained(this), current_step(),
-      /*reset_state=*/false,
-      /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
-      /*pop_step_callback=*/base::OnceClosure());
   SwitchToStep(Step::kAccountSelection,
                /*reset_state=*/step_needs_registration,
                std::move(step_switch_finished_callback),
-               std::move(pop_closure));
+               CreateSwitchToCurrentStepPopCallback());
 }
 #endif
 

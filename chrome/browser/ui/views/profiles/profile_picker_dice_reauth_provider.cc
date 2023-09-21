@@ -83,11 +83,13 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(&*profile_));
 
-  // TODO(https://crbug.com/1478217): Add the back button and the appropriate
-  // reactions.
-
-  host_->ShowScreen(contents_.get(),
-                    signin::GetChromeReauthURL((email_to_reauth_)));
+  // Show the back button, the reactions are handled by the host itself.
+  host_->ShowScreen(
+      contents_.get(), signin::GetChromeReauthURL((email_to_reauth_)),
+      base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,
+                     // Unretained is enough as the callback is called by the
+                     // host itself.
+                     base::Unretained(host_), /*visible=*/true));
 }
 
 void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
@@ -120,6 +122,8 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
 
 void ProfilePickerDiceReauthProvider::Finish(bool success) {
   scoped_identity_manager_observation_.Reset();
+  // Hide the toolbar in case it was visible after showing the reauth page.
+  host_->SetNativeToolbarVisible(false);
 
   std::move(on_reauth_completed_).Run(success);
 }
