@@ -23,6 +23,8 @@ namespace content {
 // https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
 // to ensure failure reasons are correctly shown in the DevTools
 // frontend.
+//
+// LINT.IfChange
 enum class PrerenderFinalStatus {
   kActivated = 0,
   kDestroyed = 1,
@@ -154,6 +156,7 @@ enum class PrerenderFinalStatus {
 
   kMaxValue = kActivationUrlHasEffectiveUrl,
 };
+// LINT.ThenChange()
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
 PreloadingFailureReason CONTENT_EXPORT
