@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariant" enum="CookiePrefix"
-    expires_after="2023-09-17">
+    expires_after="2024-03-17">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariantCount" enum="Boolean"
-    expires_after="2023-09-17">
+    expires_after="2024-03-17">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariantValid" enum="Boolean"
-    expires_after="2023-09-17">
+    expires_after="2024-03-17">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
