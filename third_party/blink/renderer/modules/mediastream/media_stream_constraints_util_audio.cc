@@ -417,12 +417,22 @@ class EchoCancellationContainer {
     if (!has_active_source)
       return;
 
-    // If HW echo cancellation is used, reconfiguration is not supported and
-    // only the current values are allowed. Otherwise, allow all possible values
-    // for echo cancellation.
-    if (is_reconfiguration_allowed &&
+    // If HW echo cancellation is used, reconfiguration is not always supported
+    // and only the current values are allowed. Otherwise, allow all possible
+    // values for echo cancellation.
+    // TODO(crbug.com/1481032): Consider extending to other platforms. It is not
+    // known at the moment what OSes support this behavior.
+    const bool is_aec_reconfiguration_supported =
+#if BUILDFLAG(IS_CHROMEOS)
+        // ChromeOS is currently the only platform where we have confirmed
+        // support for simultaneous streams with and without hardware AEC on the
+        // same device.
+        true;
+#else
         properties.echo_cancellation_type !=
-            EchoCancellationType::kEchoCancellationSystem) {
+        EchoCancellationType::kEchoCancellationSystem;
+#endif
+    if (is_reconfiguration_allowed && is_aec_reconfiguration_supported) {
       return;
     }
 
