@@ -300,28 +300,22 @@ promise_test(async t => {
 }, `New stats baselines for the clone of a clone`);
 
 promise_test(async t => {
-  const stream = await navigator.mediaDevices.getUserMedia({
-          video:{frameRate:{ideal:20}}
-      });
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
   const [originalTrack] = stream.getTracks();
   t.add_cleanup(() => originalTrack.stop());
 
-  // Wait for 20 frames to be delivered (~1 second).
+  // Wait for some frames and assert that no frames are discarded.
   const firstStats = await getFrameStatsUntil(originalTrack, stats =>
       stats.deliveredFrames > 20);
+  assert_equals(firstStats.discardedFrames, 0);
   // Make a clone that discards almost all frames. This should not affect the
   // discarded frames counter of the original track.
   const clonedTrack = originalTrack.clone();
   await clonedTrack.applyConstraints({frameRate:{ideal:1}});
-  // Wait for another 20 frames (~1 second).
+  // Wait for some more frames. There should still be no frames discarded.
   const secondStats = await getFrameStatsUntil(originalTrack, stats =>
       stats.deliveredFrames > 40);
-  const deltaDiscardedFrames =
-      secondStats.discardedFrames - firstStats.discardedFrames;
-
-  // The amount of frames reported as discarded on the original track should be
-  // approximately the same both before and after cloning.
-  assert_approx_equals(deltaDiscardedFrames, firstStats.discardedFrames, 5);
+  assert_equals(secondStats.discardedFrames, 0);
 }, `A low FPS clone does not affect the original track's discardedFrames`);
 
 promise_test(async t => {
