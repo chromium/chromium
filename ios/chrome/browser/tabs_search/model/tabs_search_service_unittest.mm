@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 
 #import <memory>
 #import <vector>
@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

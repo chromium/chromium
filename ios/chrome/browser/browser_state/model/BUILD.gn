@@ -133,7 +133,7 @@ source_set("model") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:model_type_store_service_factory",
     "//ios/chrome/browser/sync/glue",
-    "//ios/chrome/browser/tabs_search:tabs_search_factory",
+    "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/text_selection/model",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/trusted_vault",

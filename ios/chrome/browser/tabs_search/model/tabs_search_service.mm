@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 
 #import <Foundation/Foundation.h>
 

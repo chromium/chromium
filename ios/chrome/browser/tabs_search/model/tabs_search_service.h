@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TABS_SEARCH_TABS_SEARCH_SERVICE_H_
-#define IOS_CHROME_BROWSER_TABS_SEARCH_TABS_SEARCH_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_H_
+#define IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_H_
 
 #include <set>
 #include <string>
@@ -168,4 +168,4 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   std::unique_ptr<IOSBrowsingHistoryDriver> history_driver_;
 };
 
-#endif  // IOS_CHROME_BROWSER_TABS_SEARCH_TABS_SEARCH_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_H_

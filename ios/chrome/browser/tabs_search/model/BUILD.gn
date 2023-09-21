@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("tabs_search") {
+source_set("model") {
   sources = [
     "tabs_search_service.h",
     "tabs_search_service.mm",
@@ -23,14 +23,14 @@ source_set("tabs_search") {
   ]
 }
 
-source_set("tabs_search_factory") {
+source_set("model_factory") {
   sources = [
     "tabs_search_service_factory.h",
     "tabs_search_service_factory.mm",
   ]
 
   deps = [
-    ":tabs_search",
+    ":model",
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -47,8 +47,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "tabs_search_service_unittest.mm" ]
   deps = [
-    ":tabs_search",
-    ":tabs_search_factory",
+    ":model",
+    ":model_factory",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser",
