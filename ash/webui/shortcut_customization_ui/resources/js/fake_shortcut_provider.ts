@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
@@ -19,13 +19,16 @@ import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAccelerator
 // Method names.
 const ON_ACCELERATORS_UPDATED_METHOD_NAME =
     'AcceleratorsUpdatedObserver_OnAcceleratorsUpdated';
-
+const ON_POLICY_UPDATED_METHOD_NAME =
+    'PolicyUpdatedObserver_OnCustomizationPolicyUpdated';
 export class FakeShortcutProvider implements ShortcutProviderInterface {
   private methods: FakeMethodResolver;
   private observables: FakeObservables = new FakeObservables();
   private acceleratorsUpdatedRemote: AcceleratorsUpdatedObserverRemote|null =
       null;
   private acceleratorsUpdatedPromise: Promise<void>|null = null;
+  private policyUpdateRemote: PolicyUpdatedObserverRemote|null = null;
+  private policyUpdatedPromise: Promise<void>|null = null;
   private restoreDefaultCallCount: number = 0;
   private preventProcessingAcceleratorsCallCount: number = 0;
   private addAcceleratorCallCount: number = 0;
@@ -46,6 +49,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('restoreDefault');
     this.methods.register('restoreAllDefaults');
     this.methods.register('addObserver');
+    this.methods.register('addPolicyObserver');
     this.methods.register('preventProcessingAccelerators');
     this.methods.register('getConflictAccelerator');
     this.methods.register('getDefaultAcceleratorsForId');
@@ -55,6 +59,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   registerObservables(): void {
     this.observables.register(ON_ACCELERATORS_UPDATED_METHOD_NAME);
+    this.observables.register(ON_POLICY_UPDATED_METHOD_NAME);
   }
 
   // Disable all observers and reset provider to initial state.
@@ -97,9 +102,21 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
         });
   }
 
+  addPolicyObserver(observer: PolicyUpdatedObserverRemote): void {
+    this.policyUpdatedPromise =
+        this.observe(ON_POLICY_UPDATED_METHOD_NAME, () => {
+          observer.onCustomizationPolicyUpdated();
+        });
+  }
+
   getAcceleratorsUpdatedPromiseForTesting(): Promise<void> {
     assert(this.acceleratorsUpdatedPromise);
     return this.acceleratorsUpdatedPromise;
+  }
+
+  getPolicyUpdatedPromiseForTesting(): Promise<void> {
+    assert(this.policyUpdatedPromise);
+    return this.policyUpdatedPromise;
   }
 
   // Set the value that will be retuned when `onAcceleratorsUpdated()` is
@@ -107,6 +124,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   setFakeAcceleratorsUpdated(config: MojoAcceleratorConfig[]): void {
     this.observables.setObservableData(
         ON_ACCELERATORS_UPDATED_METHOD_NAME, config);
+  }
+
+  setFakePolicyUpdated(): void {
+    this.observables.setObservableData(ON_POLICY_UPDATED_METHOD_NAME, [true]);
   }
 
   addAccelerator(

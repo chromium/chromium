@@ -807,8 +807,6 @@ Shell::~Shell() {
   // Must be destructed before human_presence_orientation_controller_.
   power_prefs_.reset();
 
-  accelerator_prefs_.reset();
-
   // Must be destructed before the tablet mode and message center controllers,
   // both of which these rely on.
   snooping_protection_controller_.reset();

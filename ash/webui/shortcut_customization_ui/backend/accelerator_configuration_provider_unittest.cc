@@ -160,6 +160,25 @@ class FakeAcceleratorsUpdatedMojoObserver
   int num_times_notified_ = 0;
 };
 
+class FakePolicyUpdatedMojoObserver
+    : public shortcut_customization::mojom::PolicyUpdatedObserver {
+ public:
+  void OnCustomizationPolicyUpdated() override { ++num_times_notified_; }
+
+  mojo::PendingRemote<shortcut_customization::mojom::PolicyUpdatedObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  int num_times_notified() { return num_times_notified_; }
+  void clear_num_times_notified() { num_times_notified_ = 0; }
+
+ private:
+  mojo::Receiver<shortcut_customization::mojom::PolicyUpdatedObserver>
+      receiver_{this};
+  int num_times_notified_ = 0;
+};
+
 bool AreAcceleratorsEqual(const ui::Accelerator& expected_accelerator,
                           const mojom::AcceleratorInfoPtr& actual_info) {
   const bool accelerator_equals =
@@ -389,6 +408,12 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetUpPolicyObserver(
+      FakePolicyUpdatedMojoObserver* mojo_policy_observer) {
+    provider_->AddPolicyObserver(mojo_policy_observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetLayoutDetailsMap(
       const std::vector<AcceleratorLayoutDetails>& layouts) {
     provider_->SetLayoutDetailsMapForTesting(layouts);
@@ -532,6 +557,22 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   // Verify observer has been updated with the new set of accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
                                updated_test_data, mojo_observer.config());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, CustomizationPolicyUpdated) {
+  FakePolicyUpdatedMojoObserver policy_observer;
+  SetUpPolicyObserver(&policy_observer);
+  EXPECT_EQ(0, policy_observer.num_times_notified());
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kShortcutCustomizationAllowed, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, policy_observer.num_times_notified());
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kShortcutCustomizationAllowed, true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, policy_observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {

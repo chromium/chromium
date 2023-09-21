@@ -24,7 +24,7 @@ suite('acceleratorSubsectionTest', function() {
   let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     manager = AcceleratorLookupManager.getInstance();
     manager!.setAcceleratorLookup(fakeAcceleratorConfig);
     manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);

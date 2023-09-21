@@ -16,7 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
-import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getTextAcceleratorParts, isCustomizationDisabled} from './shortcut_utils.js';
+import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getTextAcceleratorParts, isCustomizationAllowed} from './shortcut_utils.js';
 
 export type ShowEditDialogEvent = CustomEvent<{
   description: string,
@@ -119,7 +119,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   }
 
   private showDialog(): void {
-    if (isCustomizationDisabled() || this.isTextLayout()) {
+    if (!isCustomizationAllowed() || this.isTextLayout()) {
       return;
     }
 
@@ -159,7 +159,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
 
   protected getTabIndex(): number {
     // If customization is disabled, this element should not be tab-focusable.
-    return isCustomizationDisabled() ? -1 : 0;
+    return !isCustomizationAllowed() ? -1 : 0;
   }
 
   protected onRowFocused(): void {

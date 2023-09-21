@@ -604,7 +604,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
 
   // Observe shortcut policy changes.
   // Gets removed on `AcceleratorPrefs` destruction.
-  Shell::Get()->accelerator_prefs()->AddObserver(this);
+  if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+    Shell::Get()->accelerator_prefs()->AddObserver(this);
+  }
 
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     // `InputDeviceSettingsController` provides updates whenever a device is
@@ -660,7 +662,9 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
     if (features::IsInputDeviceSettingsSplitEnabled()) {
       Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
     }
-    Shell::Get()->accelerator_prefs()->RemoveObserver(this);
+    if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+      Shell::Get()->accelerator_prefs()->RemoveObserver(this);
+    }
   }
 }
 
@@ -819,6 +823,13 @@ void AcceleratorConfigurationProvider::AddObserver(
   accelerators_updated_mojo_observer_.Bind(std::move(observer));
 }
 
+void AcceleratorConfigurationProvider::AddPolicyObserver(
+    mojo::PendingRemote<shortcut_customization::mojom::PolicyUpdatedObserver>
+        observer) {
+  policy_updated_mojo_observer.reset();
+  policy_updated_mojo_observer.Bind(std::move(observer));
+}
+
 void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
     uint8_t input_device_types) {
   if (input_device_types & (ui::InputDeviceEventObserver::kKeyboard)) {
@@ -850,9 +861,10 @@ void AcceleratorConfigurationProvider::OnKeyboardSettingsUpdated(
   NotifyAcceleratorsUpdated();
 }
 
-// TODO(longbowei): Create policy_updated_mojo_observer and inform it
-// of any policy updates.
 void AcceleratorConfigurationProvider::OnShortcutPolicyUpdated() {
+  if (policy_updated_mojo_observer.is_bound()) {
+    policy_updated_mojo_observer->OnCustomizationPolicyUpdated();
+  }
   NotifyAcceleratorsUpdated();
 }
 

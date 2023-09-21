@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('fakeShortcutProviderTest', function() {
@@ -29,6 +29,13 @@ suite('fakeShortcutProviderTest', function() {
     public override onAcceleratorsUpdated(config: MojoAcceleratorConfig) {
       assertDeepEquals(fakeAcceleratorConfig, config);
     }
+  }
+
+  // Fake class that overrides the `onCustomizationPolicyUpdated` function. This
+  // allows us to intercept the request send from the remote and validate
+  // the data received.
+  class FakePolicyUpdatedRemote extends PolicyUpdatedObserverRemote {
+    public override onCustomizationPolicyUpdated() {}
   }
 
   function getProvider(): FakeShortcutProvider {
@@ -77,6 +84,17 @@ suite('fakeShortcutProviderTest', function() {
     getProvider().addObserver(remote);
     // Simulate `onAcceleratorsUpdated()` being called by an observer.
     return getProvider().getAcceleratorsUpdatedPromiseForTesting();
+  });
+
+  test('ObservePolicyUpdated', () => {
+    // Set the expected value to be returned when
+    // `onCustomizationPolicyUpdated()` is called.
+    getProvider().setFakePolicyUpdated();
+
+    const remote = new FakePolicyUpdatedRemote();
+    getProvider().addPolicyObserver(remote);
+    // Simulate `onCustomizationPolicyUpdated()` being called by an observer.
+    return getProvider().getPolicyUpdatedPromiseForTesting();
   });
 
   test('IsMutableDefaultFake', () => {

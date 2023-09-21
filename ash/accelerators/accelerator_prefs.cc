@@ -64,14 +64,21 @@ void AcceleratorPrefs::RemoveObserver(AcceleratorPrefs::Observer* observer) {
 }
 
 void AcceleratorPrefs::OnCustomizationPolicyChanged() {
+  if (!IsUserEnterpriseManaged()) {
+    return;
+  }
   for (auto& observer : observers_) {
     observer.OnShortcutPolicyUpdated();
   }
 }
 
+bool AcceleratorPrefs::IsUserEnterpriseManaged() {
+  return delegate_->IsUserEnterpriseManaged();
+}
+
 bool AcceleratorPrefs::IsCustomizationAllowed() {
   // If user is managed and pref is set by admin policy, check the pref.
-  if (delegate_->IsUserEnterpriseManaged()) {
+  if (IsUserEnterpriseManaged()) {
     PrefService* pref_service = GetActiveUserPrefService();
     if (pref_service && pref_service->IsManagedPreference(
                             prefs::kShortcutCustomizationAllowed)) {

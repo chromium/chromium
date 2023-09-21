@@ -161,7 +161,7 @@ suite('shortcutCustomizationAppTest', function() {
   async function validateAcceleratorInDialog(
       acceleratorConfigResult: AcceleratorConfigResult,
       expectedErrorMessage: string) {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -221,7 +221,7 @@ suite('shortcutCustomizationAppTest', function() {
   }
 
   test('LoadFakeWindowsAndDesksPage', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -264,7 +264,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('LoadFakeBrowserPage', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -666,7 +666,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RestoreAllButton', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -718,7 +718,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RestoreAllButtonShownWithFlag', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
@@ -731,7 +731,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RestoreAllButtonHiddenWithoutFlag', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    loadTimeData.overrideValues({isCustomizationAllowed: false});
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
@@ -744,7 +744,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('CurrentPageChangesWhenURLIsUpdated', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    loadTimeData.overrideValues({isCustomizationAllowed: false});
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
@@ -889,7 +889,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('DialogAcceleratorUpdateOnAcceleartorsUpdated', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
 
     // Set up test to only have one shortcut.
     // Category: Windows and Desks, Subcategory: Desks.

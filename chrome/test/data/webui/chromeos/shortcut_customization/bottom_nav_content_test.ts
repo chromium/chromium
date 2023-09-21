@@ -38,7 +38,7 @@ suite('BottomNavContentTest', function() {
   });
 
   test('RestoreAllButtonNotHidden', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     contentElement = initBottomNavContentElement();
     contentElement.restoreAllButtonHidden = false;
     const restoreAllButton =
@@ -48,7 +48,7 @@ suite('BottomNavContentTest', function() {
   });
 
   test('RestoreAllButtonHidden', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     contentElement = initBottomNavContentElement();
     contentElement.restoreAllButtonHidden = true;
     const restoreAllButton =
@@ -61,7 +61,7 @@ suite('BottomNavContentTest', function() {
     // Even if customization is disabled, if the property
     // `restoreAllButtonHidden` is false, the button will be shown. It's up to
     // the parent element to check if customization is enabled.
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    loadTimeData.overrideValues({isCustomizationAllowed: false});
     contentElement = initBottomNavContentElement();
     contentElement.restoreAllButtonHidden = false;
     const restoreAllButton =

@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {InputKeyElement, KeyInputState} from './input_key.js';
 import {AcceleratorSource, TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
-import {isCustomizationDisabled} from './shortcut_utils.js';
+import {isCustomizationAllowed} from './shortcut_utils.js';
 import {getTemplate} from './text_accelerator.html.js';
 
 /**
@@ -136,7 +136,7 @@ export class TextAcceleratorElement extends PolymerElement {
   private shouldShowLockIcon(): boolean {
     // Show lock icon in each row if customization is enabled and its
     // category is not locked.
-    if (isCustomizationDisabled()) {
+    if (!isCustomizationAllowed()) {
       return false;
     }
     return !this.lookupManager.isCategoryLocked(

@@ -83,9 +83,9 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'ZoomToggle': 'fullscreen',
 };
 
-// Returns true if shortcut customization is disabled via the feature flag.
-export const isCustomizationDisabled = (): boolean => {
-  return !loadTimeData.getBoolean('isCustomizationEnabled');
+// Return true if shortcut customization is allowed.
+export const isCustomizationAllowed = (): boolean => {
+  return loadTimeData.getBoolean('isCustomizationAllowed');
 };
 
 export const isTextAcceleratorInfo =

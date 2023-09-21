@@ -99,6 +99,9 @@ class AcceleratorConfigurationProvider
   void AddObserver(mojo::PendingRemote<
                    shortcut_customization::mojom::AcceleratorsUpdatedObserver>
                        observer) override;
+  void AddPolicyObserver(
+      mojo::PendingRemote<shortcut_customization::mojom::PolicyUpdatedObserver>
+          observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
   void PreventProcessingAccelerators(
@@ -280,6 +283,10 @@ class AcceleratorConfigurationProvider
       accelerators_updated_mojo_observer_;
   base::ObserverList<AcceleratorsUpdatedObserver>
       accelerators_updated_observers_;
+
+  // Policy update mojo observer:
+  mojo::Remote<shortcut_customization::mojom::PolicyUpdatedObserver>
+      policy_updated_mojo_observer;
 
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
       this};

@@ -319,7 +319,7 @@ suite('acceleratorViewTest', function() {
     // Verify lock icon show/hide based on properties.
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
-          {isCustomizationEnabled: testCase.customizationEnabled});
+          {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
@@ -404,7 +404,7 @@ suite('acceleratorViewTest', function() {
     }
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
-          {isCustomizationEnabled: testCase.customizationEnabled});
+          {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;

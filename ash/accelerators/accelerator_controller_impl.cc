@@ -351,7 +351,9 @@ void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
 
 void AcceleratorControllerImpl::TestApi::ObserveAcceleratorUpdates() {
   CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
-  controller_->accelerator_configuration()->AddObserver(controller_);
+  if (!controller_->accelerator_configuration()->HasObserver(controller_)) {
+    controller_->accelerator_configuration()->AddObserver(controller_);
+  }
 }
 
 bool AcceleratorControllerImpl::TestApi::IsActionForAcceleratorEnabled(
@@ -413,12 +415,14 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
 
   Init();
 
-  if (::features::IsShortcutCustomizationEnabled()) {
+  if (Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     accelerator_configuration_->AddObserver(this);
   }
 
   // Observe shortcut policy changes.
-  Shell::Get()->accelerator_prefs()->AddObserver(this);
+  if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+    Shell::Get()->accelerator_prefs()->AddObserver(this);
+  }
 
   // Let AcceleratorHistory be a PreTargetHandler on aura::Env to ensure that it
   // receives KeyEvents and MouseEvents. In some cases Shell PreTargetHandlers
@@ -435,15 +439,17 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   // |AcceleratorControllerImpl| is owned by the shell which always is
-  // deconstructed before |InputMethodManager|
+  // deconstructed before |InputMethodManager| and |AcceleratorPref|.
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     InputMethodManager::Get()->RemoveObserver(this);
   }
-  if (::features::IsShortcutCustomizationEnabled()) {
+  if (Shell::HasInstance() &&
+      Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     accelerator_configuration_->RemoveObserver(this);
   }
   // In unit tests, the Shell instance may already be deleted at this point.
-  if (Shell::HasInstance()) {
+  if (Shell::HasInstance() &&
+      Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
     Shell::Get()->accelerator_prefs()->RemoveObserver(this);
   }
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
@@ -482,6 +488,12 @@ void AcceleratorControllerImpl::OnShortcutPolicyUpdated() {
   // by policy.
   if (!Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     accelerator_configuration_->RemoveObserver(this);
+  }
+  // If customization is allowed by policy and there is no existing
+  // observer, add the listener. This will be useful when the admin toggles
+  // on/off the policy.
+  else if (!accelerator_configuration_->HasObserver(this)) {
+    accelerator_configuration_->AddObserver(this);
   }
 }
 

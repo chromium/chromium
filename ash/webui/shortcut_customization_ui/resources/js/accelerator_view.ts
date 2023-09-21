@@ -20,8 +20,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
-
+import {createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 export interface AcceleratorViewElement {
   $: {
     container: HTMLDivElement,
@@ -612,7 +611,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowLockIcon(): boolean {
     // Do not show lock icon in each row if customization is disabled or its
     // category is locked.
-    if (isCustomizationDisabled() || this.categoryIsLocked) {
+    if (!isCustomizationAllowed() || this.categoryIsLocked) {
       return false;
     }
     // Show lock icon if accelerator is locked.
@@ -623,7 +622,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowEditIcon(): boolean {
     // Do not show edit icon in each row if customization is disabled, the row
     // is displayed in edit-dialog(!showEditIcon) or category is locked.
-    if (isCustomizationDisabled() || !this.showEditIcon ||
+    if (!isCustomizationAllowed() || !this.showEditIcon ||
         this.categoryIsLocked) {
       return false;
     }

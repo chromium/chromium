@@ -19,6 +19,7 @@ static_library("shortcut_customization_ui") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/resources:shortcut_customization_app_resources",

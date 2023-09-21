@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -37,13 +38,17 @@ class ShortcutCustomizationAppUIConfig
                              SystemWebAppType::SHORTCUT_CUSTOMIZATION) {}
 };
 
-class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
+class ShortcutCustomizationAppUI : public ui::MojoWebUIController,
+                                   public AcceleratorPrefs::Observer {
  public:
   explicit ShortcutCustomizationAppUI(content::WebUI* web_ui);
   ShortcutCustomizationAppUI(const ShortcutCustomizationAppUI&) = delete;
   ShortcutCustomizationAppUI& operator=(const ShortcutCustomizationAppUI&) =
       delete;
   ~ShortcutCustomizationAppUI() override;
+
+  // AcceleratorPrefs::Observer:
+  void OnShortcutPolicyUpdated() override;
 
   void BindInterface(
       mojo::PendingReceiver<

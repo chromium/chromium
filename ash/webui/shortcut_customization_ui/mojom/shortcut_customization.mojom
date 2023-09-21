@@ -58,6 +58,14 @@ interface AcceleratorsUpdatedObserver {
       map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
 };
 
+// Observer interface, to be implemented by the Shortcut Customization SWA to
+// receive updates related to shortcut customization policies.
+interface PolicyUpdatedObserver {
+  // Called whenever there is a change in the kShortcutCustomizationAllowed
+  // policy. This informs the observer about the changes in policy settings.
+  OnCustomizationPolicyUpdated();
+};
+
 // Provides methods to allow the Shortcut Customization SWA to call on the
 // shortcut provider implementor. Interface is implemented by C++ accelerator
 // source configurators, e.g. BrowserAcceleratorConfiguration,
@@ -94,6 +102,10 @@ interface AcceleratorConfigurationProvider {
   // Registers an observer that will be notified whenever there is an update
   // to either the accelerator mapping or on keyboard device connected event.
   AddObserver(pending_remote<AcceleratorsUpdatedObserver> observer);
+
+  // Registers an observer that will be notified whenever there is a change
+  // in the shortcut customization policy settings.
+  AddPolicyObserver(pending_remote<PolicyUpdatedObserver> observer);
 
   // Get a list of all shortcuts with their corresponding category,
   // sub-category, styling, description, source and action. The order of the

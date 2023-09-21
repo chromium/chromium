@@ -105,6 +105,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
 
   const AcceleratorAction* FindAcceleratorAction(
       const ui::Accelerator& accelerator) const;

@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver, PolicyUpdatedObserverInterface, PolicyUpdatedObserverReceiver, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
 import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
@@ -32,7 +32,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {getAcceleratorId, getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
+import {getAcceleratorId, getCategoryNameStringId, isCustomizationAllowed} from './shortcut_utils.js';
 
 const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
 const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
@@ -61,7 +61,8 @@ const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase implements
-        AcceleratorsUpdatedObserverInterface, RouteObserver {
+        AcceleratorsUpdatedObserverInterface, PolicyUpdatedObserverInterface,
+        RouteObserver {
   static get is(): string {
     return 'shortcut-customization-app';
   }
@@ -111,6 +112,7 @@ export class ShortcutCustomizationAppElement extends
   private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private acceleratorsUpdatedReceiver: AcceleratorsUpdatedObserverReceiver;
+  private policyUpdatedReceiver: PolicyUpdatedObserverReceiver;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -129,6 +131,10 @@ export class ShortcutCustomizationAppElement extends
       ColorChangeUpdater.forDocument().start();
     }
 
+    this.policyUpdatedReceiver = new PolicyUpdatedObserverReceiver(this);
+    this.shortcutProvider.addPolicyObserver(
+        this.policyUpdatedReceiver.$.bindNewPipeAndPassRemote());
+
     this.fetchAccelerators();
     this.addEventListener('show-edit-dialog', this.showDialog);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
@@ -145,6 +151,7 @@ export class ShortcutCustomizationAppElement extends
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.policyUpdatedReceiver.$.close();
     this.acceleratorsUpdatedReceiver.$.close();
     this.removeEventListener('show-edit-dialog', this.showDialog);
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
@@ -204,6 +211,12 @@ export class ShortcutCustomizationAppElement extends
     this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
       this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
     });
+  }
+
+  // PolicyUpdatedObserverInterface:
+  onCustomizationPolicyUpdated(): void {
+    // Reload the page to apply the changes.
+    window.location.reload();
   }
 
   private addNavigationSelectors(layoutInfos: MojoLayoutInfo[]): void {
@@ -282,7 +295,7 @@ export class ShortcutCustomizationAppElement extends
   }
 
   protected shouldHideRestoreAllButton(): boolean {
-    return isCustomizationDisabled();
+    return !isCustomizationAllowed();
   }
 
   protected updateDialogAccelerators(

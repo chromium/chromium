@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
@@ -209,8 +210,9 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 }
 
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean("isCustomizationEnabled",
-                          ::features::IsShortcutCustomizationEnabled());
+  html_source->AddBoolean(
+      "isCustomizationAllowed",
+      Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   html_source->AddBoolean(
       "isJellyEnabledForShortcutCustomization",
       ash::features::IsJellyEnabledForShortcutCustomization());
@@ -240,9 +242,28 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   AddLocalizedStrings(source);
 
   AddFeatureFlags(source);
+
+  // Observe shortcut policy changes.
+  if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+    Shell::Get()->accelerator_prefs()->AddObserver(this);
+  }
 }
 
-ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() = default;
+ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() {
+  if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+    Shell::Get()->accelerator_prefs()->RemoveObserver(this);
+  }
+}
+
+void ShortcutCustomizationAppUI::OnShortcutPolicyUpdated() {
+  base::Value::Dict update_data;
+  // Update 'isCustomizationAllowed" when policy changes.
+  update_data.Set("isCustomizationAllowed",
+                  Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
+  content::WebUIDataSource::Update(
+      web_ui()->GetWebContents()->GetBrowserContext(),
+      kChromeUIShortcutCustomizationAppHost, std::move(update_data));
+}
 
 void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<

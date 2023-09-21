@@ -186,7 +186,7 @@ suite('textAcceleratorTest', function() {
     // Verify lock icon show/hide based on properties.
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
-          {isCustomizationEnabled: testCase.customizationEnabled});
+          {isCustomizationAllowed: testCase.customizationEnabled});
       const ctrlKey =
           createTextAcceleratorPart('ctrl', TextAcceleratorPartType.kModifier);
       await initTextAcceleratorElement(

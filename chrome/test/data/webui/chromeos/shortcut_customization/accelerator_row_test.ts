@@ -52,7 +52,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('LoadsBasicRow', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
@@ -103,7 +103,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('ShowDialogOnClickWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     waitAfterNextRender(rowElement);
 
@@ -142,7 +142,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('EditIconHiddenWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    loadTimeData.overrideValues({isCustomizationAllowed: false});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     waitAfterNextRender(rowElement);
 
@@ -174,7 +174,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('ShowTextAccelerator', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kText);
 
     const accelerators = [createTextAcceleratorInfo([{
@@ -201,7 +201,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('LoadBasicRowEvenWhenAccelTextIsPresent', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
@@ -247,7 +247,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('ElementFocusableWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
 
     const acceleratorInfo = createUserAcceleratorInfo(
@@ -266,7 +266,7 @@ suite('acceleratorRowTest', function() {
   });
 
   test('ElementFocusableWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    loadTimeData.overrideValues({isCustomizationAllowed: false});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
 
     const acceleratorInfo = createUserAcceleratorInfo(
