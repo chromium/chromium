@@ -185,9 +185,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif
 
   // Deprecated prefs registered for migration.
-  registry->RegisterBooleanPref(
-      prefs::kAutofillEnabledDeprecated, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kAutofillEnabledDeprecated, true);
   registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
   registry->RegisterBooleanPref(prefs::kAutofillIbanEnabled, true);
 

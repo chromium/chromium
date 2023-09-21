@@ -44,7 +44,7 @@ namespace syncable_prefs_ids {
 enum {
   kSyncablePrefForTesting = 0,  // For tests.
   kAutofillCreditCardEnabled = 1,
-  kAutofillEnabledDeprecated = 2,
+  // kAutofillEnabledDeprecated = 2, (deprecated)
   kAutofillHasSeenIban = 3,
   // kAutofillIbanEnabled = 4,  (obsolete).
   kAutofillLastVersionDeduped = 5,
@@ -123,9 +123,6 @@ const auto& SyncablePreferences() {
         {autofill::prefs::kAutofillCreditCardEnabled,
          {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,
           false, MergeBehavior::kNone}},
-            {autofill::prefs::kAutofillEnabledDeprecated,
-             {syncable_prefs_ids::kAutofillEnabledDeprecated,
-              syncer::PREFERENCES, false, MergeBehavior::kNone}},
             {autofill::prefs::kAutofillHasSeenIban,
              {syncable_prefs_ids::kAutofillHasSeenIban, syncer::PREFERENCES,
               false, MergeBehavior::kNone}},
