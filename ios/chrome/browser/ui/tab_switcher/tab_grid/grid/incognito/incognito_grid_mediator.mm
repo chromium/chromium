@@ -46,10 +46,10 @@
   if (self = [super initWithConsumer:consumer]) {
       CHECK(prefService);
       _prefService = prefService;
+      _prefChangeRegistrar.Init(_prefService);
       if (base::FeatureList::IsEnabled(
               supervised_user::
                   kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
-        _prefChangeRegistrar.Init(_prefService);
         _prefObserverBridge.reset(new PrefObserverBridge(self));
         // Register to observe any changes on supervised_user status.
         _prefObserverBridge->ObserveChangesForPreference(
