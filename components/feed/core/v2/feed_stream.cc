@@ -1766,13 +1766,9 @@ void FeedStream::CheckDuplicatedContentsOnRefresh() {
   base::flat_set<uint32_t> viewed_content_hashes(
       stream_metadata.viewed_content_hashes().begin(),
       stream_metadata.viewed_content_hashes().end());
-  most_recent_viewed_content_hashes.erase(
-      std::remove_if(most_recent_viewed_content_hashes.begin(),
-                     most_recent_viewed_content_hashes.end(),
-                     [&viewed_content_hashes](uint32_t x) {
-                       return viewed_content_hashes.contains(x);
-                     }),
-      most_recent_viewed_content_hashes.end());
+  base::EraseIf(most_recent_viewed_content_hashes,
+      [&viewed_content_hashes](
+      uint32_t x) { return viewed_content_hashes.contains(x); });
   most_recent_viewed_content_hashes.insert(
       most_recent_viewed_content_hashes.end(),
       stream_metadata.viewed_content_hashes().begin(),

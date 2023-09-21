@@ -45,14 +45,9 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
   // startups, and is being removed proactively here in the case that there
   // wasn't a chance to clean it up before the previous shutdown.
   const auto orig_size = startup_data.stream_data.size();
-  startup_data.stream_data.erase(
-      std::remove_if(startup_data.stream_data.begin(),
-                     startup_data.stream_data.end(),
-                     [&](const feedstore::StreamData& e) {
-                       return feedstore::StreamTypeFromKey(e.stream_key())
-                           .IsSingleWebFeed();
-                     }),
-      startup_data.stream_data.end());
+  base::EraseIf(startup_data.stream_data, [&](const feedstore::StreamData& e) {
+    return feedstore::StreamTypeFromKey(e.stream_key()).IsSingleWebFeed();
+  });
 
   result_.startup_data = std::move(startup_data);
 

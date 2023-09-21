@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -1353,18 +1354,14 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
   // Collect all Actions in Suggest.
   omnibox::ActionInfo::ActionType remove_action_type =
       OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.Get();
-  actions.erase(
-      std::remove_if(
-          actions.begin(), actions.end(),
-          [&actions_in_suggest_to_reinsert,
-           remove_action_type](const scoped_refptr<OmniboxAction>& action) {
-            auto* ais = OmniboxActionInSuggest::FromAction(action.get());
-            if (ais != nullptr && ais->Type() != remove_action_type) {
-              actions_in_suggest_to_reinsert.emplace(ais->Type(), action);
-            }
-            return ais != nullptr;
-          }),
-      actions.end());
+  base::EraseIf(actions, [&actions_in_suggest_to_reinsert, remove_action_type](
+                             const scoped_refptr<OmniboxAction>& action) {
+    auto* ais = OmniboxActionInSuggest::FromAction(action.get());
+    if (ais != nullptr && ais->Type() != remove_action_type) {
+      actions_in_suggest_to_reinsert.emplace(ais->Type(), action);
+    }
+    return ais != nullptr;
+  });
 
   for (auto pair : actions_in_suggest_to_reinsert) {
     actions.emplace_back(std::move(pair.second));

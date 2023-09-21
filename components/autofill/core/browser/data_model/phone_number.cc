@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -246,14 +247,10 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
       // GetNationallyFormattedNumber optimizes for screen display, e.g. it
       // shows a US number as (888) 123-1234. The following retains only the
       // digits.
-      national_number.erase(
-          std::remove_if(
-              national_number.begin(), national_number.end(),
-              [](char16_t c) {
-                return c > UCHAR_MAX || !absl::ascii_isdigit(
-                    static_cast<unsigned char>(c));
-              }),
-          national_number.end());
+      base::EraseIf(national_number, [](char16_t c) {
+        return c > UCHAR_MAX ||
+               !absl::ascii_isdigit(static_cast<unsigned char>(c));
+      });
       return national_number;
     }
 
