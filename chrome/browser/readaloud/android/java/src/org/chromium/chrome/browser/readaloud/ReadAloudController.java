@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.expandedplayer.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator;
+import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -45,7 +46,7 @@ public class ReadAloudController {
     private final TabModel mTabModel;
     private final MiniPlayerCoordinator mMiniPlayer;
     private final ExpandedPlayer mExpandedPlayer;
-    private final PlayerController mPlayerController;
+    private final PlayerCoordinator mPlayerCoordinator;
     private TabModelTabObserver mTabObserver;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
@@ -87,7 +88,7 @@ public class ReadAloudController {
                 : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
         mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub);
         mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
-        mPlayerController = new PlayerController(mMiniPlayer, mExpandedPlayer);
+        mPlayerCoordinator = new PlayerCoordinator(context);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override
@@ -173,10 +174,10 @@ public class ReadAloudController {
         PlaybackArgs args =
                 new PlaybackArgs(tab.getUrl().getSpec(), TranslateBridge.getCurrentLanguage(tab),
                         /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
-        // TODO request playback here and call mPlayerController.playbackReady()
+        // TODO request playback here and call mPlayerCoordinator.playbackReady()
 
         // Notify player UI that playback is happening soon.
-        mPlayerController.playTabRequested(tab);
+        mPlayerCoordinator.playTabRequested();
     }
 
     /**
@@ -197,7 +198,7 @@ public class ReadAloudController {
             mTabObserver.destroy();
         }
         // Stop playback and hide players.
-        mPlayerController.destroy();
+        mPlayerCoordinator.destroy();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
