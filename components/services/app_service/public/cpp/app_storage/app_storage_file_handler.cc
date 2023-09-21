@@ -20,6 +20,7 @@ constexpr char kAppStorageFileName[] = "AppStorage";
 
 constexpr char kTypeKey[] = "type";
 constexpr char kNameKey[] = "name";
+constexpr char kReadinessKey[] = "readiness";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
@@ -109,6 +110,8 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
       app_details_dict.Set(kNameKey, app->name.value());
     }
 
+    app_details_dict.Set(kReadinessKey, static_cast<int>(app->readiness));
+
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(app_details_dict));
   }
@@ -148,6 +151,13 @@ std::vector<AppPtr> AppStorageFileHandler::ConvertValueToApps(
     auto app =
         std::make_unique<App>(static_cast<AppType>(app_type.value()), app_id);
     app->name = GetStringValueFromDict(*value, kNameKey);
+
+    auto readiness = value->FindInt(kReadinessKey);
+    if (readiness.has_value() &&
+        readiness.value() >= static_cast<int>(Readiness::kUnknown) &&
+        readiness.value() <= static_cast<int>(Readiness::kMaxValue)) {
+      app->readiness = static_cast<Readiness>(readiness.value());
+    }
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     apps.push_back(std::move(app));

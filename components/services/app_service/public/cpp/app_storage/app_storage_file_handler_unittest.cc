@@ -90,10 +90,12 @@ class AppStorageFileHandlerTest : public testing::Test {
 
     AppPtr app1 = std::make_unique<App>(kAppType1, kAppId1);
     app1->name = kAppName1;
+    app1->readiness = Readiness::kReady;
     apps.push_back(std::move(app1));
 
     AppPtr app2 = std::make_unique<App>(kAppType2, kAppId2);
     app2->name = kAppName2;
+    app2->readiness = Readiness::kDisabledByUser;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
@@ -130,7 +132,8 @@ TEST_F(AppStorageFileHandlerTest, ReadFromWrongJSONFile) {
 
 // Test AppStorageFileHandler can work when the data format isn't correct.
 TEST_F(AppStorageFileHandlerTest, ReadFromWrongDataFile) {
-  const char kAppInfoData[] = "{\"abc\":{}, \"aaa\":{\"type\":2}}";
+  const char kAppInfoData[] =
+      "{\"abc\":{}, \"aaa\":{\"type\":2, \"readiness\":100}}";
   WriteToFile(kAppInfoData);
   auto apps = ReadFromFile();
 
@@ -139,6 +142,9 @@ TEST_F(AppStorageFileHandlerTest, ReadFromWrongDataFile) {
   EXPECT_EQ(1u, apps.size());
   EXPECT_EQ("aaa", apps[0]->app_id);
   EXPECT_EQ(AppType::kBuiltIn, apps[0]->app_type);
+  // The readiness for the app "aaa" is wrong, so readiness is set as the
+  // default value.
+  EXPECT_EQ(Readiness::kUnknown, apps[0]->readiness);
 }
 
 // Test AppStorageFileHandler can work when the app type isn't correct.
