@@ -1,3 +1,0 @@
-include_rules = [
-  "+chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
-]

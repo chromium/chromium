@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/read_write_cards/read_write_cards_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -39,9 +39,10 @@ class EditorMenuBrowserTest : public InProcessBrowserTest {
       chromeos::editor_menu::EditorMenuPromoCardView;
 
   EditorMenuControllerImpl* GetControllerImpl() {
-    return chromeos::ReadWriteCardsFactory::GetForBrowserContext(
-               browser()->profile())
-        ->editor_menu_for_testing();
+    auto* read_write_manager =
+        static_cast<chromeos::ReadWriteCardsManagerImpl*>(
+            chromeos::ReadWriteCardsManager::Get());
+    return read_write_manager->editor_menu_for_testing();
   }
 
   views::View* GetEditorMenuView() {

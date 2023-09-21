@@ -53,6 +53,7 @@
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -313,6 +314,9 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   if (!is_initial_profile) {
     return;
   }
+
+  read_write_cards_manager_ =
+      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 
   // Initialize the metric reporting manager so we can start recording relevant
   // telemetry metrics and events on managed devices. The reporting manager

@@ -41,6 +41,10 @@ namespace arc {
 class ArcIconCacheDelegateProvider;
 }  // namespace arc
 
+namespace chromeos {
+class ReadWriteCardsManager;
+}  // namespace chromeos
+
 namespace crosapi {
 class ClipboardHistoryLacros;
 class SearchControllerLacros;
@@ -176,6 +180,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Handles WebAuthn request id generation.
   std::unique_ptr<WebAuthnRequestRegistrarLacros>
       webauthn_request_registrar_lacros_;
+
+  // Handles read write cards requests from the Lacros browser.
+  std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
 
   // Updates Blink preferences on tablet mode state change.
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;

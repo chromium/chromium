@@ -5776,7 +5776,6 @@ static_library("browser") {
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/telemetry",
-      "//chrome/browser/chromeos/read_write_cards",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/webshare:storage",

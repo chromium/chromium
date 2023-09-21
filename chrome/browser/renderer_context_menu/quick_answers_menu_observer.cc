@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/read_write_cards/read_write_cards_factory.h"
-#include "chrome/browser/chromeos/read_write_cards/read_write_cards_manager.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
@@ -30,18 +30,11 @@ QuickAnswersMenuObserver::~QuickAnswersMenuObserver() = default;
 void QuickAnswersMenuObserver::OnContextMenuShown(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen) {
-  read_write_cards_manager_ =
-      chromeos::ReadWriteCardsFactory::GetForBrowserContext(
-          proxy_->GetBrowserContext());
+  chromeos::ReadWriteCardsManager* cards_manager =
+      chromeos::ReadWriteCardsManager::Get();
+  CHECK(cards_manager);
 
-  // `read_write_cards_manager_` could be nullptr, e.g. this is an OffTheRecord
-  // context.
-  if (!read_write_cards_manager_) {
-    return;
-  }
-
-  read_write_card_controller_ =
-      read_write_cards_manager_->GetController(params);
+  read_write_card_controller_ = cards_manager->GetController(params);
   if (!read_write_card_controller_) {
     return;
   }

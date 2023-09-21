@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -18,7 +17,6 @@ class RenderViewContextMenuProxy;
 
 namespace chromeos {
 class ReadWriteCardController;
-class ReadWriteCardsManager;
 }  // namespace chromeos
 
 // A class that implements the quick answers menu.
@@ -55,7 +53,6 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
 
   raw_ptr<chromeos::ReadWriteCardController> read_write_card_controller_ =
       nullptr;
-  raw_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_ = nullptr;
 
   base::WeakPtrFactory<QuickAnswersMenuObserver> weak_factory_{this};
 };

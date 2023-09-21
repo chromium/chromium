@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_MANAGER_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_READ_WRITE_CARDS_MANAGER_IMPL_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_READ_WRITE_CARDS_MANAGER_IMPL_H_
 
 #include <memory>
 
-#include "components/keyed_service/core/keyed_service.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
 
 class QuickAnswersControllerImpl;
 
@@ -23,23 +23,20 @@ class EditorMenuControllerImpl;
 
 class ReadWriteCardController;
 
-// `ReadWriteCardsManager` provides supported UI controller to given context
+// `ReadWriteCardsManagerImpl` provides supported UI controller to given context
 // menu params. It could be either QuickAnswersController or
-// EditorMenuController.
-class ReadWriteCardsManager : public KeyedService {
+// EditorMenuController, or nullptr.
+class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  public:
-  ReadWriteCardsManager();
-  ReadWriteCardsManager(const ReadWriteCardsManager&) = delete;
-  ReadWriteCardsManager& operator=(const ReadWriteCardsManager&) = delete;
-  ~ReadWriteCardsManager() override;
+  ReadWriteCardsManagerImpl();
+  ReadWriteCardsManagerImpl(const ReadWriteCardsManagerImpl&) = delete;
+  ReadWriteCardsManagerImpl& operator=(const ReadWriteCardsManagerImpl&) =
+      delete;
+  ~ReadWriteCardsManagerImpl() override;
 
-  // KeyedService:
-  void Shutdown() override;
-
-  // Returns the supported controller for the input params. Could be nullptr if
-  // it is not supported.
+  // ReadWriteCardController:
   ReadWriteCardController* GetController(
-      const content::ContextMenuParams& params);
+      const content::ContextMenuParams& params) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();
@@ -53,4 +50,4 @@ class ReadWriteCardsManager : public KeyedService {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_MANAGER_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_READ_WRITE_CARDS_MANAGER_IMPL_H_

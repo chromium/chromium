@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
@@ -351,6 +352,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
+
+  read_write_cards_manager_ =
+      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -415,8 +419,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   app_list_client_.reset();
   ash_shell_init_.reset();
 
-  // This instance must be destructed after `ash_shell_init_`.
+  // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();
+  read_write_cards_manager_.reset();
 
   ambient_client_.reset();
 

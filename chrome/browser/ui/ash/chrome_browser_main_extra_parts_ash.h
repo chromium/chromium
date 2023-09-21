@@ -21,6 +21,10 @@ class NightLightClient;
 class VideoConferenceTrayController;
 }  // namespace ash
 
+namespace chromeos {
+class ReadWriteCardsManager;
+}  // namespace chromeos
+
 namespace enterprise_connectors {
 class AshAttestationCleanupManager;
 }
@@ -153,6 +157,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
+  std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
