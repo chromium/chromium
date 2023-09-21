@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_source.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -277,8 +278,14 @@ DownloadTargetDeterminer::Result
     DCHECK(virtual_path_.IsAbsolute());
   }
   DVLOG(20) << "Generated virtual path: " << virtual_path_.AsUTF8Unsafe();
+  LOG(ERROR) << "DownloadTargetDeterminer::DoGenerateTargetPath path: " << virtual_path_.AsUTF8Unsafe();
 
   if (confirmation_reason_ != DownloadConfirmationReason::NONE) {
+     if (download_->GetDownloadSource() == download::DownloadSource::CONTEXT_MENU) {
+        // 来自上下文菜单的下载链接无需弹窗确认
+        confirmation_reason_ = DownloadConfirmationReason::NONE;
+        return CONTINUE;
+     }
      delegate_->RequestConfirmation(
         download_, virtual_path_, confirmation_reason_,
         base::BindRepeating(

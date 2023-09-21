@@ -1,7 +1,9 @@
 package com.ark.browser.ui.fragment.dialog;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.ark.browser.ui.widget.EmptyAlertEditText;
 import com.ark.browser.utils.FileUtil;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
@@ -38,6 +41,7 @@ public class DownloadDialog extends FitWindowOverDragBottomDialog<DownloadDialog
     private String fileSize;
     private String downloadPath;
     private boolean isDangerous;
+    private boolean isConflict;
 
     private boolean isDismissed = false;
 
@@ -79,16 +83,50 @@ public class DownloadDialog extends FitWindowOverDragBottomDialog<DownloadDialog
         }
 
         super.initView(view, savedInstanceState);
+
+        final TextView ok = findViewById(R.id.tv_ok);
+        final TextView cancel = findViewById(R.id.tv_cancel);
+
         ImageView fileIcon = findViewById(R.id.file_icon);
         TextView fileSizeTextView = findViewById(R.id.file_size);
-        final EditText etName = findViewById(R.id.et_file_name);
+        final EmptyAlertEditText etName = findViewById(R.id.et_file_name);
+        etName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String name = etName.getTrimmedText();
+                if (!TextUtils.isEmpty(name)) {
+                    if (new File(new File(downloadPath).getParentFile(), name).exists()) {
+                        etName.setError("文件已存在");
+                        ok.setText("仍要下载");
+                        etName.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                etName.requestFocus();
+                            }
+                        });
+                    } else {
+                        etName.setError(null);
+                        ok.setText("确定");
+                    }
+                } else {
+                    ok.setText("确定");
+                }
+            }
+        });
+
+
         EditText etLink = findViewById(R.id.et_link);
         TextView copyLink = findViewById(R.id.copy_link);
         final TextView tCount = findViewById(R.id.threads_count);
         final SeekBar threads = findViewById(R.id.threads);
-
-        final TextView ok = findViewById(R.id.tv_ok);
-        final TextView cancel = findViewById(R.id.tv_cancel);
 
         SkinEngine.setTextColor(cancel, R.attr.textColorMajor);
         SkinEngine.setTextColor(ok, R.attr.colorPrimary);
@@ -219,6 +257,11 @@ public class DownloadDialog extends FitWindowOverDragBottomDialog<DownloadDialog
 
     public DownloadDialog setDangerous(boolean dangerous) {
         isDangerous = dangerous;
+        return this;
+    }
+
+    public DownloadDialog setConflict(boolean conflict) {
+        isConflict = conflict;
         return this;
     }
 

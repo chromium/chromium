@@ -1093,10 +1093,11 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         return;
       }
 
+      /*
       gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
       DownloadPathReservationTracker::GetReservedPath(
           download, suggested_path, download_dir,
-          base::FilePath() /* fallback_directory */, true,
+          base::FilePath(), true,
           DownloadPathReservationTracker::UNIQUIFY,
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
@@ -1104,6 +1105,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
               download->GetURL().spec(), download->GetTotalBytes(),
               show_download_later_dialog, download->IsDangerous(), std::move(callback)));
       return;
+      */
     }
 
     // Figure out type of dialog and display.
@@ -1125,6 +1127,10 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 
       case DownloadConfirmationReason::DANGEROUS:
         dialog_type = DownloadLocationDialogType::DANGEROUS;
+        break;
+
+      case DownloadConfirmationReason::TARGET_CONFLICT:
+        dialog_type = DownloadLocationDialogType::NAME_CONFLICT;
         break;
 
       case DownloadConfirmationReason::PREFERENCE:

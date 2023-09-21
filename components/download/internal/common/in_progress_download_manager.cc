@@ -106,7 +106,7 @@ void BeginResourceDownload(
           network::SharedURLLoaderFactory::Create(
               std::move(pending_url_loader_factory)),
           url_security_policy, serialized_embedder_download_data, tab_url,
-          tab_referrer_url, is_new_download, false,
+          tab_referrer_url, is_new_download, true,
           std::move(wake_lock_provider), is_background_mode, main_task_runner)
           .release(),
       base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));

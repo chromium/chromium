@@ -127,7 +127,10 @@ public class DownloadDialogBridge {
             activity = windowAndroid.getActivity().get();
         }
         Log.e("DownloadDialogBridge", "showDialog windowAndroid="
-                + windowAndroid + " activity=" + activity);
+                + windowAndroid + " activity=" + activity
+                + " dialogType=" + dialogType
+                + " isDangerous=" + isDangerous
+                + " suggestedPath=" + suggestedPath);
 
         if (activity == null) {
             onCancel();

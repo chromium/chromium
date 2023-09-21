@@ -176,6 +176,7 @@ public class ArkMainFragment extends BaseFragment implements
                             .setFileSize(FileUtils.formatFileSize(totalBytes))
                             .setDownloadPath(suggestedPath)
                             .setDangerous(isDangerous)
+                            .setConflict(dialogType == DownloadLocationDialogType.NAME_CONFLICT)
                             .show(activity);
                 }
             }

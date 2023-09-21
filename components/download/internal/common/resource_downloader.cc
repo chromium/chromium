@@ -191,7 +191,7 @@ void ResourceDownloader::Start(
       *(resource_request_.get()), std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(
           download_url_parameters->GetNetworkTrafficAnnotation()));
-  url_loader_->SetPriority(net::RequestPriority::IDLE,
+  url_loader_->SetPriority(net::RequestPriority::HIGHEST,
                            0 /* intra_priority_value */);
 }
 

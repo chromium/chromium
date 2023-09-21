@@ -1465,6 +1465,8 @@ void DownloadManagerImpl::BeginDownloadInternal(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool is_new_download,
     const std::string& serialized_embedder_download_data) {
+  LOG(ERROR) << "DownloadManagerImpl::BeginDownloadInternal is_new_download=" << is_new_download;
+  LOG(ERROR) << "DownloadManagerImpl::BeginDownloadInternal url=" << params->url() << " id=" << params->render_process_host_id();
   // Check if the renderer is permitted to request the requested URL.
   if (params->render_process_host_id() >= 0 &&
       !DownloadRequestUtils::IsURLSafe(params->render_process_host_id(),
