@@ -43,12 +43,17 @@ android_library("java") {
 }
 
 robolectric_library("junit_test_support") {
-  sources = [ "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java" ]
+  sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java",
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowGlobalSettings.java",
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowSecureSettings.java",
+  ]
   deps = [ ":java" ]
 }
 
 robolectric_library("stylus_handwriting_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/AndroidStylusWritingHandlerTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinderTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",

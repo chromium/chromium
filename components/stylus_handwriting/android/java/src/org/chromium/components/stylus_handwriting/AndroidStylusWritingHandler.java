@@ -91,9 +91,6 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     }
 
     @Override
-    public void onWindowFocusChanged(Context context, boolean hasFocus) {}
-
-    @Override
     public boolean canShowSoftKeyboard() {
         // TODO(mahesh.ma): We can return false here when Android stylus writing service has widget
         // toolbar that can allow editing commands like add space, backspace, perform editor actions
