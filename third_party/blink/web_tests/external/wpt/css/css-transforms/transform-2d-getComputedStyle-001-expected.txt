@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Matrix for translation transforms assert_equals: Computed style for an element with 'display: none' shouldn't be changed expected "matrix(1, 0, 0, 1, 10, 20)" but got "none"
-FAIL Matrix for rotate assert_equals: Computed style for an element with 'display: none' shouldn't be changed expected "matrix(0, 1, -1, 0, 0, 0)" but got "none"
-FAIL Matrix for scaling assert_equals: Computed style for an element with 'display: none' shouldn't be changed expected "matrix(2, 0, 0, 2, 0, 0)" but got "none"
-FAIL Matrix for skew assert_equals: Computed style for an element with 'display: none' shouldn't be changed expected "matrix(1, 0, 1, 1, 0, 0)" but got "none"
-FAIL Matrix for general transform assert_equals: Computed style for an element with 'display: none' shouldn't be changed expected "matrix(1, 2, 3, 4, 5, 6)" but got "none"
-Harness: the test ran to completion.
-

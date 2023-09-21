@@ -77,13 +77,14 @@
         const element = document.getElementById(id);
         const value = window.getComputedStyle(element).transform;
         element.style.display = 'none';
-        // Per spec, the resolved value doesn't depend on display value.
         // https://drafts.csswg.org/css-transforms-2/#serialization-of-the-computed-value
-        // https://github.com/w3c/csswg-drafts/issues/9121
-        assert_equals(
-            window.getComputedStyle(element).transform, value,
-                "Computed style for an element with 'display: none' " +
-                "shouldn't be changed");
+        // For now both 'none' and 'matrix()' are accepted as resolved value of
+        // transform for an element with 'display: none' until we get a consensus
+        // in https://github.com/w3c/csswg-drafts/issues/9121.
+        assert_in_array(
+            window.getComputedStyle(element).transform, ['none', value],
+            "The resolved value of 'transform' for an element with 'display: none' " +
+            "should be 'none' or should not depend on display value.");
     }
 
     test(function() {
