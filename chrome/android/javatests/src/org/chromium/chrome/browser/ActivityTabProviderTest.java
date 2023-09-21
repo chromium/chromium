@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Matchers;
@@ -26,8 +27,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -44,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests for {@link ChromeActivity}'s {@link ActivityTabProvider}.
  */
+@DoNotBatch(reason = "waitForActivityCompletelyLoaded is unhappy when batched - more work needed")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ActivityTabProviderTest {
@@ -68,13 +68,13 @@ public class ActivityTabProviderTest {
         }
 
         @Override
-        protected void addObserverToTabProvider() {
-            TestThreadUtils.runOnUiThreadBlocking(super::addObserverToTabProvider);
+        protected void addObserverToTabSupplier() {
+            TestThreadUtils.runOnUiThreadBlocking(super::addObserverToTabSupplier);
         }
 
         @Override
-        protected void removeObserverFromTabProvider() {
-            TestThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabProvider);
+        protected void removeObserverFromTabSupplier() {
+            TestThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabSupplier);
         }
 
         @Override
@@ -229,7 +229,6 @@ public class ActivityTabProviderTest {
                 mActivityTab);
         Tab activityTabBefore = mActivityTab;
 
-        int callCount = mActivityTabChangedHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivity.getTabModelSelector().closeTab(startingTab); });
 
@@ -284,16 +283,5 @@ public class ActivityTabProviderTest {
                     activityTabProvider.get(), Matchers.equalTo(null));
         });
         TestThreadUtils.runOnUiThreadBlocking(activityTabProvider::destroy);
-    }
-
-    /**
-     * Enter or exit the tab switcher with animations and wait for the scene to change.
-     * @param inSwitcher Whether to enter or exit the tab switcher.
-     */
-    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
-        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
-        @LayoutType
-        int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
-        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, true);
     }
 }

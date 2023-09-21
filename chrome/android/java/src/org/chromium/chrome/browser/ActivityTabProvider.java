@@ -4,19 +4,15 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -30,16 +26,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
      * A utility class for observing the activity tab via {@link TabObserver}. When the activity
      * tab changes, the observer is switched to that tab.
      */
-    public static class ActivityTabTabObserver extends EmptyTabObserver {
-        /** A handle to the activity tab provider. */
-        private final ActivityTabProvider mTabProvider;
-
-        /** An observer to watch for a changing activity tab and move this tab observer. */
-        private final Callback<Tab> mActivityTabObserver;
-
-        /** The current activity tab. */
-        private Tab mTab;
-
+    public static class ActivityTabTabObserver extends TabSupplierObserver {
         /**
          * Create a new {@link TabObserver} that only observes the activity tab. It doesn't trigger
          * for the initial tab being attached to after creation.
@@ -57,26 +44,12 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
          * creation.
          */
         public ActivityTabTabObserver(ActivityTabProvider tabProvider, boolean shouldTrigger) {
-            mTabProvider = tabProvider;
-            mActivityTabObserver = (tab) -> {
-                updateObservedTab(tab);
-                onObservingDifferentTab(tab, /*hint=*/false);
-            };
-
-            addObserverToTabProvider();
-            if (shouldTrigger) onObservingDifferentTab(tabProvider.get(), /*hint=*/false);
-
-            updateObservedTabToCurrent();
+            super(tabProvider, shouldTrigger);
         }
 
-        /**
-         * Update the tab being observed.
-         * @param newTab The new tab to observe.
-         */
-        private void updateObservedTab(Tab newTab) {
-            if (mTab != null) mTab.removeObserver(ActivityTabTabObserver.this);
-            mTab = newTab;
-            if (mTab != null) mTab.addObserver(ActivityTabTabObserver.this);
+        @Override
+        protected void onObservingDifferentTab(Tab tab) {
+            onObservingDifferentTab(tab, false);
         }
 
         /**
@@ -86,35 +59,9 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
          * @param tab The tab that the observer is now observing. This can be null.
          * @param hint Whether the change event is a hint that a tab change is likely. If true, the
          *             provided tab may still be frozen and is not yet selected.
+         * @Deprecated - hint is unused, override this method without the hint parameter.
          */
         protected void onObservingDifferentTab(Tab tab, boolean hint) {}
-
-        /**
-         * Clean up any state held by this observer.
-         */
-        @CallSuper
-        public void destroy() {
-            if (mTab != null) {
-                mTab.removeObserver(this);
-                mTab = null;
-            }
-            removeObserverFromTabProvider();
-        }
-
-        @VisibleForTesting
-        protected void updateObservedTabToCurrent() {
-            updateObservedTab(mTabProvider.get());
-        }
-
-        @VisibleForTesting
-        protected void addObserverToTabProvider() {
-            mTabProvider.addObserver(mActivityTabObserver);
-        }
-
-        @VisibleForTesting
-        protected void removeObserverFromTabProvider() {
-            mTabProvider.removeObserver(mActivityTabObserver);
-        }
     }
 
     /** A handle to the {@link LayoutStateProvider} to get the active layout. */
