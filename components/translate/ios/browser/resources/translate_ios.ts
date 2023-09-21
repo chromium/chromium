@@ -17,7 +17,9 @@ declare module cr {
   let googleTranslate: any;
 }
 
-let securityOrigin: string;
+declare global {
+  let securityOrigin: string;
+}
 
 /**
  * Translate XMLHttpRequests still outstanding.
