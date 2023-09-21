@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -23,11 +23,14 @@ namespace {
 const base::FilePath::CharType kLocalTracesDatabasePath[] =
     FILE_PATH_LITERAL("LocalTraces.db");
 const char kLocalTracesTableName[] = "local_traces";
-constexpr int kCurrentVersionNumber = 2;
+constexpr int kCurrentVersionNumber = 3;
 
 ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
+  auto trace_id = base::Token::FromString(statement.ColumnString(0));
+  CHECK(trace_id.has_value());
+
   ClientTraceReport client_report;
-  client_report.uuid = base::Uuid::ParseLowercase(statement.ColumnString(0));
+  client_report.uuid = *trace_id;
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
@@ -157,7 +160,7 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
 
   CHECK(create_local_trace.is_valid());
 
-  create_local_trace.BindString(0, new_report.uuid.AsLowercaseString());
+  create_local_trace.BindString(0, new_report.uuid.ToString());
   create_local_trace.BindTime(1, new_report.creation_time);
   create_local_trace.BindString(2, new_report.scenario_name);
   create_local_trace.BindString(3, new_report.upload_rule_name);
@@ -173,7 +176,7 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
   return create_local_trace.Run();
 }
 
-bool TraceReportDatabase::UserRequestedUpload(const base::Uuid& uuid) {
+bool TraceReportDatabase::UserRequestedUpload(const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return false;
@@ -190,14 +193,14 @@ bool TraceReportDatabase::UserRequestedUpload(const base::Uuid& uuid) {
 
   update_local_trace.BindInt(
       0, static_cast<int>(ReportUploadState::kPending_UserRequested));
-  update_local_trace.BindString(1, uuid.AsLowercaseString());
+  update_local_trace.BindString(1, uuid.ToString());
   update_local_trace.BindInt(
       2, static_cast<int>(SkipUploadReason::kNotAnonymized));
 
   return update_local_trace.Run();
 }
 
-bool TraceReportDatabase::UploadComplete(const base::Uuid& uuid,
+bool TraceReportDatabase::UploadComplete(const base::Token& uuid,
                                          base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -215,13 +218,13 @@ bool TraceReportDatabase::UploadComplete(const base::Uuid& uuid,
 
   update_local_trace.BindInt(0, static_cast<int>(ReportUploadState::kUploaded));
   update_local_trace.BindTime(1, time);
-  update_local_trace.BindString(2, uuid.AsLowercaseString());
+  update_local_trace.BindString(2, uuid.ToString());
 
   return update_local_trace.Run();
 }
 
 absl::optional<std::string> TraceReportDatabase::GetProtoValue(
-    const base::Uuid& uuid) {
+    const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return absl::nullopt;
@@ -234,7 +237,7 @@ absl::optional<std::string> TraceReportDatabase::GetProtoValue(
 
   CHECK(get_local_trace_proto.is_valid());
 
-  get_local_trace_proto.BindString(0, uuid.AsLowercaseString());
+  get_local_trace_proto.BindString(0, uuid.ToString());
 
   if (!get_local_trace_proto.Step()) {
     return absl::nullopt;
@@ -248,7 +251,7 @@ absl::optional<std::string> TraceReportDatabase::GetProtoValue(
   return received_value;
 }
 
-bool TraceReportDatabase::DeleteTrace(const base::Uuid& uuid) {
+bool TraceReportDatabase::DeleteTrace(const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return false;
@@ -259,7 +262,7 @@ bool TraceReportDatabase::DeleteTrace(const base::Uuid& uuid) {
 
   CHECK(delete_trace.is_valid());
 
-  delete_trace.BindString(0, uuid.AsLowercaseString());
+  delete_trace.BindString(0, uuid.ToString());
 
   return delete_trace.Run();
 }

@@ -136,7 +136,7 @@ void CompressTraceOnDatabaseTaskRunner(
 
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
-    base::Uuid uuid,
+    base::Token uuid,
     base::OnceCallback<void(std::string)> receive_callback,
     base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
         on_finalize_complete) {
@@ -285,8 +285,8 @@ void BackgroundTracingManagerImpl::GetAllTraceReports(
 }
 
 void BackgroundTracingManagerImpl::DeleteSingleTrace(
-    const base::Uuid& trace_uuid,
-    TraceUploadList::FinishedProcessingCallback callback) {
+    const base::Token& trace_uuid,
+    FinishedProcessingCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(false);
     return;
@@ -314,7 +314,7 @@ void BackgroundTracingManagerImpl::DeleteAllTraces(
 }
 
 void BackgroundTracingManagerImpl::UserUploadSingleTrace(
-    const base::Uuid& trace_uuid,
+    const base::Token& trace_uuid,
     TraceUploadList::FinishedProcessingCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(false);
@@ -328,7 +328,7 @@ void BackgroundTracingManagerImpl::UserUploadSingleTrace(
       std::move(callback));
 }
 
-void BackgroundTracingManagerImpl::DownloadTrace(const base::Uuid& trace_uuid,
+void BackgroundTracingManagerImpl::DownloadTrace(const base::Token& trace_uuid,
                                                  GetProtoCallback callback) {
   if (!trace_database_) {
     std::move(callback).Run(absl::nullopt);
@@ -766,7 +766,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
                                 serialized_trace.size() / 1024);
 
     BaseTraceReport base_report;
-    base_report.uuid = base::Uuid::GenerateRandomV4();
+    base_report.uuid = base::Token::CreateRandom();
     base_report.creation_time = base::Time::Now();
     base_report.scenario_name = scenario_name;
     base_report.upload_rule_name = rule_name;

@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,7 +20,7 @@ namespace {
 
 NewTraceReport MakeNewTraceReport(base::Time now = base::Time::Now()) {
   NewTraceReport new_report;
-  new_report.uuid = base::Uuid::GenerateRandomV4();
+  new_report.uuid = base::Token::CreateRandom();
   new_report.scenario_name = "test_scenario";
   new_report.upload_rule_name = "test_rule";
   new_report.total_size = 42;
@@ -62,12 +62,15 @@ TEST_F(TraceReportDatabaseTest, AddingNewTraceReport) {
 
   // Create Report for the local traces database.
   NewTraceReport new_report = MakeNewTraceReport();
+  const auto new_uuid = new_report.uuid;
   const auto new_size = new_report.total_size;
 
   ASSERT_TRUE(trace_report_.AddTrace(new_report));
 
   auto received_reports = trace_report_.GetAllReports();
 
+  // Verify that the conversion from string to Token is done correctly
+  EXPECT_EQ(new_uuid, received_reports[0].uuid);
   EXPECT_EQ(received_reports.size(), 1u);
   EXPECT_EQ(received_reports[0].scenario_name, "test_scenario");
   EXPECT_EQ(received_reports[0].upload_rule_name, "test_rule");

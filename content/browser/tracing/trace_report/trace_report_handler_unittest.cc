@@ -5,7 +5,7 @@
 #include "content/browser/tracing/trace_report/trace_report_handler.h"
 
 #include "base/test/mock_callback.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,16 +25,16 @@ class FakeTraceUploadList : public TraceUploadList {
   MOCK_METHOD(void, GetAllTraceReports, (GetReportsCallback), (override));
   MOCK_METHOD(void,
               DeleteSingleTrace,
-              (const base::Uuid&, FinishedProcessingCallback),
+              (const base::Token&, FinishedProcessingCallback),
               (override));
   MOCK_METHOD(void, DeleteAllTraces, (FinishedProcessingCallback), (override));
   MOCK_METHOD(void,
               UserUploadSingleTrace,
-              (const base::Uuid&, FinishedProcessingCallback),
+              (const base::Token&, FinishedProcessingCallback),
               (override));
   MOCK_METHOD(void,
               DownloadTrace,
-              (const base::Uuid&, GetProtoCallback),
+              (const base::Token&, GetProtoCallback),
               (override));
 };
 
@@ -81,7 +81,7 @@ TEST_F(TraceReportHandlerTest, GetAllTraceReports) {
 
         for (int report = 0; report < 2; ++report) {
           ClientTraceReport test_report;
-          test_report.uuid = base::Uuid::GenerateRandomV4();
+          test_report.uuid = base::Token::CreateRandom();
           test_report.creation_time = base::Time::Now();
           test_report.scenario_name = "scenario1";
           test_report.upload_rule_name = "rules1";
@@ -113,12 +113,12 @@ TEST_F(TraceReportHandlerTest, DeleteAllTraces) {
 }
 
 TEST_F(TraceReportHandlerTest, DeleteSingleTrace) {
-  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  auto uuid = base::Token::CreateRandom();
   base::MockCallback<TraceReportHandler::DeleteSingleTraceCallback> callback;
 
   EXPECT_CALL(fake_trace_upload_list_, DeleteSingleTrace)
       .WillOnce(
-          [&uuid](const base::Uuid passed_uuid,
+          [&uuid](const base::Token passed_uuid,
                   FakeTraceUploadList::FinishedProcessingCallback callback) {
             EXPECT_EQ(uuid, passed_uuid);
             std::move(callback).Run(false);
@@ -128,13 +128,13 @@ TEST_F(TraceReportHandlerTest, DeleteSingleTrace) {
 }
 
 TEST_F(TraceReportHandlerTest, UserUploadSingleTrace) {
-  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  auto uuid = base::Token::CreateRandom();
   base::MockCallback<TraceReportHandler::UserUploadSingleTraceCallback>
       callback;
 
   EXPECT_CALL(fake_trace_upload_list_, UserUploadSingleTrace)
       .WillOnce(
-          [&uuid](const base::Uuid passed_uuid,
+          [&uuid](const base::Token passed_uuid,
                   FakeTraceUploadList::FinishedProcessingCallback callback) {
             EXPECT_EQ(uuid, passed_uuid);
             std::move(callback).Run(true);
@@ -144,14 +144,14 @@ TEST_F(TraceReportHandlerTest, UserUploadSingleTrace) {
 }
 
 TEST_F(TraceReportHandlerTest, DownloadTrace) {
-  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  auto uuid = base::Token::CreateRandom();
   base::MockCallback<TraceReportHandler::DownloadTraceCallback> callback;
 
   const auto result = absl::optional<base::span<const char>>("PROTO RESULT");
 
   EXPECT_CALL(fake_trace_upload_list_, DownloadTrace)
       .WillOnce(
-          [&result, &uuid](const base::Uuid passed_uuid,
+          [&result, &uuid](const base::Token passed_uuid,
                            FakeTraceUploadList::GetProtoCallback callback) {
             EXPECT_EQ(uuid, passed_uuid);
             std::move(callback).Run(result);

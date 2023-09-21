@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,15 +32,15 @@ class TraceUploadList {
 
   virtual void GetAllTraceReports(GetReportsCallback callback) = 0;
 
-  virtual void DeleteSingleTrace(const base::Uuid& trace_uuid,
+  virtual void DeleteSingleTrace(const base::Token& trace_uuid,
                                  FinishedProcessingCallback callback) = 0;
 
   virtual void DeleteAllTraces(FinishedProcessingCallback callback) = 0;
 
-  virtual void UserUploadSingleTrace(const base::Uuid& trace_uuid,
+  virtual void UserUploadSingleTrace(const base::Token& trace_uuid,
                                      FinishedProcessingCallback callback) = 0;
 
-  virtual void DownloadTrace(const base::Uuid& trace_uuid,
+  virtual void DownloadTrace(const base::Token& trace_uuid,
                              GetProtoCallback callback) = 0;
 };
 

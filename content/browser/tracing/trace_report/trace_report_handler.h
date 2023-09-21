@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -39,12 +39,12 @@ class CONTENT_EXPORT TraceReportHandler
   // trace_report::mojom::TraceReportHandler:
   // Get all the trace report currently stored locally
   void GetAllTraceReports(GetAllTraceReportsCallback callback) override;
-  void DeleteSingleTrace(const base::Uuid& uuid,
+  void DeleteSingleTrace(const base::Token& uuid,
                          DeleteSingleTraceCallback callback) override;
   void DeleteAllTraces(DeleteAllTracesCallback callback) override;
-  void UserUploadSingleTrace(const base::Uuid& uuid,
+  void UserUploadSingleTrace(const base::Token& uuid,
                              UserUploadSingleTraceCallback callback) override;
-  void DownloadTrace(const base::Uuid& uuid,
+  void DownloadTrace(const base::Token& uuid,
                      DownloadTraceCallback callback) override;
 
  private:

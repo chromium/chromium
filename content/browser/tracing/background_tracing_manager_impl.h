@@ -128,15 +128,12 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   // TraceUploadList
   void OpenDatabaseIfExists() override;
   void GetAllTraceReports(GetReportsCallback callback) override;
-  void DeleteSingleTrace(
-      const base::Uuid& trace_uuid,
-      TraceUploadList::FinishedProcessingCallback callback) override;
-  void DeleteAllTraces(
-      TraceUploadList::FinishedProcessingCallback callback) override;
-  void UserUploadSingleTrace(
-      const base::Uuid& trace_uuid,
-      TraceUploadList::FinishedProcessingCallback callback) override;
-  void DownloadTrace(const base::Uuid& trace_uuid,
+  void DeleteSingleTrace(const base::Token& trace_uuid,
+                         FinishedProcessingCallback callback) override;
+  void DeleteAllTraces(FinishedProcessingCallback callback) override;
+  void UserUploadSingleTrace(const base::Token& trace_uuid,
+                             FinishedProcessingCallback callback) override;
+  void DownloadTrace(const base::Token& trace_uuid,
                      GetProtoCallback callback) override;
 
   // Add/remove EnabledStateTestObserver.

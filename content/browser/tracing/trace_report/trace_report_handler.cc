@@ -37,7 +37,7 @@ TraceReportHandler::TraceReportHandler(
 
 TraceReportHandler::~TraceReportHandler() = default;
 
-void TraceReportHandler::DeleteSingleTrace(const base::Uuid& uuid,
+void TraceReportHandler::DeleteSingleTrace(const base::Token& uuid,
                                            DeleteSingleTraceCallback callback) {
   trace_upload_list_->DeleteSingleTrace(uuid, std::move(callback));
 }
@@ -47,12 +47,12 @@ void TraceReportHandler::DeleteAllTraces(DeleteAllTracesCallback callback) {
 }
 
 void TraceReportHandler::UserUploadSingleTrace(
-    const base::Uuid& uuid,
+    const base::Token& uuid,
     UserUploadSingleTraceCallback callback) {
   trace_upload_list_->UserUploadSingleTrace(uuid, std::move(callback));
 }
 
-void TraceReportHandler::DownloadTrace(const base::Uuid& uuid,
+void TraceReportHandler::DownloadTrace(const base::Token& uuid,
                                        DownloadTraceCallback callback) {
   trace_upload_list_->DownloadTrace(
       uuid, base::BindOnce(

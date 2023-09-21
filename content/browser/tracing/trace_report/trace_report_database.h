@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
+#include "base/token.h"
 #include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -41,7 +41,7 @@ struct CONTENT_EXPORT BaseTraceReport {
   ~BaseTraceReport();
   // A unique identifier by which this report will always be known to the
   // database as well as outside of it (e.g.: perfetto).
-  base::Uuid uuid;
+  base::Token uuid;
 
   // The time at which the report was created.
   base::Time creation_time;
@@ -118,7 +118,7 @@ class CONTENT_EXPORT TraceReportDatabase {
   bool AddTrace(const NewTraceReport& new_report);
 
   // Delete a row (trace) from the local_traces table.
-  bool DeleteTrace(const base::Uuid& uuid);
+  bool DeleteTrace(const base::Token& uuid);
 
   // Deletes all rows (traces) from the local_traces.
   bool DeleteAllTraces();
@@ -129,12 +129,12 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Delete all traces older than |age| from today.
   bool DeleteTracesOlderThan(const base::TimeDelta age);
 
-  bool UserRequestedUpload(const base::Uuid& uuid);
-  bool UploadComplete(const base::Uuid& uuid, base::Time time);
-  bool UploadSkipped(const base::Uuid& uuid);
+  bool UserRequestedUpload(const base::Token& uuid);
+  bool UploadComplete(const base::Token& uuid, base::Time time);
+  bool UploadSkipped(const base::Token& uuid);
 
   // Get string if the current Trace exists.
-  absl::optional<std::string> GetProtoValue(const base::Uuid& uuid);
+  absl::optional<std::string> GetProtoValue(const base::Token& uuid);
 
   // Returns the number of trace for |scenario_name| since |since|.
   absl::optional<size_t> UploadCountSince(std::string scenario_name,
