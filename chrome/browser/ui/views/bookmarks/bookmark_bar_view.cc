@@ -2192,21 +2192,12 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
 }
 
 bool BookmarkBarView::UpdateOtherAndManagedButtonsVisibility() {
-  bool update_other;
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    update_other = !other_bookmarks_button_->GetVisible();
-    if (update_other) {
-      other_bookmarks_button_->SetVisible(true);
-      UpdateBookmarksSeparatorVisibility();
-    }
-  } else {
-    bool has_other_children =
-        !bookmark_model_->other_node()->children().empty();
-    update_other = has_other_children != other_bookmarks_button_->GetVisible();
-    if (update_other) {
-      other_bookmarks_button_->SetVisible(has_other_children);
-      UpdateBookmarksSeparatorVisibility();
-    }
+  bool has_other_children = !bookmark_model_->other_node()->children().empty();
+  bool update_other =
+      has_other_children != other_bookmarks_button_->GetVisible();
+  if (update_other) {
+    other_bookmarks_button_->SetVisible(has_other_children);
+    UpdateBookmarksSeparatorVisibility();
   }
 
   bool show_managed = !managed_->managed_node()->children().empty() &&
