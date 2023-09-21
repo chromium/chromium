@@ -34,7 +34,7 @@ export {slice as allEntriesSlice};
  * Create action to scan `allEntries` and remove its stale entries.
  */
 export const clearCachedEntries =
-    slice.addReducer<void>('clear-stale-cache', clearCachedEntriesReducer);
+    slice.addReducer('clear-stale-cache', clearCachedEntriesReducer);
 
 function clearCachedEntriesReducer(state: State): State {
   const entries = state.allEntries;

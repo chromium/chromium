@@ -9,7 +9,7 @@ import {customElement, html, XfBase} from '../widgets/xf_base.js';
 
 import {BaseStore, Slice} from './base_store.js';
 import {TestState} from './for_tests.js';
-import {createSelector2, SelectorEmitter, SelectorNode} from './selector.js';
+import {combine2Selectors, SelectorEmitter, SelectorNode} from './selector.js';
 
 // Test that DAG nodes only emit if at least one of their parents also emits a
 // new value and if their value has changed.
@@ -106,7 +106,7 @@ export function testSelectorGetAndSubscribe() {
   assertEquals(notifiedValues[1], 2);
 
   // Introduce a combined selector and verify it works as expected.
-  const combined = createSelector2(
+  const combined = combine2Selectors(
       (storeState, sliceState) => JSON.stringify(storeState) + sliceState,
       store.selector, numVisitorsSlice.selector);
   assertEquals(combined.get(), '{"numVisitors":2}2');

@@ -69,7 +69,7 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
  *  10. Trash.
  */
 export const refreshNavigationRoots =
-    slice.addReducer<void>('refresh-roots', refreshNavigationRootsReducer);
+    slice.addReducer('refresh-roots', refreshNavigationRootsReducer);
 
 function refreshNavigationRootsReducer(currentState: State): State {
   const {

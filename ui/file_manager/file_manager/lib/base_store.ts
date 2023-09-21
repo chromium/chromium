@@ -24,14 +24,15 @@ export interface Action {
  * Note: PAYLOAD does not hold any useful value. It's exclusively used to
  * conveniently carry the payload type along with the factory callable.
  */
-export interface ActionFactory<Payload> {
+export interface ActionFactory<Payload = void> {
   (payload: Payload): (Action&{type: string, payload: Payload});
   type: Action['type'];
   PAYLOAD: Payload;
 }
 
 /** Reducers generate a new state from the current state and a payload. */
-export type Reducer<State, Payload> = (state: State, payload: Payload) => State;
+export type Reducer<State, Payload = void> = (state: State, payload: Payload) =>
+    State;
 
 type ReducerMap<State> = Map<Action['type'], Reducer<State, any>>;
 type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
@@ -88,7 +89,7 @@ export class Slice<State, LocalState> {
    *     typing of the actions it produces. Those can be used to register
    *     reducers in other slices with the same action type.
    */
-  addReducer<Payload>(
+  addReducer<Payload = void>(
       localType: Action['type'],
       reducer: Reducer<State, Payload>): ActionFactory<Payload> {
     const type = this.prependSliceName_(localType);

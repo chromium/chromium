@@ -1,6 +1,6 @@
 # Files app state management
 
-In this folder contains the data model and the APIs to manage the state for the
+This folder contains the data model and the APIs to manage the state for the
 whole Files app.
 
 ## Deps
@@ -17,17 +17,63 @@ to updates to the state.
 The `Store` is a singleton shared throughout the app.
 
 The `Store` class in `store.ts` is merely enforcing the data type specific to
-Files app.  The store implementation itself in in `lib/base_store.ts`.
+Files app. The store implementation itself is in `lib/base_store.ts`.
+
+The store requires an initial state and a collection of slices to be constructed.
+
+## Slice
+
+Slices are instances of the class `Slice`, each representing an entry directly
+under the root state object. For example, if the store's state shape is:
+
+```ts
+{
+  cat: CatData;
+  dog: DogData;
+}
+```
+
+Then one should expect this store to be constructed with a cat and a dog slice,
+each focused on its own slice of the store.
+
+Slices are instantiated with the shape of the store and their own shape, specified
+through templates. Additionally, they take a name (which should match the key for
+its entry under the root state), which is mostly used to automatically prefix
+their actions for debugging. For example, a slice might be instantiated as such:
+
+```ts
+new Slice<State, State["search"]>("search");
+```
+
+Each slice holds a collection of reducers related to the shape of the state they own.
+
+When reducers are added to slices, they return action factories that can be used for:
+
+1. Dispatching the action to the store; and
+2. Registering reducers in other slices with the same action type.
+
+## Ducks
+
+Ducks is a pattern of organizing parts of the store used by Files app.
+
+The idea behind ducks is relatively simple: collocate actions, action factories,
+reducers, selectors, and action producers as much as possible according to the
+slice of the store they are more closely related to.
+
+In practice, this translates into creating one file per `Slice` instance and
+grouping all those files under a `ducks/` directory.
 
 ## Action
 
-An `Action` is a request to change the app's state.
+An `Action` is an event that gets captured by one or more reducers registered
+in the store and contains the necessary information to update the app's state.
 
-At its core, a `Action` is just a plain object, with a `type` property to
-uniquely identify the type of that `Action`. We use Typescript typing to enforce
-that shape and types in any `Action` object.
+At its core, an `Action` is just a plain object, with a `type` property to
+uniquely identify the type of that `Action`. We enforce the shape of actions
+by creating action factories through the use of `Slice::addReducer()`.
 
-For example, a `Action` to change the current directory might look like:
+For example, an `Action` to change the current directory might look like:
+
 ```js
 {
   type: 'CHANGE_DIRECTORY',
@@ -37,10 +83,78 @@ For example, a `Action` to change the current directory might look like:
 }
 ```
 
+### Naming actions
+
+When naming actions, it is a good idea to think of them as events rather than
+commands or setters. Remember that multiple reducers can intercept and handle
+the same action. Naming actions as events makes them more scalable as we're not
+tying a specific behavior to their name.
+
+Further reading:
+
+https://redux.js.org/style-guide/#model-actions-as-events-not-setters
+
+## Action factory
+
+Action factories are callable objects returned by `Slice::addReducer()`.
+
+Action factories can be used to dispatch actions of the type specified by
+`Slice::addReducer`, e.g.:
+
+```ts
+store.dispatch(updateDeviceConnectionState());
+```
+
+They can also be used to register reducers for the same action type in other
+slices, e.g.:
+
+In `ducks/device.ts`:
+```ts
+export const updateDeviceConnectionState = slice.addReducer(
+  'set-connection-state',
+  updateDeviceConnectionStateReducer
+);
+
+function updateDeviceConnectionStateReducer(
+  currentState: State,
+  payload: {
+    connection: chrome.fileManagerPrivate.DeviceConnectionState;
+  }
+): State {
+  // ...
+}
+```
+
+In `ducks/volume.ts`:
+```ts
+slice.addReducer(
+  updateDeviceConnectionState.type,
+  updateDeviceConnectionStateReducer
+);
+
+function updateDeviceConnectionStateReducer(
+  currentState: State,
+  payload: typeof updateDeviceConnectionState.PAYLOAD
+): State {
+  // ...
+}
+```
+
+### Raw actions vs action factories
+
+Avoid creating actions directly and instead use action factories to ensure
+your dispatched actions are always correctly typed.
+
+## Reducers
+
+Reducers are functions that take the current state and an `Action` and perform
+the actual change to the current state, returning a new state (never mutating
+the state object it receives).
+
 ## Actions Producer
 
 Actions Producers (AP) are async generator functions, that call asynchronous
-APIs and yields Actions to the Store.
+APIs and yield Actions to the Store.
 
 Each AP should be wrapped in a concurrency model to guarantee that the execution
 is still valid in-between each async API call.
@@ -48,14 +162,72 @@ is still valid in-between each async API call.
 See more details in the internal design doc:
 http://go/files-app-store-async-concurrency
 
-## Reducers
+## Selectors
 
-Reducers are functions that take the current state and an `Action` and performs
-the actual change to the state and returns the new state.
+Selectors are functions that efficiently notify parts of the app about specific
+changes in the state tree. In other words, they "select" a part of the state
+tree and provide non-redundant updates about changes to that part.
+
+Both the store and slices come with default selectors that are available
+immediately after they are instantiated. The store's default selector (the root
+selector) can be used to get updates on changes to the root state object, and the
+slice default selectors on changes to the respective slice of the store they
+represent.
+
+### Combining selectors
+
+Selectors can be combined using the `combineXSelectors()` functions, which work by
+taking a group of existing selectors and a "select" function that combines their
+outputs into a new output of interest. For example:
+
+```ts
+const newSelector = combine2Selectors(
+      (state, numVisitors) => state.something + numVisitors,
+      store.selector, numVisitorsSlice.selector);
+```
+
+Here, `2` in `combine2Selectors` refers to the number of input selectors used to
+create the new selector. Notice that the number of input selectors and the number
+of arguments passed to the "select" function should be the same.
+
+### General usage
+
+To subscribe to new values emitted by a selector, call:
+
+```ts
+selector.subscribe(callback);
+```
+
+To get the last value emitted by a selector, call:
+
+```ts
+selector.get();
+```
+
+### Usage with Lit elements
+
+Selectors can be used in Lit components using the selector's `createController()`
+helper function. The created controller takes a reference to the component which
+is then used to automatically re-render the component whenever the selector
+emits a new value. It also becomes responsible for automatically unsubscribing
+from the selector when the component is destroyed. For example:
+
+```ts
+  @customElement('xf-test')
+  class XfTest extends XfBase {
+    testCtrl = testSelector.createController(this);
+
+    override render() {
+      return html`
+      <div id="test">${this.testCtrl.value}</div>
+    `;
+    }
+  }
+```
 
 ## State
 
-The interface `State` in `../externs/ts/state.js` describe the shape and types
+The interface `State` in `../externs/ts/state.js` describes the shape and types
 of the Files app state.
 
 At runtime, the state is just a plain Object the interface is used throughout
@@ -129,67 +301,41 @@ export let UiSettings;
 export let State;
 ```
 
-## Adding new Actions
+## Adding new Slice
 
-Every new action requires the following things:
+Actions are create by registering a new reducer to a slice via
+`Slice::addReducer()`. This guarantees that all actions are assigned to at least
+one reducer.
 
-1. A new entry in the enum `ActionType`.
-1. A new interface describing the shape of the action's payload, this must
-   inherit from BaseAction.
-1. Append the new interface to the union type `Action`.
-1. A Reducer to apply the action to the store/state.
+Let's continue the example of the UI Settings and create a slice with actions
+and reducers to update the `uiSettings` state:
 
-Let's continue the example of the UI Settings and create an action to update the
-`uiSettings` state.
+```ts
+const slice = new Slice<State, State['uiSettings']>('uiSettings');
+export {slice as uiSettingsSlice};
 
-For this example, we'll create 2 actions because we want to
-update `sortOrder` independently of `detailView`.
-
-For simplicity, this data will only live in memory, therefore we can update the
-Store synchronously. See the section [Add new Actions
-Producer](#add-new-actions-producer) for an example of sending this to a storage
-backend asynchronously.
-
-In `./actions.ts`.
-
-```typescript
-export type Action = ...|ChangeSortOrderAction|SwitchDetailViewAction;
-
-export const enum ActionType {
-  ...
-  CHANGE_SORT_ORDER = 'change-sort-order',
-  SWITCH_DETAIL_VIEW = 'switch-detail-view',
-}
-
-export interface ChangeSortOrderAction extends BaseAction {
-  type: ActionType.CHANGE_SORT_ORDER;
-  payload: {
+export const changeSortingOrder = slice.addReducer('change-sort-order', (state: State, payload: {
     order: SortOrder,
     column: ColumnName,
-  };
-}
-
-export interface SwitchDetailViewAction extends BaseAction {
-  type: ActionType.SWITCH_DETAIL_VIEW;
-  // No payload, this switches from one to another.
-}
-
-/** Returns an action to update the sortOrder UI settings. */
-export function changeSortOrder(
-    order: SortOrder, column: ColumnName): ChangeSortOrderAction {
-  return {
-    type: ActionType.CHANGE_SORT_ORDER,
-    payload: {
-      order,
-      column,
+  }) => ({
+    ...state,
+    uiSettings: {
+      ...uiSettings,
+      sort: {
+        order: payload.order,
+        column: payload.column,
+      },
     },
-  };
-}
+  }));
 
-/** Returns an action to update the sortOrder UI settings. */
-export function switchDetailView(): SwitchDetailViewAction {
-  return { type: ActionType.SWITCH_DETAIL_VIEW };
-}
+export const switchDetailView = slice.addReducer('switch-detail-view', (state: State) => ({
+    ...state,
+    uiSettings: {
+      ...uiSettings,
+      detailView: state.uiSettings.detailView === ViewType.LIST ? ViewType.GRID :
+                                                                  ViewType.LIST,
+    },
+  }));
 ```
 
 In `./store.ts` add the default empty state for the new data.
@@ -209,60 +355,13 @@ export function getEmptyState(): State {
 }
 ```
 
-Add a new reducer: `./reducers/ui_settings.ts`.
-
-```typescript
-export function updateUiSettings(
-    state: State,
-    action: ChangeSortOrderAction|SwitchDetailViewAction): UiSettings {
-  const uiSettings = state.uiSettings;
-  if (action.type === ActionType.CHANGE_SORT_ORDER) {
-    return {
-      ...uiSettings,
-      sort: {
-        order: action.payload.order,
-        column: action.payload.column,
-      },
-    };
-  }
-
-  if (action.type === ActionType.SWITCH_DETAIL_VIEW) {
-    return {
-      ...uiSettings,
-      detailView: uiSettings.detailView === ViewType.LIST ? ViewType.GRID :
-                                                            ViewType.LIST,
-    };
-  }
-
-  return uiSettings;
-}
-```
-
-Register the new reducer `ui_settings.ts` in the `../file_names.gni`.
+Register the new slice `ui_settings.ts` in `../file_names.gni`.
 
 ```python
 ts_files = [
    ...
-  "file_manager/state/reducers/ui_settings.ts",
+  "file_manager/state/ducks/ui_settings.ts",
 ]
-```
-
-Register the new reducer in the rootReducer() `./reducers/root.ts`.
-
-```typescript
-import {updateUiSettings} from './ui_settings.js';
-
-export function rootReducer(currentState: State, action: Action): State {
-  ...
-  switch (action.type) {
-    ...
-    case ActionType.CHANGE_SORT_ORDER:
-    case ActionType.SWITCH_DETAIL_VIEW:
-      return Object.assign(state, {
-        uiSettings: updateUiSettings(state, action),
-      });
-  }
-}
 ```
 
 Use the new actions in a container.
@@ -271,7 +370,7 @@ For example a hypothetical "toolbar_container.ts" handling the "switch-view"
 button and the "sort-button".
 
 ```typescript
-import {switchDetailView} from '../state/actions.js';
+import {switchDetailView} from '../state/ducks/ui_settings.js';
 
 class ToolbarContainer {
   onSwitchButtonClick_(event) {
@@ -305,8 +404,6 @@ For UI Settings we have 2 actions:
 
 The State changes slightly from before, we add a `status` attribute, its type is
 the enum `PropStatus`.
-
-See a working CL with this code in http://crrev.com/c/3895339.
 
 In file `../externs/ts/state.js`:
 
@@ -349,147 +446,73 @@ export let UiSettings;
 
 The action and the reducer changes to account for the new status.
 
-```typescript
-// We replaced the `SWITCH_DETAIL_VIEW` (from section "Adding new Actions") with
-// a `CHANGE_DETAIL_VIEW`.
-export type Action = ...|ChangeDetailViewAction|
-export const enum ActionType {
-  ...
-  CHANGE_DETAIL_VIEW = 'change-detail-view',
-}
-
-export interface ChangeDetailViewAction extends BaseAction {
-  type: ActionType.CHANGE_DETAIL_VIEW;
-  payload: {
-    view: ViewType,
-    status: PropStatus,
-  };
-}
-
-// The action ChangeSortOrderAction just got the `status` in the payload.
-export interface ChangeSortOrderAction extends BaseAction {
-  type: ActionType.CHANGE_SORT_ORDER;
-  payload: {
+```ts
+export const changeSortingOrder = slice.addReducer('change-sort-order', (state: State, payload: {
     order: SortOrder,
     column: ColumnName,
     status: PropStatus,
-  };
-}
-```
-
-The reducer is slightly different, in file: `./reducers/ui_settings.ts`.
-
-```typescript
-export function updateUiSettings(
-    state: State,
-    action: ChangeSortOrderAction|ChangeDetailViewAction): UiSettings {
-  const uiSettings = state.uiSettings;
-  if (action.type === ActionType.CHANGE_SORT_ORDER) {
-    return {
+  }) => ({
+    ...state,
+    uiSettings: {
       ...uiSettings,
       sort: {
-        status: action.payload.status,
-        order: action.payload.order,
-        column: action.payload.column,
+        status: payload.status,
+        order: payload.order,
+        column: payload.column,
       },
-    };
-  }
+    },
+  }));
 
-  if (action.type === ActionType.CHANGE_DETAIL_VIEW) {
-    return {
+export const switchDetailView = slice.addReducer('switch-detail-view', (state: State: payload: {
+    view: ViewType,
+    status: PropStatus,
+  }) => ({
+    ...state,
+    uiSettings: {
       ...uiSettings,
       detailView: {
-        status: action.payload.status,
-        view: action.payload.view,
-      }
-    };
-  }
-
-  return uiSettings;
-}
-```
-
-The new action has to be registered in the rootReducer() `./reducers/root.ts`.
-
-```typescript
-export function rootReducer(currentState: State, action: Action): State {
-
-  switch (action.type) {
-    ...
-    case ActionType.CHANGE_SORT_ORDER:
-    case ActionType.CHANGE_DETAIL_VIEW:
-      return Object.assign(state, {
-        uiSettings: updateUiSettings(state, action),
-      });
-  }
+        status: payload.status,
+        view: payload.view,
+      },
+    },
+  }));
 ```
 
 For the Actions Producer, we create a new file:
 `./actions_producers/ui_settings.ts`.
 
-```typescript
-import {storage} from '../../common/js/storage.js';
-import {ColumnName, PropStatus, SortOrder, ViewType} from '../../externs/ts/state.js';
-import {ActionsProducerGen} from '../../lib/actions_producer.js';
-import {keepLatest, serialize} from '../../lib/concurrency_models.js';
-import {ActionType, ChangeDetailViewAction, ChangeSortOrderAction} from '../actions.js';
-import {getStore} from '../store.js';
-
+```ts
 const VIEW_KEY = 'ui-settings-view-key';
 const SORTING_KEY = 'ui-settings-sorting-key';
 
 export async function*
-    switchDetailViewProducer(): ActionsProducerGen<ChangeDetailViewAction> {
+    switchDetailViewProducer(): ActionsProducerGen {
   const state = getStore().getState();
   const viewType = state.uiSettings.detailView.view === ViewType.LIST ?
       ViewType.GRID :
       ViewType.LIST;
-  yield {
-    type: ActionType.CHANGE_DETAIL_VIEW,
-    payload: {
-      view: viewType,
-      status: PropStatus.STARTED,
-    },
-  };
+
+  yield switchDetailView(viewType, PropStatus.STARTED);
 
   await storage.local.setAsync({[VIEW_KEY]: viewType});
 
-  yield {
-    type: ActionType.CHANGE_DETAIL_VIEW,
-    payload: {
-      view: viewType,
-      status: PropStatus.SUCCESS,
-    },
-  };
+  yield switchDetailView(viewType, PropStatus.SUCCESS);
 }
 
 export const switchDetailView = serialize(switchDetailViewProducer);
 
-export async function*
-    changeSortingOrderProducer(order: SortOrder, column: ColumnName):
-        ActionsProducerGen<ChangeSortOrderAction> {
-  yield {
-    type: ActionType.CHANGE_SORT_ORDER,
-    payload: {
-      order,
-      column,
-      status: PropStatus.STARTED,
-    },
-  };
+let changeSortingOrderProducer = async function*(order: SortOrder, column: ColumnName):
+        ActionsProducerGen {
+  yield changeSortingOrder(order, column, PropStatus.STARTED);
 
   await storage.local.setAsync({[SORTING_KEY]: {order, column}});
 
-  yield {
-    type: ActionType.CHANGE_SORT_ORDER,
-    payload: {
-      order,
-      column,
-      status: PropStatus.SUCCESS,
-    },
-  };
+  yield changeSortingOrder(order, column, PropStatus.SUCCESS);
 }
 
-export const changeSortingOrder = keepLatest(changeSortingOrderProducer);
+changeSortingOrderProducer = keepLatest(changeSortingOrderProducer);
+
+export changeSortingOrderProducer;
 ```
 
 In the container side, we dispatch the Actions Producer in the same way we
@@ -497,9 +520,7 @@ dispatch Actions.
 
 We only use the AP wrapped by the concurrency model.
 
-```typescript
-import {changeSortingOrder, switchDetailViewfrom} '../state/actions_producers/ui_settings.js';
-
+```ts
 class ToolbarContainer {
   onSwitchButtonClick_(event) {
     this.store_.dispatch(switchDetailView());
@@ -514,4 +535,24 @@ class ToolbarContainer {
     this.store_.dispatch(changeSortingOrder(order: sortOrder));
   }
 }
+```
+## Add a new selector
+
+Continuing with our previous example, let's add a selector by combining the
+default selector provided to us by the slice we created.
+
+The new selector indicates that either `sort.order` or `detailView.view` has
+changed:
+
+```ts
+const sortingOrder = combine1Selector(
+      (uiSettings) => uiSettings.sort.order, uiSettingsSlice.selector);
+
+const detailViewType = combine1Selector(
+      (uiSettings) => uiSettings.detailView.view, uiSettingsSlice.selector);
+
+// Will always emit a new object, but will only be triggered when either one of
+// its parents (sortingOrder, detailViewType) have emitted a new value.
+const sortingFinished = combine2Selectors(
+      (order, detailView) => ({order, detailView}), sortingOrder, detailViewType);
 ```

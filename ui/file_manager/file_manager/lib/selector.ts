@@ -126,7 +126,7 @@ export class SelectorNode<T> implements Selector<T> {
    *     selector node is constructed. The arguments of select() must match the
    *     order and type of what is emitted by the parents. This typing match is
    *     not enforced here because SelectorNodes are only meant to be created by
-   *     the Store. Users of the Store should use `createSelectorX()` to combine
+   *     the Store. Users of the Store should use `combineXSelectors()` to combine
    *     selectors.
    * @param name An optional human-readable name used for debugging purposes.
    *     Named selectors will log to the console when window.DEBUG_STORE is set,
@@ -146,8 +146,8 @@ export class SelectorNode<T> implements Selector<T> {
    *
    * Slice's default selectors are then connected to the store's source node,
    * and additional selector nodes can then be created from store and slices'
-   * default selectors using `createSelectorX()` (and resulting selectors can be
-   * further combined using `createSelectorX()`).
+   * default selectors using `combineXSelectors()` (and resulting selectors can be
+   * further combined using `combineXSelectors()`).
    */
   static createSourceNode<T>(select: () => T) {
     return new SelectorNode<T>([], select);
@@ -172,7 +172,7 @@ export class SelectorNode<T> implements Selector<T> {
   /**
    * We use a getter for parents to make sure they are always retrieved as
    * SelectorNodes, even though they might be passed in as Selectors in the
-   * `createSelectorX()` functions.
+   * `combineXSelectors()` functions.
    */
   get parents(): Array<SelectorNode<any>> {
     return this.parents_ as Array<SelectorNode<any>>;
@@ -262,14 +262,14 @@ export class SelectorNode<T> implements Selector<T> {
 }
 
 /** Create a selector whose value derives from a single Selector. */
-export function createSelector1<O, I1>(
+export function combine1Selector<O, I1>(
     combineFunction: (i1: I1) => O,
     s1: Selector<I1>,
     ): Selector<O> {
   return new SelectorNode<O>([s1], combineFunction as any);
 }
 /** Create a selector whose value derives from 2 Selectors. */
-export function createSelector2<O, I1, I2>(
+export function combine2Selectors<O, I1, I2>(
     combineFunction: (i1: I1, i2: I2) => O,
     s1: Selector<I1>,
     s2: Selector<I2>,
@@ -277,7 +277,7 @@ export function createSelector2<O, I1, I2>(
   return new SelectorNode<O>([s1, s2], combineFunction as any);
 }
 /** Create a selector whose value derives from 3 Selectors. */
-export function createSelector3<O, I1, I2, I3>(
+export function combine3Selectors<O, I1, I2, I3>(
     combineFunction: (i1: I1, i2: I2, i3: I3) => O,
     s1: Selector<I1>,
     s2: Selector<I2>,
@@ -286,7 +286,7 @@ export function createSelector3<O, I1, I2, I3>(
   return new SelectorNode<O>([s1, s2, s3], combineFunction as any);
 }
 /** Create a selector whose value derives from 4 Selectors. */
-export function createSelector4<O, I1, I2, I3, I4>(
+export function combine4Selectors<O, I1, I2, I3, I4>(
     combineFunction: (i1: I1, i2: I2, i3: I3, i4: I4) => O,
     s1: Selector<I1>,
     s2: Selector<I2>,
