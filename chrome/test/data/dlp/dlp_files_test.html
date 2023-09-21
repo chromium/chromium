@@ -38,19 +38,31 @@
                 directory = await window.showDirectoryPicker({ mode: "readwrite" });
             }
             if ((await directory.queryPermission()) === 'granted') {
-                let dirFile = await directory.getFileHandle('write', { create: true });
-                let w = await dirFile.createWritable();
-                await w.write("test");
-                await w.close();
+                try {
+                    let dirFile = await directory.getFileHandle('test_file.txt', { create: true });
+                    let w = await dirFile.createWritable();
+                    await w.write("This is file content.");
+                    await w.close();
+                    console.log("saved");
+                } catch (err) {
+                    console.log("Could not write file.");
+                    console.log(err.name + ": " + err.message);
+                }
             }
         })
         document.getElementById('save_file').addEventListener('click', async () => {
             if (!file) {
                 file = await window.showSaveFilePicker({});
             }
-            let w = await file.createWritable();
-            await w.write("test");
-            await w.close();
+            try {
+                let w = await file.createWritable();
+                await w.write("This is file content.");
+                await w.close();
+                console.log("saved");
+            } catch (err) {
+                console.log("Could not write file.");
+                console.log(err.name + ": " + err.message);
+            }
         })
         document.getElementById('open_file_dir').addEventListener('click', async () => {
             if (!directory) {
@@ -58,7 +70,7 @@
             }
             if ((await directory.queryPermission()) === 'granted') {
                 try {
-                    const dirFile = await directory.getFileHandle('input.txt');
+                    const dirFile = await directory.getFileHandle('test_file.txt');
                     const blob = await dirFile.getFile();
                     const copy = await blob.slice(1);
                     const content = await copy.text();
@@ -81,6 +93,21 @@
             } catch (err) {
                 console.log("Could not read file.");
                 console.log(err.name + ": " + err.message);
+            }
+        })
+        document.getElementById('move_file').addEventListener('click', async () => {
+            if (!directory) {
+                directory = await window.showDirectoryPicker();
+            }
+            if ((await directory.queryPermission()) === 'granted') {
+                try {
+                    const dirFile = await directory.getFileHandle('test_file.txt');
+                    await dirFile.move('moved.txt');
+                    console.log('moved');
+                } catch (err) {
+                    console.log("Could not read file.");
+                    console.log(err.name + ": " + err.message);
+                }
             }
         })
         document.getElementById('save_file_dir_worker').addEventListener('click', async () => {
@@ -145,7 +172,7 @@
             }
             if ((await directory.queryPermission()) === 'granted') {
                 navigator.serviceWorker.ready.then((registration) => {
-                    registration.active.postMessage({ 'action': 0, 'directory': directory });
+                    registration.active.postMessage({ 'action': 0, 'directory': directory, 'response': true });
                 })
             }
         })
@@ -154,7 +181,7 @@
                 file = await window.showSaveFilePicker({});
             }
             navigator.serviceWorker.ready.then((registration) => {
-                registration.active.postMessage({ 'action': 1, 'file': file });
+                registration.active.postMessage({ 'action': 1, 'file': file, 'response': true });
             })
         })
         document.getElementById('open_file_dir_service').addEventListener('click', async () => {
@@ -209,7 +236,7 @@
         document.getElementById('idb_save').addEventListener('change', (e) => {
             const save = db.transaction(["files"], 'readwrite')
                 .objectStore("files")
-                .put({ 'name': 'input.txt', 'file': e.target.files[0] });
+                .put({ 'name': 'test_file.txt', 'file': e.target.files[0] });
             save.onsuccess = (ev) => {
                 // Force history update for restore test.
                 window.history.pushState({}, "", new URL(window.location));
@@ -223,7 +250,7 @@
         document.getElementById('idb_open').addEventListener('click', async (e) => {
             db.transaction("files")
                 .objectStore("files")
-                .get("input.txt").onsuccess = async (ev) => {
+                .get("test_file.txt").onsuccess = async (ev) => {
                     try {
                         const file = ev.target.result.file;
                         const copy = await file.slice(1);
@@ -238,7 +265,7 @@
         document.getElementById('idb_clear').addEventListener('click', async (e) => {
             db.transaction(["files"], 'readwrite')
                 .objectStore("files")
-                .delete("input.txt").onsuccess = async (ev) => {
+                .delete("test_file.txt").onsuccess = async (ev) => {
                     console.log("cleared");
                 }
         });
@@ -283,6 +310,7 @@
             <input type="button" id="save_file" value="save_file" />
             <input type="button" id="open_file_dir" value="open_file_dir" />
             <input type="button" id="open_file" value="open_file" />
+            <input type="button" id="move_file" value="move_file" />
         </dev>
         <dev>
             <h3>File System Access DedicatedWorkerThread</h3>

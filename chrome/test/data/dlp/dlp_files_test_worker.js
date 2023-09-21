@@ -20,23 +20,26 @@ addEventListener("fetch", (e) => {
 });
 
 async function work(e) {
-    // Given a directory handle, use it to write "test" into the file "write".
+    // Given a directory handle, use it to write "This is file content." into
+    // the file "write".
     if (e.data.action == 0) {
         let directory = e.data.directory;
-        let dirFile = await directory.getFileHandle('write', { create: true });
+        let dirFile = await directory.getFileHandle('test_file.txt', {
+            create: true
+        });
         let w = await dirFile.createWritable();
-        await w.write("test");
+        await w.write("This is file content.");
         await w.close();
-        return "";
+        return "saved";
     }
 
-    // Given a file handle, use it to write "test" into it.
+    // Given a file handle, use it to write "This is file content." into it.
     if (e.data.action == 1) {
         let file = e.data.file;
         let w = await file.createWritable();
-        await w.write("test");
+        await w.write("This is file content.");
         await w.close();
-        return "";
+        return "saved";
     }
 
     // Given a file handle, get the file object, slice it by 1 (to create a new
@@ -68,12 +71,12 @@ async function work(e) {
         }
     }
 
-    // Given a directory handle, use it to open the file "input.txt", slice it
-    // by 1 (to create a new file object) and return the sliced content.
+    // Given a directory handle, use it to open the file "test_file.txt", slice
+    // it by 1 (to create a new file object) and return the sliced content.
     if (e.data.action == 4) {
         try {
             const directory = e.data.directory;
-            const dirFile = await directory.getFileHandle('input.txt');
+            const dirFile = await directory.getFileHandle('test_file.txt');
             const file = await dirFile.getFile();
             const copy = file.slice(1);
             const content = await copy.text();

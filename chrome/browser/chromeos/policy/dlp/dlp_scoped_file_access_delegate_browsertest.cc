@@ -9,22 +9,38 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -62,11 +78,18 @@ class TestFileSystemAccessPermissionContext
     read_grant_ = GetExtendedReadPermissionGrantForTesting(
         origin, path,
         ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+    write_grant_ = GetExtendedWritePermissionGrantForTesting(
+        origin, path,
+        ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   }
 
   ~TestFileSystemAccessPermissionContext() override = default;
 
   bool CanObtainReadPermission(const url::Origin& origin) override {
+    return true;
+  }
+
+  bool CanObtainWritePermission(const url::Origin& origin) override {
     return true;
   }
 
@@ -101,7 +124,20 @@ class TestFileSystemAccessPermissionContext
         origin, path, handle_type, user_action);
   }
 
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
+  GetWritePermissionGrant(const url::Origin& origin,
+                          const base::FilePath& path,
+                          HandleType handle_type,
+                          UserAction user_action) override {
+    if (write_grant_) {
+      return write_grant_;
+    }
+    return ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
+        origin, path, handle_type, user_action);
+  }
+
   scoped_refptr<content::FileSystemAccessPermissionGrant> read_grant_;
+  scoped_refptr<content::FileSystemAccessPermissionGrant> write_grant_;
   base::FilePath directory_;
 };
 
@@ -224,11 +260,11 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(console_observer.Wait());
   }
 
-  // Setup a delegate to answer file chooser requests with a specific file
-  // (input.txt). The returned value has to be kept in scope as long as requests
-  // should be handled this way.
+  // Setup a delegate to answer file chooser requests with a specific file. The
+  // returned value has to be kept in scope as long as requests should be
+  // handled this way.
   std::unique_ptr<FileChooserDelegate> PrepareChooser() {
-    base::FilePath file = tmp_.GetPath().AppendASCII("input.txt");
+    base::FilePath file = tmp_.GetPath().AppendASCII(kTestFileName);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::WriteFile(file, kTestContent);
@@ -240,11 +276,11 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
     return delegate;
   }
 
-  // Setup a delegate to answer file picker requests with a specific file
-  // (input.txt).
-  void PrepareFilePicker() {
-    base::FilePath file = tmp_.GetPath().AppendASCII("input.txt");
-    {
+  // Setup a delegate to answer file picker requests with a specific file. If
+  // `createFile` is set the file is created.
+  void PrepareFilePicker(bool createFile) {
+    base::FilePath file = tmp_.GetPath().AppendASCII(kTestFileName);
+    if (createFile) {
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::WriteFile(file, kTestContent);
     }
@@ -252,11 +288,11 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
     ui::SelectFileDialog::SetFactory(std::move(factory));
   }
 
-  // Setup a delegate to answer directory picker requests with a specific
-  // directory (in which a input.txt file exists).
-  void PrepareDirPicker() {
-    base::FilePath file = tmp_.GetPath().AppendASCII("input.txt");
-    {
+  // Setup a delegate to answer directory picker requests with a directory of a
+  // specific file. If `createFile` is set the file is created.
+  void PrepareDirPicker(bool createFile) {
+    base::FilePath file = tmp_.GetPath().AppendASCII(kTestFileName);
+    if (createFile) {
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::WriteFile(file, kTestContent);
     }
@@ -279,6 +315,7 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
  protected:
   const std::string kTestContent = "This is file content.";
   const std::string kErrorMessage = "Could not read file.";
+  const std::string kTestFileName = "test_file.txt";
   std::unique_ptr<DlpScopedFileAccessDelegate> delegate_;
   base::ScopedTempDir tmp_;
   raw_ptr<chromeos::FakeDlpClient> fake_dlp_client_;
@@ -387,6 +424,86 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
   TestJSAction("document.getElementById('idb_cached').click()", kErrorMessage);
 }
 
+class MockDlpFilesController : public DlpFilesController {
+ public:
+  explicit MockDlpFilesController(DlpRulesManager& rules_manager)
+      : DlpFilesController(rules_manager) {}
+  MOCK_METHOD(
+      (void),
+      RequestCopyAccess,
+      (const storage::FileSystemURL& source,
+       const storage::FileSystemURL& destination,
+       base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
+           result_callback),
+      (override));
+
+ protected:
+  MOCK_METHOD((absl::optional<data_controls::Component>),
+              MapFilePathToPolicyComponent,
+              (Profile * profile, const base::FilePath& file_path),
+              (override));
+};
+
+class DlpFileSystemAccessMoveTest
+    : public DlpScopedFileAccessDelegateBrowserTest {
+ protected:
+  std::unique_ptr<MockDlpFilesController> files_controller;
+};
+
+IN_PROC_BROWSER_TEST_F(DlpFileSystemAccessMoveTest,
+                       FileSystemAccessMoveProtectedAllow) {
+  PrepareDirPicker(/*createFile=*/true);
+
+  DlpScopedFileAccessDelegate::Initialize(fake_dlp_client_);
+
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindLambdaForTesting(
+          [this](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            auto rules_manager = std::make_unique<MockDlpRulesManager>();
+            files_controller =
+                std::make_unique<MockDlpFilesController>(*rules_manager);
+            ON_CALL(*rules_manager, IsFilesPolicyEnabled)
+                .WillByDefault(testing::Return(true));
+
+            ON_CALL(*rules_manager, GetDlpFilesController())
+                .WillByDefault(::testing::Return(&*files_controller));
+            EXPECT_CALL(
+                *files_controller,
+                RequestCopyAccess(
+                    testing::Property(
+                        &storage::FileSystemURL::path,
+                        testing::Property(&base::FilePath::value,
+                                          testing::EndsWith(kTestFileName))),
+                    testing::Property(
+                        &storage::FileSystemURL::path,
+                        testing::Property(&base::FilePath::value,
+                                          testing::EndsWith("moved.txt"))),
+                    _))
+                .WillOnce(base::test::RunOnceCallback<2>(
+                    std::make_unique<file_access::ScopedFileAccess>(
+                        file_access::ScopedFileAccess::Allowed())));
+            return rules_manager;
+          }));
+
+  base::MockRepeatingCallback<void(const ::dlp::AddFilesRequest,
+                                   chromeos::DlpClient::AddFilesCallback)>
+      addFiles;
+
+  EXPECT_CALL(addFiles,
+              Run(testing::Property(&::dlp::AddFilesRequest::add_file_requests,
+                                    testing::ElementsAre(testing::Property(
+                                        &::dlp::AddFileRequest::file_path,
+                                        testing::EndsWith("moved.txt")))),
+                  _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          ::dlp::AddFilesResponse::default_instance()));
+
+  fake_dlp_client_->SetAddFilesMock(addFiles.Get());
+
+  TestJSAction("document.getElementById('move_file').click()", "moved");
+}
+
 // These tests covers using the File Access API with dlp files. The parameter
 // `isAllowed` indicates if the file access is allowed or nopt by dlp. The
 // parameter `directoryPicker` tells if a directory picker should be used in
@@ -405,9 +522,9 @@ IN_PROC_BROWSER_TEST_P(
   fake_dlp_client_->SetFileAccessAllowed(isAllowed);
 
   if (directoryPicker) {
-    PrepareDirPicker();
+    PrepareDirPicker(/*createFile=*/true);
   } else {
-    PrepareFilePicker();
+    PrepareFilePicker(/*createFile=*/true);
   }
   TestJSAction("document.getElementById('" + jsId + "').click()",
                isAllowed ? kTestContent.substr(1) : kErrorMessage);
@@ -432,5 +549,58 @@ INSTANTIATE_TEST_SUITE_P(
                     std::tuple(false, false, "open_file_service"),
                     std::tuple(true, true, "open_file_dir_service"),
                     std::tuple(false, true, "open_file_dir_service")));
+
+// These tests check if files written by the File System Access API are tried to
+// be added the dlp daemon via the DlpClient.
+class DlpScopedFileAccessDelegateBrowserTestFileSystemAccessDownload
+    : public DlpScopedFileAccessDelegateBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<bool /*directoryPicker*/, std::string /*jsId*/>> {};
+
+IN_PROC_BROWSER_TEST_P(
+    DlpScopedFileAccessDelegateBrowserTestFileSystemAccessDownload,
+    DownloadFileSystemAccessApi) {
+  auto [directoryPicker, jsId] = GetParam();
+  base::MockRepeatingCallback<void(const ::dlp::AddFilesRequest,
+                                   chromeos::FakeDlpClient::AddFilesCallback)>
+      request;
+  EXPECT_CALL(request,
+              Run(testing::Property(&::dlp::AddFilesRequest::add_file_requests,
+                                    testing::ElementsAre(testing::Property(
+                                        &::dlp::AddFileRequest::file_path,
+                                        testing::EndsWith(kTestFileName)))),
+                  _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          ::dlp::AddFilesResponse::default_instance()));
+  fake_dlp_client_->SetAddFilesMock(request.Get());
+
+  if (directoryPicker) {
+    PrepareDirPicker(/*createFile=*/false);
+  } else {
+    PrepareFilePicker(/*createFile=*/false);
+  }
+
+  TestJSAction("document.getElementById('" + jsId + "').click()", "saved");
+
+  base::FilePath file = tmp_.GetPath().AppendASCII(kTestFileName);
+  std::string content;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::ReadFileToString(file, &content));
+  }
+  EXPECT_EQ(kTestContent, content);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Default,
+    DlpScopedFileAccessDelegateBrowserTestFileSystemAccessDownload,
+    testing::Values(std::tuple(false, "save_file"),
+                    std::tuple(true, "save_file_dir"),
+                    std::tuple(false, "save_file_worker"),
+                    std::tuple(true, "save_file_dir_worker"),
+                    std::tuple(false, "save_file_shared"),
+                    std::tuple(true, "save_file_dir_shared"),
+                    std::tuple(false, "save_file_service"),
+                    std::tuple(true, "save_file_dir_service")));
 
 }  // namespace policy
