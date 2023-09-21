@@ -142,14 +142,21 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
     static constexpr char kObserveEmptyReportsTableScript[] = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[0]?.innerText === 'No sent or pending reports.') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(
         ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, title)));
@@ -191,13 +198,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char kScript[] = R"(
     const status = document.getElementById('feature-status-content');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'enabled') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(status, {childList: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(status, {childList: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -224,13 +238,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char kScript[] = R"(
     const status = document.getElementById('feature-status-content');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'disabled') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(status, {childList: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(status, {childList: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -247,14 +268,21 @@ IN_PROC_BROWSER_TEST_F(
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0]?.innerText === 'No sources.') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -329,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tbody');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 4 &&
           regTable.children.length === 5 &&
           table.children[0].children[3]?.children[0]?.children.length === 2 &&
@@ -368,11 +396,18 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           regTable.children[3].children[6]?.innerText === 'Rejected: insufficient unique destination capacity' &&
           regTable.children[4].children[5]?.innerText === 'Event' &&
           regTable.children[4].children[6]?.innerText === 'Rejected: excessive reporting origins') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $3;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(
       JsReplace(kScript, kMaxUint64String, kMaxInt64String, kCompleteTitle)));
@@ -390,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#osRegistrationTable')
         .shadowRoot.querySelector('tbody');
 
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[1]?.innerText === 'OS Source' &&
           table.children[0].children[2]?.innerText === 'https://a.test/' &&
@@ -398,11 +433,18 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[4]?.innerText === 'false' &&
           table.children[0].children[5]?.innerText === 'false' &&
           table.children[0].children[6]?.innerText === 'Passed to OS') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -437,15 +479,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kScript[] = R"(
     const reportDelays = document.getElementById('report-delays');
     const noise = document.getElementById('noise');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (reportDelays.innerText === 'enabled' &&
           noise.innerText === 'enabled') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
-    obs.observe(noise, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+      obs.observe(noise, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -467,15 +516,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kScript[] = R"(
     const reportDelays = document.getElementById('report-delays');
     const noise = document.getElementById('noise');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (reportDelays.innerText === 'disabled' &&
           noise.innerText === 'disabled') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
-    obs.observe(noise, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+      obs.observe(noise, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -1040,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#aggregatableReportTable')
           .shadowRoot.querySelector('tbody');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 7 &&
             table.children[0].children[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
@@ -1059,11 +1115,18 @@ IN_PROC_BROWSER_TEST_F(
               'https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution' &&
             table.children[6].children[5]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
             table.children[6].children[8]?.innerText === 'true') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -1138,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     const table = document.querySelector('#triggerTable')
         .shadowRoot.querySelector('tbody');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 2 &&
           table.children[0].children[5]?.innerText === 'Success: Report stored' &&
           table.children[0].children[6]?.innerText === 'Success: Report stored' &&
@@ -1148,11 +1211,18 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[4]?.innerText === '' &&
           table.children[1].children[4]?.innerText === '123' &&
           table.children[1].children[7]?.innerHTML === expectedVerification) {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -1221,14 +1291,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#aggregatableReportTable')
         .shadowRoot.querySelector('tbody');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0]?.innerText !== 'No sent or pending reports.') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -1299,17 +1376,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const label = document.querySelector('#show-debug-event-reports span');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 2 &&
             table.children[0].children[5]?.innerText === '1' &&
             table.children[1].children[5]?.innerText === '2' &&
             label.innerText === '') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
-      obs.observe(label, {childList: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+        obs.observe(label, {childList: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -1338,16 +1422,23 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const label = document.querySelector('#show-debug-event-reports span');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[5]?.innerText === '2' &&
             label.innerText === ' (2 hidden)') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
-      obs.observe(label, {childList: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+        obs.observe(label, {childList: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle2)));
 
@@ -1367,18 +1458,25 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#reportTable').shadowRoot
           .querySelector('tbody');
       const label = document.querySelector('#show-debug-event-reports span');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 3 &&
             table.children[0].children[5]?.innerText === '1' &&
             table.children[1].children[5]?.innerText === '2' &&
             table.children[2].children[5]?.innerText === '3' &&
             label.innerText === '') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
-      obs.observe(label, {childList: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+        obs.observe(label, {childList: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle3)));
 
@@ -1405,17 +1503,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     const url = 'https://report.test/.well-known/attribution-reporting/debug/verbose';
 
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[1]?.innerText === url &&
           table.children[0].children[2]?.innerText === 'HTTP 200' &&
           table.children[0].children[3]?.innerText.includes('source-unknown-error')
       ) {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
