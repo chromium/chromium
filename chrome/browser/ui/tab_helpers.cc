@@ -215,6 +215,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/cros_apps/cros_apps_tab_helper.h"
 #include "chrome/browser/lacros/web_contents_can_go_back_observer.h"
 #endif
 
@@ -602,6 +603,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   WebContentsCanGoBackObserver::CreateForWebContents(web_contents);
+  CrosAppsTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

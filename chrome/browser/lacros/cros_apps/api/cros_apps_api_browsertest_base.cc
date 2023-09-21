@@ -5,7 +5,6 @@
 #include "chrome/browser/lacros/cros_apps/api/cros_apps_api_browsertest_base.h"
 
 #include "chromeos/constants/chromeos_features.h"
-#include "content/public/common/content_switches.h"
 
 CrosAppsApiBrowserTestBase::CrosAppsApiBrowserTestBase() {
   scoped_feature_list_.InitAndEnableFeature(

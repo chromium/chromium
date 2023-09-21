@@ -2,27 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
+#include "chrome/browser/lacros/cros_apps/cros_apps_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Tests for content and blink mechanism that controls API exposure.
-class CrosAppsBlinkRuntimeFeatureBrowsertest
+//
+// This test directly controls Blink RuntimeFeatureState thus doesn't use
+// CrosAppsApiBrowserTestBase (which enables CrosApps flags to control feature
+// exposure based on feature control rules).
+class CrosAppsBlinkRuntimeFeatureBrowserTest
     : public InProcessBrowserTest,
       private content::WebContentsObserver {
  public:
-  CrosAppsBlinkRuntimeFeatureBrowsertest() = default;
-  CrosAppsBlinkRuntimeFeatureBrowsertest(
-      const CrosAppsBlinkRuntimeFeatureBrowsertest&) = delete;
-  CrosAppsBlinkRuntimeFeatureBrowsertest& operator=(
-      const CrosAppsBlinkRuntimeFeatureBrowsertest&) = delete;
-  ~CrosAppsBlinkRuntimeFeatureBrowsertest() override = default;
+  CrosAppsBlinkRuntimeFeatureBrowserTest() = default;
+  CrosAppsBlinkRuntimeFeatureBrowserTest(
+      const CrosAppsBlinkRuntimeFeatureBrowserTest&) = delete;
+  CrosAppsBlinkRuntimeFeatureBrowserTest& operator=(
+      const CrosAppsBlinkRuntimeFeatureBrowserTest&) = delete;
+  ~CrosAppsBlinkRuntimeFeatureBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -45,22 +47,12 @@ class CrosAppsBlinkRuntimeFeatureBrowsertest
                                                /*num_of_navigations*/ 1);
   }
 
-  // This method checks the given identifier is defined in web_content's
-  // JavaScript.
-  [[nodiscard]] content::EvalJsResult IsIdentifierDefined(
-      content::WebContents* web_contents,
-      const char* identifier) {
-    return content::EvalJs(
-        web_contents,
-        base::StringPrintf("typeof %s !== 'undefined';", identifier));
-  }
-
  private:
   base::RepeatingCallback<void(content::NavigationHandle*)>
       on_ready_to_commit_navigation_ = base::DoNothing();
 };
 
-IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
+IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowserTest,
                        DefaultDisabled_GlobalChromeOS) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWait(web_contents, embedded_test_server()->GetURL("/empty.html"));
@@ -68,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
   EXPECT_EQ(false, IsIdentifierDefined(web_contents, "window.chromeos"));
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
+IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowserTest,
                        SelectivelyEnabledByFeatureState_GlobalChromeOS) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -90,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
   EXPECT_EQ(false, IsIdentifierDefined(web_contents, "window.chromeos"));
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
+IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowserTest,
                        DefaultDisabled_ChromeOS_Diagnostics) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -108,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
   EXPECT_EQ(false, IsIdentifierDefined(web_contents, "window.chromeos"));
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowsertest,
+IN_PROC_BROWSER_TEST_F(CrosAppsBlinkRuntimeFeatureBrowserTest,
                        SelectivelyEnabledByFeatureState_ChromeOS_Diagnostics) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
