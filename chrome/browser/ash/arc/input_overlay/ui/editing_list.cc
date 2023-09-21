@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/background.h"
@@ -214,7 +215,8 @@ void EditingList::AddZeroStateContent() {
   auto* zero_banner =
       content_container->AddChildView(std::make_unique<views::ImageView>());
   zero_banner->SetImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          // TODO(b/301446165): Replace placeholder colors.
           IDS_ARC_INPUT_OVERLAY_ZERO_STATE_ILLUSTRATION_JSON));
   zero_banner->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 32, 0));
   content_container->AddChildView(ash::bubble_utils::CreateLabel(
