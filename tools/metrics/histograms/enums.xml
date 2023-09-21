@@ -13817,30 +13817,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="17" label="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
 </enum>
 
-<enum name="BrowserDataMigratorFinalStatus">
-  <int value="0" label="Skipped"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Find user data dir failed"/>
-  <int value="3" label="Detete tmp dir failed"/>
-  <int value="4" label="Not enough space">
-    Migration did not run because there was not enough free space.
-  </int>
-  <int value="5" label="Copy failed">
-    Migration did not complete since copy stage did not complete.
-  </int>
-  <int value="6" label="Move failed">
-    Migration did not complete since move stage did not complete.
-  </int>
-  <int value="7" label="Data wipe failed">
-    Failed to delete lacros data directory with old data.
-  </int>
-  <int value="8" label="Size limit exceeded">
-    The total size of data that needs to be copied exceeded the limit. This
-    limit is set as a short-term fix to avoid making users stuck on the
-    migration screen for more than a few minutes.
-  </int>
-</enum>
-
 <enum name="BrowserGestureActionType">
   <int value="0" label="Tab switched tap"/>
   <int value="1" label="Active tab tap"/>

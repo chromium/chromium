@@ -838,56 +838,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserDataMigrator.AshDataSizeMB" units="MB"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The size of profile data that is identified to belong to ash-chrome i.e. the
-    total size of files that are under profile data directory of ash-chrome that
-    should remain in the same directory.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.CommonDataSizeMB" units="MB"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The size of profile data that is duplicated in both ash and lacros data
-    directory.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.CommonDataTimeTakenMS" units="ms"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The time taken for copying common data shared with lacros and ash.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.CopiedDataSizeMB" units="MB"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The size of data copied due to the migration i.e. extra space taken up
-    because of the migration. Only recorded if migration succeeded.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.CreateDirectoryFailure"
-    enum="PlatformFileError" expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    Records error if CreateDirectory failed to create a directory used to copy
-    files into as an intermediate destination during migration.
-  </summary>
-</histogram>
-
 <histogram name="Ash.BrowserDataMigrator.DryRunAshDataSizeMB" units="MB"
     expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
@@ -896,9 +846,6 @@ chromium-metrics-reviews@google.com.
     The size of profile data that is identified to belong to ash-chrome i.e. the
     total size of files that are under profile data directory of ash-chrome that
     should remain in the same directory.
-
-    The same as Ash.BrowserDataMigrator.AshDataSizeMB but collected without
-    actually running the migrator. It is called on every ash launch.
   </summary>
 </histogram>
 
@@ -909,9 +856,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size of profile data that is duplicated in both ash and lacros data
     directory.
-
-    The same as Ash.BrowserDataMigrator.CommonDataSizeMB but collected without
-    actually running the migrator. It is called on every ash launch.
   </summary>
 </histogram>
 
@@ -992,9 +936,6 @@ chromium-metrics-reviews@google.com.
     The size of profile data that is identified to belong to lacros-chrome i.e.
     the total size of files that are under profile data directory of ash-chrome
     that should move to lacros data directory.
-
-    The same as Ash.BrowserDataMigrator.LacrosDataSizeMB but collected without
-    actually running the migrator. It is called on every ash launch.
   </summary>
 </histogram>
 
@@ -1016,9 +957,6 @@ chromium-metrics-reviews@google.com.
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The size of profile data that is identified to be deletable such as cache.
-
-    The same as Ash.BrowserDataMigrator.NoCopyDataSizeMB but collected without
-    actually running the migrator. It is called on every ash launch.
   </summary>
 </histogram>
 
@@ -1032,34 +970,6 @@ chromium-metrics-reviews@google.com.
     Only collected for users that cannot secure 100MB extra space buffer for
     profile migration.
   </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.FinalStatus"
-    enum="BrowserDataMigratorFinalStatus" expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The final status of browser data migration. It is collected to monitor if
-    migration is working and if not used to determine which step is failing.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.LacrosDataSizeMB" units="MB"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The size of profile data that is identified to belong to lacros-chrome i.e.
-    the total size of files that are under profile data directory of ash-chrome
-    that should move to lacros data directory.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.LacrosDataTimeTakenMS" units="ms"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>The time taken for copying lacros data.</summary>
 </histogram>
 
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.CancelledMigrationTime"
@@ -1220,17 +1130,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserDataMigrator.MoveMigrator.SetupLacrosDirTime"
-    units="ms" expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The time taken for move migration to run SetupLacrosDir(). Recorded once
-    during the migration. Profile move migration is a feature to migrate profile
-    data from Ash to Lacros once after Lacros is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.SuccessfulMigrationTime"
     units="ms" expires_after="2024-03-10">
   <owner>ythjkt@chromium.org</owner>
@@ -1269,35 +1168,6 @@ chromium-metrics-reviews@google.com.
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The size of temporary split directory created during the migration.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.NoCopyDataSizeMB" units="MB"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The size of profile data that is identified to be deletable such as cache.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.TotalCopySizeWhenNotEnoughSpace"
-    units="MB" expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The total size of data that has to be copied. Collected for cases when the
-    migration fails due to lack of disk space.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserDataMigrator.TotalTimeTakenMS" units="ms"
-    expires_after="M121">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    The time taken for migration to complete in ms. Only recorded if migration
-    succeeded.
   </summary>
 </histogram>
 
