@@ -190,19 +190,11 @@ source_set("interactive_ui_tests") {
 }
 
 if (include_js2gtest_tests) {
-  if (is_chromeos_ash || enable_print_preview) {
+  if (is_chromeos_ash) {
     js2gtest("interactive_ui_tests_js_webui") {
       test_type = "webui"
 
-      sources = []
-
-      if (is_chromeos_ash) {
-        sources += [ "cr_focus_row_behavior_interactive_test.js" ]
-      }
-
-      if (enable_print_preview) {
-        sources += [ "print_preview/print_preview_interactive_ui_tests.js" ]
-      }
+      sources = [ "cr_focus_row_behavior_interactive_test.js" ]
 
       gen_include_files = [
         "polymer_browser_test_base.js",

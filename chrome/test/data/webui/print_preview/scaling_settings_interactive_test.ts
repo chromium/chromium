@@ -10,18 +10,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
-const scaling_settings_interactive_test = {
-  suiteName: 'ScalingSettingsInteractiveTest',
-  TestNames: {
-    AutoFocusInput: 'auto focus input',
-  },
-};
-
-Object.assign(
-    window,
-    {scaling_settings_interactive_test: scaling_settings_interactive_test});
-
-suite(scaling_settings_interactive_test.suiteName, function() {
+suite('ScalingSettingsInteractiveTest', function() {
   let scalingSection: PrintPreviewScalingSettingsElement;
 
   let model: PrintPreviewModelElement;
@@ -41,7 +30,7 @@ suite(scaling_settings_interactive_test.suiteName, function() {
   });
 
   test(
-      scaling_settings_interactive_test.TestNames.AutoFocusInput, async () => {
+      'auto focus input', async () => {
         const scalingInput =
             scalingSection.shadowRoot!
                 .querySelector('print-preview-number-settings-section')!.$

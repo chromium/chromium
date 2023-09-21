@@ -12,20 +12,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_dialog_cros_interactive_test = {
-  suiteName: 'DestinationDialogCrosInteractiveTest',
-  TestNames: {
-    FocusSearchBox: 'focus search box',
-    EscapeSearchBox: 'escape search box',
-  },
-};
-
-Object.assign(window, {
-  destination_dialog_cros_interactive_test:
-      destination_dialog_cros_interactive_test,
-});
-
-suite(destination_dialog_cros_interactive_test.suiteName, function() {
+suite('DestinationDialogInteractiveTest', function() {
   let dialog: PrintPreviewDestinationDialogCrosElement;
 
   let nativeLayer: NativeLayerStub;
@@ -79,22 +66,19 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
 
   // Tests that the search input text field is automatically focused when the
   // dialog is shown and there are destinations available.
-  test(
-      destination_dialog_cros_interactive_test.TestNames.FocusSearchBox,
-      function() {
-        const searchInput = dialog.$.searchBox.getSearchInput();
-        assertTrue(!!searchInput);
-        const whenFocusDone = eventToPromise('focus', searchInput);
-        dialog.destinationStore.startLoadAllDestinations();
-        dialog.show();
-        return whenFocusDone;
-      });
+  test('FocusSearchBox', function() {
+    const searchInput = dialog.$.searchBox.getSearchInput();
+    assertTrue(!!searchInput);
+    const whenFocusDone = eventToPromise('focus', searchInput);
+    dialog.destinationStore.startLoadAllDestinations();
+    dialog.show();
+    return whenFocusDone;
+  });
 
   // Tests that pressing the escape key while the search box is focused
   // closes the dialog if and only if the query is empty.
   test(
-      destination_dialog_cros_interactive_test.TestNames.EscapeSearchBox,
-      function() {
+      'EscapeSearchBox', function() {
         const searchBox = dialog.$.searchBox;
         const searchInput = searchBox.getSearchInput();
         assertTrue(!!searchInput);

@@ -13,6 +13,31 @@ class PrintPreviewFocusTest : public WebUIMochaFocusTest {
   PrintPreviewFocusTest() { set_test_loader_host(chrome::kChromeUIPrintHost); }
 };
 
+// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FocusPrintButtonOnReady DISABLED_FocusPrintButtonOnReady
+#else
+#define MAYBE_FocusPrintButtonOnReady FocusPrintButtonOnReady
+#endif
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, MAYBE_FocusPrintButtonOnReady) {
+  RunTest("print_preview/button_strip_interactive_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, BlurResetsEmptyNumberInput) {
+  RunTest("print_preview/number_settings_section_interactive_test.js",
+          "mocha.run()");
+}
+
+// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AutoFocusScalingInput DISABLED_AutoFocusScalingInput
+#else
+#define MAYBE_AutoFocusScalingInput AutoFocusScalingInput
+#endif
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, MAYBE_AutoFocusScalingInput) {
+  RunTest("print_preview/scaling_settings_interactive_test.js", "mocha.run()");
+}
+
 class PrintPreviewPagesSettingsFocusTest : public PrintPreviewFocusTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -54,3 +79,27 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosFocusTest,
   RunTestCase("ClickCloses");
 }
 #endif
+
+class PrintPreviewDestinationDialogFocusTest : public PrintPreviewFocusTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewFocusTest::RunTest(
+#if BUILDFLAG(IS_CHROMEOS)
+        "print_preview/destination_dialog_cros_interactive_test.js",
+#else
+        "print_preview/destination_dialog_interactive_test.js",
+#endif
+        base::StringPrintf(
+            "runMochaTest('DestinationDialogInteractiveTest', '%s');",
+            testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogFocusTest, FocusSearchBox) {
+  RunTestCase("FocusSearchBox");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogFocusTest,
+                       EscapeSearchBox) {
+  RunTestCase("EscapeSearchBox");
+}

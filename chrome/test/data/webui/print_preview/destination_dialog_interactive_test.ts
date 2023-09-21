@@ -3,44 +3,19 @@
 // found in the LICENSE file.
 
 import {
-  // <if expr="is_chromeos">
-  DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
-  // </if>
   NativeLayerImpl, PrintPreviewDestinationDialogElement, State} from 'chrome://print/print_preview.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="is_chromeos">
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
-// </if>
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_dialog_interactive_test = {
-  suiteName: 'DestinationDialogInteractiveTest',
-  TestNames: {
-    FocusSearchBox: 'focus search box',
-    EscapeSearchBox: 'escape search box',
-  },
-};
-
-Object.assign(
-    window,
-    {destination_dialog_interactive_test: destination_dialog_interactive_test});
-
-suite(destination_dialog_interactive_test.suiteName, function() {
+suite('DestinationDialogInteractiveTest', function() {
   let dialog: PrintPreviewDestinationDialogElement;
 
   let nativeLayer: NativeLayerStub;
-
-  // <if expr="is_chromeos">
-  let mockTimer: MockTimer;
-  // </if>
 
   suiteSetup(function() {
     setupTestListenerElement();
@@ -65,12 +40,6 @@ suite(destination_dialog_interactive_test.suiteName, function() {
     fakeDataBind(model, destinationSettings, 'settings');
     document.body.appendChild(destinationSettings);
 
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    mockTimer = new MockTimer();
-    mockTimer.install();
-    // </if>
-
     // Initialize
     destinationSettings.init(
         'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
@@ -82,41 +51,27 @@ suite(destination_dialog_interactive_test.suiteName, function() {
     });
   });
 
-  // <if expr="is_chromeos">
-  teardown(function() {
-    mockTimer.uninstall();
-  });
-  // </if>
-
   // Tests that the search input text field is automatically focused when the
   // dialog is shown.
-  test(
-      destination_dialog_interactive_test.TestNames.FocusSearchBox, function() {
-        const searchInput = dialog.$.searchBox.getSearchInput();
-        assertTrue(!!searchInput);
-        const whenFocusDone = eventToPromise('focus', searchInput);
-        dialog.destinationStore.startLoadAllDestinations();
-        dialog.show();
-        // <if expr="is_chromeos">
-        mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
-        // </if>
-        return whenFocusDone;
-      });
+  test('FocusSearchBox', function() {
+    const searchInput = dialog.$.searchBox.getSearchInput();
+    assertTrue(!!searchInput);
+    const whenFocusDone = eventToPromise('focus', searchInput);
+    dialog.destinationStore.startLoadAllDestinations();
+    dialog.show();
+    return whenFocusDone;
+  });
 
   // Tests that pressing the escape key while the search box is focused
   // closes the dialog if and only if the query is empty.
   test(
-      destination_dialog_interactive_test.TestNames.EscapeSearchBox,
-      function() {
+      'EscapeSearchBox', function() {
         const searchBox = dialog.$.searchBox;
         const searchInput = searchBox.getSearchInput();
         assertTrue(!!searchInput);
         const whenFocusDone = eventToPromise('focus', searchInput);
         dialog.destinationStore.startLoadAllDestinations();
         dialog.show();
-        // <if expr="is_chromeos">
-        mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
-        // </if>
         return whenFocusDone
             .then(() => {
               assertTrue(dialog.$.dialog.open);
