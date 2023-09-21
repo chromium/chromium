@@ -36,13 +36,13 @@ bool LegacyTechReportPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
-  if (policy->source != policy::POLICY_SOURCE_CLOUD) {
-    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+  if (!policy::CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
+          policy_name(), policies, errors)) {
     return false;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
+  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
   // If policy is set with the signed in account, it must be affiliated.
   if (policy->scope == policy::POLICY_SCOPE_USER &&
       !policies.IsUserAffiliated()) {
