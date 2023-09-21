@@ -19,9 +19,9 @@
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_order_controller.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -36,10 +36,9 @@ namespace {
 // multiple reason (one is when opening a new tab on a slow network session,
 // and terminating the app before the navigation can commit, another is when
 // WKWebView intercepts a new tab navigation to an app navigation; there may
-// be other cases). This function creates a WebStateListRemovingIndexes that
-// records the indexes of the WebStates that should not be saved.
-WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
-    const WebStateList& web_state_list) {
+// be other cases). This function creates a RemovingIndexes that records the
+// indexes of the WebStates that should not be saved.
+RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   for (int index = 0; index < web_state_list.count(); ++index) {
     web::WebState* web_state = web_state_list.GetWebStateAt(index);
@@ -50,7 +49,7 @@ WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
       web_state_to_skip_indexes.push_back(index);
     }
   }
-  return WebStateListRemovingIndexes(std::move(web_state_to_skip_indexes));
+  return RemovingIndexes(std::move(web_state_to_skip_indexes));
 }
 
 // Represents the reference to a WebState's opener in a WebStateList
@@ -371,7 +370,7 @@ void DeserializeWebStateList(WebStateList& web_state_list,
 }  // namespace
 
 SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
-  const WebStateListRemovingIndexes removing_indexes =
+  const RemovingIndexes removing_indexes =
       GetIndexOfWebStatesToDrop(*web_state_list);
 
   std::map<const web::WebState*, int> index_mapping;
@@ -421,7 +420,7 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
     }
   }
 
-  WebStateListOrderController order_controller(*web_state_list);
+  OrderController order_controller(*web_state_list);
   const int active_index = order_controller.DetermineNewActiveIndex(
       web_state_list->active_index(), std::move(removing_indexes));
 
@@ -435,7 +434,7 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
 
 void SerializeWebStateList(const WebStateList& web_state_list,
                            ios::proto::WebStateListStorage& storage) {
-  const WebStateListRemovingIndexes removing_indexes =
+  const RemovingIndexes removing_indexes =
       GetIndexOfWebStatesToDrop(web_state_list);
 
   std::map<const web::WebState*, int> index_mapping;
@@ -478,7 +477,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   DCHECK_LE(removed_pinned_tabs_count, pinned_tabs_count);
   storage.set_pinned_item_count(pinned_tabs_count - removed_pinned_tabs_count);
 
-  WebStateListOrderController order_controller(web_state_list);
+  OrderController order_controller(web_state_list);
   const int active_index = order_controller.DetermineNewActiveIndex(
       web_state_list.active_index(), std::move(removing_indexes));
   DCHECK_LT(active_index, web_state_list.count());

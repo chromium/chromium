@@ -17,7 +17,6 @@
 
 class WebStateListDelegate;
 class WebStateListObserver;
-class WebStateListOrderController;
 struct WebStateOpener;
 
 namespace web {
@@ -326,10 +325,6 @@ class WebStateList {
 
   // Wrappers to the WebStates hosted by the WebStateList.
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
-
-  // An object that determines where new WebState should be inserted and where
-  // selection should move when a WebState is detached.
-  std::unique_ptr<WebStateListOrderController> order_controller_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;

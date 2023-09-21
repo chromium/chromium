@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 
 #import <algorithm>
 #import <cstdint>
@@ -10,8 +10,8 @@
 
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 
 namespace {
@@ -19,7 +19,7 @@ namespace {
 // Find the index of next non-removed WebState opened by `web_state`. It
 // may return WebStateList::kInvalidIndex if there is no such indexes.
 int FindIndexOfNextNonRemovedWebStateOpenedBy(
-    const WebStateListRemovingIndexes& removing_indexes,
+    const RemovingIndexes& removing_indexes,
     const WebStateList& web_state_list,
     const web::WebState* web_state,
     int starting_index) {
@@ -56,48 +56,80 @@ int FindIndexOfNextNonRemovedWebStateOpenedBy(
 
 }  // anonymous namespace
 
-WebStateListOrderController::WebStateListOrderController(
-    const WebStateList& web_state_list)
-    : web_state_list_(web_state_list) {}
-
-WebStateListOrderController::~WebStateListOrderController() = default;
-
-int WebStateListOrderController::DetermineInsertionIndex(
-    int desired_index,
-    const web::WebState* opener,
-    bool forced,
-    bool pinned) const {
-  // Forced index has superiority over anything else. The only thing that should
-  // be checked here if `desired_index` is within the proper range of WebStates
-  // (e.g. pinned or regular).
-  if (forced) {
-    return ConstrainInsertionIndex(desired_index, pinned);
-  }
-
-  // If there is no opener, WebState should be added at the end of the list of
-  // the same kind of WebStates (e.g. pinned or regular).
-  if (!opener) {
-    return ConstrainInsertionIndex(WebStateList::kInvalidIndex, pinned);
-  }
-
-  int opener_index = web_state_list_.GetIndexOfWebState(opener);
-  DCHECK_NE(WebStateList::kInvalidIndex, opener_index);
-
-  const int list_child_index = web_state_list_.GetIndexOfLastWebStateOpenedBy(
-      opener, opener_index, true);
-
-  const int reference_index = list_child_index != WebStateList::kInvalidIndex
-                                  ? list_child_index
-                                  : opener_index;
-
-  // Check for overflows (just a DCHECK as INT_MAX open WebState is unlikely).
-  DCHECK_LT(reference_index, INT_MAX);
-  return ConstrainInsertionIndex(reference_index + 1, pinned);
+// static
+OrderController::InsertionParams OrderController::InsertionParams::Automatic(
+    bool pinned) {
+  return InsertionParams{
+      .desired_index = WebStateList::kInvalidIndex,
+      .opener_index = WebStateList::kInvalidIndex,
+      .pinned = pinned,
+  };
 }
 
-int WebStateListOrderController::DetermineNewActiveIndex(
+// static
+OrderController::InsertionParams OrderController::InsertionParams::ForceIndex(
+    int desired_index,
+    bool pinned) {
+  DCHECK_NE(desired_index, WebStateList::kInvalidIndex);
+  return InsertionParams{
+      .desired_index = desired_index,
+      .opener_index = WebStateList::kInvalidIndex,
+      .pinned = pinned,
+  };
+}
+
+// static
+OrderController::InsertionParams OrderController::InsertionParams::WithOpener(
+    int opener_index,
+    bool pinned) {
+  DCHECK_NE(opener_index, WebStateList::kInvalidIndex);
+  return InsertionParams{
+      .desired_index = WebStateList::kInvalidIndex,
+      .opener_index = opener_index,
+      .pinned = pinned,
+  };
+}
+
+OrderController::OrderController(const WebStateList& web_state_list)
+    : web_state_list_(web_state_list) {}
+
+OrderController::~OrderController() = default;
+
+int OrderController::DetermineInsertionIndex(InsertionParams params) const {
+  int desired_index = WebStateList::kInvalidIndex;
+  if (params.desired_index != WebStateList::kInvalidIndex) {
+    // "Forced position" has the highest priority.
+    desired_index = params.desired_index;
+  } else if (params.opener_index != WebStateList::kInvalidIndex) {
+    // "Relative to opener" means either after the last children of opener
+    // or after the opener if there is no sibling.
+    const int last_child_index = web_state_list_.GetIndexOfLastWebStateOpenedBy(
+        web_state_list_.GetWebStateAt(params.opener_index), params.opener_index,
+        true);
+
+    if (last_child_index != WebStateList::kInvalidIndex) {
+      desired_index = last_child_index + 1;
+    } else {
+      desired_index = params.opener_index + 1;
+    }
+  }
+
+  // In all cases, ensure that the index is in the correct range according
+  // to the `pinned` status of the item.
+  const int count = web_state_list_.count();
+  const int pinned_items_count = web_state_list_.pinned_tabs_count();
+  const int min = params.pinned ? 0 : pinned_items_count;
+  const int max = params.pinned ? pinned_items_count : count;
+  if (desired_index < min || desired_index > max) {
+    return max;
+  }
+
+  return desired_index;
+}
+
+int OrderController::DetermineNewActiveIndex(
     int active_index,
-    WebStateListRemovingIndexes removing_indexes) const {
+    RemovingIndexes removing_indexes) const {
   // If there is no active element, then there will be no new active element
   // after closing the element.
   if (active_index == WebStateList::kInvalidIndex) {
@@ -197,17 +229,4 @@ int WebStateListOrderController::DetermineNewActiveIndex(
 
   NOTREACHED() << "No active WebState selected by WebStateList not empty";
   return WebStateList::kInvalidIndex;
-}
-
-int WebStateListOrderController::ConstrainInsertionIndex(int index,
-                                                         bool pinned) const {
-  int min = pinned ? 0 : web_state_list_.pinned_tabs_count();
-  int max =
-      pinned ? web_state_list_.pinned_tabs_count() : web_state_list_.count();
-
-  if (index < min || index > max) {
-    return max;
-  }
-
-  return index;
 }

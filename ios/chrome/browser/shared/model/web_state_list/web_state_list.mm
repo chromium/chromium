@@ -10,10 +10,10 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_order_controller.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -415,9 +415,18 @@ int WebStateList::InsertWebStateImpl(int index,
     opener = WebStateOpener(GetActiveWebState());
   }
 
-  WebStateListOrderController order_controller(*this);
-  index = order_controller.DetermineInsertionIndex(index, opener.opener, forced,
-                                                   pinned);
+  OrderController order_controller(*this);
+  if (forced && index != WebStateList::kInvalidIndex) {
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::ForceIndex(index, pinned));
+  } else if (opener.opener) {
+    const int opener_index = GetIndexOfWebState(opener.opener);
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::WithOpener(opener_index, pinned));
+  } else {
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::Automatic(pinned));
+  }
 
   DCHECK(ContainsIndex(index) || index == count());
   delegate_->WillAddWebState(web_state.get());
@@ -586,7 +595,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateListDidChange with kDetach.
-  WebStateListOrderController order_controller(*this);
+  OrderController order_controller(*this);
   active_index_ =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
   if (is_active_web_state_detached) {
@@ -646,10 +655,9 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
       removing_indexes.push_back(i);
     }
 
-    WebStateListOrderController order_controller(*this);
+    OrderController order_controller(*this);
     new_active_index = order_controller.DetermineNewActiveIndex(
-        active_index_,
-        WebStateListRemovingIndexes(std::move(removing_indexes)));
+        active_index_, RemovingIndexes(std::move(removing_indexes)));
   }
 
   const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);

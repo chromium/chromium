@@ -2,30 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_REMOVING_INDEXES_H_
-#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_REMOVING_INDEXES_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_REMOVING_INDEXES_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_REMOVING_INDEXES_H_
 
 #include <initializer_list>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-// WebStateListRemovingIndexes is a class storing a list of indexes that will
-// soon be closed in a WebStateList, and providing support method to fix the
-// indexes of other WebStates. It is used by WebStateListOrderController to
-// implement DetermineNewActiveIndex().
-class WebStateListRemovingIndexes {
+// RemovingIndexes is a class storing a list of indexes that will soon be
+// closed in a WebStateList (or a serialized representation) and providing
+// support methods to fix the indexes of other WebStates.
+//
+// The class has optimization for lists of exactly zero and one indexes as
+// they are common (e.g. closing one tab, or closing tabs matching some
+// criteria).
+class RemovingIndexes {
  public:
-  explicit WebStateListRemovingIndexes(std::vector<int> indexes);
-  WebStateListRemovingIndexes(std::initializer_list<int> indexes);
+  explicit RemovingIndexes(std::vector<int> indexes);
+  RemovingIndexes(std::initializer_list<int> indexes);
 
-  WebStateListRemovingIndexes(const WebStateListRemovingIndexes&);
-  WebStateListRemovingIndexes& operator=(const WebStateListRemovingIndexes&);
+  RemovingIndexes(const RemovingIndexes&);
+  RemovingIndexes& operator=(const RemovingIndexes&);
 
-  WebStateListRemovingIndexes(WebStateListRemovingIndexes&&);
-  WebStateListRemovingIndexes& operator=(WebStateListRemovingIndexes&&);
+  RemovingIndexes(RemovingIndexes&&);
+  RemovingIndexes& operator=(RemovingIndexes&&);
 
-  ~WebStateListRemovingIndexes();
+  ~RemovingIndexes();
 
   // Returns the number of WebState that will be closed.
   int count() const;
@@ -38,7 +41,7 @@ class WebStateListRemovingIndexes {
   int IndexAfterRemoval(int index) const;
 
  private:
-  // Represents an empty WebStateListRemovingIndexes.
+  // Represents an empty RemovingIndexes.
   class EmptyStorage {
    public:
     // Returns the number of items to remove.
@@ -51,7 +54,7 @@ class WebStateListRemovingIndexes {
     int IndexAfterRemoval(int index) const;
   };
 
-  // Represents a WebStateListRemovingIndexes with a single index.
+  // Represents a RemovingIndexes with a single index.
   class OneIndexStorage {
    public:
     OneIndexStorage(int index);
@@ -69,7 +72,7 @@ class WebStateListRemovingIndexes {
     int index_;
   };
 
-  // Represents a WebStateListRemovingIndexes with two or more indexes.
+  // Represents a RemovingIndexes with two or more indexes.
   class VectorStorage {
    public:
     VectorStorage(std::vector<int> indexes);
@@ -105,4 +108,4 @@ class WebStateListRemovingIndexes {
   Storage removing_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_REMOVING_INDEXES_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_REMOVING_INDEXES_H_
