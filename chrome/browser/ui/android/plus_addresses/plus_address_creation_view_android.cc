@@ -6,11 +6,14 @@
 
 #include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
@@ -26,11 +29,15 @@ void PlusAddressCreationViewAndroid::Show(
   java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
       env, reinterpret_cast<intptr_t>(this)));
 
-  base::android::ScopedJavaLocalRef<jstring> j_email =
-      base::android::ConvertUTF8ToJavaString(env, primary_email_address);
+  base::android::ScopedJavaLocalRef<jstring> j_formatted_email =
+      base::android::ConvertUTF8ToJavaString(
+          env, l10n_util::GetStringFUTF8(
+                   IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL,
+                   base::UTF8ToUTF16(primary_email_address)));
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_,
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(), j_email);
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      j_formatted_email);
 }
 
 void PlusAddressCreationViewAndroid::OnConfirmed(
