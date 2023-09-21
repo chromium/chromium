@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,10 @@ public class CronetStressTest {
 
     @Test
     @LargeTest
-    public void testLargeNumberOfUploads() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "This test crashes the fallback implementation.")
+    public void
+    testLargeNumberOfUploads() throws Exception {
         Random random = new Random();
         final int kNumRequest = 1000;
         final int kNumRequestHeaders = 100;
