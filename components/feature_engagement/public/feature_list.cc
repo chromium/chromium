@@ -176,6 +176,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSideSearchFeature,
     &kIPHSideSearchPageActionLabelFeature,
     &kIPHTabSearchFeature,
+    &kIPHTrackingProtectionOnboardingFeature,
     &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,

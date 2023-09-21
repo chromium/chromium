@@ -191,6 +191,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHTrackingProtectionOnboardingFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("iph_tracking_protection_onboarding_triggered",
+                    Comparator(GREATER_THAN_OR_EQUAL, 0), 0, 0);
+    config->used = EventConfig("iph_tracking_protection_onboarding_used",
+                               Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
   if (kIPHBatterySaverModeFeature.name == feature->name) {
     // Show promo once a year when the battery saver toolbar icon is visible.
     absl::optional<FeatureConfig> config = FeatureConfig();
