@@ -225,15 +225,18 @@ public class SectionHeaderView extends LinearLayout {
             contentMarginLayoutParams.topMargin =
                     getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
 
+            mMenuView.setImageResource(R.drawable.gs_settings_gear_24dp);
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMenuView.getLayoutParams();
             marginLayoutParams.width =
                     getResources().getDimensionPixelSize(R.dimen.feed_header_menu_width_polished);
             marginLayoutParams.setMarginStart(
                     getResources().getDimensionPixelSize(R.dimen.feed_header_tab_end_margin));
-            if (!mIsTablet && mTitleView != null) {
-                marginLayoutParams.setMarginEnd(lateralPadding);
-            }
+
+            MarginLayoutParams titleViewMarginLayoutParams =
+                    (MarginLayoutParams) mTitleView.getLayoutParams();
+            titleViewMarginLayoutParams.setMarginStart(getResources().getDimensionPixelSize(
+                    R.dimen.feed_header_title_view_margin_start));
         }
 
         // #getHitRect() will not be valid until the first layout pass completes. Additionally, if
