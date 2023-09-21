@@ -256,13 +256,13 @@ export {SettingsCupsNearbyPrintersElement} from './os_printing_page/cups_nearby_
 export {PrinterDialogErrorElement} from './os_printing_page/cups_printer_dialog_error.js';
 export {PrinterListEntry, PrinterType} from './os_printing_page/cups_printer_types.js';
 export {PrinterSettingsUserAction, SettingsCupsPrintersElement} from './os_printing_page/cups_printers.js';
-export {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
+export {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {SettingsCupsPrintersEntryElement} from './os_printing_page/cups_printers_entry.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
 export {SettingsCupsSavedPrintersElement} from './os_printing_page/cups_saved_printers.js';
 export {SettingsCupsAddPrinterDialogElement} from './os_printing_page/cups_settings_add_printer_dialog.js';
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
-export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
+export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_card.js';
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
