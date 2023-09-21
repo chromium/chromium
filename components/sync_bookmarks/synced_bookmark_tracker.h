@@ -184,7 +184,7 @@ class SyncedBookmarkTracker {
   void ClearSpecificsHashForTest(const SyncedBookmarkTrackerEntity* entity);
 
   // Checks whther all nodes in |bookmark_model| that *should* be tracked as per
-  // CanSyncNode() are tracked.
+  // IsNodeManaged() are tracked.
   void CheckAllNodesTracked(
       const bookmarks::BookmarkModel* bookmark_model) const;
 

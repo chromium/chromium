@@ -70,8 +70,7 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
   bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
-  bool CanSyncNode(const bookmarks::BookmarkNode* node) override;
-  bool CanBeEditedByUser(const bookmarks::BookmarkNode* node) override;
+  bool IsNodeManaged(const bookmarks::BookmarkNode* node) override;
   std::string EncodeBookmarkSyncMetadata() override;
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,

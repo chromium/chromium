@@ -370,7 +370,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
   // all children of non-root permanent nodes.
   {
     for (const auto& permanent_node : root_->children()) {
-      if (!client_->CanBeEditedByUser(permanent_node.get())) {
+      if (client_->IsNodeManaged(permanent_node.get())) {
         continue;
       }
 
@@ -829,7 +829,7 @@ const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
 
   // Look for the first node that the user can edit.
   for (size_t i = 0; i < nodes.size(); ++i) {
-    if (client_->CanBeEditedByUser(nodes[i])) {
+    if (!client_->IsNodeManaged(nodes[i])) {
       return nodes[i];
     }
   }
@@ -961,7 +961,7 @@ const BookmarkNode* BookmarkModel::AddURL(
 
 void BookmarkModel::SortChildren(const BookmarkNode* parent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(client_->CanBeEditedByUser(parent));
+  DCHECK(!client_->IsNodeManaged(parent));
 
   if (!parent || !parent->is_folder() || is_root_node(parent) ||
       parent->children().size() <= 1) {
@@ -993,7 +993,7 @@ void BookmarkModel::ReorderChildren(
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& ordered_nodes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(client_->CanBeEditedByUser(parent));
+  DCHECK(!client_->IsNodeManaged(parent));
 
   // Ensure that all children in `parent` are in `ordered_nodes`.
   DCHECK_EQ(parent->children().size(), ordered_nodes.size());

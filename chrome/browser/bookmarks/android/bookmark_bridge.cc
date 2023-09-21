@@ -257,8 +257,9 @@ BookmarkBridge::GetBookmarkIdForWebContents(
 
   // Return the first node matching the search criteria.
   for (const auto* node : nodes) {
-    if (only_editable && !managed->CanBeEditedByUser(node))
+    if (only_editable && managed->IsNodeManaged(node)) {
       continue;
+    }
     return JavaBookmarkIdCreateBookmarkId(env, node->id(),
                                           GetBookmarkType(node));
   }
@@ -423,7 +424,7 @@ void BookmarkBridge::GetAllFoldersWithDepths(
     bookmarks.clear();
     for (const auto& child : node->children()) {
       if (child->is_folder() &&
-          managed_bookmark_service_->CanBeEditedByUser(child.get())) {
+          !managed_bookmark_service_->IsNodeManaged(child.get())) {
         bookmarks.push_back(child.get());
       }
     }
@@ -1087,7 +1088,7 @@ bool BookmarkBridge::IsEditable(const BookmarkNode* node) const {
   if (reading_list_manager_->IsReadingListBookmark(node))
     return reading_list_manager_->GetRoot() != node;
 
-  return managed_bookmark_service_->CanBeEditedByUser(node);
+  return !managed_bookmark_service_->IsNodeManaged(node);
 }
 
 bool BookmarkBridge::IsManaged(const BookmarkNode* node) const {

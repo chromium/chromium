@@ -72,7 +72,7 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(expanded_state_tracker_);
-  DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
+  DCHECK(!bb_model_->client()->IsNodeManaged(parent));
   SetCanResize(true);
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);
@@ -443,7 +443,7 @@ void BookmarkEditorView::CreateNodes(const BookmarkNode* bb_node,
                                      BookmarkEditorView::EditorNode* b_node) {
   for (const auto& child_bb_node : bb_node->children()) {
     if (child_bb_node->IsVisible() && child_bb_node->is_folder() &&
-        bb_model_->client()->CanBeEditedByUser(child_bb_node.get())) {
+        !bb_model_->client()->IsNodeManaged(child_bb_node.get())) {
       EditorNode* new_b_node = b_node->Add(std::make_unique<EditorNode>(
           child_bb_node->GetTitle(), child_bb_node->id()));
       new_b_node->SetPlaceholderAccessibleTitle(

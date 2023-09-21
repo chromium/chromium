@@ -137,7 +137,7 @@ LocalBookmarkModelMerger::FindGuidMatches(
 
     // Exclude managed nodes.
     if (!local_node->is_permanent_node() &&
-        !local_model->client()->CanSyncNode(local_node)) {
+        local_model->client()->IsNodeManaged(local_node)) {
       continue;
     }
 
@@ -181,7 +181,7 @@ void LocalBookmarkModelMerger::MergeSubtree(
 
     // Managed nodes are not expected to exist in the account BookmarkModel
     // instance.
-    CHECK(account_model_->client()->CanSyncNode(account_child));
+    CHECK(!account_model_->client()->IsNodeManaged(account_child));
 
     // If a UUID match exists, it takes precedence over semantic matching.
     if (FindMatchingLocalNodeByUuid(account_child)) {
@@ -203,7 +203,7 @@ void LocalBookmarkModelMerger::MergeSubtree(
 
     // Special-case managed bookmarks, which don't need merging into the account
     // model.
-    if (!local_model_->client()->CanSyncNode(local_child)) {
+    if (local_model_->client()->IsNodeManaged(local_child)) {
       continue;
     }
 

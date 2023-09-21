@@ -179,8 +179,8 @@ std::u16string CleanUpUrlForMatching(
 // is overly-long.
 std::u16string CleanUpTitleForMatching(const std::u16string& title);
 
-// Returns true if all the |nodes| can be edited by the user,
-// as determined by BookmarkClient::CanBeEditedByUser().
+// Returns true if all the |nodes| can be edited by the user, which means they
+// aren't enterprise-managed, as BookmarkClient::IsNodeManaged().
 bool CanAllBeEditedByUser(BookmarkClient* client,
                           const std::vector<const BookmarkNode*>& nodes);
 

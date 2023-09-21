@@ -2091,7 +2091,7 @@ void BookmarkBarView::CalculateDropLocation(
     location->index = 0;
     const BookmarkNode* node =
         data.GetFirstNode(bookmark_model_, profile->GetPath());
-    int ops = node && managed_->CanBeEditedByUser(node)
+    int ops = node && !managed_->IsNodeManaged(node)
                   ? ui::DragDropTypes::DRAG_MOVE
                   : ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
     location->operation = chrome::GetPreferredBookmarkDropOperation(

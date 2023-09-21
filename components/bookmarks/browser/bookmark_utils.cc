@@ -337,8 +337,9 @@ void PasteFromClipboard(BookmarkModel* model,
 }
 
 bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node) {
-  if (!node || !model->client()->CanBeEditedByUser(node))
+  if (!node || model->client()->IsNodeManaged(node)) {
     return false;
+  }
   return (BookmarkNodeData::ClipboardContainsBookmarks() ||
           GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid());
 }
@@ -352,8 +353,9 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
 
   while (iterator.has_next()) {
     const BookmarkNode* parent = iterator.Next();
-    if (!model->client()->CanBeEditedByUser(parent))
+    if (model->client()->IsNodeManaged(parent)) {
       continue;
+    }
     if (parent->is_folder() && parent->date_folder_modified() > Time()) {
       if (max_count == 0) {
         nodes.push_back(parent);
@@ -376,7 +378,7 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
     const BookmarkNode* root_node = model->root_node();
 
     for (const auto& node : root_node->children()) {
-      if (node->IsVisible() && model->client()->CanBeEditedByUser(node.get()) &&
+      if (node->IsVisible() && !model->client()->IsNodeManaged(node.get()) &&
           !base::Contains(nodes, node.get())) {
         nodes.push_back(node.get());
 
@@ -555,8 +557,9 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
   // Remove all the user bookmarks.
   for (const BookmarkNode* node : model->GetNodesByURL(url)) {
-    if (model->client()->CanBeEditedByUser(node))
+    if (!model->client()->IsNodeManaged(node)) {
       model->Remove(node, metrics::BookmarkEditSource::kUser);
+    }
   }
 }
 
@@ -579,15 +582,16 @@ std::u16string CleanUpTitleForMatching(const std::u16string& title) {
 bool CanAllBeEditedByUser(BookmarkClient* client,
                           const std::vector<const BookmarkNode*>& nodes) {
   for (size_t i = 0; i < nodes.size(); ++i) {
-    if (!client->CanBeEditedByUser(nodes[i]))
+    if (client->IsNodeManaged(nodes[i])) {
       return false;
+    }
   }
   return true;
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
   for (const BookmarkNode* node : model->GetNodesByURL(url)) {
-    if (model->client()->CanBeEditedByUser(node)) {
+    if (!model->client()->IsNodeManaged(node)) {
       return true;
     }
   }

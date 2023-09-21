@@ -52,7 +52,7 @@ DragOperation DropBookmarks(Profile* profile,
   if (data.IsFromProfilePath(profile->GetPath())) {
     const std::vector<const BookmarkNode*> dragged_nodes =
         data.GetNodes(model, profile->GetPath());
-    DCHECK(model->client()->CanBeEditedByUser(parent_node));
+    DCHECK(!model->client()->IsNodeManaged(parent_node));
     DCHECK(copy ||
            bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));
     if (!dragged_nodes.empty()) {

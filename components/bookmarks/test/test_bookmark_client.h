@@ -46,9 +46,6 @@ class TestBookmarkClient : public BookmarkClient {
   // Returns true if |node| is the |managed_node_|.
   bool IsManagedNodeRoot(const BookmarkNode* node);
 
-  // Returns true if |node| belongs to the tree of the |managed_node_|.
-  bool IsAManagedNode(const BookmarkNode* node);
-
   // Mimics the completion of a previously-triggered GetFaviconImageForPageURL()
   // call for |page_url|, usually invoked by BookmarkModel. Returns false if no
   // such a call is pending completion. The completion returns a favicon with
@@ -74,8 +71,7 @@ class TestBookmarkClient : public BookmarkClient {
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
-  bool CanSyncNode(const BookmarkNode* node) override;
-  bool CanBeEditedByUser(const BookmarkNode* node) override;
+  bool IsNodeManaged(const BookmarkNode* node) override;
   std::string EncodeBookmarkSyncMetadata() override;
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,

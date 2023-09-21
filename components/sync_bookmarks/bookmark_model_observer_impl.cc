@@ -121,7 +121,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
 
   // We shouldn't see changes to the top-level nodes.
   DCHECK(!model->is_permanent_node(node));
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
   const SyncedBookmarkTrackerEntity* entity =
@@ -151,7 +151,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     size_t index,
     bool added_by_user) {
   const bookmarks::BookmarkNode* node = parent->children()[index].get();
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
 
@@ -199,7 +199,7 @@ void BookmarkModelObserverImpl::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node) {
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
   bookmark_tracker_->CheckAllNodesTracked(model);
@@ -224,7 +224,7 @@ void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
   const bookmarks::BookmarkNode* root_node = model->root_node();
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
-      if (model->client()->CanSyncNode(child.get())) {
+      if (!model->client()->IsNodeManaged(child.get())) {
         ProcessDelete(child.get());
       }
     }
@@ -242,7 +242,7 @@ void BookmarkModelObserverImpl::BookmarkAllUserNodesRemoved(
 void BookmarkModelObserverImpl::BookmarkNodeChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
 
@@ -282,7 +282,7 @@ void BookmarkModelObserverImpl::BookmarkMetaInfoChanged(
 void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
 
@@ -331,7 +331,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
 void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  if (!model->client()->CanSyncNode(node)) {
+  if (model->client()->IsNodeManaged(node)) {
     return;
   }
 

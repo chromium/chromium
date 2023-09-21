@@ -62,7 +62,7 @@ bool RemoveAllUserBookmarksIOS(BookmarkModel* bookmark_model) {
   bookmark_model->RemoveAllUserBookmarks();
 
   for (const auto& child : bookmark_model->root_node()->children()) {
-    if (!bookmark_model->client()->CanBeEditedByUser(child.get())) {
+    if (bookmark_model->client()->IsNodeManaged(child.get())) {
       continue;
     }
     if (!child->children().empty()) {

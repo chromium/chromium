@@ -112,7 +112,7 @@ size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
   // Does not count the root node.
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* node = iterator.Next();
-    if (model->client()->CanSyncNode(node)) {
+    if (!model->client()->IsNodeManaged(node)) {
       ++count;
     }
   }

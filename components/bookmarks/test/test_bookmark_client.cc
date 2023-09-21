@@ -57,10 +57,6 @@ bool TestBookmarkClient::IsManagedNodeRoot(const BookmarkNode* node) {
   return unowned_managed_node_ == node;
 }
 
-bool TestBookmarkClient::IsAManagedNode(const BookmarkNode* node) {
-  return node && node->HasAncestor(unowned_managed_node_.get());
-}
-
 bool TestBookmarkClient::SimulateFaviconLoaded(const GURL& page_url,
                                                const GURL& icon_url,
                                                const gfx::Image& image) {
@@ -133,12 +129,8 @@ bool TestBookmarkClient::CanSetPermanentNodeTitle(
   return IsManagedNodeRoot(permanent_node);
 }
 
-bool TestBookmarkClient::CanSyncNode(const BookmarkNode* node) {
-  return !IsAManagedNode(node);
-}
-
-bool TestBookmarkClient::CanBeEditedByUser(const BookmarkNode* node) {
-  return !IsAManagedNode(node);
+bool TestBookmarkClient::IsNodeManaged(const BookmarkNode* node) {
+  return node && node->HasAncestor(unowned_managed_node_.get());
 }
 
 std::string TestBookmarkClient::EncodeBookmarkSyncMetadata() {

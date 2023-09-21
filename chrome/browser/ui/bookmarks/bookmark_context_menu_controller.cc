@@ -498,7 +498,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && model_->client()->CanBeEditedByUser(parent_);
+      return can_edit && !model_->client()->IsNodeManaged(parent_);
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
       for (auto* node : selection_) {
         if (node->is_permanent_node() ||
@@ -506,7 +506,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && model_->client()->CanBeEditedByUser(parent_);
+      return can_edit && !model_->client()->IsNodeManaged(parent_);
 
     case IDC_BOOKMARK_BAR_UNDO:
       return can_edit &&
@@ -523,7 +523,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_BOOKMARK_BAR_NEW_FOLDER:
     case IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK:
-      return can_edit && model_->client()->CanBeEditedByUser(parent_) &&
+      return can_edit && !model_->client()->IsNodeManaged(parent_) &&
              bookmarks::GetParentForNewNodes(parent_, selection_, nullptr);
 
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:

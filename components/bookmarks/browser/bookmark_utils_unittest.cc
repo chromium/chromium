@@ -463,7 +463,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
 
   // But it can't be pasted into a non-editable folder.
   BookmarkClient* upcast = model->client();
-  EXPECT_FALSE(upcast->CanBeEditedByUser(managed_node));
+  EXPECT_TRUE(upcast->IsNodeManaged(managed_node));
   EXPECT_FALSE(CanPasteFromClipboard(model.get(), managed_node));
 }
 #endif  // !BUILDFLAG(IS_IOS)

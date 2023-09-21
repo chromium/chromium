@@ -186,15 +186,9 @@ bool ChromeBookmarkClient::CanSetPermanentNodeTitle(
          managed_bookmark_service_->CanSetPermanentNodeTitle(permanent_node);
 }
 
-bool ChromeBookmarkClient::CanSyncNode(const bookmarks::BookmarkNode* node) {
-  return !managed_bookmark_service_ ||
-         managed_bookmark_service_->CanSyncNode(node);
-}
-
-bool ChromeBookmarkClient::CanBeEditedByUser(
-    const bookmarks::BookmarkNode* node) {
-  return !managed_bookmark_service_ ||
-         managed_bookmark_service_->CanBeEditedByUser(node);
+bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
+  return managed_bookmark_service_ &&
+         managed_bookmark_service_->IsNodeManaged(node);
 }
 
 std::string ChromeBookmarkClient::EncodeBookmarkSyncMetadata() {

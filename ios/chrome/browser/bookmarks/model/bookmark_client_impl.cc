@@ -112,19 +112,11 @@ bool BookmarkClientImpl::CanSetPermanentNodeTitle(
   return true;
 }
 
-bool BookmarkClientImpl::CanSyncNode(const bookmarks::BookmarkNode* node) {
+bool BookmarkClientImpl::IsNodeManaged(const bookmarks::BookmarkNode* node) {
   if (managed_bookmark_service_) {
-    return managed_bookmark_service_->CanSyncNode(node);
+    return managed_bookmark_service_->IsNodeManaged(node);
   }
-  return true;
-}
-
-bool BookmarkClientImpl::CanBeEditedByUser(
-    const bookmarks::BookmarkNode* node) {
-  if (managed_bookmark_service_) {
-    return managed_bookmark_service_->CanBeEditedByUser(node);
-  }
-  return true;
+  return false;
 }
 
 std::string BookmarkClientImpl::EncodeBookmarkSyncMetadata() {

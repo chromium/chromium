@@ -49,12 +49,8 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
     return false;
   }
 
-  bool CanSyncNode(const bookmarks::BookmarkNode* node) override {
+  bool IsNodeManaged(const bookmarks::BookmarkNode* node) override {
     return false;
-  }
-
-  bool CanBeEditedByUser(const bookmarks::BookmarkNode* node) override {
-    return true;
   }
 
   std::string EncodeBookmarkSyncMetadata() override { return ""; }

@@ -73,10 +73,7 @@ std::vector<GURL> GetAllUserBookmarksExcludingFolders(
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* const node = iterator.Next();
     // Skip folders and managed bookmarks.
-    if (node->is_url() && model->client()->CanBeEditedByUser(node)) {
-      // `CanBeEditedByUser()` and `CanSyncNode()` predicates should be
-      // identical.
-      CHECK(model->client()->CanSyncNode(node));
+    if (node->is_url() && !model->client()->IsNodeManaged(node)) {
       bookmarked_urls.push_back(node->url());
     }
   }

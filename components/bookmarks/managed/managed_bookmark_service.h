@@ -48,14 +48,8 @@ class ManagedBookmarkService : public KeyedService,
   // Returns true if the |node| can have its title updated.
   bool CanSetPermanentNodeTitle(const BookmarkNode* node);
 
-  // Returns true if |node| should sync.
-  bool CanSyncNode(const BookmarkNode* node);
-
-  // Returns true if |node| can be edited by the user.
-  // TODO(joaodasilva): the model should check this more aggressively, and
-  // should give the client a means to temporarily disable those checks.
-  // http://crbug.com/49598
-  bool CanBeEditedByUser(const BookmarkNode* node);
+  // Returns true if |node| is a descendant of the managed node.
+  bool IsNodeManaged(const BookmarkNode* node);
 
   // Top-level managed bookmarks folder, defined by an enterprise policy; may be
   // null.
