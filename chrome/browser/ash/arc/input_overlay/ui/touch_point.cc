@@ -9,11 +9,13 @@
 #include "base/debug/stack_trace.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -372,41 +374,66 @@ void TouchPoint::OnBlur() {
 }
 
 SkColor TouchPoint::GetCenterColor() {
+  ui::ColorProvider* color_provider = GetColorProvider();
   switch (ui_state_) {
     case UIState::kDefault:
-      return kCenterColor;
+      return IsBeta() ? color_provider->GetColor(cros_tokens::kCrosRefPrimary70)
+                      : kCenterColor;
     case UIState::kHover:
-      return color_utils::GetResultingPaintColor(kCenterColorHover20White,
-                                                 kCenterColor);
+      return IsBeta() ? color_provider->GetColor(cros_tokens::kCrosRefPrimary80)
+                      : color_utils::GetResultingPaintColor(
+                            kCenterColorHover20White, kCenterColor);
     case UIState::kDrag:
-      return color_utils::GetResultingPaintColor(kCenterColorDrag30White,
-                                                 kCenterColor);
+      return IsBeta() ? color_provider->GetColor(cros_tokens::kCrosRefPrimary60)
+                      : color_utils::GetResultingPaintColor(
+                            kCenterColorDrag30White, kCenterColor);
     default:
       NOTREACHED();
   }
 }
 
 SkColor TouchPoint::GetInsideStrokeColor() {
+  ui::ColorProvider* color_provider = GetColorProvider();
   switch (ui_state_) {
     case UIState::kDefault:
-      return kInsideStrokeColor;
+      return IsBeta() ? SkColorSetA(color_provider->GetColor(
+                                        cros_tokens::kCrosRefNeutral100),
+                                    0x99 /*60%*/)
+                      : kInsideStrokeColor;
     case UIState::kHover:
-      return kInsideStrokeColorHover;
+      return IsBeta() ? SkColorSetA(color_provider->GetColor(
+                                        cros_tokens::kCrosRefNeutral100),
+                                    0x99 /*60%*/)
+                      : kInsideStrokeColorHover;
     case UIState::kDrag:
-      return kInsideStrokeColorDrag;
+      return IsBeta() ? color_provider->GetColor(cros_tokens::kCrosRefNeutral90)
+                      : kInsideStrokeColorDrag;
     default:
       NOTREACHED();
   }
 }
 
 SkColor TouchPoint::GetOutsideStrokeColor() {
+  ui::ColorProvider* color_provider = GetColorProvider();
   switch (ui_state_) {
     case UIState::kDefault:
-      return kOutsideStrokeColor;
+      return IsBeta()
+                 ? SkColorSetA(
+                       color_provider->GetColor(cros_tokens::kCrosSysSurface5),
+                       0xB3 /*70%*/)
+                 : kOutsideStrokeColor;
     case UIState::kHover:
-      return kOutsideStrokeColorHover;
+      return IsBeta()
+                 ? SkColorSetA(
+                       color_provider->GetColor(cros_tokens::kCrosSysSurface5),
+                       0xB3 /*70%*/)
+                 : kOutsideStrokeColorHover;
     case UIState::kDrag:
-      return kOutsideStrokeColorDrag;
+      return IsBeta()
+                 ? SkColorSetA(
+                       color_provider->GetColor(cros_tokens::kCrosRefPrimary30),
+                       0x99 /*60%*/)
+                 : kOutsideStrokeColorDrag;
     default:
       NOTREACHED();
   }
