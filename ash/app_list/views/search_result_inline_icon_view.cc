@@ -59,11 +59,12 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
 
   if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
     icon_image_->SetImage(gfx::CreateVectorIcon(
-        *icon_, use_modified_styling_ ? cros_tokens::kCrosSysOnPrimaryContainer
-                                      : cros_tokens::kCrosSysOnSurface));
+        *icon_, use_modified_styling_
+                    ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface));
 
     icon_image_->SetBackground(views::CreateThemedRoundedRectBackground(
-        use_modified_styling_ ? cros_tokens::kCrosSysPrimaryContainer
+        use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));
   } else {
@@ -95,11 +96,11 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   label_->SetVisible(true);
 
   if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
-    label_->SetEnabledColorId(use_modified_styling_
-                                  ? cros_tokens::kCrosSysOnPrimaryContainer
-                                  : cros_tokens::kCrosSysOnSurface);
+    label_->SetEnabledColorId(
+        use_modified_styling_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                              : cros_tokens::kCrosSysOnSurface);
     label_->SetBackground(views::CreateThemedRoundedRectBackground(
-        use_modified_styling_ ? cros_tokens::kCrosSysPrimaryContainer
+        use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));
   } else {
