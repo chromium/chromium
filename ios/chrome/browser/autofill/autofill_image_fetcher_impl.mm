@@ -51,6 +51,10 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     const GURL& card_art_url,
     const gfx::Image& card_art_image) {
+  if (card_art_image.IsEmpty()) {
+    return card_art_image;
+  }
+
   // Some Capital One cards have a static URL rather than 'proper' card art
   // metadata, and so cannot be fetched at different sizes. We defer handling
   // those images to the base class.
