@@ -594,8 +594,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         mojom::AutofillActionPersistence::kFill, &GetValueWrapper);
     // Verify preview selection.
     WebInputElement firstname = GetInputElementById("firstname");
-    EXPECT_EQ(16, firstname.SelectionStart());
-    EXPECT_EQ(16, firstname.SelectionEnd());
+    EXPECT_EQ(16u, firstname.SelectionStart());
+    EXPECT_EQ(16u, firstname.SelectionEnd());
   }
 
   void TestPreviewForm(const char* html, bool unowned,
@@ -673,8 +673,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement firstname = GetInputElementById("firstname");
     // Since the suggestion is previewed as a placeholder, there should be no
     // selected text.
-    EXPECT_EQ(0, firstname.SelectionStart());
-    EXPECT_EQ(0, firstname.SelectionEnd());
+    EXPECT_EQ(0u, firstname.SelectionStart());
+    EXPECT_EQ(0u, firstname.SelectionEnd());
   }
 
   void TestFindFormForInputElement(const char* html, bool unowned) {
@@ -1235,8 +1235,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
                         mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the second character.
-    EXPECT_EQ(2, input_element.SelectionStart());
-    EXPECT_EQ(2, input_element.SelectionEnd());
+    EXPECT_EQ(2u, input_element.SelectionStart());
+    EXPECT_EQ(2u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
@@ -1295,8 +1295,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(5, input_element.SelectionStart());
-    EXPECT_EQ(5, input_element.SelectionEnd());
+    EXPECT_EQ(5u, input_element.SelectionStart());
+    EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
   void TestFillFormAndModifyValues(const char* html,
@@ -1371,8 +1371,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
                         mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the fifth character.
-    EXPECT_EQ(5, input_element.SelectionStart());
-    EXPECT_EQ(5, input_element.SelectionEnd());
+    EXPECT_EQ(5u, input_element.SelectionStart());
+    EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
@@ -1476,8 +1476,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(5, input_element.SelectionStart());
-    EXPECT_EQ(5, input_element.SelectionEnd());
+    EXPECT_EQ(5u, input_element.SelectionStart());
+    EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
   void TestFillFormWithPlaceholderValues(const char* html,
@@ -1529,8 +1529,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
                         mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the fifth character.
-    EXPECT_EQ(5, input_element.SelectionStart());
-    EXPECT_EQ(5, input_element.SelectionEnd());
+    EXPECT_EQ(5u, input_element.SelectionStart());
+    EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
@@ -1592,8 +1592,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(5, input_element.SelectionStart());
-    EXPECT_EQ(5, input_element.SelectionEnd());
+    EXPECT_EQ(5u, input_element.SelectionStart());
+    EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
   void TestFillFormAndModifyInitiatingValue(const char* html,
@@ -1645,8 +1645,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
                         mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the 19th character.
-    EXPECT_EQ(19, input_element.SelectionStart());
-    EXPECT_EQ(19, input_element.SelectionEnd());
+    EXPECT_EQ(19u, input_element.SelectionStart());
+    EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
@@ -1707,8 +1707,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(19, input_element.SelectionStart());
-    EXPECT_EQ(19, input_element.SelectionEnd());
+    EXPECT_EQ(19u, input_element.SelectionStart());
+    EXPECT_EQ(19u, input_element.SelectionEnd());
   }
 
   void TestFillFormJSModifiesUserInputValue(const char* html,
@@ -1764,8 +1764,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
                         mojom::AutofillActionPersistence::kPreview);
     // The selection should be set after the 19th character.
-    EXPECT_EQ(19, input_element.SelectionStart());
-    EXPECT_EQ(19, input_element.SelectionEnd());
+    EXPECT_EQ(19u, input_element.SelectionStart());
+    EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
     ApplyAutofillAction(form, input_element, mojom::AutofillActionType::kFill,
@@ -1826,8 +1826,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(19, input_element.SelectionStart());
-    EXPECT_EQ(19, input_element.SelectionEnd());
+    EXPECT_EQ(19u, input_element.SelectionStart());
+    EXPECT_EQ(19u, input_element.SelectionEnd());
   }
 
   void TestClearSectionWithNode(const char* html, bool unowned) {
@@ -1935,8 +1935,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.autocomplete_attribute.clear();
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(0, firstname.SelectionStart());
-    EXPECT_EQ(0, firstname.SelectionEnd());
+    EXPECT_EQ(0u, firstname.SelectionStart());
+    EXPECT_EQ(0u, firstname.SelectionEnd());
   }
 
   void TestClearTwoSections(const char* html, bool unowned) {
@@ -2044,8 +2044,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[5]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(0, firstname_shipping.SelectionStart());
-    EXPECT_EQ(0, firstname_shipping.SelectionEnd());
+    EXPECT_EQ(0u, firstname_shipping.SelectionStart());
+    EXPECT_EQ(0u, firstname_shipping.SelectionEnd());
   }
 
   void TestClearSectionWithNodeContainingSelectOne(const char* html,
@@ -2115,8 +2115,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(0, firstname.SelectionStart());
-    EXPECT_EQ(0, firstname.SelectionEnd());
+    EXPECT_EQ(0u, firstname.SelectionStart());
+    EXPECT_EQ(0u, firstname.SelectionEnd());
   }
 
   void TestClearPreviewedElements(const char* html) {
@@ -2168,8 +2168,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
 
     // Verify that the cursor position has been updated.
-    EXPECT_EQ(0, lastname.SelectionStart());
-    EXPECT_EQ(0, lastname.SelectionEnd());
+    EXPECT_EQ(0u, lastname.SelectionStart());
+    EXPECT_EQ(0u, lastname.SelectionEnd());
   }
 
   void TestClearPreviewedFormWithNonEmptyInitiatingNode(const char* html) {
@@ -2211,8 +2211,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(u"W", firstname.Value().Utf16());
     EXPECT_TRUE(firstname.SuggestedValue().IsEmpty());
     EXPECT_FALSE(firstname.IsAutofilled());
-    EXPECT_EQ(1, firstname.SelectionStart());
-    EXPECT_EQ(1, firstname.SelectionEnd());
+    EXPECT_EQ(1u, firstname.SelectionStart());
+    EXPECT_EQ(1u, firstname.SelectionEnd());
 
     // Verify the previewed fields are cleared.
     for (size_t i = 1; i < elements.size(); ++i) {
@@ -2262,8 +2262,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(u"W", firstname.Value().Utf16());
     EXPECT_TRUE(firstname.SuggestedValue().IsEmpty());
     EXPECT_TRUE(firstname.IsAutofilled());
-    EXPECT_EQ(1, firstname.SelectionStart());
-    EXPECT_EQ(1, firstname.SelectionEnd());
+    EXPECT_EQ(1u, firstname.SelectionStart());
+    EXPECT_EQ(1u, firstname.SelectionEnd());
 
     // Verify the previewed fields are cleared.
     for (size_t i = 1; i < elements.size(); ++i) {

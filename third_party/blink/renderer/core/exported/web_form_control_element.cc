@@ -313,14 +313,14 @@ WebString WebFormControlElement::EditingValue() const {
   return WebString();
 }
 
-void WebFormControlElement::SetSelectionRange(int start, int end) {
+void WebFormControlElement::SetSelectionRange(unsigned start, unsigned end) {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
     input->SetSelectionRange(start, end);
   if (auto* textarea = ::blink::DynamicTo<HTMLTextAreaElement>(*private_))
     textarea->SetSelectionRange(start, end);
 }
 
-int WebFormControlElement::SelectionStart() const {
+unsigned WebFormControlElement::SelectionStart() const {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
     return input->selectionStart();
   if (auto* textarea = ::blink::DynamicTo<HTMLTextAreaElement>(*private_))
@@ -328,7 +328,7 @@ int WebFormControlElement::SelectionStart() const {
   return 0;
 }
 
-int WebFormControlElement::SelectionEnd() const {
+unsigned WebFormControlElement::SelectionEnd() const {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
     return input->selectionEnd();
   if (auto* textarea = ::blink::DynamicTo<HTMLTextAreaElement>(*private_))

@@ -698,7 +698,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     element->SetSelectionRange(value.size(), value.size());
   }
 
-  void CheckUsernameSelection(int start, int end) {
+  void CheckUsernameSelection(size_t start, size_t end) {
     EXPECT_EQ(start, username_element_.SelectionStart());
     EXPECT_EQ(end, username_element_.SelectionEnd());
   }
@@ -1506,7 +1506,7 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestion) {
     password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
                                                      kAlicePassword16);
     CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
-    int username_length = strlen(kAliceUsername);
+    size_t username_length = strlen(kAliceUsername);
     CheckUsernameSelection(username_length, username_length);
 
     // Try Filling with a suggestion with password different from the one that

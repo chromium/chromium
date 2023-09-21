@@ -944,7 +944,7 @@ void AutofillAgent::ShowSuggestions(
        !IsKeyboardAccessoryEnabled()) ||
       (RequiresCaretAtEnd(trigger_source) &&
        (element.SelectionStart() != element.SelectionEnd() ||
-        element.SelectionEnd() != static_cast<int>(value.length())))) {
+        element.SelectionEnd() != value.length()))) {
     // Any popup currently showing is obsolete.
     HidePopup();
     return;
