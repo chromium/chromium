@@ -814,7 +814,9 @@ ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
               ? CompletionCodes::COMPLETION_CODE_SUCCESS
               : CompletionCodes::
                     COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
-    } else if (app_info.error_code == ERROR_SUCCESS_REBOOT_REQUIRED) {
+    } else if (app_info.error_code == ERROR_SUCCESS_REBOOT_INITIATED ||
+               app_info.error_code == ERROR_SUCCESS_REBOOT_REQUIRED ||
+               app_info.error_code == ERROR_SUCCESS_RESTART_REQUIRED) {
       app_info.completion_code =
           CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY;
     } else {

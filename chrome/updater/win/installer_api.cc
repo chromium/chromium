@@ -402,8 +402,7 @@ std::string GetTextForSystemError(int error) {
 // Omaha/Google Update. Some edge cases could be missing.
 // TODO(crbug.com/1172866): remove the hardcoded assumption that error must
 // be zero to indicate success.
-std::pair<Installer::Result, absl::optional<int>>
-MakeInstallerResultAndOriginalError(
+Installer::Result MakeInstallerResult(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code) {
   InstallerOutcome outcome;
@@ -411,14 +410,11 @@ MakeInstallerResultAndOriginalError(
     outcome = *installer_outcome;
   } else {
     // Set the installer result based on whether this is a success or an error.
-    // TODO(crbug.com/1481314): handle an `exit_code` of
-    // `ERROR_SUCCESS_REBOOT_REQUIRED`.
     if (exit_code == 0) {
       outcome.installer_result = InstallerResult::kSuccess;
     } else {
       outcome.installer_result = InstallerResult::kExitCode;
-      outcome.installer_error = kErrorApplicationInstallerFailed;
-      outcome.installer_extracode1 = exit_code;
+      outcome.installer_error = exit_code;
     }
   }
 
@@ -438,46 +434,37 @@ MakeInstallerResultAndOriginalError(
     case InstallerResult::kMsiError:
     case InstallerResult::kSystemError:
     case InstallerResult::kExitCode:
-      // These are unconditional errors:
+      // These are usually unconditional errors:
       // - use the installer error, or the exit code, or report a generic
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.error =
+      result.original_error =
           outcome.installer_error ? *outcome.installer_error : exit_code;
-      if (!result.error) {
-        result.error = kErrorApplicationInstallerFailed;
+      if (!result.original_error) {
+        result.original_error = kErrorApplicationInstallerFailed;
       }
+
+      // `update_client` needs to view the below codes as a success, otherwise
+      // it will consider the app as not installed. So we reset the `error` to
+      // `0` in these cases.
+      result.error =
+          result.original_error == ERROR_SUCCESS_REBOOT_INITIATED ||
+                  result.original_error == ERROR_SUCCESS_REBOOT_REQUIRED ||
+                  result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
+              ? 0
+              : kErrorApplicationInstallerFailed;
       if (outcome.installer_extracode1) {
         result.extended_error = *outcome.installer_extracode1;
       }
-      result.installer_text = outcome.installer_text
-                                  ? *outcome.installer_text
-                                  : GetTextForSystemError(result.error);
-      CHECK_NE(result.error, 0);
+      result.installer_text =
+          outcome.installer_text ? *outcome.installer_text
+                                 : GetTextForSystemError(result.original_error);
+      CHECK_NE(result.original_error, 0);
       break;
   }
 
-  // `update_client` needs to view `ERROR_SUCCESS_REBOOT_REQUIRED` as a
-  // success, otherwise it will consider the app as not installed even though
-  // it installed successfully. So we reset the `error` to `0` here. The
-  // original error will be returned by this function via the
-  // `original_result_error`.
-  if (result.error == ERROR_SUCCESS_REBOOT_REQUIRED) {
-    const int original_result_error = result.error;
-    result.error = 0;
-    return std::make_pair(result, original_result_error);
-  }
-  return std::make_pair(result, absl::nullopt);
-}
-
-// Calls `MakeInstallerResultAndOriginalError` and returns the resultant
-// `Installer::Result`.
-Installer::Result MakeInstallerResult(
-    absl::optional<InstallerOutcome> installer_outcome,
-    int exit_code) {
-  return MakeInstallerResultAndOriginalError(installer_outcome, exit_code)
-      .first;
+  return result;
 }
 
 // Clears the previous installer output, runs the application installer,

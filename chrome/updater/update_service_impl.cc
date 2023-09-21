@@ -180,30 +180,20 @@ MakeUpdateClientCrxStateChangeCallback(
             ToErrorCategory(crx_update_item.error_category);
         update_state.error_code = crx_update_item.error_code;
         update_state.extra_code1 = crx_update_item.extra_code1;
+        if (crx_update_item.installer_result) {
+          update_state.error_code =
+              crx_update_item.installer_result->original_error;
+          update_state.installer_cmd_line =
+              crx_update_item.installer_result->installer_cmd_line;
+          update_state.installer_text =
+              crx_update_item.installer_result->installer_text;
+        }
 
         if (update_state.state == UpdateService::UpdateState::State::kUpdated ||
             update_state.state ==
                 UpdateService::UpdateState::State::kUpdateError ||
             update_state.state ==
                 UpdateService::UpdateState::State::kNoUpdate) {
-#if BUILDFLAG(IS_WIN)
-          // Read the installer API results from the registry.
-          // TODO(crbug.com/1478305): Remove this code if `update_client`
-          // provides these values in the future.
-          // TODO(crbug.com/1481362): Remove the need for
-          // `MakeInstallerResultAndOriginalError` if this can be implemented in
-          // `update_client` instead.
-          const auto [result, error] = MakeInstallerResultAndOriginalError(
-              GetClientStateKeyLastInstallerOutcome(GetUpdaterScope(),
-                                                    update_state.app_id),
-              update_state.error_code);
-          update_state.installer_cmd_line = result.installer_cmd_line;
-          if (error)
-            update_state.error_code = *error;
-          update_state.extra_code1 = result.extended_error;
-          update_state.installer_text = result.installer_text;
-#endif  // BUILDFLAG(IS_WIN)
-
           // If a new install encounters an error, the AppId registered in
           // `UpdateServiceImpl::Install` needs to be removed here. Otherwise
           // the updater may remain installed even if there are no other apps to
@@ -726,12 +716,16 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
               config->GetPrefService()->CommitPendingWrite();
             }
 
-            state.error_code = result.error;
+            // Handle the offline installer cases similar to the online cases,
+            // and get the `error_code` from `original_error`.
+            state.error_code =
+                result.original_error ? result.original_error : result.error;
             state.extra_code1 = result.extended_error;
             state.installer_text = result.installer_text;
             state.installer_cmd_line = result.installer_cmd_line;
             state_update.Run(state);
-            VLOG(1) << app_id << " installation completed: " << result.error;
+            VLOG(1) << app_id
+                    << " installation completed: " << state.error_code;
 
             // Send an install ping. In some environments the ping cannot be
             // sent, so do not wait for it to be sent before calling back the
