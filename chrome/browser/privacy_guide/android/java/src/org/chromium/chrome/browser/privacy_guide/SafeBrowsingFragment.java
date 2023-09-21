@@ -142,7 +142,16 @@ public class SafeBrowsingFragment extends Fragment
     }
 
     private void displayBottomSheet(View sheetContent) {
-        mBottomSheetView = new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
+            mBottomSheetView = new PrivacyGuideBottomSheetView(
+                    sheetContent, this::closeBottomSheet, 0.9f, 1.0f);
+        } else {
+            mBottomSheetView =
+                    new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
+        }
         // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
         if (mBottomSheetController != null) {
             mBottomSheetController.requestShowContent(mBottomSheetView, false);
