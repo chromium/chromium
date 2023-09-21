@@ -91,8 +91,6 @@
 
 using MockReauthCallback = base::MockCallback<
     password_manager::PasswordAccessAuthenticator::ReauthCallback>;
-using extensions::api::passwords_private::FamilyFetchResults;
-using extensions::api::passwords_private::RecipientInfo;
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
 using password_manager::ReauthPurpose;
@@ -109,7 +107,15 @@ using ::testing::Optional;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
+
 namespace extensions {
+
+using api::passwords_private::FamilyFetchResults;
+using api::passwords_private::ImportResults;
+using api::passwords_private::PasswordUiEntry;
+using api::passwords_private::PublicKey;
+using api::passwords_private::RecipientInfo;
+using api::passwords_private::UrlCollection;
 
 namespace {
 
@@ -430,12 +436,13 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
 void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
     std::vector<PasswordForm> forms) {
   for (const PasswordForm& form : forms) {
-    if (form.IsUsingAccountStore())
+    if (form.IsUsingAccountStore()) {
       account_store_->AddLogin(form);
-    else if (form.IsUsingProfileStore())
+    } else if (form.IsUsingProfileStore()) {
       profile_store_->AddLogin(form);
-    else
+    } else {
       NOTREACHED() << "Store not set";
+    }
   }
   // Spin the loop to allow PasswordStore tasks being processed.
   base::RunLoop().RunUntilIdle();
@@ -567,7 +574,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   base::RunLoop().RunUntilIdle();
 
   // Check that adding passwords got reflected in the passwords list.
-  api::passwords_private::PasswordUiEntry expected_entry1;
+  PasswordUiEntry expected_entry1;
   expected_entry1.affiliated_domains.emplace_back();
   expected_entry1.affiliated_domains.back().signon_realm =
       "https://example1.com/";
@@ -575,7 +582,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   expected_entry1.note.emplace();
   expected_entry1.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
-  api::passwords_private::PasswordUiEntry expected_entry2;
+  PasswordUiEntry expected_entry2;
   expected_entry2.affiliated_domains.emplace_back();
   expected_entry2.affiliated_domains.back().signon_realm =
       "http://example2.com/";
@@ -639,9 +646,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
       .Times(0);
   EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
-  delegate->ImportPasswords(
-      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_DEVICE,
-      base::DoNothing(), web_contents.get());
+  delegate->ImportPasswords(api::passwords_private::PASSWORD_STORE_SET_DEVICE,
+                            base::DoNothing(), web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
@@ -661,9 +667,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
   EXPECT_CALL(*(client->GetPasswordFeatureManager()),
               SetDefaultPasswordStore(PasswordForm::Store::kAccountStore));
   EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
-  delegate->ImportPasswords(
-      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
-      base::DoNothing(), web_contents.get());
+  delegate->ImportPasswords(api::passwords_private::PASSWORD_STORE_SET_ACCOUNT,
+                            base::DoNothing(), web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -685,14 +690,13 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   fake_porter_ptr->set_import_result_status(kExpectedStatus);
 
   base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback> callback;
-  EXPECT_CALL(callback, Run(::testing::Field(
-                            &api::passwords_private::ImportResults::status,
-                            api::passwords_private::ImportResultsStatus::
-                                IMPORT_RESULTS_STATUS_BAD_FORMAT)))
+  EXPECT_CALL(callback,
+              Run(::testing::Field(
+                  &ImportResults::status,
+                  api::passwords_private::IMPORT_RESULTS_STATUS_BAD_FORMAT)))
       .Times(1);
-  delegate->ImportPasswords(
-      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
-      callback.Get(), web_contents.get());
+  delegate->ImportPasswords(api::passwords_private::PASSWORD_STORE_SET_ACCOUNT,
+                            callback.Get(), web_contents.get());
   task_environment()->RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
@@ -726,11 +730,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
 
   base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback>
       import_callback;
-  EXPECT_CALL(
-      import_callback,
-      Run(::testing::Field(&api::passwords_private::ImportResults::status,
-                           api::passwords_private::ImportResultsStatus::
-                               IMPORT_RESULTS_STATUS_DISMISSED)))
+  EXPECT_CALL(import_callback,
+              Run(::testing::Field(
+                  &ImportResults::status,
+                  api::passwords_private::IMPORT_RESULTS_STATUS_DISMISSED)))
       .Times(1);
 
   delegate->ContinueImport(/*selected_ids=*/{1}, import_callback.Get(),
@@ -760,10 +763,10 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   fake_porter_ptr->set_import_result_status(kExpectedStatus);
 
   base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback> callback;
-  EXPECT_CALL(callback, Run(::testing::Field(
-                            &api::passwords_private::ImportResults::status,
-                            api::passwords_private::ImportResultsStatus::
-                                IMPORT_RESULTS_STATUS_BAD_FORMAT)))
+  EXPECT_CALL(callback,
+              Run(::testing::Field(
+                  &ImportResults::status,
+                  api::passwords_private::IMPORT_RESULTS_STATUS_BAD_FORMAT)))
       .Times(1);
   delegate->ContinueImport(/*selected_ids=*/{}, callback.Get(),
                            web_contents.get());
@@ -792,8 +795,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Password) {
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  api::passwords_private::PasswordUiEntry updated_credential =
-      GetCredentials(*delegate).at(0).Clone();
+  PasswordUiEntry updated_credential = GetCredentials(*delegate).at(0).Clone();
   updated_credential.password = "new_pass";
   updated_credential.username = "new_user";
 
@@ -808,8 +810,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Password) {
   const PasswordsPrivateDelegate::UiEntries& credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(credentials.size(), 1u);
-  const api::passwords_private::PasswordUiEntry& refreshed_credential =
-      credentials.at(0);
+  const PasswordUiEntry& refreshed_credential = credentials.at(0);
   EXPECT_EQ(refreshed_credential.username, "new_user");
   EXPECT_EQ(refreshed_credential.note, absl::nullopt);
 }
@@ -826,8 +827,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  api::passwords_private::PasswordUiEntry updated_credential =
-      GetCredentials(*delegate).at(0).Clone();
+  PasswordUiEntry updated_credential = GetCredentials(*delegate).at(0).Clone();
   updated_credential.password = "new_pass";
   updated_credential.username = "new_user";
 
@@ -840,12 +840,10 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   const PasswordsPrivateDelegate::UiEntries& credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(credentials.size(), 1u);
-  const api::passwords_private::PasswordUiEntry& refreshed_credential =
-      credentials.at(0);
+  const PasswordUiEntry& refreshed_credential = credentials.at(0);
   EXPECT_EQ(refreshed_credential.username, "new_user");
   EXPECT_EQ(refreshed_credential.stored_in,
-            api::passwords_private::PasswordStoreSet::
-                PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT);
+            api::passwords_private::PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -867,11 +865,10 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_EQ(credentials.size(), 2u);
   const auto account_credential_it = base::ranges::find(
       credentials, api::passwords_private::PASSWORD_STORE_SET_ACCOUNT,
-      &api::passwords_private::PasswordUiEntry::stored_in);
+      &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, credentials.end());
 
-  api::passwords_private::PasswordUiEntry updated_credential =
-      account_credential_it->Clone();
+  PasswordUiEntry updated_credential = account_credential_it->Clone();
   updated_credential.password = "new_pass";
   updated_credential.username = "new_user";
 
@@ -886,7 +883,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_EQ(updated_credentials.size(), 2u);
   const auto refreshed_credential_it = base::ranges::find(
       updated_credentials, api::passwords_private::PASSWORD_STORE_SET_ACCOUNT,
-      &api::passwords_private::PasswordUiEntry::stored_in);
+      &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, updated_credentials.end());
   EXPECT_EQ(refreshed_credential_it->username, "new_user");
 }
@@ -914,12 +911,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Passkey) {
   const PasswordsPrivateDelegate::UiEntries& credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(credentials.size(), 1u);
-  const api::passwords_private::PasswordUiEntry& existing_credential =
-      credentials.at(0);
+  const PasswordUiEntry& existing_credential = credentials.at(0);
   EXPECT_TRUE(existing_credential.is_passkey);
 
-  api::passwords_private::PasswordUiEntry updated_credential =
-      existing_credential.Clone();
+  PasswordUiEntry updated_credential = existing_credential.Clone();
   updated_credential.username = "new_user";
   updated_credential.display_name = "new_display_name";
 
@@ -942,8 +937,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_NotFound) {
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      delegate->ChangeCredential(api::passwords_private::PasswordUiEntry()));
+  EXPECT_FALSE(delegate->ChangeCredential(PasswordUiEntry()));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_EmptyPassword) {
@@ -954,8 +948,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_EmptyPassword) {
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  api::passwords_private::PasswordUiEntry updated_credential =
-      GetCredentials(*delegate).at(0).Clone();
+  PasswordUiEntry updated_credential = GetCredentials(*delegate).at(0).Clone();
   updated_credential.password = "";
   updated_credential.username = "new_user";
 
@@ -1111,8 +1104,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   MockRequestCredentialsDetailsCallback password_callback;
   EXPECT_CALL(password_callback, Run)
-      .WillOnce([&](const std::vector<api::passwords_private::PasswordUiEntry>&
-                        entries) {
+      .WillOnce([&](const std::vector<PasswordUiEntry>& entries) {
         EXPECT_EQ(1u, entries.size());
         EXPECT_THAT(entries[0].password, Eq("test"));
         EXPECT_THAT(entries[0].username, Eq("test@gmail.com"));
@@ -1202,7 +1194,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenIpAddress) {
   auto delegate = CreateDelegate();
-  const absl::optional<api::passwords_private::UrlCollection> urls =
+  const absl::optional<UrlCollection> urls =
       delegate->GetUrlCollection("127.0.0.1");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("127.0.0.1", urls.value().shown);
@@ -1213,7 +1205,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenWebAddress) {
   auto delegate = CreateDelegate();
-  const absl::optional<api::passwords_private::UrlCollection> urls =
+  const absl::optional<UrlCollection> urls =
       delegate->GetUrlCollection("example.com/login");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
@@ -1224,9 +1216,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionStrippedValueWhenFullUrl) {
   auto delegate = CreateDelegate();
-  const absl::optional<api::passwords_private::UrlCollection> urls =
-      delegate->GetUrlCollection(
-          "http://username:password@example.com/login?param=value#ref");
+  const absl::optional<UrlCollection> urls = delegate->GetUrlCollection(
+      "http://username:password@example.com/login?param=value#ref");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
   EXPECT_EQ("http://example.com/", urls.value().signon_realm);
@@ -1236,7 +1227,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenUnsupportedScheme) {
   auto delegate = CreateDelegate();
-  const absl::optional<api::passwords_private::UrlCollection> urls =
+  const absl::optional<UrlCollection> urls =
       delegate->GetUrlCollection("scheme://unsupported");
   EXPECT_FALSE(urls.has_value());
 }
@@ -1244,7 +1235,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenInvalidUrl) {
   auto delegate = CreateDelegate();
-  const absl::optional<api::passwords_private::UrlCollection> urls =
+  const absl::optional<UrlCollection> urls =
       delegate->GetUrlCollection("https://^/invalid");
   EXPECT_FALSE(urls.has_value());
 }
@@ -1297,130 +1288,68 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_NONE} ==
+                int{password_manager::ImportEntry::Status::NONE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_NONE) ==
-          static_cast<int>(password_manager::ImportEntry::Status::NONE),
-      "");
-  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
-                                     IMPORT_ENTRY_STATUS_UNKNOWN_ERROR) ==
-                    static_cast<int>(
-                        password_manager::ImportEntry::Status::UNKNOWN_ERROR),
-                "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_UNKNOWN_ERROR} ==
+      int{password_manager::ImportEntry::Status::UNKNOWN_ERROR});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_MISSING_PASSWORD) ==
-          static_cast<int>(
-              password_manager::ImportEntry::Status::MISSING_PASSWORD),
-      "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_MISSING_PASSWORD} ==
+      int{password_manager::ImportEntry::Status::MISSING_PASSWORD});
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_MISSING_URL} ==
+                int{password_manager::ImportEntry::Status::MISSING_URL});
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_INVALID_URL} ==
+                int{password_manager::ImportEntry::Status::INVALID_URL});
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_LONG_URL} ==
+                int{password_manager::ImportEntry::Status::LONG_URL});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_MISSING_URL) ==
-          static_cast<int>(password_manager::ImportEntry::Status::MISSING_URL),
-      "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_LONG_PASSWORD} ==
+      int{password_manager::ImportEntry::Status::LONG_PASSWORD});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_INVALID_URL) ==
-          static_cast<int>(password_manager::ImportEntry::Status::INVALID_URL),
-      "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_LONG_USERNAME} ==
+      int{password_manager::ImportEntry::Status::LONG_USERNAME});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_LONG_URL) ==
-          static_cast<int>(password_manager::ImportEntry::Status::LONG_URL),
-      "");
-  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
-                                     IMPORT_ENTRY_STATUS_LONG_PASSWORD) ==
-                    static_cast<int>(
-                        password_manager::ImportEntry::Status::LONG_PASSWORD),
-                "");
-  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
-                                     IMPORT_ENTRY_STATUS_LONG_USERNAME) ==
-                    static_cast<int>(
-                        password_manager::ImportEntry::Status::LONG_USERNAME),
-                "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_CONFLICT_PROFILE} ==
+      int{password_manager::ImportEntry::Status::CONFLICT_PROFILE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_CONFLICT_PROFILE) ==
-          static_cast<int>(
-              password_manager::ImportEntry::Status::CONFLICT_PROFILE),
-      "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_CONFLICT_ACCOUNT} ==
+      int{password_manager::ImportEntry::Status::CONFLICT_ACCOUNT});
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_LONG_NOTE} ==
+                int{password_manager::ImportEntry::Status::LONG_NOTE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_CONFLICT_ACCOUNT) ==
-          static_cast<int>(
-              password_manager::ImportEntry::Status::CONFLICT_ACCOUNT),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_LONG_NOTE) ==
-          static_cast<int>(password_manager::ImportEntry::Status::LONG_NOTE),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_LONG_CONCATENATED_NOTE) ==
-          static_cast<int>(
-              password_manager::ImportEntry::Status::LONG_CONCATENATED_NOTE),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportEntryStatus::
-                           IMPORT_ENTRY_STATUS_VALID) ==
-          static_cast<int>(password_manager::ImportEntry::Status::VALID),
-      "");
+      int{api::passwords_private::IMPORT_ENTRY_STATUS_LONG_CONCATENATED_NOTE} ==
+      int{password_manager::ImportEntry::Status::LONG_CONCATENATED_NOTE});
+  static_assert(int{api::passwords_private::IMPORT_ENTRY_STATUS_VALID} ==
+                int{password_manager::ImportEntry::Status::VALID});
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_NONE} ==
+                int{password_manager::ImportResults::Status::NONE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_NONE) ==
-          static_cast<int>(password_manager::ImportResults::Status::NONE),
-      "");
-  static_assert(static_cast<int>(api::passwords_private::ImportResultsStatus::
-                                     IMPORT_RESULTS_STATUS_UNKNOWN_ERROR) ==
-                    static_cast<int>(
-                        password_manager::ImportResults::Status::UNKNOWN_ERROR),
-                "");
+      int{api::passwords_private::IMPORT_RESULTS_STATUS_UNKNOWN_ERROR} ==
+      int{password_manager::ImportResults::Status::UNKNOWN_ERROR});
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_SUCCESS} ==
+                int{password_manager::ImportResults::Status::SUCCESS});
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_IO_ERROR} ==
+                int{password_manager::ImportResults::Status::IO_ERROR});
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_BAD_FORMAT} ==
+                int{password_manager::ImportResults::Status::BAD_FORMAT});
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_DISMISSED} ==
+                int{password_manager::ImportResults::Status::DISMISSED});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_SUCCESS) ==
-          static_cast<int>(password_manager::ImportResults::Status::SUCCESS),
-      "");
+      int{api::passwords_private::IMPORT_RESULTS_STATUS_MAX_FILE_SIZE} ==
+      int{password_manager::ImportResults::Status::MAX_FILE_SIZE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_IO_ERROR) ==
-          static_cast<int>(password_manager::ImportResults::Status::IO_ERROR),
-      "");
+      int{api::passwords_private::
+              IMPORT_RESULTS_STATUS_IMPORT_ALREADY_ACTIVE} ==
+      int{password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE});
   static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_BAD_FORMAT) ==
-          static_cast<int>(password_manager::ImportResults::Status::BAD_FORMAT),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_DISMISSED) ==
-          static_cast<int>(password_manager::ImportResults::Status::DISMISSED),
-      "");
-  static_assert(static_cast<int>(api::passwords_private::ImportResultsStatus::
-                                     IMPORT_RESULTS_STATUS_MAX_FILE_SIZE) ==
-                    static_cast<int>(
-                        password_manager::ImportResults::Status::MAX_FILE_SIZE),
-                "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_IMPORT_ALREADY_ACTIVE) ==
-          static_cast<int>(
-              password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_NUM_PASSWORDS_EXCEEDED) ==
-          static_cast<int>(
-              password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::ImportResultsStatus::
-                           IMPORT_RESULTS_STATUS_CONFLICTS) ==
-          static_cast<int>(password_manager::ImportResults::Status::CONFLICTS),
-      "");
+      int{api::passwords_private::
+              IMPORT_RESULTS_STATUS_NUM_PASSWORDS_EXCEEDED} ==
+      int{password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED});
+  static_assert(int{api::passwords_private::IMPORT_RESULTS_STATUS_CONFLICTS} ==
+                int{password_manager::ImportResults::Status::CONFLICTS});
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -1543,12 +1472,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   EXPECT_EQ("abc1.com", groups[0].name);
   EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
 
-  api::passwords_private::PasswordUiEntry expected_entry1;
+  PasswordUiEntry expected_entry1;
   expected_entry1.affiliated_domains.emplace_back();
   expected_entry1.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry1.username = "username1";
   expected_entry1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-  api::passwords_private::PasswordUiEntry expected_entry2;
+  PasswordUiEntry expected_entry2;
   expected_entry2.affiliated_domains.emplace_back();
   expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry2.username = "username2";
@@ -1601,12 +1530,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   EXPECT_EQ("abc1.com", groups[0].name);
   EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
 
-  api::passwords_private::PasswordUiEntry expected_entry1;
+  PasswordUiEntry expected_entry1;
   expected_entry1.affiliated_domains.emplace_back();
   expected_entry1.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry1.username = "username1";
   expected_entry1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-  api::passwords_private::PasswordUiEntry expected_entry2;
+  PasswordUiEntry expected_entry2;
   expected_entry2.is_passkey = true;
   expected_entry2.affiliated_domains.emplace_back();
   expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
@@ -1639,8 +1568,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
   SetUpPasswordStores({});
 
   auto groups = delegate->GetCredentialGroups();
-  api::passwords_private::PasswordUiEntry& passkey_entry =
-      groups.at(0).entries.at(0);
+  PasswordUiEntry& passkey_entry = groups.at(0).entries.at(0);
   ASSERT_TRUE(passkey_entry.is_passkey);
   EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
             0);
@@ -1653,8 +1581,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
 
   // Attempt removing a non existent entry.
   delegate->RemoveCredential(
-      /*id=*/42,
-      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT);
+      /*id=*/42, api::passwords_private::PASSWORD_STORE_SET_ACCOUNT);
   EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
             1);
 }
@@ -1665,8 +1592,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
   SetUpPasswordStores({password});
 
   PasswordsPrivateDelegate::ShareRecipients recipients;
-  api::passwords_private::RecipientInfo recipient1;
-  api::passwords_private::PublicKey public_key1;
+  RecipientInfo recipient1;
+  PublicKey public_key1;
   public_key1.value = kSharingRecipientKeyValue1;
   recipient1.public_key = std::move(public_key1);
   recipient1.user_id = kSharingRecipientId1;
@@ -1675,8 +1602,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
   recipient1.profile_image_url = kSharingRecipientProfileImageUrl1;
   recipients.push_back(std::move(recipient1));
 
-  api::passwords_private::RecipientInfo recipient2;
-  api::passwords_private::PublicKey public_key2;
+  RecipientInfo recipient2;
+  PublicKey public_key2;
   public_key2.value = kSharingRecipientKeyValue2;
   recipient2.public_key = std::move(public_key2);
   recipient2.user_id = kSharingRecipientId2;
@@ -1751,7 +1678,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // m.facebook.com
   int id_with_two_affiliated_domains = -1;
   for (const api::passwords_private::CredentialGroup& group : groups) {
-    for (const api::passwords_private::PasswordUiEntry& entry : group.entries) {
+    for (const PasswordUiEntry& entry : group.entries) {
       if (entry.affiliated_domains.size() == 2) {
         id_with_two_affiliated_domains = entry.id;
         break;
@@ -1761,8 +1688,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   ASSERT_NE(-1, id_with_two_affiliated_domains);
 
   PasswordsPrivateDelegate::ShareRecipients recipients;
-  api::passwords_private::RecipientInfo recipient;
-  api::passwords_private::PublicKey public_key;
+  RecipientInfo recipient;
+  PublicKey public_key;
   public_key.value = kSharingRecipientKeyValue1;
   recipient.public_key = std::move(public_key);
   recipient.user_id = kSharingRecipientId1;
@@ -1798,7 +1725,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
   auto delegate = CreateDelegate();
 
   PasswordsPrivateDelegate::ShareRecipients recipients;
-  api::passwords_private::RecipientInfo recipient;
+  RecipientInfo recipient;
   recipient.user_id = kSharingRecipientId1;
   recipients.push_back(std::move(recipient));
 
@@ -1910,23 +1837,21 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
       callback;
   EXPECT_CALL(
       callback,
-      Run(AllOf(
-          Field(&FamilyFetchResults::status,
-                api::passwords_private::FAMILY_FETCH_STATUS_SUCCESS),
-          Field(&FamilyFetchResults::family_members,
-                ElementsAre(AllOf(
-                    Field(&RecipientInfo::user_id, kTestUserId),
-                    Field(&RecipientInfo::display_name, kTestUserName),
-                    Field(&RecipientInfo::email, kTestEmail),
-                    Field(&RecipientInfo::is_eligible, true),
-                    Field(&RecipientInfo::public_key,
-                          Optional(AllOf(
-                              Field(&api::passwords_private::PublicKey::value,
-                                    kTestPublicKeyBase64),
-                              Field(&api::passwords_private::PublicKey::version,
-                                    kTestPublicKeyVersion)))),
-                    Field(&RecipientInfo::profile_image_url,
-                          kTestProfileImageUrl)))))));
+      Run(AllOf(Field(&FamilyFetchResults::status,
+                      api::passwords_private::FAMILY_FETCH_STATUS_SUCCESS),
+                Field(&FamilyFetchResults::family_members,
+                      ElementsAre(AllOf(
+                          Field(&RecipientInfo::user_id, kTestUserId),
+                          Field(&RecipientInfo::display_name, kTestUserName),
+                          Field(&RecipientInfo::email, kTestEmail),
+                          Field(&RecipientInfo::is_eligible, true),
+                          Field(&RecipientInfo::public_key,
+                                Optional(AllOf(Field(&PublicKey::value,
+                                                     kTestPublicKeyBase64),
+                                               Field(&PublicKey::version,
+                                                     kTestPublicKeyVersion)))),
+                          Field(&RecipientInfo::profile_image_url,
+                                kTestProfileImageUrl)))))));
 
   delegate()->FetchFamilyMembers(callback.Get());
   task_environment()->RunUntilIdle();
