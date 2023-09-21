@@ -271,7 +271,10 @@ class Port(object):
         self.server_process_constructor = server_process.ServerProcess  # This can be overridden for testing.
         self._http_lock = None  # FIXME: Why does this live on the port object?
         self._dump_reader = None
-        self._skip_base_tests = set()
+        # This is a map of the form dir->[all skipped tests in that dir]
+        # It is used to optimize looking up for a test, as it allows a quick look up of the test dir
+        # while still using the "startwith" function to match with a single entry
+        self._skip_base_test_map = defaultdict(list)
 
         # Configuration and target are always set by PortFactory so this is only
         # relevant in cases where a Port is created without it (testing mostly).
@@ -1575,8 +1578,10 @@ class Port(object):
         # Ensure that this was called at least once, to process all suites
         # information
         vts = self.virtual_test_suites()
-
-        for skipped_base_test in self._skip_base_tests:
+        # Our approach of using a map keyed on paths will only work if the test name is not a directory.
+        assert (not self._filesystem.isdir(test))
+        dirname, _ = self.split_test(test)
+        for skipped_base_test in self._skip_base_test_map.get(dirname, []):
             if test.startswith(skipped_base_test):
                 return True
         return False
@@ -2418,7 +2423,11 @@ class Port(object):
                         if (self.is_wpt_test(normalized_base)
                                 and normalized_base.endswith(".js")):
                             normalized_base = normalized_base[:-2]
-                        self._skip_base_tests.add(normalized_base)
+                        # Update _skip_base_test_map with tests from the current suite's list
+                        test_dir, _ = self.split_test(normalized_base)
+                        self._skip_base_test_map[test_dir].append(
+                            normalized_base)
+
         except ValueError as error:
             raise ValueError('{} is not a valid JSON file: {}'.format(
                 path_to_virtual_test_suites, error))
