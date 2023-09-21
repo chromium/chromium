@@ -62,6 +62,7 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
                           const std::string& locale,
                           const DlcserviceClient::InstallResult& dlc_result) {
   PackResult result = ConvertDlcInstallResultToPackResult(dlc_result);
+  result.feature_id = feature_id;
   result.language_code = locale;
 
   const bool success = result.operation_error == PackResult::ErrorCode::kNone;
@@ -83,9 +84,11 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
 }
 
 void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
+                            std::string_view feature_id,
                             const std::string& locale,
                             const std::string& err) {
   PackResult result;
+  result.feature_id = feature_id;
   result.language_code = locale;
   result.operation_error = ConvertDlcErrorToErrorCode(err);
 
@@ -103,6 +106,7 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
 }
 
 void OnGetDlcState(GetPackStateCallback callback,
+                   std::string_view feature_id,
                    const std::string& locale,
                    const std::string& err,
                    const dlcservice::DlcState& dlc_state) {
@@ -117,6 +121,7 @@ void OnGetDlcState(GetPackStateCallback callback,
     result.pack_state = PackResult::StatusCode::kUnknown;
   }
 
+  result.feature_id = feature_id;
   result.language_code = locale;
 
   std::move(callback).Run(result);
@@ -269,11 +274,7 @@ PackResult::PackResult() {
 
 PackResult::~PackResult() = default;
 
-PackResult::PackResult(const PackResult& pr)
-    : pack_state(pr.pack_state),
-      operation_error(pr.operation_error),
-      language_code(pr.language_code),
-      path(pr.path) {}
+PackResult::PackResult(const PackResult&) = default;
 ///////////////////////////////////////////////////////////
 
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
@@ -323,7 +324,8 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
                                 GetFeatureIdValueForUma(feature_id));
 
   DlcserviceClient::Get()->GetDlcState(
-      *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback), locale));
+      *dlc_id,
+      base::BindOnce(&OnGetDlcState, std::move(callback), feature_id, locale));
 }
 
 void LanguagePackManager::RemovePack(const std::string& feature_id,
@@ -341,8 +343,8 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
   }
 
   DlcserviceClient::Get()->Uninstall(
-      *dlc_id,
-      base::BindOnce(&OnUninstallDlcComplete, std::move(callback), locale));
+      *dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback),
+                              feature_id, locale));
 }
 
 void LanguagePackManager::InstallBasePack(
@@ -401,9 +403,11 @@ void LanguagePackManager::RemoveObserver(Observer* const observer) {
 }
 
 void LanguagePackManager::NotifyPackStateChanged(
+    std::string_view feature_id,
     std::string_view locale,
     const dlcservice::DlcState& dlc_state) {
   PackResult result = ConvertDlcStateToPackResult(dlc_state);
+  result.feature_id = feature_id;
   result.language_code = locale;
   for (Observer& observer : observers_) {
     observer.OnPackStateChanged(result);
@@ -420,7 +424,7 @@ void LanguagePackManager::OnDlcStateChanged(
     return;
   }
 
-  NotifyPackStateChanged(*handwriting_locale, dlc_state);
+  NotifyPackStateChanged(kHandwritingFeatureId, *handwriting_locale, dlc_state);
 }
 
 LanguagePackManager::LanguagePackManager() = default;

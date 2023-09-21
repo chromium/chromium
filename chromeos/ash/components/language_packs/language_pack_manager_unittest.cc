@@ -18,6 +18,7 @@
 
 using ::dlcservice::DlcState;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::Invoke;
@@ -160,6 +161,7 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
@@ -246,6 +248,7 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
@@ -321,6 +324,7 @@ TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
 
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
@@ -395,7 +399,9 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
   // Add an Observer and expect it to be notified.
   manager_->AddObserver(&observer);
   EXPECT_CALL(observer, OnPackStateChanged(_))
-      .With(FieldsAre(Field(&PackResult::language_code, "de")))
+      .With(
+          FieldsAre(AllOf(Field(&PackResult::feature_id, kHandwritingFeatureId),
+                          Field(&PackResult::language_code, "de"))))
       .Times(1);
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
@@ -411,7 +417,9 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
   // Add an Observer and expect it to be notified.
   manager_->AddObserver(&observer);
   EXPECT_CALL(observer, OnPackStateChanged(_))
-      .With(FieldsAre(Field(&PackResult::language_code, "de")))
+      .With(
+          FieldsAre(AllOf(Field(&PackResult::feature_id, kHandwritingFeatureId),
+                          Field(&PackResult::language_code, "de"))))
       .Times(1);
   dlcservice_client_->NotifyObserversForTest(dlc_state);
 
@@ -480,6 +488,7 @@ TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
@@ -544,6 +553,7 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kTtsFeatureId);
   EXPECT_EQ(pack_result_.language_code, "en-au");
 
   // Test UMA metrics: post-condition.
@@ -574,6 +584,7 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kTtsFeatureId);
   EXPECT_EQ(pack_result_.language_code, "it");
 
   // Test UMA metrics: post-condition.

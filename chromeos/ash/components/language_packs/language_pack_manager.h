@@ -92,6 +92,9 @@ struct PackResult {
   // here.
   ErrorCode operation_error;
 
+  // The feature ID of the pack.
+  std::string feature_id;
+
   // The resolved language code that this Pack is associated with.
   // Often this field matches the locale requested by the client, but due to
   // various mappings between languages, regions and variants, it might be
@@ -249,7 +252,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
   // Notification method called upon change of DLCs state.
-  void NotifyPackStateChanged(std::string_view locale,
+  void NotifyPackStateChanged(std::string_view feature_id,
+                              std::string_view locale,
                               const dlcservice::DlcState& dlc_state);
 
   base::ObserverList<Observer> observers_;
