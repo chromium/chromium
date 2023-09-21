@@ -32,7 +32,6 @@ class EditAddressProfileDialogControllerImplTest
     ASSERT_THAT(controller(), ::testing::NotNull());
     controller()->OfferEdit(profile_, /*original_profile=*/nullptr,
                             /*footer_message=*/u"", save_callback_.Get(),
-                            cancel_callback_.Get(),
                             /*is_migration_to_account=*/false);
   }
 
@@ -51,13 +50,11 @@ class EditAddressProfileDialogControllerImplTest
       AutofillClient::SaveAddressProfileOfferUserDecision,
       AutofillProfile profile)>
       save_callback_;
-  base::MockOnceClosure cancel_callback_;
 };
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        CloseTab_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_, Run).Times(0);
-  EXPECT_CALL(cancel_callback_, Run).Times(0);
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -66,8 +63,9 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        IgnoreDialog_CancelCallbackInvoked) {
-  EXPECT_CALL(save_callback_, Run).Times(0);
-  EXPECT_CALL(cancel_callback_, Run);
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+                  profile_));
 
   controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored, profile_);
@@ -75,8 +73,10 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        CancelEditing_CancelCallbackInvoked) {
-  EXPECT_CALL(save_callback_, Run).Times(0);
-  EXPECT_CALL(cancel_callback_, Run);
+  EXPECT_CALL(
+      save_callback_,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
+          profile_));
 
   controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
@@ -89,7 +89,6 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
       save_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           profile_));
-  EXPECT_CALL(cancel_callback_, Run).Times(0);
 
   controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,

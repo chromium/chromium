@@ -326,14 +326,16 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
 void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     AutofillProfile profile) {
+  if (decision ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined) {
+    // Reopen this bubble if the user canceled editing.
+    shown_by_user_gesture_ = false;
+    Show();
+    return;
+  }
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_).Run(decision, profile);
   }
-}
-
-void SaveUpdateAddressProfileBubbleControllerImpl::OnUserCanceledEditing() {
-  shown_by_user_gesture_ = false;
-  Show();
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
@@ -344,9 +346,6 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
       address_profile_, GetOriginalProfile(), GetEditorFooterMessage(),
       base::BindOnce(&SaveUpdateAddressProfileBubbleController::OnUserDecision,
                      GetWeakPtr()),
-      base::BindOnce(
-          &SaveUpdateAddressProfileBubbleController::OnUserCanceledEditing,
-          GetWeakPtr()),
       is_migration_to_account_);
   HideBubble();
 }

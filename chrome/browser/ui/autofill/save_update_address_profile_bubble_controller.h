@@ -38,7 +38,6 @@ class SaveUpdateAddressProfileBubbleController {
   virtual void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       AutofillProfile profile) = 0;
-  virtual void OnUserCanceledEditing() = 0;
   virtual void OnEditButtonClicked() = 0;
   virtual void OnBubbleClosed() = 0;
 };

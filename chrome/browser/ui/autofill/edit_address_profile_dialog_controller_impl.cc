@@ -35,13 +35,11 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     const std::u16string& footer_message,
-    AutofillClient::AddressProfileSavePromptCallback
-        address_profile_save_prompt_callback,
-    base::OnceClosure on_cancel_callback,
+    AutofillClient::AddressProfileSavePromptCallback on_user_decision_callback,
     bool is_migration_to_account) {
   // Don't show the editor if it's already visible, and inform the backend.
   if (dialog_view_) {
-    std::move(address_profile_save_prompt_callback)
+    std::move(on_user_decision_callback)
         .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
              profile);
     return;
@@ -49,9 +47,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   address_profile_to_edit_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   footer_message_ = footer_message;
-  address_profile_save_prompt_callback_ =
-      std::move(address_profile_save_prompt_callback);
-  on_cancel_callback_ = std::move(on_cancel_callback);
+  on_user_decision_callback_ = std::move(on_user_decision_callback);
   is_migration_to_account_ = is_migration_to_account;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   dialog_view_ = browser->window()
@@ -93,15 +89,7 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
 void EditAddressProfileDialogControllerImpl::OnDialogClosed(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     const AutofillProfile& profile_with_edits) {
-  if (decision ==
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
-    // If the user accepted the flow, save the changes directly.
-    std::move(address_profile_save_prompt_callback_)
-        .Run(decision, profile_with_edits);
-  } else {
-    // If the user hits "Cancel", run the corresponding callback.
-    std::move(on_cancel_callback_).Run();
-  }
+  std::move(on_user_decision_callback_).Run(decision, profile_with_edits);
   dialog_view_ = nullptr;
 }
 

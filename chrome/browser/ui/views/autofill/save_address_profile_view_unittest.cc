@@ -49,7 +49,6 @@ class MockSaveUpdateAddressProfileBubbleController
               (AutofillClient::SaveAddressProfileOfferUserDecision,
                AutofillProfile),
               (override));
-  MOCK_METHOD(void, OnUserCanceledEditing, (), (override));
   MOCK_METHOD(void, OnEditButtonClicked, (), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 };

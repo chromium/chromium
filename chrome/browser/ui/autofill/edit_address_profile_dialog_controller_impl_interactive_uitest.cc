@@ -78,7 +78,7 @@ class EditAddressProfileDialogControllerImplTest
           base::BindOnce(
               &EditAddressProfileDialogControllerImplTest::OnUserDecision,
               base::Unretained(this)),
-          base::DoNothing(), is_migration_to_account);
+          is_migration_to_account);
     });
   }
 

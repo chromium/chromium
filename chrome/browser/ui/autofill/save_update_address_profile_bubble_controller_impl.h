@@ -59,7 +59,6 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       AutofillProfile profile) override;
-  void OnUserCanceledEditing() override;
   void OnEditButtonClicked() override;
   void OnBubbleClosed() override;
 
