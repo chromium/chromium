@@ -48,13 +48,12 @@ std::string EventTypeToString(ServiceWorkerMetrics::EventType event) {
 BackgroundFetchEventDispatcher::BackgroundFetchEventDispatcher(
     BackgroundFetchContext* background_fetch_context,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    DevToolsBackgroundServicesContextImpl* devtools_context)
+    DevToolsBackgroundServicesContextImpl& devtools_context)
     : background_fetch_context_(background_fetch_context),
       service_worker_context_(std::move(service_worker_context)),
-      devtools_context_(devtools_context) {
+      devtools_context_(&devtools_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(background_fetch_context_);
-  DCHECK(devtools_context_);
 }
 
 BackgroundFetchEventDispatcher::~BackgroundFetchEventDispatcher() {
@@ -291,6 +290,7 @@ void BackgroundFetchEventDispatcher::LogBackgroundFetchCompletionForDevTools(
     ServiceWorkerMetrics::EventType event_type,
     blink::mojom::BackgroundFetchFailureReason failure_reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(devtools_context_);
 
   if (!devtools_context_->IsRecording(
           DevToolsBackgroundService::kBackgroundFetch)) {
@@ -311,6 +311,10 @@ void BackgroundFetchEventDispatcher::LogBackgroundFetchCompletionForDevTools(
       DevToolsBackgroundService::kBackgroundFetch,
       /* event_name= */ "Background Fetch completed",
       /* instance_id= */ registration_id.developer_id(), metadata);
+}
+
+void BackgroundFetchEventDispatcher::Shutdown() {
+  devtools_context_ = nullptr;
 }
 
 }  // namespace content

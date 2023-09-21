@@ -42,8 +42,7 @@ class BackgroundFetchEventDispatcherTest : public BackgroundFetchTestBase {
         storage_partition()->GetBackgroundFetchContext();
     event_dispatcher_ = std::make_unique<BackgroundFetchEventDispatcher>(
         background_fetch_context,
-        embedded_worker_test_helper()->context_wrapper(),
-        devtools_context().get());
+        embedded_worker_test_helper()->context_wrapper(), devtools_context());
   }
 
  protected:

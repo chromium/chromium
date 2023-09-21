@@ -16,9 +16,8 @@ namespace content {
 
 TestBackgroundSyncManager::TestBackgroundSyncManager(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
-    : BackgroundSyncManager(service_worker_context,
-                            std::move(devtools_context)) {}
+    DevToolsBackgroundServicesContextImpl& devtools_context)
+    : BackgroundSyncManager(service_worker_context, devtools_context) {}
 
 TestBackgroundSyncManager::~TestBackgroundSyncManager() {}
 

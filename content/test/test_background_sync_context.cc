@@ -16,13 +16,13 @@ namespace content {
 
 void TestBackgroundSyncContext::CreateBackgroundSyncManager(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context) {
+    DevToolsBackgroundServicesContextImpl& devtools_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!background_sync_manager());
 
   set_background_sync_manager_for_testing(
       std::make_unique<TestBackgroundSyncManager>(
-          std::move(service_worker_context), std::move(devtools_context)));
+          std::move(service_worker_context), devtools_context));
 }
 
 }  // namespace content

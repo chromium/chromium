@@ -46,7 +46,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       BackgroundFetchDataManager* data_manager,
       BackgroundFetchRegistrationNotifier* registration_notifier,
       BackgroundFetchDelegateProxy* delegate_proxy,
-      DevToolsBackgroundServicesContextImpl* devtools_context,
+      DevToolsBackgroundServicesContextImpl& devtools_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
   BackgroundFetchScheduler(const BackgroundFetchScheduler&) = delete;
@@ -96,6 +96,9 @@ class CONTENT_EXPORT BackgroundFetchScheduler
                              const GURL& pattern,
                              const blink::StorageKey& key) override;
   void OnStorageWiped() override;
+
+  // Called by BackgroundFetchContext during shutdown.
+  void Shutdown();
 
  private:
   friend class BackgroundFetchJobControllerTest;

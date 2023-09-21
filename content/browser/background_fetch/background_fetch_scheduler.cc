@@ -63,17 +63,16 @@ BackgroundFetchScheduler::BackgroundFetchScheduler(
     BackgroundFetchDataManager* data_manager,
     BackgroundFetchRegistrationNotifier* registration_notifier,
     BackgroundFetchDelegateProxy* delegate_proxy,
-    DevToolsBackgroundServicesContextImpl* devtools_context,
+    DevToolsBackgroundServicesContextImpl& devtools_context,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
     : data_manager_(data_manager),
       registration_notifier_(registration_notifier),
       delegate_proxy_(delegate_proxy),
-      devtools_context_(devtools_context),
+      devtools_context_(&devtools_context),
       event_dispatcher_(background_fetch_context,
                         std::move(service_worker_context),
                         devtools_context) {
   DCHECK(delegate_proxy_);
-  DCHECK(devtools_context_);
   delegate_proxy_->SetClickEventDispatcher(
       base::BindRepeating(&BackgroundFetchScheduler::DispatchClickEvent,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -528,6 +527,7 @@ void BackgroundFetchScheduler::LogBackgroundFetchEventForDevTools(
     const BackgroundFetchRegistrationId& registration_id,
     const BackgroundFetchRequestInfo* request_info,
     std::map<std::string, std::string> metadata) {
+  CHECK(devtools_context_);
   if (!devtools_context_->IsRecording(
           DevToolsBackgroundService::kBackgroundFetch)) {
     return;
@@ -578,6 +578,11 @@ void BackgroundFetchScheduler::LogBackgroundFetchEventForDevTools(
       registration_id.storage_key(),
       DevToolsBackgroundService::kBackgroundFetch, std::move(event_name),
       /* instance_id= */ registration_id.developer_id(), metadata);
+}
+
+void BackgroundFetchScheduler::Shutdown() {
+  event_dispatcher_.Shutdown();
+  devtools_context_ = nullptr;
 }
 
 }  // namespace content

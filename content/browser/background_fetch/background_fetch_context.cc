@@ -37,9 +37,9 @@ BackgroundFetchContext::BackgroundFetchContext(
     base::WeakPtr<StoragePartitionImpl> storage_partition,
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
+    DevToolsBackgroundServicesContextImpl& devtools_context)
     : service_worker_context_(service_worker_context),
-      devtools_context_(std::move(devtools_context)),
+      devtools_context_(&devtools_context),
       registration_notifier_(
           std::make_unique<BackgroundFetchRegistrationNotifier>()),
       delegate_proxy_(storage_partition) {
@@ -52,7 +52,7 @@ BackgroundFetchContext::BackgroundFetchContext(
       std::move(quota_manager_proxy));
   scheduler_ = std::make_unique<BackgroundFetchScheduler>(
       this, data_manager_.get(), registration_notifier_.get(), &delegate_proxy_,
-      devtools_context_.get(), service_worker_context_);
+      *devtools_context_, service_worker_context_);
 }
 
 BackgroundFetchContext::~BackgroundFetchContext() {
@@ -301,16 +301,19 @@ void BackgroundFetchContext::DidGetMatchingRequests(
 void BackgroundFetchContext::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_manager_->Shutdown();
+  scheduler_->Shutdown();
+  devtools_context_ = nullptr;
 }
 
 void BackgroundFetchContext::SetDataManagerForTesting(
     std::unique_ptr<BackgroundFetchDataManager> data_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_manager);
+  CHECK(devtools_context_);
   data_manager_ = std::move(data_manager);
   scheduler_ = std::make_unique<BackgroundFetchScheduler>(
       this, data_manager_.get(), registration_notifier_.get(), &delegate_proxy_,
-      devtools_context_.get(), service_worker_context_);
+      *devtools_context_, service_worker_context_);
 }
 
 }  // namespace content

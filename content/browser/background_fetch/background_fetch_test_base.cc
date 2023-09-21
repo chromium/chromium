@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -197,10 +198,10 @@ BackgroundFetchTestBase::CreateBackgroundFetchRegistrationData(
       /* download_total= */ 0, /* downloaded= */ 0, result, failure_reason);
 }
 
-scoped_refptr<DevToolsBackgroundServicesContextImpl>
+DevToolsBackgroundServicesContextImpl&
 BackgroundFetchTestBase::devtools_context() {
-  return static_cast<DevToolsBackgroundServicesContextImpl*>(
-      storage_partition()->GetDevToolsBackgroundServicesContext());
+  return CHECK_DEREF(static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition()->GetDevToolsBackgroundServicesContext()));
 }
 
 }  // namespace content

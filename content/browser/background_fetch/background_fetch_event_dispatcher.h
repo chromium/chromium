@@ -40,7 +40,7 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
   BackgroundFetchEventDispatcher(
       BackgroundFetchContext* background_fetch_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      DevToolsBackgroundServicesContextImpl* devtools_context);
+      DevToolsBackgroundServicesContextImpl& devtools_context);
 
   BackgroundFetchEventDispatcher(const BackgroundFetchEventDispatcher&) =
       delete;
@@ -62,6 +62,10 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
       const BackgroundFetchRegistrationId& registration_id,
       blink::mojom::BackgroundFetchRegistrationDataPtr registration_data,
       base::OnceClosure finished_closure);
+
+  // Called during during BackgroundFetchScheduler shutdown, during
+  // StoragePartitionImpl destruction.
+  void Shutdown();
 
  private:
   using ServiceWorkerLoadedCallback =
@@ -155,7 +159,7 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
   raw_ptr<BackgroundFetchContext> background_fetch_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  // Owned by BackgroundFetchContext.
+  // Owned by StoragePartitionImpl; cleared during `Shutdown()`.
   raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 };
 

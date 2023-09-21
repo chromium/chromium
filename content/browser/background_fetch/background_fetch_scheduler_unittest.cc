@@ -87,7 +87,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
         storage_partition()->GetBackgroundFetchContext();
     scheduler_ = std::make_unique<BackgroundFetchScheduler>(
         background_fetch_context, data_manager_.get(), nullptr,
-        delegate_proxy_.get(), devtools_context().get(),
+        delegate_proxy_.get(), devtools_context(),
         embedded_worker_test_helper()->context_wrapper());
   }
 

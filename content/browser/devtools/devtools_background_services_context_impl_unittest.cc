@@ -135,7 +135,7 @@ class DevToolsBackgroundServicesContextTest
     if (context_)
       context_->RemoveObserver(this);
     // Create |context_|.
-    context_ = base::MakeRefCounted<DevToolsBackgroundServicesContextImpl>(
+    context_ = std::make_unique<DevToolsBackgroundServicesContextImpl>(
         &browser_context_, embedded_worker_test_helper_.context_wrapper());
     context_->AddObserver(this);
     ASSERT_TRUE(context_);
@@ -264,7 +264,7 @@ class DevToolsBackgroundServicesContextTest
 
   EmbeddedWorkerTestHelper embedded_worker_test_helper_;
   TestBrowserContext browser_context_;
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> context_;
+  std::unique_ptr<DevToolsBackgroundServicesContextImpl> context_;
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration_;
   std::unique_ptr<ContentBrowserClient> browser_client_;
 };

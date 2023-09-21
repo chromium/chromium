@@ -1735,9 +1735,17 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
         storage_partition_impl_.get());
   }
 
+  void TearDown() override {
+    // These need to be cleared before `helper_` to avoid dangling pointers.
+    storage_partition_impl_.reset();
+    update_helper_ = nullptr;
+
+    ServiceWorkerJobTest::TearDown();
+  }
+
  protected:
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
-  raw_ptr<UpdateJobTestHelper, DanglingUntriaged> update_helper_;
+  raw_ptr<UpdateJobTestHelper> update_helper_;
 };
 
 // Make sure that the same registration is used and the update_via_cache value

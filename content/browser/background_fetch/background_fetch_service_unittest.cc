@@ -298,7 +298,7 @@ class BackgroundFetchServiceTest
             embedded_worker_test_helper()->context_wrapper()));
     context_->data_manager_->AddObserver(this);
     embedded_worker_test_helper()->context_wrapper()->AddObserver(this);
-    devtools_context()->AddObserver(this);
+    devtools_context().AddObserver(this);
 
     web_contents_ = base::WrapUnique(WebContentsTester::CreateTestWebContents(
         WebContents::CreateParams(browser_context())));
@@ -325,7 +325,7 @@ class BackgroundFetchServiceTest
 
     service_.reset();
 
-    devtools_context()->RemoveObserver(this);
+    devtools_context().RemoveObserver(this);
     embedded_worker_test_helper()->context_wrapper()->RemoveObserver(this);
     context_->data_manager_->RemoveObserver(this);
     context_ = nullptr;
@@ -1243,7 +1243,7 @@ TEST_F(BackgroundFetchServiceTest, JobsInitializedOnBrowserRestart) {
 TEST_F(BackgroundFetchServiceTest,
        DevToolsContextReceivesBackgroundFetchEvents) {
   // Allow the DevTools Context to log Background Fetch events.
-  devtools_context()->StartRecording(devtools::proto::BACKGROUND_FETCH);
+  devtools_context().StartRecording(devtools::proto::BACKGROUND_FETCH);
 
   // Start a fetch and wait for it to complete.
   auto* worker =

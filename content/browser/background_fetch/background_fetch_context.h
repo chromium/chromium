@@ -54,7 +54,7 @@ class CONTENT_EXPORT BackgroundFetchContext
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
+      DevToolsBackgroundServicesContextImpl& devtools_context);
 
   BackgroundFetchContext(const BackgroundFetchContext&) = delete;
   BackgroundFetchContext& operator=(const BackgroundFetchContext&) = delete;
@@ -200,7 +200,8 @@ class CONTENT_EXPORT BackgroundFetchContext
 
   std::unique_ptr<BackgroundFetchDataManager> data_manager_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
+  // Owned by StoragePartitionImpl; cleared during `Shutdown()`.
+  raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
   std::unique_ptr<BackgroundFetchRegistrationNotifier> registration_notifier_;
   BackgroundFetchDelegateProxy delegate_proxy_;
   std::unique_ptr<BackgroundFetchScheduler> scheduler_;

@@ -23,8 +23,8 @@ enum class PushEventStatus;
 namespace content {
 
 class BrowserContext;
-class DevToolsBackgroundServicesContextImpl;
 class ServiceWorkerVersion;
+class ServiceWorkerContextWrapper;
 
 // All methods must be called on the UI thread.
 class PushMessagingRouter {
@@ -64,14 +64,14 @@ class PushMessagingRouter {
       absl::optional<std::string> payload,
       PushEventCallback deliver_message_callback,
       scoped_refptr<ServiceWorkerVersion> service_worker,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       blink::ServiceWorkerStatusCode status);
 
   // Gets called asynchronously after the Service Worker has dispatched the push
   // event.
   static void DeliverMessageEnd(
       scoped_refptr<ServiceWorkerVersion> service_worker,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       const std::string& message_id,
       PushEventCallback deliver_message_callback,
       blink::ServiceWorkerStatusCode service_worker_status);
@@ -83,7 +83,7 @@ class PushMessagingRouter {
       blink::mojom::PushSubscriptionPtr old_subscription,
       PushEventCallback subscription_change_callback,
       scoped_refptr<ServiceWorkerVersion> service_worker,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       blink::ServiceWorkerStatusCode status);
 
   // Gets called asynchronously after the Service Worker has dispatched the

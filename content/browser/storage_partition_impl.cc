@@ -1429,7 +1429,7 @@ void StoragePartitionImpl::Initialize(
   platform_notification_context_->Initialize();
 
   devtools_background_services_context_ =
-      base::MakeRefCounted<DevToolsBackgroundServicesContextImpl>(
+      std::make_unique<DevToolsBackgroundServicesContextImpl>(
           browser_context_, service_worker_context_);
 
   content_index_context_ = base::MakeRefCounted<ContentIndexContextImpl>(
@@ -1437,11 +1437,11 @@ void StoragePartitionImpl::Initialize(
 
   background_fetch_context_ = base::MakeRefCounted<BackgroundFetchContext>(
       weak_factory_.GetWeakPtr(), service_worker_context_, quota_manager_proxy,
-      devtools_background_services_context_);
+      *devtools_background_services_context_.get());
 
   background_sync_context_ = base::MakeRefCounted<BackgroundSyncContextImpl>();
   background_sync_context_->Init(service_worker_context_,
-                                 devtools_background_services_context_);
+                                 *devtools_background_services_context_.get());
 
   payment_app_context_ = new PaymentAppContextImpl();
   payment_app_context_->Init(service_worker_context_);
