@@ -94,8 +94,6 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   gfx::AcceleratedWidget GetAcceleratedWidgetForWindow(
       aura::Window* window) const;
 
-  virtual void OnBeforePlatformScreenInit();
-
   std::unique_ptr<ui::PlatformScreen> platform_screen_;
 };
 

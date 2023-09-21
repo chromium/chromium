@@ -61,10 +61,6 @@ display::TabletState PlatformScreen::GetTabletState() const {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-void PlatformScreen::SetDisplayConfig(const DisplayConfig& display_config) {}
-#endif
-
 void PlatformScreen::StorePlatformNameIntoListOfValues(
     base::Value::List& values,
     const std::string& platform_name) {
