@@ -121,9 +121,6 @@ class BASE_EXPORT TaskQueue {
     std::unique_ptr<TaskQueue> task_queue_;
   };
 
-  // Shuts down the queue. All tasks currently queued will be discarded.
-  virtual void ShutdownTaskQueue();
-
   // Queues with higher priority (smaller number) are selected to run before
   // queues of lower priority. Note that there is no starvation protection,
   // i.e., a constant stream of high priority work can mean that tasks in lower
@@ -456,6 +453,11 @@ class BASE_EXPORT TaskQueue {
   friend class RefCountedThreadSafe<TaskQueue>;
   friend class internal::SequenceManagerImpl;
   friend class internal::TaskQueueImpl;
+
+  // Shuts down the queue. All tasks currently queued will be discarded. Only
+  // called during task queue destruction, which is tied to the lifetime of the
+  // `Handle`.
+  virtual void ShutdownTaskQueue();
 
   bool IsOnMainThread() const;
 

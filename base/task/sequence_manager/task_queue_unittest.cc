@@ -81,7 +81,7 @@ TEST(TaskQueueTest, ShutdownQueueBeforeEnabledVoterDeleted) {
       queue->CreateQueueEnabledVoter();
 
   voter->SetVoteToEnable(true);  // NOP
-  queue->ShutdownTaskQueue();
+  queue.reset();
 
   // This should complete without DCHECKing.
   voter.reset();
@@ -97,7 +97,7 @@ TEST(TaskQueueTest, ShutdownQueueBeforeDisabledVoterDeleted) {
       queue->CreateQueueEnabledVoter();
 
   voter->SetVoteToEnable(false);
-  queue->ShutdownTaskQueue();
+  queue.reset();
 
   // This should complete without DCHECKing.
   voter.reset();

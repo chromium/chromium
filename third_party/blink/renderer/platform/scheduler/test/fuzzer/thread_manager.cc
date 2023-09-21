@@ -295,21 +295,13 @@ void ThreadManager::ExecuteShutdownTaskQueueAction(
                                   ActionForTest::ActionType::kShutdownTaskQueue,
                                   NowTicks());
 
-  TaskQueue* chosen_task_queue = nullptr;
-  wtf_size_t queue_index;
-  {
-    AutoLock lock(lock_);
-
-    // We always want to have a default task queue.
-    if (task_queues_.size() > 1) {
-      queue_index = action.task_queue_id() % task_queues_.size();
-      chosen_task_queue = task_queues_[queue_index]->queue.get();
-    }
-  }
-
-  if (chosen_task_queue) {
-    chosen_task_queue->ShutdownTaskQueue();
-    AutoLock lock(lock_);
+  // The shutdown needs to happen with the lock held to prevent cross-thread
+  // task posting from grabbing a dangling pointer.
+  AutoLock lock(lock_);
+  // We always want to have a default task queue.
+  if (task_queues_.size() > 1) {
+    wtf_size_t queue_index = action.task_queue_id() % task_queues_.size();
+    task_queues_[queue_index].reset();
     task_queues_.erase(task_queues_.begin() + queue_index);
   }
 }

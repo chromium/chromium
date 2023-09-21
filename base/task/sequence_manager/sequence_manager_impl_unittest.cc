@@ -492,14 +492,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GetTestTypes(),
                          GetTestNameSuffix);
 
-void PostFromNestedRunloop(TaskQueue* runner,
+void PostFromNestedRunloop(scoped_refptr<SingleThreadTaskRunner> runner,
                            std::vector<std::pair<OnceClosure, bool>>* tasks) {
   for (std::pair<OnceClosure, bool>& pair : *tasks) {
     if (pair.second) {
-      runner->task_runner()->PostTask(FROM_HERE, std::move(pair.first));
+      runner->PostTask(FROM_HERE, std::move(pair.first));
     } else {
-      runner->task_runner()->PostNonNestableTask(FROM_HERE,
-                                                 std::move(pair.first));
+      runner->PostNonNestableTask(FROM_HERE, std::move(pair.first));
     }
   }
   RunLoop(RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
@@ -724,7 +723,7 @@ TEST_P(SequenceManagerTest, NonNestableTasksDoesntExecuteInNestedLoop) {
       std::make_pair(BindOnce(&TestTask, 6, &run_order), true));
 
   queue->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostFromNestedRunloop, Unretained(queue.get()),
+      FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
 
   RunLoop().RunUntilIdle();
@@ -734,8 +733,9 @@ TEST_P(SequenceManagerTest, NonNestableTasksDoesntExecuteInNestedLoop) {
 
 TEST_P(SequenceManagerTest, NonNestableTasksShutdownQueue) {
   // TestMockTimeTaskRunner doesn't support nested loops.
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   auto queue = CreateTaskQueue();
 
   std::vector<EnqueueOrder> run_order;
@@ -746,10 +746,10 @@ TEST_P(SequenceManagerTest, NonNestableTasksShutdownQueue) {
   tasks_to_post_from_nested_loop.emplace_back(
       BindOnce(&TestTask, 2, &run_order), true);
   tasks_to_post_from_nested_loop.emplace_back(
-      BindLambdaForTesting([&queue]() { queue->ShutdownTaskQueue(); }), true);
+      BindLambdaForTesting([&queue]() { queue.reset(); }), true);
 
   queue->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostFromNestedRunloop, Unretained(queue.get()),
+      FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
 
   RunLoop().RunUntilIdle();
@@ -862,7 +862,7 @@ TEST_P(SequenceManagerTest, TaskQueueDisabledFromNestedLoop) {
                      true));
 
   queue->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostFromNestedRunloop, Unretained(queue.get()),
+      FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
   RunLoop().RunUntilIdle();
 
@@ -1812,7 +1812,7 @@ TEST_P(SequenceManagerTest, PostFromNestedRunloop) {
 
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&TestTask, 0, &run_order));
   queue->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostFromNestedRunloop, Unretained(queue.get()),
+      FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&TestTask, 2, &run_order));
 
@@ -2351,7 +2351,7 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueue_TaskRunnersDetaching) {
   std::vector<EnqueueOrder> run_order;
   EXPECT_TRUE(runner1->PostTask(FROM_HERE, BindOnce(&TestTask, 1, &run_order)));
   EXPECT_TRUE(runner2->PostTask(FROM_HERE, BindOnce(&TestTask, 2, &run_order)));
-  queue->ShutdownTaskQueue();
+  queue.reset();
   EXPECT_FALSE(
       runner1->PostTask(FROM_HERE, BindOnce(&TestTask, 3, &run_order)));
   EXPECT_FALSE(
@@ -2379,7 +2379,7 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueue) {
                                   BindOnce(&TestTask, 2, &run_order));
   queue3->task_runner()->PostTask(FROM_HERE,
                                   BindOnce(&TestTask, 3, &run_order));
-  queue2->ShutdownTaskQueue();
+  queue2.reset();
   RunLoop().RunUntilIdle();
 
   EXPECT_THAT(run_order, ElementsAre(1u, 3u));
@@ -2397,7 +2397,7 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueue_WithDelayedTasks) {
   queues[0]->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(30));
 
-  queues[1]->ShutdownTaskQueue();
+  queues[1].reset();
   RunLoop().RunUntilIdle();
 
   FastForwardBy(Milliseconds(40));
@@ -2405,25 +2405,23 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueue_WithDelayedTasks) {
 }
 
 namespace {
-void ShutdownQueue(TaskQueue* queue) {
-  queue->ShutdownTaskQueue();
-}
+void ShutdownQueue(TaskQueue::Handle queue) {}
 }  // namespace
 
 TEST_P(SequenceManagerTest, ShutdownTaskQueue_InTasks) {
   auto queues = CreateTaskQueues(3u);
+  auto runner1 = queues[1]->task_runner();
+  auto runner2 = queues[2]->task_runner();
 
   std::vector<EnqueueOrder> run_order;
   queues[0]->task_runner()->PostTask(FROM_HERE,
                                      BindOnce(&TestTask, 1, &run_order));
   queues[0]->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&ShutdownQueue, Unretained(queues[1].get())));
+      FROM_HERE, BindOnce(&ShutdownQueue, std::move(queues[1])));
   queues[0]->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&ShutdownQueue, Unretained(queues[2].get())));
-  queues[1]->task_runner()->PostTask(FROM_HERE,
-                                     BindOnce(&TestTask, 2, &run_order));
-  queues[2]->task_runner()->PostTask(FROM_HERE,
-                                     BindOnce(&TestTask, 3, &run_order));
+      FROM_HERE, BindOnce(&ShutdownQueue, std::move(queues[2])));
+  runner1->PostTask(FROM_HERE, BindOnce(&TestTask, 2, &run_order));
+  runner2->PostTask(FROM_HERE, BindOnce(&TestTask, 3, &run_order));
 
   RunLoop().RunUntilIdle();
   ASSERT_THAT(run_order, ElementsAre(1u));
@@ -2445,24 +2443,20 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueueInNestedLoop) {
 
   // We retain a reference to the task queue even when the manager has deleted
   // its reference.
-  TaskQueue::Handle task_queue = CreateTaskQueue();
+  TaskQueue::Handle queue_to_delete = CreateTaskQueue();
 
   std::vector<bool> log;
   std::vector<std::pair<OnceClosure, bool>> tasks_to_post_from_nested_loop;
 
-  // Inside a nested run loop, call task_queue->ShutdownTaskQueue, bookended
-  // by calls to HasOneRefTask to make sure the manager doesn't release its
-  // reference until the nested run loop exits.
-  // NB: This first HasOneRefTask is a sanity check.
+  // Inside a nested run loop, delete `queue_to_delete`, bookended by Nop tasks.
   tasks_to_post_from_nested_loop.push_back(
       std::make_pair(BindOnce(&NopTask), true));
   tasks_to_post_from_nested_loop.push_back(std::make_pair(
-      BindOnce(&TaskQueue::ShutdownTaskQueue, Unretained(task_queue.get())),
-      true));
+      BindLambdaForTesting([&] { queue_to_delete.reset(); }), true));
   tasks_to_post_from_nested_loop.push_back(
       std::make_pair(BindOnce(&NopTask), true));
   queue->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostFromNestedRunloop, Unretained(queue.get()),
+      FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
   RunLoop().RunUntilIdle();
 
@@ -2488,7 +2482,6 @@ TEST_P(SequenceManagerTest, TimeDomainMigrationWithIncomingImmediateTasks) {
   EXPECT_THAT(run_order, ElementsAre(1u));
 
   sequence_manager()->ResetTimeDomain();
-  queue->ShutdownTaskQueue();
 }
 
 // Test that no wake up is scheduled for a delayed task in the future when a
@@ -2512,7 +2505,6 @@ TEST_P(SequenceManagerTest, TimeDomainDoesNotCauseWakeUp) {
   EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   sequence_manager()->ResetTimeDomain();
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest,
@@ -2545,7 +2537,6 @@ TEST_P(SequenceManagerTest,
   EXPECT_THAT(run_order, ElementsAre(4u, 3u, 2u, 1u));
 
   sequence_manager()->ResetTimeDomain();
-  queue->ShutdownTaskQueue();
 }
 
 namespace {
@@ -2607,9 +2598,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_ImmediateTask) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   sequence_manager()->ReloadEmptyWorkQueues();
   Mock::VerifyAndClearExpectations(&throttler);
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTask) {
@@ -2656,9 +2644,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTask) {
               GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
   voter->SetVoteToEnable(true);
   Mock::VerifyAndClearExpectations(&throttler);
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, TaskQueueThrottler_OnWakeUp) {
@@ -2682,9 +2667,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_OnWakeUp) {
   LazyNow lazy_now(mock_tick_clock());
   sequence_manager()->MoveReadyDelayedTasksToWorkQueues(&lazy_now);
   Mock::VerifyAndClearExpectations(&throttler);
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, TaskQueueThrottler_ResetThrottler) {
@@ -2715,9 +2697,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_ResetThrottler) {
   // Next wake up should be back to normal.
   EXPECT_EQ((WakeUp{start_time + delay1s, kLeeway}),
             sequence_manager()->GetPendingWakeUp(&lazy_now));
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTaskMultipleQueues) {
@@ -2769,10 +2748,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTaskMultipleQueues) {
               GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay10s));
   voter1->SetVoteToEnable(true);
   Mock::VerifyAndClearExpectations(&throttler1);
-
-  // Tidy up.
-  queues[0]->ShutdownTaskQueue();
-  queues[1]->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedWorkWhichCanRunNow) {
@@ -2799,9 +2774,6 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedWorkWhichCanRunNow) {
   LazyNow lazy_now(mock_tick_clock());
   queue->UpdateWakeUp(&lazy_now);
   Mock::VerifyAndClearExpectations(&throttler);
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 namespace {
@@ -2988,7 +2960,7 @@ TEST_P(SequenceManagerTest, CancelledImmediateTaskShutsDownQueue) {
   auto queue = CreateTaskQueue();
   bool did_shutdown = false;
   auto on_destroy = BindLambdaForTesting([&] {
-    queue->ShutdownTaskQueue();
+    queue.reset();
     did_shutdown = true;
   });
 
@@ -3011,7 +2983,7 @@ TEST_P(SequenceManagerTest, CancelledDelayedTaskShutsDownQueue) {
   auto queue = CreateTaskQueue();
   bool did_shutdown = false;
   auto on_destroy = BindLambdaForTesting([&] {
-    queue->ShutdownTaskQueue();
+    queue.reset();
     did_shutdown = true;
   });
 
@@ -3605,9 +3577,6 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
       lazy_now2, SequencedTaskSource::SelectTaskOption::kDefault));
   sequence_manager()->DidRunTask(lazy_now2);
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
@@ -3665,9 +3634,6 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   sequence_manager()->DidRunTask(lazy_now2);
-
-  // Tidy up.
-  queue->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest,
@@ -3729,12 +3695,6 @@ TEST_P(SequenceManagerTest,
   // No delayed tasks can be executed anymore.
   EXPECT_FALSE(sequence_manager()->SelectNextTask(lazy_now2));
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
-
-  // Tidy up.
-  queues[0]->ShutdownTaskQueue();
-  queues[1]->ShutdownTaskQueue();
-  queues[2]->ShutdownTaskQueue();
-  queues[3]->ShutdownTaskQueue();
 }
 
 TEST_P(SequenceManagerTest, GetPendingWakeUp) {
@@ -4083,7 +4043,7 @@ TEST_P(SequenceManagerTest, SetTimeDomainForDisabledQueue) {
   sequence_manager()->SetTimeDomain(domain.get());
 
   // Tidy up.
-  queue->ShutdownTaskQueue();
+  queue.reset();
   sequence_manager()->ResetTimeDomain();
 }
 
@@ -4480,10 +4440,13 @@ TEST_P(SequenceManagerTest, TaskQueueUsedInTaskDestructorAfterShutdown) {
 }
 
 TEST_P(SequenceManagerTest, TaskQueueTaskRunnerDetach) {
-  TaskQueue::Handle queue1 = CreateTaskQueue();
-  EXPECT_TRUE(queue1->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask)));
-  queue1->ShutdownTaskQueue();
-  EXPECT_FALSE(queue1->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask)));
+  scoped_refptr<SingleThreadTaskRunner> task_runner;
+  {
+    TaskQueue::Handle queue1 = CreateTaskQueue();
+    task_runner = queue1->task_runner();
+    EXPECT_TRUE(task_runner->PostTask(FROM_HERE, BindOnce(&NopTask)));
+  }
+  EXPECT_FALSE(task_runner->PostTask(FROM_HERE, BindOnce(&NopTask)));
 
   // Create without a sequence manager.
   std::unique_ptr<TaskQueueImpl> queue2 = std::make_unique<TaskQueueImpl>(
@@ -5119,7 +5082,7 @@ TEST_P(SequenceManagerTest, CrossQueueTaskPostingWhenQueueDeleted) {
   queue_1->task_runner()->PostDelayedTask(
       FROM_HERE, PostOnDestruction(queue_2.get(), task.Get()), Minutes(1));
 
-  queue_1->ShutdownTaskQueue();
+  queue_1.reset();
 
   FastForwardUntilNoTasksRemain();
 }
@@ -5139,7 +5102,7 @@ TEST_P(SequenceManagerTest, UnregisterTaskQueueTriggersScheduleWork) {
 
   // Wakeup time needs to be adjusted to kDelay * 2 when the queue is
   // unregistered from the TimeDomain
-  queue_1->ShutdownTaskQueue();
+  queue_1.reset();
 
   RunLoop().RunUntilIdle();
 }

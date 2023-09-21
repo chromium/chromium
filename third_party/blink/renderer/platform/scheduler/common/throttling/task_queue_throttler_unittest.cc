@@ -93,7 +93,7 @@ class TaskQueueThrottlerTest : public testing::Test {
     wake_up_budget_pool_->RemoveThrottler(test_task_runner_->NowTicks(),
                                           task_queue_throttler_.get());
     task_queue_throttler_.reset();
-    timer_queue_->ShutdownTaskQueue();
+    timer_queue_.reset();
   }
 
   base::sequence_manager::TaskQueue::Handle CreateTaskQueue(

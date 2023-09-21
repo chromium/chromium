@@ -207,9 +207,10 @@ void MainThreadTaskQueue::OnTaskRunTimeReported(
 void MainThreadTaskQueue::DetachTaskQueue() {
   // The task queue was already shut down, which happens in tests if the
   // `agent_group_scheduler_` is GCed after the task queue impl is unregistered.
+  //
   // TODO(crbug.com/1143007): AgentGroupSchedulerImpl should probably not be
   // detaching shut down task queues.
-  if (!task_queue_->HasImpl()) {
+  if (!task_queue_) {
     return;
   }
   // `main_thread_scheduler_` can be null in tests.
@@ -249,7 +250,7 @@ void MainThreadTaskQueue::ShutdownTaskQueue() {
   agent_group_scheduler_ = nullptr;
   frame_scheduler_ = nullptr;
   throttler_.reset();
-  task_queue_->ShutdownTaskQueue();
+  task_queue_.reset();
 }
 
 AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
@@ -348,6 +349,7 @@ void MainThreadTaskQueue::QueueTraits::WriteIntoTrace(
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadTaskQueue::CreateTaskRunner(TaskType task_type) {
+  CHECK(task_queue_);
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       task_queue_->CreateTaskRunner(static_cast<int>(task_type));
   if (base::FeatureList::IsEnabled(

@@ -210,10 +210,10 @@ BrowserTaskQueues::BrowserTaskQueues(
 
 BrowserTaskQueues::~BrowserTaskQueues() {
   for (auto& queue : queue_data_) {
-    queue.task_queue->ShutdownTaskQueue();
+    queue.task_queue.reset();
   }
-  control_queue_->ShutdownTaskQueue();
-  run_all_pending_tasks_queue_->ShutdownTaskQueue();
+  control_queue_.reset();
+  run_all_pending_tasks_queue_.reset();
   handle_->OnTaskQueuesDestroyed();
 }
 

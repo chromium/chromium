@@ -54,11 +54,10 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
       name_(impl_->GetProtoName()) {}
 
 TaskQueue::~TaskQueue() {
-  // scoped_refptr guarantees us that this object isn't used.
-  if (!impl_)
+  CHECK(impl_);
+  if (impl_->IsUnregistered()) {
     return;
-  if (impl_->IsUnregistered())
-    return;
+  }
 
   // If we've not been unregistered then this must occur on the main thread.
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

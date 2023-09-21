@@ -81,7 +81,6 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
     if (!test_task_queue_) {
       return;
     }
-    test_task_queue_->ShutdownTaskQueue();
     test_task_queue_.reset();
   }
 
@@ -89,7 +88,6 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
     if (!backup_task_queue_) {
       return;
     }
-    backup_task_queue_->ShutdownTaskQueue();
     backup_task_queue_.reset();
   }
 

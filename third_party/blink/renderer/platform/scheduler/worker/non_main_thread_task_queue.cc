@@ -60,7 +60,7 @@ NonMainThreadTaskQueue::~NonMainThreadTaskQueue() = default;
 void NonMainThreadTaskQueue::ShutdownTaskQueue() {
   non_main_thread_scheduler_ = nullptr;
   throttler_.reset();
-  task_queue_->ShutdownTaskQueue();
+  task_queue_.reset();
 }
 
 void NonMainThreadTaskQueue::OnTaskCompleted(
