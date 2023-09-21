@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
+#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/platform/cursors.h"
@@ -38,8 +38,9 @@ void LayoutNGFrameSet::AddChild(LayoutObject* new_child,
 
 void LayoutNGFrameSet::RemoveChild(LayoutObject* child) {
   LayoutNGBlock::RemoveChild(child);
-  if (DocumentBeingDestroyed())
+  if (DocumentBeingDestroyed()) {
     return;
+  }
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
