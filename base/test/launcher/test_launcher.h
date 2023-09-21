@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -248,7 +249,7 @@ class TestLauncher {
   // Helper to tell if the test runs in current shard.
   // `prefix_stripped_name` is the test name excluding DISABLED_ and
   // PRE_ prefixes.
-  bool ShouldRunInCurrentShard(const std::string& prefix_stripped_name) const;
+  bool ShouldRunInCurrentShard(std::string_view prefix_stripped_name) const;
 
   // Helper to check whether only exact positive filter is passed via
   // a filter file.

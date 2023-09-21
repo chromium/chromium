@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <random>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -2002,9 +2003,9 @@ void TestLauncher::CombinePositiveTestFilters(
 }
 
 bool TestLauncher::ShouldRunInCurrentShard(
-    const std::string& prefix_stripped_name) const {
-  CHECK(!StartsWith(prefix_stripped_name, kPreTestPrefix) &&
-        !StartsWith(prefix_stripped_name, kDisabledTestPrefix));
+    std::string_view prefix_stripped_name) const {
+  CHECK(!StartsWith(prefix_stripped_name, kPreTestPrefix));
+  CHECK(!StartsWith(prefix_stripped_name, kDisabledTestPrefix));
   return PersistentHash(prefix_stripped_name) % total_shards_ ==
          static_cast<uint32_t>(shard_index_);
 }
@@ -2109,11 +2110,10 @@ std::vector<std::string> TestLauncher::CollectTests() {
   // `enforced_positive_tests`. Otherwise, fail loudly.
   if (enforce_exact_postive_filter_) {
     for (const auto& filter : positive_exact_filter) {
-      std::string filter_string(filter);
-      if (!ShouldRunInCurrentShard(filter_string)) {
+      if (!ShouldRunInCurrentShard(filter)) {
         continue;
       }
-      CHECK(Contains(enforced_positive_tests, filter_string))
+      CHECK(Contains(enforced_positive_tests, std::string(filter)))
           << "Found exact positive filter not enforced: " << filter;
     }
   }

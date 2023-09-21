@@ -4,6 +4,8 @@
 
 #include "base/hash/hash.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -149,8 +151,8 @@ uint32_t PersistentHash(const void* data, size_t length) {
   return PersistentHash(make_span(static_cast<const uint8_t*>(data), length));
 }
 
-uint32_t PersistentHash(const std::string& str) {
-  return PersistentHash(str.data(), str.size());
+uint32_t PersistentHash(std::string_view str) {
+  return PersistentHash(as_bytes(make_span(str)));
 }
 
 size_t HashInts32(uint32_t value1, uint32_t value2) {
