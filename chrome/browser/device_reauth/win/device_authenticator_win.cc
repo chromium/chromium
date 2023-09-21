@@ -57,7 +57,6 @@ bool DeviceAuthenticatorWin::CanAuthenticateWithBiometricOrScreenLock() {
 }
 
 void DeviceAuthenticatorWin::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid_auth) {
   NOTIMPLEMENTED();
@@ -78,8 +77,7 @@ void DeviceAuthenticatorWin::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DeviceAuthenticatorWin::Cancel(
-    device_reauth::DeviceAuthRequester requester) {
+void DeviceAuthenticatorWin::Cancel() {
   // TODO(crbug.com/1354552): Add implementation of the Cancel method.
   NOTIMPLEMENTED();
 }

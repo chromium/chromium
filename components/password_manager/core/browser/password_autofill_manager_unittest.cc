@@ -371,19 +371,17 @@ class PasswordAutofillManagerTest : public testing::Test {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator,
-                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true));
+    EXPECT_CALL(*authenticator, Authenticate(_,
+                                             /*use_last_valid_auth= */ true));
 #endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
   void ExpectAndSimulateAuthenticationSuccess(
       device_reauth::MockDeviceAuthenticator* authenticator) {
-    EXPECT_CALL(*authenticator,
-                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true))
-        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+    EXPECT_CALL(*authenticator, Authenticate(_,
+                                             /*use_last_valid_auth= */ true))
+        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
   }
 #endif
 
@@ -1651,10 +1649,9 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator,
-                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true))
-        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+    EXPECT_CALL(*authenticator, Authenticate(_,
+                                             /*use_last_valid_auth= */ true))
+        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
 #endif
 
     EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1726,10 +1723,9 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator,
-                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true))
-        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+    EXPECT_CALL(*authenticator, Authenticate(_,
+                                             /*use_last_valid_auth= */ true))
+        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/false));
 #endif
 
     EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1795,8 +1791,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
           autofill::PopupItemId::kPasswordEntry, test_username_),
       1);
 
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAutofillSuggestion));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -1851,8 +1846,7 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::PopupItemId::kPasswordEntry, test_username_),
       1);
 
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAutofillSuggestion));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
   password_autofill_manager_->DeleteFillData();
 }
 
@@ -1908,8 +1902,7 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::PopupItemId::kPasswordEntry, test_username_),
       1);
 
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAutofillSuggestion));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
 
@@ -1949,8 +1942,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   auto* authenticator_ptr2 = authenticator2.get();
 
   // Triggering new authentication should cancel ongoing authentication.
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAutofillSuggestion));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
   ExpectAndAllowAuthentication(authenticator_ptr2);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1962,8 +1954,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
       1);
 
   // Destroying the manager should cancel ongoing authentication.
-  EXPECT_CALL(*authenticator_ptr2,
-              Cancel(DeviceAuthRequester::kAutofillSuggestion));
+  EXPECT_CALL(*authenticator_ptr2, Cancel());
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

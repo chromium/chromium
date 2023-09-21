@@ -139,7 +139,7 @@ ShouldShowAction ShouldShowCredManReentryAction(
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
   if (authenticator_) {
-    authenticator_->Cancel(device_reauth::DeviceAuthRequester::kFallbackSheet);
+    authenticator_->Cancel();
   }
 }
 
@@ -265,7 +265,6 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->Authenticate(
-      device_reauth::DeviceAuthRequester::kFallbackSheet,
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
                      base::Unretained(this), selection),
       /*use_last_valid_auth=*/true);

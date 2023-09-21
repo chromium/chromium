@@ -82,8 +82,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
 
 AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() {
   if (authenticator_) {
-    authenticator_->Cancel(
-        device_reauth::DeviceAuthRequester::kAllPasswordsList);
+    authenticator_->Cancel();
   }
 }
 
@@ -126,7 +125,6 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
                                                    client_)) {
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
-          device_reauth::DeviceAuthRequester::kAllPasswordsList,
           base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
                          base::Unretained(this), password),
           /*use_last_valid_auth=*/true);

@@ -1080,8 +1080,7 @@ void ManagePasswordsUIController::OnReauthCompleted() {
 void ManagePasswordsUIController::CancelAnyOngoingBiometricAuth() {
   if (!biometric_authenticator_)
     return;
-  biometric_authenticator_->Cancel(
-      device_reauth::DeviceAuthRequester::kTouchToFill);
+  biometric_authenticator_->Cancel();
   biometric_authenticator_.reset();
 }
 

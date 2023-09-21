@@ -267,10 +267,9 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator,
-              Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
-                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<1>(true));
+  EXPECT_CALL(*authenticator, Authenticate(_,
+                                           /*use_last_valid_auth=*/true))
+      .WillOnce(RunOnceCallback<0>(true));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -286,10 +285,9 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator,
-              Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
-                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<1>(false));
+  EXPECT_CALL(*authenticator, Authenticate(_,
+                                           /*use_last_valid_auth=*/true))
+      .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -307,9 +305,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr,
-              Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
-                           /*use_last_valid_auth=*/true));
+  EXPECT_CALL(*authenticator_ptr, Authenticate(_,
+                                               /*use_last_valid_auth=*/true));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -319,8 +316,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAllPasswordsList));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {
@@ -332,8 +328,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto authenticator = std::make_unique<MockDeviceAuthenticator>();
-    ON_CALL(*authenticator, Authenticate(_, _, _))
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+    ON_CALL(*authenticator, Authenticate(_, _))
+        .WillByDefault(RunOnceCallback<0>(/*auth_succeeded=*/true));
     EXPECT_CALL(client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   }

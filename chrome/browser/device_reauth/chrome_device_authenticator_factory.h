@@ -58,7 +58,8 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
   // API on platforms that do not provide an implementation will result in a
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
-      Profile* profile);
+      Profile* profile,
+      device_reauth::DeviceAuthSource source);
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

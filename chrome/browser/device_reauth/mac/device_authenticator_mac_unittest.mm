@@ -200,7 +200,7 @@ TEST_P(DeviceAuthenticatorMacTest, CancelPendingAuthentication) {
   // Authentication should fail as it will take 10 seconds to authenticate, and
   // there will be a cancellation in the meantime.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
-  authenticator()->Cancel(DeviceAuthRequester::kPasswordsInSettings);
+  authenticator()->Cancel();
 }
 
 TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailability) {

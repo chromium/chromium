@@ -676,10 +676,11 @@ class CreditCardAccessManagerMandatoryReauthTest
       ON_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
               AuthenticateWithMessage)
+          .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
               Authenticate)
+          .WillByDefault(testing::WithArg<0>(
 #endif
-          .WillByDefault(testing::WithArg<1>(
               testing::Invoke([mandatory_reauth_response_is_success =
                                    MandatoryReauthResponseIsSuccess()](
                                   base::OnceCallback<void(bool)> callback) {

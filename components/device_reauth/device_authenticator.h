@@ -106,8 +106,7 @@ class DeviceAuthenticator {
   // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
   // period between the last valid authentication and the current
   // authentication, and re-invokes system authentication.
-  virtual void Authenticate(DeviceAuthRequester requester,
-                            AuthenticateCallback callback,
+  virtual void Authenticate(AuthenticateCallback callback,
                             bool use_last_valid_auth) = 0;
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
@@ -120,7 +119,7 @@ class DeviceAuthenticator {
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was
   // triggered.
-  virtual void Cancel(DeviceAuthRequester requester) = 0;
+  virtual void Cancel() = 0;
 };
 
 }  // namespace device_reauth

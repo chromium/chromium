@@ -67,7 +67,9 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 // Also checks that other profiles need to authenticate.
 TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
   static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-      ChromeDeviceAuthenticatorFactory::GetForProfile(profile1()).get())
+      ChromeDeviceAuthenticatorFactory::GetForProfile(
+          profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
+          .get())
       ->RecordAuthenticationTimeIfSuccessful(
           /*success=*/true);
 
@@ -75,17 +77,23 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
       password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
   EXPECT_FALSE(
       static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(profile1()).get())
+          ChromeDeviceAuthenticatorFactory::GetForProfile(
+              profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
+              .get())
           ->NeedsToAuthenticate());
   EXPECT_TRUE(
       static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(profile2()).get())
+          ChromeDeviceAuthenticatorFactory::GetForProfile(
+              profile2(), device_reauth::DeviceAuthSource::kPasswordManager)
+              .get())
           ->NeedsToAuthenticate());
 
   task_environment().FastForwardBy(
       password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod);
   EXPECT_TRUE(
       static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(profile1()).get())
+          ChromeDeviceAuthenticatorFactory::GetForProfile(
+              profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
+              .get())
           ->NeedsToAuthenticate());
 }

@@ -13,6 +13,37 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
+namespace {
+
+device_reauth::DeviceAuthSource ConvertRequesterToSoruce(
+    device_reauth::DeviceAuthRequester requester) {
+  switch (requester) {
+    case device_reauth::DeviceAuthRequester::kTouchToFill:
+    case device_reauth::DeviceAuthRequester::kAutofillSuggestion:
+    case device_reauth::DeviceAuthRequester::kFallbackSheet:
+    case device_reauth::DeviceAuthRequester::kAllPasswordsList:
+    case device_reauth::DeviceAuthRequester::kAccountChooserDialog:
+    case device_reauth::DeviceAuthRequester::kPasswordCheckAutoPwdChange:
+      return device_reauth::DeviceAuthSource::kPasswordManager;
+
+    case device_reauth::DeviceAuthRequester::kLocalCardAutofill:
+    case device_reauth::DeviceAuthRequester::kDeviceLockPage:
+    case device_reauth::DeviceAuthRequester::kPaymentMethodsReauthInSettings:
+    case device_reauth::DeviceAuthRequester::kVirtualCardAutofill:
+    case device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn:
+      return device_reauth::DeviceAuthSource::kAutofill;
+
+    case device_reauth::DeviceAuthRequester::kIncognitoReauthPage:
+      return device_reauth::DeviceAuthSource::kIncognito;
+
+    // kPasswordsInSettings flag is used only for desktop.
+    case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
+
 static jlong JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_bridge,
@@ -24,17 +55,20 @@ static jlong JNI_ReauthenticatorBridge_Create(
 ReauthenticatorBridge::ReauthenticatorBridge(
     const base::android::JavaParamRef<jobject>& java_bridge,
     jint requester)
-    : java_bridge_(java_bridge),
-      requester_(static_cast<device_reauth::DeviceAuthRequester>(requester)) {
+    : java_bridge_(java_bridge) {
+  // TODO(crbug.com/1476842): Update Java code to use DeviceAuthSource.
+  device_reauth::DeviceAuthSource source = ConvertRequesterToSoruce(
+      static_cast<device_reauth::DeviceAuthRequester>(requester));
+
   // TODO(crbug.com/1479361): Replace GetLastUsedProfile() when Android starts
   // supporting multiple profiles.
   authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile());
+      ProfileManager::GetLastUsedProfile(), source);
 }
 
 ReauthenticatorBridge::~ReauthenticatorBridge() {
   if (authenticator_) {
-    authenticator_->Cancel(requester_);
+    authenticator_->Cancel();
   }
 }
 
@@ -58,7 +92,6 @@ void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
   authenticator_->Authenticate(
-      requester_,
       base::BindOnce(&ReauthenticatorBridge::OnReauthenticationCompleted,
                      base::Unretained(this)),
       use_last_valid_auth);

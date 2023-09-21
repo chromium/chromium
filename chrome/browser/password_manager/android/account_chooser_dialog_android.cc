@@ -116,8 +116,7 @@ AccountChooserDialogAndroid::AccountChooserDialogAndroid(
 
 AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {
   if (authenticator_) {
-    authenticator_->Cancel(
-        device_reauth::DeviceAuthRequester::kAccountChooserDialog);
+    authenticator_->Cancel();
   }
 
   // |dialog_jobject_| can be null in tests or if the dialog could not
@@ -235,7 +234,6 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
                                                  client_)) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
-        device_reauth::DeviceAuthRequester::kAccountChooserDialog,
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
                        base::Unretained(this), index),
         /*use_last_valid_auth=*/true);

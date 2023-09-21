@@ -31,7 +31,6 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
 }
 
 void DeviceAuthenticatorChromeOS::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid_auth) {
   NOTIMPLEMENTED();
@@ -53,8 +52,7 @@ void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DeviceAuthenticatorChromeOS::Cancel(
-    device_reauth::DeviceAuthRequester requester) {
+void DeviceAuthenticatorChromeOS::Cancel() {
   // TODO(b/292097975): Cancel the in session auth dialog.
   if (callback_) {
     std::move(callback_).Run(false);

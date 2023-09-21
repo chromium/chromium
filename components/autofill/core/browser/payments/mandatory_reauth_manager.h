@@ -44,7 +44,6 @@ class MandatoryReauthManager {
   // last valid DeviceAuthenticator authentication is used if it happened within
   // the set default auth validity period.
   virtual void Authenticate(
-      device_reauth::DeviceAuthRequester requester,
       device_reauth::DeviceAuthenticator::AuthenticateCallback callback);
 
   // Initiates an authentication flow. This method calls

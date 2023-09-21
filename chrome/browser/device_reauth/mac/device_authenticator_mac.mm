@@ -58,13 +58,12 @@ bool DeviceAuthenticatorMac::CanAuthenticateWithBiometricOrScreenLock() {
 }
 
 void DeviceAuthenticatorMac::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid_auth) {
   NOTIMPLEMENTED();
 }
 
-void DeviceAuthenticatorMac::Cancel(device_reauth::DeviceAuthRequester) {
+void DeviceAuthenticatorMac::Cancel() {
   touch_id_auth_context_ = nullptr;
   if (callback_) {
     // No code should be run after the callback as the callback could already be

@@ -38,9 +38,6 @@ class ReauthenticatorBridge {
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
-  // The authentication requester.
-  device_reauth::DeviceAuthRequester requester_;
-
   // The authenticator used to trigger a biometric re-auth.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 };

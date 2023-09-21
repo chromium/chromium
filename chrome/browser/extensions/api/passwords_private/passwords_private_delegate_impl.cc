@@ -1110,8 +1110,7 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
   if (device_authenticator_) {
     // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
     // |device_authenticator_|.
-    device_authenticator_->Cancel(
-        device_reauth::DeviceAuthRequester::kPasswordsInSettings);
+    device_authenticator_->Cancel();
   }
   device_authenticator_ = GetDeviceAuthenticator(web_contents_);
 

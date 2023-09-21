@@ -504,7 +504,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         authenticator_ = std::move(authenticator);
 #if BUILDFLAG(IS_ANDROID)
         authenticator_->Authenticate(
-            device_reauth::DeviceAuthRequester::kAutofillSuggestion,
             base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            suggestion.main_text.value,
@@ -970,8 +969,7 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
 void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
   if (!authenticator_)
     return;
-  authenticator_->Cancel(
-      device_reauth::DeviceAuthRequester::kAutofillSuggestion);
+  authenticator_->Cancel();
   authenticator_.reset();
 }
 

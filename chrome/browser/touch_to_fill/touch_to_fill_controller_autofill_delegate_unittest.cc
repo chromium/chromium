@@ -234,10 +234,9 @@ class TouchToFillControllerAutofillTest
 
   void ExpectAndSimulateAuthenticationSuccess(
       device_reauth::MockDeviceAuthenticator* authenticator_ptr) {
-    EXPECT_CALL(*authenticator_ptr,
-                Authenticate(DeviceAuthRequester::kTouchToFill, _,
-                             /*use_last_valid_auth=*/true))
-        .WillOnce(RunOnceCallback<1>(true));
+    EXPECT_CALL(*authenticator_ptr, Authenticate(_,
+                                                 /*use_last_valid_auth=*/true))
+        .WillOnce(RunOnceCallback<0>(true));
   }
 
  private:
@@ -542,10 +541,9 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr,
-              Authenticate(DeviceAuthRequester::kTouchToFill, _,
-                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<1>(false));
+  EXPECT_CALL(*authenticator_ptr, Authenticate(_,
+                                               /*use_last_valid_auth=*/true))
+      .WillOnce(RunOnceCallback<0>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   histogram_tester().ExpectUniqueSample(
@@ -766,12 +764,11 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr,
-              Authenticate(DeviceAuthRequester::kTouchToFill, _,
-                           /*use_last_valid_auth=*/true));
+  EXPECT_CALL(*authenticator_ptr, Authenticate(_,
+                                               /*use_last_valid_auth=*/true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator_ptr, Cancel(DeviceAuthRequester::kTouchToFill));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
 }
 
 TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {

@@ -154,10 +154,9 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator,
-              Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
-                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<1>(true));
+  EXPECT_CALL(*authenticator, Authenticate(_,
+                                           /*use_last_valid_auth=*/true))
+      .WillOnce(RunOnceCallback<0>(true));
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -177,10 +176,9 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator,
-              Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
-                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<1>(false));
+  EXPECT_CALL(*authenticator, Authenticate(_,
+                                           /*use_last_valid_auth=*/true))
+      .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -201,9 +199,8 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr,
-              Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
-                           /*use_last_valid_auth=*/true));
+  EXPECT_CALL(*authenticator_ptr, Authenticate(_,
+                                               /*use_last_valid_auth=*/true));
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -211,7 +208,6 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
                               nullptr /* obj */, 1 /* credential_item */,
                               false /* signin_button_clicked */);
 
-  EXPECT_CALL(*authenticator_ptr,
-              Cancel(DeviceAuthRequester::kAccountChooserDialog));
+  EXPECT_CALL(*authenticator_ptr, Cancel());
   dialog->OnVisibilityChanged(content::Visibility::HIDDEN);
 }

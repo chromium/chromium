@@ -49,7 +49,8 @@ enum class DeviceAuthFinalResult {
 class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorAndroid(std::unique_ptr<DeviceAuthenticatorBridge> bridge,
-                             DeviceAuthenticatorProxy* proxy);
+                             DeviceAuthenticatorProxy* proxy,
+                             device_reauth::DeviceAuthSource source);
   ~DeviceAuthenticatorAndroid() override;
 
   bool CanAuthenticateWithBiometrics() override;
@@ -62,8 +63,7 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
   // period between the last valid authentication and the current
   // authentication, and re-invokes system authentication.
-  void Authenticate(device_reauth::DeviceAuthRequester requester,
-                    AuthenticateCallback callback,
+  void Authenticate(AuthenticateCallback callback,
                     bool use_last_valid_auth) override;
 
   // Trigges an authentication flow based on biometrics, with the
@@ -75,7 +75,7 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
-  void Cancel(device_reauth::DeviceAuthRequester requester) override;
+  void Cancel() override;
 
  private:
   // Called when the authentication compeletes with the result
@@ -84,12 +84,12 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
 
-  // Enum value representing the filling surface that has requested the current
-  // authentication.
-  absl::optional<device_reauth::DeviceAuthRequester> requester_;
-
   // Bridge used to call into the Java side.
   std::unique_ptr<DeviceAuthenticatorBridge> bridge_;
+
+  // Enum value representing where the device reauthentication flow is requested
+  // from.
+  device_reauth::DeviceAuthSource source_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_

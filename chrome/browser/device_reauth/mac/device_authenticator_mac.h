@@ -34,8 +34,7 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
   // period between the last valid authentication and the current
   // authentication, and re-invokes system authentication.
-  void Authenticate(device_reauth::DeviceAuthRequester requester,
-                    AuthenticateCallback callback,
+  void Authenticate(AuthenticateCallback callback,
                     bool use_last_valid_auth) override;
 
   // Triggers an OS-level authentication flow.
@@ -51,7 +50,7 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
-  void Cancel(device_reauth::DeviceAuthRequester requester) override;
+  void Cancel() override;
 
  private:
   // Called when the authentication completes with the result |success|.

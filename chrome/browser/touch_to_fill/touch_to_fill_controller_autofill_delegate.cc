@@ -92,7 +92,7 @@ TouchToFillControllerAutofillDelegate::
     ~TouchToFillControllerAutofillDelegate() {
   if (authenticator_) {
     // This is a noop if no auth triggered by Touch To Fill is in progress.
-    authenticator_->Cancel(device_reauth::DeviceAuthRequester::kTouchToFill);
+    authenticator_->Cancel();
   }
 }
 
@@ -133,7 +133,6 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
   authenticator_->Authenticate(
-      device_reauth::DeviceAuthRequester::kTouchToFill,
       base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
                      base::Unretained(this), credential),
       /*use_last_valid_auth=*/true);

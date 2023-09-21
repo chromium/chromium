@@ -28,8 +28,7 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
   MOCK_METHOD(
       void,
       Authenticate,
-      ((device_reauth::DeviceAuthRequester requester),
-       (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
+      ((device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
       (override));
   MOCK_METHOD(
       void,

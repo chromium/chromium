@@ -77,7 +77,6 @@ TEST_F(MandatoryReauthManagerTest, Authenticate) {
       .Times(1);
 
   mandatory_reauth_manager_->Authenticate(
-      /*requester=*/device_reauth::DeviceAuthRequester::kLocalCardAutofill,
       /*callback=*/base::DoNothing());
 
   // Test that `MandatoryReauthManager::OnAuthenticationCompleted()` resets the
@@ -284,11 +283,12 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
+      .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(), Authenticate)
+      .WillByDefault(testing::WithArg<0>(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
+          [](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
 
@@ -315,11 +315,12 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
+      .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(), Authenticate)
+      .WillByDefault(testing::WithArg<0>(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
+          [](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
 
@@ -392,10 +393,11 @@ class MandatoryReauthManagerOptInFlowTest
       bool success) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     ON_CALL(*device_authenticator_ptr, AuthenticateWithMessage)
+        .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
     ON_CALL(*device_authenticator_ptr, Authenticate)
+        .WillByDefault(testing::WithArg<0>(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        .WillByDefault(testing::WithArg<1>(
             [success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
             }));

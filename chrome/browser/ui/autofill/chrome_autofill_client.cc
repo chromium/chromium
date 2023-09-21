@@ -1216,7 +1216,8 @@ std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClient::GetDeviceAuthenticator() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      device_reauth::DeviceAuthSource::kAutofill);
 #else
   return nullptr;
 #endif

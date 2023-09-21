@@ -469,7 +469,8 @@ std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromePasswordManagerClient::GetDeviceAuthenticator() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-  return ChromeDeviceAuthenticatorFactory::GetForProfile(profile_);
+  return ChromeDeviceAuthenticatorFactory::GetForProfile(
+      profile_, device_reauth::DeviceAuthSource::kPasswordManager);
 #else
   return nullptr;
 #endif

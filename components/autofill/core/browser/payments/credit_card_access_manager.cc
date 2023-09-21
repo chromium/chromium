@@ -1506,9 +1506,6 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   // MandatoryReauthManager::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
   client_->GetOrCreatePaymentsMandatoryReauthManager()->Authenticate(
-      record_type == CreditCard::RecordType::kLocalCard
-          ? device_reauth::DeviceAuthRequester::kLocalCardAutofill
-          : device_reauth::DeviceAuthRequester::kVirtualCardAutofill,
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
           weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method, card,

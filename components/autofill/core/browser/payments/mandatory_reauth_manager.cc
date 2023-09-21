@@ -21,12 +21,10 @@ MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
 MandatoryReauthManager::~MandatoryReauthManager() = default;
 
 void MandatoryReauthManager::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
   device_authenticator_->Authenticate(
-      requester,
       base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       /*use_last_valid_auth=*/true);
@@ -151,10 +149,9 @@ void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
   // TODO(crbug.com/1427216): Convert this to
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
-  Authenticate(device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn,
-               base::BindOnce(
-                   &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
-                   weak_ptr_factory_.GetWeakPtr()));
+  Authenticate(base::BindOnce(
+      &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
+      weak_ptr_factory_.GetWeakPtr()));
 #else
   NOTREACHED_NORETURN();
 #endif
