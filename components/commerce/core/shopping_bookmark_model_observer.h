@@ -63,16 +63,23 @@ class ShoppingBookmarkModelObserver
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
+                             const bookmarks::BookmarkNode* parent,
+                             size_t old_index,
+                             const bookmarks::BookmarkNode* node) override;
 
   void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
                                const bookmarks::BookmarkNode* node) override;
 
  private:
+  void HandleFolderDeletion(bookmarks::BookmarkModel* model,
+                            const bookmarks::BookmarkNode* node,
+                            std::set<uint64_t>* unsubscribed_ids);
+  void HandleNodeDeletion(bookmarks::BookmarkModel* model,
+                          const bookmarks::BookmarkNode* node,
+                          const bookmarks::BookmarkNode* folder_being_deleted,
+                          std::set<uint64_t>* unsubscribed_ids);
+
   raw_ptr<ShoppingService> shopping_service_;
 
   raw_ptr<SubscriptionsManager> subscriptions_manager_;

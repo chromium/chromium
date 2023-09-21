@@ -7,11 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -130,24 +132,55 @@ void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
   }
 }
 
-void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(
+void ShoppingBookmarkModelObserver::OnWillRemoveBookmarks(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
+    const bookmarks::BookmarkNode* node) {
+  if (node->is_folder()) {
+    std::set<uint64_t> unsubscribed_ids;
+    HandleFolderDeletion(model, node, &unsubscribed_ids);
+  } else {
+    HandleNodeDeletion(model, node, nullptr, nullptr);
+  }
+}
+
+void ShoppingBookmarkModelObserver::HandleFolderDeletion(
+    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    std::set<uint64_t>* unsubscribed_ids) {
+  CHECK(node && node->is_folder());
+
   if (IsShoppingCollectionBookmarkFolder(node)) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.ShoppingCollection.Deleted"));
   }
 
-  // If the number of bookmarks with the node's cluster ID is now 0, unsubscribe
-  // from the product.
+  for (const auto& child : node->children()) {
+    if (child->is_folder()) {
+      HandleFolderDeletion(model, child.get(), unsubscribed_ids);
+    } else {
+      HandleNodeDeletion(model, child.get(), node, unsubscribed_ids);
+    }
+  }
+}
+
+void ShoppingBookmarkModelObserver::HandleNodeDeletion(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node,
+    const bookmarks::BookmarkNode* folder_being_deleted,
+    std::set<uint64_t>* unsubscribed_ids) {
+  CHECK(node && !node->is_folder());
+  CHECK(!folder_being_deleted || (folder_being_deleted && unsubscribed_ids));
+
+  // If the number of bookmarks with the node's cluster ID is 1, we can
+  // unsubscribe from the product since deleting this node will result in 0.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
-  if (!meta || !meta->has_shopping_specifics())
+  if (!meta || !meta->has_shopping_specifics()) {
     return;
+  }
 
   power_bookmarks::ShoppingSpecifics* specifics =
       meta->mutable_shopping_specifics();
@@ -155,10 +188,29 @@ void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(
   std::vector<const bookmarks::BookmarkNode*> bookmarks_with_cluster =
       GetBookmarksWithClusterId(model, specifics->product_cluster_id());
 
-  // If there are other bookmarks with the node's cluster ID, do nothing.
-  if (!bookmarks_with_cluster.empty())
-    return;
+  // Determine the number of duplicates that are in the folder being deleted.
+  // Skip any previously unsubscribed IDs.
+  if (folder_being_deleted &&
+      !base::Contains(*unsubscribed_ids, specifics->product_cluster_id())) {
+    size_t duplicates_in_deleted_folder = 0;
+    for (const bookmarks::BookmarkNode* duplicate : bookmarks_with_cluster) {
+      if (bookmarks::IsDescendantOf(duplicate, folder_being_deleted)) {
+        duplicates_in_deleted_folder++;
+      }
+    }
 
+    // If all the duplicates for a product aren't in the folder being deleted,
+    // do nothing.
+    if (bookmarks_with_cluster.size() > duplicates_in_deleted_folder) {
+      return;
+    }
+  } else if (bookmarks_with_cluster.size() > 1) {
+    return;
+  }
+
+  if (unsubscribed_ids) {
+    unsubscribed_ids->insert(specifics->product_cluster_id());
+  }
   SetPriceTrackingStateForBookmark(shopping_service_, model, node, false,
                                    base::BindOnce([](bool success) {}));
 }

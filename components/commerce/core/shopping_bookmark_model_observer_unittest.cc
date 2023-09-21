@@ -87,6 +87,83 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   base::RunLoop().RunUntilIdle();
 }
 
+// Make sure that when a folder is deleted, the products that it contains are
+// unsubscribed.
+TEST_F(ShoppingBookmarkModelObserverTest,
+       TestUnsubscribeOnBookmarkFolderDeletion) {
+  uint64_t cluster_id = 12345L;
+
+  const bookmarks::BookmarkNode* folder = bookmark_model_->AddFolder(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size(), u"folder");
+
+  bookmark_model_->Move(
+      AddProductBookmark(bookmark_model_.get(), u"title 1",
+                         GURL("https://example.com/1"), cluster_id),
+      folder, folder->children().size());
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
+  bookmark_model_->Remove(folder,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
+  base::RunLoop().RunUntilIdle();
+}
+
+// Make sure that when a folder is deleted and contains duplicate products in
+// the subtree, it is correctly unsubscribed.
+TEST_F(ShoppingBookmarkModelObserverTest,
+       TestUnsubscribeOnBookmarkFolderDeletion_SameProduct_SameFolder) {
+  uint64_t cluster_id = 12345L;
+
+  const bookmarks::BookmarkNode* folder = bookmark_model_->AddFolder(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size(), u"folder");
+
+  bookmark_model_->Move(
+      AddProductBookmark(bookmark_model_.get(), u"title 1",
+                         GURL("https://example.com/1"), cluster_id),
+      folder, folder->children().size());
+  bookmark_model_->Move(
+      AddProductBookmark(bookmark_model_.get(), u"title 2",
+                         GURL("https://example.com/2"), cluster_id),
+      folder, folder->children().size());
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
+  bookmark_model_->Remove(folder,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
+  base::RunLoop().RunUntilIdle();
+}
+
+// If there are duplicate products but they exist in different subtrees, make
+// sure the product remains subscribed.
+TEST_F(ShoppingBookmarkModelObserverTest,
+       TestUnsubscribeOnBookmarkFolderDeletion_SameProduct_DifferentFolder) {
+  uint64_t cluster_id = 12345L;
+
+  const bookmarks::BookmarkNode* folder1 = bookmark_model_->AddFolder(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size(), u"folder 1");
+  const bookmarks::BookmarkNode* folder2 = bookmark_model_->AddFolder(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size(), u"folder 2");
+
+  bookmark_model_->Move(
+      AddProductBookmark(bookmark_model_.get(), u"title 1",
+                         GURL("https://example.com/1"), cluster_id),
+      folder1, folder1->children().size());
+  bookmark_model_->Move(
+      AddProductBookmark(bookmark_model_.get(), u"title 2",
+                         GURL("https://example.com/2"), cluster_id),
+      folder2, folder2->children().size());
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
+  bookmark_model_->Remove(folder1,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
+  base::RunLoop().RunUntilIdle();
+}
+
 // If the URL of a bookmark changes, we don't know if it still points to a valid
 // product. The subscription and meta should be removed.
 TEST_F(ShoppingBookmarkModelObserverTest,
