@@ -1,4 +1,3 @@
 # cr23_browser_tests that are expected to fail on linux bots:
 -FullscreenTabSearchBubbleDialogTest.InvokeUi_default
 -IntentChipButtonBrowserTest.ShowsAppIconInChip
--InteractiveBrowserTestBrowsertest.InstrumentTabsAsTestSteps
