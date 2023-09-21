@@ -357,6 +357,15 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 }
 
 - (void)completedClearAllSpotlightItems {
+  // If this method is called before bookmark model loaded, or after it
+  // unloaded, reindexing won't be possible. The latter should happen at
+  // shutdown, so the reindex can't happen until next app start. In the former
+  // case, unset _initialIndexDone flag. This makes sure indexing will happen
+  // once the model loads.
+  if (!_bookmarkModel->loaded()) {
+    _initialIndexDone = NO;
+  }
+
   const base::Time startOfReindexing = base::Time::Now();
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
