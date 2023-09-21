@@ -38,6 +38,10 @@ def main():
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
     "--override-sql-module", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,
+    # TODO(b/301093584): This test fails with Chrome's trace_processor_shell
+    # most likely due to Chromium using a different version of sqlite.
+    # This name filter will be removed when fixed.
+    "--name-filter", "^((?!ChromeScrollJank:frame_times_metric).)*$",
     args.trace_processor_shell,
   ]
 

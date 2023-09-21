@@ -656,33 +656,35 @@ class ChromeScrollJank(TestSuite):
   def test_chrome_scroll_jank_v3(self):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
-          SELECT IMPORT('chrome.scroll_jank.scroll_jank_v3');
-
-          SELECT
-            (SELECT COUNT(*) FROM chrome_janky_frame_info_with_delay)
-              AS trace_num_frames,
-            (SELECT COUNT(*) FROM chrome_janky_frames)
-              AS trace_num_janky_frames,
-            causes.vsync_interval,
-            frames.num_frames,
-            frames.num_janky_frames,
-            frames.scroll_jank_percentage,
-            causes.max_delay_since_last_frame,
-            c.cause_of_jank,
-            c.delay_since_last_frame
-          FROM chrome_frames_per_scroll AS frames
-          INNER JOIN chrome_causes_per_scroll AS causes USING(scroll_id)
-          INNER JOIN chrome_janky_frames c USING (scroll_id)
-        """,
-        out=Csv("""
-        "trace_num_frames","trace_num_janky_frames","vsync_interval",
-                "num_frames","num_janky_frames","scroll_jank_percentage",
-                "max_delay_since_last_frame","cause_of_jank",
-                "delay_since_last_frame"
-        291,3,16.368000,105,2,1.904762,6.126222,"[NULL]",33.462000
-        291,3,16.368000,105,2,1.904762,6.126222,
-                "RendererCompositorFinishedToBeginImplFrame",100.274000
-        291,3,16.368000,84,1,1.190476,2.040811,
-                "RendererCompositorQueueingDelay",33.404000
+        query=Metric('chrome_scroll_jank_v3'),
+        out=TextProto(r"""
+        [perfetto.protos.chrome_scroll_jank_v3] {
+          trace_num_frames: 291
+          trace_num_janky_frames: 3
+          trace_scroll_jank_percentage: 1.0309278350515463
+          vsync_interval_ms: 16.368
+          scrolls {
+            num_frames: 105
+            num_janky_frames: 2
+            scroll_jank_percentage: 1.9047619047619047
+            max_delay_since_last_frame: 6.126221896383187
+            scroll_jank_causes {
+              delay_since_last_frame: 2.044354838709678
+            }
+            scroll_jank_causes {
+              cause: "RendererCompositorFinishedToBeginImplFrame"
+              delay_since_last_frame: 6.126221896383187
+            }
+          }
+          scrolls {
+            num_frames: 84
+            num_janky_frames: 1
+            scroll_jank_percentage: 1.1904761904761905
+            max_delay_since_last_frame: 2.040811339198436
+            scroll_jank_causes {
+              cause: "RendererCompositorQueueingDelay"
+              delay_since_last_frame: 2.040811339198436
+            }
+          }
+        }
         """))
