@@ -1001,6 +1001,7 @@ void ShapeResult::ApplyTextAutoSpacing(
     ApplyTextAutoSpacingCore<TextDirection::kRtl>(offsets_with_spacing.rbegin(),
                                                   offsets_with_spacing.rend());
   }
+  RecalcCharacterPositions();
 }
 
 template <TextDirection direction, class Iterator>
@@ -1883,12 +1884,12 @@ void ShapeResult::ComputePositionData() const {
           float x_position = !rtl ? last_x_position : total_advance;
           for (unsigned i = next_character_index; i < character_index; i++) {
             DCHECK_LT(i, num_characters_);
-            data[i] = {x_position, false, false};
+            data[i].SetCachedData(x_position, false, false);
           }
         }
 
-        data[character_index] = {total_advance, true,
-                                 glyph_data.safe_to_break_before};
+        data[character_index].SetCachedData(total_advance, true,
+                                            glyph_data.safe_to_break_before);
         last_x_position = total_advance;
       }
 
@@ -1903,7 +1904,7 @@ void ShapeResult::ComputePositionData() const {
   if (next_character_index < num_characters_) {
     float x_position = !rtl ? last_x_position : run_advance;
     for (unsigned i = next_character_index; i < num_characters_; i++) {
-      data[i] = {x_position, false, false};
+      data[i].SetCachedData(x_position, false, false);
     }
   }
 
@@ -1916,10 +1917,16 @@ void ShapeResult::EnsurePositionData() const {
 
   character_position_ =
       std::make_unique<CharacterPositionData>(num_characters_, width_);
-  if (Direction() == TextDirection::kLtr)
+  RecalcCharacterPositions();
+}
+
+void ShapeResult::RecalcCharacterPositions() const {
+  DCHECK(character_position_);
+  if (IsLtr()) {
     ComputePositionData<false>();
-  else
+  } else {
     ComputePositionData<true>();
+  }
 }
 
 unsigned ShapeResult::CachedOffsetForPosition(float x) const {

@@ -74,22 +74,20 @@ enum class AdjustMidCluster {
 struct ShapeResultCharacterData {
   DISALLOW_NEW();
 
-  ShapeResultCharacterData() : ShapeResultCharacterData(0, false, false) {}
-  ShapeResultCharacterData(float position,
-                           bool is_cluster_base,
-                           bool safe_to_break_before)
-      : x_position(position),
-        is_cluster_base(is_cluster_base),
-        safe_to_break_before(safe_to_break_before),
+  ShapeResultCharacterData()
+      : is_cluster_base(false),
+        safe_to_break_before(false),
         has_auto_spacing_after(false) {}
-  ShapeResultCharacterData(float position,
-                           bool is_cluster_base,
-                           unsigned safe_to_break_before)
-      : ShapeResultCharacterData(position,
-                                 is_cluster_base,
-                                 static_cast<bool>(safe_to_break_before)) {}
 
-  float x_position;
+  void SetCachedData(float new_x_position,
+                     bool new_is_cluster_base,
+                     bool new_safe_to_break_before) {
+    x_position = new_x_position;
+    is_cluster_base = new_is_cluster_base;
+    safe_to_break_before = new_safe_to_break_before;
+  }
+
+  float x_position = 0;
   // Set for the logical first character of a cluster.
   unsigned is_cluster_base : 1;
   unsigned safe_to_break_before : 1;
@@ -499,6 +497,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   template <bool>
   void ComputePositionData() const;
+  void RecalcCharacterPositions() const;
 
   template <typename TextContainerType>
   void ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
