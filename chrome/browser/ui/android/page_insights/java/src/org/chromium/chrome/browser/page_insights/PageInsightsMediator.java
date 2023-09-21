@@ -11,11 +11,13 @@ import android.os.Looper;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import com.google.protobuf.ByteString;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -111,6 +113,32 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // for testing.
     private long mAutoTriggerDelayMs;
     private Supplier<Long> mCurrentTime;
+
+    private int mOldState = SheetState.NONE;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({PageInsightsEvent.USER_INVOKES_PIH, PageInsightsEvent.AUTO_PEEK_TRIGGERED,
+            PageInsightsEvent.STATE_PEEK, PageInsightsEvent.STATE_EXPANDED,
+            PageInsightsEvent.DISMISS_PEEK, PageInsightsEvent.DISMISS_EXPANDED,
+            PageInsightsEvent.TAP_XSURFACE_VIEW, PageInsightsEvent.COUNT})
+    @interface PageInsightsEvent {
+        int USER_INVOKES_PIH = 0;
+        int AUTO_PEEK_TRIGGERED = 1;
+        int STATE_PEEK = 2;
+        int STATE_EXPANDED = 3;
+        int DISMISS_PEEK = 4;
+        int DISMISS_EXPANDED = 5;
+        // User interacts with a xSurface in PIH
+        int TAP_XSURFACE_VIEW = 6;
+        // Number of elements in the enum
+        int COUNT = 7;
+    }
+
+    private static void logPageInsightsEvent(@PageInsightsEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.PageInsights.Event", event, PageInsightsEvent.COUNT);
+    }
 
     public PageInsightsMediator(Context context, ObservableSupplier<Tab> tabObservable,
             Supplier<ShareDelegate> shareDelegateSupplier,
@@ -253,6 +281,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         boolean hasEnoughConfidence =
                 metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE;
         if (hasEnoughConfidence) {
+            logPageInsightsEvent(PageInsightsEvent.AUTO_PEEK_TRIGGERED);
             openInPeekState(metadata);
             resetAutoTriggerTimer();
         }
@@ -265,7 +294,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     // data
-    void openInExpandedState() {
+    void launch() {
         mSheetContent.showLoadingIndicator();
         mSheetController.requestShowContent(mSheetContent, true);
         mPageInsightsDataLoader.loadInsightsData();
@@ -273,6 +302,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetContent.setFeedPage(getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
         mSheetContent.showFeedPage();
         setCornerRadiusPx(mMaxCornerRadiusPx);
+        logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
         mSheetController.expandSheet();
     }
 
@@ -304,10 +334,27 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (newState == SheetState.HIDDEN || newState == SheetState.PEEK) {
             setBottomControlsHeight(mSheetController.getCurrentOffset());
         }
+
+        // Dismiss from PEEK state
+        if (newState == SheetState.HIDDEN && mOldState == SheetState.PEEK) {
+            logPageInsightsEvent(PageInsightsEvent.DISMISS_PEEK);
+        }
+
+        // Dismiss from EXPANDED state
+        if (newState == SheetState.HIDDEN && mOldState >= SheetState.HALF) {
+            logPageInsightsEvent(PageInsightsEvent.DISMISS_EXPANDED);
+        }
+
         if (newState == SheetState.PEEK) {
             setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ .0f);
+            logPageInsightsEvent(PageInsightsEvent.STATE_PEEK);
         } else if (newState == SheetState.FULL) {
             setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
+            logPageInsightsEvent(PageInsightsEvent.STATE_EXPANDED);
+        }
+
+        if (newState != SheetState.NONE && newState != SheetState.SCROLLING) {
+            mOldState = newState;
         }
     }
 

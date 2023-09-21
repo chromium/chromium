@@ -394,6 +394,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
+    expires_after="2024-04-01">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only on Android. Holds the interaction that the user has with Page
+    Insights BottomSheet, such as invoking PIH manually or by being auto
+    triggered, the bottom sheet's states and when it is dismissed, and
+    interactions with xSurface views.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ParallelRequestStatusOnStart"
     enum="CustomTabsParallelRequestStatusOnStart" expires_after="M120">
   <owner>lizeb@chromium.org</owner>

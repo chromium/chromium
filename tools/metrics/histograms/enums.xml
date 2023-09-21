@@ -81877,6 +81877,16 @@ Called by update_net_trust_anchors.py.-->
       label="Click on lock within 20 seconds after confirmation chip collapse"/>
 </enum>
 
+<enum name="PageInsightsEvent">
+  <int value="0" label="Tap on Page Insights tab from Overflow menu"/>
+  <int value="1" label="Page Insights is auto-triggered in Peek state"/>
+  <int value="2" label="Page Insights is in Peek state"/>
+  <int value="3" label="Page Insights is in Expanded state"/>
+  <int value="4" label="Dismiss Page Insights from Peek state"/>
+  <int value="5" label="Dismiss Page Insights from Expanded state"/>
+  <int value="6" label="Tap on a xSurface in Page Insights"/>
+</enum>
+
 <enum name="PageLoadBackForwardCacheEvent">
   <int value="0" label="Enter back-forward cache"/>
   <int value="1" label="Restore from back-forward cache"/>
