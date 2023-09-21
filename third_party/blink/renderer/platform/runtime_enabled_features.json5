@@ -3310,6 +3310,12 @@
       base_feature: "none",
     },
     {
+      // Allows the HTML parser to put <hr> tags inside <select> tags.
+      // https://chromestatus.com/feature/6198448366026752
+      name: "SelectHr",
+      status: "experimental",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",
