@@ -161,7 +161,7 @@ class BatteryNotificationTest : public AshTestBase {
 
   std::u16string GetBatterySaverMessage() {
     return GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE, GetRemainingTimeString(),
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME,
         base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()));
   }
 

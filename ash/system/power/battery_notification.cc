@@ -101,12 +101,14 @@ std::u16string GetLowBatteryMessage(
       notification_state ==
       PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_OUT;
 
-  auto message_token =
-      features::IsBatterySaverAvailable() && auto_enable_bsm_notification
-          ? IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE
-          : IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE;
+  if (features::IsBatterySaverAvailable() && auto_enable_bsm_notification) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME,
+        base::NumberToString16(battery_percentage));
+  }
 
-  return l10n_util::GetStringFUTF16(message_token, duration,
+  return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE,
+                                    duration,
                                     base::NumberToString16(battery_percentage));
 }
 
@@ -199,7 +201,9 @@ std::unique_ptr<Notification> CreateNotification(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE);
     message = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
-  } else if (time && power_utils::ShouldDisplayBatteryTime(*time) &&
+  } else if (time &&
+             (power_utils::ShouldDisplayBatteryTime(*time) ||
+              features::IsBatterySaverAvailable()) &&
              !status.IsBatteryDischargingOnLinePower()) {
     std::u16string duration = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG, *time);

@@ -207,10 +207,10 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   const PowerStatus& status = *PowerStatus::Get();
 
   const bool on_AC_power = status.IsMainsChargerConnected();
-  const double battery_percent = status.GetBatteryPercent();
+  const double rounded_battery_percent = status.GetRoundedBatteryPercent();
 
   const bool below_threshold =
-      battery_percent <= battery_saver_activation_charge_percent_;
+      rounded_battery_percent <= battery_saver_activation_charge_percent_;
   const bool threshold_conditions_met =
       !on_AC_power && below_threshold && !battery_saver_triggered_;
 
@@ -269,7 +269,11 @@ bool PowerNotificationController::UpdateNotificationState() {
     battery_saver_triggered_ = false;
   }
 
-  if (!status.IsBatteryPresent() || status.IsBatteryTimeBeingCalculated() ||
+  // Battery Saver Notification doesn't have a time remaining text, so send
+  // the notification + turn on battery saver right away.
+  if (!status.IsBatteryPresent() ||
+      (!features::IsBatterySaverAvailable() &&
+       status.IsBatteryTimeBeingCalculated()) ||
       on_AC_power) {
     notification_state_ = NOTIFICATION_NONE;
     return false;
@@ -277,14 +281,14 @@ bool PowerNotificationController::UpdateNotificationState() {
 
   // Send different notifications if Battery Saver flag is enabled.
   if (features::IsBatterySaverAvailable()) {
-    const double battery_percent = status.GetBatteryPercent();
+    const double rounded_battery_percent = status.GetRoundedBatteryPercent();
     const bool on_USB_power = status.IsUsbChargerConnected();
     const bool on_line_power = status.IsLinePowerConnected();
 
     // Reset threshold when charging and percent remaining goes above the
     // threshold.
     if ((on_AC_power || on_USB_power || on_line_power) &&
-        battery_percent > battery_saver_activation_charge_percent_) {
+        rounded_battery_percent > battery_saver_activation_charge_percent_) {
       battery_saver_triggered_ = false;
     }
 
@@ -395,37 +399,38 @@ bool PowerNotificationController::
 bool PowerNotificationController::
     UpdateNotificationStateForRemainingPercentageBatterySaver() {
   const PowerStatus* status = PowerStatus::Get();
-  const double battery_percent = status->GetBatteryPercent();
+  const double rounded_battery_percent = status->GetRoundedBatteryPercent();
 
-  if (battery_percent >= no_warning_percentage_ || status->IsBatteryFull()) {
+  if (rounded_battery_percent >= no_warning_percentage_ ||
+      status->IsBatteryFull()) {
     notification_state_ = NOTIFICATION_NONE;
     return false;
   }
 
   switch (notification_state_) {
     case NOTIFICATION_NONE:
-      if (battery_percent <= critical_percentage_) {
+      if (rounded_battery_percent <= critical_percentage_) {
         notification_state_ = NOTIFICATION_CRITICAL;
-        LogBattery(notification_state_, battery_percent,
+        LogBattery(notification_state_, rounded_battery_percent,
                    status->IsUsbChargerConnected());
         return true;
       }
-      if (battery_percent <= low_power_percentage_) {
+      if (rounded_battery_percent <= low_power_percentage_) {
         notification_state_ =
             features::kBatterySaverNotificationBehavior.Get() ==
                     features::kBSMAutoEnable
                 ? NOTIFICATION_BSM_THRESHOLD_OPT_OUT
                 : NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-        LogBattery(notification_state_, battery_percent,
+        LogBattery(notification_state_, rounded_battery_percent,
                    status->IsUsbChargerConnected());
         return true;
       }
       return false;
     case NOTIFICATION_BSM_THRESHOLD_OPT_OUT:
     case NOTIFICATION_BSM_THRESHOLD_OPT_IN:
-      if (battery_percent <= critical_percentage_) {
+      if (rounded_battery_percent <= critical_percentage_) {
         notification_state_ = NOTIFICATION_CRITICAL;
-        LogBattery(notification_state_, battery_percent,
+        LogBattery(notification_state_, rounded_battery_percent,
                    status->IsUsbChargerConnected());
         return true;
       }
